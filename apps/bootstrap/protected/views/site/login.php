@@ -5,8 +5,10 @@ use yii\helpers\Html;
  * @var yii\widgets\ActiveForm $form
  * @var app\models\LoginForm $model
  */
+$this->title = 'Login';
+$this->params['breadcrumbs'][] = $this->title;
 ?>
-<h1>Login</h1>
+<h1><?php echo Html::encode($this->title); ?></h1>
 
 <p>Please fill out the following fields to login:</p>
 
@@ -14,9 +16,7 @@ use yii\helpers\Html;
 	<?php echo $form->field($model, 'username')->textInput(); ?>
 	<?php echo $form->field($model, 'password')->passwordInput(); ?>
 	<?php echo $form->field($model, 'rememberMe')->checkbox(); ?>
-	<div class="control-group">
-		<div class="controls">
-			<?php echo Html::submitButton('Login', null, null, array('class' => 'btn btn-primary')); ?>
-		</div>
+	<div class="form-actions">
+		<?php echo Html::submitButton('Login', null, null, array('class' => 'btn btn-primary')); ?>
 	</div>
 <?php $this->endWidget(); ?>
