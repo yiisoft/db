@@ -4,13 +4,12 @@ namespace yiiunit\framework\db\oci;
 
 use yii\db\Expression;
 use yii\db\oci\Schema;
-use yiiunit\framework\db\SchemaTest;
 
 /**
  * @group db
  * @group oci
  */
-class OracleSchemaTest extends SchemaTest
+class SchemaTest extends \yiiunit\framework\db\SchemaTest
 {
     public $driverName = 'oci';
 

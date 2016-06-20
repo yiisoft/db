@@ -1,14 +1,14 @@
 <?php
+
 namespace yiiunit\framework\db\oci;
 
 use yii\db\Schema;
-use yiiunit\framework\db\CommandTest;
 
 /**
  * @group db
  * @group oci
  */
-class OracleCommandTest extends CommandTest
+class CommandTest extends \yiiunit\framework\db\CommandTest
 {
     protected $driverName = 'oci';
 

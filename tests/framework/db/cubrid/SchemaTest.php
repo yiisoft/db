@@ -1,14 +1,14 @@
 <?php
+
 namespace yiiunit\framework\db\cubrid;
 
 use yii\db\Expression;
-use yiiunit\framework\db\SchemaTest;
 
 /**
  * @group db
  * @group cubrid
  */
-class CubridSchemaTest extends SchemaTest
+class SchemaTest extends \yiiunit\framework\db\SchemaTest
 {
     public $driverName = 'cubrid';
 

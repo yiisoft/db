@@ -2,13 +2,11 @@
 
 namespace yiiunit\framework\db\mssql;
 
-use yiiunit\framework\db\ConnectionTest;
-
 /**
  * @group db
  * @group mssql
  */
-class MssqlConnectionTest extends ConnectionTest
+class ConnectionTest extends \yiiunit\framework\db\ConnectionTest
 {
     protected $driverName = 'sqlsrv';
 

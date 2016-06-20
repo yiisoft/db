@@ -3,14 +3,13 @@
 namespace yiiunit\framework\db\mssql;
 
 use yii\db\mssql\Schema;
-use yiiunit\framework\db\QueryBuilderTest;
 use yii\db\Query;
 
 /**
  * @group db
  * @group mssql
  */
-class MssqlQueryBuilderTest extends QueryBuilderTest
+class QueryBuilderTest extends \yiiunit\framework\db\QueryBuilderTest
 {
     public $driverName = 'sqlsrv';
 

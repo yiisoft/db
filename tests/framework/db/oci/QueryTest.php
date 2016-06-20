@@ -1,14 +1,14 @@
 <?php
+
 namespace yiiunit\framework\db\oci;
 
-use yiiunit\framework\db\QueryTest;
 use yii\db\Query;
 
 /**
  * @group db
  * @group oci
  */
-class OracleQueryTest extends QueryTest
+class QueryTest extends \yiiunit\framework\db\QueryTest
 {
     protected $driverName = 'oci';
 
