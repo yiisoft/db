@@ -3,13 +3,12 @@
 namespace yiiunit\framework\db\oci;
 
 use yii\db\oci\Schema;
-use yiiunit\framework\db\QueryBuilderTest;
 
 /**
  * @group db
  * @group oci
  */
-class OracleQueryBuilderTest extends QueryBuilderTest
+class QueryBuilderTest extends \yiiunit\framework\db\QueryBuilderTest
 {
     public $driverName = 'oci';
 

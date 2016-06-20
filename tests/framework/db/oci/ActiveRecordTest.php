@@ -1,7 +1,7 @@
 <?php
+
 namespace yiiunit\framework\db\oci;
 
-use yiiunit\framework\db\ActiveRecordTest;
 use yiiunit\data\ar\DefaultPk;
 use yiiunit\data\ar\Type;
 
@@ -9,7 +9,7 @@ use yiiunit\data\ar\Type;
  * @group db
  * @group oci
  */
-class OracleActiveRecordTest extends ActiveRecordTest
+class ActiveRecordTest extends \yiiunit\framework\db\ActiveRecordTest
 {
     protected $driverName = 'oci';
 

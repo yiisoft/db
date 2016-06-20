@@ -3,13 +3,12 @@
 namespace yiiunit\framework\db\cubrid;
 
 use yii\db\Schema;
-use yiiunit\framework\db\QueryBuilderTest;
 
 /**
  * @group db
  * @group cubrid
  */
-class CubridQueryBuilderTest extends QueryBuilderTest
+class QueryBuilderTest extends \yiiunit\framework\db\QueryBuilderTest
 {
     public $driverName = 'cubrid';
 
