@@ -1,13 +1,12 @@
 <?php
-namespace yiiunit\framework\db\cubrid;
 
-use yiiunit\framework\db\ConnectionTest;
+namespace yiiunit\framework\db\cubrid;
 
 /**
  * @group db
  * @group cubrid
  */
-class CubridConnectionTest extends ConnectionTest
+class ConnectionTest extends \yiiunit\framework\db\ConnectionTest
 {
     public $driverName = 'cubrid';
 

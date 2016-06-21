@@ -1,15 +1,30 @@
 <?php
-namespace yiiunit\framework\db\cubrid;
 
-use yiiunit\framework\db\CommandTest;
+namespace yiiunit\framework\db\mssql;
+
+use yii\db\Schema;
 
 /**
  * @group db
- * @group cubrid
+ * @group mssql
  */
-class CubridCommandTest extends CommandTest
+class CommandTest extends \yiiunit\framework\db\CommandTest
 {
-    public $driverName = 'cubrid';
+    protected $driverName = 'sqlsrv';
+
+    public function testAutoQuoting()
+    {
+        $db = $this->getConnection(false);
+
+        $sql = 'SELECT [[id]], [[t.name]] FROM {{customer}} t';
+        $command = $db->createCommand($sql);
+        $this->assertEquals("SELECT [id], [t].[name] FROM [customer] t", $command->sql);
+    }
+
+    public function testPrepareCancel()
+    {
+        $this->markTestSkipped('MSSQL driver does not support this feature.');
+    }
 
     public function testBindParamValue()
     {
@@ -31,33 +46,29 @@ class CubridCommandTest extends CommandTest
         $command->bindParam(':email', $email);
         $this->assertEquals($name, $command->queryScalar());
 
-        $sql = "INSERT INTO type (int_col, char_col, char_col2, enum_col, float_col, blob_col, numeric_col, bool_col) VALUES (:int_col, '', :char_col, :enum_col, :float_col, CHAR_TO_BLOB(:blob_col), :numeric_col, :bool_col)";
+        $sql = 'INSERT INTO type (int_col, char_col, float_col, blob_col, numeric_col, bool_col) VALUES (:int_col, :char_col, :float_col, CONVERT([varbinary], :blob_col), :numeric_col, :bool_col)';
         $command = $db->createCommand($sql);
         $intCol = 123;
         $charCol = 'abc';
-        $enumCol = 'a';
         $floatCol = 1.23;
         $blobCol = "\x10\x11\x12";
         $numericCol = '1.23';
-        $boolCol = true;
+        $boolCol = false;
         $command->bindParam(':int_col', $intCol);
         $command->bindParam(':char_col', $charCol);
-        $command->bindParam(':enum_col', $enumCol);
         $command->bindParam(':float_col', $floatCol);
         $command->bindParam(':blob_col', $blobCol);
         $command->bindParam(':numeric_col', $numericCol);
         $command->bindParam(':bool_col', $boolCol);
         $this->assertEquals(1, $command->execute());
 
-        $sql = 'SELECT * FROM type';
+        $sql = 'SELECT int_col, char_col, float_col, CONVERT([nvarchar], blob_col) AS blob_col, numeric_col FROM type';
         $row = $db->createCommand($sql)->queryOne();
         $this->assertEquals($intCol, $row['int_col']);
-        $this->assertEquals($enumCol, $row['enum_col']);
-        $this->assertEquals($charCol, $row['char_col2']);
+        $this->assertEquals($charCol, trim($row['char_col']));
         $this->assertEquals($floatCol, $row['float_col']);
-        $this->assertEquals($blobCol, fread($row['blob_col'], 3));
+        $this->assertEquals($blobCol, $row['blob_col']);
         $this->assertEquals($numericCol, $row['numeric_col']);
-        $this->assertEquals($boolCol, $row['bool_col']);
 
         // bindValue
         $sql = 'INSERT INTO customer(email, name, address) VALUES (:email, \'user5\', \'address5\')';
@@ -71,12 +82,12 @@ class CubridCommandTest extends CommandTest
         $this->assertEquals('user5@example.com', $command->queryScalar());
     }
 
-    public function testAutoQuoting()
+    public function paramsNonWhereProvider()
     {
-        $db = $this->getConnection(false);
-
-        $sql = 'SELECT [[id]], [[t.name]] FROM {{customer}} t';
-        $command = $db->createCommand($sql);
-        $this->assertEquals('SELECT "id", "t"."name" FROM "customer" t', $command->sql);
+        return[
+            ['SELECT SUBSTRING(name, :len, 6) AS name FROM {{customer}} WHERE [[email]] = :email GROUP BY name'],
+            ['SELECT SUBSTRING(name, :len, 6) as name FROM {{customer}} WHERE [[email]] = :email ORDER BY name'],
+            ['SELECT SUBSTRING(name, :len, 6) FROM {{customer}} WHERE [[email]] = :email'],
+        ];
     }
 }
