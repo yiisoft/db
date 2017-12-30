@@ -5,29 +5,28 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\captcha;
+namespace yii\jquery;
 
 use yii\web\AssetBundle;
-use yii\jquery\YiiAsset;
 
 /**
- * This asset bundle provides the javascript files needed for the [[Captcha]] widget.
+ * This asset bundle provides the base JavaScript files for the Yii Framework.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class CaptchaAsset extends AssetBundle
+class YiiAsset extends AssetBundle
 {
     /**
      * @inheritdoc
      */
-    public $sourcePath = '@yii/captcha/assets';
+    public $sourcePath = '@yii/jquery/assets';
     /**
      * @inheritdoc
      */
-    public $js = ['yii.captcha.js',];
+    public $js = ['yii.js'];
     /**
      * @inheritdoc
      */
-    public $depends = [YiiAsset::class];
+    public $depends = [JqueryAsset::class];
 }
