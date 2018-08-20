@@ -7,11 +7,11 @@
 
 namespace yii\db;
 
+use yii\exceptions\InvalidArgumentException;
+use yii\exceptions\InvalidConfigException;
 use yii\helpers\Yii;
 use yii\base\Component;
-use yii\base\InvalidArgumentException;
 use yii\helpers\ArrayHelper;
-use yii\base\InvalidConfigException;
 
 /**
  * Query represents a SELECT SQL statement in a way that is independent of DBMS.
@@ -476,7 +476,7 @@ class Query extends Component implements QueryInterface, ExpressionInterface
      * Returns table names used in [[from]] indexed by aliases.
      * Both aliases and names are enclosed into {{ and }}.
      * @return string[] table names indexed by aliases
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      * @since 2.0.12
      */
     public function getTablesUsedInFrom()

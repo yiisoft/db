@@ -13,7 +13,7 @@ namespace yii\db;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Exception extends \yii\base\Exception
+class Exception extends \yii\exceptions\Exception
 {
     /**
      * @var array the error info provided by a PDO exception. This is the same as returned
