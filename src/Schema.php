@@ -7,7 +7,6 @@
 
 namespace yii\db;
 
-use Yii;
 use yii\base\BaseObject;
 use yii\base\InvalidCallException;
 use yii\base\InvalidConfigException;
@@ -16,6 +15,7 @@ use yii\caching\Cache;
 use yii\caching\CacheInterface;
 use yii\caching\TagDependency;
 use yii\helpers\StringHelper;
+use yii\helpers\Yii;
 
 /**
  * Schema is the base class for concrete DBMS-specific schema classes.
@@ -281,7 +281,7 @@ abstract class Schema extends BaseObject
     public function refresh()
     {
         /* @var $cache CacheInterface */
-        $cache = is_string($this->db->schemaCache) ? Yii::$app->get($this->db->schemaCache, false) : $this->db->schemaCache;
+        $cache = is_string($this->db->schemaCache) ? Yii::getApp()->get($this->db->schemaCache, false) : $this->db->schemaCache;
         if ($this->db->enableSchemaCache && $cache instanceof CacheInterface) {
             TagDependency::invalidate($cache, $this->getCacheTag());
         }
@@ -302,7 +302,7 @@ abstract class Schema extends BaseObject
         unset($this->_tableMetadata[$rawName]);
         $this->_tableNames = [];
         /* @var $cache CacheInterface */
-        $cache = is_string($this->db->schemaCache) ? Yii::$app->get($this->db->schemaCache, false) : $this->db->schemaCache;
+        $cache = is_string($this->db->schemaCache) ? Yii::getApp()->get($this->db->schemaCache, false) : $this->db->schemaCache;
         if ($this->db->enableSchemaCache && $cache instanceof CacheInterface) {
             $cache->delete($this->getCacheKey($rawName));
         }
@@ -731,7 +731,7 @@ abstract class Schema extends BaseObject
     {
         $cache = null;
         if ($this->db->enableSchemaCache && !in_array($name, $this->db->schemaCacheExclude, true)) {
-            $schemaCache = is_string($this->db->schemaCache) ? Yii::$app->get($this->db->schemaCache, false) : $this->db->schemaCache;
+            $schemaCache = is_string($this->db->schemaCache) ? Yii::getApp()->get($this->db->schemaCache, false) : $this->db->schemaCache;
             if ($schemaCache instanceof CacheInterface) {
                 $cache = $schemaCache;
             }

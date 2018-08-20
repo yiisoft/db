@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\db;
+namespace yii\db\tests\unit;
 
 use PDO;
 use yii\caching\ArrayCache;

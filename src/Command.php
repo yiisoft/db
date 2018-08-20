@@ -7,9 +7,9 @@
 
 namespace yii\db;
 
-use Yii;
 use yii\base\Component;
 use yii\base\NotSupportedException;
+use yii\helpers\Yii;
 
 /**
  * Command represents a SQL statement to be executed against a database.

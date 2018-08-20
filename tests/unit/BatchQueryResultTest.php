@@ -5,9 +5,9 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\db;
+namespace yii\db\tests\unit;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\db\BatchQueryResult;
 use yii\db\Query;
 use yiiunit\data\ar\ActiveRecord;

@@ -5,9 +5,9 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\db;
+namespace yii\db\tests\unit;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\base\InvalidConfigException;
 use yii\caching\ArrayCache;
 use yii\caching\Cache;
@@ -457,7 +457,7 @@ abstract class ConnectionTest extends DatabaseTestCase
     public function testServerStatusCacheWorks()
     {
         $cache = new Cache(['handler' => new ArrayCache()]);
-        Yii::$app->set('cache', $cache);
+        Yii::getApp()->set('cache', $cache);
 
         $connection = $this->getConnection(true, false);
         $connection->masters[] = [
@@ -487,7 +487,7 @@ abstract class ConnectionTest extends DatabaseTestCase
     public function testServerStatusCacheCanBeDisabled()
     {
         $cache = new Cache(['handler' => new ArrayCache()]);
-        Yii::$app->set('cache', $cache);
+        Yii::getApp()->set('cache', $cache);
 
         $connection = $this->getConnection(true, false);
         $connection->masters[] = [

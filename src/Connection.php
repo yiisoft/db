@@ -8,11 +8,11 @@
 namespace yii\db;
 
 use PDO;
-use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\base\NotSupportedException;
 use yii\caching\CacheInterface;
+use yii\helpers\Yii;
 
 /**
  * Connection represents a connection to a database via [PDO](http://php.net/manual/en/book.pdo.php).
@@ -586,8 +586,8 @@ class Connection extends Component
         }
 
         if ($duration === 0 || $duration > 0) {
-            if (is_string($this->queryCache) && Yii::$app) {
-                $cache = Yii::$app->get($this->queryCache, false);
+            if (is_string($this->queryCache) && Yii::getApp()) {
+                $cache = Yii::getApp()->get($this->queryCache, false);
             } else {
                 $cache = $this->queryCache;
             }
@@ -1122,7 +1122,7 @@ class Connection extends Component
             $sharedConfig['__class'] = get_class($this);
         }
 
-        $cache = is_string($this->serverStatusCache) ? Yii::$app->get($this->serverStatusCache, false) : $this->serverStatusCache;
+        $cache = is_string($this->serverStatusCache) ? Yii::getApp()->get($this->serverStatusCache, false) : $this->serverStatusCache;
 
         foreach ($pool as $config) {
             $config = array_merge($sharedConfig, $config);

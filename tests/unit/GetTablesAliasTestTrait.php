@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\db;
+namespace yii\db\tests\unit;
 
 use yii\base\InvalidArgumentException;
 use yii\db\ActiveQuery;

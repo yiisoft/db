@@ -5,11 +5,11 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\db;
+namespace yii\db\tests\unit;
 
 use yii\caching\DummyCache;
 use yii\db\Connection;
-use yiiunit\TestCase;
+use yii\tests\TestCase;
 
 abstract class DatabaseTestCase extends TestCase
 {
@@ -84,7 +84,7 @@ abstract class DatabaseTestCase extends TestCase
             $config['__class'] = \yii\db\Connection::class;
         }
         /* @var $db \yii\db\Connection */
-        $db = \Yii::createObject($config);
+        $db = $this->factory->create($config);
         if (!$open) {
             return $db;
         }

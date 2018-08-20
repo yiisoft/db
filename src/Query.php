@@ -7,7 +7,7 @@
 
 namespace yii\db;
 
-use Yii;
+use yii\helpers\Yii;
 use yii\base\Component;
 use yii\base\InvalidArgumentException;
 use yii\helpers\ArrayHelper;
@@ -141,7 +141,7 @@ class Query extends Component implements QueryInterface, ExpressionInterface
     public function createCommand($db = null)
     {
         if ($db === null) {
-            $db = Yii::$app->getDb();
+            $db = Yii::getApp()->getDb();
         }
         [$sql, $params] = $db->getQueryBuilder()->build($this);
 

@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yiiunit\framework\db;
+namespace yii\db\tests\unit;
 
 use yii\db\conditions\BetweenColumnsCondition;
 use yii\db\Expression;
@@ -722,7 +722,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 [
                     /**
                      * MySQL has its own TIMESTAMP test realization
-                     * @see \yiiunit\framework\db\mysql\QueryBuilderTest::columnTypes()
+                     * @see \yii\db\tests\unit\mysql\QueryBuilderTest::columnTypes()
                      */
 
                     'postgres' => 'timestamp(0)',
