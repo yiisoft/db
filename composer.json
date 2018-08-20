@@ -1,0 +1,90 @@
+{
+    "name": "yiisoft/db",
+    "type": "library",
+    "description": "Yii DataBase Library",
+    "keywords": [
+        "yii",
+        "database"
+    ],
+    "homepage": "http://www.yiiframework.com/",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Qiang Xue",
+            "email": "qiang.xue@gmail.com",
+            "homepage": "http://www.yiiframework.com/",
+            "role": "Founder and project lead"
+        },
+        {
+            "name": "Alexander Makarov",
+            "email": "sam@rmcreative.ru",
+            "homepage": "http://rmcreative.ru/",
+            "role": "Core framework development"
+        },
+        {
+            "name": "Maurizio Domba",
+            "homepage": "http://mdomba.info/",
+            "role": "Core framework development"
+        },
+        {
+            "name": "Carsten Brandt",
+            "email": "mail@cebe.cc",
+            "homepage": "http://cebe.cc/",
+            "role": "Core framework development"
+        },
+        {
+            "name": "Timur Ruziev",
+            "email": "resurtm@gmail.com",
+            "homepage": "http://resurtm.com/",
+            "role": "Core framework development"
+        },
+        {
+            "name": "Paul Klimov",
+            "email": "klimov.paul@gmail.com",
+            "role": "Core framework development"
+        },
+        {
+            "name": "Dmitry Naumenko",
+            "email": "d.naumenko.a@gmail.com",
+            "role": "Core framework development"
+        },
+        {
+            "name": "Boudewijn Vahrmeijer",
+            "email": "info@dynasource.eu",
+            "homepage": "http://dynasource.eu",
+            "role": "Core framework development"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/yiisoft/db",
+        "issues": "https://github.com/yiisoft/db/issues",
+        "forum": "http://www.yiiframework.com/forum/",
+        "wiki": "http://www.yiiframework.com/wiki/",
+        "irc": "irc://irc.freenode.net/yii"
+    },
+    "require": {
+        "yiisoft/db": "^3.0@dev"
+    },
+    "require-dev": {
+        "yiisoft/core": "^3.0@dev",
+        "yiisoft/view": "^3.0@dev",
+        "yiisoft/di": "^3.0@dev",
+        "yiisoft/log": "^3.0@dev",
+        "hiqdev/composer-config-plugin": "^1.0@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "yii\\db\\": "src",
+            "yii\\db\\tests\\": "tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0.x-dev"
+        },
+        "config-plugin": {
+            "params": "config/params.php",
+            "common": "config/common.php"
+        }
+    }
+}
