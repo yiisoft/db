@@ -66,7 +66,7 @@
         "yiisoft/db": "^3.0@dev"
     },
     "require-dev": {
-        "yiisoft/core": "^3.0@dev",
+        "yiisoft/yii-core": "^3.0@dev",
         "yiisoft/view": "^3.0@dev",
         "yiisoft/di": "^3.0@dev",
         "yiisoft/log": "^3.0@dev",
