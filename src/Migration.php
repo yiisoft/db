@@ -8,8 +8,8 @@
 namespace yii\db;
 
 use yii\base\Component;
-use yii\di\Instance;
 use yii\helpers\StringHelper;
+use yii\helpers\Yii;
 
 /**
  * Migration is the base class for representing a database migration.
@@ -84,10 +84,10 @@ class Migration extends Component implements MigrationInterface
      * Initializes the migration.
      * This method will set [[db]] to be the 'db' application component, if it is `null`.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
-        $this->db = Instance::ensure($this->db, Connection::class);
+        $this->db = Yii::ensureObject($this->db, Connection::class);
         $this->db->getSchema()->refresh();
         $this->db->enableSlaves = false;
     }
