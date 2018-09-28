@@ -104,20 +104,11 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param Connection $connection the database connection.
      * @param array $config name-value pairs that will be used to initialize the object properties
      */
-    public function __construct($connection, $config = [])
+    public function __construct($connection)
     {
         $this->db = $connection;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function init()
-    {
-        parent::init();
-
-        $this->expressionBuilders = array_merge($this->defaultExpressionBuilders(), $this->expressionBuilders);
-        $this->conditionClasses = array_merge($this->defaultConditionClasses(), $this->conditionClasses);
+        $this->expressionBuilders = $this->defaultExpressionBuilders();
+        $this->conditionClasses = $this->defaultConditionClasses();
     }
 
     /**
