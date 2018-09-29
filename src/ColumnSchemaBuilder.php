@@ -126,12 +126,11 @@ class ColumnSchemaBuilder extends BaseObject
      * @param \yii\db\Connection $db the current database connection. See [[$db]].
      * @param array $config name-value pairs that will be used to initialize the object properties
      */
-    public function __construct($type, $length = null, $db = null, $config = [])
+    public function __construct($type, $length = null, $db = null)
     {
         $this->type = $type;
         $this->length = $length;
         $this->db = $db;
-        parent::__construct($config);
     }
 
     /**
