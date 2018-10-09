@@ -7,7 +7,7 @@
 
 namespace yii\db\conditions;
 
-use yii\base\InvalidArgumentException;
+use yii\exceptions\InvalidArgumentException;
 
 /**
  * Condition that inverts passed [[condition]].

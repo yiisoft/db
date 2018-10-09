@@ -289,7 +289,7 @@ trait SchemaBuilderTrait
      * Creates a JSON column.
      * @return ColumnSchemaBuilder the column instance which can be further customized.
      * @since 2.0.14
-     * @throws \yii\base\Exception
+     * @throws \yii\exceptions\Exception
      */
     public function json()
     {

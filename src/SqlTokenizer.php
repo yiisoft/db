@@ -8,7 +8,7 @@
 namespace yii\db;
 
 use yii\base\Component;
-use yii\base\InvalidArgumentException;
+use yii\exceptions\InvalidArgumentException;
 
 /**
  * SqlTokenizer splits an SQL query into individual SQL tokens.

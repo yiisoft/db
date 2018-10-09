@@ -7,7 +7,7 @@
 
 namespace yii\db;
 
-use yii\base\InvalidCallException;
+use yii\exceptions\InvalidCallException;
 
 /**
  * DataReader represents a forward-only stream of rows from a query result set.

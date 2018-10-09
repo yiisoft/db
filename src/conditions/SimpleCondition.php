@@ -7,7 +7,7 @@
 
 namespace yii\db\conditions;
 
-use yii\base\InvalidArgumentException;
+use yii\exceptions\InvalidArgumentException;
 
 /**
  * Class SimpleCondition represents a simple condition like `"column" operator value`.

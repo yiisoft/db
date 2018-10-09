@@ -7,8 +7,8 @@
 
 namespace yii\db;
 
-use yii\base\InvalidArgumentException;
-use yii\base\NotSupportedException;
+use yii\exceptions\InvalidArgumentException;
+use yii\exceptions\NotSupportedException;
 use yii\db\conditions\ConditionInterface;
 use yii\db\conditions\HashCondition;
 use yii\helpers\StringHelper;

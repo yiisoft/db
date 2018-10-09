@@ -7,7 +7,7 @@
 
 namespace yii\db;
 
-use yii\base\NotSupportedException;
+use yii\exceptions\NotSupportedException;
 
 /**
  * The BaseQuery trait represents the minimum method set of a database Query.

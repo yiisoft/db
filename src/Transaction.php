@@ -8,7 +8,7 @@
 namespace yii\db;
 
 use yii\helpers\Yii;
-use yii\base\InvalidConfigException;
+use yii\exceptions\InvalidConfigException;
 
 /**
  * Transaction represents a DB transaction.

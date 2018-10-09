@@ -7,7 +7,7 @@
 
 namespace yii\db;
 
-use yii\base\InvalidConfigException;
+use yii\exceptions\InvalidConfigException;
 
 /**
  * Class JsonExpression represents data that should be encoded to JSON.

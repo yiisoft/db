@@ -9,8 +9,8 @@ namespace yii\db;
 
 use PDO;
 use yii\base\Component;
-use yii\base\InvalidConfigException;
-use yii\base\NotSupportedException;
+use yii\exceptions\InvalidConfigException;
+use yii\exceptions\NotSupportedException;
 use yii\caching\CacheInterface;
 use yii\helpers\Yii;
 

@@ -8,7 +8,7 @@
 namespace yii\db;
 
 use Traversable;
-use yii\base\InvalidConfigException;
+use yii\exceptions\InvalidConfigException;
 
 /**
  * Class ArrayExpression represents an array SQL expression.
