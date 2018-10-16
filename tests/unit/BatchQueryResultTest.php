@@ -10,8 +10,8 @@ namespace yii\db\tests\unit;
 use yii\helpers\Yii;
 use yii\db\BatchQueryResult;
 use yii\db\Query;
-use yiiunit\data\ar\ActiveRecord;
-use yiiunit\data\ar\Customer;
+use yii\activerecord\tests\data\ActiveRecord;
+use yii\activerecord\tests\data\Customer;
 
 abstract class BatchQueryResultTest extends DatabaseTestCase
 {
