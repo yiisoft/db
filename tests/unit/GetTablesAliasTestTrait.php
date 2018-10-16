@@ -8,7 +8,7 @@
 namespace yii\db\tests\unit;
 
 use yii\base\InvalidArgumentException;
-use yii\db\ActiveQuery;
+use yii\activerecord\ActiveQuery;
 use yii\db\Query;
 
 trait GetTablesAliasTestTrait
