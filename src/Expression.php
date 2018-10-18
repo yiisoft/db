@@ -52,7 +52,6 @@ class Expression extends \yii\base\BaseObject implements ExpressionInterface
     {
         $this->expression = $expression;
         $this->params = $params;
-        parent::__construct($config);
     }
 
     /**

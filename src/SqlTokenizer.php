@@ -74,7 +74,6 @@ abstract class SqlTokenizer extends Component
     public function __construct($sql, $config = [])
     {
         $this->sql = $sql;
-        parent::__construct($config);
     }
 
     /**

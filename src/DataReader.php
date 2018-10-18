@@ -68,7 +68,6 @@ class DataReader extends \yii\base\BaseObject implements \Iterator, \Countable
     {
         $this->_statement = $command->pdoStatement;
         $this->_statement->setFetchMode(\PDO::FETCH_ASSOC);
-        parent::__construct($config);
     }
 
     /**
