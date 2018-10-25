@@ -229,6 +229,17 @@ abstract class ConnectionTest extends DatabaseTestCase
             $this->assertNotNull($db->transaction);
         });
     }
+    
+    public function testNestedTransactionNotSupported()
+    {
+        $connection = $this->getConnection();
+        $connection->enableSavepoint = false;
+        $connection->transaction(function (Connection $db) {
+            $this->assertNotNull($db->transaction);
+            $this->expectException('yii\base\NotSupportedException');
+            $db->beginTransaction();
+        });
+    }
 
     public function testEnableQueryLog()
     {
