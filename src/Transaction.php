@@ -9,6 +9,7 @@ namespace yii\db;
 
 use yii\helpers\Yii;
 use yii\exceptions\InvalidConfigException;
+use yii\exceptions\NotSupportedException;
 
 /**
  * Transaction represents a DB transaction.
@@ -102,7 +103,12 @@ class Transaction extends \yii\base\BaseObject
      * At the time of this writing affected DBMS are MSSQL and SQLite.
      *
      * [isolation level]: http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
-     * @throws InvalidConfigException if [[db]] is `null`.
+     *
+     * Starting from version 2.0.16, this method throws exception when beginning nested transaction and underlying DBMS
+     * does not support savepoints.
+     * @throws InvalidConfigException if [[db]] is `null`
+     * @throws NotSupportedException if the DBMS does not support nested transactions
+     * @throws Exception if DB connection fails
      */
     public function begin($isolationLevel = null)
     {
@@ -130,6 +136,7 @@ class Transaction extends \yii\base\BaseObject
             $schema->createSavepoint('LEVEL' . $this->_level);
         } else {
             Yii::info('Transaction not started: nested transaction not supported', __METHOD__);
+            throw new NotSupportedException('Transaction not started: nested transaction not supported.');
         }
         $this->_level++;
     }
@@ -163,7 +170,6 @@ class Transaction extends \yii\base\BaseObject
 
     /**
      * Rolls back a transaction.
-     * @throws Exception if the transaction is not active
      */
     public function rollBack()
     {
@@ -187,8 +193,6 @@ class Transaction extends \yii\base\BaseObject
             $schema->rollBackSavepoint('LEVEL' . $this->_level);
         } else {
             Yii::info('Transaction not rolled back: nested transaction not supported', __METHOD__);
-            // throw an exception to fail the outer transaction
-            throw new Exception('Roll back failed: nested transaction not supported.');
         }
     }
 
