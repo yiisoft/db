@@ -105,7 +105,6 @@ use yii\helpers\Yii;
  *         'dsn' => 'mysql:host=127.0.0.1;dbname=demo',
  *         'username' => 'root',
  *         'password' => '',
- *         'charset' => 'utf8',
  *     ],
  * ],
  * ```
@@ -123,7 +122,6 @@ use yii\helpers\Yii;
  *          ],
  *         'username' => 'root',
  *         'password' => '',
- *         'charset' => 'utf8',
  *     ],
  * ],
  * ```
@@ -191,8 +189,6 @@ class Connection extends Component
      * ```
      *
      * Will result in the DSN string `mysql:host=127.0.0.1;dbname=demo`.
-     *
-     * @see charset
      */
     public $dsn;
     /**
@@ -269,18 +265,7 @@ class Connection extends Component
      * @see enableQueryCache
      */
     public $queryCache = 'cache';
-    /**
-     * @var string the charset used for database connection. The property is only used
-     * for MySQL and PostgreSQL databases. Defaults to null, meaning using default charset
-     * as configured by the database.
-     *
-     * For Oracle Database, the charset must be specified in the [[dsn]], for example for UTF-8 by appending `;charset=UTF-8`
-     * to the DSN string.
-     *
-     * The same applies for if you're using GBK or BIG5 charset with MySQL, then it's highly recommended to
-     * specify charset via [[dsn]] like `'mysql:dbname=mydatabase;host=127.0.0.1;charset=GBK;'`.
-     */
-    public $charset;
+
     /**
      * @var bool whether to turn on prepare emulation. Defaults to false, meaning PDO
      * will use the native prepare support if available. For some databases (such as MySQL),
@@ -713,7 +698,7 @@ class Connection extends Component
      * Initializes the DB connection.
      * This method is invoked right after the DB connection is established.
      * The default implementation turns on `PDO::ATTR_EMULATE_PREPARES`
-     * if [[emulatePrepare]] is true, and sets the database [[charset]] if it is not empty.
+     * if [[emulatePrepare]] is true.
      * It then triggers an [[EVENT_AFTER_OPEN]] event.
      */
     protected function initConnection()
@@ -721,9 +706,6 @@ class Connection extends Component
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         if ($this->emulatePrepare !== null && constant('PDO::ATTR_EMULATE_PREPARES')) {
             $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, $this->emulatePrepare);
-        }
-        if ($this->charset !== null && in_array($this->getDriverName(), ['pgsql', 'mysql', 'mysqli'], true)) {
-            $this->pdo->exec('SET NAMES ' . $this->pdo->quote($this->charset));
         }
         $this->trigger(self::EVENT_AFTER_OPEN);
     }
