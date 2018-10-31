@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9c951ee43a27bcff095d0bef2e408d8c",
+    "content-hash": "4fbcd0a4cfce1c6ee43f6295da7a02d7",
     "packages": [],
     "packages-dev": [
         {
@@ -388,15 +388,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/cache.git",
-                "reference": "5dd442fb384315a2e0d72bff5979117c4327822a"
+                "reference": "95dba0763b1376dfd07fa1f25ac98fc114a09815"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/cache/zipball/5dd442fb384315a2e0d72bff5979117c4327822a",
-                "reference": "5dd442fb384315a2e0d72bff5979117c4327822a",
+                "url": "https://api.github.com/repos/yiisoft/cache/zipball/95dba0763b1376dfd07fa1f25ac98fc114a09815",
+                "reference": "95dba0763b1376dfd07fa1f25ac98fc114a09815",
                 "shasum": ""
             },
             "require": {
+                "ext-ctype": "*",
+                "ext-json": "*",
+                "php": ">=7.1.0",
                 "psr/simple-cache": "~1.0.0"
             },
             "provide": {
@@ -404,6 +407,7 @@
             },
             "require-dev": {
                 "hiqdev/composer-config-plugin": "^1.0@dev",
+                "phpunit/phpunit": "^7.2",
                 "yiisoft/db": "^3.0@dev",
                 "yiisoft/db-sqlite": "^3.0@dev",
                 "yiisoft/di": "^3.0@dev",
@@ -485,7 +489,7 @@
                 "cache",
                 "yii"
             ],
-            "time": "2018-09-28T09:39:10+00:00"
+            "time": "2018-10-23T21:07:04+00:00"
         },
         {
             "name": "yiisoft/db-sqlite",
@@ -599,12 +603,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/di.git",
-                "reference": "c3e92da3fa059b28091339c741e3542392d22174"
+                "reference": "a065a5640ca93351e9098f05d7e93ebfafe3cefa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/di/zipball/c3e92da3fa059b28091339c741e3542392d22174",
-                "reference": "c3e92da3fa059b28091339c741e3542392d22174",
+                "url": "https://api.github.com/repos/yiisoft/di/zipball/a065a5640ca93351e9098f05d7e93ebfafe3cefa",
+                "reference": "a065a5640ca93351e9098f05d7e93ebfafe3cefa",
                 "shasum": ""
             },
             "require": {
@@ -652,7 +656,7 @@
                 "injection",
                 "injector"
             ],
-            "time": "2018-10-16T10:12:48+00:00"
+            "time": "2018-10-31T17:05:02+00:00"
         },
         {
             "name": "yiisoft/log",
@@ -981,12 +985,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/yiisoft/yii-core.git",
-                "reference": "2cddb7558e1d6180f48bd6ef9fb73c806ab46e95"
+                "reference": "b6cef7d6c6201a45a019f915ba4b7808cbf6e22d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii-core/zipball/2cddb7558e1d6180f48bd6ef9fb73c806ab46e95",
-                "reference": "2cddb7558e1d6180f48bd6ef9fb73c806ab46e95",
+                "url": "https://api.github.com/repos/yiisoft/yii-core/zipball/b6cef7d6c6201a45a019f915ba4b7808cbf6e22d",
+                "reference": "b6cef7d6c6201a45a019f915ba4b7808cbf6e22d",
                 "shasum": ""
             },
             "require": {
@@ -1103,7 +1107,7 @@
                 "framework",
                 "yii"
             ],
-            "time": "2018-10-21T17:21:12+00:00"
+            "time": "2018-10-31T20:15:04+00:00"
         },
         {
             "name": "yiisoft/yii-web",
@@ -1221,7 +1225,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "yiisoft/db": 20,
         "yiisoft/yii-core": 20,
         "yiisoft/yii-web": 20,
         "yiisoft/yii-console": 20,
@@ -1235,6 +1238,8 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "ext-pdo": "*"
+    },
     "platform-dev": []
 }
