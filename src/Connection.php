@@ -722,8 +722,10 @@ class Connection extends Component
         if ($this->emulatePrepare !== null && constant('PDO::ATTR_EMULATE_PREPARES')) {
             $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, $this->emulatePrepare);
         }
-        if ($this->charset !== null && in_array($this->getDriverName(), ['pgsql', 'mysql', 'mysqli'], true)) {
+        if (isset($this->charset) && in_array($this->getDriverName(), ['pgsql'], true)) {
             $this->pdo->exec('SET NAMES ' . $this->pdo->quote($this->charset));
+        } elseif (isset($this->charset)) {
+            throw new InvalidConfigException('Charset is not supported and thus ignored for this driver');
         }
         $this->trigger(self::EVENT_AFTER_OPEN);
     }
