@@ -102,7 +102,7 @@ use yii\helpers\Yii;
  * 'components' => [
  *     'db' => [
  *         '__class' => \yii\db\Connection::class,
- *         'dsn' => 'mysql:host=127.0.0.1;dbname=demo',
+ *         'dsn' => 'mysql:host=127.0.0.1;dbname=demo;charset=utf8',
  *         'username' => 'root',
  *         'password' => '',
  *     ],
@@ -118,7 +118,8 @@ use yii\helpers\Yii;
  *         'dsn' => [
  *             'driver' => 'mysql',
  *             'host' => '127.0.0.1',
- *             'dbname' => 'demo'
+ *             'dbname' => 'demo',
+ *             'charset' => 'utf8',
  *          ],
  *         'username' => 'root',
  *         'password' => '',
@@ -184,7 +185,8 @@ class Connection extends Component
      * 'dsn' => [
      *     'driver' => 'mysql',
      *     'host' => '127.0.0.1',
-     *     'dbname' => 'demo'
+     *     'dbname' => 'demo',
+     *     'charset' => 'utf8',
      * ],
      * ```
      *
