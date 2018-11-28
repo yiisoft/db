@@ -840,12 +840,15 @@ class Connection extends Component
     /**
      * Can be used to set [[QueryBuilder]] configuration via Connection configuration array.
      *
-     * @param array $value the [[QueryBuilder]] properties to be configured.
+     * @param iterable $config the [[QueryBuilder]] properties to be configured.
      * @since 2.0.14
      */
-    public function setQueryBuilder($value)
+    public function setQueryBuilder(iterable $config)
     {
-        Yii::configure($this->getQueryBuilder(), $value);
+        $builder = $this->getQueryBuilder();
+        foreach ($config as $key => $value) {
+            $builder->{$key} = $value;
+        }
     }
 
     /**
