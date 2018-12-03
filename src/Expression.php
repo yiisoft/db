@@ -48,11 +48,10 @@ class Expression extends \yii\base\BaseObject implements ExpressionInterface
      * @param array $params parameters
      * @param array $config name-value pairs that will be used to initialize the object properties
      */
-    public function __construct($expression, $params = [], $config = [])
+    public function __construct($expression, $params = [])
     {
         $this->expression = $expression;
         $this->params = $params;
-        parent::__construct($config);
     }
 
     /**
