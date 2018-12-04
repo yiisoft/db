@@ -752,7 +752,7 @@ class Connection extends Component
         $this->open();
 
         if (($transaction = $this->getTransaction()) === null) {
-            $transaction = $this->_transaction = new Transaction(['db' => $this]);
+            $transaction = $this->_transaction = new Transaction($this);
         }
         $transaction->begin($isolationLevel);
 

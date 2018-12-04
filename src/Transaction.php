@@ -77,6 +77,11 @@ class Transaction extends \yii\base\BaseObject
     private $_level = 0;
 
 
+    public function __construct(Connection $db)
+    {
+        $this->db = $db;
+    }
+
     /**
      * Returns a value indicating whether this transaction is active.
      * @return bool whether this transaction is active. Only an active transaction
