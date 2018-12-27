@@ -7,8 +7,8 @@
 
 namespace yii\db\tests\unit;
 
-use yii\caching\ArrayCache;
-use yii\caching\Cache;
+use yii\cache\ArrayCache;
+use yii\cache\Cache;
 use yii\db\Connection;
 use yii\db\Expression;
 use yii\db\Query;
