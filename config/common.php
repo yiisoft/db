@@ -1,6 +1,7 @@
 <?php
 
 return [
+    \yii\db\ConnectionInterface::class => \yii\di\Reference::to('db'),
     'db' => [
         '__class'   => \yii\db\Connection::class,
         'dsn'       => 'pgsql:dbname=' . $params['db.name']
