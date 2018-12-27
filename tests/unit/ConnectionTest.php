@@ -8,9 +8,9 @@
 namespace yii\db\tests\unit;
 
 use yii\helpers\Yii;
-use yii\base\InvalidConfigException;
-use yii\caching\ArrayCache;
-use yii\caching\Cache;
+use yii\exceptions\InvalidConfigException;
+use yii\cache\ArrayCache;
+use yii\cache\Cache;
 use yii\db\Connection;
 use yii\db\Transaction;
 
@@ -229,14 +229,14 @@ abstract class ConnectionTest extends DatabaseTestCase
             $this->assertNotNull($db->transaction);
         });
     }
-    
+
     public function testNestedTransactionNotSupported()
     {
         $connection = $this->getConnection();
         $connection->enableSavepoint = false;
         $connection->transaction(function (Connection $db) {
             $this->assertNotNull($db->transaction);
-            $this->expectException('yii\base\NotSupportedException');
+            $this->expectException('yii\exceptions\NotSupportedException');
             $db->beginTransaction();
         });
     }
@@ -461,14 +461,14 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertEquals('mysql:host=127.0.0.1;dbname=yiitest', $connection->dsn);
 
         unset($dsn['driver']);
-        $this->expectException('yii\base\InvalidConfigException');
+        $this->expectException('yii\exceptions\InvalidConfigException');
         $connection = new Connection(['dsn' => $dsn]);
     }
 
     public function testServerStatusCacheWorks()
     {
-        $cache = new Cache(['handler' => new ArrayCache()]);
-        Yii::getApp()->set('cache', $cache);
+        $cache = new Cache(new ArrayCache());
+        $this->container->set('cache', $cache);
 
         $connection = $this->getConnection(true, false);
         $connection->masters[] = [
@@ -497,8 +497,8 @@ abstract class ConnectionTest extends DatabaseTestCase
 
     public function testServerStatusCacheCanBeDisabled()
     {
-        $cache = new Cache(['handler' => new ArrayCache()]);
-        Yii::getApp()->set('cache', $cache);
+        $cache = new Cache(new ArrayCache());
+        $this->container->set('cache', $cache);
 
         $connection = $this->getConnection(true, false);
         $connection->masters[] = [

@@ -7,7 +7,7 @@
 
 namespace yii\db\tests\unit;
 
-use yii\base\InvalidCallException;
+use yii\exceptions\InvalidCallException;
 use yii\db\Query;
 
 class UnqueryableQueryMock extends Query

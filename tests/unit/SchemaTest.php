@@ -568,7 +568,7 @@ abstract class SchemaTest extends DatabaseTestCase
             'somecolUnique' => ['somecol'],
             'someCol2Unique' => ['someCol2'],
         ], $uniqueIndexes);
-        
+
         // see https://github.com/yiisoft/yii2/issues/13814
         $db->createCommand()->createIndex('another unique index', 'uniqueIndex', 'someCol2', true)->execute();
 
@@ -721,7 +721,7 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testTableSchemaConstraints($tableName, $type, $expected)
     {
         if ($expected === false) {
-            $this->expectException('yii\base\NotSupportedException');
+            $this->expectException('yii\exceptions\NotSupportedException');
         }
 
         $constraints = $this->getConnection(false)->getSchema()->{'getTable' . ucfirst($type)}($tableName);
@@ -737,7 +737,7 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testTableSchemaConstraintsWithPdoUppercase($tableName, $type, $expected)
     {
         if ($expected === false) {
-            $this->expectException('yii\base\NotSupportedException');
+            $this->expectException('yii\exceptions\NotSupportedException');
         }
 
         $connection = $this->getConnection(false);
@@ -755,7 +755,7 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testTableSchemaConstraintsWithPdoLowercase($tableName, $type, $expected)
     {
         if ($expected === false) {
-            $this->expectException('yii\base\NotSupportedException');
+            $this->expectException('yii\exceptions\NotSupportedException');
         }
 
         $connection = $this->getConnection(false);
