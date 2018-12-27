@@ -17,7 +17,7 @@ use yii\db\Schema;
 use yii\db\SchemaBuilderTrait;
 use yii\db\sqlite\QueryBuilder as SqliteQueryBuilder;
 use yii\helpers\ArrayHelper;
-use yiiunit\data\base\TraversableObject;
+use yii\tests\data\base\TraversableObject;
 
 abstract class QueryBuilderTest extends DatabaseTestCase
 {
@@ -47,7 +47,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     {
         $connection = $this->getConnection($reset, $open);
 
-        \Yii::$container->set('db', $connection);
+        $this->container->set('db', $connection);
 
         switch ($this->driverName) {
             case 'mysql':

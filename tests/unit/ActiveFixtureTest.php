@@ -7,6 +7,7 @@
 
 namespace yii\db\tests\unit;
 
+use yii\helpers\Yii;
 use yii\test\ActiveFixture;
 use yii\test\FixtureTrait;
 use yii\activerecord\tests\data\ActiveRecord;
@@ -22,7 +23,7 @@ class CustomerFixture extends ActiveFixture
     public $modelClass = \yii\activerecord\tests\data\Customer::class;
 
     public $depends = [
-        'yii\tests\framework\test\ProfileFixture',
+        'yii\db\tests\unit\ProfileFixture',
     ];
 }
 
@@ -110,7 +111,7 @@ class ActiveFixtureTest extends DatabaseTestCase
     {
         parent::setUp();
         $db = $this->getConnection();
-        \Yii::getApp()->set('db', $db);
+        $this->container->set('db', $db);
         ActiveRecord::$db = $db;
     }
 
