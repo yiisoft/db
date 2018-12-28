@@ -1301,6 +1301,16 @@ PATTERN;
     }
 
     /**
+     * Constructor for query object
+     */
+    public function __construct($config = [])
+    {
+        if (!empty($config)) {
+            \yii\di\AbstractContainer::configure($this, $config);
+        }
+    }
+
+    /**
      * Returns the SQL representation of Query
      * @return string
      */
