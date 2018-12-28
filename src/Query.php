@@ -1301,6 +1301,27 @@ PATTERN;
     }
 
     /**
+     * Constructor for query object
+     */
+    public function __construct($config = [])
+    {
+        $this->where = isset($config['where'])?$config['where']:null;
+        $this->limit = isset($config['limit'])?$config['limit']:null;
+        $this->offset = isset($config['offset'])?$config['offset']:null;
+        $this->orderBy = isset($config['orderBy'])?$config['orderBy']:null;
+        $this->indexBy = isset($config['indexBy'])?$config['indexBy']:null;
+        $this->select = isset($config['select'])?$config['select']:null;
+        $this->selectOption = isset($config['selectOption'])?$config['selectOption']:null;
+        $this->distinct = isset($config['distinct'])?$config['distinct']:null;
+        $this->from = isset($config['from'])?$config['from']:null;
+        $this->groupBy = isset($config['groupBy'])?$config['groupBy']:null;
+        $this->join = isset($config['join'])?$config['join']:null;
+        $this->having = isset($config['having'])?$config['having']:null;
+        $this->union = isset($config['union'])?$config['union']:null;
+        $this->params = isset($config['params'])?$config['params']:null;
+    }
+
+    /**
      * Returns the SQL representation of Query
      * @return string
      */
