@@ -1303,7 +1303,7 @@ PATTERN;
     /**
      * Constructor for query object
      */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         if (!empty($config)) {
             \yii\di\AbstractContainer::configure($this, $config);
