@@ -818,10 +818,9 @@ class Connection extends Component implements ConnectionInterface
 
         $driver = $this->getDriverName();
         if (isset($this->schemaMap[$driver])) {
-            $config = !is_array($this->schemaMap[$driver]) ? ['__class' => $this->schemaMap[$driver]] : $this->schemaMap[$driver];
-            $config['db'] = $this;
+            $class = $this->schemaMap[$driver];
 
-            return $this->_schema = Yii::createObject($config);
+            return $this->_schema = new $class($this);
         }
 
         throw new NotSupportedException("Connection does not support reading schema information for '$driver' DBMS.");

@@ -127,6 +127,11 @@ abstract class Schema extends BaseObject
     private $_serverVersion;
 
 
+    public function __construct(Connection $db)
+    {
+        $this->db = $db;
+    }
+
     /**
      * Resolves the table name and schema name (if any).
      * @param string $name the table name
