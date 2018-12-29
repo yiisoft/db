@@ -11,7 +11,7 @@ use PDO;
 use yii\base\Component;
 use yii\exceptions\InvalidConfigException;
 use yii\exceptions\NotSupportedException;
-use yii\caching\CacheInterface;
+use yii\cache\CacheInterface;
 use yii\helpers\Yii;
 
 /**
@@ -446,17 +446,16 @@ class Connection extends Component implements ConnectionInterface
      */
     private $_queryCacheInfo = [];
 
-
     /**
-    * {@inheritdoc}
-    */
-    public function init()
+     * Constructor based on dns info
+     * @param array dns info
+     */
+    public function __construct(array $dsn = null)
     {
-       if (is_array($this->dsn)) {
-           $this->dsn = $this->buildDSN($this->dsn);
-       }
-       parent::init();
-    }
+        if (is_array($dsn)) {
+            $this->dsn = $this->buildDSN($dsn);
+        }
+     }
 
     /**
      * Returns a value indicating whether the DB connection is established.
