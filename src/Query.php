@@ -125,7 +125,7 @@ class Query extends Component implements QueryInterface, ExpressionInterface
      */
     public $queryCacheDuration;
     /**
-     * @var \yii\caching\Dependency the dependency to be associated with the cached query result for this query
+     * @var \yii\cache\Dependency the dependency to be associated with the cached query result for this query
      * @see cache()
      * @since 2.0.14
      */
@@ -1235,7 +1235,7 @@ PATTERN;
      * Use a negative number to indicate that query cache should not be used.
      * Use boolean `true` to indicate that [[Connection::queryCacheDuration]] should be used.
      * Defaults to `true`.
-     * @param \yii\caching\Dependency $dependency the cache dependency associated with the cached result.
+     * @param \yii\cache\Dependency $dependency the cache dependency associated with the cached result.
      * @return $this the Query object itself
      * @since 2.0.14
      */

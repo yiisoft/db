@@ -489,7 +489,7 @@ class Connection extends Component implements ConnectionInterface
      * @param int $duration the number of seconds that query results can remain valid in the cache. If this is
      * not set, the value of [[queryCacheDuration]] will be used instead.
      * Use 0 to indicate that the cached data will never expire.
-     * @param \yii\caching\Dependency $dependency the cache dependency associated with the cached query results.
+     * @param \yii\cache\Dependency $dependency the cache dependency associated with the cached query results.
      * @return mixed the return result of the callable
      * @throws \Throwable if there is any exception during query
      * @see enableQueryCache
@@ -551,7 +551,7 @@ class Connection extends Component implements ConnectionInterface
      * Returns the current query cache information.
      * This method is used internally by [[Command]].
      * @param int $duration the preferred caching duration. If null, it will be ignored.
-     * @param \yii\caching\Dependency $dependency the preferred caching dependency. If null, it will be ignored.
+     * @param \yii\cache\Dependency $dependency the preferred caching dependency. If null, it will be ignored.
      * @return array the current query cache information, or null if query cache is not enabled.
      * @internal
      */

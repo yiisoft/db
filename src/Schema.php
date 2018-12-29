@@ -11,9 +11,9 @@ use yii\base\BaseObject;
 use yii\exceptions\InvalidCallException;
 use yii\exceptions\InvalidConfigException;
 use yii\exceptions\NotSupportedException;
-use yii\caching\Cache;
-use yii\caching\CacheInterface;
-use yii\caching\TagDependency;
+use yii\cache\Cache;
+use yii\cache\CacheInterface;
+use yii\cache\TagDependency;
 use yii\helpers\StringHelper;
 use yii\helpers\Yii;
 
