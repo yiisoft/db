@@ -31,7 +31,7 @@ class CustomDirectoryFixture extends ActiveFixture
 {
     public $modelClass = \yii\activerecord\tests\data\Customer::class;
 
-    public $dataDirectory = '@app/framework/test/custom';
+    public $dataDirectory = '@yii/tests/framework/test/custom';
 }
 
 class AnimalFixture extends ActiveFixture
@@ -80,7 +80,7 @@ class DataPathDbTestCase extends BaseDbTestCase
         return [
             'customers' => [
                 '__class' => CustomDirectoryFixture::class,
-                'dataFile' => '@app/framework/test/data/customer.php'
+                'dataFile' => '@yii/tests/framework/test/data/customer.php'
             ]
         ];
     }
