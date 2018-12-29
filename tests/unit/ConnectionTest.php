@@ -430,6 +430,9 @@ abstract class ConnectionTest extends DatabaseTestCase
      */
     public function testGetPdoAfterClose()
     {
+        $cache = new Cache(new ArrayCache());
+        $this->container->set('cache', $cache);
+
         $connection = $this->getConnection();
         $connection->slaves[] = [
             'dsn' => $connection->dsn,
@@ -457,12 +460,12 @@ abstract class ConnectionTest extends DatabaseTestCase
             'dbname' => 'yiitest'
         ];
 
-        $connection = new Connection(['dsn' => $dsn]);
+        $connection = new Connection($dsn);
         $this->assertEquals('mysql:host=127.0.0.1;dbname=yiitest', $connection->dsn);
 
         unset($dsn['driver']);
         $this->expectException('yii\exceptions\InvalidConfigException');
-        $connection = new Connection(['dsn' => $dsn]);
+        $connection = new Connection($dsn);
     }
 
     public function testServerStatusCacheWorks()
