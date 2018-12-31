@@ -8,6 +8,7 @@
 namespace yii\db;
 
 use yii\exceptions\InvalidCallException;
+use yii\di\AbstractContainer;
 
 /**
  * DataReader represents a forward-only stream of rows from a query result set.
@@ -68,8 +69,9 @@ class DataReader extends \yii\base\BaseObject implements \Iterator, \Countable
     {
         $this->_statement = $command->pdoStatement;
         $this->_statement->setFetchMode(\PDO::FETCH_ASSOC);
-        parent::__construct($config);
-    }
+
+        AbstractContainer::configure($this, $config);
+    }   
 
     /**
      * Binds a column to a PHP variable.
