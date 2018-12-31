@@ -7,7 +7,7 @@
 
 namespace yii\db\tests\unit;
 
-use yii\caching\DummyCache;
+use yii\cache\DummyCache;
 use yii\db\Connection;
 use yii\tests\TestCase;
 

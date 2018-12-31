@@ -11,7 +11,7 @@ use PDO;
 use yii\base\Component;
 use yii\exceptions\InvalidConfigException;
 use yii\exceptions\NotSupportedException;
-use yii\caching\CacheInterface;
+use yii\cache\CacheInterface;
 use yii\helpers\Yii;
 
 /**
@@ -446,17 +446,16 @@ class Connection extends Component implements ConnectionInterface
      */
     private $_queryCacheInfo = [];
 
-
     /**
-    * {@inheritdoc}
-    */
-    public function init()
+     * Constructor based on dns info
+     * @param array dns info
+     */
+    public function __construct(array $dsn = null)
     {
-       if (is_array($this->dsn)) {
-           $this->dsn = $this->buildDSN($this->dsn);
-       }
-       parent::init();
-    }
+        if (is_array($dsn)) {
+            $this->dsn = $this->buildDSN($dsn);
+        }
+     }
 
     /**
      * Returns a value indicating whether the DB connection is established.
@@ -490,7 +489,7 @@ class Connection extends Component implements ConnectionInterface
      * @param int $duration the number of seconds that query results can remain valid in the cache. If this is
      * not set, the value of [[queryCacheDuration]] will be used instead.
      * Use 0 to indicate that the cached data will never expire.
-     * @param \yii\caching\Dependency $dependency the cache dependency associated with the cached query results.
+     * @param \yii\cache\dependencies\Dependency $dependency the cache dependency associated with the cached query results.
      * @return mixed the return result of the callable
      * @throws \Throwable if there is any exception during query
      * @see enableQueryCache
@@ -552,7 +551,7 @@ class Connection extends Component implements ConnectionInterface
      * Returns the current query cache information.
      * This method is used internally by [[Command]].
      * @param int $duration the preferred caching duration. If null, it will be ignored.
-     * @param \yii\caching\Dependency $dependency the preferred caching dependency. If null, it will be ignored.
+     * @param \yii\cache\dependencies\Dependency $dependency the preferred caching dependency. If null, it will be ignored.
      * @return array the current query cache information, or null if query cache is not enabled.
      * @internal
      */
@@ -819,10 +818,9 @@ class Connection extends Component implements ConnectionInterface
 
         $driver = $this->getDriverName();
         if (isset($this->schemaMap[$driver])) {
-            $config = !is_array($this->schemaMap[$driver]) ? ['__class' => $this->schemaMap[$driver]] : $this->schemaMap[$driver];
-            $config['db'] = $this;
+            $class = $this->schemaMap[$driver];
 
-            return $this->_schema = Yii::createObject($config);
+            return $this->_schema = new $class($this);
         }
 
         throw new NotSupportedException("Connection does not support reading schema information for '$driver' DBMS.");

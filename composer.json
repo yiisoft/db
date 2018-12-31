@@ -70,6 +70,7 @@
         "yiisoft/yii-web": "^3.0@dev",
         "yiisoft/yii-console": "^3.0@dev",
         "yiisoft/active-record": "^3.0@dev",
+        "yiisoft/db-mysql": "^3.0@dev",
         "yiisoft/db-sqlite": "^3.0@dev",
         "yiisoft/cache": "^3.0@dev",
         "yiisoft/view": "^3.0@dev",
