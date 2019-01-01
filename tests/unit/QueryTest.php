@@ -659,7 +659,7 @@ abstract class QueryTest extends DatabaseTestCase
     {
         $db = $this->getConnection();
         $db->enableQueryCache = true;
-        $db->queryCache = new Cache(['handler' => new ArrayCache()]);
+        $db->queryCache = new Cache(new ArrayCache());
         $query = (new Query())
             ->select(['name'])
             ->from('customer');
