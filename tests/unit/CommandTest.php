@@ -204,7 +204,7 @@ SQL;
         $row = $command->queryOne();
         $this->assertEquals($intCol, $row['int_col']);
         $this->assertEquals($charCol, $row['char_col']);
-        $this->assertEquals((float)$floatCol, (float) $row['float_col']);
+        $this->assertEquals((float)$floatCol, (float)$row['float_col']);
         if ($this->driverName === 'mysql' || $this->driverName === 'sqlite' || $this->driverName === 'oci') {
             $this->assertEquals($blobCol, $row['blob_col']);
         } else {
