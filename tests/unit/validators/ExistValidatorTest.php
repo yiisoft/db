@@ -139,13 +139,13 @@ abstract class ExistValidatorTest extends DatabaseTestCase
         $this->assertFalse($m->hasErrors('order_id'));
 
         // validate new record
-        $m = new OrderItem(['order_id' => 1, 'item_id' => 2]);
+        $m = $this->factory->create(['__class' => OrderItem::class, 'order_id' => 1, 'item_id' => 2]);
         $val->validateAttribute($m, 'order_id');
         $this->assertFalse($m->hasErrors('order_id'));
-        $m = new OrderItem(['order_id' => 2, 'item_id' => 5]);
+        $m = $this->factory->create(['__class' => OrderItem::class, 'order_id' => 2, 'item_id' => 5]);
         $val->validateAttribute($m, 'order_id');
         $this->assertFalse($m->hasErrors('order_id'));
-        $m = new OrderItem(['order_id' => 10, 'item_id' => 2]);
+        $m = $this->factory->create(['__class' => OrderItem::class, 'order_id' => 10, 'item_id' => 2]);
         $val->validateAttribute($m, 'order_id');
         $this->assertTrue($m->hasErrors('order_id'));
 
@@ -162,10 +162,10 @@ abstract class ExistValidatorTest extends DatabaseTestCase
         $val->validateAttribute($m, 'id');
         $this->assertTrue($m->hasErrors('id'));
 
-        $m = new Order(['id' => 1]);
+        $m = $this->factory->create(['__class' => Order::class, 'id' => 1]);
         $val->validateAttribute($m, 'id');
         $this->assertFalse($m->hasErrors('id'));
-        $m = new Order(['id' => 10]);
+        $m = $this->factory->create(['__class' => Order::class, 'id' => 10]);
         $val->validateAttribute($m, 'id');
         $this->assertTrue($m->hasErrors('id'));
     }
@@ -183,7 +183,7 @@ abstract class ExistValidatorTest extends DatabaseTestCase
             'targetAttribute' => ['id' => 'order_id'],
         ]);
 
-        $m = new Order(['id' => 1]);
+        $m = $this->factory->create(['__class' => Order::class, 'id' => 1]);
         $val->validateAttribute($m, 'id');
         $this->assertFalse($m->hasErrors('id'));
 
@@ -201,7 +201,7 @@ abstract class ExistValidatorTest extends DatabaseTestCase
            'targetAttribute' => ['id' => 'COALESCE(order_id, 0)'],
        ]);
 
-        $m = new Order(['id' => 1]);
+        $m = $this->factory->create(['__class' => Order::class, 'id' => 1]);
         $val->validateAttribute($m, 'id');
         $this->assertFalse($m->hasErrors('id'));
     }
