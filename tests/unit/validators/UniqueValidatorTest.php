@@ -160,11 +160,11 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
         $this->assertStringStartsWith('The combination "1"-"1" of Order Id and Item Id', $m->getFirstError('order_id'));
 
         // validate new record
-        $m = new OrderItem(['order_id' => 1, 'item_id' => 2]);
+        $m = $this->factory->create(['__class' => OrderItem::class, 'order_id' => 1, 'item_id' => 2]);
         $val->validateAttribute($m, 'order_id');
         $this->assertTrue($m->hasErrors('order_id'));
         $this->assertStringStartsWith('The combination "1"-"2" of Order Id and Item Id', $m->getFirstError('order_id'));
-        $m = new OrderItem(['order_id' => 10, 'item_id' => 2]);
+        $m = $this->factory->create(['__class' => OrderItem::class, 'order_id' => 10, 'item_id' => 2]);
         $val->validateAttribute($m, 'order_id');
         $this->assertFalse($m->hasErrors('order_id'));
 
@@ -188,11 +188,11 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
         $val->validateAttribute($m, 'id');
         $this->assertFalse($m->hasErrors('id'));
 
-        $m = new Order(['id' => 1]);
+        $m = $this->factory->create(['__class' => Order::class, 'id' => 1]);
         $val->validateAttribute($m, 'id');
         $this->assertTrue($m->hasErrors('id'));
         $this->assertStringStartsWith('Id "1" has already been taken.', $m->getFirstError('id'));
-        $m = new Order(['id' => 10]);
+        $m = $this->factory->create(['__class' => Order::class, 'id' => 10]);
         $val->validateAttribute($m, 'id');
         $this->assertFalse($m->hasErrors('id'));
     }
@@ -231,7 +231,7 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
         $validator = new UniqueValidator();
 
         /** @var Profile $profileModel */
-        $profileModel = new Profile(['description' => 'profile customer 1']);
+        $profileModel = Yii::createObject(['__class' => Profile::class, 'description' => 'profile customer 1']);
         $validator->validateAttribute($profileModel, 'description');
         $this->assertTrue($profileModel->hasErrors('description'));
 

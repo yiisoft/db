@@ -529,7 +529,7 @@ abstract class SchemaTest extends DatabaseTestCase
 
     public function testColumnSchemaDbTypecastWithEmptyCharType()
     {
-        $columnSchema = new ColumnSchema(['type' => Schema::TYPE_CHAR]);
+        $columnSchema = $this->factory->create(['__class' => ColumnSchema::class, 'type' => Schema::TYPE_CHAR]);
         $this->assertSame('', $columnSchema->dbTypecast(''));
     }
 
