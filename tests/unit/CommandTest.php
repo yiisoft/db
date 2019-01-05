@@ -1455,11 +1455,13 @@ SQL;
             ->select('bar')
             ->from('testCreateViewTable')
             ->where(['>', 'bar', '5']);
-        if ($db->getSchema()->getTableSchema('testCreateViewTable')) {
-            $db->createCommand()->dropTable('testCreateViewTable')->execute();
-        }
+        // Order of the next two "if" conditions is very important, because testCreateView depends on testCreateViewTable.
+        // If testCreateViewTable was deleted before testCreateView, at the second round this test will always fail becase testCreateView exists but it is referred to not existing table
         if ($db->getSchema()->getTableSchema('testCreateView') !== null) {
             $db->createCommand()->dropView('testCreateView')->execute();
+        }
+        if ($db->getSchema()->getTableSchema('testCreateViewTable')) {
+            $db->createCommand()->dropTable('testCreateViewTable')->execute();
         }
         $db->createCommand()->createTable('testCreateViewTable', [
             'id' => Schema::TYPE_PK,

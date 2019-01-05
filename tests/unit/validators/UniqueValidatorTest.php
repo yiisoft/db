@@ -231,7 +231,7 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
         $validator = new UniqueValidator();
 
         /** @var Profile $profileModel */
-        $profileModel = new Profile(['description' => 'profile customer 1']);
+        $profileModel = Yii::createObject(['__class' => Profile::class, 'description' => 'profile customer 1']);
         $validator->validateAttribute($profileModel, 'description');
         $this->assertTrue($profileModel->hasErrors('description'));
 
