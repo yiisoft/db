@@ -598,31 +598,31 @@ abstract class SchemaTest extends DatabaseTestCase
     public function constraintsProvider()
     {
         return [
-            '1: primary key' => ['T_constraints_1', 'primaryKey', new Constraint([
+            '1: primary key' => ['T_constraints_1', 'primaryKey', $this->factory->create(['__class' => Constraint::class,
                 'name' => AnyValue::getInstance(),
                 'columnNames' => ['C_id'],
             ])],
             '1: check' => ['T_constraints_1', 'checks', [
-                new CheckConstraint([
+                $this->factory->create(['__class' => CheckConstraint::class,
                     'name' => AnyValue::getInstance(),
                     'columnNames' => ['C_check'],
                     'expression' => "C_check <> ''",
                 ]),
             ]],
             '1: unique' => ['T_constraints_1', 'uniques', [
-                new Constraint([
+                $this->factory->create(['__class' => Constraint::class,
                     'name' => 'CN_unique',
                     'columnNames' => ['C_unique'],
                 ]),
             ]],
             '1: index' => ['T_constraints_1', 'indexes', [
-                new IndexConstraint([
+                $this->factory->create(['__class' => IndexConstraint::class,
                     'name' => AnyValue::getInstance(),
                     'columnNames' => ['C_id'],
                     'isUnique' => true,
                     'isPrimary' => true,
                 ]),
-                new IndexConstraint([
+                $this->factory->create(['__class' => IndexConstraint::class,
                     'name' => 'CN_unique',
                     'columnNames' => ['C_unique'],
                     'isPrimary' => false,
@@ -631,30 +631,30 @@ abstract class SchemaTest extends DatabaseTestCase
             ]],
             '1: default' => ['T_constraints_1', 'defaultValues', false],
 
-            '2: primary key' => ['T_constraints_2', 'primaryKey', new Constraint([
+            '2: primary key' => ['T_constraints_2', 'primaryKey', $this->factory->create(['__class' => Constraint::class,
                 'name' => 'CN_pk',
                 'columnNames' => ['C_id_1', 'C_id_2'],
             ])],
             '2: unique' => ['T_constraints_2', 'uniques', [
-                new Constraint([
+                $this->factory->create(['__class' => Constraint::class,
                     'name' => 'CN_constraints_2_multi',
                     'columnNames' => ['C_index_2_1', 'C_index_2_2'],
                 ]),
             ]],
             '2: index' => ['T_constraints_2', 'indexes', [
-                new IndexConstraint([
+                $this->factory->create(['__class' => IndexConstraint::class,
                     'name' => AnyValue::getInstance(),
                     'columnNames' => ['C_id_1', 'C_id_2'],
                     'isUnique' => true,
                     'isPrimary' => true,
                 ]),
-                new IndexConstraint([
+                $this->factory->create(['__class' => IndexConstraint::class,
                     'name' => 'CN_constraints_2_single',
                     'columnNames' => ['C_index_1'],
                     'isPrimary' => false,
                     'isUnique' => false,
                 ]),
-                new IndexConstraint([
+                $this->factory->create(['__class' => IndexConstraint::class,
                     'name' => 'CN_constraints_2_multi',
                     'columnNames' => ['C_index_2_1', 'C_index_2_2'],
                     'isPrimary' => false,
@@ -666,7 +666,7 @@ abstract class SchemaTest extends DatabaseTestCase
 
             '3: primary key' => ['T_constraints_3', 'primaryKey', null],
             '3: foreign key' => ['T_constraints_3', 'foreignKeys', [
-                new ForeignKeyConstraint([
+                $this->factory->create(['__class' => ForeignKeyConstraint::class,
                     'name' => 'CN_constraints_3',
                     'columnNames' => ['C_fk_id_1', 'C_fk_id_2'],
                     'foreignTableName' => 'T_constraints_2',
@@ -677,7 +677,7 @@ abstract class SchemaTest extends DatabaseTestCase
             ]],
             '3: unique' => ['T_constraints_3', 'uniques', []],
             '3: index' => ['T_constraints_3', 'indexes', [
-                new IndexConstraint([
+                $this->factory->create(['__class' => IndexConstraint::class,
                     'name' => 'CN_constraints_3',
                     'columnNames' => ['C_fk_id_1', 'C_fk_id_2'],
                     'isUnique' => false,
@@ -687,12 +687,12 @@ abstract class SchemaTest extends DatabaseTestCase
             '3: check' => ['T_constraints_3', 'checks', []],
             '3: default' => ['T_constraints_3', 'defaultValues', false],
 
-            '4: primary key' => ['T_constraints_4', 'primaryKey', new Constraint([
+            '4: primary key' => ['T_constraints_4', 'primaryKey', $this->factory->create(['__class' => Constraint::class,
                 'name' => AnyValue::getInstance(),
                 'columnNames' => ['C_id'],
             ])],
             '4: unique' => ['T_constraints_4', 'uniques', [
-                new Constraint([
+                $this->factory->create(['__class' => Constraint::class,
                     'name' => 'CN_constraints_4',
                     'columnNames' => ['C_col_1', 'C_col_2'],
                 ]),

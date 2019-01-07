@@ -23,6 +23,5 @@ class AnyCaseValue extends CompareValue
         } else {
             $this->value = strtolower($value);
         }
-        parent::__construct($config);
     }
 }
