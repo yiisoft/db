@@ -20,29 +20,9 @@ class Constraint extends BaseObject
     /**
      * @var string[]|null list of column names the constraint belongs to.
      */
-    private $columnNames;
+    public $columnNames;
     /**
      * @var string|null the constraint name.
      */
-    private $name;
-
-    /**
-     * Constructor
-     * @param string|null $name the constraint name.
-     * @param string[]|null $columnNames list of column names the constraint belongs to.
-     */
-    public function __construct(?string $name, ?iterable $columnNames)
-    {
-        $this->name = $name;
-        $this->columnNames = $columnNames;
-    }
-
-    public function getColumnNames() : ?iterable 
-    {
-        return $this->columnNames;
-    }
-    public function getName() : ?string
-    {
-        return $this->name;
-    }
+    public $name;
 }

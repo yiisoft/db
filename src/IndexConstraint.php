@@ -18,32 +18,9 @@ class IndexConstraint extends Constraint
     /**
      * @var bool whether the index is unique.
      */
-    private $isUnique;
+    public $isUnique;
     /**
      * @var bool whether the index was created for a primary key.
      */
-    private $isPrimary;
-
-    /**
-     * Constructor
-     * @param bool isPrimary whether the index was created for a primary key.
-     * @param bool isUnique whether the index is unique.
-     * @param string|null name (inherited from parent) the constraint name.
-     * @param string[]|null columnNames (inherited from parent) list of column names the constraint belongs to.
-     */
-    public function __construct(bool $isPrimary, bool $isUnique, ?string $name, ?iterable $columnNames)
-    {
-        parent::__construct($name, $columnNames);
-        $this->isPrimary = $isPrimary;
-        $this->isUnique = $isUnique;
-    }
-
-    public function getIsUnique() : bool
-    {
-        return $this->isUnique;
-    }
-    public function getIsPrimary() : bool
-    {
-        return $this->isPrimary;
-    }    
+    public $isPrimary;
 }
