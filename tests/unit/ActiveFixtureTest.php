@@ -16,12 +16,16 @@ use yii\activerecord\tests\data\Customer;
 class ProfileFixture extends ActiveFixture
 {
     public $modelClass = \yii\activerecord\tests\data\Profile::class;
+
+    public $dataDirectory = '@yii/tests/framework/test/data';
 }
 
 class CustomerFixture extends ActiveFixture
 {
     public $modelClass = \yii\activerecord\tests\data\Customer::class;
 
+    public $dataDirectory = '@yii/tests/framework/test/data';
+    
     public $depends = [
         'yii\db\tests\unit\ProfileFixture',
     ];

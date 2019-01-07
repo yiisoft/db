@@ -799,7 +799,7 @@ class Connection extends Component implements ConnectionInterface
             try {
                 $transaction->rollBack();
             } catch (\Exception $e) {
-                \Yii::error($e, __METHOD__);
+                Yii::error($e, __METHOD__);
                 // hide this exception to be able to continue throwing original exception outside
             }
         }
