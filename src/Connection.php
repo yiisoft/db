@@ -467,7 +467,7 @@ class Connection extends Component implements ConnectionInterface
         if (is_array($dsn)) {
             $this->dsn = $this->buildDSN($dsn);
         }
-     }
+    }
 
     /**
      * Returns a value indicating whether the DB connection is established.
