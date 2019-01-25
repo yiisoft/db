@@ -9,6 +9,7 @@ namespace yii\db;
 
 use yii\base\Component;
 use yii\exceptions\InvalidArgumentException;
+use yii\di\AbstractContainer;
 
 /**
  * SqlTokenizer splits an SQL query into individual SQL tokens.
@@ -74,7 +75,7 @@ abstract class SqlTokenizer extends Component
     public function __construct($sql, $config = [])
     {
         $this->sql = $sql;
-        parent::__construct($config);
+        AbstractContainer::configure($this, $config);
     }
 
     /**
