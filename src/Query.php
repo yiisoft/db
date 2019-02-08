@@ -463,7 +463,7 @@ class Query extends Component implements QueryInterface, ExpressionInterface
             return $command->queryScalar();
         }
 
-        $command = self::createInstance()
+        $command = static::createInstance()
             ->select([$selectExpression])
             ->from(['c' => $this])
             ->createCommand($db);
