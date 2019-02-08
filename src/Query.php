@@ -463,13 +463,22 @@ class Query extends Component implements QueryInterface, ExpressionInterface
             return $command->queryScalar();
         }
 
-        $command = (new self())
+        $command = self::createInstance()
             ->select([$selectExpression])
             ->from(['c' => $this])
             ->createCommand($db);
         $this->setCommandCache($command);
 
         return $command->queryScalar();
+    }
+
+   /**
+    * This function can be overridden to customize the returned class.
+    * @return Query
+    */
+    protected static function createInstance()
+    {
+         return new static();
     }
 
     /**
