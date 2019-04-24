@@ -95,7 +95,8 @@
         },
         "config-plugin": {
             "params": "config/params.php",
-            "common": "config/common.php"
+            "common": "config/common.php",
+            "tests": "config/tests.php"
         }
     }
 }
