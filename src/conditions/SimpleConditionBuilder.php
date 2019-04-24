@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -10,25 +11,25 @@ namespace yii\db\conditions;
 use yii\db\ExpressionBuilderInterface;
 use yii\db\ExpressionBuilderTrait;
 use yii\db\ExpressionInterface;
-use yii\db\Query;
 
 /**
- * Class NotConditionBuilder builds objects of [[SimpleCondition]]
+ * Class NotConditionBuilder builds objects of [[SimpleCondition]].
  *
  * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
+ *
  * @since 2.0.14
  */
 class SimpleConditionBuilder implements ExpressionBuilderInterface
 {
     use ExpressionBuilderTrait;
 
-
     /**
      * Method builds the raw SQL from the $expression that will not be additionally
      * escaped or quoted.
      *
      * @param ExpressionInterface|SimpleCondition $expression the expression to be built.
-     * @param array $params the binding parameters.
+     * @param array                               $params     the binding parameters.
+     *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
     public function build(ExpressionInterface $expression, array &$params = [])
@@ -49,6 +50,7 @@ class SimpleConditionBuilder implements ExpressionBuilderInterface
         }
 
         $phName = $this->queryBuilder->bindParam($value, $params);
+
         return "$column $operator $phName";
     }
 }

@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -12,22 +13,23 @@ use yii\db\ExpressionBuilderTrait;
 use yii\db\ExpressionInterface;
 
 /**
- * Class BetweenConditionBuilder builds objects of [[BetweenCondition]]
+ * Class BetweenConditionBuilder builds objects of [[BetweenCondition]].
  *
  * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
+ *
  * @since 2.0.14
  */
 class BetweenConditionBuilder implements ExpressionBuilderInterface
 {
     use ExpressionBuilderTrait;
 
-
     /**
      * Method builds the raw SQL from the $expression that will not be additionally
      * escaped or quoted.
      *
      * @param ExpressionInterface|BetweenCondition $expression the expression to be built.
-     * @param array $params the binding parameters.
+     * @param array                                $params     the binding parameters.
+     *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
     public function build(ExpressionInterface $expression, array &$params = [])
@@ -50,6 +52,7 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      *
      * @param mixed $value
      * @param array $params passed by reference
+     *
      * @return string
      */
     protected function createPlaceholder($value, &$params)

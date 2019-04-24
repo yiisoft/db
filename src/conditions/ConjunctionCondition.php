@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -8,9 +9,10 @@
 namespace yii\db\conditions;
 
 /**
- * Class ConjunctionCondition
+ * Class ConjunctionCondition.
  *
  * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
+ *
  * @since 2.0.14
  */
 abstract class ConjunctionCondition implements ConditionInterface
@@ -19,7 +21,6 @@ abstract class ConjunctionCondition implements ConditionInterface
      * @var mixed[]
      */
     protected $expressions;
-
 
     /**
      * @param mixed $expressions
@@ -39,6 +40,7 @@ abstract class ConjunctionCondition implements ConditionInterface
 
     /**
      * Returns the operator that is represented by this condition class, e.g. `AND`, `OR`.
+     *
      * @return string
      */
     abstract public function getOperator();

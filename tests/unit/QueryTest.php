@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -83,12 +84,12 @@ abstract class QueryTest extends DatabaseTestCase
         /** @see https://github.com/yiisoft/yii2/issues/15731 */
         $selectedCols = [
             'total_sum' => 'SUM(f.amount)',
-            'in_sum' => 'SUM(IF(f.type = :type_in, f.amount, 0))',
-            'out_sum' => 'SUM(IF(f.type = :type_out, f.amount, 0))',
+            'in_sum'    => 'SUM(IF(f.type = :type_in, f.amount, 0))',
+            'out_sum'   => 'SUM(IF(f.type = :type_out, f.amount, 0))',
         ];
         $query = (new Query())->select($selectedCols)->addParams([
-            ':type_in' => 'in',
-            ':type_out' => 'out',
+            ':type_in'      => 'in',
+            ':type_out'     => 'out',
             ':type_partner' => 'partner',
         ]);
         $this->assertSame($selectedCols, $query->select);
@@ -112,6 +113,7 @@ abstract class QueryTest extends DatabaseTestCase
     }
 
     use GetTablesAliasTestTrait;
+
     protected function createQuery()
     {
         return new Query();
@@ -137,8 +139,8 @@ abstract class QueryTest extends DatabaseTestCase
     {
         $query = new Query();
         $query->filterWhere([
-            'id' => 0,
-            'title' => '   ',
+            'id'         => 0,
+            'title'      => '   ',
             'author_ids' => [],
         ]);
         $this->assertEquals(['id' => 0], $query->where);
@@ -189,8 +191,8 @@ abstract class QueryTest extends DatabaseTestCase
     {
         $query = new Query();
         $query->filterHaving([
-            'id' => 0,
-            'title' => '   ',
+            'id'         => 0,
+            'title'      => '   ',
             'author_ids' => [],
         ]);
         $this->assertEquals(['id' => 0], $query->having);
@@ -400,7 +402,6 @@ abstract class QueryTest extends DatabaseTestCase
         $this->assertEquals(['user3' => 'user3', 'user2' => 'user2', 'user1' => 'user1'], $result);
     }
 
-
     /**
      * Ensure no ambiguous column error occurs on indexBy with JOIN.
      *
@@ -572,10 +573,11 @@ abstract class QueryTest extends DatabaseTestCase
 
     /**
      * @param Connection $db
-     * @param string $tableName
-     * @param string $columnName
-     * @param array $condition
-     * @param string $operator
+     * @param string     $tableName
+     * @param string     $columnName
+     * @param array      $condition
+     * @param string     $operator
+     *
      * @return int
      */
     protected function countLikeQuery(Connection $db, $tableName, $columnName, array $condition, $operator = 'or')
@@ -685,14 +687,12 @@ abstract class QueryTest extends DatabaseTestCase
             $this->assertEquals('user2', $query->where(['id' => 2])->scalar($db), 'Cache does not get changes after getting newer data from DB in noCache block.');
         }, 10);
 
-
         $db->enableQueryCache = false;
         $db->cache(function ($db) use ($query, $update) {
             $this->assertEquals('user22', $query->where(['id' => 2])->scalar($db), 'When cache is disabled for the whole connection, Query inside cache block does not get cached');
             $update->bindValues([':id' => 2, ':name' => 'user2'])->execute();
             $this->assertEquals('user2', $query->where(['id' => 2])->scalar($db));
         }, 10);
-
 
         $db->enableQueryCache = true;
         $query->cache();
