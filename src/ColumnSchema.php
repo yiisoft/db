@@ -8,7 +8,7 @@
 namespace yii\db;
 
 use yii\base\BaseObject;
-use yii\helpers\StringHelper;
+use Yiisoft\Strings\StringHelper;
 
 /**
  * ColumnSchema class describes the metadata of a column in a database table.

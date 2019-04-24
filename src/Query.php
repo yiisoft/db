@@ -11,7 +11,7 @@ use yii\exceptions\InvalidArgumentException;
 use yii\exceptions\InvalidConfigException;
 use yii\helpers\Yii;
 use yii\base\Component;
-use yii\helpers\ArrayHelper;
+use Yiisoft\Arrays\ArrayHelper;
 
 /**
  * Query represents a SELECT SQL statement in a way that is independent of DBMS.

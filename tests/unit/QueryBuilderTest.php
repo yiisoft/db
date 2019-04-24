@@ -16,7 +16,7 @@ use yii\db\QueryBuilder;
 use yii\db\Schema;
 use yii\db\SchemaBuilderTrait;
 use yii\db\sqlite\QueryBuilder as SqliteQueryBuilder;
-use yii\helpers\ArrayHelper;
+use Yiisoft\Arrays\ArrayHelper;
 use yii\tests\data\base\TraversableObject;
 
 abstract class QueryBuilderTest extends DatabaseTestCase

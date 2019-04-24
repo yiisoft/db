@@ -11,7 +11,7 @@ use yii\exceptions\InvalidArgumentException;
 use yii\exceptions\NotSupportedException;
 use yii\db\conditions\ConditionInterface;
 use yii\db\conditions\HashCondition;
-use yii\helpers\StringHelper;
+use Yiisoft\Strings\StringHelper;
 
 /**
  * QueryBuilder builds a SELECT SQL statement based on the specification given as a [[Query]] object.

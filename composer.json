@@ -62,11 +62,15 @@
         "wiki": "http://www.yiiframework.com/wiki/",
         "irc": "irc://irc.freenode.net/yii"
     },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
+        "yiisoft/yii-core": "^3.0@dev",
+        "yiisoft/arrays": "^3.0@dev",
+        "yiisoft/strings": "^3.0@dev",
         "ext-pdo": "*"
     },
     "require-dev": {
-        "yiisoft/yii-core": "^3.0@dev",
         "yiisoft/yii-web": "^3.0@dev",
         "yiisoft/yii-console": "^3.0@dev",
         "yiisoft/active-record": "^3.0@dev",

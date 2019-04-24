@@ -9,7 +9,7 @@ namespace yii\db;
 
 use yii\helpers\Yii;
 use yii\base\BaseObject;
-use yii\helpers\StringHelper;
+use Yiisoft\Strings\StringHelper;
 
 /**
  * ColumnSchemaBuilder helps to define database schema types using a PHP interface.

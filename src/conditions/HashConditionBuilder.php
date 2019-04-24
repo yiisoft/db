@@ -11,7 +11,7 @@ use yii\db\ExpressionBuilderInterface;
 use yii\db\ExpressionBuilderTrait;
 use yii\db\ExpressionInterface;
 use yii\db\Query;
-use yii\helpers\ArrayHelper;
+use Yiisoft\Arrays\ArrayHelper;
 
 /**
  * Class HashConditionBuilder builds objects of [[HashCondition]]

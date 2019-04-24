@@ -8,7 +8,7 @@
 namespace yii\db;
 
 use yii\base\Component;
-use yii\helpers\StringHelper;
+use Yiisoft\Strings\StringHelper;
 use yii\helpers\Yii;
 
 /**
