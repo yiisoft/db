@@ -1,20 +1,21 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\db\tests\unit\validators;
 
-use yii\exceptions\Exception;
-use yii\validators\ExistValidator;
 use yii\activerecord\tests\data\ActiveRecord;
 use yii\activerecord\tests\data\Order;
 use yii\activerecord\tests\data\OrderItem;
+use yii\db\tests\unit\DatabaseTestCase;
+use yii\exceptions\Exception;
 use yii\tests\data\validators\models\ValidatorTestMainModel;
 use yii\tests\data\validators\models\ValidatorTestRefModel;
-use yii\db\tests\unit\DatabaseTestCase;
+use yii\validators\ExistValidator;
 
 abstract class ExistValidatorTest extends DatabaseTestCase
 {
@@ -130,7 +131,7 @@ abstract class ExistValidatorTest extends DatabaseTestCase
     public function testValidateCompositeKeys()
     {
         $val = new ExistValidator([
-            'targetClass' => OrderItem::class,
+            'targetClass'     => OrderItem::class,
             'targetAttribute' => ['order_id', 'item_id'],
         ]);
         // validate old record
@@ -150,7 +151,7 @@ abstract class ExistValidatorTest extends DatabaseTestCase
         $this->assertTrue($m->hasErrors('order_id'));
 
         $val = new ExistValidator([
-            'targetClass' => OrderItem::class,
+            'targetClass'     => OrderItem::class,
             'targetAttribute' => ['id' => 'order_id'],
         ]);
         // validate old record
@@ -179,7 +180,7 @@ abstract class ExistValidatorTest extends DatabaseTestCase
         OrderItem::$tableName = '{{%order_item}}';
 
         $val = new ExistValidator([
-            'targetClass' => OrderItem::class,
+            'targetClass'     => OrderItem::class,
             'targetAttribute' => ['id' => 'order_id'],
         ]);
 
@@ -192,12 +193,13 @@ abstract class ExistValidatorTest extends DatabaseTestCase
 
     /**
      * Test expresssion in targetAttribute.
+     *
      * @see https://github.com/yiisoft/yii2/issues/14304
      */
     public function testExpresionInAttributeColumnName()
     {
         $val = new ExistValidator([
-           'targetClass' => OrderItem::class,
+           'targetClass'     => OrderItem::class,
            'targetAttribute' => ['id' => 'COALESCE(order_id, 0)'],
        ]);
 
@@ -235,26 +237,26 @@ abstract class ExistValidatorTest extends DatabaseTestCase
         $val->validateAttribute($m, 'id');
         $this->assertTrue($m->hasErrors('id'));
     }
-    
+
     public function testForceMaster()
     {
         $connection = $this->getConnectionWithInvalidSlave();
         ActiveRecord::$db = $connection;
 
         $model = null;
-        $connection->useMaster(function() use (&$model) {
+        $connection->useMaster(function () use (&$model) {
             $model = ValidatorTestMainModel::findOne(2);
         });
 
         $validator = new ExistValidator([
-            'forceMasterDb' => true,
+            'forceMasterDb'  => true,
             'targetRelation' => 'references',
         ]);
         $validator->validateAttribute($model, 'id');
 
         $this->expectException('\yii\exceptions\InvalidConfigException');
         $validator = new ExistValidator([
-            'forceMasterDb' => false,
+            'forceMasterDb'  => false,
             'targetRelation' => 'references',
         ]);
         $validator->validateAttribute($model, 'id');

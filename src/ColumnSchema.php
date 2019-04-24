@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -14,6 +15,7 @@ use Yiisoft\Strings\StringHelper;
  * ColumnSchema class describes the metadata of a column in a database table.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ *
  * @since 2.0
  */
 class ColumnSchema extends BaseObject
@@ -28,13 +30,13 @@ class ColumnSchema extends BaseObject
     public $allowNull;
     /**
      * @var string abstract type of this column. Possible abstract types include:
-     * char, string, text, boolean, smallint, integer, bigint, float, decimal, datetime,
-     * timestamp, time, date, binary, and money.
+     *             char, string, text, boolean, smallint, integer, bigint, float, decimal, datetime,
+     *             timestamp, time, date, binary, and money.
      */
     public $type;
     /**
      * @var string the PHP type of this column. Possible PHP types include:
-     * `string`, `boolean`, `integer`, `double`, `array`.
+     *             `string`, `boolean`, `integer`, `double`, `array`.
      */
     public $phpType;
     /**
@@ -71,7 +73,7 @@ class ColumnSchema extends BaseObject
     public $autoIncrement = false;
     /**
      * @var bool whether this column is unsigned. This is only meaningful
-     * when [[type]] is `smallint`, `integer` or `bigint`.
+     *           when [[type]] is `smallint`, `integer` or `bigint`.
      */
     public $unsigned;
     /**
@@ -79,11 +81,12 @@ class ColumnSchema extends BaseObject
      */
     public $comment;
 
-
     /**
      * Converts the input value according to [[phpType]] after retrieval from the database.
      * If the value is null or an [[Expression]], it will not be converted.
+     *
      * @param mixed $value input value
+     *
      * @return mixed converted value
      */
     public function phpTypecast($value)
@@ -94,9 +97,11 @@ class ColumnSchema extends BaseObject
     /**
      * Converts the input value according to [[type]] and [[dbType]] for use in a db query.
      * If the value is null or an [[Expression]], it will not be converted.
+     *
      * @param mixed $value input value
+     *
      * @return mixed converted value. This may also be an array containing the value as the first element
-     * and the PDO type as the second element.
+     *               and the PDO type as the second element.
      */
     public function dbTypecast($value)
     {
@@ -108,8 +113,11 @@ class ColumnSchema extends BaseObject
     /**
      * Converts the input value according to [[phpType]] after retrieval from the database.
      * If the value is null or an [[Expression]], it will not be converted.
+     *
      * @param mixed $value input value
+     *
      * @return mixed converted value
+     *
      * @since 2.0.3
      */
     protected function typecast($value)
@@ -121,11 +129,11 @@ class ColumnSchema extends BaseObject
                     Schema::TYPE_TEXT,
                     Schema::TYPE_STRING,
                     Schema::TYPE_BINARY,
-                    Schema::TYPE_CHAR
+                    Schema::TYPE_CHAR,
                 ],
                 true)
         ) {
-            return null;
+            return;
         }
 
         if ($value === null
@@ -154,6 +162,7 @@ class ColumnSchema extends BaseObject
                     // ensure type cast always has . as decimal separator in all locales
                     return StringHelper::floatToString($value);
                 }
+
                 return (string) $value;
             case 'integer':
                 return (int) $value;

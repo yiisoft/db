@@ -1,17 +1,18 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\db\tests\unit;
 
-use yii\helpers\Yii;
-use yii\db\BatchQueryResult;
-use yii\db\Query;
 use yii\activerecord\tests\data\ActiveRecord;
 use yii\activerecord\tests\data\Customer;
+use yii\db\BatchQueryResult;
+use yii\db\Query;
+use yii\helpers\Yii;
 
 abstract class BatchQueryResultTest extends DatabaseTestCase
 {

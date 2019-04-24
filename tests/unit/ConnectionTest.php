@@ -1,18 +1,19 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\db\tests\unit;
 
-use yii\helpers\Yii;
-use yii\exceptions\InvalidConfigException;
 use yii\cache\ArrayCache;
 use yii\cache\Cache;
 use yii\db\Connection;
 use yii\db\Transaction;
+use yii\exceptions\InvalidConfigException;
+use yii\helpers\Yii;
 
 abstract class ConnectionTest extends DatabaseTestCase
 {
@@ -175,6 +176,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection = $this->getConnection(true);
         $connection->transaction(function () use ($connection) {
             $connection->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
+
             throw new \Exception('Exception in transaction shortcut');
         });
 
@@ -188,6 +190,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $result = $connection->transaction(function () use ($connection) {
             $connection->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
+
             return true;
         });
 
@@ -203,6 +206,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $result = $connection->transaction(function (Connection $db) {
             $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
+
             return true;
         }, Transaction::READ_UNCOMMITTED);
 
@@ -214,6 +218,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
     /**
      * Tests nested transactions with partial rollback.
+     *
      * @see https://github.com/yiisoft/yii2/issues/9851
      */
     public function testNestedTransaction()
@@ -299,7 +304,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         Yii::getApp()->profiler->messages = [];
         $connection->createCommand('SELECT * FROM qlog3')->queryAll();
         $this->assertCount(1, Yii::getApp()->logger->messages);
-        $this->assertCount(0,Yii::getApp()->profiler->messages);
+        $this->assertCount(0, Yii::getApp()->profiler->messages);
 
         // disabled
         $connection->enableLogging = false;
@@ -329,7 +334,6 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection->enableProfiling = true;
         $this->runExceptionTest($connection);
 
-
         // profiling only
         $connection->enableLogging = false;
         $connection->enableProfiling = true;
@@ -352,19 +356,21 @@ abstract class ConnectionTest extends DatabaseTestCase
     private function runExceptionTest($connection)
     {
         $thrown = false;
+
         try {
             $connection->createCommand('INSERT INTO qlog1(a) VALUES(:a);', [':a' => 1])->execute();
         } catch (\yii\db\Exception $e) {
-            $this->assertContains('INSERT INTO qlog1(a) VALUES(1);', $e->getMessage(), 'Exception message should contain raw SQL query: ' . (string) $e);
+            $this->assertContains('INSERT INTO qlog1(a) VALUES(1);', $e->getMessage(), 'Exception message should contain raw SQL query: '.(string) $e);
             $thrown = true;
         }
         $this->assertTrue($thrown, 'An exception should have been thrown by the command.');
 
         $thrown = false;
+
         try {
             $connection->createCommand('SELECT * FROM qlog1 WHERE id=:a ORDER BY nonexistingcolumn;', [':a' => 1])->queryAll();
         } catch (\yii\db\Exception $e) {
-            $this->assertContains('SELECT * FROM qlog1 WHERE id=1 ORDER BY nonexistingcolumn;', $e->getMessage(), 'Exception message should contain raw SQL query: ' . (string) $e);
+            $this->assertContains('SELECT * FROM qlog1 WHERE id=1 ORDER BY nonexistingcolumn;', $e->getMessage(), 'Exception message should contain raw SQL query: '.(string) $e);
             $thrown = true;
         }
         $this->assertTrue($thrown, 'An exception should have been thrown by the command.');
@@ -422,7 +428,6 @@ abstract class ConnectionTest extends DatabaseTestCase
         }
     }
 
-
     /**
      * Test whether slave connection is recovered when call getSlavePdo() after close().
      *
@@ -435,7 +440,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection = $this->getConnection();
         $connection->slaves[] = [
-            'dsn' => $connection->dsn,
+            'dsn'      => $connection->dsn,
             'username' => $connection->username,
             'password' => $connection->password,
         ];
@@ -456,8 +461,8 @@ abstract class ConnectionTest extends DatabaseTestCase
     {
         $dsn = [
             'driver' => 'mysql',
-            'host' => '127.0.0.1',
-            'dbname' => 'yiitest'
+            'host'   => '127.0.0.1',
+            'dbname' => 'yiitest',
         ];
 
         $connection = new Connection($dsn);
@@ -475,7 +480,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection = $this->getConnection(true, false);
         $connection->masters[] = [
-            'dsn' => $connection->dsn,
+            'dsn'      => $connection->dsn,
             'username' => $connection->username,
             'password' => $connection->password,
         ];
@@ -490,6 +495,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $cacheKey = ['yii\db\Connection::openFromPoolSequentially', 'host:invalid'];
         $connection->masters[0]['dsn'] = 'host:invalid';
+
         try {
             $connection->open();
         } catch (InvalidConfigException $e) {
@@ -505,7 +511,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection = $this->getConnection(true, false);
         $connection->masters[] = [
-            'dsn' => $connection->dsn,
+            'dsn'      => $connection->dsn,
             'username' => $connection->username,
             'password' => $connection->password,
         ];
@@ -521,6 +527,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $cacheKey = ['yii\db\Connection::openFromPoolSequentially', 'host:invalid'];
         $connection->masters[0]['dsn'] = 'host:invalid';
+
         try {
             $connection->open();
         } catch (InvalidConfigException $e) {

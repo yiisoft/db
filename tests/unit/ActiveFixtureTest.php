@@ -1,17 +1,18 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\db\tests\unit;
 
+use yii\activerecord\tests\data\ActiveRecord;
+use yii\activerecord\tests\data\Customer;
 use yii\helpers\Yii;
 use yii\test\ActiveFixture;
 use yii\test\FixtureTrait;
-use yii\activerecord\tests\data\ActiveRecord;
-use yii\activerecord\tests\data\Customer;
 
 class ProfileFixture extends ActiveFixture
 {
@@ -25,7 +26,7 @@ class CustomerFixture extends ActiveFixture
     public $modelClass = \yii\activerecord\tests\data\Customer::class;
 
     public $dataDirectory = '@yii/tests/framework/test/data';
-    
+
     public $depends = [
         'yii\db\tests\unit\ProfileFixture',
     ];
@@ -83,9 +84,9 @@ class DataPathDbTestCase extends BaseDbTestCase
     {
         return [
             'customers' => [
-                '__class' => CustomDirectoryFixture::class,
-                'dataFile' => '@yii/tests/framework/test/data/customer.php'
-            ]
+                '__class'  => CustomDirectoryFixture::class,
+                'dataFile' => '@yii/tests/framework/test/data/customer.php',
+            ],
         ];
     }
 }
@@ -97,11 +98,10 @@ class TruncateTestCase extends BaseDbTestCase
         return [
             'animals' => [
                 '__class' => AnimalFixture::class,
-            ]
+            ],
         ];
     }
 }
-
 
 /**
  * @group fixture
@@ -172,7 +172,6 @@ class ActiveFixtureTest extends DatabaseTestCase
         $this->assertEquals(1, $directory->id);
         $this->assertEquals('directory@example.com', $directory['email']);
         $test->tearDown();
-
     }
 
     public function testDataPath()

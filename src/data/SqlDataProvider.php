@@ -1,19 +1,20 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\db\data;
 
-use yii\helpers\Yii;
-use yii\exceptions\InvalidConfigException;
 use yii\data\BaseDataProvider;
 use yii\db\Connection;
 use yii\db\Expression;
 use yii\db\Query;
 use yii\di\Instance;
+use yii\exceptions\InvalidConfigException;
+use yii\helpers\Yii;
 
 /**
  * SqlDataProvider implements a data provider based on a plain SQL statement.
@@ -63,13 +64,14 @@ use yii\di\Instance;
  * For more details and usage information on SqlDataProvider, see the [guide article on data providers](guide:output-data-providers).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ *
  * @since 2.0
  */
 class SqlDataProvider extends BaseDataProvider
 {
     /**
      * @var Connection|array|string the DB connection object or the application component ID of the DB connection.
-     * Starting from version 2.0.2, this can also be a configuration array for creating the object.
+     *                              Starting from version 2.0.2, this can also be a configuration array for creating the object.
      */
     public $db = 'db';
     /**
@@ -82,16 +84,16 @@ class SqlDataProvider extends BaseDataProvider
     public $params = [];
     /**
      * @var string|callable the column that is used as the key of the data models.
-     * This can be either a column name, or a callable that returns the key value of a given data model.
+     *                      This can be either a column name, or a callable that returns the key value of a given data model.
      *
      * If this is not set, the keys of the [[models]] array will be used.
      */
     public $key;
 
-
     /**
      * Initializes the DB connection component.
      * This method will initialize the [[db]] property to make sure it refers to a valid DB connection.
+     *
      * @throws InvalidConfigException if [[db]] is invalid.
      */
     public function init()
@@ -165,7 +167,7 @@ class SqlDataProvider extends BaseDataProvider
     protected function prepareTotalCount()
     {
         return (new Query([
-            'from' => ['sub' => "({$this->sql})"],
+            'from'   => ['sub' => "({$this->sql})"],
             'params' => $this->params,
         ]))->count('*', $this->db);
     }

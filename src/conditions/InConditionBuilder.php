@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -13,22 +14,23 @@ use yii\db\ExpressionInterface;
 use yii\db\Query;
 
 /**
- * Class InConditionBuilder builds objects of [[InCondition]]
+ * Class InConditionBuilder builds objects of [[InCondition]].
  *
  * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
+ *
  * @since 2.0.14
  */
 class InConditionBuilder implements ExpressionBuilderInterface
 {
     use ExpressionBuilderTrait;
 
-
     /**
      * Method builds the raw SQL from the $expression that will not be additionally
      * escaped or quoted.
      *
      * @param ExpressionInterface|InCondition $expression the expression to be built.
-     * @param array $params the binding parameters.
+     * @param array                           $params     the binding parameters.
+     *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
     public function build(ExpressionInterface $expression, array &$params = [])
@@ -67,20 +69,21 @@ class InConditionBuilder implements ExpressionBuilderInterface
             $column = $this->queryBuilder->db->quoteColumnName($column);
         }
         if (count($sqlValues) > 1) {
-            return "$column $operator (" . implode(', ', $sqlValues) . ')';
+            return "$column $operator (".implode(', ', $sqlValues).')';
         }
 
         $operator = $operator === 'IN' ? '=' : '<>';
 
-        return $column . $operator . reset($sqlValues);
+        return $column.$operator.reset($sqlValues);
     }
 
     /**
-     * Builds $values to be used in [[InCondition]]
+     * Builds $values to be used in [[InCondition]].
      *
      * @param ConditionInterface|InCondition $condition
-     * @param array $values
-     * @param array $params the binding parameters
+     * @param array                          $values
+     * @param array                          $params    the binding parameters
+     *
      * @return array of prepared for SQL placeholders
      */
     protected function buildValues(ConditionInterface $condition, $values, &$params)
@@ -107,10 +110,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds SQL for IN condition.
      *
-     * @param string $operator
+     * @param string       $operator
      * @param array|string $columns
-     * @param Query $values
-     * @param array $params
+     * @param Query        $values
+     * @param array        $params
+     *
      * @return string SQL
      */
     protected function buildSubqueryInCondition($operator, $columns, $values, &$params)
@@ -124,7 +128,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
                 }
             }
 
-            return '(' . implode(', ', $columns) . ") $operator $sql";
+            return '('.implode(', ', $columns).") $operator $sql";
         }
 
         if (strpos($columns, '(') === false) {
@@ -137,10 +141,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds SQL for IN condition.
      *
-     * @param string $operator
+     * @param string             $operator
      * @param array|\Traversable $columns
-     * @param array $values
-     * @param array $params
+     * @param array              $values
+     * @param array              $params
+     *
      * @return string SQL
      */
     protected function buildCompositeInCondition($operator, $columns, $values, &$params)
@@ -155,7 +160,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
                     $vs[] = 'NULL';
                 }
             }
-            $vss[] = '(' . implode(', ', $vs) . ')';
+            $vss[] = '('.implode(', ', $vs).')';
         }
 
         if (empty($vss)) {
@@ -167,6 +172,6 @@ class InConditionBuilder implements ExpressionBuilderInterface
             $sqlColumns[] = strpos($column, '(') === false ? $this->queryBuilder->db->quoteColumnName($column) : $column;
         }
 
-        return '(' . implode(', ', $sqlColumns) . ") $operator (" . implode(', ', $vss) . ')';
+        return '('.implode(', ', $sqlColumns).") $operator (".implode(', ', $vss).')';
     }
 }
