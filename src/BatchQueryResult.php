@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -26,18 +27,19 @@ use yii\base\BaseObject;
  * ```
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
+ *
  * @since 2.0
  */
 class BatchQueryResult extends BaseObject implements \Iterator
 {
     /**
      * @var Connection the DB connection to be used when performing batch query.
-     * If null, the "db" application component will be used.
+     *                 If null, the "db" application component will be used.
      */
     public $db;
     /**
      * @var Query the query object associated with this batch query.
-     * Do not modify this property directly unless after [[reset()]] is called explicitly.
+     *            Do not modify this property directly unless after [[reset()]] is called explicitly.
      */
     public $query;
     /**
@@ -46,7 +48,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
     public $batchSize = 100;
     /**
      * @var bool whether to return a single row during each iteration.
-     * If false, a whole batch of rows will be returned in each iteration.
+     *           If false, a whole batch of rows will be returned in each iteration.
      */
     public $each = false;
 
@@ -66,7 +68,6 @@ class BatchQueryResult extends BaseObject implements \Iterator
      * @var string|int the key for the current iteration
      */
     private $_key;
-
 
     /**
      * Destructor.
@@ -130,6 +131,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
 
     /**
      * Fetches the next batch of data.
+     *
      * @return array the data fetched
      */
     protected function fetchData()
@@ -150,6 +152,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
     /**
      * Returns the index of the current dataset.
      * This method is required by the interface [[\Iterator]].
+     *
      * @return int the index of the current row.
      */
     public function key()
@@ -160,6 +163,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
     /**
      * Returns the current dataset.
      * This method is required by the interface [[\Iterator]].
+     *
      * @return mixed the current dataset.
      */
     public function current()
@@ -170,6 +174,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
     /**
      * Returns whether there is a valid dataset at the current position.
      * This method is required by the interface [[\Iterator]].
+     *
      * @return bool whether there is a valid dataset at the current position.
      */
     public function valid()

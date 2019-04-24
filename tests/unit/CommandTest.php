@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -9,7 +10,6 @@ namespace yii\db\tests\unit;
 
 use yii\cache\ArrayCache;
 use yii\cache\Cache;
-use yii\cache\FileCache;
 use yii\db\Connection;
 use yii\db\DataReader;
 use yii\db\Exception;
@@ -174,7 +174,7 @@ INSERT INTO {{type}} ([[int_col]], [[char_col]], [[float_col]], [[blob_col]], [[
 SQL;
         $command = $db->createCommand($sql);
         $intCol = 123;
-        $charCol = str_repeat('abc', 33) . 'x'; // a 100 char string
+        $charCol = str_repeat('abc', 33).'x'; // a 100 char string
         $boolCol = false;
         $command->bindParam(':int_col', $intCol, \PDO::PARAM_INT);
         $command->bindParam(':char_col', $charCol);
@@ -204,7 +204,7 @@ SQL;
         $row = $command->queryOne();
         $this->assertEquals($intCol, $row['int_col']);
         $this->assertEquals($charCol, $row['char_col']);
-        $this->assertEquals((float)$floatCol, (float)$row['float_col']);
+        $this->assertEquals((float) $floatCol, (float) $row['float_col']);
         if ($this->driverName === 'mysql' || $this->driverName === 'sqlite' || $this->driverName === 'oci') {
             $this->assertEquals($blobCol, $row['blob_col']);
         } else {
@@ -241,7 +241,9 @@ SQL;
 
     /**
      * Test whether param binding works in other places than WHERE.
+     *
      * @dataProvider paramsNonWhereProvider
+     *
      * @param string $sql
      */
     public function testBindParamsNonWhere($sql)
@@ -252,7 +254,7 @@ SQL;
 
         $params = [
             ':email' => 'testParams@example.com',
-            ':len' => 5,
+            ':len'   => 5,
         ];
         $command = $db->createCommand($sql, $params);
         $this->assertEquals('Params', $command->queryScalar());
@@ -369,9 +371,11 @@ SQL;
             $this->assertIsOneOf($data[2]['bool_col'], ['0', false]);
         } catch (\Exception $e) {
             setlocale(LC_NUMERIC, $locale);
+
             throw $e;
         } catch (\Throwable $e) {
             setlocale(LC_NUMERIC, $locale);
+
             throw $e;
         }
         setlocale(LC_NUMERIC, $locale);
@@ -405,9 +409,9 @@ SQL;
                 '{{%type}}',
                 ['int_col'],
                 [[new Expression(':qp1', [':qp1' => 42])]], // This example is completely useless. This feature of batchInsert is intended to be used with complex expression objects, such as JsonExpression.
-                'expected' => "INSERT INTO `type` (`int_col`) VALUES (:qp1)",
-                'expectedParams' => [':qp1' => 42]
-            ]
+                'expected'       => 'INSERT INTO `type` (`int_col`) VALUES (:qp1)',
+                'expectedParams' => [':qp1' => 42],
+            ],
         ];
     }
 
@@ -416,6 +420,7 @@ SQL;
      * https://github.com/yiisoft/yii2/issues/11242.
      *
      * @dataProvider batchInsertSqlProvider
+     *
      * @param mixed $table
      * @param mixed $columns
      * @param mixed $values
@@ -440,16 +445,16 @@ SQL;
         $command->insert(
             '{{customer}}',
             [
-                'email' => 't1@example.com',
-                'name' => 'test',
+                'email'   => 't1@example.com',
+                'name'    => 'test',
                 'address' => 'test address',
             ]
         )->execute();
         $this->assertEquals(1, $db->createCommand('SELECT COUNT(*) FROM {{customer}};')->queryScalar());
         $record = $db->createCommand('SELECT [[email]], [[name]], [[address]] FROM {{customer}}')->queryOne();
         $this->assertEquals([
-            'email' => 't1@example.com',
-            'name' => 'test',
+            'email'   => 't1@example.com',
+            'name'    => 'test',
             'address' => 'test address',
         ], $record);
     }
@@ -464,9 +469,9 @@ SQL;
         $db->createCommand()->insert(
             '{{customer}}',
             [
-                'id' => 43,
-                'name' => 'Some {{weird}} name',
-                'email' => 'test@example.com',
+                'id'      => 43,
+                'name'    => 'Some {{weird}} name',
+                'email'   => 'test@example.com',
                 'address' => 'Some {{%weird}} address',
             ]
         )->execute();
@@ -477,7 +482,7 @@ SQL;
         $db->createCommand()->update(
             '{{customer}}',
             [
-                'name' => 'Some {{updated}} name',
+                'name'    => 'Some {{updated}} name',
                 'address' => 'Some {{%updated}} address',
             ],
             ['id' => 43]
@@ -499,8 +504,8 @@ SQL;
         $command->insert(
             '{{customer}}',
             [
-                'email' => 't1@example.com',
-                'name' => 'test',
+                'email'   => 't1@example.com',
+                'name'    => 'test',
                 'address' => 'test address',
             ]
         )->execute();
@@ -529,13 +534,13 @@ SQL;
         $record = $db->createCommand('SELECT [[email]], [[name]], [[address]] FROM {{customer}}')->queryAll();
         $this->assertEquals([
             [
-                'email' => 't1@example.com',
-                'name' => 'test',
+                'email'   => 't1@example.com',
+                'name'    => 'test',
                 'address' => 'test address',
             ],
             [
-                'email' => 'test',
-                'name' => 't1@example.com',
+                'email'   => 'test',
+                'name'    => 't1@example.com',
                 'address' => 'test address',
             ],
         ], $record);
@@ -553,17 +558,17 @@ SQL;
         $command->insert(
             '{{customer}}',
             [
-                'email' => 't1@example.com',
-                'name' => 'test',
+                'email'   => 't1@example.com',
+                'name'    => 'test',
                 'address' => 'test address',
             ]
         )->execute();
 
         $query = new \yii\db\Query();
         $query->select([
-                'email' => '{{customer}}.[[email]]',
+                'email'   => '{{customer}}.[[email]]',
                 'address' => 'name',
-                'name' => 'address',
+                'name'    => 'address',
             ]
         )
             ->from('{{customer}}')
@@ -583,13 +588,13 @@ SQL;
         $record = $db->createCommand('SELECT [[email]], [[name]], [[address]] FROM {{customer}}')->queryAll();
         $this->assertEquals([
             [
-                'email' => 't1@example.com',
-                'name' => 'test',
+                'email'   => 't1@example.com',
+                'name'    => 'test',
                 'address' => 'test address',
             ],
             [
-                'email' => 't1@example.com',
-                'name' => 'test address',
+                'email'   => 't1@example.com',
+                'name'    => 'test address',
                 'address' => 'test',
             ],
         ], $record);
@@ -597,6 +602,7 @@ SQL;
 
     /**
      * Data provider for testInsertSelectFailed.
+     *
      * @return array
      */
     public function invalidSelectColumns()
@@ -614,6 +620,7 @@ SQL;
      * @dataProvider invalidSelectColumns
      * @expectedException \yii\exceptions\InvalidArgumentException
      * @expectedExceptionMessage Expected select query object with enumerated (named) parameters
+     *
      * @param mixed $invalidSelectColumns
      */
     public function testInsertSelectFailed($invalidSelectColumns)
@@ -653,7 +660,7 @@ SQL;
             '{{order_with_null_fk}}',
             [
                 'created_at' => new Expression($expression),
-                'total' => 1,
+                'total'      => 1,
             ]
         )->execute();
         $this->assertEquals(1, $db->createCommand('SELECT COUNT(*) FROM {{order_with_null_fk}}')->queryScalar());
@@ -672,10 +679,10 @@ SQL;
 
         $command = $db->createCommand();
         $command->insert('{{order}}', [
-            'id' => 42,
+            'id'          => 42,
             'customer_id' => 1,
-            'created_at' => $time,
-            'total' => 42,
+            'created_at'  => $time,
+            'total'       => 42,
         ])->execute();
 
         $columnValueQuery = new \yii\db\Query();
@@ -686,8 +693,8 @@ SQL;
             '{{order_with_null_fk}}',
             [
                 'customer_id' => 42,
-                'created_at' => $columnValueQuery,
-                'total' => 42,
+                'created_at'  => $columnValueQuery,
+                'total'       => 42,
             ]
         )->execute();
 
@@ -787,21 +794,21 @@ SQL;
                     'params' => [
                         'T_upsert',
                         [
-                            'email' => 'foo@example.com',
+                            'email'   => 'foo@example.com',
                             'address' => 'Earth',
-                            'status' => 3,
-                        ]
-                    ]
+                            'status'  => 3,
+                        ],
+                    ],
                 ],
                 [
                     'params' => [
                         'T_upsert',
                         [
-                            'email' => 'foo@example.com',
+                            'email'   => 'foo@example.com',
                             'address' => 'Universe',
-                            'status' => 1,
-                        ]
-                    ]
+                            'status'  => 1,
+                        ],
+                    ],
                 ],
             ],
             'regular values with update part' => [
@@ -809,13 +816,13 @@ SQL;
                     'params' => [
                         'T_upsert',
                         [
-                            'email' => 'foo@example.com',
+                            'email'   => 'foo@example.com',
                             'address' => 'Earth',
-                            'status' => 3,
+                            'status'  => 3,
                         ],
                         [
                             'address' => 'Moon',
-                            'status' => 2,
+                            'status'  => 2,
                         ],
                     ],
                 ],
@@ -823,19 +830,19 @@ SQL;
                     'params' => [
                         'T_upsert',
                         [
-                            'email' => 'foo@example.com',
+                            'email'   => 'foo@example.com',
                             'address' => 'Universe',
-                            'status' => 1,
+                            'status'  => 1,
                         ],
                         [
                             'address' => 'Moon',
-                            'status' => 2,
+                            'status'  => 2,
                         ],
                     ],
                     'expected' => [
-                        'email' => 'foo@example.com',
+                        'email'   => 'foo@example.com',
                         'address' => 'Moon',
-                        'status' => 2,
+                        'status'  => 2,
                     ],
                 ],
             ],
@@ -844,27 +851,27 @@ SQL;
                     'params' => [
                         'T_upsert',
                         [
-                            'email' => 'foo@example.com',
+                            'email'   => 'foo@example.com',
                             'address' => 'Earth',
-                            'status' => 3,
+                            'status'  => 3,
                         ],
                         false,
-                    ]
+                    ],
                 ],
                 [
                     'params' => [
                         'T_upsert',
                         [
-                            'email' => 'foo@example.com',
+                            'email'   => 'foo@example.com',
                             'address' => 'Universe',
-                            'status' => 1,
+                            'status'  => 1,
                         ],
                         false,
                     ],
                     'expected' => [
-                        'email' => 'foo@example.com',
+                        'email'   => 'foo@example.com',
                         'address' => 'Earth',
-                        'status' => 3,
+                        'status'  => 3,
                     ],
                 ],
             ],
@@ -880,12 +887,12 @@ SQL;
                             ])
                             ->from('customer')
                             ->where(['name' => 'user1'])
-                            ->limit(1)
+                            ->limit(1),
                     ],
                     'expected' => [
-                        'email' => 'user1@example.com',
+                        'email'   => 'user1@example.com',
                         'address' => 'address1',
-                        'status' => 1,
+                        'status'  => 1,
                     ],
                 ],
                 [
@@ -899,12 +906,12 @@ SQL;
                             ])
                             ->from('customer')
                             ->where(['name' => 'user1'])
-                            ->limit(1)
+                            ->limit(1),
                     ],
                     'expected' => [
-                        'email' => 'user1@example.com',
+                        'email'   => 'user1@example.com',
                         'address' => 'address1',
-                        'status' => 2,
+                        'status'  => 2,
                     ],
                 ],
             ],
@@ -923,13 +930,13 @@ SQL;
                             ->limit(1),
                         [
                             'address' => 'Moon',
-                            'status' => 2,
+                            'status'  => 2,
                         ],
                     ],
                     'expected' => [
-                        'email' => 'user1@example.com',
+                        'email'   => 'user1@example.com',
                         'address' => 'address1',
-                        'status' => 1,
+                        'status'  => 1,
                     ],
                 ],
                 [
@@ -946,13 +953,13 @@ SQL;
                             ->limit(1),
                         [
                             'address' => 'Moon',
-                            'status' => 2,
+                            'status'  => 2,
                         ],
                     ],
                     'expected' => [
-                        'email' => 'user1@example.com',
+                        'email'   => 'user1@example.com',
                         'address' => 'Moon',
-                        'status' => 2,
+                        'status'  => 2,
                     ],
                 ],
             ],
@@ -972,9 +979,9 @@ SQL;
                         false,
                     ],
                     'expected' => [
-                        'email' => 'user1@example.com',
+                        'email'   => 'user1@example.com',
                         'address' => 'address1',
-                        'status' => 1,
+                        'status'  => 1,
                     ],
                 ],
                 [
@@ -992,9 +999,9 @@ SQL;
                         false,
                     ],
                     'expected' => [
-                        'email' => 'user1@example.com',
+                        'email'   => 'user1@example.com',
                         'address' => 'address1',
-                        'status' => 1,
+                        'status'  => 1,
                     ],
                 ],
             ],
@@ -1003,6 +1010,7 @@ SQL;
 
     /**
      * @dataProvider upsertProvider
+     *
      * @param array $firstData
      * @param array $secondData
      */
@@ -1211,7 +1219,7 @@ SQL;
 
     public function testAddDropDefaultValue()
     {
-        $this->markTestSkipped($this->driverName . ' does not support adding/dropping default value constraints.');
+        $this->markTestSkipped($this->driverName.' does not support adding/dropping default value constraints.');
     }
 
     public function testIntegrityViolation()
@@ -1307,6 +1315,7 @@ SQL;
 
     /**
      * Data provider for [[testGetRawSql()]].
+     *
      * @return array test data
      */
     public function dataProviderGetRawSql()
@@ -1330,7 +1339,7 @@ SQL;
             [
                 'SELECT * FROM customer WHERE id = :base OR id = :basePrefix',
                 [
-                    'base' => 1,
+                    'base'       => 1,
                     'basePrefix' => 2,
                 ],
                 'SELECT * FROM customer WHERE id = 1 OR id = 2',
@@ -1356,7 +1365,7 @@ SQL;
      * @dataProvider dataProviderGetRawSql
      *
      * @param string $sql
-     * @param array $params
+     * @param array  $params
      * @param string $expectedRawSql
      */
     public function testGetRawSql($sql, array $params, $expectedRawSql)
@@ -1379,8 +1388,8 @@ SQL;
         $this->assertNull($db->getSchema()->getTableSchema($tableName));
 
         $db->createCommand()->createTable($tableName, [
-            'id' => 'pk',
-            'fk' => 'int',
+            'id'   => 'pk',
+            'fk'   => 'int',
             'name' => 'string',
         ])->execute();
         $initialSchema = $db->getSchema()->getTableSchema($tableName);
@@ -1434,8 +1443,10 @@ SQL;
         $this->invokeMethod($command, 'setRetryHandler', [function ($exception, $attempt) use (&$attempts, &$hitHandler) {
             $attempts = $attempt;
             $hitHandler = true;
+
             return $attempt <= 2;
         }]);
+
         try {
             $command->execute();
         } catch (Exception $e) {
@@ -1464,7 +1475,7 @@ SQL;
             $db->createCommand()->dropTable('testCreateViewTable')->execute();
         }
         $db->createCommand()->createTable('testCreateViewTable', [
-            'id' => Schema::TYPE_PK,
+            'id'  => Schema::TYPE_PK,
             'bar' => Schema::TYPE_INTEGER,
         ])->execute();
         $db->createCommand()->insert('testCreateViewTable', ['bar' => 1])->execute();
@@ -1489,7 +1500,7 @@ SQL;
     public function testBindValuesSupportsDeprecatedPDOCastingFormat()
     {
         $db = $this->getConnection();
-        $db->createCommand()->setSql("SELECT :p1")->bindValues([':p1' => [2, \PDO::PARAM_STR]]);
+        $db->createCommand()->setSql('SELECT :p1')->bindValues([':p1' => [2, \PDO::PARAM_STR]]);
         $this->assertTrue(true);
     }
 }

@@ -1,24 +1,25 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\db\tests\unit\validators;
 
-use yii\db\tests\unit\DatabaseTestCase;
-use yii\helpers\Yii;
-use yii\validators\UniqueValidator;
 use yii\activerecord\tests\data\ActiveRecord;
 use yii\activerecord\tests\data\Customer;
 use yii\activerecord\tests\data\Document;
 use yii\activerecord\tests\data\Order;
 use yii\activerecord\tests\data\OrderItem;
 use yii\activerecord\tests\data\Profile;
+use yii\db\tests\unit\DatabaseTestCase;
+use yii\helpers\Yii;
 use yii\tests\data\validators\models\FakedValidationModel;
 use yii\tests\data\validators\models\ValidatorTestMainModel;
 use yii\tests\data\validators\models\ValidatorTestRefModel;
+use yii\validators\UniqueValidator;
 
 abstract class UniqueValidatorTest extends DatabaseTestCase
 {
@@ -54,7 +55,7 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
         $customError = 'Custom message for Order Id and Item Id with values "1"-"1"';
         $validator = new UniqueValidator([
             'targetAttribute' => ['order_id', 'item_id'],
-            'message' => 'Custom message for {attributes} with values {values}',
+            'message'         => 'Custom message for {attributes} with values {values}',
         ]);
         $model = OrderItem::findOne(['order_id' => 1, 'item_id' => 2]);
         $model->item_id = 1;
@@ -146,7 +147,7 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
     public function testValidateCompositeKeys()
     {
         $val = new UniqueValidator([
-            'targetClass' => OrderItem::class,
+            'targetClass'     => OrderItem::class,
             'targetAttribute' => ['order_id', 'item_id'],
         ]);
         // validate old record
@@ -169,7 +170,7 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
         $this->assertFalse($m->hasErrors('order_id'));
 
         $val = new UniqueValidator([
-            'targetClass' => OrderItem::class,
+            'targetClass'     => OrderItem::class,
             'targetAttribute' => ['id' => 'order_id'],
         ]);
         // validate old record
@@ -201,7 +202,7 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
     {
         // Check whether "Description" and "address" aren't equal
         $val = new UniqueValidator([
-            'targetClass' => Customer::class,
+            'targetClass'     => Customer::class,
             'targetAttribute' => ['description' => 'address'],
         ]);
 
@@ -335,7 +336,7 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
         $attribute = 'id';
         $targetAttribute = 'id';
         $result = $this->invokeMethod(new UniqueValidator(), 'prepareConditions', [$targetAttribute, $model, $attribute]);
-        $expected = ['{{' . Profile::tableName() . '}}.[[' . $attribute . ']]' => $model->id];
+        $expected = ['{{'.Profile::tableName().'}}.[['.$attribute.']]' => $model->id];
         $this->assertEquals($expected, $result);
     }
 
@@ -386,6 +387,7 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
 
     /**
      * Test ambiguous column name in select clause.
+     *
      * @see https://github.com/yiisoft/yii2/issues/14042
      */
     public function testAmbiguousColumnName()
@@ -406,6 +408,7 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
 
     /**
      * Test expresssion in targetAttribute.
+     *
      * @see https://github.com/yiisoft/yii2/issues/14304
      */
     public function testExpresionInAttributeColumnName()
@@ -422,19 +425,21 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
         $model->version = 1;
         $model->save(false);
         $validator->validateAttribute($model, 'title');
-        $this->assertFalse($model->hasErrors(), 'There were errors: ' . json_encode($model->getErrors()));
+        $this->assertFalse($model->hasErrors(), 'There were errors: '.json_encode($model->getErrors()));
     }
 
     /**
-     * Test validating a class with default scope
+     * Test validating a class with default scope.
+     *
      * @see https://github.com/yiisoft/yii2/issues/14484
-    */
+     */
     public function testFindModelWith()
     {
         $validator = new UniqueValidator([
-            'targetAttribute' => ['status', 'profile_id']
+            'targetAttribute' => ['status', 'profile_id'],
         ]);
         $model = WithCustomer::find()->one();
+
         try {
             $validator->validateAttribute($model, 'email');
             $this->assertTrue(true);
@@ -442,27 +447,27 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
             $this->fail('Query is crashed because "with" relation cannot be loaded');
         }
     }
-    
+
     public function testForceMaster()
     {
         $connection = $this->getConnectionWithInvalidSlave();
         ActiveRecord::$db = $connection;
 
         $model = null;
-        $connection->useMaster(function() use (&$model) {
+        $connection->useMaster(function () use (&$model) {
             $model = WithCustomer::find()->one();
         });
 
         $validator = new UniqueValidator([
-            'forceMasterDb' => true,
-            'targetAttribute' => ['status', 'profile_id']
+            'forceMasterDb'   => true,
+            'targetAttribute' => ['status', 'profile_id'],
         ]);
         $validator->validateAttribute($model, 'email');
 
         $this->expectException('\yii\exceptions\InvalidConfigException');
         $validator = new UniqueValidator([
-            'forceMasterDb' => false,
-            'targetAttribute' => ['status', 'profile_id']
+            'forceMasterDb'   => false,
+            'targetAttribute' => ['status', 'profile_id'],
         ]);
         $validator->validateAttribute($model, 'email');
 
@@ -470,8 +475,10 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
     }
 }
 
-class WithCustomer extends Customer {
-    public static function find() {
+class WithCustomer extends Customer
+{
+    public static function find()
+    {
         $res = parent::find();
 
         $res->with('profile');

@@ -1,15 +1,16 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
 namespace yii\db\tests\unit;
 
-use yii\exceptions\InvalidArgumentException;
 use yii\activerecord\ActiveQuery;
 use yii\db\Query;
+use yii\exceptions\InvalidArgumentException;
 
 trait GetTablesAliasTestTrait
 {
@@ -22,7 +23,7 @@ trait GetTablesAliasTestTrait
     {
         $query = $this->createQuery();
         $query->from = [
-            'prf' => 'profile',
+            'prf'     => 'profile',
             '{{usr}}' => '{{user}}',
             '{{a b}}' => '{{c d}}',
             'post AS p',
@@ -34,7 +35,7 @@ trait GetTablesAliasTestTrait
             '{{prf}}' => '{{profile}}',
             '{{usr}}' => '{{user}}',
             '{{a b}}' => '{{c d}}',
-            '{{p}}' => '{{post}}',
+            '{{p}}'   => '{{post}}',
         ], $tables);
     }
 
@@ -43,14 +44,14 @@ trait GetTablesAliasTestTrait
         $query = $this->createQuery();
         $query->from = [
             '{{profile}}',
-            'user'
+            'user',
         ];
 
         $tables = $query->getTablesUsedInFrom();
 
         $this->assertEquals([
             '{{profile}}' => '{{profile}}',
-            '{{user}}' => '{{user}}',
+            '{{user}}'    => '{{user}}',
         ], $tables);
     }
 
@@ -62,11 +63,11 @@ trait GetTablesAliasTestTrait
         $tables = $query->getTablesUsedInFrom();
 
         $this->assertEquals([
-            '{{prf}}' => '{{profile}}',
-            '{{usr}}' => '{{user}}',
-            '{{order}}' => '{{order}}',
+            '{{prf}}'      => '{{profile}}',
+            '{{usr}}'      => '{{user}}',
+            '{{order}}'    => '{{order}}',
             '{{customer}}' => '{{customer}}',
-            '{{c d}}' => '{{a b}}',
+            '{{c d}}'      => '{{a b}}',
         ], $tables);
     }
 
@@ -88,11 +89,11 @@ trait GetTablesAliasTestTrait
         $tables = $query->getTablesUsedInFrom();
 
         $this->assertEquals([
-            '{{prf}}' => '{{profile}}',
-            '{{usr}}' => '{{user}}',
-            '{{srv}}' => '{{service}}',
-            '{{order}}' => '{{order}}',
-            '{{c d}}' => '{{a b}}',
+            '{{prf}}'     => '{{profile}}',
+            '{{usr}}'     => '{{user}}',
+            '{{srv}}'     => '{{service}}',
+            '{{order}}'   => '{{order}}',
+            '{{c d}}'     => '{{a b}}',
             '{{myalias}}' => '{{something}}',
         ], $tables);
     }

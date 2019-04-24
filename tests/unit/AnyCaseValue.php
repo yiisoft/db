@@ -1,6 +1,7 @@
 <?php
 /**
  * @link http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -13,8 +14,9 @@ class AnyCaseValue extends CompareValue
 
     /**
      * Constructor.
+     *
      * @param string|string[] $value
-     * @param array $config
+     * @param array           $config
      */
     public function __construct($value, $config = [])
     {
