@@ -9,8 +9,8 @@
 namespace yii\db\tests\unit;
 
 use PDO;
-use yii\cache\ArrayCache;
-use yii\cache\FileCache;
+use Yiisoft\Cache\ArrayCache;
+use Yiisoft\Cache\FileCache;
 use yii\db\CheckConstraint;
 use yii\db\ColumnSchema;
 use yii\db\Constraint;

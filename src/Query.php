@@ -130,7 +130,7 @@ class Query extends Component implements QueryInterface, ExpressionInterface
      */
     public $queryCacheDuration;
     /**
-     * @var \yii\cache\dependencies\Dependency the dependency to be associated with the cached query result for this query
+     * @var \Yiisoft\Cache\Dependencies\Dependency the dependency to be associated with the cached query result for this query
      *
      * @see cache()
      * @since 2.0.14
@@ -1349,7 +1349,7 @@ PATTERN;
      *                                                       Use a negative number to indicate that query cache should not be used.
      *                                                       Use boolean `true` to indicate that [[Connection::queryCacheDuration]] should be used.
      *                                                       Defaults to `true`.
-     * @param \yii\cache\dependencies\Dependency $dependency the cache dependency associated with the cached result.
+     * @param \Yiisoft\Cache\Dependencies\Dependency $dependency the cache dependency associated with the cached result.
      *
      * @return $this the Query object itself
      *

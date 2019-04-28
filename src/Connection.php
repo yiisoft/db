@@ -10,7 +10,7 @@ namespace yii\db;
 
 use PDO;
 use yii\base\Component;
-use yii\cache\CacheInterface;
+use Yiisoft\Cache\CacheInterface;
 use yii\exceptions\InvalidConfigException;
 use yii\exceptions\NotSupportedException;
 use yii\helpers\Yii;
@@ -520,7 +520,7 @@ class Connection extends Component implements ConnectionInterface
      * @param int                                $duration   the number of seconds that query results can remain valid in the cache. If this is
      *                                                       not set, the value of [[queryCacheDuration]] will be used instead.
      *                                                       Use 0 to indicate that the cached data will never expire.
-     * @param \yii\cache\dependencies\Dependency $dependency the cache dependency associated with the cached query results.
+     * @param \Yiisoft\Cache\Dependencies\Dependency $dependency the cache dependency associated with the cached query results.
      *
      * @throws \Throwable if there is any exception during query
      *
@@ -595,7 +595,7 @@ class Connection extends Component implements ConnectionInterface
      * This method is used internally by [[Command]].
      *
      * @param int                                $duration   the preferred caching duration. If null, it will be ignored.
-     * @param \yii\cache\dependencies\Dependency $dependency the preferred caching dependency. If null, it will be ignored.
+     * @param \Yiisoft\Cache\Dependencies\Dependency $dependency the preferred caching dependency. If null, it will be ignored.
      *
      * @return array the current query cache information, or null if query cache is not enabled.
      *

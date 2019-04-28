@@ -8,8 +8,8 @@
 
 namespace yii\db\tests\unit;
 
-use yii\cache\ArrayCache;
-use yii\cache\Cache;
+use Yiisoft\Cache\ArrayCache;
+use Yiisoft\Cache\Cache;
 use yii\db\Connection;
 use yii\db\Transaction;
 use yii\exceptions\InvalidConfigException;

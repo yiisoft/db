@@ -87,7 +87,7 @@ class Command extends Component
      */
     public $queryCacheDuration;
     /**
-     * @var \yii\cache\dependencies\Dependency the dependency to be associated with the cached query result for this command
+     * @var \Yiisoft\Cache\Dependencies\Dependency the dependency to be associated with the cached query result for this command
      *
      * @see cache()
      */
@@ -122,7 +122,7 @@ class Command extends Component
      * @param int                                $duration   the number of seconds that query result of this command can remain valid in the cache.
      *                                                       If this is not set, the value of [[Connection::queryCacheDuration]] will be used instead.
      *                                                       Use 0 to indicate that the cached data will never expire.
-     * @param \yii\cache\dependencies\Dependency $dependency the cache dependency associated with the cached query result.
+     * @param \Yiisoft\Cache\Dependencies\Dependency $dependency the cache dependency associated with the cached query result.
      *
      * @return $this the command object itself
      */
@@ -1239,7 +1239,7 @@ class Command extends Component
         if ($method !== '') {
             $info = $this->db->getQueryCacheInfo($this->queryCacheDuration, $this->queryCacheDependency);
             if (is_array($info)) {
-                /* @var $cache \yii\cache\CacheInterface */
+                /* @var $cache \Yiisoft\Cache\CacheInterface */
                 $cache = $info[0];
                 $cacheKey = [
                     __CLASS__,
