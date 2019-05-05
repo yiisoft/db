@@ -6,7 +6,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db;
+namespace Yiisoft\Db;
 
 use PDO;
 use yii\base\Component;
@@ -34,7 +34,7 @@ use yii\helpers\Yii;
  * the DB connection:
  *
  * ```php
- * $connection = new \yii\db\Connection([
+ * $connection = new \Yiisoft\Db\Connection([
  *     'dsn' => $dsn,
  *     'username' => $username,
  *     'password' => $password,
@@ -102,7 +102,7 @@ use yii\helpers\Yii;
  * ```php
  * 'components' => [
  *     'db' => [
- *         '__class' => \yii\db\Connection::class,
+ *         '__class' => \Yiisoft\Db\Connection::class,
  *         'dsn' => 'mysql:host=127.0.0.1;dbname=demo;charset=utf8',
  *         'username' => 'root',
  *         'password' => '',
@@ -115,7 +115,7 @@ use yii\helpers\Yii;
  * ```php
  * 'components' => [
  *     'db' => [
- *         '__class' => \yii\db\Connection::class,
+ *         '__class' => \Yiisoft\Db\Connection::class,
  *         'dsn' => [
  *             'driver' => 'mysql',
  *             'host' => '127.0.0.1',
@@ -322,7 +322,7 @@ class Connection extends Component implements ConnectionInterface
         'sqlite2' => sqlite\Schema::class, // sqlite 2
     ];
     /**
-     * @var string Custom PDO wrapper class. If not set, it will use [[PDO]] or [[\yii\db\mssql\PDO]] when MSSQL is used.
+     * @var string Custom PDO wrapper class. If not set, it will use [[PDO]] or [[\Yiisoft\Db\mssql\PDO]] when MSSQL is used.
      *
      * @see pdo
      */
@@ -340,15 +340,15 @@ class Connection extends Component implements ConnectionInterface
      * @since 2.0.14
      */
     public $commandMap = [
-        'pgsql'   => 'yii\db\Command', // PostgreSQL
-        'mysqli'  => 'yii\db\Command', // MySQL
-        'mysql'   => 'yii\db\Command', // MySQL
-        'sqlite'  => 'yii\db\sqlite\Command', // sqlite 3
-        'sqlite2' => 'yii\db\sqlite\Command', // sqlite 2
-        'sqlsrv'  => 'yii\db\Command', // newer MSSQL driver on MS Windows hosts
-        'oci'     => 'yii\db\Command', // Oracle driver
-        'mssql'   => 'yii\db\Command', // older MSSQL driver on MS Windows hosts
-        'dblib'   => 'yii\db\Command', // dblib drivers on GNU/Linux (and maybe other OSes) hosts
+        'pgsql'   => 'Yiisoft\Db\Command', // PostgreSQL
+        'mysqli'  => 'Yiisoft\Db\Command', // MySQL
+        'mysql'   => 'Yiisoft\Db\Command', // MySQL
+        'sqlite'  => 'Yiisoft\Db\Sqlite\Command', // sqlite 3
+        'sqlite2' => 'Yiisoft\Db\Sqlite\Command', // sqlite 2
+        'sqlsrv'  => 'Yiisoft\Db\Command', // newer MSSQL driver on MS Windows hosts
+        'oci'     => 'Yiisoft\Db\Command', // Oracle driver
+        'mssql'   => 'Yiisoft\Db\Command', // older MSSQL driver on MS Windows hosts
+        'dblib'   => 'Yiisoft\Db\Command', // dblib drivers on GNU/Linux (and maybe other OSes) hosts
     ];
     /**
      * @var bool whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint).

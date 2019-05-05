@@ -6,7 +6,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db;
+namespace Yiisoft\Db;
 
 use yii\base\BaseObject;
 use yii\helpers\Yii;
@@ -113,7 +113,7 @@ class ColumnSchemaBuilder extends BaseObject
         Schema::TYPE_MONEY     => self::CATEGORY_NUMERIC,
     ];
     /**
-     * @var \yii\db\Connection the current database connection. It is used mainly to escape strings
+     * @var \Yiisoft\Db\Connection the current database connection. It is used mainly to escape strings
      *                         safely when building the final column schema string.
      *
      * @since 2.0.8
@@ -131,7 +131,7 @@ class ColumnSchemaBuilder extends BaseObject
      *
      * @param string             $type   type of the column. See [[$type]].
      * @param int|string|array   $length length or precision of the column. See [[$length]].
-     * @param \yii\db\Connection $db     the current database connection. See [[$db]].
+     * @param \Yiisoft\Db\Connection $db     the current database connection. See [[$db]].
      * @param array              $config name-value pairs that will be used to initialize the object properties
      */
     public function __construct($type, $length = null, $db = null)

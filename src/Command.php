@@ -6,7 +6,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db;
+namespace Yiisoft\Db;
 
 use yii\base\Component;
 use yii\exceptions\NotSupportedException;
@@ -111,7 +111,7 @@ class Command extends Component
      */
     private $_isolationLevel = false;
     /**
-     * @var callable a callable (e.g. anonymous function) that is called when [[\yii\db\Exception]] is thrown
+     * @var callable a callable (e.g. anonymous function) that is called when [[\Yiisoft\Db\Exception]] is thrown
      *               when executing the command.
      */
     private $_retryHandler;
@@ -373,7 +373,7 @@ class Command extends Component
      * @param array $values the values to be bound. This must be given in terms of an associative
      *                      array with array keys being the parameter names, and array values the corresponding parameter values,
      *                      e.g. `[':name' => 'John', ':age' => 25]`. By default, the PDO type of each value is determined
-     *                      by its PHP type. You may explicitly specify the PDO type by using a [[yii\db\PdoValue]] class: `new PdoValue(value, type)`,
+     *                      by its PHP type. You may explicitly specify the PDO type by using a [[Yiisoft\Db\PdoValue]] class: `new PdoValue(value, type)`,
      *                      e.g. `[':name' => 'John', ':profile' => new PdoValue($profile, \PDO::PARAM_LOB)]`.
      *
      * @return $this the current command being executed
@@ -498,9 +498,9 @@ class Command extends Component
      * Note that the created command is not executed until [[execute()]] is called.
      *
      * @param string              $table   the table that new rows will be inserted into.
-     * @param array|\yii\db\Query $columns the column data (name => value) to be inserted into the table or instance
-     *                                     of [[yii\db\Query|Query]] to perform INSERT INTO ... SELECT SQL statement.
-     *                                     Passing of [[yii\db\Query|Query]] is available since version 2.0.11.
+     * @param array|\Yiisoft\Db\Query $columns the column data (name => value) to be inserted into the table or instance
+     *                                     of [[Yiisoft\Db\Query|Query]] to perform INSERT INTO ... SELECT SQL statement.
+     *                                     Passing of [[Yiisoft\Db\Query|Query]] is available since version 2.0.11.
      *
      * @return $this the command object itself
      */
@@ -566,7 +566,7 @@ class Command extends Component
      *     'url' => 'http://example.com/', // url is unique
      *     'visits' => 0,
      * ], [
-     *     'visits' => new \yii\db\Expression('visits + 1'),
+     *     'visits' => new \Yiisoft\Db\Expression('visits + 1'),
      * ], $params);
      * ```
      *
@@ -734,7 +734,7 @@ class Command extends Component
      *
      * @param string $table  the table that the new column will be added to. The table name will be properly quoted by the method.
      * @param string $column the name of the new column. The name will be properly quoted by the method.
-     * @param string $type   the column type. [[\yii\db\QueryBuilder::getColumnType()]] will be called
+     * @param string $type   the column type. [[\Yiisoft\Db\QueryBuilder::getColumnType()]] will be called
      *                       to convert the give column type to the physical one. For example, `string` will be converted
      *                       as `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
@@ -783,7 +783,7 @@ class Command extends Component
      *
      * @param string $table  the table whose column is to be changed. The table name will be properly quoted by the method.
      * @param string $column the name of the column to be changed. The name will be properly quoted by the method.
-     * @param string $type   the column type. [[\yii\db\QueryBuilder::getColumnType()]] will be called
+     * @param string $type   the column type. [[\Yiisoft\Db\QueryBuilder::getColumnType()]] will be called
      *                       to convert the give column type to the physical one. For example, `string` will be converted
      *                       as `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
@@ -1234,7 +1234,7 @@ class Command extends Component
      */
     protected function queryInternal($method, $fetchMode = null)
     {
-        [$profile, $rawSql] = $this->logQuery('yii\db\Command::query');
+        [$profile, $rawSql] = $this->logQuery('Yiisoft\Db\Command::query');
 
         if ($method !== '') {
             $info = $this->db->getQueryCacheInfo($this->queryCacheDuration, $this->queryCacheDependency);
@@ -1251,7 +1251,7 @@ class Command extends Component
                 ];
                 $result = $cache->get($cacheKey);
                 if (is_array($result) && isset($result[0])) {
-                    Yii::debug('Query result served from cache', 'yii\db\Command::query');
+                    Yii::debug('Query result served from cache', 'Yiisoft\Db\Command::query');
 
                     return $result[0];
                 }
@@ -1261,7 +1261,7 @@ class Command extends Component
         $this->prepare(true);
 
         try {
-            $profile and Yii::beginProfile($rawSql, 'yii\db\Command::query');
+            $profile and Yii::beginProfile($rawSql, 'Yiisoft\Db\Command::query');
 
             $this->internalExecute($rawSql);
 
@@ -1275,16 +1275,16 @@ class Command extends Component
                 $this->pdoStatement->closeCursor();
             }
 
-            $profile and Yii::endProfile($rawSql, 'yii\db\Command::query');
+            $profile and Yii::endProfile($rawSql, 'Yiisoft\Db\Command::query');
         } catch (Exception $e) {
-            $profile and Yii::endProfile($rawSql, 'yii\db\Command::query');
+            $profile and Yii::endProfile($rawSql, 'Yiisoft\Db\Command::query');
 
             throw $e;
         }
 
         if (isset($cache, $cacheKey, $info)) {
             $cache->set($cacheKey, [$result], $info[1], $info[2]);
-            Yii::debug('Saved query result in cache', 'yii\db\Command::query');
+            Yii::debug('Saved query result in cache', 'Yiisoft\Db\Command::query');
         }
 
         return $result;
@@ -1340,7 +1340,7 @@ class Command extends Component
      * when executing the command. The signature of the callable should be:.
      *
      * ```php
-     * function (\yii\db\Exception $e, $attempt)
+     * function (\Yiisoft\Db\Exception $e, $attempt)
      * {
      *     // return true or false (whether to retry the command or rethrow $e)
      * }

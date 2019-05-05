@@ -6,10 +6,10 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db;
+namespace Yiisoft\Db;
 
 /**
- * Class ExpressionBuilder builds objects of [[yii\db\Expression]] class.
+ * Class ExpressionBuilder builds objects of [[Yiisoft\Db\Expression]] class.
  *
  * @author Dmitry Naumenko <d.naumenko.a@gmail.com>
  *

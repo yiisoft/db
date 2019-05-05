@@ -6,7 +6,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db;
+namespace Yiisoft\Db;
 
 /**
  * SchemaBuilderTrait contains shortcut methods to create instances of [[ColumnSchemaBuilder]].
