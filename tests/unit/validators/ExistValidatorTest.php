@@ -8,9 +8,9 @@
 
 namespace yii\db\tests\unit\validators;
 
-use yii\activerecord\tests\data\ActiveRecord;
-use yii\activerecord\tests\data\Order;
-use yii\activerecord\tests\data\OrderItem;
+use Yiisoft\ActiveRecord\Tests\Data\ActiveRecord;
+use Yiisoft\ActiveRecord\Tests\Data\Order;
+use Yiisoft\ActiveRecord\Tests\Data\OrderItem;
 use yii\db\tests\unit\DatabaseTestCase;
 use yii\exceptions\Exception;
 use yii\tests\data\validators\models\ValidatorTestMainModel;

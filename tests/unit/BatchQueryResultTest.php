@@ -8,8 +8,8 @@
 
 namespace yii\db\tests\unit;
 
-use yii\activerecord\tests\data\ActiveRecord;
-use yii\activerecord\tests\data\Customer;
+use Yiisoft\ActiveRecord\Tests\Data\ActiveRecord;
+use Yiisoft\ActiveRecord\Tests\Data\Customer;
 use yii\db\BatchQueryResult;
 use yii\db\Query;
 use yii\helpers\Yii;

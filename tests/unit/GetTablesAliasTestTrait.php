@@ -8,7 +8,7 @@
 
 namespace yii\db\tests\unit;
 
-use yii\activerecord\ActiveQuery;
+use Yiisoft\ActiveRecord\ActiveQuery;
 use yii\db\Query;
 use yii\exceptions\InvalidArgumentException;
 

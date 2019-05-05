@@ -8,22 +8,22 @@
 
 namespace yii\db\tests\unit;
 
-use yii\activerecord\tests\data\ActiveRecord;
-use yii\activerecord\tests\data\Customer;
+use Yiisoft\ActiveRecord\Tests\Data\ActiveRecord;
+use Yiisoft\ActiveRecord\Tests\Data\Customer;
 use yii\helpers\Yii;
 use yii\test\ActiveFixture;
 use yii\test\FixtureTrait;
 
 class ProfileFixture extends ActiveFixture
 {
-    public $modelClass = \yii\activerecord\tests\data\Profile::class;
+    public $modelClass = \Yiisoft\ActiveRecord\Tests\Data\Profile::class;
 
     public $dataDirectory = '@yii/tests/framework/test/data';
 }
 
 class CustomerFixture extends ActiveFixture
 {
-    public $modelClass = \yii\activerecord\tests\data\Customer::class;
+    public $modelClass = \Yiisoft\ActiveRecord\Tests\Data\Customer::class;
 
     public $dataDirectory = '@yii/tests/framework/test/data';
 
@@ -34,14 +34,14 @@ class CustomerFixture extends ActiveFixture
 
 class CustomDirectoryFixture extends ActiveFixture
 {
-    public $modelClass = \yii\activerecord\tests\data\Customer::class;
+    public $modelClass = \Yiisoft\ActiveRecord\Tests\Data\Customer::class;
 
     public $dataDirectory = '@yii/tests/framework/test/custom';
 }
 
 class AnimalFixture extends ActiveFixture
 {
-    public $modelClass = \yii\activerecord\tests\data\Animal::class;
+    public $modelClass = \Yiisoft\ActiveRecord\Tests\Data\Animal::class;
 }
 
 class BaseDbTestCase

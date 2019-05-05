@@ -8,12 +8,12 @@
 
 namespace yii\db\tests\unit\validators;
 
-use yii\activerecord\tests\data\ActiveRecord;
-use yii\activerecord\tests\data\Customer;
-use yii\activerecord\tests\data\Document;
-use yii\activerecord\tests\data\Order;
-use yii\activerecord\tests\data\OrderItem;
-use yii\activerecord\tests\data\Profile;
+use Yiisoft\ActiveRecord\Tests\Data\ActiveRecord;
+use Yiisoft\ActiveRecord\Tests\Data\Customer;
+use Yiisoft\ActiveRecord\Tests\Data\Document;
+use Yiisoft\ActiveRecord\Tests\Data\Order;
+use Yiisoft\ActiveRecord\Tests\Data\OrderItem;
+use Yiisoft\ActiveRecord\Tests\Data\Profile;
 use yii\db\tests\unit\DatabaseTestCase;
 use yii\helpers\Yii;
 use yii\tests\data\validators\models\FakedValidationModel;
