@@ -315,11 +315,11 @@ class Connection extends Component implements ConnectionInterface
      * [[Schema]] class to support DBMS that is not supported by Yii.
      */
     public $schemaMap = [
-        'pgsql'   => pgsql\Schema::class, // PostgreSQL
-        'mysqli'  => mysql\Schema::class, // MySQL
-        'mysql'   => mysql\Schema::class, // MySQL
-        'sqlite'  => sqlite\Schema::class, // sqlite 3
-        'sqlite2' => sqlite\Schema::class, // sqlite 2
+        'pgsql'   => Pgsql\Schema::class, // PostgreSQL
+        'mysqli'  => Mysql\Schema::class, // MySQL
+        'mysql'   => Mysql\Schema::class, // MySQL
+        'sqlite'  => Sqlite\Schema::class, // sqlite 3
+        'sqlite2' => Sqlite\Schema::class, // sqlite 2
     ];
     /**
      * @var string Custom PDO wrapper class. If not set, it will use [[PDO]] or [[\Yiisoft\Db\mssql\PDO]] when MSSQL is used.
