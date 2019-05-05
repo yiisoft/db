@@ -6,7 +6,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db;
+namespace Yiisoft\Db;
 
 /**
  * ForeignKeyConstraint represents the metadata of a table `FOREIGN KEY` constraint.

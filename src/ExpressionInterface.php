@@ -6,7 +6,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db;
+namespace Yiisoft\Db;
 
 /**
  * Interface ExpressionInterface should be used to mark classes, that should be built

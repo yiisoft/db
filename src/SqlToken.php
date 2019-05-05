@@ -6,7 +6,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db;
+namespace Yiisoft\Db;
 
 use yii\base\BaseObject;
 
@@ -214,7 +214,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
      * Usage Example:
      *
      * ```php
-     * $patternToken = (new \yii\db\sqlite\SqlTokenizer('SELECT any FROM any'))->tokenize();
+     * $patternToken = (new \Yiisoft\Db\Sqlite\SqlTokenizer('SELECT any FROM any'))->tokenize();
      * if ($sqlToken->matches($patternToken, 0, $firstMatchIndex, $lastMatchIndex)) {
      *     // ...
      * }

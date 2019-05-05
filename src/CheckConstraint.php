@@ -6,7 +6,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db;
+namespace Yiisoft\Db;
 
 /**
  * CheckConstraint represents the metadata of a table `CHECK` constraint.

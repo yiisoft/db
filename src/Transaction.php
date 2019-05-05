@@ -6,7 +6,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db;
+namespace Yiisoft\Db;
 
 use yii\exceptions\InvalidConfigException;
 use yii\exceptions\NotSupportedException;

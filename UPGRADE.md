@@ -10,4 +10,4 @@ the changes are bearable and require "refactoring", not "rewrite".
 All the "Yes, it is" cool stuff and Yii soul are still in place.
 
 Changes summary:
-* `yii\db\Connection::$charset` has been removed. All support PDO classes allow you to specify the connection charset in the DSN.
+* `Yiisoft\Db\Connection::$charset` has been removed. All support PDO classes allow you to specify the connection charset in the DSN.

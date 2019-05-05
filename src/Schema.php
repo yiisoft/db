@@ -6,7 +6,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace yii\db;
+namespace Yiisoft\Db;
 
 use yii\base\BaseObject;
 use Yiisoft\Cache\Cache;
