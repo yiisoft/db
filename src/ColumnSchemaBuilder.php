@@ -9,7 +9,6 @@
 namespace Yiisoft\Db;
 
 use yii\base\BaseObject;
-use yii\helpers\Yii;
 use Yiisoft\Strings\StringHelper;
 
 /**
