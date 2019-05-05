@@ -85,8 +85,8 @@
     },
     "autoload": {
         "psr-4": {
-            "yii\\db\\": "src",
-            "yii\\db\\tests\\": "tests"
+            "Yiisoft\\Db\\": "src",
+            "Yiisoft\\Db\\Tests\\": "tests"
         }
     },
     "extra": {
