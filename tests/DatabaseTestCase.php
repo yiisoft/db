@@ -8,7 +8,7 @@
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\Cache\DummyCache;
+use Yiisoft\Cache\NullCache;
 use Yiisoft\Db\Connection;
 use yii\tests\TestCase;
 
@@ -140,7 +140,7 @@ abstract class DatabaseTestCase extends TestCase
     protected function getConnectionWithInvalidSlave()
     {
         $config = array_merge($this->database, [
-            'serverStatusCache' => new DummyCache(),
+            'serverStatusCache' => new NullCache(),
             'slaves'            => [
                 [], // invalid config
             ],
