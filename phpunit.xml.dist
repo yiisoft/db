@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="./vendor/yiisoft/yii-core/tests/bootstrap.php"
+<phpunit bootstrap="./vendor/autoload.php"
     backupGlobals="true"
     colors="true"
     verbose="true"
@@ -8,8 +8,7 @@
     convertErrorsToExceptions="true"
     convertNoticesToExceptions="true"
     convertWarningsToExceptions="true"
-    stopOnFailure="false"
-    printerClass="yii\tests\ResultPrinter">
+    stopOnFailure="false">
     <testsuites>
         <testsuite name="Yii DB unit tests">
             <directory>./tests/unit</directory>
