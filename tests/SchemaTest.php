@@ -5,7 +5,7 @@ namespace Yiisoft\Db\Tests;
 
 use PDO;
 use Yiisoft\Cache\ArrayCache;
-use Yiisoft\Cache\FileCache;
+use Yiisoft\Cache\File\FileCache;
 use Yiisoft\Db\CheckConstraint;
 use Yiisoft\Db\ColumnSchema;
 use Yiisoft\Db\Constraint;
@@ -33,10 +33,11 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testGetSchemaNames()
     {
         /* @var $schema Schema */
-        $schema = $this->getConnection()->schema;
+        $schema = $this->getConnection()->getSchema();
 
         $schemas = $schema->getSchemaNames();
         $this->assertNotEmpty($schemas);
+
         foreach ($this->expectedSchemas as $schema) {
             $this->assertContains($schema, $schemas);
         }
@@ -50,11 +51,13 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testGetTableNames($pdoAttributes)
     {
         $connection = $this->getConnection();
+
         foreach ($pdoAttributes as $name => $value) {
-            $connection->pdo->setAttribute($name, $value);
+            $connection->getPDO()->setAttribute($name, $value);
         }
+
         /* @var $schema Schema */
-        $schema = $connection->schema;
+        $schema = $connection->getSchema();
 
         $tables = $schema->getTableNames();
         $this->assertTrue(\in_array('customer', $tables));
@@ -75,14 +78,18 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testGetTableSchemas($pdoAttributes)
     {
         $connection = $this->getConnection();
+
         foreach ($pdoAttributes as $name => $value) {
-            $connection->pdo->setAttribute($name, $value);
+            $connection->getPDO()->setAttribute($name, $value);
         }
+
         /* @var $schema Schema */
-        $schema = $connection->schema;
+        $schema = $connection->getSchema();
 
         $tables = $schema->getTableSchemas();
+
         $this->assertEquals(\count($schema->getTableNames()), \count($tables));
+
         foreach ($tables as $table) {
             $this->assertInstanceOf('Yiisoft\Db\TableSchema', $table);
         }
@@ -91,16 +98,17 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testGetTableSchemasWithAttrCase()
     {
         $db = $this->getConnection(false);
-        $db->slavePdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
-        $this->assertEquals(\count($db->schema->getTableNames()), \count($db->schema->getTableSchemas()));
+
+        $db->getSlavePdo()->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
+        $this->assertEquals(\count($db->getSchema()->getTableNames()), \count($db->getSchema()->getTableSchemas()));
 
         $db->slavePdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_UPPER);
-        $this->assertEquals(\count($db->schema->getTableNames()), \count($db->schema->getTableSchemas()));
+        $this->assertEquals(\count($db->getSchema()->getTableNames()), \count($db->getSchema()->getTableSchemas()));
     }
 
     public function testGetNonExistingTableSchema()
     {
-        $this->assertNull($this->getConnection()->schema->getTableSchema('nonexisting_table'));
+        $this->assertNull($this->getConnection()->getSchema()->getTableSchema('nonexisting_table'));
     }
 
     public function testSchemaCache()
@@ -109,16 +117,21 @@ abstract class SchemaTest extends DatabaseTestCase
         $db = $this->getConnection();
 
         /* @var $schema Schema */
-        $schema = $db->schema;
+        $schema = $db->getSchema();
 
         $schema->db->enableSchemaCache = true;
-        $schema->db->schemaCache = new FileCache();
+
+        $schema->db->schemaCache = new FileCache($this->aliases->get('@runtime'));
+
         $noCacheTable = $schema->getTableSchema('type', true);
         $cachedTable = $schema->getTableSchema('type', false);
+
         $this->assertEquals($noCacheTable, $cachedTable);
 
         $db->createCommand()->renameTable('type', 'type_test');
+
         $noCacheTable = $schema->getTableSchema('type', true);
+
         $this->assertNotSame($noCacheTable, $cachedTable);
 
         $db->createCommand()->renameTable('type_test', 'type');
@@ -221,7 +234,7 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testCompositeFk()
     {
         /* @var $schema Schema */
-        $schema = $this->getConnection()->schema;
+        $schema = $this->getConnection()->getSchema();
 
         $table = $schema->getTableSchema('composite_fk');
 
@@ -247,7 +260,7 @@ abstract class SchemaTest extends DatabaseTestCase
         ];
 
         /* @var $schema Schema */
-        $schema = $this->getConnection()->schema;
+        $schema = $this->getConnection()->getSchema();
 
         foreach ($values as $value) {
             $this->assertEquals($value[1], $schema->getPdoType($value[0]), 'type for value '.print_r($value[0], true).' does not match.');
@@ -480,9 +493,10 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testNegativeDefaultValues()
     {
         /* @var $schema Schema */
-        $schema = $this->getConnection()->schema;
+        $schema = $this->getConnection()->getSchema();
 
         $table = $schema->getTableSchema('negative_default_values');
+
         $this->assertEquals(-123, $table->getColumn('tinyint_col')->defaultValue);
         $this->assertEquals(-123, $table->getColumn('smallint_col')->defaultValue);
         $this->assertEquals(-123, $table->getColumn('int_col')->defaultValue);
@@ -495,7 +509,7 @@ abstract class SchemaTest extends DatabaseTestCase
     {
         $columns = $this->getExpectedColumns();
 
-        $table = $this->getConnection(false)->schema->getTableSchema('type', true);
+        $table = $this->getConnection(false)->getSchema()->getTableSchema('type', true);
 
         $expectedColNames = array_keys($columns);
         sort($expectedColNames);
@@ -529,6 +543,7 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testColumnSchemaDbTypecastWithEmptyCharType()
     {
         $columnSchema = $this->factory->create(['__class' => ColumnSchema::class, 'type' => Schema::TYPE_CHAR]);
+
         $this->assertSame('', $columnSchema->dbTypecast(''));
     }
 
@@ -546,7 +561,7 @@ abstract class SchemaTest extends DatabaseTestCase
         ])->execute();
 
         /* @var $schema Schema */
-        $schema = $db->schema;
+        $schema = $db->getSchema();
 
         $uniqueIndexes = $schema->findUniqueIndexes($schema->getTableSchema('uniqueIndex', true));
         $this->assertEquals([], $uniqueIndexes);

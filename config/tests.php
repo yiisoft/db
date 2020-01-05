@@ -1,9 +1,15 @@
 <?php
 declare(strict_types=1);
 
-use \Yiisoft\Db\Connection;
+use Yiisoft\Aliases\Aliases;
+use Yiisoft\Db\Connection;
 
 return [
+    Aliases::class => [
+        '@root' => dirname(__DIR__, 1),
+        '@runtime' => '@root/tests/data/runtime',
+    ],
+
     Connection::class => [
         '__class'   => \Yiisoft\Db\Connection::class,
         '__construct()' => [

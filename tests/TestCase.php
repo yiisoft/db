@@ -41,6 +41,9 @@ abstract class TestCase extends BaseTestCase
         $config = require Builder::path('tests');
 
         $this->container = new Container($config);
+
+        $this->aliases = $this->container->get(Aliases::class);
+        $this->factory = $this->container->get(Factory::class);
     }
 
     /**

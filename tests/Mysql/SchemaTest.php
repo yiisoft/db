@@ -16,7 +16,7 @@ class SchemaTest extends \Yiisoft\Db\Tests\SchemaTest
 
     public function testLoadDefaultDatetimeColumn()
     {
-        if (!version_compare($this->getConnection()->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION), '5.6', '>=')) {
+        if (!version_compare($this->getConnection()->getPDO()->getAttribute(\PDO::ATTR_SERVER_VERSION), '5.6', '>=')) {
             $this->markTestSkipped('Default datetime columns are supported since MySQL 5.6.');
         }
         $sql = <<<SQL
@@ -40,7 +40,7 @@ SQL;
 
     public function testDefaultDatetimeColumnWithMicrosecs()
     {
-        if (!version_compare($this->getConnection()->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION), '5.6.4', '>=')) {
+        if (!version_compare($this->getConnection()->getPDO()->getAttribute(\PDO::ATTR_SERVER_VERSION), '5.6.4', '>=')) {
             $this->markTestSkipped('CURRENT_TIMESTAMP with microseconds as default column value is supported since MySQL 5.6.4.');
         }
         $sql = <<<SQL
@@ -97,7 +97,8 @@ SQL;
          * We do not have a real database MariaDB >= 10.2.3 for tests, so we emulate the information that database
          * returns in response to the query `SHOW FULL COLUMNS FROM ...`
          */
-        $schema = new \yii\db\mysql\Schema();
+        $schema = new \Yiisoft\Db\Mysql\Schema($this->getConnection());
+
         $column = $this->invokeMethod($schema, 'loadColumnSchema', [[
             'field' => 'emulated_MariaDB_field',
             'type' => 'timestamp',
@@ -110,7 +111,7 @@ SQL;
             'comment' => '',
         ]]);
 
-        $this->assertInstanceOf(\yii\db\mysql\ColumnSchema::className(), $column);
+        $this->assertInstanceOf(\Yiisoft\Db\Mysql\ColumnSchema::class, $column);
         $this->assertInstanceOf(Expression::className(), $column->defaultValue);
         $this->assertEquals('CURRENT_TIMESTAMP', $column->defaultValue);
     }

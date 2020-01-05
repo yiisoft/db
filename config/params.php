@@ -9,6 +9,6 @@ return [
             'fixture' => __DIR__ . '/mysql.sql',
         ],
         'username' => 'root',
-        'password' => 'root',
+        'password' => '',
     ],
 ];
