@@ -102,7 +102,7 @@ SQL;
         $column = $this->invokeMethod($schema, 'loadColumnSchema', [[
             'field' => 'emulated_MariaDB_field',
             'type' => 'timestamp',
-            'collation' => NULL,
+            'collation' => null,
             'null' => 'NO',
             'key' => '',
             'default' => 'current_timestamp()',
