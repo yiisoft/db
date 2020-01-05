@@ -15,20 +15,20 @@ class TableSchema
     /**
      * @var string the name of the schema that this table belongs to.
      */
-    public string $schemaName;
+    public ?string $schemaName = null;
 
     /**
      * @var string the name of this table. The schema name is not included. Use {@see fullName} to get the name with
      * schema name prefix.
      */
-    public string $name;
+    public ?string $name = null;
 
     /**
      * @var string the full name of this table, which includes the schema name prefix, if any.
      * Note that if the schema name is the same as the {@see Schema::defaultSchema|default schema name}, the schema name
      * will not be included.
      */
-    public string $fullName;
+    public ?string $fullName = null;
 
     /**
      * @var array primary keys of this table.
@@ -38,7 +38,7 @@ class TableSchema
     /**
      * @var string sequence name for the primary key. Null if no sequence.
      */
-    public string $sequenceName;
+    public ?string $sequenceName = null;
 
     /**
      * @var array foreign keys of this table. Each array element is of the following structure:

@@ -45,8 +45,6 @@ abstract class DatabaseTestCase extends TestCase
         if (!\extension_loaded('pdo') || !\extension_loaded($pdo_database)) {
             $this->markTestSkipped('pdo and '.$pdo_database.' extension are required.');
         }
-
-        //$this->mockApplication();
     }
 
     protected function tearDown(): void

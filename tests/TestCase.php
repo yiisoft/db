@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use hiqdev\composer\config\Builder;
-use PHPUnit\Framework\TestCase as BaseTestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
@@ -12,7 +11,7 @@ use Yiisoft\Db\Connection;
 use Yiisoft\Di\Container;
 use Yiisoft\Factory\Factory;
 
-abstract class TestCase extends BaseTestCase
+abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Aliases $aliases
@@ -23,6 +22,11 @@ abstract class TestCase extends BaseTestCase
      * @var ContainerInterface $container
      */
     protected $container;
+
+    /**
+     * @var Factory $factory
+     */
+    protected $factory;
 
     /**
      * @var array $params
@@ -91,30 +95,23 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Build the Data Source Name or DSN.
-     *
-     * @param array $config the DSN configurations
-     *
-     * @throws InvalidConfigException if 'driver' key was not defined
-     *
-     * @return string the formated DSN
+     * Invokes a inaccessible method.
+     * @param $object
+     * @param $method
+     * @param array $args
+     * @param bool $revoke whether to make method inaccessible after execution
+     * @return mixed
+     * @since 2.0.11
      */
-    protected function buildDSN(array $config): string
+    protected function invokeMethod($object, $method, $args = [], $revoke = true)
     {
-        if (isset($config['driver'])) {
-            $driver = $config['driver'];
-
-            unset($config['driver']);
-
-            $parts = [];
-
-            foreach ($config as $key => $value) {
-                $parts[] = "$key=$value";
-            }
-
-            return "$driver:" . implode(';', $parts);
+        $reflection = new \ReflectionObject($object);
+        $method = $reflection->getMethod($method);
+        $method->setAccessible(true);
+        $result = $method->invokeArgs($object, $args);
+        if ($revoke) {
+            $method->setAccessible(false);
         }
-
-        throw new InvalidConfigException("Connection DSN 'driver' must be set.");
+        return $result;
     }
 }

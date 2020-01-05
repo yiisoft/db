@@ -14,6 +14,7 @@ use Yiisoft\Db\ForeignKeyConstraint;
 use Yiisoft\Db\IndexConstraint;
 use Yiisoft\Db\Schema;
 use Yiisoft\Db\TableSchema;
+use Yiisoft\Db\Exception\NotSupportedException;
 
 abstract class SchemaTest extends DatabaseTestCase
 {
@@ -611,6 +612,8 @@ abstract class SchemaTest extends DatabaseTestCase
 
     public function constraintsProvider()
     {
+        $this->factory = new \Yiisoft\Factory\Factory();
+
         return [
             '1: primary key' => ['T_constraints_1', 'primaryKey', $this->factory->create(['__class' => Constraint::class,
                 'name'                                                                              => AnyValue::getInstance(),
@@ -736,7 +739,7 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testTableSchemaConstraints($tableName, $type, $expected)
     {
         if ($expected === false) {
-            $this->expectException('yii\exceptions\NotSupportedException');
+            $this->expectException(NotSupportedException::class);
         }
 
         $constraints = $this->getConnection(false)->getSchema()->{'getTable'.ucfirst($type)}($tableName);
@@ -753,7 +756,7 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testTableSchemaConstraintsWithPdoUppercase($tableName, $type, $expected)
     {
         if ($expected === false) {
-            $this->expectException('yii\exceptions\NotSupportedException');
+            $this->expectException(NotSupportedException::class);
         }
 
         $connection = $this->getConnection(false);
@@ -772,7 +775,7 @@ abstract class SchemaTest extends DatabaseTestCase
     public function testTableSchemaConstraintsWithPdoLowercase($tableName, $type, $expected)
     {
         if ($expected === false) {
-            $this->expectException('yii\exceptions\NotSupportedException');
+            $this->expectException(NotSupportedException::class);
         }
 
         $connection = $this->getConnection(false);

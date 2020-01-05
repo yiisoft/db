@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Mysql;
 
 use Yiisoft\Db\Expression;
-use Yiisoft\Db\AnyCaseValue;
+use Yiisoft\Db\Tests\AnyCaseValue;
 
 /**
  * @group db
@@ -112,7 +112,7 @@ SQL;
         ]]);
 
         $this->assertInstanceOf(\Yiisoft\Db\Mysql\ColumnSchema::class, $column);
-        $this->assertInstanceOf(Expression::className(), $column->defaultValue);
+        $this->assertInstanceOf(Expression::class, $column->defaultValue);
         $this->assertEquals('CURRENT_TIMESTAMP', $column->defaultValue);
     }
 }
