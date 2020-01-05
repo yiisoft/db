@@ -1,10 +1,5 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
@@ -14,11 +9,7 @@ use Yiisoft\Db\ExpressionInterface;
 use Yiisoft\Db\Query;
 
 /**
- * Class BetweenColumnsConditionBuilder builds objects of [[BetweenColumnsCondition]].
- *
- * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
- *
- * @since 2.0.14
+ * Class BetweenColumnsConditionBuilder builds objects of {@see BetweenColumnsCondition}.
  */
 class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
 {
@@ -29,7 +20,7 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
      * escaped or quoted.
      *
      * @param ExpressionInterface|BetweenColumnsCondition $expression the expression to be built.
-     * @param array                                       $params     the binding parameters.
+     * @param array $params the binding parameters.
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
@@ -48,7 +39,7 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
      * Prepares column name to be used in SQL statement.
      *
      * @param Query|ExpressionInterface|string $columnName
-     * @param array                            $params     the binding parameters.
+     * @param array $params the binding parameters.
      *
      * @return string
      */

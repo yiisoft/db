@@ -1,64 +1,64 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
-use yii\base\BaseObject;
-
 /**
- * SqlToken represents SQL tokens produced by [[SqlTokenizer]] or its child classes.
+ * SqlToken represents SQL tokens produced by {@see SqlTokenizer} or its child classes.
  *
  * @property SqlToken[] $children Child tokens.
  * @property bool $hasChildren Whether the token has children. This property is read-only.
  * @property bool $isCollection Whether the token represents a collection of tokens. This property is
  * read-only.
  * @property string $sql SQL code. This property is read-only.
- *
- * @author Sergey Makinen <sergey@makinen.ru>
- *
- * @since 2.0.13
  */
 class SqlToken extends BaseObject implements \ArrayAccess
 {
     const TYPE_CODE = 0;
+
     const TYPE_STATEMENT = 1;
+
     const TYPE_TOKEN = 2;
+
     const TYPE_PARENTHESIS = 3;
+
     const TYPE_KEYWORD = 4;
+
     const TYPE_OPERATOR = 5;
+
     const TYPE_IDENTIFIER = 6;
+
     const TYPE_STRING_LITERAL = 7;
 
     /**
      * @var int token type. It has to be one of the following constants:
      *
-     * - [[TYPE_CODE]]
-     * - [[TYPE_STATEMENT]]
-     * - [[TYPE_TOKEN]]
-     * - [[TYPE_PARENTHESIS]]
-     * - [[TYPE_KEYWORD]]
-     * - [[TYPE_OPERATOR]]
-     * - [[TYPE_IDENTIFIER]]
-     * - [[TYPE_STRING_LITERAL]]
+     * - {@see TYPE_CODE}
+     * - {@see TYPE_STATEMENT}
+     * - {@see TYPE_TOKEN}
+     * - {@see TYPE_PARENTHESIS}
+     * - {@see TYPE_KEYWORD}
+     * - {@see TYPE_OPERATOR}
+     * - {@see TYPE_IDENTIFIER}
+     * - {@see TYPE_STRING_LITERAL}
      */
-    public $type = self::TYPE_TOKEN;
+    public int $type = self::TYPE_TOKEN;
+
     /**
      * @var string|null token content.
      */
-    public $content;
+    public ?string $content;
+
     /**
      * @var int original SQL token start position.
      */
-    public $startOffset;
+    public int $startOffset;
+
     /**
      * @var int original SQL token end position.
      */
-    public $endOffset;
+    public int $endOffset;
+
     /**
      * @var SqlToken parent token.
      */
@@ -67,7 +67,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
     /**
      * @var SqlToken[] token children.
      */
-    private $_children = [];
+    private $children = [];
 
     /**
      * Returns the SQL code representing the token.
@@ -81,66 +81,72 @@ class SqlToken extends BaseObject implements \ArrayAccess
 
     /**
      * Returns whether there is a child token at the specified offset.
-     * This method is required by the SPL [[\ArrayAccess]] interface.
-     * It is implicitly called when you use something like `isset($token[$offset])`.
+     *
+     * This method is required by the SPL {@see \ArrayAccess} interface. It is implicitly called when you use something
+     * like `isset($token[$offset])`.
      *
      * @param int $offset child token offset.
      *
      * @return bool whether the token exists.
      */
-    public function offsetExists($offset)
+    public function offsetExists(int $offset): bool
     {
-        return isset($this->_children[$this->calculateOffset($offset)]);
+        return isset($this->children[$this->calculateOffset($offset)]);
     }
 
     /**
      * Returns a child token at the specified offset.
-     * This method is required by the SPL [[\ArrayAccess]] interface.
-     * It is implicitly called when you use something like `$child = $token[$offset];`.
+     *
+     * This method is required by the SPL {@see \ArrayAccess} interface. It is implicitly called when you use something
+     * like `$child = $token[$offset];`.
      *
      * @param int $offset child token offset.
      *
      * @return SqlToken|null the child token at the specified offset, `null` if there's no token.
      */
-    public function offsetGet($offset)
+    public function offsetGet(int $offset)
     {
         $offset = $this->calculateOffset($offset);
 
-        return isset($this->_children[$offset]) ? $this->_children[$offset] : null;
+        return isset($this->children[$offset]) ? $this->children[$offset] : null;
     }
 
     /**
      * Adds a child token to the token.
-     * This method is required by the SPL [[\ArrayAccess]] interface.
-     * It is implicitly called when you use something like `$token[$offset] = $child;`.
+     *
+     * This method is required by the SPL {@see \ArrayAccess} interface. It is implicitly called when you use something
+     * like `$token[$offset] = $child;`.
      *
      * @param int|null $offset child token offset.
      * @param SqlToken $token  token to be added.
      */
-    public function offsetSet($offset, $token)
+    public function offsetSet(?int $offset, $token)
     {
         $token->parent = $this;
         if ($offset === null) {
-            $this->_children[] = $token;
+            $this->children[] = $token;
         } else {
-            $this->_children[$this->calculateOffset($offset)] = $token;
+            $this->children[$this->calculateOffset($offset)] = $token;
         }
         $this->updateCollectionOffsets();
     }
 
     /**
      * Removes a child token at the specified offset.
-     * This method is required by the SPL [[\ArrayAccess]] interface.
-     * It is implicitly called when you use something like `unset($token[$offset])`.
+     *
+     * This method is required by the SPL {@see \ArrayAccess} interface. It is implicitly called when you use something
+     * like `unset($token[$offset])`.
      *
      * @param int $offset child token offset.
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(int $offset): void
     {
         $offset = $this->calculateOffset($offset);
-        if (isset($this->_children[$offset])) {
-            array_splice($this->_children, $offset, 1);
+
+        if (isset($this->children[$offset])) {
+            array_splice($this->children, $offset, 1);
         }
+
         $this->updateCollectionOffsets();
     }
 
@@ -151,7 +157,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
      */
     public function getChildren()
     {
-        return $this->_children;
+        return $this->children;
     }
 
     /**
@@ -159,13 +165,15 @@ class SqlToken extends BaseObject implements \ArrayAccess
      *
      * @param SqlToken[] $children child tokens.
      */
-    public function setChildren($children)
+    public function setChildren($children): void
     {
-        $this->_children = [];
+        $this->children = [];
+
         foreach ($children as $child) {
             $child->parent = $this;
-            $this->_children[] = $child;
+            $this->children[] = $child;
         }
+
         $this->updateCollectionOffsets();
     }
 
@@ -190,7 +198,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
      */
     public function getHasChildren()
     {
-        return $this->getIsCollection() && !empty($this->_children);
+        return $this->getIsCollection() && !empty($this->children);
     }
 
     /**
@@ -220,16 +228,20 @@ class SqlToken extends BaseObject implements \ArrayAccess
      * }
      * ```
      *
-     * @param SqlToken $patternToken    tokenized SQL code to match against. In addition to normal SQL, the
-     *                                  `any` keyword is supported which will match any number of keywords, identifiers, whitespaces.
-     * @param int      $offset          token children offset to start lookup with.
+     * @param SqlToken $patternToken tokenized SQL code to match against. In addition to normal SQL, the `any` keyword
+     * is supported which will match any number of keywords, identifiers, whitespaces.
+     * @param int $offset token children offset to start lookup with.
      * @param int|null $firstMatchIndex token children offset where a successful match begins.
      * @param int|null $lastMatchIndex  token children offset where a successful match ends.
      *
      * @return bool whether this token matches the pattern SQL code.
      */
-    public function matches(self $patternToken, $offset = 0, &$firstMatchIndex = null, &$lastMatchIndex = null)
-    {
+    public function matches(
+        self $patternToken,
+        int $offset = 0,
+        ?int &$firstMatchIndex = null,
+        ?int &$lastMatchIndex = null
+    ): bool {
         if (!$patternToken->getHasChildren()) {
             return false;
         }
@@ -244,18 +256,21 @@ class SqlToken extends BaseObject implements \ArrayAccess
      *
      * @param SqlToken $patternToken
      * @param SqlToken $token
-     * @param int      $offset
+     * @param int $offset
      * @param int|null $firstMatchIndex
      * @param int|null $lastMatchIndex
      *
      * @return bool
      */
-    private function tokensMatch(self $patternToken, self $token, $offset = 0, &$firstMatchIndex = null, &$lastMatchIndex = null)
-    {
-        if (
-            $patternToken->getIsCollection() !== $token->getIsCollection()
-            || (!$patternToken->getIsCollection() && $patternToken->content !== $token->content)
-        ) {
+    private function tokensMatch(
+        self $patternToken,
+        self $token,
+        int $offset = 0,
+        ?int &$firstMatchIndex = null,
+        ?int &$lastMatchIndex = null
+    ): bool {
+        if ($patternToken->getIsCollection() !== $token->getIsCollection()
+            || (!$patternToken->getIsCollection() && $patternToken->content !== $token->content)) {
             return false;
         }
 
@@ -267,6 +282,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
 
         $firstMatchIndex = $lastMatchIndex = null;
         $wildcard = false;
+
         for ($index = 0, $count = count($patternToken->children); $index < $count; $index++) {
             // Here we iterate token by token with an exception of "any" that toggles
             // an iteration until we matched with a next pattern token or EOF.
@@ -290,8 +306,10 @@ class SqlToken extends BaseObject implements \ArrayAccess
                 } else {
                     $lastMatchIndex = $offset;
                 }
+
                 $wildcard = false;
                 $offset++;
+
                 continue 2;
             }
 
@@ -308,13 +326,13 @@ class SqlToken extends BaseObject implements \ArrayAccess
      *
      * @return int
      */
-    private function calculateOffset($offset)
+    private function calculateOffset(int $offset): int
     {
         if ($offset >= 0) {
             return $offset;
         }
 
-        return count($this->_children) + $offset;
+        return count($this->children) + $offset;
     }
 
     /**
@@ -322,10 +340,11 @@ class SqlToken extends BaseObject implements \ArrayAccess
      */
     private function updateCollectionOffsets()
     {
-        if (!empty($this->_children)) {
-            $this->startOffset = reset($this->_children)->startOffset;
-            $this->endOffset = end($this->_children)->endOffset;
+        if (!empty($this->children)) {
+            $this->startOffset = reset($this->children)->startOffset;
+            $this->endOffset = end($this->children)->endOffset;
         }
+
         if ($this->parent !== null) {
             $this->parent->updateCollectionOffsets();
         }

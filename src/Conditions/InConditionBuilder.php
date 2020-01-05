@@ -1,10 +1,5 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
@@ -15,21 +10,16 @@ use Yiisoft\Db\Query;
 
 /**
  * Class InConditionBuilder builds objects of [[InCondition]].
- *
- * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
- *
- * @since 2.0.14
  */
 class InConditionBuilder implements ExpressionBuilderInterface
 {
     use ExpressionBuilderTrait;
 
     /**
-     * Method builds the raw SQL from the $expression that will not be additionally
-     * escaped or quoted.
+     * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
      *
      * @param ExpressionInterface|InCondition $expression the expression to be built.
-     * @param array                           $params     the binding parameters.
+     * @param array $params the binding parameters.
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
@@ -78,11 +68,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Builds $values to be used in [[InCondition]].
+     * Builds $values to be used in {@see InCondition}.
      *
      * @param ConditionInterface|InCondition $condition
-     * @param array                          $values
-     * @param array                          $params    the binding parameters
+     * @param array $values
+     * @param array $params the binding parameters
      *
      * @return array of prepared for SQL placeholders
      */
@@ -110,10 +100,10 @@ class InConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds SQL for IN condition.
      *
-     * @param string       $operator
+     * @param string $operator
      * @param array|string $columns
-     * @param Query        $values
-     * @param array        $params
+     * @param Query $values
+     * @param array $params
      *
      * @return string SQL
      */
@@ -141,10 +131,10 @@ class InConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds SQL for IN condition.
      *
-     * @param string             $operator
+     * @param string $operator
      * @param array|\Traversable $columns
-     * @param array              $values
-     * @param array              $params
+     * @param array $values
+     * @param array $params
      *
      * @return string SQL
      */

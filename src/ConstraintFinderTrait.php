@@ -1,10 +1,5 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
@@ -12,30 +7,26 @@ namespace Yiisoft\Db;
  * ConstraintFinderTrait provides methods for getting a table constraint information.
  *
  * @property CheckConstraint[][] $schemaChecks Check constraints for all tables in the database.
- * Each array element is an array of [[CheckConstraint]] or its child classes. This property is read-only.
+ * Each array element is an array of {@see CheckConstraint} or its child classes. This property is read-only.
  * @property DefaultValueConstraint[] $schemaDefaultValues Default value constraints for all tables in the database.
- * Each array element is an array of [[DefaultValueConstraint]] or its child classes. This property is read-only.
+ * Each array element is an array of {@see DefaultValueConstraint} or its child classes. This property is read-only.
  * @property ForeignKeyConstraint[][] $schemaForeignKeys Foreign keys for all tables in the database. Each
- * array element is an array of [[ForeignKeyConstraint]] or its child classes. This property is read-only.
+ * array element is an array of {@see ForeignKeyConstraint} or its child classes. This property is read-only.
  * @property IndexConstraint[][] $schemaIndexes Indexes for all tables in the database. Each array element is
- * an array of [[IndexConstraint]] or its child classes. This property is read-only.
+ * an array of {@see IndexConstraint} or its child classes. This property is read-only.
  * @property Constraint[] $schemaPrimaryKeys Primary keys for all tables in the database. Each array element
- * is an instance of [[Constraint]] or its child class. This property is read-only.
+ * is an instance of {@see Constraint} or its child class. This property is read-only.
  * @property IndexConstraint[][] $schemaUniques Unique constraints for all tables in the database.
- * Each array element is an array of [[IndexConstraint]] or its child classes. This property is read-only.
- *
- * @author Sergey Makinen <sergey@makinen.ru>
- *
- * @since 2.0.13
+ * Each array element is an array of {@see IndexConstraint} or its child classes. This property is read-only.
  */
 trait ConstraintFinderTrait
 {
     /**
      * Returns the metadata of the given type for the given table.
      *
-     * @param string $name    table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param string $type    metadata type.
-     * @param bool   $refresh whether to reload the table metadata even if it is found in the cache.
+     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string $type metadata type.
+     * @param bool $refresh whether to reload the table metadata even if it is found in the cache.
      *
      * @return mixed metadata.
      */
@@ -44,10 +35,11 @@ trait ConstraintFinderTrait
     /**
      * Returns the metadata of the given type for all tables in the given schema.
      *
-     * @param string $schema  the schema of the metadata. Defaults to empty string, meaning the current or default schema name.
-     * @param string $type    metadata type.
-     * @param bool   $refresh whether to fetch the latest available table metadata. If this is `false`,
-     *                        cached data may be returned if available.
+     * @param string $schema the schema of the metadata. Defaults to empty string, meaning the current or default schema
+     * name.
+     * @param string $type metadata type.
+     * @param bool $refresh whether to fetch the latest available table metadata. If this is `false`, cached data may be
+     * returned if available.
      *
      * @return array array of metadata.
      */
@@ -110,8 +102,8 @@ trait ConstraintFinderTrait
     /**
      * Obtains the primary key for the named table.
      *
-     * @param string $name    table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool   $refresh whether to reload the information even if it is found in the cache.
+     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param bool $refresh whether to reload the information even if it is found in the cache.
      *
      * @return Constraint|null table primary key, `null` if the table has no primary key.
      */
@@ -123,12 +115,13 @@ trait ConstraintFinderTrait
     /**
      * Returns primary keys for all tables in the database.
      *
-     * @param string $schema  the schema of the tables. Defaults to empty string, meaning the current or default schema name.
-     * @param bool   $refresh whether to fetch the latest available table schemas. If this is `false`,
-     *                        cached data may be returned if available.
+     * @param string $schema  the schema of the tables. Defaults to empty string, meaning the current or default schema
+     * name.
+     * @param bool $refresh whether to fetch the latest available table schemas. If this is `false`, cached data may be
+     * returned if available.
      *
-     * @return Constraint[] primary keys for all tables in the database.
-     *                      Each array element is an instance of [[Constraint]] or its child class.
+     * @return Constraint[] primary keys for all tables in the database. Each array element is an instance of
+     * {@see Constraint} or its child class.
      */
     public function getSchemaPrimaryKeys($schema = '', $refresh = false)
     {
@@ -138,8 +131,8 @@ trait ConstraintFinderTrait
     /**
      * Obtains the foreign keys information for the named table.
      *
-     * @param string $name    table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool   $refresh whether to reload the information even if it is found in the cache.
+     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param bool $refresh whether to reload the information even if it is found in the cache.
      *
      * @return ForeignKeyConstraint[] table foreign keys.
      */
@@ -151,12 +144,13 @@ trait ConstraintFinderTrait
     /**
      * Returns foreign keys for all tables in the database.
      *
-     * @param string $schema  the schema of the tables. Defaults to empty string, meaning the current or default schema name.
-     * @param bool   $refresh whether to fetch the latest available table schemas. If this is false,
-     *                        cached data may be returned if available.
+     * @param string $schema  the schema of the tables. Defaults to empty string, meaning the current or default schema
+     * name.
+     * @param bool $refresh whether to fetch the latest available table schemas. If this is false, cached data may be
+     * returned if available.
      *
-     * @return ForeignKeyConstraint[][] foreign keys for all tables in the database.
-     *                                  Each array element is an array of [[ForeignKeyConstraint]] or its child classes.
+     * @return ForeignKeyConstraint[][] foreign keys for all tables in the database. Each array element is an array of
+     * {@see ForeignKeyConstraint} or its child classes.
      */
     public function getSchemaForeignKeys($schema = '', $refresh = false)
     {
@@ -166,8 +160,8 @@ trait ConstraintFinderTrait
     /**
      * Obtains the indexes information for the named table.
      *
-     * @param string $name    table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool   $refresh whether to reload the information even if it is found in the cache.
+     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param bool $refresh whether to reload the information even if it is found in the cache.
      *
      * @return IndexConstraint[] table indexes.
      */
@@ -179,12 +173,13 @@ trait ConstraintFinderTrait
     /**
      * Returns indexes for all tables in the database.
      *
-     * @param string $schema  the schema of the tables. Defaults to empty string, meaning the current or default schema name.
-     * @param bool   $refresh whether to fetch the latest available table schemas. If this is false,
-     *                        cached data may be returned if available.
+     * @param string $schema  the schema of the tables. Defaults to empty string, meaning the current or default schema
+     * name.
+     * @param bool $refresh whether to fetch the latest available table schemas. If this is false, cached data may be
+     * returned if available.
      *
      * @return IndexConstraint[][] indexes for all tables in the database.
-     *                             Each array element is an array of [[IndexConstraint]] or its child classes.
+     * Each array element is an array of {@see IndexConstraint} or its child classes.
      */
     public function getSchemaIndexes($schema = '', $refresh = false)
     {
@@ -194,8 +189,8 @@ trait ConstraintFinderTrait
     /**
      * Obtains the unique constraints information for the named table.
      *
-     * @param string $name    table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool   $refresh whether to reload the information even if it is found in the cache.
+     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param bool $refresh whether to reload the information even if it is found in the cache.
      *
      * @return Constraint[] table unique constraints.
      */
@@ -207,12 +202,13 @@ trait ConstraintFinderTrait
     /**
      * Returns unique constraints for all tables in the database.
      *
-     * @param string $schema  the schema of the tables. Defaults to empty string, meaning the current or default schema name.
-     * @param bool   $refresh whether to fetch the latest available table schemas. If this is false,
-     *                        cached data may be returned if available.
+     * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema
+     * name.
+     * @param bool $refresh whether to fetch the latest available table schemas. If this is false, cached data may be
+     * returned if available.
      *
      * @return Constraint[][] unique constraints for all tables in the database.
-     *                        Each array element is an array of [[Constraint]] or its child classes.
+     * Each array element is an array of {@see Constraint} or its child classes.
      */
     public function getSchemaUniques($schema = '', $refresh = false)
     {
@@ -222,8 +218,8 @@ trait ConstraintFinderTrait
     /**
      * Obtains the check constraints information for the named table.
      *
-     * @param string $name    table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool   $refresh whether to reload the information even if it is found in the cache.
+     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param bool $refresh whether to reload the information even if it is found in the cache.
      *
      * @return CheckConstraint[] table check constraints.
      */
@@ -235,12 +231,13 @@ trait ConstraintFinderTrait
     /**
      * Returns check constraints for all tables in the database.
      *
-     * @param string $schema  the schema of the tables. Defaults to empty string, meaning the current or default schema name.
-     * @param bool   $refresh whether to fetch the latest available table schemas. If this is false,
-     *                        cached data may be returned if available.
+     * @param string $schema  the schema of the tables. Defaults to empty string, meaning the current or default schema
+     * name.
+     * @param bool $refresh whether to fetch the latest available table schemas. If this is false, cached data may be
+     * returned if available.
      *
      * @return CheckConstraint[][] check constraints for all tables in the database.
-     *                             Each array element is an array of [[CheckConstraint]] or its child classes.
+     * Each array element is an array of {@see CheckConstraint} or its child classes.
      */
     public function getSchemaChecks($schema = '', $refresh = false)
     {
@@ -250,8 +247,8 @@ trait ConstraintFinderTrait
     /**
      * Obtains the default value constraints information for the named table.
      *
-     * @param string $name    table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool   $refresh whether to reload the information even if it is found in the cache.
+     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param bool $refresh whether to reload the information even if it is found in the cache.
      *
      * @return DefaultValueConstraint[] table default value constraints.
      */
@@ -264,7 +261,7 @@ trait ConstraintFinderTrait
      * Returns default value constraints for all tables in the database.
      *
      * @param string $schema  the schema of the tables. Defaults to empty string, meaning the current or default schema name.
-     * @param bool   $refresh whether to fetch the latest available table schemas. If this is false,
+     * @param bool $refresh whether to fetch the latest available table schemas. If this is false,
      *                        cached data may be returned if available.
      *
      * @return DefaultValueConstraint[] default value constraints for all tables in the database.

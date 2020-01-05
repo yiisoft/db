@@ -1,20 +1,11 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
 /**
  * Trait ExpressionBuilderTrait provides common constructor for classes that
- * should implement [[ExpressionBuilderInterface]].
- *
- * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
- *
- * @since 2.0.14
+ * should implement {@see ExpressionBuilderInterface}.
  */
 trait ExpressionBuilderTrait
 {

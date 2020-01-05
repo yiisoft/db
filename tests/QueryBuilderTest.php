@@ -1,10 +1,5 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
@@ -17,7 +12,7 @@ use Yiisoft\Db\QueryBuilder;
 use Yiisoft\Db\Schema;
 use Yiisoft\Db\SchemaBuilderTrait;
 use Yiisoft\Db\Sqlite\QueryBuilder as SqliteQueryBuilder;
-use yii\tests\data\base\TraversableObject;
+use Yiisoft\Db\Tests\Util\TraversableObject;
 use Yiisoft\Arrays\ArrayHelper;
 
 abstract class QueryBuilderTest extends DatabaseTestCase

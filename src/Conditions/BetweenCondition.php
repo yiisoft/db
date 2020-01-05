@@ -1,21 +1,10 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
-use yii\exceptions\InvalidArgumentException;
-
 /**
  * Class BetweenCondition represents a `BETWEEN` condition.
- *
- * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
- *
- * @since 2.0.14
  */
 class BetweenCondition implements ConditionInterface
 {
@@ -23,14 +12,17 @@ class BetweenCondition implements ConditionInterface
      * @var string the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`)
      */
     private $operator;
+
     /**
      * @var mixed the column name to the left of [[operator]]
      */
     private $column;
+
     /**
      * @var mixed beginning of the interval
      */
     private $intervalStart;
+
     /**
      * @var mixed end of the interval
      */
@@ -87,12 +79,12 @@ class BetweenCondition implements ConditionInterface
     /**
      * {@inheritdoc}
      *
-     * @throws InvalidArgumentException if wrong number of operands have been given.
+     * @throws \InvalidArgumentException if wrong number of operands have been given.
      */
     public static function fromArrayDefinition($operator, $operands)
     {
         if (!isset($operands[0], $operands[1], $operands[2])) {
-            throw new InvalidArgumentException("Operator '$operator' requires three operands.");
+            throw new \InvalidArgumentException("Operator '$operator' requires three operands.");
         }
 
         return new static($operands[0], $operator, $operands[1], $operands[2]);

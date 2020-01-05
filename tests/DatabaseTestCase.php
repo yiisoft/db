@@ -1,39 +1,43 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
 use Yiisoft\Cache\NullCache;
 use Yiisoft\Db\Connection;
-use yii\tests\TestCase;
+use Yiisoft\Db\Tests\TestCase;
 
 abstract class DatabaseTestCase extends TestCase
 {
+    /**
+     * @var [type]
+     */
     protected $database;
+
     /**
      * @var string the driver name of this test class. Must be set by a subclass.
      */
     protected $driverName;
+
     /**
      * @var Connection
      */
-    private $_db;
+    private $db;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         if ($this->driverName === null) {
             throw new \Exception('driverName is not set for a DatabaseTestCase.');
         }
 
         parent::setUp();
+
         $databases = self::getParam('databases');
+
         $this->database = $databases[$this->driverName];
-        $pdo_database = 'pdo_'.$this->driverName;
+
+        $pdo_database = 'pdo_' . $this->driverName;
+
         if ($this->driverName === 'oci') {
             $pdo_database = 'oci8';
         }
@@ -41,15 +45,17 @@ abstract class DatabaseTestCase extends TestCase
         if (!\extension_loaded('pdo') || !\extension_loaded($pdo_database)) {
             $this->markTestSkipped('pdo and '.$pdo_database.' extension are required.');
         }
-        $this->mockApplication();
+
+        //$this->mockApplication();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
-        if ($this->_db) {
-            $this->_db->close();
+        if ($this->db) {
+            $this->db->close();
         }
-        $this->destroyApplication();
+
+        //$this->destroyApplication();
     }
 
     /**
@@ -60,10 +66,12 @@ abstract class DatabaseTestCase extends TestCase
      */
     public function getConnection($reset = true, $open = true)
     {
-        if (!$reset && $this->_db) {
-            return $this->_db;
+        if (!$reset && $this->db) {
+            return $this->db;
         }
+
         $config = $this->database;
+
         if (isset($config['fixture'])) {
             $fixture = $config['fixture'];
             unset($config['fixture']);
@@ -72,12 +80,12 @@ abstract class DatabaseTestCase extends TestCase
         }
 
         try {
-            $this->_db = $this->prepareDatabase($config, $fixture, $open);
+            $this->db = $this->prepareDatabase($config, $fixture, $open);
         } catch (\Exception $e) {
             $this->markTestSkipped('Something wrong when preparing database: '.$e->getMessage());
         }
 
-        return $this->_db;
+        return $this->db;
     }
 
     public function prepareDatabase($config, $fixture, $open = true)
@@ -85,12 +93,18 @@ abstract class DatabaseTestCase extends TestCase
         if (!isset($config['__class'])) {
             $config['__class'] = \Yiisoft\Db\Connection::class;
         }
+
         /* @var $db \Yiisoft\Db\Connection */
-        $db = $this->factory->create($config);
+        $db = new Connection($config['dsn']);
+        $db->setUsername($config['username']);
+        $db->setPassword($config['password']);
+
         if (!$open) {
             return $db;
         }
+
         $db->open();
+
         if ($fixture !== null) {
             if ($this->driverName === 'oci') {
                 [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($fixture), 2);

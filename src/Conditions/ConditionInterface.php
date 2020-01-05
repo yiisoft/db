@@ -1,23 +1,12 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
 use Yiisoft\Db\ExpressionInterface;
-use yii\exceptions\InvalidArgumentException;
 
 /**
- * Interface ConditionInterface should be implemented by classes that represent a condition
- * in DBAL of framework.
- *
- * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
- *
- * @since 2.0.14
+ * Interface ConditionInterface should be implemented by classes that represent a condition in DBAL of framework.
  */
 interface ConditionInterface extends ExpressionInterface
 {
@@ -28,7 +17,7 @@ interface ConditionInterface extends ExpressionInterface
      * @param string $operator operator in uppercase.
      * @param array  $operands array of corresponding operands
      *
-     * @throws InvalidArgumentException if input parameters are not suitable for this condition
+     * @throws \InvalidArgumentException if input parameters are not suitable for this condition
      *
      * @return $this
      */

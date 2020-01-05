@@ -1,15 +1,9 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
 use Yiisoft\Db\Query;
-use yii\exceptions\InvalidCallException;
 
 class UnqueryableQueryMock extends Query
 {
@@ -18,7 +12,7 @@ class UnqueryableQueryMock extends Query
      */
     public function one($db = null)
     {
-        throw new InvalidCallException();
+        throw new \InvalidCallException();
     }
 
     /**
@@ -26,6 +20,6 @@ class UnqueryableQueryMock extends Query
      */
     public function all($db = null)
     {
-        throw new InvalidCallException();
+        throw new \InvalidCallException();
     }
 }

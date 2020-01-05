@@ -1,14 +1,9 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
-use yii\exceptions\InvalidConfigException;
+use Yiisoft\Db\Exception\InvalidConfigException;
 
 /**
  * Class JsonExpression represents data that should be encoded to JSON.
@@ -18,14 +13,11 @@ use yii\exceptions\InvalidConfigException;
  * ```php
  * new JsonExpression(['a' => 1, 'b' => 2]); // will be encoded to '{"a": 1, "b": 2}'
  * ```
- *
- * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
- *
- * @since 2.0.14
  */
 class JsonExpression implements ExpressionInterface, \JsonSerializable
 {
     const TYPE_JSON = 'json';
+
     const TYPE_JSONB = 'jsonb';
 
     /**
@@ -33,6 +25,7 @@ class JsonExpression implements ExpressionInterface, \JsonSerializable
      *            The value must be compatible with [\yii\helpers\Json::encode()|Json::encode()]] input requirements.
      */
     protected $value;
+
     /**
      * @var string|null Type of JSON, expression should be casted to. Defaults to `null`, meaning
      *                  no explicit casting will be performed.
@@ -89,8 +82,6 @@ class JsonExpression implements ExpressionInterface, \JsonSerializable
      *
      * @return mixed data which can be serialized by <b>json_encode</b>,
      *               which is a value of any type other than a resource.
-     *
-     * @since 2.0.14.2
      */
     public function jsonSerialize()
     {

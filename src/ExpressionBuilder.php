@@ -1,19 +1,10 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
 /**
  * Class ExpressionBuilder builds objects of [[Yiisoft\Db\Expression]] class.
- *
- * @author Dmitry Naumenko <d.naumenko.a@gmail.com>
- *
- * @since 2.0.14
  */
 class ExpressionBuilder implements ExpressionBuilderInterface
 {

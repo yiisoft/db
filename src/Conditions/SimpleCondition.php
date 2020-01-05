@@ -1,21 +1,10 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
-use yii\exceptions\InvalidArgumentException;
-
 /**
  * Class SimpleCondition represents a simple condition like `"column" operator value`.
- *
- * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
- *
- * @since 2.0.14
  */
 class SimpleCondition implements ConditionInterface
 {
@@ -23,10 +12,12 @@ class SimpleCondition implements ConditionInterface
      * @var string the operator to use. Anything could be used e.g. `>`, `<=`, etc.
      */
     private $operator;
+
     /**
      * @var mixed the column name to the left of [[operator]]
      */
     private $column;
+
     /**
      * @var mixed the value to the right of the [[operator]]
      */
@@ -35,9 +26,9 @@ class SimpleCondition implements ConditionInterface
     /**
      * SimpleCondition constructor.
      *
-     * @param mixed  $column   the literal to the left of $operator
+     * @param mixed $column the literal to the left of $operator
      * @param string $operator the operator to use. Anything could be used e.g. `>`, `<=`, etc.
-     * @param mixed  $value    the literal to the right of $operator
+     * @param mixed $value the literal to the right of $operator
      */
     public function __construct($column, $operator, $value)
     {
@@ -73,12 +64,12 @@ class SimpleCondition implements ConditionInterface
     /**
      * {@inheritdoc}
      *
-     * @throws InvalidArgumentException if wrong number of operands have been given.
+     * @throws \InvalidArgumentException if wrong number of operands have been given.
      */
     public static function fromArrayDefinition($operator, $operands)
     {
         if (count($operands) !== 2) {
-            throw new InvalidArgumentException("Operator '$operator' requires two operands.");
+            throw new \InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
         return new static($operands[0], $operator, $operands[1]);

@@ -1,21 +1,13 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
 use yii\base\Event;
 
 /**
- * AfterSaveEvent represents the information available in [[ActiveRecord::EVENT_AFTER_INSERT]] and [[ActiveRecord::EVENT_AFTER_UPDATE]].
- *
- * @author Carsten Brandt <mail@cebe.cc>
- *
- * @since 2.0
+ * AfterSaveEvent represents the information available in {@see ActiveRecord::EVENT_AFTER_INSERT} and
+ * {@see ActiveRecord::EVENT_AFTER_UPDATE}.
  */
 class AfterSaveEvent extends Event
 {

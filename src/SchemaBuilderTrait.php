@@ -1,15 +1,10 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
 /**
- * SchemaBuilderTrait contains shortcut methods to create instances of [[ColumnSchemaBuilder]].
+ * SchemaBuilderTrait contains shortcut methods to create instances of {@see ColumnSchemaBuilder}.
  *
  * These can be used in database migrations to define database schema types using a PHP interface.
  * This is useful to define a schema in a DBMS independent way so that the application may run on
@@ -29,10 +24,6 @@ namespace Yiisoft\Db;
  *   'updated_at' => $this->datetime(),
  * ]);
  * ```
- *
- * @author Vasenin Matvey <vaseninm@gmail.com>
- *
- * @since 2.0.6
  */
 trait SchemaBuilderTrait
 {
@@ -45,13 +36,12 @@ trait SchemaBuilderTrait
      * Creates a primary key column.
      *
      * @param int $length column size or precision definition.
-     *                    This parameter will be ignored if not supported by the DBMS.
+     *
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function primaryKey($length = null)
+    public function primaryKey(?int $length = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_PK, $length);
     }
@@ -60,13 +50,12 @@ trait SchemaBuilderTrait
      * Creates a big primary key column.
      *
      * @param int $length column size or precision definition.
-     *                    This parameter will be ignored if not supported by the DBMS.
+     *
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function bigPrimaryKey($length = null)
+    public function bigPrimaryKey(?int $length = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_BIGPK, $length);
     }
@@ -75,13 +64,12 @@ trait SchemaBuilderTrait
      * Creates a char column.
      *
      * @param int $length column size definition i.e. the maximum string length.
-     *                    This parameter will be ignored if not supported by the DBMS.
+     *
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.8
      */
-    public function char($length = null)
+    public function char(?int $length = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_CHAR, $length);
     }
@@ -90,13 +78,12 @@ trait SchemaBuilderTrait
      * Creates a string column.
      *
      * @param int $length column size definition i.e. the maximum string length.
-     *                    This parameter will be ignored if not supported by the DBMS.
+     *
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function string($length = null)
+    public function string(?int $length = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_STRING, $length);
     }
@@ -105,8 +92,6 @@ trait SchemaBuilderTrait
      * Creates a text column.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
     public function text()
     {
@@ -117,13 +102,12 @@ trait SchemaBuilderTrait
      * Creates a tinyint column. If tinyint is not supported by the DBMS, smallint will be used.
      *
      * @param int $length column size or precision definition.
-     *                    This parameter will be ignored if not supported by the DBMS.
+     *
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.14
      */
-    public function tinyInteger($length = null)
+    public function tinyInteger(?int $length = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TINYINT, $length);
     }
@@ -132,13 +116,12 @@ trait SchemaBuilderTrait
      * Creates a smallint column.
      *
      * @param int $length column size or precision definition.
-     *                    This parameter will be ignored if not supported by the DBMS.
+     *
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function smallInteger($length = null)
+    public function smallInteger(?int $length = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_SMALLINT, $length);
     }
@@ -147,13 +130,12 @@ trait SchemaBuilderTrait
      * Creates an integer column.
      *
      * @param int $length column size or precision definition.
-     *                    This parameter will be ignored if not supported by the DBMS.
+     *
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function integer($length = null)
+    public function integer(?int $length = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_INTEGER, $length);
     }
@@ -162,13 +144,12 @@ trait SchemaBuilderTrait
      * Creates a bigint column.
      *
      * @param int $length column size or precision definition.
-     *                    This parameter will be ignored if not supported by the DBMS.
+     *
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function bigInteger($length = null)
+    public function bigInteger(?int $length = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_BIGINT, $length);
     }
@@ -177,13 +158,12 @@ trait SchemaBuilderTrait
      * Creates a float column.
      *
      * @param int $precision column value precision. First parameter passed to the column type, e.g. FLOAT(precision).
-     *                       This parameter will be ignored if not supported by the DBMS.
+     *
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function float($precision = null)
+    public function float(?int $precision = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_FLOAT, $precision);
     }
@@ -192,13 +172,12 @@ trait SchemaBuilderTrait
      * Creates a double column.
      *
      * @param int $precision column value precision. First parameter passed to the column type, e.g. DOUBLE(precision).
-     *                       This parameter will be ignored if not supported by the DBMS.
+     *
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function double($precision = null)
+    public function double(?int $precision = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_DOUBLE, $precision);
     }
@@ -207,22 +186,22 @@ trait SchemaBuilderTrait
      * Creates a decimal column.
      *
      * @param int $precision column value precision, which is usually the total number of digits.
-     *                       First parameter passed to the column type, e.g. DECIMAL(precision, scale).
-     *                       This parameter will be ignored if not supported by the DBMS.
-     * @param int $scale     column value scale, which is usually the number of digits after the decimal point.
-     *                       Second parameter passed to the column type, e.g. DECIMAL(precision, scale).
-     *                       This parameter will be ignored if not supported by the DBMS.
+     * First parameter passed to the column type, e.g. DECIMAL(precision, scale).
+     * This parameter will be ignored if not supported by the DBMS.
+     * @param int $scale column value scale, which is usually the number of digits after the decimal point.
+     * Second parameter passed to the column type, e.g. DECIMAL(precision, scale).
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function decimal($precision = null, $scale = null)
+    public function decimal(?int $precision = null, ?int $scale = null)
     {
         $length = [];
+
         if ($precision !== null) {
             $length[] = $precision;
         }
+
         if ($scale !== null) {
             $length[] = $scale;
         }
@@ -233,14 +212,12 @@ trait SchemaBuilderTrait
     /**
      * Creates a datetime column.
      *
-     * @param int $precision column value precision. First parameter passed to the column type, e.g. DATETIME(precision).
-     *                       This parameter will be ignored if not supported by the DBMS.
+     * @param int $precision column value precision. First parameter passed to the column type, e.g.
+     * DATETIME(precision). This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function dateTime($precision = null)
+    public function dateTime(?int $precision = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_DATETIME, $precision);
     }
@@ -248,14 +225,12 @@ trait SchemaBuilderTrait
     /**
      * Creates a timestamp column.
      *
-     * @param int $precision column value precision. First parameter passed to the column type, e.g. TIMESTAMP(precision).
-     *                       This parameter will be ignored if not supported by the DBMS.
+     * @param int $precision column value precision. First parameter passed to the column type, e.g.
+     * TIMESTAMP(precision). This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function timestamp($precision = null)
+    public function timestamp(?int $precision = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TIMESTAMP, $precision);
     }
@@ -264,13 +239,11 @@ trait SchemaBuilderTrait
      * Creates a time column.
      *
      * @param int $precision column value precision. First parameter passed to the column type, e.g. TIME(precision).
-     *                       This parameter will be ignored if not supported by the DBMS.
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function time($precision = null)
+    public function time(?int $precision = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TIME, $precision);
     }
@@ -279,8 +252,6 @@ trait SchemaBuilderTrait
      * Creates a date column.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
     public function date()
     {
@@ -291,13 +262,11 @@ trait SchemaBuilderTrait
      * Creates a binary column.
      *
      * @param int $length column size or precision definition.
-     *                    This parameter will be ignored if not supported by the DBMS.
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function binary($length = null)
+    public function binary(?int $length = null)
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_BINARY, $length);
     }
@@ -306,8 +275,6 @@ trait SchemaBuilderTrait
      * Creates a boolean column.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
     public function boolean()
     {
@@ -318,22 +285,22 @@ trait SchemaBuilderTrait
      * Creates a money column.
      *
      * @param int $precision column value precision, which is usually the total number of digits.
-     *                       First parameter passed to the column type, e.g. DECIMAL(precision, scale).
-     *                       This parameter will be ignored if not supported by the DBMS.
-     * @param int $scale     column value scale, which is usually the number of digits after the decimal point.
-     *                       Second parameter passed to the column type, e.g. DECIMAL(precision, scale).
-     *                       This parameter will be ignored if not supported by the DBMS.
+     * First parameter passed to the column type, e.g. DECIMAL(precision, scale).
+     * This parameter will be ignored if not supported by the DBMS.
+     * @param int $scale column value scale, which is usually the number of digits after the decimal point.
+     * Second parameter passed to the column type, e.g. DECIMAL(precision, scale).
+     * This parameter will be ignored if not supported by the DBMS.
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.6
      */
-    public function money($precision = null, $scale = null)
+    public function money(?int $precision = null, ?int $scale = null)
     {
         $length = [];
+
         if ($precision !== null) {
             $length[] = $precision;
         }
+
         if ($scale !== null) {
             $length[] = $scale;
         }
@@ -344,11 +311,9 @@ trait SchemaBuilderTrait
     /**
      * Creates a JSON column.
      *
-     * @throws \yii\exceptions\Exception
+     * @throws\Exception
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
-     *
-     * @since 2.0.14
      */
     public function json()
     {

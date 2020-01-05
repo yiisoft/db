@@ -1,16 +1,11 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
 use Yiisoft\ActiveRecord\ActiveQuery;
 use Yiisoft\Db\Query;
-use yii\exceptions\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 
 trait GetTablesAliasTestTrait
 {
@@ -134,7 +129,7 @@ trait GetTablesAliasTestTrait
         $expression = new \Yiisoft\Db\Expression('(SELECT id FROM user)');
         $query->from = $expression;
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('To use Expression in from() method, pass it in array format with alias.');
         $tables = $query->getTablesUsedInFrom();
 

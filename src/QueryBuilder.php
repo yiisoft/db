@@ -1,17 +1,12 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
 use Yiisoft\Db\Conditions\ConditionInterface;
 use Yiisoft\Db\Conditions\HashCondition;
-use yii\exceptions\InvalidArgumentException;
-use yii\exceptions\NotSupportedException;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Strings\StringHelper;
 
 /**
@@ -27,12 +22,8 @@ use Yiisoft\Strings\StringHelper;
  * ['LIKE' => Yiisoft\Db\Condition\LikeCondition::class] ``` . This property is write-only.
  * @property string[] $expressionBuilders Array of builders that should be merged with the pre-defined ones in
  * [[expressionBuilders]] property. This property is write-only.
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- *
- * @since 2.0
  */
-class QueryBuilder extends \yii\base\BaseObject
+class QueryBuilder
 {
     /**
      * The prefix for automatically generated query binding parameters.

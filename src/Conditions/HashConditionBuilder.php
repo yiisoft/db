@@ -1,10 +1,5 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
@@ -16,10 +11,6 @@ use Yiisoft\Arrays\ArrayHelper;
 
 /**
  * Class HashConditionBuilder builds objects of [[HashCondition]].
- *
- * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
- *
- * @since 2.0.14
  */
 class HashConditionBuilder implements ExpressionBuilderInterface
 {
@@ -30,7 +21,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
      * escaped or quoted.
      *
      * @param ExpressionInterface|HashCondition $expression the expression to be built.
-     * @param array                             $params     the binding parameters.
+     * @param array $params the binding parameters.
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
@@ -38,6 +29,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
     {
         $hash = $expression->getHash();
         $parts = [];
+
         foreach ($hash as $column => $value) {
             if (ArrayHelper::isTraversable($value) || $value instanceof Query) {
                 // IN condition

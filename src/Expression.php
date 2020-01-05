@@ -1,19 +1,12 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
 
 namespace Yiisoft\Db;
 
 /**
  * Expression represents a DB expression that does not need escaping or quoting.
  *
- * When an Expression object is embedded within a SQL statement or fragment,
- * it will be replaced with the [[expression]] property value without any
- * DB escaping or quoting. For example,
+ * When an Expression object is embedded within a SQL statement or fragment, it will be replaced with the
+ * {@see expression} property value without any DB escaping or quoting. For example,
  *
  * ```php
  * $expression = new Expression('NOW()');
@@ -22,24 +15,18 @@ namespace Yiisoft\Db;
  * ```
  *
  * Expression objects are mainly created for passing raw SQL expressions to methods of
- * [[Query]], [[ActiveQuery]], and related classes.
- *
- * An expression can also be bound with parameters specified via [[params]].
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- *
- * @since 2.0
+ * {@see Query}, {@see ActiveQuery}, and related classes.
  */
-class Expression extends \yii\base\BaseObject implements ExpressionInterface
+class Expression implements ExpressionInterface
 {
     /**
      * @var string the DB expression
      */
     public $expression;
+
     /**
      * @var array list of parameters that should be bound for this expression.
-     *            The keys are placeholders appearing in [[expression]] and the values
-     *            are the corresponding parameter values.
+     * The keys are placeholders appearing in {@see expression} and the values are the corresponding parameter values.
      */
     public $params = [];
 
@@ -47,8 +34,8 @@ class Expression extends \yii\base\BaseObject implements ExpressionInterface
      * Constructor.
      *
      * @param string $expression the DB expression
-     * @param array  $params     parameters
-     * @param array  $config     name-value pairs that will be used to initialize the object properties
+     * @param array $params parameters
+     * @param array $config name-value pairs that will be used to initialize the object properties
      */
     public function __construct($expression, $params = [])
     {

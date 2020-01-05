@@ -1,17 +1,10 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
-use yii\base\Component;
-use yii\exceptions\InvalidArgumentException;
-use yii\exceptions\InvalidConfigException;
-use yii\helpers\Yii;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Arrays\ArrayHelper;
 
 /**
@@ -44,13 +37,8 @@ use Yiisoft\Arrays\ArrayHelper;
  * A more detailed usage guide on how to work with Query can be found in the [guide article on Query Builder](guide:db-query-builder).
  *
  * @property string[] $tablesUsedInFrom Table names indexed by aliases. This property is read-only.
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Carsten Brandt <mail@cebe.cc>
- *
- * @since 2.0
  */
-class Query extends Component implements QueryInterface, ExpressionInterface
+class Query implements QueryInterface, ExpressionInterface
 {
     use QueryTrait;
 

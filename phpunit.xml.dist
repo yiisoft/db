@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="./vendor/autoload.php"
-    backupGlobals="true"
-    colors="true"
-    verbose="true"
-    failOnRisky="true"
-    failOnWarning="true"
-    convertErrorsToExceptions="true"
-    convertNoticesToExceptions="true"
-    convertWarningsToExceptions="true"
-    stopOnFailure="false">
+
+<phpunit backupGlobals="false"
+         colors="true"
+         verbose="true"
+         bootstrap="vendor/autoload.php"
+         failOnRisky="true"
+         failOnWarning="true">
+    <php>
+        <ini name="error_reporting" value="-1"/>
+    </php>
+
     <testsuites>
-        <testsuite name="Yii DB unit tests">
-            <directory>./tests/unit</directory>
+        <testsuite name="Yii db tests">
+            <directory>./tests</directory>
         </testsuite>
     </testsuites>
 

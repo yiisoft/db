@@ -1,21 +1,14 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db;
-
-use yii\base\BaseObject;
 
 /**
  * BatchQueryResult represents a batch query from which you can retrieve data in batches.
  *
  * You usually do not instantiate BatchQueryResult directly. Instead, you obtain it by
- * calling [[Query::batch()]] or [[Query::each()]]. Because BatchQueryResult implements the [[\Iterator]] interface,
- * you can iterate it to obtain a batch of data in each iteration. For example,
+ * calling {@see Query::batch()} or {@see Query::each()}. Because BatchQueryResult implements the {@see \Iterator}
+ * interface, you can iterate it to obtain a batch of data in each iteration. For example,
  *
  * ```php
  * $query = (new Query)->from('user');
@@ -25,10 +18,6 @@ use yii\base\BaseObject;
  * foreach ($query->each() as $user) {
  * }
  * ```
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- *
- * @since 2.0
  */
 class BatchQueryResult extends BaseObject implements \Iterator
 {
@@ -36,38 +25,42 @@ class BatchQueryResult extends BaseObject implements \Iterator
      * @var Connection the DB connection to be used when performing batch query.
      *                 If null, the "db" application component will be used.
      */
-    public $db;
+    public Connection $db;
+
     /**
      * @var Query the query object associated with this batch query.
      *            Do not modify this property directly unless after [[reset()]] is called explicitly.
      */
-    public $query;
+    public Query $query;
     /**
      * @var int the number of rows to be returned in each batch.
      */
-    public $batchSize = 100;
+    public int $batchSize = 100;
     /**
      * @var bool whether to return a single row during each iteration.
      *           If false, a whole batch of rows will be returned in each iteration.
      */
-    public $each = false;
+    public bool $each = false;
 
     /**
      * @var DataReader the data reader associated with this batch query.
      */
-    private $_dataReader;
+    private DataReader $dataReader;
+
     /**
      * @var array the data retrieved in the current batch
      */
-    private $_batch;
+    private array $batch;
+
     /**
      * @var mixed the value for the current iteration
      */
-    private $_value;
+    private $value;
+
     /**
      * @var string|int the key for the current iteration
      */
-    private $_key;
+    private $key;
 
     /**
      * Destructor.
@@ -80,22 +73,25 @@ class BatchQueryResult extends BaseObject implements \Iterator
 
     /**
      * Resets the batch query.
+     *
      * This method will clean up the existing batch query so that a new batch query can be performed.
      */
     public function reset()
     {
-        if ($this->_dataReader !== null) {
-            $this->_dataReader->close();
+        if ($this->dataReader !== null) {
+            $this->dataReader->close();
         }
-        $this->_dataReader = null;
-        $this->_batch = null;
-        $this->_value = null;
-        $this->_key = null;
+
+        $this->dataReader = null;
+        $this->batch = null;
+        $this->value = null;
+        $this->key = null;
     }
 
     /**
      * Resets the iterator to the initial state.
-     * This method is required by the interface [[\Iterator]].
+     *
+     * This method is required by the interface {@see \Iterator}.
      */
     public function rewind()
     {
@@ -105,27 +101,28 @@ class BatchQueryResult extends BaseObject implements \Iterator
 
     /**
      * Moves the internal pointer to the next dataset.
-     * This method is required by the interface [[\Iterator]].
+     *
+     * This method is required by the interface {@see \Iterator}.
      */
     public function next()
     {
-        if ($this->_batch === null || !$this->each || $this->each && next($this->_batch) === false) {
-            $this->_batch = $this->fetchData();
-            reset($this->_batch);
+        if ($this->batch === null || !$this->each || $this->each && next($this->batch) === false) {
+            $this->batch = $this->fetchData();
+            reset($this->batch);
         }
 
         if ($this->each) {
-            $this->_value = current($this->_batch);
+            $this->value = current($this->batch);
             if ($this->query->indexBy !== null) {
-                $this->_key = key($this->_batch);
-            } elseif (key($this->_batch) !== null) {
-                $this->_key = $this->_key === null ? 0 : $this->_key + 1;
+                $this->key = key($this->batch);
+            } elseif (key($this->batch) !== null) {
+                $this->key = $this->key === null ? 0 : $this->key + 1;
             } else {
-                $this->_key = null;
+                $this->key = null;
             }
         } else {
-            $this->_value = $this->_batch;
-            $this->_key = $this->_key === null ? 0 : $this->_key + 1;
+            $this->value = $this->batch;
+            $this->key = $this->key === null ? 0 : $this->key + 1;
         }
     }
 
@@ -136,13 +133,14 @@ class BatchQueryResult extends BaseObject implements \Iterator
      */
     protected function fetchData()
     {
-        if ($this->_dataReader === null) {
-            $this->_dataReader = $this->query->createCommand($this->db)->query();
+        if ($this->dataReader === null) {
+            $this->dataReader = $this->query->createCommand($this->db)->query();
         }
 
         $rows = [];
         $count = 0;
-        while ($count++ < $this->batchSize && ($row = $this->_dataReader->read())) {
+
+        while ($count++ < $this->batchSize && ($row = $this->dataReader->read())) {
             $rows[] = $row;
         }
 
@@ -151,34 +149,37 @@ class BatchQueryResult extends BaseObject implements \Iterator
 
     /**
      * Returns the index of the current dataset.
-     * This method is required by the interface [[\Iterator]].
+     *
+     * This method is required by the interface {@see \Iterator}.
      *
      * @return int the index of the current row.
      */
-    public function key()
+    public function key(): int
     {
-        return $this->_key;
+        return $this->key;
     }
 
     /**
      * Returns the current dataset.
-     * This method is required by the interface [[\Iterator]].
+     *
+     * This method is required by the interface {@see \Iterator}.
      *
      * @return mixed the current dataset.
      */
     public function current()
     {
-        return $this->_value;
+        return $this->value;
     }
 
     /**
      * Returns whether there is a valid dataset at the current position.
-     * This method is required by the interface [[\Iterator]].
+     *
+     * This method is required by the interface {@see Iterator}.
      *
      * @return bool whether there is a valid dataset at the current position.
      */
-    public function valid()
+    public function valid(): bool
     {
-        return !empty($this->_batch);
+        return !empty($this->batch);
     }
 }

@@ -1,10 +1,5 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
@@ -13,13 +8,9 @@ namespace Yiisoft\Db;
  * in a special way.
  *
  * The database abstraction layer of Yii framework supports objects that implement this
- * interface and will use [[ExpressionBuilderInterface]] to build them.
+ * interface and will use {@see ExpressionBuilderInterface} to build them.
  *
- * The default implementation is a class [[Expression]].
- *
- * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
- *
- * @since 2.0.14
+ * The default implementation is a class {@see Expression}.
  */
 interface ExpressionInterface
 {

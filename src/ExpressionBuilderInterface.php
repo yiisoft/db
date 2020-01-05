@@ -1,20 +1,11 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
 /**
  * Interface ExpressionBuilderInterface is designed to build raw SQL from specific expression
- * objects that implement [[ExpressionInterface]].
- *
- * @author Dmitry Naumenko <d.naumenko.a@gmail.com>
- *
- * @since 2.0.14
+ * objects that implement {@see ExpressionInterface}.
  */
 interface ExpressionBuilderInterface
 {
@@ -23,7 +14,7 @@ interface ExpressionBuilderInterface
      * escaped or quoted.
      *
      * @param ExpressionInterface $expression the expression to be built.
-     * @param array               $params     the binding parameters.
+     * @param array $params the binding parameters.
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
