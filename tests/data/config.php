@@ -33,7 +33,7 @@ $config = [
                 'fixture' => __DIR__ . '/mysql.sql',
             ],
             'username' => 'root',
-            'password' => '1234',
+            'password' => 'root',
         ],
         'sqlite' => [
             'dsn' => 'sqlite::memory:',
