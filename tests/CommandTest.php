@@ -7,7 +7,8 @@ use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Cache\Cache;
 use Yiisoft\Db\Connection;
 use Yiisoft\Db\DataReader;
-use Yiisoft\Db\Exception;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Expression;
 use Yiisoft\Db\JsonExpression;
 use Yiisoft\Db\Query;
@@ -50,6 +51,7 @@ abstract class CommandTest extends DatabaseTestCase
 
         $sql = 'SELECT [[id]], [[t.name]] FROM {{customer}} t';
         $command = $db->createCommand($sql);
+
         $this->assertEquals('SELECT `id`, `t`.`name` FROM `customer` t', $command->getSql());
     }
 
@@ -78,7 +80,7 @@ abstract class CommandTest extends DatabaseTestCase
         $this->assertEquals(1, $command->queryScalar());
 
         $command = $db->createCommand('bad SQL');
-        $this->expectException('\Yiisoft\Db\Exception');
+        $this->expectException(Exception::class);
         $command->execute();
     }
 
@@ -139,7 +141,7 @@ abstract class CommandTest extends DatabaseTestCase
         $this->assertFalse($command->queryScalar());
 
         $command = $db->createCommand('bad SQL');
-        $this->expectException('\Yiisoft\Db\Exception');
+        $this->expectException(Exception::class);
         $command->query();
     }
 
@@ -193,10 +195,13 @@ SQL;
         }
         $this->assertEquals(1, $command->execute());
 
-        $command = $db->createCommand('SELECT [[int_col]], [[char_col]], [[float_col]], [[blob_col]], [[numeric_col]], [[bool_col]] FROM {{type}}');
-//        $command->prepare();
-//        $command->pdoStatement->bindColumn('blob_col', $bc, \PDO::PARAM_LOB);
+        $command = $db->createCommand(
+            'SELECT [[int_col]], [[char_col]], [[float_col]], [[blob_col]], [[numeric_col]], [[bool_col]] FROM {{type}}'
+        );
+        $command->prepare();
+        $command->pdoStatement->bindColumn('blob_col', $bc, \PDO::PARAM_LOB);
         $row = $command->queryOne();
+
         $this->assertEquals($intCol, $row['int_col']);
         $this->assertEquals($charCol, $row['char_col']);
         $this->assertEquals((float) $floatCol, (float) $row['float_col']);
@@ -261,6 +266,7 @@ SQL;
 
         // default: FETCH_ASSOC
         $sql = 'SELECT * FROM {{customer}}';
+
         $command = $db->createCommand($sql);
         $result = $command->queryOne();
         $this->assertTrue(\is_array($result) && isset($result['id']));
@@ -268,12 +274,15 @@ SQL;
         // FETCH_OBJ, customized via fetchMode property
         $sql = 'SELECT * FROM {{customer}}';
         $command = $db->createCommand($sql);
+
         $command->fetchMode = \PDO::FETCH_OBJ;
+
         $result = $command->queryOne();
-        $this->assertInternalType('object', $result);
+        $this->assertIsObject($result);
 
         // FETCH_NUM, customized in query method
         $sql = 'SELECT * FROM {{customer}}';
+
         $command = $db->createCommand($sql);
         $result = $command->queryOne([], \PDO::FETCH_NUM);
         $this->assertTrue(\is_array($result) && isset($result[0]));
@@ -384,7 +393,7 @@ SQL;
                 ['int_col', 'float_col', 'char_col'],
                 [['', '', 'Kyiv {{city}}, Ukraine']],
 
-                'expected' => "INSERT INTO `type` (`int_col`, `float_col`, `char_col`) VALUES (NULL, NULL, 'Kyiv {{city}}, Ukraine')",
+                'expected' => "INSERT INTO `type` (`int_col`, `float_col`, `char_col`) VALUES (null, null, 'Kyiv {{city}}, Ukraine')",
                 // See https://github.com/yiisoft/yii2/issues/11242
                 // Make sure curly bracelets (`{{..}}`) in values will not be escaped
             ],
@@ -1061,21 +1070,26 @@ SQL;
     public function testAddDropPrimaryKey()
     {
         $db = $this->getConnection(false);
+
         $tableName = 'test_pk';
         $name = 'test_pk_constraint';
+
         /** @var \Yiisoft\Db\pgsql\Schema $schema */
         $schema = $db->getSchema();
 
         if ($schema->getTableSchema($tableName) !== null) {
             $db->createCommand()->dropTable($tableName)->execute();
         }
+
         $db->createCommand()->createTable($tableName, [
             'int1' => 'integer not null',
             'int2' => 'integer not null',
         ])->execute();
 
         $this->assertNull($schema->getTablePrimaryKey($tableName, true));
+
         $db->createCommand()->addPrimaryKey($name, $tableName, ['int1'])->execute();
+
         $this->assertEquals(['int1'], $schema->getTablePrimaryKey($tableName, true)->columnNames);
 
         $db->createCommand()->dropPrimaryKey($name, $tableName)->execute();
@@ -1421,7 +1435,7 @@ SQL;
         $this->invokeMethod($command, 'requireTransaction');
 
         $command->execute();
-        $this->assertNull($connection->transaction);
+        $this->assertNull($connection->getTransaction());
         $this->assertEquals(1, $connection->createCommand("SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction'")->queryScalar());
     }
 
@@ -1431,13 +1445,21 @@ SQL;
         $this->assertNull($connection->getTransaction());
 
         $connection->createCommand("INSERT INTO {{profile}}([[description]]) VALUES('command retry')")->execute();
-        $this->assertNull($connection->transaction);
-        $this->assertEquals(1, $connection->createCommand("SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command retry'")->queryScalar());
+        $this->assertNull($connection->getTransaction());
+        $this->assertEquals(
+            1,
+            $connection->createCommand(
+                "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command retry'"
+            )->queryScalar()
+        );
 
         $attempts = null;
         $hitHandler = false;
         $hitCatch = false;
-        $command = $connection->createCommand("INSERT INTO {{profile}}([[id]], [[description]]) VALUES(1, 'command retry')");
+        $command = $connection->createCommand(
+            "INSERT INTO {{profile}}([[id]], [[description]]) VALUES(1, 'command retry')"
+        );
+
         $this->invokeMethod($command, 'setRetryHandler', [function ($exception, $attempt) use (&$attempts, &$hitHandler) {
             $attempts = $attempt;
             $hitHandler = true;
@@ -1449,9 +1471,10 @@ SQL;
             $command->execute();
         } catch (Exception $e) {
             $hitCatch = true;
-            $this->assertInstanceOf('Yiisoft\Db\IntegrityException', $e);
+            $this->assertInstanceOf(IntegrityException::class, $e);
         }
-        $this->assertNull($connection->transaction);
+
+        $this->assertNull($connection->getTransaction());
         $this->assertSame(3, $attempts);
         $this->assertTrue($hitHandler);
         $this->assertTrue($hitCatch);
@@ -1464,18 +1487,22 @@ SQL;
             ->select('bar')
             ->from('testCreateViewTable')
             ->where(['>', 'bar', '5']);
+
         // Order of the next two "if" conditions is very important, because testCreateView depends on testCreateViewTable.
         // If testCreateViewTable was deleted before testCreateView, at the second round this test will always fail becase testCreateView exists but it is referred to not existing table
         if ($db->getSchema()->getTableSchema('testCreateView') !== null) {
             $db->createCommand()->dropView('testCreateView')->execute();
         }
+
         if ($db->getSchema()->getTableSchema('testCreateViewTable')) {
             $db->createCommand()->dropTable('testCreateViewTable')->execute();
         }
+
         $db->createCommand()->createTable('testCreateViewTable', [
             'id'  => Schema::TYPE_PK,
             'bar' => Schema::TYPE_INTEGER,
         ])->execute();
+
         $db->createCommand()->insert('testCreateViewTable', ['bar' => 1])->execute();
         $db->createCommand()->insert('testCreateViewTable', ['bar' => 6])->execute();
         $db->createCommand()->createView('testCreateView', $subquery)->execute();

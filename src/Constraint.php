@@ -16,4 +16,14 @@ class Constraint
      * @var string|null the constraint name.
      */
     public $name;
+
+    public function setColumnNames($value): void
+    {
+        $this->columnNames = $value;
+    }
+
+    public function setName($value): void
+    {
+        $this->name = $value;
+    }
 }

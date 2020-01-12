@@ -171,6 +171,18 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return $result;
     }
 
+    /**
+     * Asserts that value is one of expected values.
+     *
+     * @param mixed $actual
+     * @param array $expected
+     * @param string $message
+     */
+    public function assertIsOneOf($actual, array $expected, $message = '')
+    {
+        self::assertThat($actual, new IsOneOfAssert($expected), $message);
+    }
+
     protected function removeDirectory(string $basePath): void
     {
         $handle = opendir($dir = $this->aliases->get($basePath));

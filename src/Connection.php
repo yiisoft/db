@@ -845,7 +845,7 @@ class Connection implements ConnectionInterface
         $config['sql'] = $sql;
 
         /** @var Command $command */
-        $command = new Command($this->profiler, $this->logger, $config['db'], $config['sql']);
+        $command = new Command($this->profiler, $this->logger, $config['db'], $this->quoteSql($config['sql']));
 
         return $command->bindValues($params);
     }
@@ -1071,7 +1071,7 @@ class Connection implements ConnectionInterface
      *
      * @return string the quoted SQL
      */
-    public function quoteSql(string $sql): string
+    public function quoteSql(?string $sql): string
     {
         return preg_replace_callback(
             '/(\\{\\{(%?[\w\-\. ]+%?)\\}\\}|\\[\\[([\w\-\. ]+)\\]\\])/',

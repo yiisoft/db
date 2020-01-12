@@ -763,9 +763,9 @@ class QueryBuilder
             $columns[$i] = $this->db->quoteColumnName($col);
         }
 
-        return 'ALTER TABLE '.$this->db->quoteTableName($table).' ADD CONSTRAINT '
-            .$this->db->quoteColumnName($name).' PRIMARY KEY ('
-            .implode(', ', $columns).')';
+        return 'ALTER TABLE ' . $this->db->quoteTableName($table) . ' ADD CONSTRAINT '
+            . $this->db->quoteColumnName($name).' PRIMARY KEY ('
+            . implode(', ', $columns) . ')';
     }
 
     /**

@@ -1393,7 +1393,7 @@ class Command
      * command. The signature of the callable should be:.
      *
      * ```php
-     * function (\Yiisoft\Db\Exception $e, $attempt)
+     * function (\Yiisoft\Db\Exception\Exception $e, $attempt)
      * {
      *     // return true or false (whether to retry the command or rethrow $e)
      * }
@@ -1409,8 +1409,6 @@ class Command
     protected function setRetryHandler(callable $handler)
     {
         $this->retryHandler = $handler;
-
-        var_dump($this);
 
         return $this;
     }
@@ -1464,5 +1462,27 @@ class Command
         $this->refreshTableName = null;
         $this->isolationLevel = false;
         $this->retryHandler = null;
+    }
+
+    /**
+     * Returns the cache key for the query.
+     *
+     * @param string $method method of PDOStatement to be called
+     * @param int $fetchMode the result fetch mode. Please refer to [PHP manual](https://secure.php.net/manual/en/function.PDOStatement-setFetchMode.php)
+     * for valid fetch modes.
+     * @param string $rawSql the raw SQL with parameter values inserted into the corresponding placeholders
+     *
+     * @return array the cache key
+     */
+    protected function getCacheKey($method, $fetchMode, $rawSql)
+    {
+        return [
+            __CLASS__,
+            $method,
+            $fetchMode,
+            $this->db->getDsn(),
+            $this->db->getUsername(),
+            $rawSql,
+        ];
     }
 }

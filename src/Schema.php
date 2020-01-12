@@ -411,8 +411,10 @@ abstract class Schema
      */
     public function getLastInsertID($sequenceName = '')
     {
-        if ($this->db->isActive) {
-            return $this->db->pdo->lastInsertId($sequenceName === '' ? null : $this->quoteTableName($sequenceName));
+        if ($this->db->getIsActive()) {
+            return $this->db->getPDO()->lastInsertId(
+                $sequenceName === '' ? null : $this->quoteTableName($sequenceName)
+            );
         }
 
         throw new InvalidCallException('DB Connection is not active.');

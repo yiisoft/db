@@ -31,4 +31,29 @@ class ForeignKeyConstraint extends Constraint
      * @var string|null referential action if rows in a referenced table are to be deleted.
      */
     public $onDelete;
+
+    public function setForeignSchemaName($value): void
+    {
+        $this->foreignSchemaName = $value;
+    }
+
+    public function setForeignTableName($value): void
+    {
+        $this->foreignTableName = $value;
+    }
+
+    public function setForeignColumnNames($value): void
+    {
+        $this->foreignColumnNames = $value;
+    }
+
+    public function setOnUpdate($value): void
+    {
+        $this->onUpdate = $value;
+    }
+
+    public function setOnDelete($value): void
+    {
+        $this->onDelete = $value;
+    }
 }
