@@ -7,9 +7,13 @@ use hiqdev\composer\config\Builder;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
+use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Db\Connection;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Di\Container;
+use Yiisoft\Files\FileHelper;
 use Yiisoft\Factory\Factory;
+use Yiisoft\Profiler\Profiler;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -17,6 +21,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      * @var Aliases $aliases
      */
     protected $aliases;
+
+    /**
+     * @var CacheInterface $cache
+     */
+    protected $cache;
 
     /**
      * @var ContainerInterface $container
@@ -29,9 +38,19 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected $factory;
 
     /**
+     * @var LoggerInterface $logger
+     */
+    protected $logger;
+
+    /**
      * @var array $params
      */
     protected static $params;
+
+    /**
+     * @var Profiler $profiler
+     */
+    protected $profiler;
 
     /**
      * setUp
@@ -47,7 +66,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->container = new Container($config);
 
         $this->aliases = $this->container->get(Aliases::class);
+        $this->cache = $this->container->get(CacheInterface::class);
+        $this->connection = $this->container->get(Connection::class);
         $this->factory = $this->container->get(Factory::class);
+        $this->logger = $this->container->get(LoggerInterface::class);
+        $this->profiler = $this->container->get(Profiler::class);
     }
 
     /**
@@ -57,7 +80,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      */
     protected function tearDown(): void
     {
+        $this->aliases = null;
+        $this->cache = null;
         $this->container = null;
+        $this->factory = null;
+        $this->logger = null;
+        $this->profiler = null;
+
         parent::tearDown();
     }
 
@@ -95,13 +124,40 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Build the Data Source Name or DSN.
+     *
+     * @param array $config the DSN configurations
+     *
+     * @throws InvalidConfigException if 'driver' key was not defined
+     *
+     * @return string the formated DSN
+     */
+    protected function buildDSN(array $config): string
+    {
+        if (isset($config['driver'])) {
+            $driver = $config['driver'];
+
+            unset($config['driver']);
+
+            $parts = [];
+
+            foreach ($config as $key => $value) {
+                $parts[] = "$key=$value";
+            }
+
+            return "$driver:" . implode(';', $parts);
+        }
+
+        throw new InvalidConfigException("Connection DSN 'driver' must be set.");
+    }
+
+    /**
      * Invokes a inaccessible method.
      * @param $object
      * @param $method
      * @param array $args
      * @param bool $revoke whether to make method inaccessible after execution
      * @return mixed
-     * @since 2.0.11
      */
     protected function invokeMethod($object, $method, $args = [], $revoke = true)
     {
@@ -113,5 +169,28 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $method->setAccessible(false);
         }
         return $result;
+    }
+
+    protected function removeDirectory(string $basePath): void
+    {
+        $handle = opendir($dir = $this->aliases->get($basePath));
+
+        if ($handle === false) {
+            throw new \Exception("Unable to open directory: $dir");
+        }
+
+        while (($file = readdir($handle)) !== false) {
+            if ($file === '.' || $file === '..' || $file === '.gitignore') {
+                continue;
+            }
+            $path = $dir.DIRECTORY_SEPARATOR.$file;
+            if (is_dir($path)) {
+                FileHelper::removeDirectory($path);
+            } else {
+                FileHelper::unlink($path);
+            }
+        }
+
+        closedir($handle);
     }
 }

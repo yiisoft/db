@@ -23,12 +23,12 @@ abstract class CommandTest extends DatabaseTestCase
 
         // null
         $command = $db->createCommand();
-        $this->assertNull($command->sql);
+        $this->assertNull($command->getSql());
 
         // string
         $sql = 'SELECT * FROM customer';
         $command = $db->createCommand($sql);
-        $this->assertEquals($sql, $command->sql);
+        $this->assertEquals($sql, $command->getSql());
     }
 
     public function testGetSetSql()
@@ -37,11 +37,11 @@ abstract class CommandTest extends DatabaseTestCase
 
         $sql = 'SELECT * FROM customer';
         $command = $db->createCommand($sql);
-        $this->assertEquals($sql, $command->sql);
+        $this->assertEquals($sql, $command->getSql());
 
         $sql2 = 'SELECT * FROM order';
-        $command->sql = $sql2;
-        $this->assertEquals($sql2, $command->sql);
+        $command->setSql($sql2);
+        $this->assertEquals($sql2, $command->getSql());
     }
 
     public function testAutoQuoting()
@@ -50,7 +50,7 @@ abstract class CommandTest extends DatabaseTestCase
 
         $sql = 'SELECT [[id]], [[t.name]] FROM {{customer}} t';
         $command = $db->createCommand($sql);
-        $this->assertEquals('SELECT `id`, `t`.`name` FROM `customer` t', $command->sql);
+        $this->assertEquals('SELECT `id`, `t`.`name` FROM `customer` t', $command->getSql());
     }
 
     public function testPrepareCancel()
@@ -613,7 +613,7 @@ SQL;
      * Test INSERT INTO ... SELECT SQL statement with wrong query object.
      *
      * @dataProvider invalidSelectColumns
-     * @expectedException \yii\exceptions\InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Expected select query object with enumerated (named) parameters
      *
      * @param mixed $invalidSelectColumns
@@ -621,8 +621,8 @@ SQL;
     public function testInsertSelectFailed($invalidSelectColumns)
     {
         $query = new \Yiisoft\Db\Query();
-        $query->select($invalidSelectColumns)->from('{{customer}}');
 
+        $query->select($invalidSelectColumns)->from('{{customer}}');
         $db = $this->getConnection();
         $command = $db->createCommand();
         $command->insert(
@@ -1219,7 +1219,7 @@ SQL;
 
     public function testIntegrityViolation()
     {
-        $this->expectException('\Yiisoft\Db\IntegrityException');
+        $this->expectException(\Yiisoft\Db\Exception\IntegrityException::class);
 
         $db = $this->getConnection();
 
@@ -1287,7 +1287,7 @@ SQL;
     public function testColumnCase()
     {
         $db = $this->getConnection(false);
-        $this->assertEquals(\PDO::CASE_NATURAL, $db->slavePdo->getAttribute(\PDO::ATTR_CASE));
+        $this->assertEquals(\PDO::CASE_NATURAL, $db->getSlavePdo()->getAttribute(\PDO::ATTR_CASE));
 
         $sql = 'SELECT [[customer_id]], [[total]] FROM {{order}}';
         $rows = $db->createCommand($sql)->queryAll();
@@ -1295,13 +1295,13 @@ SQL;
         $this->assertTrue(isset($rows[0]['customer_id']));
         $this->assertTrue(isset($rows[0]['total']));
 
-        $db->slavePdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
+        $db->getSlavePdo()->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_LOWER);
         $rows = $db->createCommand($sql)->queryAll();
         $this->assertTrue(isset($rows[0]));
         $this->assertTrue(isset($rows[0]['customer_id']));
         $this->assertTrue(isset($rows[0]['total']));
 
-        $db->slavePdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_UPPER);
+        $db->getSlavePdo()->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_UPPER);
         $rows = $db->createCommand($sql)->queryAll();
         $this->assertTrue(isset($rows[0]));
         $this->assertTrue(isset($rows[0]['CUSTOMER_ID']));
@@ -1415,9 +1415,11 @@ SQL;
     public function testTransaction()
     {
         $connection = $this->getConnection(false);
-        $this->assertNull($connection->transaction);
+        $this->assertNull($connection->getTransaction());
+
         $command = $connection->createCommand("INSERT INTO {{profile}}([[description]]) VALUES('command transaction')");
         $this->invokeMethod($command, 'requireTransaction');
+
         $command->execute();
         $this->assertNull($connection->transaction);
         $this->assertEquals(1, $connection->createCommand("SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction'")->queryScalar());
@@ -1426,7 +1428,8 @@ SQL;
     public function testRetryHandler()
     {
         $connection = $this->getConnection(false);
-        $this->assertNull($connection->transaction);
+        $this->assertNull($connection->getTransaction());
+
         $connection->createCommand("INSERT INTO {{profile}}([[description]]) VALUES('command retry')")->execute();
         $this->assertNull($connection->transaction);
         $this->assertEquals(1, $connection->createCommand("SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command retry'")->queryScalar());

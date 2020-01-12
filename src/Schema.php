@@ -1,12 +1,12 @@
 <?php
-declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
 use Yiisoft\Cache\Cache;
 use Yiisoft\Cache\CacheInterface;
-use Yiisoft\Cache\Dependencies\TagDependency;
-use \Yiisoft\Db\Exception\Exception;
+use Yiisoft\Cache\Dependency\TagDependency;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -120,9 +120,15 @@ abstract class Schema
      */
     private $serverVersion;
 
+    /**
+     * @var CacheInterface $cache
+     */
+    private $cache;
+
     public function __construct(Connection $db)
     {
         $this->db = $db;
+        $this->cache = $this->db->getCache();
     }
 
     /**
@@ -305,8 +311,7 @@ abstract class Schema
     public function refresh()
     {
         /* @var $cache CacheInterface */
-        $cache = is_string($this->db->schemaCache) ? Yii::getApp()->get($this->db->schemaCache, false)
-            : $this->db->schemaCache;
+        $cache = is_string($this->db->schemaCache) ? $this->cache : $this->db->schemaCache;
 
         if ($this->db->enableSchemaCache && $cache instanceof CacheInterface) {
             TagDependency::invalidate($cache, $this->getCacheTag());
@@ -327,13 +332,13 @@ abstract class Schema
     public function refreshTableSchema($name)
     {
         $rawName = $this->getRawTableName($name);
+
         unset($this->tableMetadata[$rawName]);
 
         $this->tableNames = [];
 
         /* @var $cache CacheInterface */
-        $cache = is_string($this->db->schemaCache) ? /*Yii::getApp()->get(*/$this->db->schemaCache/*, false)*/
-            : $this->db->schemaCache;
+        $cache = is_string($this->db->schemaCache) ? $this->cache : $this->db->schemaCache;
 
         if ($this->db->enableSchemaCache && $cache instanceof CacheInterface) {
             $cache->delete($this->getCacheKey($rawName));
@@ -539,10 +544,13 @@ abstract class Schema
         if (strpos($name, '(') !== false || strpos($name, '{{') !== false) {
             return $name;
         }
+
         if (strpos($name, '.') === false) {
             return $this->quoteSimpleTableName($name);
         }
+
         $parts = explode('.', $name);
+
         foreach ($parts as $i => $part) {
             $parts[$i] = $this->quoteSimpleTableName($part);
         }
@@ -789,8 +797,8 @@ abstract class Schema
     {
         return [
             __CLASS__,
-            $this->db->dsn,
-            $this->db->username,
+            $this->db->getDsn(),
+            $this->db->getUsername(),
             $this->getRawTableName($name),
         ];
     }
@@ -805,8 +813,8 @@ abstract class Schema
     {
         return md5(serialize([
             __CLASS__,
-            $this->db->dsn,
-            $this->db->username,
+            $this->db->getDsn(),
+            $this->db->getUsername(),
         ]));
     }
 
@@ -825,9 +833,10 @@ abstract class Schema
     protected function getTableMetadata($name, $type, $refresh)
     {
         $cache = null;
+
         if ($this->db->enableSchemaCache && !in_array($name, $this->db->schemaCacheExclude, true)) {
-            $schemaCache = is_string($this->db->schemaCache) ?
-                /*Yii::getApp()->get(*/$this->db->schemaCache/*, false)*/ : $this->db->schemaCache;
+            $schemaCache = is_string($this->db->schemaCache) ? $this->cache : $this->db->schemaCache;
+
             if ($schemaCache instanceof CacheInterface) {
                 $cache = $schemaCache;
             }
@@ -864,6 +873,7 @@ abstract class Schema
     {
         $metadata = [];
         $methodName = 'getTable'.ucfirst($type);
+
         foreach ($this->getTableNames($schema, $refresh) as $name) {
             if ($schema !== '') {
                 $name = $schema.'.'.$name;
@@ -927,6 +937,7 @@ abstract class Schema
         }
 
         $metadata = $cache->get($this->getCacheKey($name));
+
         if (!is_array($metadata) || !isset($metadata['cacheVersion']) || $metadata['cacheVersion'] !== static::SCHEMA_CACHE_VERSION) {
             $this->tableMetadata[$name] = [];
 
@@ -950,6 +961,7 @@ abstract class Schema
         }
 
         $metadata = $this->tableMetadata[$name];
+
         $metadata['cacheVersion'] = static::SCHEMA_CACHE_VERSION;
 
         $cache->set(

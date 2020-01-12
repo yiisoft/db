@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Mysql;
 
@@ -34,7 +33,7 @@ SQL;
 
         $dt = $schema->columns['dt'];
 
-        $this->assertInstanceOf(Expression::className(), $dt->defaultValue);
+        $this->assertInstanceOf(Expression::class, $dt->defaultValue);
         $this->assertEquals('CURRENT_TIMESTAMP', (string)$dt->defaultValue);
     }
 
@@ -55,11 +54,11 @@ SQL;
         $schema = $this->getConnection()->getTableSchema('current_timestamp_test');
 
         $dt = $schema->columns['dt'];
-        $this->assertInstanceOf(Expression::className(), $dt->defaultValue);
+        $this->assertInstanceOf(Expression::class, $dt->defaultValue);
         $this->assertEquals('CURRENT_TIMESTAMP(2)', (string)$dt->defaultValue);
 
         $ts = $schema->columns['ts'];
-        $this->assertInstanceOf(Expression::className(), $ts->defaultValue);
+        $this->assertInstanceOf(Expression::class, $ts->defaultValue);
         $this->assertEquals('CURRENT_TIMESTAMP(3)', (string)$ts->defaultValue);
     }
 
@@ -71,16 +70,19 @@ SQL;
     public function constraintsProvider()
     {
         $result = parent::constraintsProvider();
+
         $result['1: check'][2] = false;
 
         $result['2: primary key'][2]->name = null;
         $result['2: check'][2] = false;
 
         // Work aroung bug in MySQL 5.1 - it creates only this table in lowercase. O_o
-        $result['3: foreign key'][2][0]->foreignTableName = new AnyCaseValue('T_constraints_2');
+        //$result['3: foreign key'][2][0]->foreignTableName = new AnyCaseValue('T_constraints_2');
+
         $result['3: check'][2] = false;
 
         $result['4: check'][2] = false;
+
         return $result;
     }
 

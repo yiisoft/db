@@ -1,9 +1,12 @@
 <?php
-declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
+use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Profiler\Profiler;
 
 /**
  * Command represents a SQL statement to be executed against a database.
@@ -63,7 +66,7 @@ class Command
      *
      * @see http://www.php.net/manual/en/pdostatement.setfetchmode.php
      */
-    public int $fetchMode = \PDO::FETCH_ASSOC;
+    public $fetchMode = \PDO::FETCH_ASSOC;
 
     /**
      * @var array the parameters (name => value) that are bound to the current PDO statement.
@@ -71,7 +74,7 @@ class Command
      * This property is maintained by methods such as {@see bindValue()}. It is mainly provided for logging purpose and
      * is used to generate {@see rawSql}. Do not modify it directly.
      */
-    public array $params = [];
+    public $params = [];
 
     /**
      * @var int the default number of seconds that query results can remain valid in cache.
@@ -80,7 +83,7 @@ class Command
      *
      * @see cache()
      */
-    public int $queryCacheDuration = 0;
+    public $queryCacheDuration;
 
     /**
      * @var \Yiisoft\Cache\Dependencies\Dependency the dependency to be associated with the cached query result
@@ -93,17 +96,17 @@ class Command
     /**
      * @var array pending parameters to be bound to the current PDO statement.
      */
-    private array $pendingParams = [];
+    private $pendingParams = [];
 
     /**
      * @var string the SQL statement that this command represents
      */
-    private ?string $sql = null;
+    private $sql;
 
     /**
      * @var string name of the table, which schema, should be refreshed after command execution.
      */
-    private ?string $refreshTableName = null;
+    private $refreshTableName;
 
     /**
      * @var string|false|null the isolation level to use for this transaction.
@@ -112,14 +115,23 @@ class Command
     private $isolationLevel = false;
 
     /**
-     * @var callable a callable (e.g. anonymous function) that is called when {@see \Yiisoft\Db\Exception} is thrown
-     * when executing the command.
+     * @var callable a callable (e.g. anonymous function) that is called when {@see \Yiisoft\Db\Exception\Exception}
+     * is thrown when executing the command.
      */
     private $retryHandler;
 
-    public function __construct(Connection $db, ?string $sql)
+    /**
+     * @var Profiler $profiler
+     */
+    private Profiler $profiler;
+
+    private LoggerInterface $logger;
+
+    public function __construct(Profiler $profiler, LoggerInterface $logger, $db, $sql)
     {
         $this->db = $db;
+        $this->logger = $logger;
+        $this->profiler = $profiler;
         $this->sql = $sql;
     }
 
@@ -149,7 +161,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function noCache(): self
+    public function noCache()
     {
         $this->queryCacheDuration = -1;
 
@@ -161,7 +173,7 @@ class Command
      *
      * @return string the SQL statement to be executed
      */
-    public function getSql(): string
+    public function getSql()
     {
         return $this->sql;
     }
@@ -178,7 +190,7 @@ class Command
      * {@see reset()}
      * {@see cancel()}
      */
-    public function setSql(string $sql): self
+    public function setSql($sql)
     {
         if ($sql !== $this->sql) {
             $this->cancel();
@@ -202,7 +214,7 @@ class Command
      * {@see reset()}
      * {@see cancel()}
      */
-    public function setRawSql(string $sql): self
+    public function setRawSql($sql)
     {
         if ($sql !== $this->sql) {
             $this->cancel();
@@ -222,7 +234,7 @@ class Command
      *
      * @return string the raw SQL with parameter values inserted into the corresponding placeholders in {@see sql}.
      */
-    public function getRawSql(): string
+    public function getRawSql()
     {
         if (empty($this->params)) {
             return $this->sql;
@@ -270,7 +282,7 @@ class Command
      *
      * @throws Exception if there is any DB error
      */
-    public function prepare(?bool $forRead = null)
+    public function prepare($forRead = null)
     {
         if ($this->pdoStatement) {
             $this->bindPendingParams();
@@ -294,7 +306,7 @@ class Command
         try {
             $this->pdoStatement = $pdo->prepare($sql);
             $this->bindPendingParams();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $message = $e->getMessage()."\nFailed to prepare SQL: $sql";
             $errorInfo = $e instanceof \PDOException ? $e->errorInfo : null;
 
@@ -328,7 +340,7 @@ class Command
      *
      * {@see http://www.php.net/manual/en/function.PDOStatement-bindParam.php}
      */
-    public function bindParam($name, &$value, $dataType = null, $length = null, $driverOptions = null): self
+    public function bindParam($name, &$value, $dataType = null, $length = null, $driverOptions = null)
     {
         $this->prepare();
 
@@ -376,12 +388,14 @@ class Command
      *
      * {@see http://www.php.net/manual/en/function.PDOStatement-bindValue.php}
      */
-    public function bindValue($name, $value, $dataType = null): self
+    public function bindValue($name, $value, $dataType = null)
     {
         if ($dataType === null) {
             $dataType = $this->db->getSchema()->getPdoType($value);
         }
-        $this->_pendingParams[$name] = [$value, $dataType];
+
+        $this->pendingParams[$name] = [$value, $dataType];
+
         $this->params[$name] = $value;
 
         return $this;
@@ -402,23 +416,25 @@ class Command
      *
      * @return $this the current command being executed
      */
-    public function bindValues(array $values): self
+    public function bindValues($values)
     {
         if (empty($values)) {
             return $this;
         }
 
         $schema = $this->db->getSchema();
+
         foreach ($values as $name => $value) {
             if (is_array($value)) { // TODO: Drop in Yii 2.1
-                $this->_pendingParams[$name] = $value;
+                $this->pendingParams[$name] = $value;
                 $this->params[$name] = $value[0];
             } elseif ($value instanceof PdoValue) {
-                $this->_pendingParams[$name] = [$value->getValue(), $value->getType()];
+                $this->pendingParams[$name] = [$value->getValue(), $value->getType()];
                 $this->params[$name] = $value->getValue();
             } else {
                 $type = $schema->getPdoType($value);
-                $this->_pendingParams[$name] = [$value, $type];
+
+                $this->pendingParams[$name] = [$value, $type];
                 $this->params[$name] = $value;
             }
         }
@@ -450,7 +466,7 @@ class Command
      * @return array all rows of the query result. Each array element is an array representing a row of data. An empty
      * array is returned if the query results in nothing.
      */
-    public function queryAll(?int $fetchMode = null): array
+    public function queryAll($fetchMode = null)
     {
         return $this->queryInternal('fetchAll', $fetchMode);
     }
@@ -468,7 +484,7 @@ class Command
      * @return array|false the first row (in terms of an array) of the query result. False is returned if the query
      *                     results in nothing.
      */
-    public function queryOne(?int $fetchMode = null)
+    public function queryOne($fetchMode = null)
     {
         return $this->queryInternal('fetch', $fetchMode);
     }
@@ -486,6 +502,7 @@ class Command
     public function queryScalar()
     {
         $result = $this->queryInternal('fetchColumn', 0);
+
         if (is_resource($result) && get_resource_type($result) === 'stream') {
             return stream_get_contents($result);
         }
@@ -503,7 +520,7 @@ class Command
      *
      * @return array the first column of the query result. Empty array is returned if the query results in nothing.
      */
-    public function queryColumn(): array
+    public function queryColumn()
     {
         return $this->queryInternal('fetchAll', \PDO::FETCH_COLUMN);
     }
@@ -565,7 +582,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function batchInsert(string $table, array $columns, $rows)
+    public function batchInsert($table, $columns, $rows)
     {
         $table = $this->db->quoteSql($table);
         $columns = array_map(function ($column) {
@@ -722,7 +739,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function renameTable(string $table, string $newName)
+    public function renameTable($table, $newName)
     {
         $sql = $this->db->getQueryBuilder()->renameTable($table, $newName);
 
@@ -736,7 +753,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function dropTable(string $table)
+    public function dropTable($table)
     {
         $sql = $this->db->getQueryBuilder()->dropTable($table);
 
@@ -750,7 +767,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function truncateTable(string $table)
+    public function truncateTable($table)
     {
         $sql = $this->db->getQueryBuilder()->truncateTable($table);
 
@@ -784,7 +801,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function dropColumn(string $table, string $column)
+    public function dropColumn($table, $column)
     {
         $sql = $this->db->getQueryBuilder()->dropColumn($table, $column);
 
@@ -800,7 +817,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function renameColumn(string $table, string $oldName, string $newName)
+    public function renameColumn($table, $oldName, $newName)
     {
         $sql = $this->db->getQueryBuilder()->renameColumn($table, $oldName, $newName);
 
@@ -819,7 +836,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function alterColumn(string $table, string $column, string $type)
+    public function alterColumn($table, $column, $type)
     {
         $sql = $this->db->getQueryBuilder()->alterColumn($table, $column, $type);
 
@@ -837,7 +854,7 @@ class Command
      *
      * @return $this the command object itself.
      */
-    public function addPrimaryKey(string $name, string $table, $columns)
+    public function addPrimaryKey($name, $table, $columns)
     {
         $sql = $this->db->getQueryBuilder()->addPrimaryKey($name, $table, $columns);
 
@@ -852,7 +869,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function dropPrimaryKey(string $name, string $table)
+    public function dropPrimaryKey($name, $table)
     {
         $sql = $this->db->getQueryBuilder()->dropPrimaryKey($name, $table);
 
@@ -878,15 +895,8 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function addForeignKey(
-        string $name,
-        string $table,
-        $columns,
-        string $refTable,
-        $refColumns,
-        ?string $delete = null,
-        ?string $update = null
-    ) {
+    public function addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete = null, $update = null)
+    {
         $sql = $this->db->getQueryBuilder()->addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete, $update);
 
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -901,7 +911,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function dropForeignKey(string $name, string $table)
+    public function dropForeignKey($name, $table)
     {
         $sql = $this->db->getQueryBuilder()->dropForeignKey($name, $table);
 
@@ -920,7 +930,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function createIndex(string $name, string $table, $columns, bool $unique = false)
+    public function createIndex($name, $table, $columns, $unique = false)
     {
         $sql = $this->db->getQueryBuilder()->createIndex($name, $table, $columns, $unique);
 
@@ -935,7 +945,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function dropIndex(string $name, string $table)
+    public function dropIndex($name, $table)
     {
         $sql = $this->db->getQueryBuilder()->dropIndex($name, $table);
 
@@ -953,7 +963,7 @@ class Command
      *
      * @return $this the command object itself.
      */
-    public function addUnique(string $name, string $table, $columns)
+    public function addUnique($name, $table, $columns)
     {
         $sql = $this->db->getQueryBuilder()->addUnique($name, $table, $columns);
 
@@ -970,7 +980,7 @@ class Command
      *
      * @return $this the command object itself.
      */
-    public function dropUnique(string $name, string $table)
+    public function dropUnique($name, $table)
     {
         $sql = $this->db->getQueryBuilder()->dropUnique($name, $table);
 
@@ -987,7 +997,7 @@ class Command
      *
      * @return $this the command object itself.
      */
-    public function addCheck(string $name, string $table, string $expression)
+    public function addCheck($name, $table, $expression)
     {
         $sql = $this->db->getQueryBuilder()->addCheck($name, $table, $expression);
 
@@ -1004,7 +1014,7 @@ class Command
      *
      * @return $this the command object itself.
      */
-    public function dropCheck(string $name, string $table)
+    public function dropCheck($name, $table)
     {
         $sql = $this->db->getQueryBuilder()->dropCheck($name, $table);
 
@@ -1023,7 +1033,7 @@ class Command
      *
      * @return $this the command object itself.
      */
-    public function addDefaultValue(string $name, string $table, string $column, $value)
+    public function addDefaultValue($name, $table, $column, $value)
     {
         $sql = $this->db->getQueryBuilder()->addDefaultValue($name, $table, $column, $value);
 
@@ -1040,7 +1050,7 @@ class Command
      *
      * @return $this the command object itself.
      */
-    public function dropDefaultValue(string $name, string $table)
+    public function dropDefaultValue($name, $table)
     {
         $sql = $this->db->getQueryBuilder()->dropDefaultValue($name, $table);
 
@@ -1061,13 +1071,28 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function resetSequence(string $table, $value = null)
+    public function resetSequence($table, $value = null)
     {
         $sql = $this->db->getQueryBuilder()->resetSequence($table, $value);
 
         return $this->setSql($sql);
     }
 
+    /**
+     * Executes a db command resetting the sequence value of a table's primary key.
+     * Reason for execute is that some databases (Oracle) need several queries to do so.
+     * The sequence is reset such that the primary key of the next new row inserted
+     * will have the specified value or the maximum existing value +1.
+     * @param string $table the name of the table whose primary key sequence is reset
+     * @param mixed $value the value for the primary key of the next new row inserted. If this is not set,
+     * the next new row's primary key will have the maximum existing value +1.
+     * @throws NotSupportedException if this is not supported by the underlying DBMS
+     * @since 2.0.16
+     */
+    public function executeResetSequence($table, $value = null)
+    {
+        return $this->db->getQueryBuilder()->executeResetSequence($table, $value);
+    }
     /**
      * Builds a SQL command for enabling or disabling integrity check.
      *
@@ -1080,7 +1105,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function checkIntegrity(bool $check = true, string $schema = '', string $table = '')
+    public function checkIntegrity($check = true, $schema = '', $table = '')
     {
         $sql = $this->db->getQueryBuilder()->checkIntegrity($check, $schema, $table);
 
@@ -1098,7 +1123,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function addCommentOnColumn(string $table, string $column, string $comment)
+    public function addCommentOnColumn($table, $column, $comment)
     {
         $sql = $this->db->getQueryBuilder()->addCommentOnColumn($table, $column, $comment);
 
@@ -1114,7 +1139,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function addCommentOnTable(string $table, string $comment)
+    public function addCommentOnTable($table, $comment)
     {
         $sql = $this->db->getQueryBuilder()->addCommentOnTable($table, $comment);
 
@@ -1146,7 +1171,7 @@ class Command
      *
      * @return $this the command object itself
      */
-    public function dropCommentFromTable(string $table)
+    public function dropCommentFromTable($table)
     {
         $sql = $this->db->getQueryBuilder()->dropCommentFromTable($table);
 
@@ -1176,7 +1201,7 @@ class Command
      *
      * @return $this the command object itself.
      */
-    public function dropView(string $viewName)
+    public function dropView($viewName)
     {
         $sql = $this->db->getQueryBuilder()->dropView($viewName);
 
@@ -1193,7 +1218,7 @@ class Command
      *
      * @return int number of rows affected by the execution.
      */
-    public function execute(): int
+    public function execute()
     {
         $sql = $this->getSql();
 
@@ -1206,18 +1231,18 @@ class Command
         $this->prepare(false);
 
         try {
-            $profile /*and Yii::beginProfile($rawSql, __METHOD__)*/;
+            //$this->profiler->begin($rawSql, [__METHOD__]);
 
             $this->internalExecute($rawSql);
             $n = $this->pdoStatement->rowCount();
 
-            $profile /*and Yii::endProfile($rawSql, __METHOD__)*/;
+            //$this->profiler->end($rawSql, [__METHOD__]);
 
             $this->refreshTableSchema();
 
             return $n;
         } catch (Exception $e) {
-            $profile /*and Yii::endProfile($rawSql, __METHOD__)*/;
+            //$this->profiler->end($rawSql, [__METHOD__]);
 
             throw $e;
         }
@@ -1232,11 +1257,12 @@ class Command
      * @return array array of two elements, the first is boolean of whether profiling is enabled or not.
      * The second is the rawSql if it has been created.
      */
-    private function logQuery(string $category): array
+    protected function logQuery($category)
     {
         if ($this->db->enableLogging) {
             $rawSql = $this->getRawSql();
-            //Yii::info($rawSql, $category);
+
+            $this->logger->log(LogLevel::INFO, $rawSql, [$category]);
         }
         if (!$this->db->enableProfiling) {
             return [false, $rawSql ?? null];
@@ -1256,9 +1282,9 @@ class Command
      *
      * @return mixed the method execution result
      */
-    protected function queryInternal(string $method, ?int $fetchMode = null)
+    protected function queryInternal($method, $fetchMode = null)
     {
-        [$profile, $rawSql] = $this->logQuery('Yiisoft\Db\Command::query');
+        [$profile, $rawSql] = $this->logQuery('\Yiisoft\Db\Command::query');
 
         if ($method !== '') {
             $info = $this->db->getQueryCacheInfo($this->queryCacheDuration, $this->queryCacheDependency);
@@ -1266,17 +1292,18 @@ class Command
             if (is_array($info)) {
                 /* @var $cache \Yiisoft\Cache\CacheInterface */
                 $cache = $info[0];
-                $cacheKey = [
-                    __CLASS__,
-                    $method,
-                    $fetchMode,
-                    $this->db->dsn,
-                    $this->db->username,
-                    $rawSql ?: $rawSql = $this->getRawSql(),
-                ];
+                $rawSql = $rawSql ?: $this->getRawSql();
+                $cacheKey = $this->getCacheKey($method, $fetchMode, $rawSql);
+
+
                 $result = $cache->get($cacheKey);
+
                 if (is_array($result) && isset($result[0])) {
-                    Yii::debug('Query result served from cache', '\Yiisoft\Db\Command::query');
+                    $this->logger->log(
+                        LogLevel::DEBUG,
+                        'Query result served from cache',
+                        ['\Yiisoft\Db\Command::query']
+                    );
 
                     return $result[0];
                 }
@@ -1286,7 +1313,7 @@ class Command
         $this->prepare(true);
 
         try {
-            $profile /*and Yii::beginProfile($rawSql, '\Yiisoft\Db\Command::query')*/;
+            //$this->profiler->begin($rawSql, ['\Yiisoft\Db\Command::query']);
 
             $this->internalExecute($rawSql);
 
@@ -1296,20 +1323,26 @@ class Command
                 if ($fetchMode === null) {
                     $fetchMode = $this->fetchMode;
                 }
+
                 $result = call_user_func_array([$this->pdoStatement, $method], (array) $fetchMode);
+
                 $this->pdoStatement->closeCursor();
             }
 
-            $profile /*and Yii::endProfile($rawSql, '\Yiisoft\Db\Command::query')*/;
+            //$this->profiler->end($rawSql, ['\Yiisoft\Db\Command::query']);
         } catch (Exception $e) {
-            $profile /*and Yii::endProfile($rawSql, '\Yiisoft\Db\Command::query')*/;
+            //$this->profiler->end($rawSql, ['\Yiisoft\Db\Command::query']);
 
             throw $e;
         }
 
         if (isset($cache, $cacheKey, $info)) {
             $cache->set($cacheKey, [$result], $info[1], $info[2]);
-            Yii::debug('Saved query result in cache', '\Yiisoft\Db\Command::query');
+            $this->logger->log(
+                LogLevel::DEBUG,
+                'Saved query result in cache',
+                ['\Yiisoft\Db\Command::query']
+            );
         }
 
         return $result;
@@ -1322,7 +1355,7 @@ class Command
      *
      * @return $this this command instance
      */
-    protected function requireTableSchemaRefresh(string $name): self
+    protected function requireTableSchemaRefresh($name)
     {
         $this->refreshTableName = $name;
 
@@ -1348,7 +1381,7 @@ class Command
      *
      * @return $this this command instance.
      */
-    protected function requireTransaction(?string $isolationLevel = null): self
+    protected function requireTransaction($isolationLevel = null)
     {
         $this->isolationLevel = $isolationLevel;
 
@@ -1373,9 +1406,11 @@ class Command
      *
      * @return $this this command instance.
      */
-    protected function setRetryHandler(callable $handler): self
+    protected function setRetryHandler(callable $handler)
     {
         $this->retryHandler = $handler;
+
+        var_dump($this);
 
         return $this;
     }
@@ -1389,7 +1424,7 @@ class Command
      *
      * @throws Exception if execution failed.
      */
-    protected function internalExecute(?string $rawSql):void
+    protected function internalExecute($rawSql):void
     {
         $attempt = 0;
 

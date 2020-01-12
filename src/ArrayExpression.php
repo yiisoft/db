@@ -33,12 +33,12 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * @var array|QueryInterface the array's content.
      *                           In can be represented as an array of values or a [[Query]] that returns these values.
      */
-    private array $value = [];
+    private $value;
 
     /**
      * @var int the number of indices needed to select an element
      */
-    private int $dimension;
+    private int $dimension = 0;
 
     /**
      * ArrayExpression constructor.
@@ -50,7 +50,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      *                                              SQL error will be raised.
      * @param int                        $dimension the number of indices needed to select an element
      */
-    public function __construct(array $value = [], ?string $type = null, int $dimension = 1)
+    public function __construct($value = [], $type = null, $dimension = 1)
     {
         if ($value instanceof self) {
             $value = $value->getValue();
@@ -105,7 +105,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      *              <p>
      *              The return value will be casted to boolean if non-boolean was returned.
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->value[$offset]);
     }
@@ -140,7 +140,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      *
      * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->value[$offset] = $value;
     }
@@ -156,7 +156,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      *
      * @return void
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->value[$offset]);
     }

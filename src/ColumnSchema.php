@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
@@ -13,30 +12,30 @@ class ColumnSchema
     /**
      * @var string name of this column (without quotes).
      */
-    public ?string $name = null;
+    public $name;
 
     /**
      * @var bool whether this column can be null.
      */
-    public bool $allowNull = false;
+    public $allowNull;
 
     /**
      * @var string abstract type of this column. Possible abstract types include:
      *             char, string, text, boolean, smallint, integer, bigint, float, decimal, datetime,
      *             timestamp, time, date, binary, and money.
      */
-    public ?string $type = null;
+    public $type;
 
     /**
      * @var string the PHP type of this column. Possible PHP types include:
      *             `string`, `boolean`, `integer`, `double`, `array`.
      */
-    public ?string $phpType = null;
+    public $phpType;
 
     /**
      * @var string the DB type of this column. Possible DB types vary according to the type of DBMS.
      */
-    public ?string $dbType = null;
+    public $dbType;
 
     /**
      * @var mixed default value of this column
@@ -46,43 +45,43 @@ class ColumnSchema
     /**
      * @var array enumerable values. This is set only if the column is declared to be an enumerable type.
      */
-    public array $enumValues = [];
+    public $enumValues;
 
     /**
      * @var int display size of the column.
      */
-    public int $size = 0;
+    public $size;
 
     /**
      * @var int precision of the column data, if it is numeric.
      */
-    public int $precision = 0;
+    public $precision;
 
     /**
      * @var int scale of the column data, if it is numeric.
      */
-    public int $scale = 0;
+    public $scale;
 
     /**
      * @var bool whether this column is a primary key
      */
-    public bool $isPrimaryKey = false;
+    public $isPrimaryKey;
 
     /**
      * @var bool whether this column is auto-incremental
      */
-    public bool $autoIncrement = false;
+    public $autoIncrement = false;
 
     /**
      * @var bool whether this column is unsigned. This is only meaningful when {@see type} is `smallint`, `integer` or
      * `bigint`.
      */
-    public bool $unsigned = false;
+    public $unsigned;
 
     /**
      * @var string comment of this column. Not all DBMS support this.
      */
-    public ?string $comment = null;
+    public $comment;
 
     /**
      * Converts the input value according to {@see phpType} after retrieval from the database.

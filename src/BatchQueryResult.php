@@ -25,32 +25,32 @@ class BatchQueryResult extends BaseObject implements \Iterator
      * @var Connection the DB connection to be used when performing batch query.
      *                 If null, the "db" application component will be used.
      */
-    public Connection $db;
+    private $db;
 
     /**
      * @var Query the query object associated with this batch query.
      *            Do not modify this property directly unless after [[reset()]] is called explicitly.
      */
-    public Query $query;
+    public $query;
     /**
      * @var int the number of rows to be returned in each batch.
      */
-    public int $batchSize = 100;
+    public $batchSize = 100;
     /**
      * @var bool whether to return a single row during each iteration.
      *           If false, a whole batch of rows will be returned in each iteration.
      */
-    public bool $each = false;
+    public $each = false;
 
     /**
      * @var DataReader the data reader associated with this batch query.
      */
-    private DataReader $dataReader;
+    private $dataReader;
 
     /**
      * @var array the data retrieved in the current batch
      */
-    private array $batch;
+    private $batch;
 
     /**
      * @var mixed the value for the current iteration
@@ -130,6 +130,8 @@ class BatchQueryResult extends BaseObject implements \Iterator
      * Fetches the next batch of data.
      *
      * @return array the data fetched
+     *
+     * @throws Exception
      */
     protected function fetchData()
     {
@@ -137,14 +139,33 @@ class BatchQueryResult extends BaseObject implements \Iterator
             $this->dataReader = $this->query->createCommand($this->db)->query();
         }
 
+        $rows = $this->getRows();
+
+        return $this->query->populate($rows);
+    }
+
+    /**
+     * Reads and collects rows for batch
+     *
+     * @return array
+     */
+    protected function getRows()
+    {
         $rows = [];
         $count = 0;
 
-        while ($count++ < $this->batchSize && ($row = $this->dataReader->read())) {
-            $rows[] = $row;
+        try {
+            while ($count++ < $this->batchSize && ($row = $this->dataReader->read())) {
+                $rows[] = $row;
+            }
+        } catch (\PDOException $e) {
+            $errorCode = isset($e->errorInfo[1]) ? $e->errorInfo[1] : null;
+            if ($this->getDbDriverName() !== 'sqlsrv' || $errorCode !== $this->mssqlNoMoreRowsErrorCode) {
+                throw $e;
+            }
         }
 
-        return $this->query->populate($rows);
+        return $rows;
     }
 
     /**
@@ -181,5 +202,27 @@ class BatchQueryResult extends BaseObject implements \Iterator
     public function valid(): bool
     {
         return !empty($this->batch);
+    }
+
+    /**
+     * Gets db driver name from the db connection that is passed to the `batch()`, if it is not passed it uses
+     * connection from the active record model
+     *
+     * @return string|null
+     */
+    private function getDbDriverName()
+    {
+        if (empty($this->db->getDriverName())) {
+            return $this->db->getDriverName();
+        }
+
+        if (!empty($this->batch)) {
+            $key = array_keys($this->batch)[0];
+            if (empty($this->batch[$key]->db->getDriverName())) {
+                return $this->batch[$key]->db->getDriverName();
+            }
+        }
+
+        return null;
     }
 }

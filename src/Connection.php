@@ -1,13 +1,15 @@
 <?php
-declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
 use PDO;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Profiler\Profiler;
 
 /**
  * Connection represents a connection to a database via [PDO](http://php.net/manual/en/book.pdo.php).
@@ -187,24 +189,29 @@ class Connection implements ConnectionInterface
      *
      * Will result in the DSN string `mysql:host=127.0.0.1;dbname=demo`.
      */
-    private string $dsn;
+    private $dsn;
+
+    /**
+     * @var LoggerInterface $logger
+     */
+    private LoggerInterface $logger;
 
     /**
      * @var string the username for establishing DB connection. Defaults to `null` meaning no username to use.
      */
-    private $username;
+    private ?string $username = null;
 
     /**
      * @var string the password for establishing DB connection. Defaults to `null` meaning no password to use.
      */
-    private $password;
+    private ?string $password = null;
 
     /**
      * @var array PDO attributes (name => value) that should be set when calling {@see open()} to establish a DB
      * connection. Please refer to the [PHP manual](http://php.net/manual/en/pdo.setattribute.php) for details about
      * available attributes.
      */
-    public $attributes;
+    private array $attributes = [];
 
     /**
      * @var PDO the PHP PDO instance associated with this DB connection. This property is mainly managed by
@@ -213,7 +220,7 @@ class Connection implements ConnectionInterface
      *
      * @see pdoClass
      */
-    private ?PDO $pdo = null;
+    private $pdo;
 
     /**
      * @var bool whether to enable schema caching. Note that in order to enable truly schema caching, a valid cache
@@ -223,7 +230,7 @@ class Connection implements ConnectionInterface
      * @see schemaCacheExclude
      * @see schemaCache
      */
-    public $enableSchemaCache = false;
+    public $enableSchemaCache = true;
 
     /**
      * @var int number of seconds that table metadata can remain valid in cache. Use 0 to indicate that the cached data
@@ -314,11 +321,16 @@ class Connection implements ConnectionInterface
      * supported by Yii.
      */
     public $schemaMap = [
-        'pgsql'   => Pgsql\Schema::class, // PostgreSQL
-        'mysqli'  => Mysql\Schema::class, // MySQL
-        'mysql'   => Mysql\Schema::class, // MySQL
-        'sqlite'  => Sqlite\Schema::class, // sqlite 3
-        'sqlite2' => Sqlite\Schema::class, // sqlite 2
+        'pgsql' => 'Yiisoft\Db\Pgsql\Schema', // PostgreSQL
+        'mysqli' => 'Yiisoft\Db\Mysql\Schema', // MySQL
+        'mysql' => 'Yiisoft\Db\Mysql\Schema', // MySQL
+        'sqlite' => 'Yiisoft\Db\Sqlite\Schema', // sqlite 3
+        'sqlite2' => 'Yiisoft\Db\Sqlite\Schema', // sqlite 2
+        'sqlsrv' => 'Yiisoft\Db\db\Mssql\Schema', // newer MSSQL driver on MS Windows hosts
+        'oci' => 'Yiisoft\Db\db\Oci\Schema', // Oracle driver
+        'mssql' => 'Yiisoft\Db\db\Mssql\Schema', // older MSSQL driver on MS Windows hosts
+        'dblib' => 'Yiisoft\Db\Mssql\Schema', // dblib drivers on GNU/Linux (and maybe other OSes) hosts
+        'cubrid' => 'Yiisoft\Db\Cubrid\Schema', // CUBRID
     ];
 
     /**
@@ -486,17 +498,31 @@ class Connection implements ConnectionInterface
     private $queryCacheInfo = [];
 
     /**
+     * @var Profiler $profiler
+     */
+    private $profiler;
+
+    /**
+     * @var CacheInterface $cache
+     */
+    private $cache;
+
+    /**
      * Constructor based on dns info.
      *
      * @param array dns info
      */
-    public function __construct($config)
+    public function __construct(CacheInterface $cache, LoggerInterface $logger, Profiler $profiler, $config)
     {
         if (\is_array($config)) {
             $this->dsn = $this->buildDSN($config);
         } else {
             $this->dsn = $config;
         }
+
+        $this->cache = $cache;
+        $this->logger = $logger;
+        $this->profiler = $profiler;
     }
 
     /**
@@ -550,9 +576,14 @@ class Connection implements ConnectionInterface
 
         try {
             $result = call_user_func($callable, $this);
+
             array_pop($this->queryCacheInfo);
 
             return $result;
+        } catch (\Exception $e) {
+            array_pop($this->queryCacheInfo);
+
+            throw $e;
         } catch (\Throwable $e) {
             array_pop($this->queryCacheInfo);
 
@@ -597,6 +628,10 @@ class Connection implements ConnectionInterface
             array_pop($this->queryCacheInfo);
 
             return $result;
+        } catch (\Exception $e) {
+            array_pop($this->queryCacheInfo);
+
+            throw $e;
         } catch (\Throwable $e) {
             array_pop($this->queryCacheInfo);
 
@@ -635,13 +670,8 @@ class Connection implements ConnectionInterface
         }
 
         if ($duration === 0 || $duration > 0) {
-            if (\is_string($this->queryCache) /*&& Yii::getApp()*/) {
-                $cache = /*Yii::getApp()->get(*/$this->queryCache/*, false)*/;
-            } else {
-                $cache = $this->queryCache;
-            }
-            if ($cache instanceof CacheInterface) {
-                return [$cache, $duration, $dependency];
+            if ($this->cache instanceof CacheInterface) {
+                return [$this->cache, $duration, $dependency];
             }
         }
     }
@@ -663,7 +693,7 @@ class Connection implements ConnectionInterface
             $db = $this->getMaster();
 
             if ($db !== null) {
-                $this->pdo = $db->pdo;
+                $this->pdo = $db->getPDO();
 
                 return;
             }
@@ -679,21 +709,23 @@ class Connection implements ConnectionInterface
         $enableProfiling = $this->enableProfiling;
 
         try {
-            //Yii::info($token, __METHOD__);
+            $this->logger->log(LogLevel::INFO, $token);
 
             if ($enableProfiling) {
-                //Yii::beginProfile($token, __METHOD__);
+                $this->profiler->begin($token, [__METHOD__]);
             }
 
             $this->pdo = $this->createPdoInstance();
+
             $this->initConnection();
 
             if ($enableProfiling) {
-                //Yii::endProfile($token, __METHOD__);
+                $this->profiler->end($token, [__METHOD__]);
             }
         } catch (\PDOException $e) {
             if ($enableProfiling) {
-                //Yii::endProfile($token, Exception_METHOD__);
+                $this->logger->log(LogLevel::ERROR, $token);
+                $this->profiler->end($token, [__METHOD__]);
             }
 
             throw new Exception($e->getMessage(), $e->errorInfo, (int) $e->getCode(), $e);
@@ -708,16 +740,18 @@ class Connection implements ConnectionInterface
     public function close()
     {
         if ($this->master) {
-            if ($this->pdo === $this->master->pdo) {
+            if ($this->pdo === $this->master->getPDO()) {
                 $this->pdo = null;
             }
 
             $this->master->close();
+
             $this->master = false;
         }
 
         if ($this->pdo !== null) {
-            //Yii::debug('Closing DB connection: '.$this->dsn, __METHOD__);
+            $this->logger->log(LogLevel::DEBUG, 'Closing DB connection: ' . $this->dsn . __METHOD__);
+
             $this->pdo = null;
             $this->schema = null;
             $this->transaction = null;
@@ -725,6 +759,7 @@ class Connection implements ConnectionInterface
 
         if ($this->slave) {
             $this->slave->close();
+
             $this->slave = false;
         }
     }
@@ -762,7 +797,7 @@ class Connection implements ConnectionInterface
         $dsn = $this->dsn;
 
         if (strncmp('sqlite:@', $dsn, 8) === 0) {
-            $dsn = 'sqlite:' . Yii::getAlias(substr($dsn, 7));
+            $dsn = 'sqlite:' . substr($dsn, 7);
         }
 
         return new $pdoClass($dsn, $this->username, $this->password, $this->attributes);
@@ -801,15 +836,16 @@ class Connection implements ConnectionInterface
     {
         $driver = $this->getDriverName();
 
-        /*if (isset($this->commandMap[$driver])) {
-            $config = !is_array($this->commandMap[$driver]) ? ['__class' => $this->commandMap[$driver]] : $this->commandMap[$driver];
-        }*/
+        if (isset($this->commandMap[$driver])) {
+            $config = !is_array($this->commandMap[$driver]) ? ['__class' => $this->commandMap[$driver]]
+            : $this->commandMap[$driver];
+        }
 
         $config['db'] = $this;
         $config['sql'] = $sql;
 
         /** @var Command $command */
-        $command = new Command($config['db'], $config['sql']);
+        $command = new Command($this->profiler, $this->logger, $config['db'], $config['sql']);
 
         return $command->bindValues($params);
     }
@@ -865,6 +901,7 @@ class Connection implements ConnectionInterface
 
         try {
             $result = call_user_func($callback, $this);
+
             if ($transaction->getIsActive() && $transaction->getLevel() === $level) {
                 $transaction->commit();
             }
@@ -892,7 +929,7 @@ class Connection implements ConnectionInterface
             try {
                 $transaction->rollBack();
             } catch (Exception $e) {
-                //Yii::error($e, __METHOD__);
+                $this->logger->log(LogLevel::ERROR, $e, [__METHOD__]);
                 // hide this exception to be able to continue throwing original exception outside
             }
         }
@@ -912,6 +949,7 @@ class Connection implements ConnectionInterface
         }
 
         $driver = $this->getDriverName();
+
         if (isset($this->schemaMap[$driver])) {
             $class = $this->schemaMap[$driver];
 
@@ -939,6 +977,7 @@ class Connection implements ConnectionInterface
     public function setQueryBuilder(iterable $config)
     {
         $builder = $this->getQueryBuilder();
+
         foreach ($config as $key => $value) {
             $builder->{$key} = $value;
         }
@@ -1219,7 +1258,7 @@ class Connection implements ConnectionInterface
      *
      * @return Connection the opened DB connection, or `null` if no server is available
      */
-    protected function openFromPool(array $pool, array $sharedConfig)
+    protected function openFromPool($pool, $sharedConfig)
     {
         shuffle($pool);
 
@@ -1240,14 +1279,11 @@ class Connection implements ConnectionInterface
      *
      * @return Connection the opened DB connection, or `null` if no server is available
      */
-    protected function openFromPoolSequentially(array $pool, array $sharedConfig)
+    protected function openFromPoolSequentially($pool, $sharedConfig)
     {
         if (empty($pool)) {
             return;
         }
-
-        $cache = is_string($this->serverStatusCache) ?
-            /*Yii::getApp()->get(*/$this->serverStatusCache/*, false)*/ : $this->serverStatusCache;
 
         foreach ($pool as $config) {
             if (empty($config['dsn'])) {
@@ -1256,23 +1292,35 @@ class Connection implements ConnectionInterface
 
             $key = [__METHOD__, $config['dsn']];
 
-            if ($cache instanceof CacheInterface && $cache->get($key)) {
+            if ($this->cache instanceof CacheInterface && $this->cache->get($key)) {
                 // should not try this dead server now
                 continue;
             }
 
             /* @var $db Connection */
-            $db = new Connection($config['dsn']);
+            $db = new Connection(
+                $config['cache'],
+                $config['logger'],
+                $config['profiler'],
+                $config['dsn']
+            );
+
+            $db->setUsername($config['username']);
+            $db->setPassword($config['password']);
 
             try {
                 $db->open();
 
                 return $db;
             } catch (Exception $e) {
-                //Yii::warning("Connection ({$config['dsn']}) failed: ".$e->getMessage(), __METHOD__);
-                if ($cache instanceof CacheInterface) {
+                $this->logger->log(
+                    LogLevel::WARNING,
+                    "Connection ({$config['dsn']}) failed: " . $e->getMessage() . __METHOD__
+                );
+
+                if ($this->cache instanceof CacheInterface) {
                     // mark this server as dead and only retry it after the specified interval
-                    $cache->set($key, 1, $this->serverRetryInterval);
+                    $this->cache->set($key, 1, $this->serverRetryInterval);
                 }
             }
         }
@@ -1340,32 +1388,37 @@ class Connection implements ConnectionInterface
         }
     }
 
-    public function getDsn(): string
+    public function getDsn()
     {
         return $this->dsn;
     }
 
-    public function getUsername(): string
+    public function getUsername()
     {
         return $this->username;
     }
 
-    public function getPassword(): string
+    public function getCache()
+    {
+        return $this->cache;
+    }
+
+    public function getPassword()
     {
         return $this->password;
     }
 
-    public function getPDO(): ?PDO
+    public function getPDO()
     {
         return $this->pdo;
     }
 
-    public function setUsername(string $value): void
+    public function setUsername($value)
     {
         $this->username = $value;
     }
 
-    public function setPassword(string $value): void
+    public function setPassword($value)
     {
         $this->password = $value;
     }

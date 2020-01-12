@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
@@ -23,7 +22,7 @@ class ColumnSchemaBuilder
     /**
      * @var string the column type definition such as INTEGER, VARCHAR, DATETIME, etc.
      */
-    protected sring $type;
+    protected $type;
 
     /**
      * @var int|string|array column size or precision definition. This is what goes into the parenthesis after
@@ -36,17 +35,17 @@ class ColumnSchemaBuilder
      * @var bool|null whether the column is or not nullable. If this is `true`, a `NOT NULL` constraint will be added.
      *                If this is `false`, a `NULL` constraint will be added.
      */
-    protected ?bool $isNotNull = null;
+    protected $isNotNull;
 
     /**
      * @var bool whether the column values should be unique. If this is `true`, a `UNIQUE` constraint will be added.
      */
-    protected bool $isUnique = false;
+    protected $isUnique = false;
 
     /**
      * @var string the `CHECK` constraint for the column.
      */
-    protected string $check;
+    protected $check;
 
     /**
      * @var mixed default value of the column.
@@ -61,17 +60,17 @@ class ColumnSchemaBuilder
     /**
      * @var bool whether the column values should be unsigned. If this is `true`, an `UNSIGNED` keyword will be added.
      */
-    protected bool $isUnsigned = false;
+    protected $isUnsigned = false;
 
     /**
      * @var string the column after which this column will be added.
      */
-    protected string $after;
+    protected $after;
 
     /**
      * @var bool whether this column is to be inserted at the beginning of the table.
      */
-    protected bool $isFirst;
+    protected $isFirst;
 
     /**
      * @var array mapping of abstract column types (keys) to type categories (values).
@@ -104,12 +103,12 @@ class ColumnSchemaBuilder
      * @var \Yiisoft\Db\Connection the current database connection. It is used mainly to escape strings
      *                         safely when building the final column schema string.
      */
-    public Connection $db;
+    public $db;
 
     /**
      * @var string comment value of the column.
      */
-    public string $comment;
+    public $comment;
 
     /**
      * Create a column schema builder instance giving the type and value precision.
@@ -119,7 +118,7 @@ class ColumnSchemaBuilder
      * @param \Yiisoft\Db\Connection $db     the current database connection. See [[$db]].
      * @param array              $config name-value pairs that will be used to initialize the object properties
      */
-    public function __construct(string $type, $length = null, $db = null)
+    public function __construct($type, $length = null, $db = null)
     {
         $this->type = $type;
         $this->length = $length;
@@ -131,7 +130,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function notNull(): self
+    public function notNull()
     {
         $this->isNotNull = true;
 
@@ -143,7 +142,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function null(): self
+    public function null()
     {
         $this->isNotNull = false;
 
@@ -155,7 +154,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function unique(): self
+    public function unique()
     {
         $this->isUnique = true;
 
@@ -169,7 +168,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function check(string $check): self
+    public function check($check)
     {
         $this->check = $check;
 
@@ -183,7 +182,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function defaultValue($default): self
+    public function defaultValue($default)
     {
         if ($default === null) {
             $this->null();
@@ -199,7 +198,7 @@ class ColumnSchemaBuilder
      *
      * @param string $comment the comment
      */
-    public function comment(string $comment): self
+    public function comment($comment)
     {
         $this->comment = $comment;
 
@@ -234,7 +233,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function after(string $after): self
+    public function after($after)
     {
         $this->after = $after;
 
@@ -247,7 +246,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function first(): self
+    public function first()
     {
         $this->isFirst = true;
 
@@ -261,7 +260,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function defaultExpression(string $default): self
+    public function defaultExpression($default)
     {
         $this->default = new Expression($default);
 
@@ -276,7 +275,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function append(string $sql)
+    public function append($sql)
     {
         $this->append = $sql;
 
@@ -455,7 +454,7 @@ class ColumnSchemaBuilder
      *
      * @return string a string containing the complete column definition.
      */
-    protected function buildCompleteString(string $format)
+    protected function buildCompleteString($format)
     {
         $placeholderValues = [
             '{type}'     => $this->type,

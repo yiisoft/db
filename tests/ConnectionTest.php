@@ -7,6 +7,7 @@ use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Cache\Cache;
 use Yiisoft\Db\Connection;
 use Yiisoft\Db\Transaction;
+use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Tests\TestCase;
@@ -42,7 +43,8 @@ abstract class ConnectionTest extends DatabaseTestCase
         $dsn = [
             'driver' => 'unknown::memory:',
         ];
-        $connection = new Connection($dsn);
+
+        $connection = new Connection($this->cache, $this->logger, $this->profiler, $dsn);
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('could not find driver');
@@ -50,7 +52,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection->open();
     }
 
-    /*public function testSerialize()
+    public function testSerialize()
     {
         $connection = $this->getConnection(false, false);
 
@@ -65,7 +67,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertInstanceOf(Connection::class, $unserialized);
         $this->assertNull($unserialized->getPDO());
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
-    }*/
+    }
 
     public function testGetDriverName()
     {
@@ -151,16 +153,24 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertFalse($transaction->getIsActive());
         $this->assertNull($connection->getTransaction());
 
-        $this->assertEquals(0, $connection->createCommand("SELECT COUNT(*) FROM profile WHERE description = 'test transaction';")->queryScalar());
+        $this->assertEquals(0, $connection->createCommand(
+            "SELECT COUNT(*) FROM profile WHERE description = 'test transaction';"
+        )->queryScalar());
 
         $transaction = $connection->beginTransaction();
-        $connection->createCommand()->insert('profile', ['description' => 'test transaction'])->execute();
+        $connection->createCommand()->insert(
+            'profile',
+            ['description' => 'test transaction']
+        )->execute();
+
         $transaction->commit();
 
         $this->assertFalse($transaction->getIsActive());
         $this->assertNull($connection->getTransaction());
 
-        $this->assertEquals(1, $connection->createCommand("SELECT COUNT(*) FROM profile WHERE description = 'test transaction';")->queryScalar());
+        $this->assertEquals(1, $connection->createCommand(
+            "SELECT COUNT(*) FROM profile WHERE description = 'test transaction';"
+        )->queryScalar());
     }
 
     public function testTransactionIsolation()
@@ -189,17 +199,18 @@ abstract class ConnectionTest extends DatabaseTestCase
     {
         $connection = $this->getConnection(true);
 
-        $connection->transaction(function () use ($connection) {
-            $connection->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
+        $result = $connection->transaction(function (Connection $db) {
+            $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
+            return true;
+        }, Transaction::READ_UNCOMMITTED);
 
-            throw new \Exception('Exception in transaction shortcut');
-        });
+        $this->assertTrue($result, 'transaction shortcut valid value should be returned from callback');
 
         $profilesCount = $connection->createCommand(
             "SELECT COUNT(*) FROM profile WHERE description = 'test transaction shortcut';"
         )->queryScalar();
 
-        $this->assertEquals(0, $profilesCount, 'profile should not be inserted in transaction shortcut');
+        $this->assertEquals(1, $profilesCount, 'profile should be inserted in transaction shortcut');
     }
 
     public function testTransactionShortcutCorrect()
@@ -269,16 +280,17 @@ abstract class ConnectionTest extends DatabaseTestCase
         });
     }
 
-    /*public function testEnableQueryLog()
+    public function testEnableQueryLog()
     {
         $connection = $this->getConnection();
+
         foreach (['qlog1', 'qlog2', 'qlog3', 'qlog4'] as $table) {
             if ($connection->getTableSchema($table, true) !== null) {
                 $connection->createCommand()->dropTable($table)->execute();
             }
         }
 
-        // profiling and logging
+        /*// profiling and logging
         $connection->enableLogging = true;
         $connection->enableProfiling = true;
 
@@ -341,35 +353,41 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertCount(0, Yii::getApp()->profiler->messages);
         $connection->createCommand('SELECT * FROM qlog4')->queryAll();
         $this->assertCount(0, Yii::getApp()->logger->messages);
-        $this->assertCount(0, Yii::getApp()->profiler->messages);
-    }*/
+        $this->assertCount(0, Yii::getApp()->profiler->messages);*/
+    }
 
     public function testExceptionContainsRawQuery()
     {
         $connection = $this->getConnection();
+
         if ($connection->getTableSchema('qlog1', true) === null) {
             $connection->createCommand()->createTable('qlog1', ['id' => 'pk'])->execute();
         }
+
         $connection->emulatePrepare = true;
 
         // profiling and logging
         $connection->enableLogging = true;
         $connection->enableProfiling = true;
+
         $this->runExceptionTest($connection);
 
         // profiling only
         $connection->enableLogging = false;
         $connection->enableProfiling = true;
+
         $this->runExceptionTest($connection);
 
         // logging only
         $connection->enableLogging = true;
         $connection->enableProfiling = false;
+
         $this->runExceptionTest($connection);
 
         // disabled
         $connection->enableLogging = false;
         $connection->enableProfiling = false;
+
         $this->runExceptionTest($connection);
     }
 
@@ -382,20 +400,34 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         try {
             $connection->createCommand('INSERT INTO qlog1(a) VALUES(:a);', [':a' => 1])->execute();
-        } catch (\Yiisoft\Db\Exception $e) {
-            $this->assertContains('INSERT INTO qlog1(a) VALUES(1);', $e->getMessage(), 'Exception message should contain raw SQL query: '.(string) $e);
+        } catch (Exception $e) {
+            $this->assertStringContainsString(
+                'INSERT INTO qlog1(a) VALUES(1);',
+                $e->getMessage(),
+                'Exception message should contain raw SQL query: ' . (string) $e
+            );
+
             $thrown = true;
         }
+
         $this->assertTrue($thrown, 'An exception should have been thrown by the command.');
 
         $thrown = false;
 
         try {
-            $connection->createCommand('SELECT * FROM qlog1 WHERE id=:a ORDER BY nonexistingcolumn;', [':a' => 1])->queryAll();
-        } catch (\Yiisoft\Db\Exception $e) {
-            $this->assertContains('SELECT * FROM qlog1 WHERE id=1 ORDER BY nonexistingcolumn;', $e->getMessage(), 'Exception message should contain raw SQL query: '.(string) $e);
+            $connection->createCommand(
+                'SELECT * FROM qlog1 WHERE id=:a ORDER BY nonexistingcolumn;', [':a' => 1]
+            )->queryAll();
+        } catch (Exception $e) {
+            $this->assertStringContainsString(
+                'SELECT * FROM qlog1 WHERE id=1 ORDER BY nonexistingcolumn;',
+                $e->getMessage(),
+                'Exception message should contain raw SQL query: ' . (string) $e
+            );
+
             $thrown = true;
         }
+
         $this->assertTrue($thrown, 'An exception should have been thrown by the command.');
     }
 
@@ -465,13 +497,12 @@ abstract class ConnectionTest extends DatabaseTestCase
      */
     public function testGetPdoAfterClose()
     {
-        $cache = new Cache(new ArrayCache());
-
-        $this->container->set('cache', $cache);
-
         $connection = $this->getConnection();
 
         $connection->slaves[] = [
+            'cache'    => $this->cache,
+            'logger'   => $this->logger,
+            'profiler' => $this->profiler,
             'dsn'      => $connection->getDsn(),
             'username' => $connection->getUsername(),
             'password' => $connection->getPassword(),
@@ -498,51 +529,67 @@ abstract class ConnectionTest extends DatabaseTestCase
             'dbname' => 'yiitest',
         ];
 
-        $connection = new Connection($dsn);
+        $connection = new Connection($this->cache, $this->logger, $this->profiler, $dsn);
         $this->assertEquals('mysql:host=127.0.0.1;dbname=yiitest', $connection->getDsn());
 
         unset($dsn['driver']);
 
         $this->expectException(InvalidConfigException::class);
 
-        $connection = new Connection($dsn);
+        $connection = new Connection($this->cache, $this->logger, $this->profiler, $dsn);
     }
 
     public function testServerStatusCacheWorks()
     {
-        $cache = new Cache(new ArrayCache());
-
-        $this->container->set('cache', $cache);
-
         $connection = $this->getConnection(true, false);
+
         $connection->masters[] = [
+            'cache'    => $this->cache,
+            'logger'   => $this->logger,
+            'profiler' => $this->profiler,
             'dsn'      => $connection->getDsn(),
             'username' => $connection->getUsername(),
             'password' => $connection->getPassword(),
         ];
+
         $connection->shuffleMasters = false;
 
         $cacheKey = ['Yiisoft\Db\Connection::openFromPoolSequentially', $connection->getDsn()];
 
-        $this->assertFalse($cache->has($cacheKey));
+        $this->assertFalse($this->cache->has($cacheKey));
 
         $connection->open();
 
         $this->assertFalse(
-            $cache->has($cacheKey),
+            $this->cache->has($cacheKey),
             'Connection was successful – cache must not contain information about this DSN'
         );
 
         $connection->close();
 
         $cacheKey = ['Yiisoft\Db\Connection::openFromPoolSequentially', 'host:invalid'];
-        $connection->masters[0]['dsn'] = 'host:invalid';
+
+        $connection->masters[] = [
+            'cache'    => $this->cache,
+            'logger'   => $this->logger,
+            'profiler' => $this->profiler,
+            'dsn' => 'host:invalid',
+            'username' => $connection->getUsername(),
+            'password' => $connection->getPassword(),
+        ];
+
+        $connection->shuffleMasters = true;
 
         try {
             $connection->open();
         } catch (InvalidConfigException $e) {
         }
-        $this->assertTrue($cache->has($cacheKey), 'Connection was not successful – cache must contain information about this DSN');
+
+        $this->assertTrue(
+            $this->cache->has($cacheKey),
+            'Connection was not successful – cache must contain information about this DSN'
+        );
+
         $connection->close();
     }
 
@@ -555,6 +602,9 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection = $this->getConnection(true, false);
 
         $connection->masters[] = [
+            'cache'    => $this->cache,
+            'logger'   => $this->logger,
+            'profiler' => $this->profiler,
             'dsn'      => $connection->getDsn(),
             'username' => $connection->getUsername(),
             'password' => $connection->getPassword(),

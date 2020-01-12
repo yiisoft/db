@@ -5,7 +5,6 @@ namespace Yiisoft\Db\Tests;
 
 use Yiisoft\ActiveRecord\ActiveQuery;
 use Yiisoft\Db\Query;
-use Yiisoft\Db\Exception\InvalidArgumentException;
 
 trait GetTablesAliasTestTrait
 {
@@ -71,7 +70,7 @@ trait GetTablesAliasTestTrait
         $query = $this->createQuery();
         $query->from = new \stdClass();
 
-        $this->expectException(\yii\exceptions\InvalidConfigException::class);
+        $this->expectException(\Yiisoft\Db\Exception\InvalidConfigException::class);
 
         $query->getTablesUsedInFrom();
     }

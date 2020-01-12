@@ -30,6 +30,7 @@ $config = [
                 'driver' => 'mysql',
                 'host' => '127.0.0.1',
                 'dbname' => 'yiitest',
+                'port' => '3306',
                 'fixture' => __DIR__ . '/mysql.sql',
             ],
             'username' => 'root',

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Yiisoft\Cache\NullCache;
+use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Db\Connection;
 use Yiisoft\Db\Tests\TestCase;
 
@@ -15,22 +16,20 @@ abstract class DatabaseTestCase extends TestCase
     protected $database;
 
     /**
+     * @var Connection
+     */
+    private ?Connection $db = null;
+
+    /**
      * @var string the driver name of this test class. Must be set by a subclass.
      */
     protected $driverName;
-
-    /**
-     * @var Connection
-     */
-    private $db;
 
     protected function setUp(): void
     {
         if ($this->driverName === null) {
             throw new \Exception('driverName is not set for a DatabaseTestCase.');
         }
-
-        parent::setUp();
 
         $databases = self::getParam('databases');
 
@@ -45,6 +44,8 @@ abstract class DatabaseTestCase extends TestCase
         if (!\extension_loaded('pdo') || !\extension_loaded($pdo_database)) {
             $this->markTestSkipped('pdo and '.$pdo_database.' extension are required.');
         }
+
+        parent::setUp();
     }
 
     protected function tearDown(): void
@@ -53,7 +54,9 @@ abstract class DatabaseTestCase extends TestCase
             $this->db->close();
         }
 
-        //$this->destroyApplication();
+        $this->removeDirectory('@runtime');
+
+        parent::tearDown();
     }
 
     /**
@@ -62,7 +65,7 @@ abstract class DatabaseTestCase extends TestCase
      *
      * @return \Yiisoft\Db\Connection
      */
-    public function getConnection($reset = true, $open = true)
+    public function getConnection(bool $reset = true, bool $open = true, bool $fixture = false)
     {
         if (!$reset && $this->db) {
             return $this->db;
@@ -70,30 +73,25 @@ abstract class DatabaseTestCase extends TestCase
 
         $config = $this->database;
 
-        if (isset($config['fixture'])) {
-            $fixture = $config['fixture'];
-            unset($config['fixture']);
-        } else {
-            $fixture = null;
+        if (isset($config['dsn']['fixture'])) {
+            $sqlFile = $config['dsn']['fixture'];
+            //unset($config['dsn']['fixture']);
         }
 
         try {
             $this->db = $this->prepareDatabase($config, $fixture, $open);
         } catch (\Exception $e) {
-            $this->markTestSkipped('Something wrong when preparing database: '.$e->getMessage());
+            $this->markTestSkipped('Something wrong when preparing database: ' . $e->getMessage());
         }
 
         return $this->db;
     }
 
-    public function prepareDatabase($config, $fixture, $open = true)
+    public function prepareDatabase(array $config, bool $fixture, bool $open = true)
     {
-        if (!isset($config['__class'])) {
-            $config['__class'] = \Yiisoft\Db\Connection::class;
-        }
-
         /* @var $db \Yiisoft\Db\Connection */
-        $db = new Connection($config['dsn']);
+        $db = new Connection($this->cache, $this->logger, $this->profiler, $config['dsn']);
+
         $db->setUsername($config['username']);
         $db->setPassword($config['password']);
 
@@ -103,17 +101,23 @@ abstract class DatabaseTestCase extends TestCase
 
         $db->open();
 
-        if ($fixture !== null) {
+        if ($fixture) {
             if ($this->driverName === 'oci') {
-                [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($fixture), 2);
+                [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($sqlFile), 2);
                 [$statements, $triggers, $data] = explode('/* TRIGGERS */', $creates, 3);
-                $lines = array_merge(explode('--', $drops), explode(';', $statements), explode('/', $triggers), explode(';', $data));
+                $lines = array_merge(
+                    explode('--', $drops),
+                    explode(';', $statements),
+                    explode('/', $triggers),
+                    explode(';', $data)
+                );
             } else {
-                $lines = explode(';', file_get_contents($fixture));
+                $lines = explode(';', file_get_contents($sqlFile));
             }
+
             foreach ($lines as $line) {
                 if (trim($line) !== '') {
-                    $db->pdo->exec($line);
+                    $db->getPDO()->exec($line);
                 }
             }
         }

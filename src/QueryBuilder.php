@@ -1,11 +1,9 @@
 <?php
-declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
 use Yiisoft\Db\Conditions\ConditionInterface;
 use Yiisoft\Db\Conditions\HashCondition;
-use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Strings\StringHelper;
 
@@ -62,7 +60,6 @@ class QueryBuilder
      *
      * @see setConditonClasses()
      * @see defaultConditionClasses()
-     * @since 2.0.14
      */
     protected $conditionClasses = [];
     /**
@@ -79,7 +76,6 @@ class QueryBuilder
      *
      * @see setExpressionBuilders()
      * @see defaultExpressionBuilders()
-     * @since 2.0.14
      */
     protected $expressionBuilders = [];
 
@@ -311,9 +307,9 @@ class QueryBuilder
     {
         [$names, $placeholders, $values, $params] = $this->prepareInsertValues($table, $columns, $params);
 
-        return 'INSERT INTO '.$this->db->quoteTableName($table)
-            .(!empty($names) ? ' ('.implode(', ', $names).')' : '')
-            .(!empty($placeholders) ? ' VALUES ('.implode(', ', $placeholders).')' : $values);
+        return 'INSERT INTO ' . $this->db->quoteTableName($table)
+            . (!empty($names) ? ' (' . implode(', ', $names) . ')' : '')
+            . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : $values);
     }
 
     /**
@@ -337,6 +333,7 @@ class QueryBuilder
         $names = [];
         $placeholders = [];
         $values = ' DEFAULT VALUES';
+
         if ($columns instanceof Query) {
             [$names, $values, $params] = $this->prepareInsertSelectSubQuery($columns, $schema, $params);
         } else {
@@ -375,12 +372,14 @@ class QueryBuilder
     protected function prepareInsertSelectSubQuery($columns, $schema, $params = [])
     {
         if (!is_array($columns->select) || empty($columns->select) || in_array('*', $columns->select)) {
-            throw new InvalidArgumentException('Expected select query object with enumerated (named) parameters');
+            throw new \InvalidArgumentException('Expected select query object with enumerated (named) parameters');
         }
 
         [$values, $params] = $this->build($columns, $params);
+
         $names = [];
         $values = ' '.$values;
+
         foreach ($columns->select as $title => $field) {
             if (is_string($title)) {
                 $names[] = $schema->quoteColumnName($title);
@@ -425,6 +424,7 @@ class QueryBuilder
         }
 
         $schema = $this->db->getSchema();
+
         if (($tableSchema = $schema->getTableSchema($table)) !== null) {
             $columnSchemas = $tableSchema->columns;
         } else {
@@ -446,7 +446,7 @@ class QueryBuilder
                 } elseif ($value === false) {
                     $value = 0;
                 } elseif ($value === null) {
-                    $value = 'NULL';
+                    $value = 'null';
                 } elseif ($value instanceof ExpressionInterface) {
                     $value = $this->buildExpression($value, $params);
                 }
@@ -462,8 +462,8 @@ class QueryBuilder
             $columns[$i] = $schema->quoteColumnName($name);
         }
 
-        return 'INSERT INTO '.$schema->quoteTableName($table)
-        .' ('.implode(', ', $columns).') VALUES '.implode(', ', $values);
+        return 'INSERT INTO ' . $schema->quoteTableName($table)
+        . ' ('.implode(', ', $columns).') VALUES '.implode(', ', $values);
     }
 
     /**
@@ -497,8 +497,6 @@ class QueryBuilder
      * @throws NotSupportedException if this is not supported by the underlying DBMS.
      *
      * @return string the resulting SQL.
-     *
-     * @since 2.0.14
      */
     public function upsert($table, $insertColumns, $updateColumns, &$params)
     {
@@ -513,8 +511,6 @@ class QueryBuilder
      *                                    The constraints will be unique by their column names.
      *
      * @return array
-     *
-     * @since 2.0.14
      */
     protected function prepareUpsertColumns($table, $insertColumns, $updateColumns, &$constraints = [])
     {
@@ -523,8 +519,10 @@ class QueryBuilder
         } else {
             $insertNames = array_map([$this->db, 'quoteColumnName'], array_keys($insertColumns));
         }
+
         $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
         $uniqueNames = array_map([$this->db, 'quoteColumnName'], $uniqueNames);
+
         if ($updateColumns !== true) {
             return [$uniqueNames, $insertNames, null];
         }
@@ -547,33 +545,40 @@ class QueryBuilder
     private function getTableUniqueColumnNames($name, $columns, &$constraints = [])
     {
         $schema = $this->db->getSchema();
+
         if (!$schema instanceof ConstraintFinderInterface) {
             return [];
         }
 
         $constraints = [];
         $primaryKey = $schema->getTablePrimaryKey($name);
+
         if ($primaryKey !== null) {
             $constraints[] = $primaryKey;
         }
+
         foreach ($schema->getTableIndexes($name) as $constraint) {
             if ($constraint->isUnique) {
                 $constraints[] = $constraint;
             }
         }
+
         $constraints = array_merge($constraints, $schema->getTableUniques($name));
+
         // Remove duplicates
-        $constraints = array_combine(array_map(function (Constraint $constraint) {
+        $constraints = array_combine(array_map(function ($constraint) {
             $columns = $constraint->columnNames;
             sort($columns, SORT_STRING);
-
             return json_encode($columns);
         }, $constraints), $constraints);
+
         $columnNames = [];
+
         // Remove all constraints which do not cover the specified column list
-        $constraints = array_values(array_filter($constraints, function (Constraint $constraint) use ($schema, $columns, &$columnNames) {
+        $constraints = array_values(array_filter($constraints, function ($constraint) use ($schema, $columns, &$columnNames) {
             $constraintColumnNames = array_map([$schema, 'quoteColumnName'], $constraint->columnNames);
             $result = !array_diff($constraintColumnNames, $columns);
+
             if ($result) {
                 $columnNames = array_merge($columnNames, $constraintColumnNames);
             }
@@ -893,7 +898,8 @@ class QueryBuilder
     /**
      * Builds a SQL statement for dropping a foreign key constraint.
      *
-     * @param string $name  the name of the foreign key constraint to be dropped. The name will be properly quoted by the method.
+     * @param string $name  the name of the foreign key constraint to be dropped. The name will be properly quoted by
+     * the method.
      * @param string $table the table whose foreign is to be dropped. The name will be properly quoted by the method.
      *
      * @return string the SQL statement for dropping a foreign key constraint.
@@ -975,8 +981,6 @@ class QueryBuilder
      *                      The name will be properly quoted by the method.
      *
      * @return string the SQL statement for dropping an unique constraint.
-     *
-     * @since 2.0.13
      */
     public function dropUnique($name, $table)
     {
@@ -1075,7 +1079,7 @@ class QueryBuilder
      *
      * @return string the SQL statement for resetting sequence
      */
-    public function resetSequence($table, $value = null)
+    public function resetSequence($tableName, $value = null)
     {
         throw new NotSupportedException($this->db->getDriverName().' does not support resetting sequence.');
     }
@@ -1369,18 +1373,20 @@ class QueryBuilder
     {
         foreach ($tables as $i => $table) {
             if ($table instanceof Query) {
-                [$sql, $params] = $this->build($table, $params);
-                $tables[$i] = "($sql) ".$this->db->quoteTableName($i);
+                list($sql, $params) = $this->build($table, $params);
+                $tables[$i] = "($sql) " . $this->db->quoteTableName($i);
             } elseif (is_string($i)) {
                 if (strpos($table, '(') === false) {
                     $table = $this->db->quoteTableName($table);
                 }
-                $tables[$i] = "$table ".$this->db->quoteTableName($i);
-            } elseif (strpos($table, '(') === false) {
-                if (preg_match('/^(.*?)(?i:\s+as|)\s+([^ ]+)$/', $table, $matches)) { // with alias
-                    $tables[$i] = $this->db->quoteTableName($matches[1]).' '.$this->db->quoteTableName($matches[2]);
-                } else {
-                    $tables[$i] = $this->db->quoteTableName($table);
+                $tables[$i] = "$table " . $this->db->quoteTableName($i);
+            } elseif (is_string($table)) {
+                if (strpos($table, '(') === false) {
+                    if ($tableWithAlias = $this->extractAlias($table)) { // with alias
+                        $tables[$i] = $this->db->quoteTableName($tableWithAlias[1]) . ' ' . $this->db->quoteTableName($tableWithAlias[2]);
+                    } else {
+                        $tables[$i] = $this->db->quoteTableName($table);
+                    }
                 }
             }
         }
@@ -1673,5 +1679,20 @@ class QueryBuilder
         $params[$phName] = $value;
 
         return $phName;
+    }
+
+    /**
+     * Extracts table alias if there is one or returns false
+     * @param $table
+     * @return bool|array
+     * @since 2.0.24
+     */
+    protected function extractAlias($table)
+    {
+        if (preg_match('/^(.*?)(?i:\s+as|)\s+([^ ]+)$/', $table, $matches)) {
+            return $matches;
+        }
+
+        return false;
     }
 }

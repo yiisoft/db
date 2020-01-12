@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
@@ -15,30 +14,30 @@ class TableSchema
     /**
      * @var string the name of the schema that this table belongs to.
      */
-    public ?string $schemaName = null;
+    public $schemaName;
 
     /**
      * @var string the name of this table. The schema name is not included. Use {@see fullName} to get the name with
      * schema name prefix.
      */
-    public ?string $name = null;
+    public $name;
 
     /**
      * @var string the full name of this table, which includes the schema name prefix, if any.
      * Note that if the schema name is the same as the {@see Schema::defaultSchema|default schema name}, the schema name
      * will not be included.
      */
-    public ?string $fullName = null;
+    public $fullName;
 
     /**
      * @var array primary keys of this table.
      */
-    public array $primaryKey = [];
+    public $primaryKey = [];
 
     /**
      * @var string sequence name for the primary key. Null if no sequence.
      */
-    public ?string $sequenceName = null;
+    public $sequenceName;
 
     /**
      * @var array foreign keys of this table. Each array element is of the following structure:
@@ -51,13 +50,13 @@ class TableSchema
      * ]
      * ```
      */
-    public array $foreignKeys = [];
+    public $foreignKeys = [];
 
     /**
      * @var ColumnSchema[] column metadata of this table. Each array element is a {@see ColumnSchema} object, indexed by
      * column names.
      */
-    public array $columns = [];
+    public $columns = [];
 
     /**
      * Gets the named column metadata.
@@ -78,7 +77,7 @@ class TableSchema
      *
      * @return array list of column names
      */
-    public function getColumnNames(): array
+    public function getColumnNames()
     {
         return array_keys($this->columns);
     }
@@ -90,7 +89,7 @@ class TableSchema
      *
      * @throws InvalidArgumentException if the specified key cannot be found in the table.
      */
-    public function fixPrimaryKey($keys): void
+    public function fixPrimaryKey($keys)
     {
         $keys = (array) $keys;
         $this->primaryKey = $keys;

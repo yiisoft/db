@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
@@ -11,7 +10,7 @@ class Constraint
     /**
      * @var string[]|null list of column names the constraint belongs to.
      */
-    public $columnNames;
+    public $columnNames = [];
 
     /**
      * @var string|null the constraint name.

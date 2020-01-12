@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
@@ -533,8 +532,6 @@ class Query implements QueryInterface, ExpressionInterface
      * @param array $tableNames non-empty array
      *
      * @return string[] table names indexed by aliases
-     *
-     * @since 2.0.14
      */
     protected function cleanUpTableNames($tableNames)
     {
@@ -583,7 +580,7 @@ PATTERN;
 
             if ($tableName instanceof Expression) {
                 if (!is_string($alias)) {
-                    throw new InvalidArgumentException('To use Expression in from() method, pass it in array format with alias.');
+                    throw new \InvalidArgumentException('To use Expression in from() method, pass it in array format with alias.');
                 }
                 $cleanedUpTableNames[$this->ensureNameQuoted($alias)] = $tableName;
             } elseif ($tableName instanceof self) {

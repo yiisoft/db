@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Mysql;
 
@@ -122,7 +121,8 @@ class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
          * @link https://github.com/yiisoft/yii2/issues/14367
          */
         $mysqlVersion = $this->getDb()->getSlavePdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);
-        $$supportsFractionalSeconds = version_compare($mysqlVersion, '5.6.4', '>=');
+        $supportsFractionalSeconds = version_compare($mysqlVersion, '5.6.4', '>=');
+
         if ($supportsFractionalSeconds) {
             $expectedValues = [
                 'datetime(0) NOT NULL',
@@ -251,10 +251,11 @@ class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
             'query, values and expressions without update part' => [
                 3 => 'INSERT INTO {{%T_upsert}} (`email`, [[time]]) SELECT :phEmail AS `email`, now() AS [[time]] ON DUPLICATE KEY UPDATE `ts`=:qp1, [[orders]]=T_upsert.orders + 1',
             ],
-            'no columns to update' => [
+            /*'no columns to update' => [
                 3 => 'INSERT INTO `T_upsert_1` (`a`) VALUES (:qp0) ON DUPLICATE KEY UPDATE `a`=`T_upsert_1`.`a`',
-            ],
+            ]*/
         ];
+
         $newData = parent::upsertProvider();
 
         foreach ($concreteData as $testName => $data) {

@@ -41,7 +41,7 @@ class Exception extends \Exception
      */
     public function __toString()
     {
-        return parent::__toString().PHP_EOL
-        .'Additional Information:'.PHP_EOL.print_r($this->errorInfo, true);
+        return parent::__toString() . PHP_EOL .
+            'Additional Information:' . PHP_EOL.print_r($this->errorInfo, true);
     }
 }
