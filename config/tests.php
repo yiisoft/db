@@ -79,7 +79,7 @@ return [
         );
 
         $connection->setUsername('root');
-        $connection->setPassword('root');
+        $connection->setPassword('');
 
         return $connection;
     },

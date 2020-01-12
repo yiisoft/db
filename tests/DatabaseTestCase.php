@@ -65,7 +65,7 @@ abstract class DatabaseTestCase extends TestCase
      *
      * @return \Yiisoft\Db\Connection
      */
-    public function getConnection(bool $reset = true, bool $open = true, bool $fixture = false)
+    public function getConnection(bool $reset = true, bool $open = true)
     {
         if (!$reset && $this->db) {
             return $this->db;
@@ -74,8 +74,10 @@ abstract class DatabaseTestCase extends TestCase
         $config = $this->database;
 
         if (isset($config['dsn']['fixture'])) {
-            $sqlFile = $config['dsn']['fixture'];
-            //unset($config['dsn']['fixture']);
+            $fixture = $config['dsn']['fixture'];
+            unset($config['dsn']['fixture']);
+        } else {
+            $fixture = null;
         }
 
         try {
@@ -87,7 +89,7 @@ abstract class DatabaseTestCase extends TestCase
         return $this->db;
     }
 
-    public function prepareDatabase(array $config, bool $fixture, bool $open = true)
+    public function prepareDatabase($config, $fixture, $open = true)
     {
         /* @var $db \Yiisoft\Db\Connection */
         $db = new Connection($this->cache, $this->logger, $this->profiler, $config['dsn']);
@@ -101,9 +103,9 @@ abstract class DatabaseTestCase extends TestCase
 
         $db->open();
 
-        if ($fixture) {
+        if ($fixture !== null) {
             if ($this->driverName === 'oci') {
-                [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($sqlFile), 2);
+                [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($fixture), 2);
                 [$statements, $triggers, $data] = explode('/* TRIGGERS */', $creates, 3);
                 $lines = array_merge(
                     explode('--', $drops),
@@ -112,7 +114,7 @@ abstract class DatabaseTestCase extends TestCase
                     explode(';', $data)
                 );
             } else {
-                $lines = explode(';', file_get_contents($sqlFile));
+                $lines = explode(';', file_get_contents($fixture));
             }
 
             foreach ($lines as $line) {
