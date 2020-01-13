@@ -1037,7 +1037,9 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     public function testBuildCondition($condition, $expected, $expectedParams)
     {
         $query = (new Query())->where($condition);
+
         [$sql, $params] = $this->getQueryBuilder()->build($query);
+
         $this->assertEquals('SELECT *'.(empty($expected) ? '' : ' WHERE '.$this->replaceQuotes($expected)), $sql);
         $this->assertEquals($expectedParams, $params);
     }

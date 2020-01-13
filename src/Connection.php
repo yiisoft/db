@@ -841,11 +841,12 @@ class Connection implements ConnectionInterface
             : $this->commandMap[$driver];
         }
 
-        $config['db'] = $this;
-        $config['sql'] = $sql;
+        if ($sql !== null) {
+            $sql = $this->quoteSql($sql);
+        }
 
         /** @var Command $command */
-        $command = new Command($this->profiler, $this->logger, $config['db'], $this->quoteSql($config['sql']));
+        $command = new Command($this->profiler, $this->logger, $this, $sql);
 
         return $command->bindValues($params);
     }

@@ -73,8 +73,8 @@ abstract class DatabaseTestCase extends TestCase
 
         $config = $this->database;
 
-        if (isset($config['dsn']['fixture'])) {
-            $fixture = $config['dsn']['fixture'];
+        if (isset($config['fixture'])) {
+            $fixture = $config['fixture'];
             unset($config['dsn']['fixture']);
         } else {
             $fixture = null;

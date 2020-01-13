@@ -99,9 +99,9 @@ class Command
     private $pendingParams = [];
 
     /**
-     * @var string the SQL statement that this command represents
+     * @var ?string the SQL statement that this command represents
      */
-    private $sql;
+    private ?string $sql = null;
 
     /**
      * @var string name of the table, which schema, should be refreshed after command execution.

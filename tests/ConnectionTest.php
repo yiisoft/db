@@ -52,7 +52,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection->open();
     }
 
-    public function testSerialize()
+    public function testSerialize(): void
     {
         $connection = $this->getConnection(false, false);
 
@@ -69,14 +69,14 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
     }
 
-    public function testGetDriverName()
+    public function testGetDriverName(): void
     {
         $connection = $this->getConnection(false, false);
 
         $this->assertEquals($this->driverName, $connection->getDriverName());
     }
 
-    public function testQuoteValue()
+    public function testQuoteValue(): void
     {
         $connection = $this->getConnection(false);
 
@@ -85,7 +85,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertEquals("'It\\'s interesting'", $connection->quoteValue("It's interesting"));
     }
 
-    public function testQuoteTableName()
+    public function testQuoteTableName(): void
     {
         $connection = $this->getConnection(false, false);
 
@@ -98,7 +98,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertEquals('(table)', $connection->quoteTableName('(table)'));
     }
 
-    public function testQuoteColumnName()
+    public function testQuoteColumnName(): void
     {
         $connection = $this->getConnection(false, false);
 
@@ -112,7 +112,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertEquals('`column`', $connection->quoteSql('{{column}}'));
     }
 
-    public function testQuoteFullColumnName()
+    public function testQuoteFullColumnName(): void
     {
         $connection = $this->getConnection(false, false);
 
@@ -135,7 +135,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertEquals('`table`.`column`', $connection->quoteSql('{{%table}}.`column`'));
     }
 
-    public function testTransaction()
+    public function testTransaction(): void
     {
         $connection = $this->getConnection(false);
 
@@ -158,6 +158,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         )->queryScalar());
 
         $transaction = $connection->beginTransaction();
+
         $connection->createCommand()->insert(
             'profile',
             ['description' => 'test transaction']
@@ -173,7 +174,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         )->queryScalar());
     }
 
-    public function testTransactionIsolation()
+    public function testTransactionIsolation(): void
     {
         $connection = $this->getConnection(true);
 
@@ -192,10 +193,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertTrue(true); // should not be any exception so far
     }
 
-    /**
-     * @expectException \Exception
-     */
-    public function testTransactionShortcutException()
+    public function testTransactionShortcutException(): void
     {
         $connection = $this->getConnection(true);
 
@@ -213,35 +211,39 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertEquals(1, $profilesCount, 'profile should be inserted in transaction shortcut');
     }
 
-    public function testTransactionShortcutCorrect()
+    public function testTransactionShortcutCorrect(): void
     {
         $connection = $this->getConnection(true);
 
         $result = $connection->transaction(function () use ($connection) {
             $connection->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
-
             return true;
         });
 
         $this->assertTrue($result, 'transaction shortcut valid value should be returned from callback');
 
-        $profilesCount = $connection->createCommand("SELECT COUNT(*) FROM profile WHERE description = 'test transaction shortcut';")->queryScalar();
+        $profilesCount = $connection->createCommand(
+            "SELECT COUNT(*) FROM profile WHERE description = 'test transaction shortcut';"
+        )->queryScalar();
+
         $this->assertEquals(1, $profilesCount, 'profile should be inserted in transaction shortcut');
     }
 
-    public function testTransactionShortcutCustom()
+    public function testTransactionShortcutCustom(): void
     {
         $connection = $this->getConnection(true);
 
         $result = $connection->transaction(function (Connection $db) {
             $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
-
             return true;
         }, Transaction::READ_UNCOMMITTED);
 
         $this->assertTrue($result, 'transaction shortcut valid value should be returned from callback');
 
-        $profilesCount = $connection->createCommand("SELECT COUNT(*) FROM profile WHERE description = 'test transaction shortcut';")->queryScalar();
+        $profilesCount = $connection->createCommand(
+            "SELECT COUNT(*) FROM profile WHERE description = 'test transaction shortcut';"
+        )->queryScalar();
+
         $this->assertEquals(1, $profilesCount, 'profile should be inserted in transaction shortcut');
     }
 
@@ -270,17 +272,17 @@ abstract class ConnectionTest extends DatabaseTestCase
     public function testNestedTransactionNotSupported()
     {
         $connection = $this->getConnection();
+
         $connection->enableSavepoint = false;
 
         $connection->transaction(function (Connection $db) {
             $this->assertNotNull($db->getTransaction());
             $this->expectException(NotSupportedException::class);
-
             $db->beginTransaction();
         });
     }
 
-    public function testEnableQueryLog()
+    /*public function testEnableQueryLog()
     {
         $connection = $this->getConnection();
 
@@ -290,7 +292,7 @@ abstract class ConnectionTest extends DatabaseTestCase
             }
         }
 
-        /*// profiling and logging
+        // profiling and logging
         $connection->enableLogging = true;
         $connection->enableProfiling = true;
 
@@ -353,10 +355,10 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertCount(0, Yii::getApp()->profiler->messages);
         $connection->createCommand('SELECT * FROM qlog4')->queryAll();
         $this->assertCount(0, Yii::getApp()->logger->messages);
-        $this->assertCount(0, Yii::getApp()->profiler->messages);*/
-    }
+        $this->assertCount(0, Yii::getApp()->profiler->messages);
+    }*/
 
-    public function testExceptionContainsRawQuery()
+    public function testExceptionContainsRawQuery(): void
     {
         $connection = $this->getConnection();
 
@@ -394,7 +396,7 @@ abstract class ConnectionTest extends DatabaseTestCase
     /**
      * @param Connection $connection
      */
-    private function runExceptionTest($connection)
+    private function runExceptionTest(Connection $connection): void
     {
         $thrown = false;
 
@@ -433,10 +435,11 @@ abstract class ConnectionTest extends DatabaseTestCase
 
     /**
      * Ensure database connection is reset on when a connection is cloned.
+     *
      * Make sure each connection element has its own PDO instance i.e. own connection to the DB.
      * Also transaction elements should not be shared between two connections.
      */
-    public function testClone()
+    public function testClone(): void
     {
         $connection = $this->getConnection(true, false);
 
@@ -495,7 +498,7 @@ abstract class ConnectionTest extends DatabaseTestCase
      *
      * @see https://github.com/yiisoft/yii2/issues/14165
      */
-    public function testGetPdoAfterClose()
+    public function testGetPdoAfterClose(): void
     {
         $connection = $this->getConnection();
 
@@ -521,7 +524,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertNotSame($masterPdo, $slavePdo);
     }
 
-    public function testDSNConfig()
+    public function testDSNConfig(): void
     {
         $dsn = [
             'driver' => 'mysql',
@@ -539,7 +542,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection = new Connection($this->cache, $this->logger, $this->profiler, $dsn);
     }
 
-    public function testServerStatusCacheWorks()
+    public function testServerStatusCacheWorks(): void
     {
         $connection = $this->getConnection(true, false);
 
@@ -593,7 +596,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection->close();
     }
 
-    public function testServerStatusCacheCanBeDisabled()
+    public function testServerStatusCacheCanBeDisabled(): void
     {
         $cache = new Cache(new ArrayCache());
 

@@ -627,111 +627,91 @@ abstract class SchemaTest extends DatabaseTestCase
             '1: primary key' => [
                 'T_constraints_1',
                 'primaryKey',
-                new Constraint(
-                    [
-                        'name' => AnyValue::getInstance(),
-                        'columnNames' => ['C_id'],
-                    ]
-                )
+                $this->constraint(AnyValue::getInstance(), ['C_id'])
             ],
             '1: check' => [
                 'T_constraints_1',
                 'checks',
                 [
-                    new CheckConstraint(
-                        [
-                            'name' => AnyValue::getInstance(),
-                            'columnNames' => ['C_check'],
-                            'expression' => "C_check <> ''",
-                        ]
-                    ),
+                    $this->checkConstraint(AnyValue::getInstance(), "C_check <> ''", ['C_check'])
                 ]
             ],
-            '1: unique' => ['T_constraints_1', 'uniques', [
-                new Constraint([
-                    'name' => 'CN_unique',
-                    'columnNames' => ['C_unique'],
-                ]),
-            ]],
-            '1: index' => ['T_constraints_1', 'indexes', [
-                new IndexConstraint([
-                    'name' => AnyValue::getInstance(),
-                    'columnNames' => ['C_id'],
-                    'isUnique' => true,
-                    'isPrimary' => true,
-                ]),
-                new IndexConstraint([
-                    'name' => 'CN_unique',
-                    'columnNames' => ['C_unique'],
-                    'isPrimary' => false,
-                    'isUnique' => true,
-                ]),
-            ]],
+            '1: unique' => [
+                'T_constraints_1',
+                'uniques',
+                [
+                    $this->constraint('CN_unique', ['C_unique'])
+                ],
+            ],
+            '1: index' => [
+                'T_constraints_1',
+                'indexes',
+                [
+                    $this->indexConstraint(AnyValue::getInstance(), ['C_id'], true, true),
+                    $this->indexConstraint('CN_unique', ['C_unique'], false, true)
+                ]
+            ],
             '1: default' => ['T_constraints_1', 'defaultValues', false],
-            '2: primary key' => ['T_constraints_2', 'primaryKey', new Constraint([
-                'name' => 'CN_pk',
-                'columnNames' => ['C_id_1', 'C_id_2'],
-            ])],
-            '2: unique' => ['T_constraints_2', 'uniques', [
-                new Constraint([
-                    'name' => 'CN_constraints_2_multi',
-                    'columnNames' => ['C_index_2_1', 'C_index_2_2'],
-                ]),
-            ]],
-            '2: index' => ['T_constraints_2', 'indexes', [
-                new IndexConstraint([
-                    'name' => AnyValue::getInstance(),
-                    'columnNames' => ['C_id_1', 'C_id_2'],
-                    'isUnique' => true,
-                    'isPrimary' => true,
-                ]),
-                new IndexConstraint([
-                    'name' => 'CN_constraints_2_single',
-                    'columnNames' => ['C_index_1'],
-                    'isPrimary' => false,
-                    'isUnique' => false,
-                ]),
-                new IndexConstraint([
-                    'name' => 'CN_constraints_2_multi',
-                    'columnNames' => ['C_index_2_1', 'C_index_2_2'],
-                    'isPrimary' => false,
-                    'isUnique' => true,
-                ]),
-            ]],
+            '2: primary key' => [
+                'T_constraints_2',
+                'primaryKey',
+                $this->constraint('CN_pk', ['C_id_1', 'C_id_2'])
+            ],
+            '2: unique' => [
+                'T_constraints_2',
+                'uniques',
+                [
+                    $this->constraint('CN_constraints_2_multi', ['C_index_2_1', 'C_index_2_2'])
+                ]
+            ],
+            '2: index' => [
+                'T_constraints_2',
+                'indexes',
+                [
+                    $this->indexConstraint(AnyValue::getInstance(), ['C_id_1', 'C_id_2'], true, true),
+                    $this->indexConstraint('CN_constraints_2_single', ['C_index_1'], false, false),
+                    $this->indexConstraint('CN_constraints_2_multi', ['C_index_2_1', 'C_index_2_2'], false, true),
+                ]
+            ],
             '2: check' => ['T_constraints_2', 'checks', []],
             '2: default' => ['T_constraints_2', 'defaultValues', false],
             '3: primary key' => ['T_constraints_3', 'primaryKey', null],
-            '3: foreign key' => ['T_constraints_3', 'foreignKeys', [
-                new ForeignKeyConstraint([
-                    'name' => 'CN_constraints_3',
-                    'columnNames' => ['C_fk_id_1', 'C_fk_id_2'],
-                    'foreignTableName' => 'T_constraints_2',
-                    'foreignColumnNames' => ['C_id_1', 'C_id_2'],
-                    'onDelete' => 'CASCADE',
-                    'onUpdate' => 'CASCADE',
-                ]),
-            ]],
+            '3: foreign key' => [
+                'T_constraints_3',
+                'foreignKeys',
+                [
+                    $this->foreignKeyConstraint(
+                        'CN_constraints_3',
+                        'T_constraints_2',
+                        'CASCADE',
+                        'CASCADE',
+                        ['C_fk_id_1', 'C_fk_id_2'],
+                        ['C_id_1', 'C_id_2']
+                    )
+                ]
+            ],
             '3: unique' => ['T_constraints_3', 'uniques', []],
-            '3: index' => ['T_constraints_3', 'indexes', [
-                new IndexConstraint([
-                    'name' => 'CN_constraints_3',
-                    'columnNames' => ['C_fk_id_1', 'C_fk_id_2'],
-                    'isUnique' => false,
-                    'isPrimary' => false,
-                ]),
-            ]],
+            '3: index' => [
+                'T_constraints_3',
+                'indexes',
+                [
+                    $this->indexConstraint('CN_constraints_3', ['C_fk_id_1', 'C_fk_id_2'], false, false)
+                ]
+            ],
             '3: check' => ['T_constraints_3', 'checks', []],
             '3: default' => ['T_constraints_3', 'defaultValues', false],
-            '4: primary key' => ['T_constraints_4', 'primaryKey', new Constraint([
-                'name' => AnyValue::getInstance(),
-                'columnNames' => ['C_id'],
-            ])],
-            '4: unique' => ['T_constraints_4', 'uniques', [
-                new Constraint([
-                    'name' => 'CN_constraints_4',
-                    'columnNames' => ['C_col_1', 'C_col_2'],
-                ]),
-            ]],
+            '4: primary key' => [
+                'T_constraints_4',
+                'primaryKey',
+                $this->constraint(AnyValue::getInstance(), ['C_id'])
+            ],
+            '4: unique' => [
+                'T_constraints_4',
+                'uniques',
+                [
+                    $this->constraint('CN_constraints_4', ['C_col_1', 'C_col_2'])
+                ]
+            ],
             '4: check' => ['T_constraints_4', 'checks', []],
             '4: default' => ['T_constraints_4', 'defaultValues', false],
         ];
@@ -832,6 +812,59 @@ abstract class SchemaTest extends DatabaseTestCase
         }
 
         $this->assertEquals($expected, $actual);
+    }
+
+    private function constraint($name, array $columnNames = []): Constraint
+    {
+        $ct = new Constraint();
+
+        $ct->setName($name);
+        $ct->setColumnNames($columnNames);
+
+        return $ct;
+    }
+
+    private function checkConstraint($name, string $expression, array $columnNames = []): CheckConstraint
+    {
+        $cht = new CheckConstraint();
+
+        $cht->setName($name);
+        $cht->setColumnNames($columnNames);
+        $cht->setExpression($expression);
+
+        return $cht;
+    }
+
+    private function foreignKeyConstraint(
+        $name,
+        string $foreignTableName,
+        string $onDelete,
+        string $onUpdate,
+        array $columnNames = [],
+        array $foreignColumnNames = []
+    ): ForeignKeyConstraint {
+        $fk = new ForeignKeyConstraint();
+
+        $fk->setName($name);
+        $fk->setColumnNames($columnNames);
+        $fk->setForeignTableName($foreignTableName);
+        $fk->setForeignColumnNames($foreignColumnNames);
+        $fk->setOnUpdate($onUpdate);
+        $fk->setOnDelete($onDelete);
+
+        return $fk;
+    }
+
+    private function indexConstraint($name, array $columnNames = [], bool $isPrimary = false, bool $isUnique = false): IndexConstraint
+    {
+        $ic = new IndexConstraint();
+
+        $ic->setName($name);
+        $ic->setColumnNames($columnNames);
+        $ic->setIsUnique($isUnique);
+        $ic->setIsPrimary($isPrimary);
+
+        return $ic;
     }
 
     private function normalizeArrayKeys(array &$array, $caseSensitive)

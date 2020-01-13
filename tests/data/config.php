@@ -1,9 +1,5 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+
 /**
  * This is the configuration file for the Yii 2 unit tests.
  *
@@ -31,8 +27,8 @@ $config = [
                 'host' => '127.0.0.1',
                 'dbname' => 'yiitest',
                 'port' => '3306',
-                'fixture' => __DIR__ . '/mysql.sql',
             ],
+            'fixture' => __DIR__ . '/mysql.sql',
             'username' => 'root',
             'password' => '',
         ],
