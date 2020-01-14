@@ -152,7 +152,7 @@ class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
             $columns[] = [
                 Schema::TYPE_TIMESTAMP,
                 $this->timestamp(),
-                $supportsFractionalSeconds ? 'timestamp(0)' : 'timestamp',
+                'timestamp',
             ];
         }
 
