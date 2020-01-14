@@ -570,6 +570,8 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection->close();
 
+        $connection = $this->getConnection(true, false);
+
         $cacheKey = ['Yiisoft\Db\Connection::openFromPoolSequentially', 'host:invalid'];
 
         $connection->masters[] = [

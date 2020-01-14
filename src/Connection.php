@@ -750,7 +750,7 @@ class Connection implements ConnectionInterface
         }
 
         if ($this->pdo !== null) {
-            $this->logger->log(LogLevel::DEBUG, 'Closing DB connection: ' . $this->dsn . __METHOD__);
+            $this->logger->log(LogLevel::DEBUG, 'Closing DB connection: ' . $this->dsn . ' ' . __METHOD__);
 
             $this->pdo = null;
             $this->schema = null;
@@ -1316,7 +1316,7 @@ class Connection implements ConnectionInterface
             } catch (Exception $e) {
                 $this->logger->log(
                     LogLevel::WARNING,
-                    "Connection ({$config['dsn']}) failed: " . $e->getMessage() . __METHOD__
+                    "Connection ({$config['dsn']}) failed: " . $e->getMessage() . ' ' . __METHOD__
                 );
 
                 if ($this->cache instanceof CacheInterface) {
@@ -1364,11 +1364,11 @@ class Connection implements ConnectionInterface
     {
         $fields = (array) $this;
 
-        unset($fields['pdo']);
-        unset($fields["\000".__CLASS__."\000".'master']);
-        unset($fields["\000".__CLASS__."\000".'slave']);
-        unset($fields["\000".__CLASS__."\000".'transaction']);
-        unset($fields["\000".__CLASS__."\000".'schema']);
+        unset($fields["\000" . __CLASS__ . "\000" . "pdo"]);
+        unset($fields["\000" . __CLASS__ . "\000" . 'master']);
+        unset($fields["\000" . __CLASS__ . "\000" . 'slave']);
+        unset($fields["\000" . __CLASS__ . "\000" . 'transaction']);
+        unset($fields["\000" . __CLASS__ . "\000" . 'schema']);
 
         return array_keys($fields);
     }
