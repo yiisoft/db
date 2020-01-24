@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db;
 
 use PDO;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Yiisoft\Cache\CacheInterface;
+use Yiisoft\Db\Contracts\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -132,7 +135,7 @@ use Yiisoft\Profiler\Profiler;
  * available. This property is read-only.
  * @property PDO $masterPdo The PDO instance for the currently active master connection. This property is read-only.
  * @property QueryBuilder $queryBuilder The query builder for the current DB connection. Note that the type of this
- * property differs in getter and setter. See [[getQueryBuilder()]] and [[setQueryBuilder()]] for details.
+ * property differs in getter and setter. See {@see getQueryBuilder()} and {@see setQueryBuilder()} for details.
  * @property Schema $schema The schema information for the database opened by this connection. This property is
  * read-only.
  * @property string $serverVersion Server version as a string. This property is read-only.
@@ -146,32 +149,12 @@ use Yiisoft\Profiler\Profiler;
 class Connection implements ConnectionInterface
 {
     /**
-     * @event {@see \Yiisoft\Base\Event|Event} an event that is triggered after a DB connection is established
-     */
-    const EVENT_AFTER_OPEN = 'afterOpen';
-
-    /**
-     * @event [[yii\base\Event|Event]] an event that is triggered right before a top-level transaction is started
-     */
-    const EVENT_BEGIN_TRANSACTION = 'beginTransaction';
-
-    /**
-     * @event [[yii\base\Event|Event]] an event that is triggered right after a top-level transaction is committed
-     */
-    const EVENT_COMMIT_TRANSACTION = 'commitTransaction';
-
-    /**
-     * @event [[yii\base\Event|Event]] an event that is triggered right after a top-level transaction is rolled back
-     */
-    const EVENT_ROLLBACK_TRANSACTION = 'rollbackTransaction';
-
-    /**
-     * @var string|array the Data Source Name, or DSN, contains the information required to connect to the database.
+     * @var string|null the Data Source Name, or DSN, contains the information required to connect to the database.
      *                   Please refer to the [PHP manual](http://php.net/manual/en/pdo.construct.php) on
      *                   the format of the DSN string.
      *
-     * For [SQLite](http://php.net/manual/en/ref.pdo-sqlite.connection.php) you may use a [path alias](guide:concept-aliases)
-     * for specifying the database path, e.g. `sqlite:@app/data/db.sql`.
+     * For [SQLite](http://php.net/manual/en/ref.pdo-sqlite.connection.php) you may use a
+     * [path alias](guide:concept-aliases) for specifying the database path, e.g. `sqlite:@app/data/db.sql`.
      *
      * Since version 3.0.0 an array can be passed to contruct a DSN string.
      *
@@ -189,7 +172,7 @@ class Connection implements ConnectionInterface
      *
      * Will result in the DSN string `mysql:host=127.0.0.1;dbname=demo`.
      */
-    private $dsn;
+    private ?string $dsn = null;
 
     /**
      * @var LoggerInterface $logger
@@ -220,7 +203,7 @@ class Connection implements ConnectionInterface
      *
      * @see pdoClass
      */
-    private $pdo;
+    private ?PDO $pdo = null;
 
     /**
      * @var bool whether to enable schema caching. Note that in order to enable truly schema caching, a valid cache
@@ -230,7 +213,7 @@ class Connection implements ConnectionInterface
      * @see schemaCacheExclude
      * @see schemaCache
      */
-    public $enableSchemaCache = true;
+    private bool $enableSchemaCache = true;
 
     /**
      * @var int number of seconds that table metadata can remain valid in cache. Use 0 to indicate that the cached data
@@ -238,7 +221,7 @@ class Connection implements ConnectionInterface
      *
      * @see enableSchemaCache
      */
-    public $schemaCacheDuration = 3600;
+    private int $schemaCacheDuration = 3600;
 
     /**
      * @var array list of tables whose metadata should NOT be cached. Defaults to empty array. The table names may
@@ -246,15 +229,15 @@ class Connection implements ConnectionInterface
      *
      * @see enableSchemaCache
      */
-    public $schemaCacheExclude = [];
+    private array $schemaCacheExclude = [];
 
     /**
-     * @var CacheInterface|string the cache object or the ID of the cache application component that is used to cache
+     * @var CacheInterface|null the cache object or the ID of the cache application component that is used to cache
      * the table metadata.
      *
-     * @see enableSchemaCache
+     * {@see enableSchemaCache}
      */
-    public $schemaCache = 'cache';
+    private ?CacheInterface $schemaCache = null;
 
     /**
      * @var bool whether to enable query caching. Note that in order to enable query caching, a valid cache component as
@@ -265,7 +248,7 @@ class Connection implements ConnectionInterface
      * {@see cache()}
      * {@see noCache()}
      */
-    public $enableQueryCache = true;
+    private bool $enableQueryCache = true;
 
     /**
      * @var int the default number of seconds that query results can remain valid in cache. Defaults to 3600, meaning
@@ -275,19 +258,19 @@ class Connection implements ConnectionInterface
      * {@see enableQueryCache}
      * {@see cache()}
      */
-    public $queryCacheDuration = 3600;
+    private int $queryCacheDuration = 3600;
 
     /**
-     * @var CacheInterface|string the cache object or the ID of the cache application component that is used for query
+     * @var CacheInterface the cache object or the ID of the cache application component that is used for query
      * caching.
      *
      * @see enableQueryCache
      */
-    public $queryCache = 'cache';
+    private CacheInterface $queryCache;
 
     /**
-     * @var string the charset used for database connection. The property is only used for MySQL, PostgreSQL and CUBRID
-     * databases. Defaults to null, meaning using default charset as configured by the database.
+     * @var string|null the charset used for database connection. The property is only used for MySQL, PostgreSQL and
+     * CUBRID databases. Defaults to null, meaning using default charset as configured by the database.
      *
      * For Oracle Database, the charset must be specified in the {@see dsn}, for example for UTF-8 by appending
      * `;charset=UTF-8` to the DSN string.
@@ -295,7 +278,7 @@ class Connection implements ConnectionInterface
      * The same applies for if you're using GBK or BIG5 charset with MySQL, then it's highly recommended to specify
      * charset via {@see dsn} like `'mysql:dbname=mydatabase;host=127.0.0.1;charset=GBK;'`.
      */
-    public $charset;
+    private ?string $charset = null;
 
     /**
      * @var bool whether to turn on prepare emulation. Defaults to false, meaning PDO will use the native prepare
@@ -303,14 +286,14 @@ class Connection implements ConnectionInterface
      * the prepare support to bypass the buggy native prepare support. The default value is null, which means the PDO
      * ATTR_EMULATE_PREPARES value will not be changed.
      */
-    public $emulatePrepare;
+    private ?bool $emulatePrepare = null;
 
     /**
      * @var string the common prefix or suffix for table names. If a table name is given as `{{%TableName}}`, then the
      * percentage character `%` will be replaced with this property value. For example, `{{%post}}` becomes
      * `{{tbl_post}}`.
      */
-    public $tablePrefix = '';
+    private string $tablePrefix = '';
 
     /**
      * @var array mapping between PDO driver names and {@see Schema} classes. The keys of the array are PDO driver names
@@ -320,26 +303,25 @@ class Connection implements ConnectionInterface
      * not need to set this property unless you want to use your own {@see Schema} class to support DBMS that is not
      * supported by Yii.
      */
-    public $schemaMap = [
-        'pgsql' => 'Yiisoft\Db\Pgsql\Schema', // PostgreSQL
-        'mysqli' => 'Yiisoft\Db\Mysql\Schema', // MySQL
-        'mysql' => 'Yiisoft\Db\Mysql\Schema', // MySQL
-        'sqlite' => 'Yiisoft\Db\Sqlite\Schema', // sqlite 3
-        'sqlite2' => 'Yiisoft\Db\Sqlite\Schema', // sqlite 2
-        'sqlsrv' => 'Yiisoft\Db\db\Mssql\Schema', // newer MSSQL driver on MS Windows hosts
-        'oci' => 'Yiisoft\Db\db\Oci\Schema', // Oracle driver
-        'mssql' => 'Yiisoft\Db\db\Mssql\Schema', // older MSSQL driver on MS Windows hosts
-        'dblib' => 'Yiisoft\Db\Mssql\Schema', // dblib drivers on GNU/Linux (and maybe other OSes) hosts
-        'cubrid' => 'Yiisoft\Db\Cubrid\Schema', // CUBRID
+    private array $schemaMap = [
+        'pgsql' => Pgsql\Schema::class, // PostgreSQL
+        'mysqli' => Mysql\Schema::class, // MySQL
+        'mysql' => Mysql\Schema::class, // MySQL
+        'sqlite' => Sqlite\Schema::class, // sqlite 3
+        'sqlite2' => Sqlite\Schema::class, // sqlite 2
+        'sqlsrv' => Mssql\Schema::class, // newer MSSQL driver on MS Windows hosts
+        'oci' => Oci\Schema::class, // Oracle driver
+        'mssql' => Mssql\Schema::class, // older MSSQL driver on MS Windows hosts
+        'dblib' => Mssql\Schema::class, // dblib drivers on GNU/Linux (and maybe other OSes) hosts
     ];
 
     /**
-     * @var string Custom PDO wrapper class. If not set, it will use {@see PDO} or {@see \Yiisoft\Db\mssql\PDO} when
-     * MSSQL is used.
+     * @var string Custom PDO wrapper class. If not set, it will use {@see PDO} or {@see \Yiisoft\Db\mssql\PDO}
+     * when MSSQL is used.
      *
      * @see pdo
      */
-    public $pdoClass;
+    private ?string $pdoClass = null;
 
     /**
      * @var array mapping between PDO driver names and {@see Command} classes. The keys of the array are PDO driver
@@ -349,31 +331,23 @@ class Connection implements ConnectionInterface
      * normally do not need to set this property unless you want to use your own {@see Command} class or support
      * DBMS that is not supported by Yii.
      */
-    public $commandMap = [
-        'pgsql'   => 'Yiisoft\Db\Command', // PostgreSQL
-        'mysqli'  => 'Yiisoft\Db\Command', // MySQL
-        'mysql'   => 'Yiisoft\Db\Command', // MySQL
-        'sqlite'  => 'Yiisoft\Db\Sqlite\Command', // sqlite 3
-        'sqlite2' => 'Yiisoft\Db\Sqlite\Command', // sqlite 2
-        'sqlsrv'  => 'Yiisoft\Db\Command', // newer MSSQL driver on MS Windows hosts
-        'oci'     => 'Yiisoft\Db\Command', // Oracle driver
-        'mssql'   => 'Yiisoft\Db\Command', // older MSSQL driver on MS Windows hosts
-        'dblib'   => 'Yiisoft\Db\Command', // dblib drivers on GNU/Linux (and maybe other OSes) hosts
+    private array $commandMap = [
+        'pgsql'   => Command::class, // PostgreSQL
+        'mysqli'  => Command::class, // MySQL
+        'mysql'   => Command::class, // MySQL
+        'sqlite'  => Sqlite\Command::class, // sqlite 3
+        'sqlite2' => Sqlite\Command::class, // sqlite 2
+        'sqlsrv'  => Command::class, // newer MSSQL driver on MS Windows hosts
+        'oci'     => Command::class, // Oracle driver
+        'mssql'   => Command::class, // older MSSQL driver on MS Windows hosts
+        'dblib'   => Command::class, // dblib drivers on GNU/Linux (and maybe other OSes) hosts
     ];
 
     /**
      * @var bool whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint). Note that if the underlying
      * DBMS does not support savepoint, setting this property to be true will have no effect.
      */
-    public $enableSavepoint = true;
-
-    /**
-     * @var CacheInterface|string|false the cache object or the ID of the cache application component that is used to
-     * store the health status of the DB servers specified in {@see masters} and {@see slaves}. This is used only when
-     * read/write splitting is enabled or {@see masters} is not empty. Set boolean `false` to disabled server status
-     * caching.
-     */
-    public $serverStatusCache = 'cache';
+    private bool $enableSavepoint = true;
 
     /**
      * @var int the retry interval in seconds for dead servers listed in {@see masters} and {@see slaves}. This is used
@@ -503,24 +477,29 @@ class Connection implements ConnectionInterface
     private $profiler;
 
     /**
-     * @var CacheInterface $cache
+     * @var string[] quoted table name cache for {@see quoteTableName()} calls
      */
-    private $cache;
+    private $quotedTableNames;
+
+    /**
+     * @var string[] quoted column name cache for {@see quoteColumnName()} calls
+     */
+    private $quotedColumnNames;
 
     /**
      * Constructor based on dns info.
      *
      * @param array dns info
      */
-    public function __construct(CacheInterface $cache, LoggerInterface $logger, Profiler $profiler, $config)
+    public function __construct(CacheInterface $cache, LoggerInterface $logger, Profiler $profiler, array $config)
     {
-        if (\is_array($config)) {
-            $this->dsn = $this->buildDSN($config);
+        if (\array_key_exists('dsn', $config)) {
+            $this->dsn = $config['dsn'];
         } else {
-            $this->dsn = $config;
+            $this->dsn = $this->buildDSN($config);
         }
 
-        $this->cache = $cache;
+        $this->schemaCache = $cache;
         $this->logger = $logger;
         $this->profiler = $profiler;
     }
@@ -649,8 +628,6 @@ class Connection implements ConnectionInterface
      * ignored.
      *
      * @return array the current query cache information, or null if query cache is not enabled.
-     *
-     * @internal
      */
     public function getQueryCacheInfo($duration, $dependency)
     {
@@ -670,8 +647,8 @@ class Connection implements ConnectionInterface
         }
 
         if ($duration === 0 || $duration > 0) {
-            if ($this->cache instanceof CacheInterface) {
-                return [$this->cache, $duration, $dependency];
+            if ($this->schemaCache instanceof CacheInterface) {
+                return [$this->schemaCache, $duration, $dependency];
             }
         }
     }
@@ -1028,40 +1005,6 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * Quotes a table name for use in a query.
-     *
-     * If the table name contains schema prefix, the prefix will also be properly quoted.
-     *
-     * If the table name is already quoted or contains special characters including '(', '[[' and '{{', then this method
-     * will do nothing.
-     *
-     * @param string $name table name
-     *
-     * @return string the properly quoted table name
-     */
-    public function quoteTableName($name)
-    {
-        return $this->getSchema()->quoteTableName($name);
-    }
-
-    /**
-     * Quotes a column name for use in a query.
-     *
-     * If the column name contains prefix, the prefix will also be properly quoted.
-     *
-     * If the column name is already quoted or contains special characters including '(', '[[' and '{{', then this
-     * method will do nothing.
-     *
-     * @param string $name column name
-     *
-     * @return string the properly quoted column name
-     */
-    public function quoteColumnName($name)
-    {
-        return $this->getSchema()->quoteColumnName($name);
-    }
-
-    /**
      * Processes a SQL statement by quoting table and column names that are enclosed within double brackets.
      *
      * Tokens enclosed within double curly brackets are treated as table names, while tokens enclosed within double
@@ -1293,7 +1236,7 @@ class Connection implements ConnectionInterface
 
             $key = [__METHOD__, $config['dsn']];
 
-            if ($this->cache instanceof CacheInterface && $this->cache->get($key)) {
+            if ($this->schemaCache instanceof CacheInterface && $this->schemaCache->get($key)) {
                 // should not try this dead server now
                 continue;
             }
@@ -1303,7 +1246,7 @@ class Connection implements ConnectionInterface
                 $config['cache'],
                 $config['logger'],
                 $config['profiler'],
-                $config['dsn']
+                $config
             );
 
             $db->setUsername($config['username']);
@@ -1319,9 +1262,9 @@ class Connection implements ConnectionInterface
                     "Connection ({$config['dsn']}) failed: " . $e->getMessage() . ' ' . __METHOD__
                 );
 
-                if ($this->cache instanceof CacheInterface) {
+                if ($this->schemaCache instanceof CacheInterface) {
                     // mark this server as dead and only retry it after the specified interval
-                    $this->cache->set($key, 1, $this->serverRetryInterval);
+                    $this->schemaCache->set($key, 1, $this->serverRetryInterval);
                 }
             }
         }
@@ -1394,33 +1337,145 @@ class Connection implements ConnectionInterface
         return $this->dsn;
     }
 
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->username;
     }
 
-    public function getCache()
-    {
-        return $this->cache;
-    }
-
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    public function getPDO()
+    public function getPDO(): ?PDO
     {
         return $this->pdo;
     }
 
-    public function setUsername($value)
+    public function setUsername(?string $value): void
     {
         $this->username = $value;
     }
 
-    public function setPassword($value)
+    public function setPassword(?string $value): void
     {
         $this->password = $value;
+    }
+
+    public function getEnableSchemaCache(): bool
+    {
+        return $this->enableSchemaCache;
+    }
+
+    public function setEnableSchemaCache(bool $value): void
+    {
+        $this->enableSchemaCache = $value;
+    }
+
+    public function getSchemaCacheExclude(): array
+    {
+        return $this->schemaCacheExclude;
+    }
+
+    public function setSchemaCacheExclude(array $value): void
+    {
+        $this->schemaCacheExclude = $value;
+    }
+
+    public function getSchemaCache(): CacheInterface
+    {
+        return $this->schemaCache;
+    }
+
+    public function setSchemaCache(?CacheInterface $value): void
+    {
+        $this->schemaCache = $value;
+    }
+
+    public function getSchemaCacheDuration(): int
+    {
+        return $this->schemaCacheDuration;
+    }
+
+    public function getEnableQueryCache(): bool
+    {
+        return $this->enableQueryCache;
+    }
+
+    public function setEnableQueryCache(bool $value): void
+    {
+        $this->enableQueryCache = $value;
+    }
+
+    public function setQueryCache(CacheInterface $value): void
+    {
+        $this->queryCache = $value;
+    }
+
+    public function getQueryCacheDuration(): int
+    {
+        return $this->queryCacheDuration;
+    }
+
+    public function setEmulatePrepare(bool $value): void
+    {
+        $this->emulatePrepare = $value;
+    }
+
+    public function getTablePrefix(): string
+    {
+        return $this->tablePrefix;
+    }
+
+    public function setTablePrefix(string $value): void
+    {
+        $this->tablePrefix = $value;
+    }
+
+    public function getEnableSavepoint(): bool
+    {
+        return $this->enableSavepoint;
+    }
+
+    public function setEnableSavepoint(bool $value): void
+    {
+        $this->enableSavepoint = $value;
+    }
+
+    /**
+     * Quotes a table name for use in a query.
+     * If the table name contains schema prefix, the prefix will also be properly quoted.
+     * If the table name is already quoted or contains special characters including '(', '[[' and '{{',
+     * then this method will do nothing.
+     *
+     * @param string $name table name
+     * @return string the properly quoted table name
+     */
+    public function quoteTableName($name)
+    {
+        if (isset($this->quotedTableNames[$name])) {
+            return $this->quotedTableNames[$name];
+        }
+
+        return $this->quotedTableNames[$name] = $this->getSchema()->quoteTableName($name);
+    }
+
+    /**
+     * Quotes a column name for use in a query.
+     *
+     * If the column name contains prefix, the prefix will also be properly quoted.
+     * If the column name is already quoted or contains special characters including '(', '[[' and '{{',
+     * then this method will do nothing.
+     *
+     * @param string $name column name
+     * @return string the properly quoted column name
+     */
+    public function quoteColumnName($name)
+    {
+        if (isset($this->quotedColumnNames[$name])) {
+            return $this->quotedColumnNames[$name];
+        }
+
+        return $this->quotedColumnNames[$name] = $this->getSchema()->quoteColumnName($name);
     }
 }

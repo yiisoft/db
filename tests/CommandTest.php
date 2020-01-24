@@ -81,7 +81,7 @@ abstract class CommandTest extends DatabaseTestCase
 
     public function testExecute(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true, true, true);
 
         $sql = 'INSERT INTO {{customer}}([[email]], [[name]], [[address]]) VALUES (\'user4@example.com\', \'user4\', \'address4\')';
 
@@ -104,7 +104,7 @@ abstract class CommandTest extends DatabaseTestCase
 
     public function testQuery(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true, true, true);
 
         // query
         $sql = 'SELECT * FROM {{customer}}';
@@ -187,7 +187,7 @@ abstract class CommandTest extends DatabaseTestCase
 
     public function testBindParamValue(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true, true, true);
 
         // bindParam
         $sql = 'INSERT INTO {{customer}}([[email]], [[name]], [[address]]) VALUES (:email, :name, :address)';
@@ -790,7 +790,7 @@ SQL;
     {
         $time = time();
 
-        $db = $this->getConnection();
+        $db = $this->getConnection(true, true, true);
 
         $db->createCommand('DELETE FROM {{order_with_null_fk}}')->execute();
 
@@ -903,7 +903,7 @@ SQL;
 
     public function testRenameTable(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true, true, true);
 
         $fromTableName = 'type';
         $toTableName = 'new_type';
@@ -1151,7 +1151,7 @@ SQL;
      */
     public function testUpsert(array $firstData, array $secondData)
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true, true, true);
 
         $this->assertEquals(0, $db->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')->queryScalar());
 
@@ -1404,7 +1404,7 @@ SQL;
 
     public function testLastInsertId(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true, true, true);
 
         $sql = 'INSERT INTO {{profile}}([[description]]) VALUES (\'non duplicate\')';
 
@@ -1419,8 +1419,8 @@ SQL;
     {
         $db = $this->getConnection();
 
-        $db->enableQueryCache = true;
-        $db->queryCache = $this->cache;
+        $db->setEnableQueryCache(true);
+        $db->setQueryCache($this->cache);
 
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
@@ -1446,7 +1446,7 @@ SQL;
             $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
         }, 10);
 
-        $db->enableQueryCache = false;
+        $db->setEnableQueryCache(false);
 
         $db->cache(function ($db) use ($command, $update) {
             $this->assertEquals('user22', $command->bindValue(':id', 2)->queryScalar());
@@ -1454,7 +1454,7 @@ SQL;
             $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
         }, 10);
 
-        $db->enableQueryCache = true;
+        $db->setEnableQueryCache(true);
 
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->cache();
 

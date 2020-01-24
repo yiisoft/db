@@ -4,6 +4,7 @@ namespace Yiisoft\Db;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Yiisoft\Db\Contracts\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Profiler\Profiler;
@@ -49,12 +50,12 @@ use Yiisoft\Profiler\Profiler;
  * {@see sql}.
  * @property string $sql The SQL statement to be executed.
  */
-class Command
+class Command extends Database
 {
     /**
-     * @var Connection the DB connection that this command is associated with
+     * @var ConnectionInterface the DB connection that this command is associated with
      */
-    public Connection $db;
+    public ConnectionInterface $db;
 
     /**
      * @var \PDOStatement the PDOStatement object that this command is associated with
@@ -64,7 +65,7 @@ class Command
     /**
      * @var int the default fetch mode for this command.
      *
-     * @see http://www.php.net/manual/en/pdostatement.setfetchmode.php
+     * {@see http://www.php.net/manual/en/pdostatement.setfetchmode.php}
      */
     public $fetchMode = \PDO::FETCH_ASSOC;
 
@@ -120,14 +121,11 @@ class Command
      */
     private $retryHandler;
 
-    /**
-     * @var Profiler $profiler
-     */
     private Profiler $profiler;
 
     private LoggerInterface $logger;
 
-    public function __construct(Profiler $profiler, LoggerInterface $logger, $db, $sql)
+    public function __construct(Profiler $profiler, LoggerInterface $logger, ConnectionInterface $db, $sql)
     {
         $this->db = $db;
         $this->logger = $logger;
@@ -144,13 +142,14 @@ class Command
      *
      * Use 0 to indicate that the cached data will never expire.
      *
-     * @param \Yiisoft\Cache\Dependencies\Dependency $dependency the cache dependency associated with the cached query result.
+     * @param \Yiisoft\Cache\Dependencies\Dependency $dependency the cache dependency associated with the cached query
+     * result.
      *
      * @return $this the command object itself
      */
     public function cache($duration = null, $dependency = null)
     {
-        $this->queryCacheDuration = $duration === null ? $this->db->queryCacheDuration : $duration;
+        $this->queryCacheDuration = $duration === null ? $this->db->getQueryCacheDuration() : $duration;
         $this->queryCacheDependency = $dependency;
 
         return $this;
@@ -180,6 +179,7 @@ class Command
 
     /**
      * Specifies the SQL statement to be executed. The SQL statement will be quoted using {@see Connection::quoteSql()}.
+     *
      * The previous SQL (if any) will be discarded, and {@see params} will be cleared as well. See {@see reset()}
      * for details.
      *
@@ -243,10 +243,11 @@ class Command
         $params = [];
 
         foreach ($this->params as $name => $value) {
-            if (is_string($name) && strncmp(':', $name, 1)) {
+            if (\is_string($name) && strncmp(':', $name, 1)) {
                 $name = ':'.$name;
             }
-            if (is_string($value)) {
+
+            if (\is_string($value)) {
                 $params[$name] = $this->db->quoteValue($value);
             } elseif (is_bool($value)) {
                 $params[$name] = ($value ? 'TRUE' : 'FALSE');
@@ -332,7 +333,8 @@ class Command
      * 1-indexed position of the parameter.
      *
      * @param mixed $value the PHP variable to bind to the SQL statement parameter (passed by reference)
-     * @param int $dataType SQL data type of the parameter. If null, the type is determined by the PHP type of the value.
+     * @param int $dataType SQL data type of the parameter. If null, the type is determined by the PHP type of the
+     * value.
      * @param int $length length of the data type
      * @param mixed $driverOptions the driver-specific options
      *
@@ -382,7 +384,8 @@ class Command
      * parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
      * @param mixed $value The value to bind to the parameter
-     * @param int $dataType SQL data type of the parameter. If null, the type is determined by the PHP type of the value.
+     * @param int $dataType SQL data type of the parameter. If null, the type is determined by the PHP type of the
+     * value.
      *
      * @return $this the current command being executed
      *
@@ -444,6 +447,7 @@ class Command
 
     /**
      * Executes the SQL statement and returns query result.
+     *
      * This method is for executing a SQL query that returns result set, such as `SELECT`.
      *
      * @throws Exception execution failed
@@ -458,7 +462,8 @@ class Command
     /**
      * Executes the SQL statement and returns ALL rows at once.
      *
-     * @param int $fetchMode the result fetch mode. Please refer to [PHP manual](http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php)
+     * @param int $fetchMode the result fetch mode.
+     * Please refer to [PHP manual](http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php)
      * for valid fetch modes. If this parameter is null, the value set in {@see fetchMode} will be used.
      *
      * @throws Exception execution failed
@@ -476,7 +481,8 @@ class Command
      *
      * This method is best used when only the first row of result is needed for a query.
      *
-     * @param int $fetchMode the result fetch mode. Please refer to [PHP manual](http://php.net/manual/en/pdostatement.setfetchmode.php)
+     * @param int $fetchMode the result fetch mode.
+     * Please refer to [PHP manual](http://php.net/manual/en/pdostatement.setfetchmode.php)
      * for valid fetch modes. If this parameter is null, the value set in {@see fetchMode} will be used.
      *
      * @throws Exception execution failed
@@ -542,8 +548,8 @@ class Command
      * Note that the created command is not executed until {@see execute()} is called.
      *
      * @param string $table the table that new rows will be inserted into.
-     * @param array|\Yiisoft\Db\Query $columns the column data (name => value) to be inserted into the table or instance
-     * of {@see \Yiisoft\Db\Query|Query} to perform INSERT INTO ... SELECT SQL statement.
+     * @param array|\Yiisoft\Db\Query $columns the column data (name => value) to be inserted into the table or
+     * instance of {@see \Yiisoft\Db\Query|Query} to perform INSERT INTO ... SELECT SQL statement.
      *
      * Passing of {@see Yiisoft\Db\Query|Query}.
      *
@@ -1087,12 +1093,12 @@ class Command
      * @param mixed $value the value for the primary key of the next new row inserted. If this is not set,
      * the next new row's primary key will have the maximum existing value +1.
      * @throws NotSupportedException if this is not supported by the underlying DBMS
-     * @since 2.0.16
      */
     public function executeResetSequence($table, $value = null)
     {
-        return $this->db->getQueryBuilder()->executeResetSequence($table, $value);
+        return $this->resetSequence($table, $value);
     }
+
     /**
      * Builds a SQL command for enabling or disabling integrity check.
      *
@@ -1289,7 +1295,7 @@ class Command
         if ($method !== '') {
             $info = $this->db->getQueryCacheInfo($this->queryCacheDuration, $this->queryCacheDependency);
 
-            if (is_array($info)) {
+            if (\is_array($info)) {
                 /* @var $cache \Yiisoft\Cache\CacheInterface */
                 $cache = $info[0];
                 $rawSql = $rawSql ?: $this->getRawSql();

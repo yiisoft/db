@@ -1,7 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db;
+
+use Yiisoft\Db\Contracts\ConnectionInterface;
 
 /**
  * BatchQueryResult represents a batch query from which you can retrieve data in batches.
@@ -19,38 +22,41 @@ namespace Yiisoft\Db;
  * }
  * ```
  */
-class BatchQueryResult extends BaseObject implements \Iterator
+class BatchQueryResult implements \Iterator
 {
     /**
-     * @var Connection the DB connection to be used when performing batch query.
+     * @var ConnectionInterface the DB connection to be used when performing batch query.
      *                 If null, the "db" application component will be used.
      */
-    private $db;
+    private ConnectionInterface $db;
 
     /**
      * @var Query the query object associated with this batch query.
-     *            Do not modify this property directly unless after [[reset()]] is called explicitly.
+     * Do not modify this property directly unless after {@see reset()} is called explicitly.
      */
-    public $query;
+    private Query $query;
+
     /**
      * @var int the number of rows to be returned in each batch.
      */
-    public $batchSize = 100;
+    private int $batchSize = 100;
+
     /**
      * @var bool whether to return a single row during each iteration.
-     *           If false, a whole batch of rows will be returned in each iteration.
+     *
+     * If false, a whole batch of rows will be returned in each iteration.
      */
-    public $each = false;
+    private bool $each = false;
 
     /**
      * @var DataReader the data reader associated with this batch query.
      */
-    private $dataReader;
+    private ?DataReader $dataReader = null;
 
     /**
      * @var array the data retrieved in the current batch
      */
-    private $batch;
+    private ?array $batch = null;
 
     /**
      * @var mixed the value for the current iteration
@@ -175,7 +181,7 @@ class BatchQueryResult extends BaseObject implements \Iterator
      *
      * @return int the index of the current row.
      */
-    public function key(): int
+    public function key()
     {
         return $this->key;
     }
@@ -224,5 +230,93 @@ class BatchQueryResult extends BaseObject implements \Iterator
         }
 
         return null;
+    }
+
+    /**
+     * {@see Query}
+     *
+     * @return Query
+     */
+    public function getQuery(): Query
+    {
+        return $this->query;
+    }
+
+    /**
+     * {@see batchSize}
+     *
+     * @return int
+     */
+    public function getBatchSize(): int
+    {
+        return $this->batchSize;
+    }
+
+    /**
+     * {@see db}
+     *
+     * @return Connection
+     */
+    public function getDb(): Connection
+    {
+        return $this->db = $value;
+    }
+
+    /**
+     * {@see each}
+     *
+     * @return boolean
+     */
+    public function getEach(): bool
+    {
+        return $this->each;
+    }
+
+    /**
+     * {@see query}
+     *
+     * @param Query $value
+     *
+     * @return void
+     */
+    public function setQuery(Query $value): void
+    {
+        $this->query = $value;
+    }
+
+    /**
+     * {@see batchSize}
+     *
+     * @param integer $value
+     *
+     * @return void
+     */
+    public function setBatchSize(int $value): void
+    {
+        $this->batchSize = $value;
+    }
+
+    /**
+     * {@see db}
+     *
+     * @param Connection $value
+     *
+     * @return void
+     */
+    public function setDb(Connection $value): void
+    {
+        $this->db = $value;
+    }
+
+    /**
+     * {@see each}
+     *
+     * @param boolean $value
+     *
+     * @return void
+     */
+    public function setEach(bool $value): void
+    {
+        $this->each = $value;
     }
 }

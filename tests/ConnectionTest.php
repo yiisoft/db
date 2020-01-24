@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\Cache\ArrayCache;
-use Yiisoft\Cache\Cache;
 use Yiisoft\Db\Connection;
 use Yiisoft\Db\Transaction;
 use Yiisoft\Db\Exception\Exception;
@@ -18,9 +16,9 @@ abstract class ConnectionTest extends DatabaseTestCase
     {
         $connection = $this->getConnection(false);
 
-        $this->assertEquals($this->buildDSN($this->database['dsn']), $connection->getDsn());
-        $this->assertEquals($this->database['username'], $connection->getUsername());
-        $this->assertEquals($this->database['password'], $connection->getPassword());
+        $this->assertEquals($this->buildDSN($this->databases['dsn']), $connection->getDsn());
+        $this->assertEquals($this->databases['username'], $connection->getUsername());
+        $this->assertEquals($this->databases['password'], $connection->getPassword());
     }
 
     public function testOpenClose(): void
@@ -137,7 +135,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
     public function testTransaction(): void
     {
-        $connection = $this->getConnection(false);
+        $connection = $this->getConnection(false, true, true);
 
         $this->assertNull($connection->getTransaction());
 
@@ -213,7 +211,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
     public function testTransactionShortcutCorrect(): void
     {
-        $connection = $this->getConnection(true);
+        $connection = $this->getConnection(true, true, true);
 
         $result = $connection->transaction(function () use ($connection) {
             $connection->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
@@ -231,7 +229,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
     public function testTransactionShortcutCustom(): void
     {
-        $connection = $this->getConnection(true);
+        $connection = $this->getConnection(true, true, true);
 
         $result = $connection->transaction(function (Connection $db) {
             $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
@@ -273,7 +271,7 @@ abstract class ConnectionTest extends DatabaseTestCase
     {
         $connection = $this->getConnection();
 
-        $connection->enableSavepoint = false;
+        $connection->setEnableSavepoint(false);
 
         $connection->transaction(function (Connection $db) {
             $this->assertNotNull($db->getTransaction());
@@ -281,82 +279,6 @@ abstract class ConnectionTest extends DatabaseTestCase
             $db->beginTransaction();
         });
     }
-
-    /*public function testEnableQueryLog()
-    {
-        $connection = $this->getConnection();
-
-        foreach (['qlog1', 'qlog2', 'qlog3', 'qlog4'] as $table) {
-            if ($connection->getTableSchema($table, true) !== null) {
-                $connection->createCommand()->dropTable($table)->execute();
-            }
-        }
-
-        // profiling and logging
-        $connection->enableLogging = true;
-        $connection->enableProfiling = true;
-
-        Yii::getApp()->logger->messages = [];
-        Yii::getApp()->profiler->messages = [];
-        $connection->createCommand()->createTable('qlog1', ['id' => 'pk'])->execute();
-        $this->assertCount(1, Yii::getApp()->logger->messages);
-        $this->assertCount(1, Yii::getApp()->profiler->messages);
-        $this->assertNotNull($connection->getTableSchema('qlog1', true));
-
-        Yii::getApp()->logger->messages = [];
-        Yii::getApp()->profiler->messages = [];
-        $connection->createCommand('SELECT * FROM qlog1')->queryAll();
-        $this->assertCount(1, Yii::getApp()->logger->messages);
-        $this->assertCount(1, Yii::getApp()->profiler->messages);
-
-        // profiling only
-        $connection->enableLogging = false;
-        $connection->enableProfiling = true;
-
-        Yii::getApp()->logger->messages = [];
-        Yii::getApp()->profiler->messages = [];
-        $connection->createCommand()->createTable('qlog2', ['id' => 'pk'])->execute();
-        $this->assertCount(0, Yii::getApp()->logger->messages);
-        $this->assertCount(1, Yii::getApp()->profiler->messages);
-        $this->assertNotNull($connection->getTableSchema('qlog2', true));
-
-        Yii::getApp()->logger->messages = [];
-        Yii::getApp()->profiler->messages = [];
-        $connection->createCommand('SELECT * FROM qlog2')->queryAll();
-        $this->assertCount(0, Yii::getApp()->logger->messages);
-        $this->assertCount(1, Yii::getApp()->profiler->messages);
-
-        // logging only
-        $connection->enableLogging = true;
-        $connection->enableProfiling = false;
-
-        Yii::getApp()->logger->messages = [];
-        Yii::getApp()->profiler->messages = [];
-        $connection->createCommand()->createTable('qlog3', ['id' => 'pk'])->execute();
-        $this->assertCount(1, Yii::getApp()->logger->messages);
-        $this->assertCount(0, Yii::getApp()->profiler->messages);
-        $this->assertNotNull($connection->getTableSchema('qlog3', true));
-
-        Yii::getApp()->logger->messages = [];
-        Yii::getApp()->profiler->messages = [];
-        $connection->createCommand('SELECT * FROM qlog3')->queryAll();
-        $this->assertCount(1, Yii::getApp()->logger->messages);
-        $this->assertCount(0, Yii::getApp()->profiler->messages);
-
-        // disabled
-        $connection->enableLogging = false;
-        $connection->enableProfiling = false;
-
-        Yii::getApp()->logger->messages = [];
-        Yii::getApp()->profiler->messages = [];
-        $connection->createCommand()->createTable('qlog4', ['id' => 'pk'])->execute();
-        $this->assertNotNull($connection->getTableSchema('qlog4', true));
-        $this->assertCount(0, Yii::getApp()->logger->messages);
-        $this->assertCount(0, Yii::getApp()->profiler->messages);
-        $connection->createCommand('SELECT * FROM qlog4')->queryAll();
-        $this->assertCount(0, Yii::getApp()->logger->messages);
-        $this->assertCount(0, Yii::getApp()->profiler->messages);
-    }*/
 
     public function testExceptionContainsRawQuery(): void
     {
@@ -366,7 +288,7 @@ abstract class ConnectionTest extends DatabaseTestCase
             $connection->createCommand()->createTable('qlog1', ['id' => 'pk'])->execute();
         }
 
-        $connection->emulatePrepare = true;
+        $connection->setEmulatePrepare(true);
 
         // profiling and logging
         $connection->enableLogging = true;
@@ -600,9 +522,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
     public function testServerStatusCacheCanBeDisabled(): void
     {
-        $cache = new Cache(new ArrayCache());
-
-        $this->container->set('cache', $cache);
+        $this->cache->clear();
 
         $connection = $this->getConnection(true, false);
 
@@ -615,16 +535,17 @@ abstract class ConnectionTest extends DatabaseTestCase
             'password' => $connection->getPassword(),
         ];
 
+        $connection->setSchemaCache(null);
+
         $connection->shuffleMasters = false;
-        $connection->serverStatusCache = false;
 
         $cacheKey = ['Yiisoft\Db\Connection::openFromPoolSequentially', $connection->getDsn()];
 
-        $this->assertFalse($cache->has($cacheKey));
+        $this->assertFalse($this->cache->has($cacheKey));
 
         $connection->open();
 
-        $this->assertFalse($cache->has($cacheKey), 'Caching is disabled');
+        $this->assertFalse($this->cache->has($cacheKey), 'Caching is disabled');
 
         $connection->close();
 
@@ -637,7 +558,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         } catch (InvalidConfigException $e) {
         }
 
-        $this->assertFalse($cache->has($cacheKey), 'Caching is disabled');
+        $this->assertFalse($this->cache->has($cacheKey), 'Caching is disabled');
 
         $connection->close();
     }

@@ -11,9 +11,9 @@ use Yiisoft\Db\Tests\TestCase;
 abstract class DatabaseTestCase extends TestCase
 {
     /**
-     * @var [type]
+     * @var
      */
-    protected $database;
+    protected $databases;
 
     /**
      * @var Connection
@@ -27,13 +27,15 @@ abstract class DatabaseTestCase extends TestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         if ($this->driverName === null) {
             throw new \Exception('driverName is not set for a DatabaseTestCase.');
         }
 
         $databases = self::getParam('databases');
 
-        $this->database = $databases[$this->driverName];
+        $this->databases = $databases[$this->driverName];
 
         $pdo_database = 'pdo_' . $this->driverName;
 
@@ -44,8 +46,6 @@ abstract class DatabaseTestCase extends TestCase
         if (!\extension_loaded('pdo') || !\extension_loaded($pdo_database)) {
             $this->markTestSkipped('pdo and '.$pdo_database.' extension are required.');
         }
-
-        parent::setUp();
     }
 
     protected function tearDown(): void
@@ -53,8 +53,6 @@ abstract class DatabaseTestCase extends TestCase
         if ($this->db) {
             $this->db->close();
         }
-
-        $this->removeDirectory('@runtime');
 
         parent::tearDown();
     }
@@ -65,23 +63,14 @@ abstract class DatabaseTestCase extends TestCase
      *
      * @return \Yiisoft\Db\Connection
      */
-    public function getConnection(bool $reset = true, bool $open = true)
+    public function getConnection(bool $reset = true, bool $open = true, $fixture = false)
     {
         if (!$reset && $this->db) {
             return $this->db;
         }
 
-        $config = $this->database;
-
-        if (isset($config['fixture'])) {
-            $fixture = $config['fixture'];
-            unset($config['dsn']['fixture']);
-        } else {
-            $fixture = null;
-        }
-
         try {
-            $this->db = $this->prepareDatabase($config, $fixture, $open);
+            $this->db = $this->prepareDatabase($fixture, $open);
         } catch (\Exception $e) {
             $this->markTestSkipped('Something wrong when preparing database: ' . $e->getMessage());
         }
@@ -89,13 +78,13 @@ abstract class DatabaseTestCase extends TestCase
         return $this->db;
     }
 
-    public function prepareDatabase($config, $fixture, $open = true)
+    public function prepareDatabase($fixture, $open)
     {
         /* @var $db \Yiisoft\Db\Connection */
-        $db = new Connection($this->cache, $this->logger, $this->profiler, $config['dsn']);
+        $db = new Connection($this->cache, $this->logger, $this->profiler, $this->databases['dsn']);
 
-        $db->setUsername($config['username']);
-        $db->setPassword($config['password']);
+        $db->setUsername($this->databases['username']);
+        $db->setPassword($this->databases['password']);
 
         if (!$open) {
             return $db;
@@ -103,9 +92,9 @@ abstract class DatabaseTestCase extends TestCase
 
         $db->open();
 
-        if ($fixture !== null) {
+        if ($fixture) {
             if ($this->driverName === 'oci') {
-                [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($fixture), 2);
+                [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($this->databases['fixture']), 2);
                 [$statements, $triggers, $data] = explode('/* TRIGGERS */', $creates, 3);
                 $lines = array_merge(
                     explode('--', $drops),
@@ -114,7 +103,7 @@ abstract class DatabaseTestCase extends TestCase
                     explode(';', $data)
                 );
             } else {
-                $lines = explode(';', file_get_contents($fixture));
+                $lines = explode(';', file_get_contents($this->databases['fixture']));
             }
 
             foreach ($lines as $line) {

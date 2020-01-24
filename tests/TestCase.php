@@ -8,49 +8,19 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Cache\CacheInterface;
-use Yiisoft\Db\Connection;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Di\Container;
 use Yiisoft\Files\FileHelper;
-use Yiisoft\Factory\Factory;
 use Yiisoft\Profiler\Profiler;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var Aliases $aliases
-     */
-    protected $aliases;
-
-    /**
-     * @var CacheInterface $cache
-     */
-    protected $cache;
-
-    /**
-     * @var ContainerInterface $container
-     */
-    protected $container;
-
-    /**
-     * @var Factory $factory
-     */
-    protected $factory;
-
-    /**
-     * @var LoggerInterface $logger
-     */
-    protected $logger;
-
-    /**
-     * @var array $params
-     */
-    protected static $params;
-
-    /**
-     * @var Profiler $profiler
-     */
-    protected $profiler;
+    protected static array $params = [];
+    protected Aliases $aliases;
+    protected CacheInterface $cache;
+    protected ContainerInterface $container;
+    protected LoggerInterface $logger;
+    protected Profiler $profiler;
 
     /**
      * setUp
@@ -67,8 +37,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
         $this->aliases = $this->container->get(Aliases::class);
         $this->cache = $this->container->get(CacheInterface::class);
-        $this->connection = $this->container->get(Connection::class);
-        $this->factory = $this->container->get(Factory::class);
         $this->logger = $this->container->get(LoggerInterface::class);
         $this->profiler = $this->container->get(Profiler::class);
     }
@@ -80,12 +48,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      */
     protected function tearDown(): void
     {
-        $this->aliases = null;
-        $this->cache = null;
-        $this->container = null;
-        $this->factory = null;
-        $this->logger = null;
-        $this->profiler = null;
+        unset($this->aliases);
+        unset($this->cache);
+        unset($this->container);
+        unset($this->logger);
+        unset($this->profiler);
 
         parent::tearDown();
     }
@@ -116,7 +83,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      */
     public static function getParam($name, $default = null)
     {
-        if (static::$params === null) {
+        if (empty(static::$params)) {
             static::$params = require __DIR__ . '/data/config.php';
         }
 
@@ -185,17 +152,19 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function removeDirectory(string $basePath): void
     {
-        $handle = opendir($dir = $this->aliases->get($basePath));
+        $handle = opendir($basePath);
 
         if ($handle === false) {
-            throw new \Exception("Unable to open directory: $dir");
+            throw new \Exception("Unable to open directory: $basePath");
         }
 
         while (($file = readdir($handle)) !== false) {
             if ($file === '.' || $file === '..' || $file === '.gitignore') {
                 continue;
             }
-            $path = $dir.DIRECTORY_SEPARATOR.$file;
+
+            $path = $basePath . DIRECTORY_SEPARATOR . $file;
+
             if (is_dir($path)) {
                 FileHelper::removeDirectory($path);
             } else {
