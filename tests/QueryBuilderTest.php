@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Yiisoft\Db\Conditions\BetweenColumnsCondition;
+use Yiisoft\Db\Connection;
 use Yiisoft\Db\Expression;
 use Yiisoft\Db\Mysql\QueryBuilder as MysqlQueryBuilder;
 use Yiisoft\Db\Pgsql\QueryBuilder as PgsqlQueryBuilder;
@@ -28,7 +29,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      */
     protected $likeParameterReplacements = [];
 
-    public function getDb()
+    public function getDb(): Connection
     {
         return $this->getConnection(false, false);
     }
@@ -61,7 +62,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      * This is not used as a dataprovider for testGetColumnType to speed up the test
      * when used as dataprovider every single line will cause a reconnect with the database which is not needed here.
      */
-    public function columnTypes()
+    public function columnTypes(): array
     {
         $items = [
             [
@@ -823,7 +824,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         return array_values($items);
     }
 
-    public function testGetColumnType()
+    public function testGetColumnType(): void
     {
         $qb = $this->getQueryBuilder();
 
@@ -837,14 +838,17 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         }
     }
 
-    public function testCreateTableColumnTypes()
+    public function testCreateTableColumnTypes(): void
     {
         $qb = $this->getQueryBuilder();
+
         if ($qb->db->getTableSchema('column_type_table', true) !== null) {
             $this->getConnection(false)->createCommand($qb->dropTable('column_type_table'))->execute();
         }
+
         $columns = [];
         $i = 0;
+
         foreach ($this->columnTypes() as [$column, $builder, $expected]) {
             if (!(strncmp($column, Schema::TYPE_PK, 2) === 0 ||
                   strncmp($column, Schema::TYPE_UPK, 3) === 0 ||
@@ -855,11 +859,12 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 $columns['col'.++$i] = str_replace('CHECK (value', 'CHECK ([[col'.$i.']]', $column);
             }
         }
+
         $this->getConnection(false)->createCommand($qb->createTable('column_type_table', $columns))->execute();
         $this->assertNotEmpty($qb->db->getTableSchema('column_type_table', true));
     }
 
-    public function conditionProvider()
+    public function conditionProvider(): array
     {
         $conditions = [
             // empty values
@@ -979,7 +984,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         return $conditions;
     }
 
-    public function filterConditionProvider()
+    public function filterConditionProvider(): array
     {
         $conditions = [
             // like
@@ -1030,11 +1035,11 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     /**
      * @dataProvider conditionProvider
      *
-     * @param array  $condition
+     * @param array $condition
      * @param string $expected
-     * @param array  $expectedParams
+     * @param array $expectedParams
      */
-    public function testBuildCondition($condition, $expected, $expectedParams)
+    public function testBuildCondition($condition, $expected, array $expectedParams): void
     {
         $query = (new Query())->where($condition);
 
@@ -1047,13 +1052,14 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     /**
      * @dataProvider filterConditionProvider
      *
-     * @param array  $condition
+     * @param array $condition
      * @param string $expected
-     * @param array  $expectedParams
+     * @param array $expectedParams
      */
-    public function testBuildFilterCondition($condition, $expected, $expectedParams)
+    public function testBuildFilterCondition(array $condition, string $expected, array $expectedParams): void
     {
         $query = (new Query())->filterWhere($condition);
+
         [$sql, $params] = $this->getQueryBuilder()->build($query);
         $this->assertEquals('SELECT *'.(empty($expected) ? '' : ' WHERE '.$this->replaceQuotes($expected)), $sql);
         $this->assertEquals($expectedParams, $params);
@@ -1091,7 +1097,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      *
      * @param string $sql
      */
-    public function testAddDropPrimaryKey($sql, \Closure $builder)
+    public function testAddDropPrimaryKey(string $sql, \Closure $builder): void
     {
         $this->assertSame($this->getConnection(false)->quoteSql($sql), $builder($this->getQueryBuilder(false)));
     }
@@ -1129,12 +1135,12 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      *
      * @param string $sql
      */
-    public function testAddDropForeignKey($sql, \Closure $builder)
+    public function testAddDropForeignKey(string $sql, \Closure $builder): void
     {
         $this->assertSame($this->getConnection(false)->quoteSql($sql), $builder($this->getQueryBuilder(false)));
     }
 
-    public function indexesProvider()
+    public function indexesProvider(): array
     {
         $tableName = 'T_constraints_2';
         $name1 = 'CN_constraints_2_single';
@@ -1179,12 +1185,12 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      *
      * @param string $sql
      */
-    public function testCreateDropIndex($sql, \Closure $builder)
+    public function testCreateDropIndex(string $sql, \Closure $builder): void
     {
         $this->assertSame($this->getConnection(false)->quoteSql($sql), $builder($this->getQueryBuilder(false)));
     }
 
-    public function uniquesProvider()
+    public function uniquesProvider(): array
     {
         $tableName1 = 'T_constraints_1';
         $name1 = 'CN_unique';
@@ -1218,7 +1224,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      *
      * @param string $sql
      */
-    public function testAddDropUnique($sql, \Closure $builder)
+    public function testAddDropUnique(string $sql, \Closure $builder): void
     {
         $this->assertSame($this->getConnection(false)->quoteSql($sql), $builder($this->getQueryBuilder(false)));
     }
@@ -1249,7 +1255,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      *
      * @param string $sql
      */
-    public function testAddDropCheck($sql, \Closure $builder)
+    public function testAddDropCheck(string $sql, \Closure $builder): array
     {
         $this->assertSame($this->getConnection(false)->quoteSql($sql), $builder($this->getQueryBuilder(false)));
     }
@@ -1280,12 +1286,14 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      *
      * @param string $sql
      */
-    public function testAddDropDefaultValue($sql, \Closure $builder)
+    public function testAddDropDefaultValue(string $sql, \Closure $builder): array
     {
-        $this->assertSame($this->getConnection(false)->quoteSql($sql), $builder($this->getQueryBuilder(false)));
+        $this->assertSame(
+            $this->getConnection(false)->quoteSql($sql), $builder($this->getQueryBuilder(false))
+        );
     }
 
-    public function existsParamsProvider()
+    public function existsParamsProvider(): array
     {
         return [
             ['exists', $this->replaceQuotes('SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])')],
@@ -1299,7 +1307,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      * @param string $cond
      * @param string $expectedQuerySql
      */
-    public function testBuildWhereExists($cond, $expectedQuerySql)
+    public function testBuildWhereExists(string $cond, string $expectedQuerySql): void
     {
         $expectedQueryParams = [];
 
@@ -1317,7 +1325,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEquals($expectedQueryParams, $actualQueryParams);
     }
 
-    public function testBuildWhereExistsWithParameters()
+    public function testBuildWhereExistsWithParameters(): void
     {
         $expectedQuerySql = $this->replaceQuotes(
             'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (w.merchant_id = :merchant_id))) AND (t.some_column = :some_value)'
@@ -1341,7 +1349,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEquals($expectedQueryParams, $queryParams);
     }
 
-    public function testBuildWhereExistsWithArrayParameters()
+    public function testBuildWhereExistsWithArrayParameters(): void
     {
         $expectedQuerySql = $this->replaceQuotes(
             'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (([[w]].[[merchant_id]]=:qp0) AND ([[w]].[[user_id]]=:qp1)))) AND ([[t]].[[some_column]]=:qp2)'
@@ -1369,47 +1377,55 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      * This test contains three select queries connected with UNION and UNION ALL constructions.
      * It could be useful to use "phpunit --group=db --filter testBuildUnion" command for run it.
      */
-    public function testBuildUnion()
+    public function testBuildUnion(): void
     {
         $expectedQuerySql = $this->replaceQuotes(
             '(SELECT [[id]] FROM [[TotalExample]] [[t1]] WHERE (w > 0) AND (x < 2)) UNION ( SELECT [[id]] FROM [[TotalTotalExample]] [[t2]] WHERE w > 5 ) UNION ALL ( SELECT [[id]] FROM [[TotalTotalExample]] [[t3]] WHERE w = 3 )'
         );
+
         $query = new Query();
         $secondQuery = new Query();
+
         $secondQuery->select('id')
               ->from('TotalTotalExample t2')
               ->where('w > 5');
+
         $thirdQuery = new Query();
+
         $thirdQuery->select('id')
               ->from('TotalTotalExample t3')
               ->where('w = 3');
+
         $query->select('id')
               ->from('TotalExample t1')
               ->where(['and', 'w > 0', 'x < 2'])
               ->union($secondQuery)
               ->union($thirdQuery, true);
+
         [$actualQuerySql, $queryParams] = $this->getQueryBuilder()->build($query);
         $this->assertEquals($expectedQuerySql, $actualQuerySql);
         $this->assertEquals([], $queryParams);
     }
 
-    public function testSelectSubquery()
+    public function testSelectSubquery(): void
     {
         $subquery = (new Query())
             ->select('COUNT(*)')
             ->from('operations')
             ->where('account_id = accounts.id');
+
         $query = (new Query())
             ->select('*')
             ->from('accounts')
             ->addSelect(['operations_count' => $subquery]);
+
         [$sql, $params] = $this->getQueryBuilder()->build($query);
         $expected = $this->replaceQuotes('SELECT *, (SELECT COUNT(*) FROM [[operations]] WHERE account_id = accounts.id) AS [[operations_count]] FROM [[accounts]]');
         $this->assertEquals($expected, $sql);
         $this->assertEmpty($params);
     }
 
-    public function testComplexSelect()
+    public function testComplexSelect(): void
     {
         $query = (new Query())
             ->select([
@@ -1421,6 +1437,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 new Expression($this->replaceQuotes("case t.Status_Id when 1 then 'Acknowledge' when 2 then 'No Action' else 'Unknown Action' END as [[Next Action]]")),
             ])
             ->from('tablename');
+
         [$sql, $params] = $this->getQueryBuilder()->build($query);
         $expected = $this->replaceQuotes(
             'SELECT [[t]].[[id]] AS [[ID]], [[gsm]].[[username]] AS [[GSM]], [[part]].[[Part]], [[t]].[[Part_Cost]] AS [[Part Cost]], st_x(location::geometry) as lon,'
@@ -1429,7 +1446,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEmpty($params);
     }
 
-    public function testSelectExpression()
+    public function testSelectExpression(): void
     {
         $query = (new Query())
             ->select(new Expression('1 AS ab'))
@@ -1461,9 +1478,10 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     /**
      * @see https://github.com/yiisoft/yii2/issues/10869
      */
-    public function testFromIndexHint()
+    public function testFromIndexHint(): void
     {
         $query = (new Query())->from([new Expression('{{%user}} USE INDEX (primary)')]);
+
         [$sql, $params] = $this->getQueryBuilder()->build($query);
         $expected = $this->replaceQuotes('SELECT * FROM {{%user}} USE INDEX (primary)');
         $this->assertEquals($expected, $sql);
@@ -1472,17 +1490,19 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $query = (new Query())
             ->from([new Expression('{{user}} {{t}} FORCE INDEX (primary) IGNORE INDEX FOR ORDER BY (i1)')])
             ->leftJoin(['p' => 'profile'], 'user.id = profile.user_id USE INDEX (i2)');
+
         [$sql, $params] = $this->getQueryBuilder()->build($query);
         $expected = $this->replaceQuotes('SELECT * FROM {{user}} {{t}} FORCE INDEX (primary) IGNORE INDEX FOR ORDER BY (i1) LEFT JOIN [[profile]] [[p]] ON user.id = profile.user_id USE INDEX (i2)');
         $this->assertEquals($expected, $sql);
         $this->assertEmpty($params);
     }
 
-    public function testFromSubquery()
+    public function testFromSubquery(): void
     {
         // query subquery
         $subquery = (new Query())->from('user')->where('account_id = accounts.id');
         $query = (new Query())->from(['activeusers' => $subquery]);
+
         // SELECT * FROM (SELECT * FROM [[user]] WHERE [[active]] = 1) [[activeusers]];
         [$sql, $params] = $this->getQueryBuilder()->build($query);
         $expected = $this->replaceQuotes('SELECT * FROM (SELECT * FROM [[user]] WHERE account_id = accounts.id) [[activeusers]]');
@@ -1492,6 +1512,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         // query subquery with params
         $subquery = (new Query())->from('user')->where('account_id = :id', ['id' => 1]);
         $query = (new Query())->from(['activeusers' => $subquery])->where('abc = :abc', ['abc' => 'abc']);
+
         // SELECT * FROM (SELECT * FROM [[user]] WHERE [[active]] = 1) [[activeusers]];
         [$sql, $params] = $this->getQueryBuilder()->build($query);
         $expected = $this->replaceQuotes('SELECT * FROM (SELECT * FROM [[user]] WHERE account_id = :id) [[activeusers]] WHERE abc = :abc');
@@ -1504,6 +1525,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         // simple subquery
         $subquery = '(SELECT * FROM user WHERE account_id = accounts.id)';
         $query = (new Query())->from(['activeusers' => $subquery]);
+
         // SELECT * FROM (SELECT * FROM [[user]] WHERE [[active]] = 1) [[activeusers]];
         [$sql, $params] = $this->getQueryBuilder()->build($query);
         $expected = $this->replaceQuotes('SELECT * FROM (SELECT * FROM user WHERE account_id = accounts.id) [[activeusers]]');
@@ -1511,7 +1533,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEmpty($params);
     }
 
-    public function testOrderBy()
+    public function testOrderBy(): void
     {
         // simple string
         $query = (new Query())
@@ -1555,7 +1577,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEquals([':to' => 4], $params);
     }
 
-    public function testGroupBy()
+    public function testGroupBy(): void
     {
         // simple string
         $query = (new Query())
@@ -1584,7 +1606,9 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             ->where('account_id = accounts.id')
             ->groupBy(new Expression('SUBSTR(name, 0, 1), x'));
         [$sql, $params] = $this->getQueryBuilder()->build($query);
-        $expected = $this->replaceQuotes('SELECT * FROM [[operations]] WHERE account_id = accounts.id GROUP BY SUBSTR(name, 0, 1), x');
+        $expected = $this->replaceQuotes(
+            'SELECT * FROM [[operations]] WHERE account_id = accounts.id GROUP BY SUBSTR(name, 0, 1), x'
+        );
         $this->assertEquals($expected, $sql);
         $this->assertEmpty($params);
 
@@ -1599,7 +1623,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEquals([':to' => 4], $params);
     }
 
-    public function insertProvider()
+    public function insertProvider(): array
     {
         return [
             'regular-values' => [
@@ -1692,15 +1716,16 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      * @dataProvider insertProvider
      *
      * @param string $table
-     * @param array  $columns
-     * @param array  $params
+     * @param array|object $columns
+     * @param array $params
      * @param string $expectedSQL
-     * @param array  $expectedParams
+     * @param array $expectedParams
      */
-    public function testInsert($table, $columns, $params, $expectedSQL, $expectedParams)
+    public function testInsert(string $table, $columns, array $params, string $expectedSQL, array $expectedParams): void
     {
         $actualParams = $params;
         $actualSQL = $this->getQueryBuilder()->insert($table, $columns, $actualParams);
+
         $this->assertSame($expectedSQL, $actualSQL);
         $this->assertSame($expectedParams, $actualParams);
     }
@@ -1708,20 +1733,20 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     /**
      * Dummy test to speed up QB's tests which rely on DB schema.
      */
-    public function testInitFixtures()
+    public function testInitFixtures(): void
     {
-        $this->assertInstanceOf('Yiisoft\Db\QueryBuilder', $this->getQueryBuilder(true, true));
+        $this->assertInstanceOf(\Yiisoft\Db\QueryBuilder::class, $this->getQueryBuilder(true, true, true));
     }
 
-    public function upsertProvider()
+    public function upsertProvider(): array
     {
         return [
             'regular values' => [
                 'T_upsert',
                 [
-                    'email'      => 'test@example.com',
-                    'address'    => 'bar {{city}}',
-                    'status'     => 1,
+                    'email' => 'test@example.com',
+                    'address' => 'bar {{city}}',
+                    'status' => 1,
                     'profile_id' => null,
                 ],
                 true,
@@ -1736,15 +1761,15 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             'regular values with update part' => [
                 'T_upsert',
                 [
-                    'email'      => 'test@example.com',
-                    'address'    => 'bar {{city}}',
-                    'status'     => 1,
+                    'email' => 'test@example.com',
+                    'address' => 'bar {{city}}',
+                    'status' => 1,
                     'profile_id' => null,
                 ],
                 [
                     'address' => 'foo {{city}}',
-                    'status'  => 2,
-                    'orders'  => new Expression('T_upsert.orders + 1'),
+                    'status' => 2,
+                    'orders' => new Expression('T_upsert.orders + 1'),
                 ],
                 null,
                 [
@@ -1759,9 +1784,9 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             'regular values without update part' => [
                 'T_upsert',
                 [
-                    'email'      => 'test@example.com',
-                    'address'    => 'bar {{city}}',
-                    'status'     => 1,
+                    'email' => 'test@example.com',
+                    'address' => 'bar {{city}}',
+                    'status' => 1,
                     'profile_id' => null,
                 ],
                 false,
@@ -1801,8 +1826,8 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                     ->limit(1),
                 [
                     'address' => 'foo {{city}}',
-                    'status'  => 2,
-                    'orders'  => new Expression('T_upsert.orders + 1'),
+                    'status' => 2,
+                    'orders' => new Expression('T_upsert.orders + 1'),
                 ],
                 null,
                 [
@@ -1831,7 +1856,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 '{{%T_upsert}}',
                 [
                     '{{%T_upsert}}.[[email]]' => 'dynamic@example.com',
-                    '[[ts]]'                  => new Expression('now()'),
+                    '[[ts]]' => new Expression('now()'),
                 ],
                 true,
                 null,
@@ -1843,7 +1868,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 '{{%T_upsert}}',
                 [
                     '{{%T_upsert}}.[[email]]' => 'dynamic@example.com',
-                    '[[ts]]'                  => new Expression('now()'),
+                    '[[ts]]' => new Expression('now()'),
                 ],
                 [
                     '[[orders]]' => new Expression('T_upsert.orders + 1'),
@@ -1857,7 +1882,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 '{{%T_upsert}}',
                 [
                     '{{%T_upsert}}.[[email]]' => 'dynamic@example.com',
-                    '[[ts]]'                  => new Expression('now()'),
+                    '[[ts]]' => new Expression('now()'),
                 ],
                 false,
                 null,
@@ -1869,54 +1894,70 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 '{{%T_upsert}}',
                 (new Query())
                     ->select([
-                        'email'    => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
+                        'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
                         '[[time]]' => new Expression('now()'),
                     ]),
                 [
-                    'ts'         => 0,
+                    'ts' => 0,
                     '[[orders]]' => new Expression('T_upsert.orders + 1'),
                 ],
                 null,
                 [
                     ':phEmail' => 'dynamic@example.com',
-                    ':qp1'     => 0,
+                    ':qp1' => 0,
                 ],
             ],
             'query, values and expressions without update part' => [
                 '{{%T_upsert}}',
                 (new Query())
                     ->select([
-                        'email'    => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
+                        'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
                         '[[time]]' => new Expression('now()'),
                     ]),
                 [
-                    'ts'         => 0,
+                    'ts' => 0,
                     '[[orders]]' => new Expression('T_upsert.orders + 1'),
                 ],
                 null,
                 [
                     ':phEmail' => 'dynamic@example.com',
-                    ':qp1'     => 0,
+                    ':qp1' => 0,
+                ],
+            ],
+            'no columns to update' => [
+                'T_upsert_1',
+                [
+                    'a' => 1,
+                ],
+                false,
+                null,
+                [
+                    ':qp0' => 1,
                 ],
             ],
         ];
     }
 
     /**
+     * @depends testInitFixtures
      * @dataProvider upsertProvider
      *
-     * @param string          $table
-     * @param array           $insertColumns
-     * @param array|null      $updateColumns
+     * @param string $table
+     * @param array|object $insertColumns
+     * @param array|bool|null $updateColumns
      * @param string|string[] $expectedSQL
-     * @param array           $expectedParams
+     * @param array $expectedParams
+     * @throws NotSupportedException
+     * @throws Exception
      */
-    /*public function testUpsert($table, $insertColumns, $updateColumns, $expectedSQL, $expectedParams)
+    public function testUpsert(string $table, $insertColumns, $updateColumns, $expectedSQL, $expectedParams): void
     {
         $actualParams = [];
 
-        $actualSQL = $this->getQueryBuilder(true, $this->driverName === 'sqlite')
-            ->upsert($table, $insertColumns, $updateColumns, $actualParams);
+        $actualSQL = $this->getQueryBuilder(
+            true,
+            $this->driverName === 'sqlite'
+        )->upsert($table, $insertColumns, $updateColumns, $actualParams);
 
         if (is_string($expectedSQL)) {
             $this->assertSame($expectedSQL, $actualSQL);
@@ -1929,9 +1970,9 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         } else {
             $this->assertIsOneOf($actualParams, $expectedParams);
         }
-    }*/
+    }
 
-    public function batchInsertProvider()
+    public function batchInsertProvider(): array
     {
         return [
             [
@@ -1985,19 +2026,20 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      * @dataProvider batchInsertProvider
      *
      * @param string $table
-     * @param array  $columns
-     * @param array  $value
+     * @param array $columns
+     * @param array $value
      * @param string $expected
      */
-    public function testBatchInsert($table, $columns, $value, $expected)
+    public function testBatchInsert(string $table, array $columns, array $value, string $expected): void
     {
         $queryBuilder = $this->getQueryBuilder();
 
         $sql = $queryBuilder->batchInsert($table, $columns, $value);
+
         $this->assertEquals($expected, $sql);
     }
 
-    public function updateProvider()
+    public function updateProvider(): array
     {
         return [
             [
@@ -2021,21 +2063,23 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     /**
      * @dataProvider updateProvider
      *
-     * @param string       $table
-     * @param array        $columns
+     * @param string $table
+     * @param array $columns
      * @param array|string $condition
-     * @param string       $expectedSQL
-     * @param array        $expectedParams
+     * @param string $expectedSQL
+     * @param array $expectedParams
      */
-    public function testUpdate($table, $columns, $condition, $expectedSQL, $expectedParams)
+    public function testUpdate(string $table, array $columns, $condition, string $expectedSQL, array $expectedParams): void
     {
         $actualParams = [];
+
         $actualSQL = $this->getQueryBuilder()->update($table, $columns, $condition, $actualParams);
+
         $this->assertSame($expectedSQL, $actualSQL);
         $this->assertSame($expectedParams, $actualParams);
     }
 
-    public function deleteProvider()
+    public function deleteProvider(): array
     {
         return [
             [
@@ -2055,20 +2099,22 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     /**
      * @dataProvider deleteProvider
      *
-     * @param string       $table
+     * @param string $table
      * @param array|string $condition
-     * @param string       $expectedSQL
-     * @param array        $expectedParams
+     * @param string $expectedSQL
+     * @param array $expectedParams
      */
-    public function testDelete($table, $condition, $expectedSQL, $expectedParams)
+    public function testDelete(string $table, $condition, string $expectedSQL, array $expectedParams): void
     {
         $actualParams = [];
+
         $actualSQL = $this->getQueryBuilder()->delete($table, $condition, $actualParams);
+
         $this->assertSame($expectedSQL, $actualSQL);
         $this->assertSame($expectedParams, $actualParams);
     }
 
-    public function testCommentColumn()
+    public function testCommentColumn(): void
     {
         $qb = $this->getQueryBuilder();
 
@@ -2085,7 +2131,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEquals($this->replaceQuotes($expected), $sql);
     }
 
-    public function testCommentTable()
+    public function testCommentTable(): void
     {
         $qb = $this->getQueryBuilder();
 
@@ -2098,7 +2144,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEquals($this->replaceQuotes($expected), $sql);
     }
 
-    public function likeConditionProvider()
+    public function likeConditionProvider(): array
     {
         $conditions = [
             // simple like
@@ -2150,14 +2196,16 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     /**
      * @dataProvider likeConditionProvider
      *
-     * @param array  $condition
+     * @param array $condition
      * @param string $expected
-     * @param array  $expectedParams
+     * @param array $expectedParams
      */
-    public function testBuildLikeCondition($condition, $expected, $expectedParams)
+    public function testBuildLikeCondition(array $condition, string $expected, array $expectedParams): void
     {
         $query = (new Query())->where($condition);
+
         [$sql, $params] = $this->getQueryBuilder()->build($query);
+
         $this->assertEquals('SELECT *'.(empty($expected) ? '' : ' WHERE '.$this->replaceQuotes($expected)), $sql);
         $this->assertEquals($expectedParams, $params);
     }
@@ -2165,7 +2213,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     /**
      * @see https://github.com/yiisoft/yii2/issues/15653
      */
-    public function testIssue15653()
+    public function testIssue15653(): void
     {
         $query = (new Query())
             ->from('admin_user')
@@ -2176,6 +2224,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             ->andWhere(['in', 'id', ['1', '0']]);
 
         [$sql, $params] = $this->getQueryBuilder()->build($query);
+
         $this->assertSame($this->replaceQuotes('SELECT * FROM [[admin_user]] WHERE [[id]] IN (:qp0, :qp1)'), $sql);
         $this->assertSame([':qp0' => '1', ':qp1' => '0'], $params);
     }

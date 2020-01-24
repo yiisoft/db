@@ -1,25 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db;
 
 use Yiisoft\Db\Conditions\ConditionInterface;
 use Yiisoft\Db\Conditions\HashCondition;
+use Yiisoft\Db\Contracts\ConnectionInterface;
+use Yiisoft\Db\Contracts\ConstraintFinderInterface;
+use Yiisoft\Db\Contracts\ExpressionInterface;
+use Yiisoft\Db\Contracts\ExpressionBuilderInterface;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Strings\StringHelper;
 
 /**
- * QueryBuilder builds a SELECT SQL statement based on the specification given as a [[Query]] object.
+ * QueryBuilder builds a SELECT SQL statement based on the specification given as a {@see Query} object.
  *
- * SQL statements are created from [[Query]] objects using the [[build()]]-method.
+ * SQL statements are created from {@see Query} objects using the {@see build()}-method.
  *
- * QueryBuilder is also used by [[Command]] to build SQL statements such as INSERT, UPDATE, DELETE, CREATE TABLE.
+ * QueryBuilder is also used by {@see Command} to build SQL statements such as INSERT, UPDATE, DELETE, CREATE TABLE.
  *
- * For more details and usage information on QueryBuilder, see the [guide article on query builders](guide:db-query-builder).
+ * For more details and usage information on QueryBuilder, see the
+ * [guide article on query builders](guide:db-query-builder).
  *
  * @property string[] $conditionClasses Map of condition aliases to condition classes. For example: ```php
- * ['LIKE' => Yiisoft\Db\Condition\LikeCondition::class] ``` . This property is write-only.
+ * ['LIKE' => \Yiisoft\Db\Condition\LikeCondition::class] ``` . This property is write-only.
  * @property string[] $expressionBuilders Array of builders that should be merged with the pre-defined ones in
- * [[expressionBuilders]] property. This property is write-only.
+ * {@see expressionBuilders} property. This property is write-only.
  */
 class QueryBuilder
 {
@@ -32,15 +40,17 @@ class QueryBuilder
      * @var Connection the database connection.
      */
     public $db;
+
     /**
      * @var string the separator between different fragments of a SQL statement.
-     *             Defaults to an empty space. This is mainly used by [[build()]] when generating a SQL statement.
+     * Defaults to an empty space. This is mainly used by {@see build()} when generating a SQL statement.
      */
     public $separator = ' ';
+
     /**
      * @var array the abstract column types mapped to physical column types.
-     *            This is mainly used to support creating/modifying tables using DB-independent data type specifications.
-     *            Child classes should override this property to declare supported type mappings.
+     * This is mainly used to support creating/modifying tables using DB-independent data type specifications.
+     * Child classes should override this property to declare supported type mappings.
      */
     public $typeMap = [];
 
@@ -49,33 +59,34 @@ class QueryBuilder
      *
      * ```php
      * return [
-     *     'LIKE' => Yiisoft\Db\Condition\LikeCondition::class,
+     *     'LIKE' => \Yiisoft\Db\Condition\LikeCondition::class,
      * ];
      * ```
      *
-     * This property is used by [[createConditionFromArray]] method.
-     * See default condition classes list in [[defaultConditionClasses()]] method.
+     * This property is used by {@see createConditionFromArray} method.
+     * See default condition classes list in {@see defaultConditionClasses()} method.
      *
-     * In case you want to add custom conditions support, use the [[setConditionClasses()]] method.
+     * In case you want to add custom conditions support, use the {@see setConditionClasses()} method.
      *
      * @see setConditonClasses()
      * @see defaultConditionClasses()
      */
     protected $conditionClasses = [];
+
     /**
      * @var string[]|ExpressionBuilderInterface[] maps expression class to expression builder class.
-     *                                            For example:
+     * For example:
      *
      * ```php
      * [
-     *    Yiisoft\Db\Expression::class => Yiisoft\Db\ExpressionBuilder::class
+     *    Yiisoft\Db\Expression::class => \Yiisoft\Db\ExpressionBuilder::class
      * ]
      * ```
-     * This property is mainly used by [[buildExpression()]] to build SQL expressions form expression objects.
-     * See default values in [[defaultExpressionBuilders()]] method.
+     * This property is mainly used by {@see buildExpression()} to build SQL expressions form expression objects.
+     * See default values in {@see defaultExpressionBuilders()} method.
      *
-     * @see setExpressionBuilders()
-     * @see defaultExpressionBuilders()
+     * {@see setExpressionBuilders()}
+     * {@see defaultExpressionBuilders()}
      */
     protected $expressionBuilders = [];
 
@@ -83,23 +94,22 @@ class QueryBuilder
      * Constructor.
      *
      * @param Connection $connection the database connection.
-     * @param array      $config     name-value pairs that will be used to initialize the object properties
+     * @param array $config name-value pairs that will be used to initialize the object properties
      */
-    public function __construct($connection)
+    public function __construct(Connection $db)
     {
-        $this->db = $connection;
+        $this->db = $db;
         $this->expressionBuilders = $this->defaultExpressionBuilders();
         $this->conditionClasses = $this->defaultConditionClasses();
     }
 
     /**
-     * Contains array of default condition classes. Extend this method, if you want to change
-     * default condition classes for the query builder. See [[conditionClasses]] docs for details.
+     * Contains array of default condition classes. Extend this method, if you want to change default condition classes
+     * for the query builder. See {@see conditionClasses} docs for details.
      *
      * @return array
      *
-     * @see conditionClasses
-     * @since 2.0.14
+     * {@see conditionClasses}
      */
     protected function defaultConditionClasses()
     {
@@ -121,13 +131,12 @@ class QueryBuilder
     }
 
     /**
-     * Contains array of default expression builders. Extend this method and override it, if you want to change
-     * default expression builders for this query builder. See [[expressionBuilders]] docs for details.
+     * Contains array of default expression builders. Extend this method and override it, if you want to change default
+     * expression builders for this query builder. See {@see expressionBuilders} docs for details.
      *
      * @return array
      *
-     * @see $expressionBuilders
-     * @since 2.0.14
+     * {@see $expressionBuilders}
      */
     protected function defaultExpressionBuilders()
     {
@@ -150,13 +159,12 @@ class QueryBuilder
     }
 
     /**
-     * Setter for [[expressionBuilders]] property.
+     * Setter for {@see expressionBuilders property.
      *
-     * @param string[] $builders array of builders that should be merged with the pre-defined ones
-     *                           in [[expressionBuilders]] property.
+     * @param string[] $builders array of builders that should be merged with the pre-defined ones in
+     * {@see expressionBuilders} property.
      *
-     * @since 2.0.14
-     * @see expressionBuilders
+     * {@see expressionBuilders}
      */
     public function setExpressionBuilders($builders)
     {
@@ -164,16 +172,15 @@ class QueryBuilder
     }
 
     /**
-     * Setter for [[conditionClasses]] property.
+     * Setter for {@see conditionClasses} property.
      *
      * @param string[] $classes map of condition aliases to condition classes. For example:
      *
      * ```php
-     * ['LIKE' => Yiisoft\Db\Condition\LikeCondition::class]
+     * ['LIKE' => \Yiisoft\Db\Condition\LikeCondition::class]
      * ```
      *
-     * @since 2.0.14.2
-     * @see conditionClasses
+     * {@see conditionClasses}
      */
     public function setConditionClasses($classes)
     {
@@ -181,15 +188,14 @@ class QueryBuilder
     }
 
     /**
-     * Generates a SELECT SQL statement from a [[Query]] object.
+     * Generates a SELECT SQL statement from a {@see Query} object.
      *
-     * @param Query $query  the [[Query]] object from which the SQL statement will be generated.
-     * @param array $params the parameters to be bound to the generated SQL statement. These parameters will
-     *                      be included in the result with the additional parameters generated during the query building process.
+     * @param Query $query the {@see Query} object from which the SQL statement will be generated.
+     * @param array $params the parameters to be bound to the generated SQL statement. These parameters will be included
+     * in the result with the additional parameters generated during the query building process.
      *
-     * @return array the generated SQL statement (the first array element) and the corresponding
-     *               parameters to be bound to the SQL statement (the second array element). The parameters returned
-     *               include those provided in `$params`.
+     * @return array the generated SQL statement (the first array element) and the corresponding parameters to be bound
+     * to the SQL statement (the second array element). The parameters returned include those provided in `$params`.
      */
     public function build($query, $params = [])
     {
@@ -207,9 +213,11 @@ class QueryBuilder
         ];
 
         $sql = implode($this->separator, array_filter($clauses));
+
         $sql = $this->buildOrderByAndLimit($sql, $query->orderBy, $query->limit, $query->offset, $params);
 
         $union = $this->buildUnion($query->union, $params);
+
         if ($union !== '') {
             $sql = "($sql){$this->separator}$union";
         }
@@ -221,17 +229,16 @@ class QueryBuilder
      * Builds given $expression.
      *
      * @param ExpressionInterface $expression the expression to be built
-     * @param array               $params     the parameters to be bound to the generated SQL statement. These parameters will
-     *                                        be included in the result with the additional parameters generated during the expression building process.
+     * @param array $params the parameters to be bound to the generated SQL statement. These parameters will be included
+     * in the result with the additional parameters generated during the expression building process.
      *
      * @throws InvalidArgumentException when $expression building is not supported by this QueryBuilder.
      *
      * @return string the SQL statement that will not be neither quoted nor encoded before passing to DBMS
      *
-     * @see ExpressionInterface
-     * @see ExpressionBuilderInterface
-     * @see expressionBuilders
-     * @since 2.0.14
+     * {@see ExpressionInterface}
+     * {@see ExpressionBuilderInterface}
+     * {@see expressionBuilders}
      */
     public function buildExpression(ExpressionInterface $expression, &$params = [])
     {
@@ -241,8 +248,9 @@ class QueryBuilder
     }
 
     /**
-     * Gets object of [[ExpressionBuilderInterface]] that is suitable for $expression.
-     * Uses [[expressionBuilders]] array to find a suitable builder class.
+     * Gets object of {@see ExpressionBuilderInterface} that is suitable for $expression.
+     *
+     * Uses {@see expressionBuilders} array to find a suitable builder class.
      *
      * @param ExpressionInterface $expression
      *
@@ -251,7 +259,6 @@ class QueryBuilder
      * @return ExpressionBuilderInterface
      *
      * @see expressionBuilders
-     * @since 2.0.14
      */
     public function getExpressionBuilder(ExpressionInterface $expression)
     {
@@ -266,7 +273,9 @@ class QueryBuilder
             }
 
             if (!isset($this->expressionBuilders[$className])) {
-                throw new InvalidArgumentException('Expression of class '.$className.' can not be built in '.get_class($this));
+                throw new InvalidArgumentException(
+                    'Expression of class ' . $className . ' can not be built in ' . get_class($this)
+                );
             }
         }
 
@@ -283,6 +292,7 @@ class QueryBuilder
 
     /**
      * Creates an INSERT SQL statement.
+     *
      * For example,.
      *
      * ```php
@@ -294,12 +304,12 @@ class QueryBuilder
      *
      * The method will properly escape the table and column names.
      *
-     * @param string      $table   the table that new rows will be inserted into.
+     * @param string $table the table that new rows will be inserted into.
      * @param array|Query $columns the column data (name => value) to be inserted into the table or instance
-     *                             of [[Yiisoft\Db\Query|Query]] to perform INSERT INTO ... SELECT SQL statement.
-     *                             Passing of [[Yiisoft\Db\Query|Query]] is available since version 2.0.11.
-     * @param array       $params  the binding parameters that will be generated by this method.
-     *                             They should be bound to the DB command later.
+     * of {@see \Yiisoft\Db\Query|Query} to perform INSERT INTO ... SELECT SQL statement. Passing of
+     * {@see \Yiisoft\Db\Query|Query}.
+     * @param array $params the binding parameters that will be generated by this method. They should be bound to the
+     * DB command later.
      *
      * @return string the INSERT SQL
      */
@@ -315,15 +325,14 @@ class QueryBuilder
     /**
      * Prepares a `VALUES` part for an `INSERT` SQL statement.
      *
-     * @param string      $table   the table that new rows will be inserted into.
+     * @param string $table the table that new rows will be inserted into.
      * @param array|Query $columns the column data (name => value) to be inserted into the table or instance
-     *                             of [[Yiisoft\Db\Query|Query]] to perform INSERT INTO ... SELECT SQL statement.
-     * @param array       $params  the binding parameters that will be generated by this method.
-     *                             They should be bound to the DB command later.
+     * of {\Yiisoft\Db\Query|Query} to perform INSERT INTO ... SELECT SQL statement.
+     * @param array $params the binding parameters that will be generated by this method.
+     * They should be bound to the DB command later.
      *
      * @return array array of column names, placeholders, values and params.
      *
-     * @since 2.0.14
      */
     protected function prepareInsertValues($table, $columns, $params = [])
     {
@@ -358,16 +367,14 @@ class QueryBuilder
     /**
      * Prepare select-subquery and field names for INSERT INTO ... SELECT SQL statement.
      *
-     * @param Query          $columns Object, which represents select query.
+     * @param Query $columns Object, which represents select query.
      * @param \Yiisoft\Db\Schema $schema  Schema object to quote column name.
-     * @param array          $params  the parameters to be bound to the generated SQL statement. These parameters will
-     *                                be included in the result with the additional parameters generated during the query building process.
+     * @param array $params  the parameters to be bound to the generated SQL statement. These parameters will
+     * be included in the result with the additional parameters generated during the query building process.
      *
      * @throws InvalidArgumentException if query's select does not contain named parameters only.
      *
      * @return array array of column names, values and params.
-     *
-     * @since 2.0.11
      */
     protected function prepareInsertSelectSubQuery($columns, $schema, $params = [])
     {
@@ -410,10 +417,10 @@ class QueryBuilder
      *
      * The method will properly escape the column names, and quote the values to be inserted.
      *
-     * @param string           $table   the table that new rows will be inserted into.
-     * @param array            $columns the column names
-     * @param array|\Generator $rows    the rows to be batch inserted into the table
-     * @param array            $params  the binding parameters. This parameter exists since 2.0.14
+     * @param string $table the table that new rows will be inserted into.
+     * @param array $columns the column names
+     * @param array|\Generator $rows the rows to be batch inserted into the table
+     * @param array $params the binding parameters. This parameter exists
      *
      * @return string the batch INSERT SQL statement
      */
@@ -432,6 +439,7 @@ class QueryBuilder
         }
 
         $values = [];
+
         foreach ($rows as $row) {
             $vs = [];
             foreach ($row as $i => $value) {
@@ -454,6 +462,7 @@ class QueryBuilder
             }
             $values[] = '('.implode(', ', $vs).')';
         }
+
         if (empty($values)) {
             return '';
         }
@@ -467,9 +476,8 @@ class QueryBuilder
     }
 
     /**
-     * Creates an SQL statement to insert rows into a database table if
-     * they do not already exist (matching unique constraints),
-     * or update them if they do.
+     * Creates an SQL statement to insert rows into a database table if they do not already exist (matching unique
+     * constraints), or update them if they do.
      *
      * For example,
      *
@@ -485,14 +493,14 @@ class QueryBuilder
      *
      * The method will properly escape the table and column names.
      *
-     * @param string      $table         the table that new rows will be inserted into/updated in.
+     * @param string $table the table that new rows will be inserted into/updated in.
      * @param array|Query $insertColumns the column data (name => value) to be inserted into the table or instance
-     *                                   of [[Query]] to perform `INSERT INTO ... SELECT` SQL statement.
+     * of {@see Query} to perform `INSERT INTO ... SELECT` SQL statement.
      * @param array|bool  $updateColumns the column data (name => value) to be updated if they already exist.
-     *                                   If `true` is passed, the column data will be updated to match the insert column data.
-     *                                   If `false` is passed, no update will be performed if the column data already exists.
-     * @param array       $params        the binding parameters that will be generated by this method.
-     *                                   They should be bound to the DB command later.
+     * If `true` is passed, the column data will be updated to match the insert column data.
+     * If `false` is passed, no update will be performed if the column data already exists.
+     * @param array $params the binding parameters that will be generated by this method.
+     * They should be bound to the DB command later.
      *
      * @throws NotSupportedException if this is not supported by the underlying DBMS.
      *
@@ -504,11 +512,11 @@ class QueryBuilder
     }
 
     /**
-     * @param string       $table
-     * @param array|Query  $insertColumns
-     * @param array|bool   $updateColumns
-     * @param Constraint[] $constraints   this parameter recieves a matched constraint list.
-     *                                    The constraints will be unique by their column names.
+     * @param string $table
+     * @param array|Query $insertColumns
+     * @param array|bool $updateColumns
+     * @param Constraint[] $constraints this parameter recieves a matched constraint list.
+     * The constraints will be unique by their column names.
      *
      * @return array
      */
@@ -533,12 +541,13 @@ class QueryBuilder
     /**
      * Returns all column names belonging to constraints enforcing uniqueness (`PRIMARY KEY`, `UNIQUE INDEX`, etc.)
      * for the named table removing constraints which did not cover the specified column list.
+     *
      * The column list will be unique by column names.
      *
-     * @param string       $name        table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param string[]     $columns     source column list.
+     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string[] $columns source column list.
      * @param Constraint[] $constraints this parameter optionally recieves a matched constraint list.
-     *                                  The constraints will be unique by their column names.
+     * The constraints will be unique by their column names.
      *
      * @return string[] column list.
      */
@@ -601,12 +610,12 @@ class QueryBuilder
      *
      * The method will properly escape the table and column names.
      *
-     * @param string       $table     the table to be updated.
-     * @param array        $columns   the column data (name => value) to be updated.
-     * @param array|string $condition the condition that will be put in the WHERE part. Please
-     *                                refer to [[Query::where()]] on how to specify condition.
-     * @param array        $params    the binding parameters that will be modified by this method
-     *                                so that they can be bound to the DB command later.
+     * @param string $table the table to be updated.
+     * @param array $columns the column data (name => value) to be updated.
+     * @param array|string $condition the condition that will be put in the WHERE part. Please refer to
+     * {@see Query::where()} on how to specify condition.
+     * @param array $params the binding parameters that will be modified by this method so that they can be bound to the
+     * DB command later.
      *
      * @return string the UPDATE SQL
      */
@@ -622,20 +631,22 @@ class QueryBuilder
     /**
      * Prepares a `SET` parts for an `UPDATE` SQL statement.
      *
-     * @param string $table   the table to be updated.
-     * @param array  $columns the column data (name => value) to be updated.
-     * @param array  $params  the binding parameters that will be modified by this method
-     *                        so that they can be bound to the DB command later.
+     * @param string $table the table to be updated.
+     * @param array $columns the column data (name => value) to be updated.
+     * @param array $params the binding parameters that will be modified by this method so that they can be bound to the
+     * DB command later.
      *
-     * @return array an array `SET` parts for an `UPDATE` SQL statement (the first array element) and params (the second array element).
-     *
-     * @since 2.0.14
+     * @return array an array `SET` parts for an `UPDATE` SQL statement (the first array element) and params (the second
+     * array element).
      */
     protected function prepareUpdateSets($table, $columns, $params = [])
     {
         $tableSchema = $this->db->getTableSchema($table);
+
         $columnSchemas = $tableSchema !== null ? $tableSchema->columns : [];
+
         $sets = [];
+
         foreach ($columns as $name => $value) {
             $value = isset($columnSchemas[$name]) ? $columnSchemas[$name]->dbTypecast($value) : $value;
             if ($value instanceof ExpressionInterface) {
@@ -661,11 +672,11 @@ class QueryBuilder
      *
      * The method will properly escape the table and column names.
      *
-     * @param string       $table     the table where the data will be deleted from.
-     * @param array|string $condition the condition that will be put in the WHERE part. Please
-     *                                refer to [[Query::where()]] on how to specify condition.
-     * @param array        $params    the binding parameters that will be modified by this method
-     *                                so that they can be bound to the DB command later.
+     * @param string $table the table where the data will be deleted from.
+     * @param array|string $condition the condition that will be put in the WHERE part. Please refer to
+     * {@see Query::where()} on how to specify condition.
+     * @param array $params the binding parameters that will be modified by this method so that they can be bound to the
+     * DB command later.
      *
      * @return string the DELETE SQL
      */
@@ -680,13 +691,14 @@ class QueryBuilder
     /**
      * Builds a SQL statement for creating a new DB table.
      *
-     * The columns in the new  table should be specified as name-definition pairs (e.g. 'name' => 'string'),
-     * where name stands for a column name which will be properly quoted by the method, and definition
-     * stands for the column type which can contain an abstract DB type.
-     * The [[getColumnType()]] method will be invoked to convert any abstract type into a physical one.
+     * The columns in the new  table should be specified as name-definition pairs (e.g. 'name' => 'string'), where name
+     * stands for a column name which will be properly quoted by the method, and definition stands for the column type
+     * which can contain an abstract DB type.
      *
-     * If a column is specified with definition only (e.g. 'PRIMARY KEY (name, type)'), it will be directly
-     * inserted into the generated SQL.
+     * The {@see getColumnType()} method will be invoked to convert any abstract type into a physical one.
+     *
+     * If a column is specified with definition only (e.g. 'PRIMARY KEY (name, type)'), it will be directly inserted
+     * into the generated SQL.
      *
      * For example,
      *
@@ -698,7 +710,7 @@ class QueryBuilder
      * ]);
      * ```
      *
-     * @param string $table   the name of the table to be created. The name will be properly quoted by the method.
+     * @param string $table the name of the table to be created. The name will be properly quoted by the method.
      * @param array  $columns the columns (name => definition) in the new table.
      * @param string $options additional SQL fragment that will be appended to the generated SQL.
      *
@@ -747,8 +759,8 @@ class QueryBuilder
     /**
      * Builds a SQL statement for adding a primary key constraint to an existing table.
      *
-     * @param string       $name    the name of the primary key constraint.
-     * @param string       $table   the table that the primary key constraint will be added to.
+     * @param string $name the name of the primary key constraint.
+     * @param string $table the table that the primary key constraint will be added to.
      * @param string|array $columns comma separated string or array of columns that the primary key will consist of.
      *
      * @return string the SQL statement for adding a primary key constraint to an existing table.
@@ -771,7 +783,7 @@ class QueryBuilder
     /**
      * Builds a SQL statement for removing a primary key constraint to an existing table.
      *
-     * @param string $name  the name of the primary key constraint to be removed.
+     * @param string $name the name of the primary key constraint to be removed.
      * @param string $table the table that the primary key constraint will be removed from.
      *
      * @return string the SQL statement for removing a primary key constraint from an existing table.
@@ -797,11 +809,14 @@ class QueryBuilder
     /**
      * Builds a SQL statement for adding a new DB column.
      *
-     * @param string $table  the table that the new column will be added to. The table name will be properly quoted by the method.
+     * @param string $table the table that the new column will be added to. The table name will be properly quoted by
+     * the method.
      * @param string $column the name of the new column. The name will be properly quoted by the method.
-     * @param string $type   the column type. The [[getColumnType()]] method will be invoked to convert abstract column type (if any)
-     *                       into the physical one. Anything that is not recognized as abstract type will be kept in the generated SQL.
-     *                       For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become 'varchar(255) not null'.
+     * @param string $type the column type. The {@see getColumnType()} method will be invoked to convert abstract column
+     * type (if any) into the physical one. Anything that is not recognized as abstract type will be kept in the
+     * generated SQL.
+     * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become
+     * 'varchar(255) not null'.
      *
      * @return string the SQL statement for adding a new column.
      */
@@ -829,7 +844,7 @@ class QueryBuilder
     /**
      * Builds a SQL statement for renaming a column.
      *
-     * @param string $table   the table whose column is to be renamed. The name will be properly quoted by the method.
+     * @param string $table the table whose column is to be renamed. The name will be properly quoted by the method.
      * @param string $oldName the old name of the column. The name will be properly quoted by the method.
      * @param string $newName the new name of the column. The name will be properly quoted by the method.
      *
@@ -845,12 +860,13 @@ class QueryBuilder
     /**
      * Builds a SQL statement for changing the definition of a column.
      *
-     * @param string $table  the table whose column is to be changed. The table name will be properly quoted by the method.
+     * @param string $table the table whose column is to be changed. The table name will be properly quoted by the
+     * method.
      * @param string $column the name of the column to be changed. The name will be properly quoted by the method.
-     * @param string $type   the new column type. The [[getColumnType()]] method will be invoked to convert abstract
-     *                       column type (if any) into the physical one. Anything that is not recognized as abstract type will be kept
-     *                       in the generated SQL. For example, 'string' will be turned into 'varchar(255)', while 'string not null'
-     *                       will become 'varchar(255) not null'.
+     * @param string $type the new column type. The {@see getColumnType()} method will be invoked to convert abstract
+     * column type (if any) into the physical one. Anything that is not recognized as abstract type will be kept
+     * in the generated SQL. For example, 'string' will be turned into 'varchar(255)', while 'string not null'
+     * will become 'varchar(255) not null'.
      *
      * @return string the SQL statement for changing the definition of a column.
      */
@@ -866,15 +882,17 @@ class QueryBuilder
      * Builds a SQL statement for adding a foreign key constraint to an existing table.
      * The method will properly quote the table and column names.
      *
-     * @param string       $name       the name of the foreign key constraint.
-     * @param string       $table      the table that the foreign key constraint will be added to.
-     * @param string|array $columns    the name of the column to that the constraint will be added on.
-     *                                 If there are multiple columns, separate them with commas or use an array to represent them.
-     * @param string       $refTable   the table that the foreign key references to.
+     * @param string $name the name of the foreign key constraint.
+     * @param string $table the table that the foreign key constraint will be added to.
+     * @param string|array $columns the name of the column to that the constraint will be added on.
+     * If there are multiple columns, separate them with commas or use an array to represent them.
+     * @param string $refTable the table that the foreign key references to.
      * @param string|array $refColumns the name of the column that the foreign key references to.
-     *                                 If there are multiple columns, separate them with commas or use an array to represent them.
-     * @param string       $delete     the ON DELETE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION, SET DEFAULT, SET NULL
-     * @param string       $update     the ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION, SET DEFAULT, SET NULL
+     * If there are multiple columns, separate them with commas or use an array to represent them.
+     * @param string $delete the ON DELETE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION,
+     * SET DEFAULT, SET NULL
+     * @param string $update the ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION,
+     * SET DEFAULT, SET NULL
      *
      * @return string the SQL statement for adding a foreign key constraint to an existing table.
      */
@@ -913,12 +931,13 @@ class QueryBuilder
     /**
      * Builds a SQL statement for creating a new index.
      *
-     * @param string       $name    the name of the index. The name will be properly quoted by the method.
-     * @param string       $table   the table that the new index will be created for. The table name will be properly quoted by the method.
+     * @param string $name the name of the index. The name will be properly quoted by the method.
+     * @param string $table the table that the new index will be created for. The table name will be properly quoted by
+     * the method.
      * @param string|array $columns the column(s) that should be included in the index. If there are multiple columns,
-     *                              separate them with commas or use an array to represent them. Each column name will be properly quoted
-     *                              by the method, unless a parenthesis is found in the name.
-     * @param bool         $unique  whether to add UNIQUE constraint on the created index.
+     * separate them with commas or use an array to represent them. Each column name will be properly quoted by the
+     * method, unless a parenthesis is found in the name.
+     * @param bool $unique  whether to add UNIQUE constraint on the created index.
      *
      * @return string the SQL statement for creating a new index.
      */
@@ -946,17 +965,15 @@ class QueryBuilder
     /**
      * Creates a SQL command for adding an unique constraint to an existing table.
      *
-     * @param string       $name    the name of the unique constraint.
-     *                              The name will be properly quoted by the method.
-     * @param string       $table   the table that the unique constraint will be added to.
-     *                              The name will be properly quoted by the method.
+     * @param string $name the name of the unique constraint.
+     * The name will be properly quoted by the method.
+     * @param string $table the table that the unique constraint will be added to.
+     * The name will be properly quoted by the method.
      * @param string|array $columns the name of the column to that the constraint will be added on.
-     *                              If there are multiple columns, separate them with commas.
-     *                              The name will be properly quoted by the method.
+     * If there are multiple columns, separate them with commas.
+     * The name will be properly quoted by the method.
      *
      * @return string the SQL statement for adding an unique constraint to an existing table.
-     *
-     * @since 2.0.13
      */
     public function addUnique($name, $table, $columns)
     {
@@ -976,9 +993,9 @@ class QueryBuilder
      * Creates a SQL command for dropping an unique constraint.
      *
      * @param string $name  the name of the unique constraint to be dropped.
-     *                      The name will be properly quoted by the method.
+     * The name will be properly quoted by the method.
      * @param string $table the table whose unique constraint is to be dropped.
-     *                      The name will be properly quoted by the method.
+     * The name will be properly quoted by the method.
      *
      * @return string the SQL statement for dropping an unique constraint.
      */
@@ -991,15 +1008,13 @@ class QueryBuilder
     /**
      * Creates a SQL command for adding a check constraint to an existing table.
      *
-     * @param string $name       the name of the check constraint.
-     *                           The name will be properly quoted by the method.
-     * @param string $table      the table that the check constraint will be added to.
-     *                           The name will be properly quoted by the method.
+     * @param string $name the name of the check constraint.
+     * The name will be properly quoted by the method.
+     * @param string $table the table that the check constraint will be added to.
+     * The name will be properly quoted by the method.
      * @param string $expression the SQL of the `CHECK` constraint.
      *
      * @return string the SQL statement for adding a check constraint to an existing table.
-     *
-     * @since 2.0.13
      */
     public function addCheck($name, $table, $expression)
     {
@@ -1010,14 +1025,12 @@ class QueryBuilder
     /**
      * Creates a SQL command for dropping a check constraint.
      *
-     * @param string $name  the name of the check constraint to be dropped.
-     *                      The name will be properly quoted by the method.
+     * @param string $name the name of the check constraint to be dropped.
+     * The name will be properly quoted by the method.
      * @param string $table the table whose check constraint is to be dropped.
-     *                      The name will be properly quoted by the method.
+     * The name will be properly quoted by the method.
      *
      * @return string the SQL statement for dropping a check constraint.
-     *
-     * @since 2.0.13
      */
     public function dropCheck($name, $table)
     {
@@ -1028,38 +1041,36 @@ class QueryBuilder
     /**
      * Creates a SQL command for adding a default value constraint to an existing table.
      *
-     * @param string $name   the name of the default value constraint.
-     *                       The name will be properly quoted by the method.
-     * @param string $table  the table that the default value constraint will be added to.
-     *                       The name will be properly quoted by the method.
+     * @param string $name the name of the default value constraint.
+     * The name will be properly quoted by the method.
+     * @param string $table the table that the default value constraint will be added to.
+     * The name will be properly quoted by the method.
      * @param string $column the name of the column to that the constraint will be added on.
-     *                       The name will be properly quoted by the method.
+     * The name will be properly quoted by the method.
      * @param mixed  $value  default value.
      *
      * @throws NotSupportedException if this is not supported by the underlying DBMS.
      *
      * @return string the SQL statement for adding a default value constraint to an existing table.
-     *
-     * @since 2.0.13
      */
     public function addDefaultValue($name, $table, $column, $value)
     {
-        throw new NotSupportedException($this->db->getDriverName().' does not support adding default value constraints.');
+        throw new NotSupportedException(
+            $this->db->getDriverName().' does not support adding default value constraints.'
+        );
     }
 
     /**
      * Creates a SQL command for dropping a default value constraint.
      *
-     * @param string $name  the name of the default value constraint to be dropped.
-     *                      The name will be properly quoted by the method.
+     * @param string $name the name of the default value constraint to be dropped.
+     * The name will be properly quoted by the method.
      * @param string $table the table whose default value constraint is to be dropped.
-     *                      The name will be properly quoted by the method.
+     * The name will be properly quoted by the method.
      *
      * @throws NotSupportedException if this is not supported by the underlying DBMS.
      *
      * @return string the SQL statement for dropping a default value constraint.
-     *
-     * @since 2.0.13
      */
     public function dropDefaultValue($name, $table)
     {
@@ -1068,12 +1079,13 @@ class QueryBuilder
 
     /**
      * Creates a SQL statement for resetting the sequence value of a table's primary key.
+     *
      * The sequence will be reset such that the primary key of the next new row inserted
      * will have the specified value or 1.
      *
-     * @param string       $table the name of the table whose primary key sequence will be reset
+     * @param string $table the name of the table whose primary key sequence will be reset
      * @param array|string $value the value for the primary key of the next new row inserted. If this is not set,
-     *                            the next new row's primary key will have a value 1.
+     * the next new row's primary key will have a value 1.
      *
      * @throws NotSupportedException if this is not supported by the underlying DBMS
      *
@@ -1087,9 +1099,9 @@ class QueryBuilder
     /**
      * Builds a SQL statement for enabling or disabling integrity check.
      *
-     * @param bool   $check  whether to turn on or off the integrity check.
+     * @param bool $check whether to turn on or off the integrity check.
      * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
-     * @param string $table  the table name. Defaults to empty string, meaning that no table will be changed.
+     * @param string $table the table name. Defaults to empty string, meaning that no table will be changed.
      *
      * @throws NotSupportedException if this is not supported by the underlying DBMS
      *
@@ -1103,13 +1115,13 @@ class QueryBuilder
     /**
      * Builds a SQL command for adding comment to column.
      *
-     * @param string $table   the table whose column is to be commented. The table name will be properly quoted by the method.
-     * @param string $column  the name of the column to be commented. The column name will be properly quoted by the method.
+     * @param string $table the table whose column is to be commented. The table name will be properly quoted by the
+     * method.
+     * @param string $column the name of the column to be commented. The column name will be properly quoted by the
+     * method.
      * @param string $comment the text of the comment to be added. The comment will be properly quoted by the method.
      *
      * @return string the SQL statement for adding comment on column
-     *
-     * @since 2.0.8
      */
     public function addCommentOnColumn($table, $column, $comment)
     {
@@ -1123,8 +1135,6 @@ class QueryBuilder
      * @param string $comment the text of the comment to be added. The comment will be properly quoted by the method.
      *
      * @return string the SQL statement for adding comment on table
-     *
-     * @since 2.0.8
      */
     public function addCommentOnTable($table, $comment)
     {
@@ -1134,16 +1144,17 @@ class QueryBuilder
     /**
      * Builds a SQL command for adding comment to column.
      *
-     * @param string $table  the table whose column is to be commented. The table name will be properly quoted by the method.
-     * @param string $column the name of the column to be commented. The column name will be properly quoted by the method.
+     * @param string $table  the table whose column is to be commented. The table name will be properly quoted by the
+     * method.
+     * @param string $column the name of the column to be commented. The column name will be properly quoted by the
+     * method.
      *
      * @return string the SQL statement for adding comment on column
-     *
-     * @since 2.0.8
      */
     public function dropCommentFromColumn($table, $column)
     {
-        return 'COMMENT ON COLUMN '.$this->db->quoteTableName($table).'.'.$this->db->quoteColumnName($column).' IS NULL';
+        return 'COMMENT ON COLUMN ' . $this->db->quoteTableName($table) . '.' . $this->db->quoteColumnName($column) .
+            ' IS NULL';
     }
 
     /**
@@ -1152,8 +1163,6 @@ class QueryBuilder
      * @param string $table the table whose column is to be commented. The table name will be properly quoted by the method.
      *
      * @return string the SQL statement for adding comment on column
-     *
-     * @since 2.0.8
      */
     public function dropCommentFromTable($table)
     {
@@ -1163,13 +1172,12 @@ class QueryBuilder
     /**
      * Creates a SQL View.
      *
-     * @param string       $viewName the name of the view to be created.
+     * @param string $viewName the name of the view to be created.
      * @param string|Query $subQuery the select statement which defines the view.
-     *                               This can be either a string or a [[Query]] object.
+     *
+     * This can be either a string or a {@see Query} object.
      *
      * @return string the `CREATE VIEW` SQL statement.
-     *
-     * @since 2.0.14
      */
     public function createView($viewName, $subQuery)
     {
@@ -1193,8 +1201,6 @@ class QueryBuilder
      * @param string $viewName the name of the view to be dropped.
      *
      * @return string the `DROP VIEW` SQL statement.
-     *
-     * @since 2.0.14
      */
     public function dropView($viewName)
     {
@@ -1204,7 +1210,7 @@ class QueryBuilder
     /**
      * Converts an abstract column type into a physical column type.
      *
-     * The conversion is done using the type map specified in [[typeMap]].
+     * The conversion is done using the type map specified in {@see typeMap}.
      * The following abstract column types are supported (using MySQL as an example to explain the corresponding
      * physical types):
      *
@@ -1227,17 +1233,18 @@ class QueryBuilder
      * - `money`: money type, will be converted into "decimal(19,4)"
      * - `binary`: binary data type, will be converted into "blob"
      *
-     * If the abstract type contains two or more parts separated by spaces (e.g. "string NOT NULL"), then only
-     * the first part will be converted, and the rest of the parts will be appended to the converted result.
+     * If the abstract type contains two or more parts separated by spaces (e.g. "string NOT NULL"), then only the first
+     * part will be converted, and the rest of the parts will be appended to the converted result.
+     *
      * For example, 'string NOT NULL' is converted to 'varchar(255) NOT NULL'.
      *
-     * For some of the abstract types you can also specify a length or precision constraint
-     * by appending it in round brackets directly to the type.
-     * For example `string(32)` will be converted into "varchar(32)" on a MySQL database.
-     * If the underlying DBMS does not support these kind of constraints for a type it will
-     * be ignored.
+     * For some of the abstract types you can also specify a length or precision constraint by appending it in round
+     * brackets directly to the type.
      *
-     * If a type cannot be found in [[typeMap]], it will be returned without any change.
+     * For example `string(32)` will be converted into "varchar(32)" on a MySQL database. If the underlying DBMS does not
+     * support these kind of constraints for a type it will be ignored.
+     *
+     * If a type cannot be found in {@see typeMap}, it will be returned without any change.
      *
      * @param string|ColumnSchemaBuilder $type abstract column type
      *
@@ -1265,18 +1272,19 @@ class QueryBuilder
     }
 
     /**
-     * @param array  $columns
-     * @param array  $params       the binding parameters to be populated
-     * @param bool   $distinct
+     * @param array $columns
+     * @param array $params the binding parameters to be populated
+     * @param bool $distinct
      * @param string $selectOption
      *
-     * @return string the SELECT clause built from [[Query::$select]].
+     * @return string the SELECT clause built from {@see Query::$select}.
      */
     public function buildSelect($columns, &$params, $distinct = false, $selectOption = null)
     {
         $select = $distinct ? 'SELECT DISTINCT' : 'SELECT';
+
         if ($selectOption !== null) {
-            $select .= ' '.$selectOption;
+            $select .= ' ' . $selectOption;
         }
 
         if (empty($columns)) {
@@ -1288,7 +1296,7 @@ class QueryBuilder
                 if (is_int($i)) {
                     $columns[$i] = $this->buildExpression($column, $params);
                 } else {
-                    $columns[$i] = $this->buildExpression($column, $params).' AS '.$this->db->quoteColumnName($i);
+                    $columns[$i] = $this->buildExpression($column, $params) . ' AS ' . $this->db->quoteColumnName($i);
                 }
             } elseif ($column instanceof Query) {
                 [$sql, $params] = $this->build($column, $params);
@@ -1300,7 +1308,9 @@ class QueryBuilder
                 $columns[$i] = "$column AS ".$this->db->quoteColumnName($i);
             } elseif (strpos($column, '(') === false) {
                 if (preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_\.]+)$/', $column, $matches)) {
-                    $columns[$i] = $this->db->quoteColumnName($matches[1]).' AS '.$this->db->quoteColumnName($matches[2]);
+                    $columns[$i] = $this->db->quoteColumnName(
+                        $matches[1]
+                    ) . ' AS ' . $this->db->quoteColumnName($matches[2]);
                 } else {
                     $columns[$i] = $this->db->quoteColumnName($column);
                 }
@@ -1314,7 +1324,7 @@ class QueryBuilder
      * @param array $tables
      * @param array $params the binding parameters to be populated
      *
-     * @return string the FROM clause built from [[Query::$from]].
+     * @return string the FROM clause built from {@see Query::$from}.
      */
     public function buildFrom($tables, &$params)
     {
@@ -1333,7 +1343,7 @@ class QueryBuilder
      *
      * @throws Exception if the $joins parameter is not in proper format
      *
-     * @return string the JOIN clause built from [[Query::$join]].
+     * @return string the JOIN clause built from {@see Query::$join}.
      */
     public function buildJoin($joins, &$params)
     {
@@ -1346,10 +1356,12 @@ class QueryBuilder
                 throw new Exception('A join clause must be specified as an array of join type, join table, and optionally join condition.');
             }
             // 0:join type, 1:join table, 2:on-condition (optional)
+
             [$joinType, $table] = $join;
             $tables = $this->quoteTableNames((array) $table, $params);
             $table = reset($tables);
             $joins[$i] = "$joinType $table";
+
             if (isset($join[2])) {
                 $condition = $this->buildCondition($join[2], $params);
                 if ($condition !== '') {
@@ -1396,9 +1408,9 @@ class QueryBuilder
 
     /**
      * @param string|array $condition
-     * @param array        $params    the binding parameters to be populated
+     * @param array $params the binding parameters to be populated
      *
-     * @return string the WHERE clause built from [[Query::$where]].
+     * @return string the WHERE clause built from {@see Query::$where}.
      */
     public function buildWhere($condition, &$params)
     {
@@ -1409,7 +1421,7 @@ class QueryBuilder
 
     /**
      * @param array $columns
-     * @param array $params  the binding parameters to be populated
+     * @param array $params the binding parameters to be populated
      *
      * @return string the GROUP BY clause
      */
@@ -1432,9 +1444,9 @@ class QueryBuilder
 
     /**
      * @param string|array $condition
-     * @param array        $params    the binding parameters to be populated
+     * @param array $params the binding parameters to be populated
      *
-     * @return string the HAVING clause built from [[Query::$having]].
+     * @return string the HAVING clause built from {@see Query::$having}.
      */
     public function buildHaving($condition, &$params)
     {
@@ -1446,11 +1458,11 @@ class QueryBuilder
     /**
      * Builds the ORDER BY and LIMIT/OFFSET clauses and appends them to the given SQL.
      *
-     * @param string $sql     the existing SQL (without ORDER BY/LIMIT/OFFSET)
-     * @param array  $orderBy the order by columns. See [[Query::orderBy]] for more details on how to specify this parameter.
-     * @param int    $limit   the limit number. See [[Query::limit]] for more details.
-     * @param int    $offset  the offset number. See [[Query::offset]] for more details.
-     * @param array  $params  the binding parameters to be populated
+     * @param string $sql the existing SQL (without ORDER BY/LIMIT/OFFSET)
+     * @param array $orderBy the order by columns. See {@see Query::orderBy} for more details on how to specify this parameter.
+     * @param int $limit the limit number. See {@see Query::limit} for more details.
+     * @param int $offset the offset number. See {@see Query::offset} for more details.
+     * @param array $params the binding parameters to be populated
      *
      * @return string the SQL completed with ORDER BY/LIMIT/OFFSET (if any)
      */
@@ -1472,14 +1484,16 @@ class QueryBuilder
      * @param array $columns
      * @param array $params  the binding parameters to be populated
      *
-     * @return string the ORDER BY clause built from [[Query::$orderBy]].
+     * @return string the ORDER BY clause built from {@see Query::$orderBy}.
      */
     public function buildOrderBy($columns, &$params)
     {
         if (empty($columns)) {
             return '';
         }
+
         $orders = [];
+
         foreach ($columns as $name => $direction) {
             if ($direction instanceof ExpressionInterface) {
                 $orders[] = $this->buildExpression($direction);
@@ -1539,7 +1553,7 @@ class QueryBuilder
      * @param array $unions
      * @param array $params the binding parameters to be populated
      *
-     * @return string the UNION clause built from [[Query::$union]].
+     * @return string the UNION clause built from {@see Query::$union}.
      */
     public function buildUnion($unions, &$params)
     {
@@ -1563,6 +1577,7 @@ class QueryBuilder
 
     /**
      * Processes columns and properly quotes them if necessary.
+     *
      * It will join all columns into a string with comma as separators.
      *
      * @param string|array $columns the columns to be processed
@@ -1596,9 +1611,9 @@ class QueryBuilder
     /**
      * Parses the condition specification and generates the corresponding SQL expression.
      *
-     * @param string|array|ExpressionInterface $condition the condition specification. Please refer to [[Query::where()]]
-     *                                                    on how to specify a condition.
-     * @param array                            $params    the binding parameters to be populated
+     * @param string|array|ExpressionInterface $condition the condition specification. Please refer to
+     * {@see Query::where()} on how to specify a condition.
+     * @param array $params the binding parameters to be populated
      *
      * @return string the generated SQL expression
      */
@@ -1620,17 +1635,14 @@ class QueryBuilder
     }
 
     /**
-     * Transforms $condition defined in array format (as described in [[Query::where()]]
-     * to instance of [[Yiisoft\Db\Condition\ConditionInterface|ConditionInterface]] according to
-     * [[conditionClasses]] map.
+     * Transforms $condition defined in array format (as described in {@see Query::where()} to instance of
+     * {@see \Yiisoft\Db\Condition\ConditionInterface|ConditionInterface} according to {@see conditionClasses} map.
      *
      * @param string|array $condition
      *
      * @see conditionClasses
      *
      * @return ConditionInterface
-     *
-     * @since 2.0.14
      */
     public function createConditionFromArray($condition)
     {
@@ -1639,7 +1651,7 @@ class QueryBuilder
             if (isset($this->conditionClasses[$operator])) {
                 $className = $this->conditionClasses[$operator];
             } else {
-                $className = 'Yiisoft\Db\Conditions\SimpleCondition';
+                $className = \Yiisoft\Db\Conditions\SimpleCondition::class;
             }
             /* @var ConditionInterface $className */
             return $className::fromArrayDefinition($operator, $condition);
@@ -1655,8 +1667,6 @@ class QueryBuilder
      * @param string $rawSql the subquery in a raw form to select from.
      *
      * @return string the SELECT EXISTS() SQL statement.
-     *
-     * @since 2.0.8
      */
     public function selectExists($rawSql)
     {
@@ -1664,14 +1674,12 @@ class QueryBuilder
     }
 
     /**
-     * Helper method to add $value to $params array using [[PARAM_PREFIX]].
+     * Helper method to add $value to $params array using {@see PARAM_PREFIX}.
      *
      * @param string|null $value
-     * @param array       $params passed by reference
+     * @param array $params passed by reference
      *
      * @return string the placeholder name in $params array
-     *
-     * @since 2.0.14
      */
     public function bindParam($value, &$params)
     {
@@ -1683,9 +1691,10 @@ class QueryBuilder
 
     /**
      * Extracts table alias if there is one or returns false
+     *
      * @param $table
+     *
      * @return bool|array
-     * @since 2.0.24
      */
     protected function extractAlias($table)
     {

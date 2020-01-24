@@ -17,10 +17,10 @@ class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
     protected $driverName = 'mysql';
 
     /**
-     * This is not used as a dataprovider for testGetColumnType to speed up the test
-     * when used as dataprovider every single line will cause a reconnect with the database which is not needed here.
+     * This is not used as a dataprovider for testGetColumnType to speed up the test when used as dataprovider every
+     * single line will cause a reconnect with the database which is not needed here.
      */
-    public function columnTypes()
+    public function columnTypes(): array
     {
         $columns = [
             [
@@ -65,24 +65,10 @@ class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
             ],
         ];
 
-        /*
-         * TODO Remove in Yii 2.1
-         *
-         * Disabled due bug in MySQL extension
-         * @link https://bugs.php.net/bug.php?id=70384
-         */
-        if (version_compare(PHP_VERSION, '5.6', '>=')) {
-            $columns[] = [
-                Schema::TYPE_JSON,
-                $this->json(),
-                "json",
-            ];
-        }
-
         return array_merge(parent::columnTypes(), $this->columnTimeTypes(), $columns);
     }
 
-    public function columnTimeTypes()
+    public function columnTimeTypes(): array
     {
         $columns = [
             [
@@ -159,40 +145,44 @@ class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
         return $columns;
     }
 
-    public function primaryKeysProvider()
+    public function primaryKeysProvider(): array
     {
         $result = parent::primaryKeysProvider();
         $result['drop'][0] = 'ALTER TABLE {{T_constraints_1}} DROP PRIMARY KEY';
         $result['add'][0] = 'ALTER TABLE {{T_constraints_1}} ADD CONSTRAINT [[CN_pk]] PRIMARY KEY ([[C_id_1]])';
         $result['add (2 columns)'][0] = 'ALTER TABLE {{T_constraints_1}} ADD CONSTRAINT [[CN_pk]] PRIMARY KEY ([[C_id_1]], [[C_id_2]])';
+
         return $result;
     }
 
-    public function foreignKeysProvider()
+    public function foreignKeysProvider(): array
     {
         $result = parent::foreignKeysProvider();
         $result['drop'][0] = 'ALTER TABLE {{T_constraints_3}} DROP FOREIGN KEY [[CN_constraints_3]]';
+
         return $result;
     }
 
-    public function indexesProvider()
+    public function indexesProvider(): array
     {
         $result = parent::indexesProvider();
         $result['create'][0] = 'ALTER TABLE {{T_constraints_2}} ADD INDEX [[CN_constraints_2_single]] ([[C_index_1]])';
         $result['create (2 columns)'][0] = 'ALTER TABLE {{T_constraints_2}} ADD INDEX [[CN_constraints_2_multi]] ([[C_index_2_1]], [[C_index_2_2]])';
         $result['create unique'][0] = 'ALTER TABLE {{T_constraints_2}} ADD UNIQUE INDEX [[CN_constraints_2_single]] ([[C_index_1]])';
         $result['create unique (2 columns)'][0] = 'ALTER TABLE {{T_constraints_2}} ADD UNIQUE INDEX [[CN_constraints_2_multi]] ([[C_index_2_1]], [[C_index_2_2]])';
+
         return $result;
     }
 
-    public function uniquesProvider()
+    public function uniquesProvider(): array
     {
         $result = parent::uniquesProvider();
         $result['drop'][0] = 'DROP INDEX [[CN_unique]] ON {{T_constraints_1}}';
+
         return $result;
     }
 
-    public function checksProvider()
+    public function checksProvider(): void
     {
         $this->markTestSkipped('Adding/dropping check constraints is not supported in MySQL.');
     }
@@ -202,9 +192,9 @@ class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
         $this->markTestSkipped('Adding/dropping default constraints is not supported in MySQL.');
     }
 
-    public function testResetSequence()
+    public function testResetSequence(): void
     {
-        $qb = $this->getQueryBuilder();
+        $qb = $this->getQueryBuilder(true, true);
 
         $expected = 'ALTER TABLE `item` AUTO_INCREMENT=6';
         $sql = $qb->resetSequence('item');
@@ -215,7 +205,7 @@ class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
         $this->assertEquals($expected, $sql);
     }
 
-    public function upsertProvider()
+    public function upsertProvider(): array
     {
         $concreteData = [
             'regular values' => [
@@ -251,9 +241,9 @@ class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
             'query, values and expressions without update part' => [
                 3 => 'INSERT INTO {{%T_upsert}} (`email`, [[time]]) SELECT :phEmail AS `email`, now() AS [[time]] ON DUPLICATE KEY UPDATE `ts`=:qp1, [[orders]]=T_upsert.orders + 1',
             ],
-            /*'no columns to update' => [
+            'no columns to update' => [
                 3 => 'INSERT INTO `T_upsert_1` (`a`) VALUES (:qp0) ON DUPLICATE KEY UPDATE `a`=`T_upsert_1`.`a`',
-            ]*/
+            ],
         ];
 
         $newData = parent::upsertProvider();
@@ -265,7 +255,7 @@ class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
         return $newData;
     }
 
-    public function conditionProvider()
+    public function conditionProvider(): array
     {
         return array_merge(parent::conditionProvider(), [
             // json conditions
@@ -320,7 +310,7 @@ class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
         ]);
     }
 
-    public function updateProvider()
+    public function updateProvider(): array
     {
         $items = parent::updateProvider();
 
@@ -342,7 +332,7 @@ class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
         return $items;
     }
 
-    public function testIssue17449()
+    public function testIssue17449(): void
     {
         $db = $this->getConnection();
         $pdo = $db->getPDO();

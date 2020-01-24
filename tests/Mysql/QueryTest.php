@@ -16,7 +16,7 @@ class QueryTest extends \Yiisoft\Db\Tests\QueryTest
     /**
      * Tests MySQL specific syntax for index hints.
      */
-    public function testQueryIndexHint()
+    public function testQueryIndexHint(): void
     {
         $db = $this->getConnection();
 
@@ -27,7 +27,7 @@ class QueryTest extends \Yiisoft\Db\Tests\QueryTest
         $this->assertArrayHasKey('email', $row);
     }
 
-    public function testLimitOffsetWithExpression()
+    public function testLimitOffsetWithExpression(): void
     {
         $query = (new Query())->from('customer')->select('id')->orderBy('id');
         // In MySQL limit and offset arguments must both be nonnegative integer constant

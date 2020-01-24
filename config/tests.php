@@ -8,8 +8,6 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Cache\Cache;
 use Yiisoft\Cache\CacheInterface;
-use Yiisoft\Db\Connection;
-use Yiisoft\Factory\Definitions\Reference;
 use Yiisoft\Log\Target\File\FileRotator;
 use Yiisoft\Log\Target\File\FileRotatorInterface;
 use Yiisoft\Log\Target\File\FileTarget;
@@ -22,16 +20,13 @@ return [
         '@runtime' => '@root/tests/data/runtime',
     ],
 
-    \Yiisoft\Cache\CacheInterface::class => static function (ContainerInterface $container) {
+    CacheInterface::class => static function (ContainerInterface $container) {
         return new Cache(new ArrayCache());
     },
 
-    FileRotatorInterface::class => [
-        '__class' => FileRotator::class,
-        '__construct()' => [
-            10
-        ]
-    ],
+    FileRotatorInterface::class => static function () {
+        return new FileRotator(10);
+    },
 
     LoggerInterface::class => static function (ContainerInterface $container) {
         $aliases = $container->get(Aliases::class);
@@ -57,30 +52,7 @@ return [
         ]);
     },
 
-    Profiler::class => [
-        '__class' => Profiler::class,
-        '__construct()' => [
-            Reference::to(LoggerInterface::class)
-        ]
-    ],
-
-    Connection::class => static function (ContainerInterface $container) {
-        $connection = new Connection(
-            $container->get(\Yiisoft\Cache\CacheInterface::class),
-            $container->get(LoggerInterface::class),
-            $container->get(Profiler::class),
-            [
-                'driver' => 'mysql',
-                'host' => '127.0.0.1',
-                'dbname' => 'yiitest',
-                'port' => '3306',
-                'fixture' => dirname(__dir__) .  '/tests/data/mysql.sql'
-            ]
-        );
-
-        $connection->setUsername('root');
-        $connection->setPassword('');
-
-        return $connection;
+    Profiler::class => static function (ContainerInterface $container) {
+        return new Profiler($container->get(LoggerInterface::class));
     },
 ];
