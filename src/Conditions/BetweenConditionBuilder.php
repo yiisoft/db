@@ -1,29 +1,29 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
-use Yiisoft\Db\ExpressionBuilderInterface;
+use Yiisoft\Db\Contracts\ExpressionInterface;
+use Yiisoft\Db\Contracts\ExpressionBuilderInterface;
 use Yiisoft\Db\ExpressionBuilderTrait;
-use Yiisoft\Db\ExpressionInterface;
 
 /**
- * Class BetweenConditionBuilder builds objects of [[BetweenCondition]].
+ * Class BetweenConditionBuilder builds objects of {@see BetweenCondition}.
  */
 class BetweenConditionBuilder implements ExpressionBuilderInterface
 {
     use ExpressionBuilderTrait;
 
     /**
-     * Method builds the raw SQL from the $expression that will not be additionally
-     * escaped or quoted.
+     * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
      *
      * @param ExpressionInterface|BetweenCondition $expression the expression to be built.
      * @param array $params the binding parameters.
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = [])
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();
         $column = $expression->getColumn();
@@ -46,7 +46,7 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      *
      * @return string
      */
-    protected function createPlaceholder($value, &$params)
+    protected function createPlaceholder($value, array &$params): string
     {
         if ($value instanceof ExpressionInterface) {
             return $this->queryBuilder->buildExpression($value, $params);

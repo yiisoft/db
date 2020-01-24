@@ -1,14 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
 use Yiisoft\Db\ExpressionInterface;
 use Yiisoft\Db\Query;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 
 /**
- * Class BetweenColumnCondition represents a `BETWEEN` condition where
- * values is between two columns. For example:.
+ * Class BetweenColumnCondition represents a `BETWEEN` condition where values is between two columns.
+ *
+ * For example:.
  *
  * ```php
  * new BetweenColumnsCondition(42, 'BETWEEN', 'min_value', 'max_value')
@@ -35,7 +38,7 @@ class BetweenColumnsCondition implements ConditionInterface
     /**
      * @var string the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`)
      */
-    private ?string $operator = null;
+    private string $operator;
 
     /**
      * @var mixed the value to compare against
@@ -61,7 +64,7 @@ class BetweenColumnsCondition implements ConditionInterface
      * interval
      * @param string|ExpressionInterface $intervalEndColumn the column name or expression that is an end of the interval
      */
-    public function __construct($value, $operator, $intervalStartColumn, $intervalEndColumn)
+    public function __construct($value, string $operator, $intervalStartColumn, $intervalEndColumn)
     {
         $this->value = $value;
         $this->operator = $operator;
@@ -104,12 +107,12 @@ class BetweenColumnsCondition implements ConditionInterface
     /**
      * {@inheritdoc}
      *
-     * @throws \InvalidArgumentException if wrong number of operands have been given.
+     * @throws InvalidArgumentException if wrong number of operands have been given.
      */
-    public static function fromArrayDefinition($operator, $operands)
+    public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (!isset($operands[0], $operands[1], $operands[2])) {
-            throw new \InvalidArgumentException("Operator '$operator' requires three operands.");
+            throw new InvalidArgumentException("Operator '$operator' requires three operands.");
         }
 
         return new static($operands[0], $operator, $operands[1], $operands[2]);

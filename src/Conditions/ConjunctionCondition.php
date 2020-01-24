@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
@@ -16,7 +17,7 @@ abstract class ConjunctionCondition implements ConditionInterface
     /**
      * @param mixed $expressions
      */
-    public function __construct($expressions) // TODO: use variadic params when PHP>5.6
+    public function __construct($expressions)
     {
         $this->expressions = $expressions;
     }
@@ -34,12 +35,12 @@ abstract class ConjunctionCondition implements ConditionInterface
      *
      * @return string
      */
-    abstract public function getOperator();
+    abstract public function getOperator(): string;
 
     /**
      * {@inheritdoc}
      */
-    public static function fromArrayDefinition($operator, $operands)
+    public static function fromArrayDefinition(string $operator, array $operands): self
     {
         return new static($operands);
     }

@@ -1,16 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
-use Yiisoft\Db\ExpressionBuilderInterface;
-use Yiisoft\Db\ExpressionBuilderTrait;
-use Yiisoft\Db\ExpressionInterface;
-use Yiisoft\Db\Query;
 use Yiisoft\Arrays\ArrayHelper;
+use Yiisoft\Db\Contracts\ExpressionInterface;
+use Yiisoft\Db\Contracts\ExpressionBuilderInterface;
+use Yiisoft\Db\ExpressionBuilderTrait;
+use Yiisoft\Db\Query;
 
 /**
- * Class HashConditionBuilder builds objects of [[HashCondition]].
+ * Class HashConditionBuilder builds objects of {@see HashCondition}.
  */
 class HashConditionBuilder implements ExpressionBuilderInterface
 {
@@ -25,7 +26,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = [])
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $hash = $expression->getHash();
         $parts = [];

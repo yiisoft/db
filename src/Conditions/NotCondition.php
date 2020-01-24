@@ -1,10 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
+use Yiisoft\Db\Exception\InvalidArgumentException;
+
 /**
- * Condition that inverts passed [[condition]].
+ * Condition that inverts passed {@see condition}.
  */
 class NotCondition implements ConditionInterface
 {
@@ -34,12 +37,12 @@ class NotCondition implements ConditionInterface
     /**
      * {@inheritdoc}
      *
-     * @throws \InvalidArgumentException if wrong number of operands have been given.
+     * @throws InvalidArgumentException if wrong number of operands have been given.
      */
-    public static function fromArrayDefinition($operator, $operands)
+    public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (count($operands) !== 1) {
-            throw new \InvalidArgumentException("Operator '$operator' requires exactly one operand.");
+            throw new InvalidArgumentException("Operator '$operator' requires exactly one operand.");
         }
 
         return new static(array_shift($operands));

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
@@ -11,14 +12,14 @@ class HashCondition implements ConditionInterface
     /**
      * @var array|null the condition specification.
      */
-    private $hash;
+    private ?array $hash = [];
 
     /**
      * HashCondition constructor.
      *
      * @param array|null $hash
      */
-    public function __construct($hash)
+    public function __construct(?array $hash = [])
     {
         $this->hash = $hash;
     }
@@ -26,7 +27,7 @@ class HashCondition implements ConditionInterface
     /**
      * @return array|null
      */
-    public function getHash()
+    public function getHash(): ?array
     {
         return $this->hash;
     }
@@ -34,7 +35,7 @@ class HashCondition implements ConditionInterface
     /**
      * {@inheritdoc}
      */
-    public static function fromArrayDefinition($operator, $operands)
+    public static function fromArrayDefinition(string $operator, array $operands): self
     {
         return new static($operands);
     }

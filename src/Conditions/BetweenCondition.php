@@ -1,7 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
+
+use Yiisoft\Db\Exception\InvalidArgumentException;
 
 /**
  * Class BetweenCondition represents a `BETWEEN` condition.
@@ -11,10 +14,10 @@ class BetweenCondition implements ConditionInterface
     /**
      * @var string the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`)
      */
-    private $operator;
+    private string $operator;
 
     /**
-     * @var mixed the column name to the left of [[operator]]
+     * @var mixed the column name to the left of {@see operator}
      */
     private $column;
 
@@ -31,12 +34,12 @@ class BetweenCondition implements ConditionInterface
     /**
      * Creates a condition with the `BETWEEN` operator.
      *
-     * @param mixed  $column        the literal to the left of $operator
-     * @param string $operator      the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`)
-     * @param mixed  $intervalStart beginning of the interval
-     * @param mixed  $intervalEnd   end of the interval
+     * @param mixed $column the literal to the left of $operator
+     * @param string $operator the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`)
+     * @param mixed $intervalStart beginning of the interval
+     * @param mixed $intervalEnd end of the interval
      */
-    public function __construct($column, $operator, $intervalStart, $intervalEnd)
+    public function __construct($column, string $operator, $intervalStart, $intervalEnd)
     {
         $this->column = $column;
         $this->operator = $operator;
@@ -47,7 +50,7 @@ class BetweenCondition implements ConditionInterface
     /**
      * @return string
      */
-    public function getOperator()
+    public function getOperator(): string
     {
         return $this->operator;
     }
@@ -79,12 +82,12 @@ class BetweenCondition implements ConditionInterface
     /**
      * {@inheritdoc}
      *
-     * @throws \InvalidArgumentException if wrong number of operands have been given.
+     * @throws InvalidArgumentException if wrong number of operands have been given.
      */
-    public static function fromArrayDefinition($operator, $operands)
+    public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (!isset($operands[0], $operands[1], $operands[2])) {
-            throw new \InvalidArgumentException("Operator '$operator' requires three operands.");
+            throw new InvalidArgumentException("Operator '$operator' requires three operands.");
         }
 
         return new static($operands[0], $operator, $operands[1], $operands[2]);

@@ -1,14 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
-use Yiisoft\Db\ExpressionBuilderInterface;
 use Yiisoft\Db\ExpressionBuilderTrait;
-use Yiisoft\Db\ExpressionInterface;
+use Yiisoft\Db\Contracts\ExpressionInterface;
+use Yiisoft\Db\Contracts\ExpressionBuilderInterface;
 
 /**
- * Class ConjunctionConditionBuilder builds objects of abstract class [[ConjunctionCondition]].
+ * Class ConjunctionConditionBuilder builds objects of abstract class {@see ConjunctionCondition}.
  */
 class ConjunctionConditionBuilder implements ExpressionBuilderInterface
 {
@@ -22,7 +23,7 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $condition, array &$params = [])
+    public function build(ExpressionInterface $condition, array &$params = []): string
     {
         $parts = $this->buildExpressionsFrom($condition, $params);
 
@@ -45,7 +46,7 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
      *
      * @return string[]
      */
-    private function buildExpressionsFrom(ExpressionInterface $condition, &$params = [])
+    private function buildExpressionsFrom(ExpressionInterface $condition, array &$params = []): array
     {
         $parts = [];
         foreach ($condition->getExpressions() as $condition) {

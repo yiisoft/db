@@ -1,15 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
-use Yiisoft\Db\ExpressionBuilderInterface;
+use Yiisoft\Db\Contracts\ExpressionInterface;
+use Yiisoft\Db\Contracts\ExpressionBuilderInterface;
 use Yiisoft\Db\ExpressionBuilderTrait;
-use Yiisoft\Db\ExpressionInterface;
 use Yiisoft\Db\Query;
 
 /**
- * Class InConditionBuilder builds objects of [[InCondition]].
+ * Class InConditionBuilder builds objects of {@see InCondition}.
  */
 class InConditionBuilder implements ExpressionBuilderInterface
 {
@@ -23,7 +24,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = [])
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();
         $column = $expression->getColumn();
@@ -76,7 +77,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      *
      * @return array of prepared for SQL placeholders
      */
-    protected function buildValues(ConditionInterface $condition, $values, &$params)
+    protected function buildValues(ConditionInterface $condition, $values, array &$params): array
     {
         $sqlValues = [];
         $column = $condition->getColumn();
@@ -107,7 +108,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      *
      * @return string SQL
      */
-    protected function buildSubqueryInCondition($operator, $columns, $values, &$params)
+    protected function buildSubqueryInCondition(string $operator, $columns, Query $values, array &$params): string
     {
         $sql = $this->queryBuilder->buildExpression($values, $params);
 
@@ -138,7 +139,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      *
      * @return string SQL
      */
-    protected function buildCompositeInCondition($operator, $columns, $values, &$params)
+    protected function buildCompositeInCondition(?string $operator, $columns, $values, &$params): string
     {
         $vss = [];
         foreach ($values as $value) {

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
@@ -13,7 +14,7 @@ class AndCondition extends ConjunctionCondition
      *
      * @return string
      */
-    public function getOperator()
+    public function getOperator(): string
     {
         return 'AND';
     }
