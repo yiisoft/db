@@ -1,6 +1,8 @@
 <?php
 
-namespace Yiisoft\Db;
+namespace Yiisoft\Db\Contracts;
+
+use Yiisoft\Db\Contracts\ConnectionInterface;
 
 /**
  * The QueryInterface defines the minimum set of methods to be implemented by a database query.
@@ -21,7 +23,7 @@ interface QueryInterface
      *
      * @return array the query results. If the query results in nothing, an empty array will be returned.
      */
-    public function all($db = null);
+    public function all(ConnectionInterface $db);
 
     /**
      * Executes the query and returns a single row of result.
@@ -32,7 +34,7 @@ interface QueryInterface
      * @return array|bool the first row (in terms of an array) of the query result. False is returned if the query
      * results in nothing.
      */
-    public function one($db = null);
+    public function one(ConnectionInterface $db);
 
     /**
      * Returns the number of records.
@@ -43,7 +45,7 @@ interface QueryInterface
      *
      * @return int number of records.
      */
-    public function count($q = '*', $db = null);
+    public function count($q = '*', ConnectionInterface $db = null);
 
     /**
      * Returns a value indicating whether the query result contains any row of data.

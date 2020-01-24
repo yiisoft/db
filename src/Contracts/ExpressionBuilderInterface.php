@@ -1,6 +1,6 @@
 <?php
 
-namespace Yiisoft\Db;
+namespace Yiisoft\Db\Contracts;
 
 /**
  * Interface ExpressionBuilderInterface is designed to build raw SQL from specific expression

@@ -1,6 +1,6 @@
 <?php
 
-namespace Yiisoft\Db;
+namespace Yiisoft\Db\Contracts;
 
 /**
  * ConstraintFinderInterface defines methods for getting a table constraint information.
