@@ -10,6 +10,7 @@ use Yiisoft\Db\Contracts\ConnectionInterface;
 use Yiisoft\Db\Contracts\ConstraintFinderInterface;
 use Yiisoft\Db\Contracts\ExpressionInterface;
 use Yiisoft\Db\Contracts\ExpressionBuilderInterface;
+use Yiisoft\Db\Constraints\Constraint;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Strings\StringHelper;
@@ -567,7 +568,7 @@ class QueryBuilder
         }
 
         foreach ($schema->getTableIndexes($name) as $constraint) {
-            if ($constraint->isUnique) {
+            if ($constraint->getIsUnique()) {
                 $constraints[] = $constraint;
             }
         }
@@ -576,7 +577,7 @@ class QueryBuilder
 
         // Remove duplicates
         $constraints = array_combine(array_map(function ($constraint) {
-            $columns = $constraint->columnNames;
+            $columns = $constraint->getColumnNames();
             sort($columns, SORT_STRING);
             return json_encode($columns);
         }, $constraints), $constraints);
@@ -585,7 +586,7 @@ class QueryBuilder
 
         // Remove all constraints which do not cover the specified column list
         $constraints = array_values(array_filter($constraints, function ($constraint) use ($schema, $columns, &$columnNames) {
-            $constraintColumnNames = array_map([$schema, 'quoteColumnName'], $constraint->columnNames);
+            $constraintColumnNames = array_map([$schema, 'quoteColumnName'], $constraint->getColumnNames());
             $result = !array_diff($constraintColumnNames, $columns);
 
             if ($result) {

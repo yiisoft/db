@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
@@ -6,12 +7,12 @@ namespace Yiisoft\Db\Tests;
 use PDO;
 use Yiisoft\Db\CheckConstraint;
 use Yiisoft\Db\ColumnSchema;
-use Yiisoft\Db\Constraint;
 use Yiisoft\Db\Expression;
-use Yiisoft\Db\ForeignKeyConstraint;
-use Yiisoft\Db\IndexConstraint;
 use Yiisoft\Db\Schema;
 use Yiisoft\Db\TableSchema;
+use Yiisoft\Db\Constraints\Constraint;
+use Yiisoft\Db\Constraints\ForeignKeyConstraint;
+use Yiisoft\Db\Constraints\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 abstract class SchemaTest extends DatabaseTestCase
@@ -120,9 +121,8 @@ abstract class SchemaTest extends DatabaseTestCase
         /* @var $schema Schema */
         $schema = $db->getSchema();
 
-        $schema->db->enableSchemaCache = true;
-
-        $schema->db->schemaCache = $this->cache;
+        $schema->db->setEnableSchemaCache(true);
+        $schema->db->setSchemaCache($this->cache);
 
         $noCacheTable = $schema->getTableSchema('type', true);
         $cachedTable = $schema->getTableSchema('type', false);
@@ -146,8 +146,8 @@ abstract class SchemaTest extends DatabaseTestCase
         /* @var $schema Schema */
         $schema = $this->getConnection()->getSchema();
 
-        $schema->db->enableSchemaCache = true;
-        $schema->db->schemaCache = $this->cache;
+        $schema->db->setEnableSchemaCache(true);
+        $schema->db->setSchemaCache($this->cache);
 
         $noCacheTable = $schema->getTableSchema('type', true);
         $schema->refreshTableSchema('type');
@@ -206,29 +206,32 @@ abstract class SchemaTest extends DatabaseTestCase
     {
         /* @var $schema Schema */
         $schema = $this->getConnection()->getSchema();
-        $schema->db->enableSchemaCache = true;
 
-        $schema->db->tablePrefix = $tablePrefix;
-        $schema->db->schemaCache = $this->cache;
-
+        $schema->db->setEnableSchemaCache(true);
+        $schema->db->setSchemaCache($this->cache);
+        $schema->db->setTablePrefix($tablePrefix);
         $noCacheTable = $schema->getTableSchema($tableName, true);
+
         $this->assertInstanceOf(TableSchema::class, $noCacheTable);
 
         // Compare
-        $schema->db->tablePrefix = $testTablePrefix;
+        $schema->db->setTablePrefix($testTablePrefix);
         $testNoCacheTable = $schema->getTableSchema($testTableName);
+
         $this->assertSame($noCacheTable, $testNoCacheTable);
 
-        $schema->db->tablePrefix = $tablePrefix;
+        $schema->db->setTablePrefix($tablePrefix);
         $schema->refreshTableSchema($tableName);
         $refreshedTable = $schema->getTableSchema($tableName, false);
+
         $this->assertInstanceOf(TableSchema::class, $refreshedTable);
         $this->assertNotSame($noCacheTable, $refreshedTable);
 
         // Compare
-        $schema->db->tablePrefix = $testTablePrefix;
+        $schema->db->setTablePrefix($testTablePrefix);
         $schema->refreshTableSchema($testTablePrefix);
         $testRefreshedTable = $schema->getTableSchema($testTableName, false);
+
         $this->assertInstanceOf(TableSchema::class, $testRefreshedTable);
         $this->assertEquals($refreshedTable, $testRefreshedTable);
         $this->assertNotSame($testNoCacheTable, $testRefreshedTable);
@@ -552,7 +555,9 @@ abstract class SchemaTest extends DatabaseTestCase
 
     public function testColumnSchemaDbTypecastWithEmptyCharType()
     {
-        $columnSchema = $this->factory->create(['__class' => ColumnSchema::class, 'type' => Schema::TYPE_CHAR]);
+        $columnSchema = new ColumnSchema();
+
+        $columnSchema->setType(Schema::TYPE_CHAR);
 
         $this->assertSame('', $columnSchema->dbTypecast(''));
     }
@@ -565,6 +570,7 @@ abstract class SchemaTest extends DatabaseTestCase
             $db->createCommand()->dropTable('uniqueIndex')->execute();
         } catch (\Exception $e) {
         }
+
         $db->createCommand()->createTable('uniqueIndex', [
             'somecol'  => 'string',
             'someCol2' => 'string',
@@ -624,6 +630,13 @@ abstract class SchemaTest extends DatabaseTestCase
     public function constraintsProvider()
     {
         return [
+            '3: index' => [
+                'T_constraints_3',
+                'indexes',
+                [
+                    $this->indexConstraint('CN_constraints_3', ['C_fk_id_1', 'C_fk_id_2'], false, false)
+                ]
+            ],
             '1: primary key' => [
                 'T_constraints_1',
                 'primaryKey',
@@ -691,13 +704,6 @@ abstract class SchemaTest extends DatabaseTestCase
                 ]
             ],
             '3: unique' => ['T_constraints_3', 'uniques', []],
-            '3: index' => [
-                'T_constraints_3',
-                'indexes',
-                [
-                    $this->indexConstraint('CN_constraints_3', ['C_fk_id_1', 'C_fk_id_2'], false, false)
-                ]
-            ],
             '3: check' => ['T_constraints_3', 'checks', []],
             '3: default' => ['T_constraints_3', 'defaultValues', false],
             '4: primary key' => [
@@ -865,6 +871,7 @@ abstract class SchemaTest extends DatabaseTestCase
         $ic->setIsPrimary($isPrimary);
 
         return $ic;
+
     }
 
     private function normalizeArrayKeys(array &$array, $caseSensitive)
