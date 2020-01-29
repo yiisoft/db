@@ -51,7 +51,6 @@ abstract class ActiveRecordTest extends DatabaseTestCase
         } else {
             $customer = Customer::find()->select(['*', '([[status]]*2) AS [[status2]]'])
                 ->where(['name' => 'user3'])->one();
-
         }
 
         $this->assertEquals(3, $customer->id);
@@ -1634,7 +1633,7 @@ abstract class ActiveRecordTest extends DatabaseTestCase
     {
         $orderClass = Order::class;
 
-        $orderClass::find()->with('customer')->indexBy(function(Order $order) {
+        $orderClass::find()->with('customer')->indexBy(function (Order $order) {
             $this->assertTrue($order->isRelationPopulated('customer'));
             $this->assertNotEmpty($order->customer->id);
 

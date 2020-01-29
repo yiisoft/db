@@ -26,11 +26,11 @@ $config = [
                 'driver' => 'mysql',
                 'host' => '127.0.0.1',
                 'dbname' => 'yiitest',
-                'port' => '3306',
+                'port' => '3307',
             ],
             'fixture' => __DIR__ . '/mysql.sql',
             'username' => 'root',
-            'password' => '',
+            'password' => 'root',
         ],
         'sqlite' => [
             'dsn' => 'sqlite::memory:',

@@ -693,7 +693,6 @@ abstract class QueryTest extends DatabaseTestCase
 
         // Connection cache
         $db->cache(function (Connection $db) use ($query, $update) {
-
             $this->assertEquals(
                 'user2',
                 $query->where(['id' => 2])->scalar($db),

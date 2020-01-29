@@ -595,10 +595,9 @@ class Command
     public function batchInsert($table, $columns, $rows)
     {
         $table = $this->db->quoteSql($table);
+
         $columns = array_map(function ($column) {
-
             return $this->db->quoteSql($column);
-
         }, $columns);
 
         $params = [];
