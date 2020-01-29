@@ -1,11 +1,3 @@
-#
-# Travis Setup
-#
-
-#
-# Test Matrix
-#
-
 language: php
 
 env:

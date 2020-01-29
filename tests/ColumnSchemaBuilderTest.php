@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
 use Yiisoft\Db\ColumnSchemaBuilder;
-use Yiisoft\Db\Expression;
 use Yiisoft\Db\Schema;
+use Yiisoft\Db\Expressions\Expression;
 
 abstract class ColumnSchemaBuilderTest extends DatabaseTestCase
 {

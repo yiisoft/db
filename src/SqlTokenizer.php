@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -19,7 +21,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
  *
  * Tokens are instances of [[SqlToken]].
  */
-abstract class SqlTokenizer extends Component
+abstract class SqlTokenizer
 {
     /**
      * @var string SQL code.

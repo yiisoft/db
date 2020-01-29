@@ -1,6 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db;
+
+use Yiisoft\Db\Constraints\Constraint;
+use Yiisoft\Db\Constraints\DefaultValueConstraint;
+use Yiisoft\Db\Constraints\CheckConstraint;
+use Yiisoft\Db\Constraints\ForeignKeyConstraint;
+use Yiisoft\Db\Constraints\IndexConstraint;
 
 /**
  * ConstraintFinderTrait provides methods for getting a table constraint information.

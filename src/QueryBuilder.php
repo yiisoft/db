@@ -13,6 +13,7 @@ use Yiisoft\Db\Contracts\ExpressionBuilderInterface;
 use Yiisoft\Db\Constraints\Constraint;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expressions\Expression;
 use Yiisoft\Strings\StringHelper;
 
 /**
@@ -353,7 +354,7 @@ class QueryBuilder
 
                 if ($value instanceof ExpressionInterface) {
                     $placeholders[] = $this->buildExpression($value, $params);
-                } elseif ($value instanceof \Yiisoft\Db\Query) {
+                } elseif ($value instanceof Query) {
                     [$sql, $params] = $this->build($value, $params);
                     $placeholders[] = "($sql)";
                 } else {

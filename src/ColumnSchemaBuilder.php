@@ -1,7 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db;
 
+use Yiisoft\Db\Contracts\ConnectionInterface;
+use Yiisoft\Db\Constraints\Constraint;
+use Yiisoft\Db\Expressions\Expression;
 use Yiisoft\Strings\StringHelper;
 
 /**
@@ -11,41 +16,47 @@ use Yiisoft\Strings\StringHelper;
  */
 class ColumnSchemaBuilder
 {
-    // Internally used constants representing categories that abstract column types fall under.
-    // {@see $categoryMap} for mappings of abstract column types to category.
+    /**
+     * Internally used constants representing categories that abstract column types fall under.
+     * {@see $categoryMap} for mappings of abstract column types to category.
+     */
     const CATEGORY_PK = 'pk';
+
     const CATEGORY_STRING = 'string';
+
     const CATEGORY_NUMERIC = 'numeric';
+
     const CATEGORY_TIME = 'time';
+
     const CATEGORY_OTHER = 'other';
 
     /**
      * @var string the column type definition such as INTEGER, VARCHAR, DATETIME, etc.
      */
-    protected $type;
+    protected string $type;
 
     /**
-     * @var int|string|array column size or precision definition. This is what goes into the parenthesis after
-     *                       the column type. This can be either a string, an integer or an array. If it is an array,
-     *                       the array values will be joined into a string separated by comma.
+     * @var int|string|array column size or precision definition. This is what goes into the parenthesis after the
+     * column type. This can be either a string, an integer or an array. If it is an array, the array values will be
+     * joined into a string separated by comma.
      */
     protected $length;
 
     /**
      * @var bool|null whether the column is or not nullable. If this is `true`, a `NOT NULL` constraint will be added.
-     *                If this is `false`, a `NULL` constraint will be added.
+     * If this is `false`, a `NULL` constraint will be added.
      */
-    protected $isNotNull;
+    protected ?bool $isNotNull = null;
 
     /**
      * @var bool whether the column values should be unique. If this is `true`, a `UNIQUE` constraint will be added.
      */
-    protected $isUnique = false;
+    protected bool $isUnique = false;
 
     /**
      * @var string the `CHECK` constraint for the column.
      */
-    protected $check;
+    protected ?string $check = null;
 
     /**
      * @var mixed default value of the column.
@@ -60,17 +71,17 @@ class ColumnSchemaBuilder
     /**
      * @var bool whether the column values should be unsigned. If this is `true`, an `UNSIGNED` keyword will be added.
      */
-    protected $isUnsigned = false;
+    protected bool $isUnsigned = false;
 
     /**
      * @var string the column after which this column will be added.
      */
-    protected $after;
+    protected ?string $after = null;
 
     /**
      * @var bool whether this column is to be inserted at the beginning of the table.
      */
-    protected $isFirst;
+    protected bool $isFirst = false;
 
     /**
      * @var array mapping of abstract column types (keys) to type categories (values).
@@ -100,25 +111,25 @@ class ColumnSchemaBuilder
     ];
 
     /**
-     * @var \Yiisoft\Db\Connection the current database connection. It is used mainly to escape strings
-     *                         safely when building the final column schema string.
+     * @var ConnectionInterface the current database connection. It is used mainly to escape strings safely
+     * when building the final column schema string.
      */
-    public $db;
+    protected ConnectionInterface $db;
 
     /**
      * @var string comment value of the column.
      */
-    public $comment;
+    protected ?string $comment = null;
 
     /**
      * Create a column schema builder instance giving the type and value precision.
      *
-     * @param string             $type   type of the column. See [[$type]].
-     * @param int|string|array   $length length or precision of the column. See [[$length]].
-     * @param \Yiisoft\Db\Connection $db     the current database connection. See [[$db]].
-     * @param array              $config name-value pairs that will be used to initialize the object properties
+     * @param string $type type of the column. See {@see $type}.
+     * @param int|string|array $length length or precision of the column. See {@see $length}.
+     * @param \Yiisoft\Db\Connection $db the current database connection. See {@see $db}.
+     * @param array $config name-value pairs that will be used to initialize the object properties
      */
-    public function __construct($type, $length = null, $db = null)
+    public function __construct(string $type, $length = null, ConnectionInterface $db = null)
     {
         $this->type = $type;
         $this->length = $length;
@@ -130,7 +141,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function notNull()
+    public function notNull(): self
     {
         $this->isNotNull = true;
 
@@ -142,7 +153,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function null()
+    public function null(): self
     {
         $this->isNotNull = false;
 
@@ -154,7 +165,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function unique()
+    public function unique(): self
     {
         $this->isUnique = true;
 
@@ -168,7 +179,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function check($check)
+    public function check(?string $check): self
     {
         $this->check = $check;
 
@@ -182,7 +193,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function defaultValue($default)
+    public function defaultValue($default): self
     {
         if ($default === null) {
             $this->null();
@@ -198,7 +209,7 @@ class ColumnSchemaBuilder
      *
      * @param string $comment the comment
      */
-    public function comment($comment)
+    public function comment(?string $comment): self
     {
         $this->comment = $comment;
 
@@ -210,7 +221,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function unsigned()
+    public function unsigned(): self
     {
         switch ($this->type) {
             case Schema::TYPE_PK:
@@ -227,13 +238,14 @@ class ColumnSchemaBuilder
 
     /**
      * Adds an `AFTER` constraint to the column.
+     *
      * Note: MySQL, Oracle support only.
      *
      * @param string $after the column after which $this column will be added.
      *
      * @return $this
      */
-    public function after($after)
+    public function after(string $after): self
     {
         $this->after = $after;
 
@@ -242,11 +254,12 @@ class ColumnSchemaBuilder
 
     /**
      * Adds an `FIRST` constraint to the column.
+     *
      * Note: MySQL, Oracle support only.
      *
      * @return $this
      */
-    public function first()
+    public function first(): self
     {
         $this->isFirst = true;
 
@@ -260,7 +273,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function defaultExpression($default)
+    public function defaultExpression(string $default): self
     {
         $this->default = new Expression($default);
 
@@ -269,13 +282,14 @@ class ColumnSchemaBuilder
 
     /**
      * Specify additional SQL to be appended to column definition.
+     *
      * Position modifiers will be appended after column definition in databases that support them.
      *
      * @param string $sql the SQL string to be appended.
      *
      * @return $this
      */
-    public function append($sql)
+    public function append(string $sql): self
     {
         $this->append = $sql;
 
@@ -287,7 +301,7 @@ class ColumnSchemaBuilder
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         switch ($this->getTypeCategory()) {
             case self::CATEGORY_PK:
@@ -305,7 +319,7 @@ class ColumnSchemaBuilder
      *
      * @return string
      */
-    protected function buildLengthString()
+    protected function buildLengthString(): string
     {
         if ($this->length === null || $this->length === []) {
             return '';
@@ -321,9 +335,9 @@ class ColumnSchemaBuilder
      * Builds the not null constraint for the column.
      *
      * @return string returns 'NOT NULL' if {@see isNotNull} is true, 'NULL' if {@see isNotNull} is false or an empty
-     *                string otherwise.
+     * string otherwise.
      */
-    protected function buildNotNullString()
+    protected function buildNotNullString(): string
     {
         if ($this->isNotNull === true) {
             return ' NOT NULL';
@@ -339,7 +353,7 @@ class ColumnSchemaBuilder
      *
      * @return string returns string 'UNIQUE' if {@see isUnique} is true, otherwise it returns an empty string.
      */
-    protected function buildUniqueString()
+    protected function buildUniqueString(): string
     {
         return $this->isUnique ? ' UNIQUE' : '';
     }
@@ -382,7 +396,7 @@ class ColumnSchemaBuilder
      *
      * @return string a string containing the CHECK constraint.
      */
-    protected function buildCheckString()
+    protected function buildCheckString(): string
     {
         return $this->check !== null ? " CHECK ({$this->check})" : '';
     }
@@ -392,7 +406,7 @@ class ColumnSchemaBuilder
      *
      * @return string a string containing UNSIGNED keyword.
      */
-    protected function buildUnsignedString()
+    protected function buildUnsignedString(): string
     {
         return '';
     }
@@ -402,7 +416,7 @@ class ColumnSchemaBuilder
      *
      * @return string a string containing the AFTER constraint.
      */
-    protected function buildAfterString()
+    protected function buildAfterString(): string
     {
         return '';
     }
@@ -412,7 +426,7 @@ class ColumnSchemaBuilder
      *
      * @return string a string containing the FIRST constraint.
      */
-    protected function buildFirstString()
+    protected function buildFirstString(): string
     {
         return '';
     }
@@ -422,7 +436,7 @@ class ColumnSchemaBuilder
      *
      * @return string custom string to append.
      */
-    protected function buildAppendString()
+    protected function buildAppendString(): string
     {
         return $this->append !== null ? ' '.$this->append : '';
     }
@@ -430,9 +444,9 @@ class ColumnSchemaBuilder
     /**
      * Returns the category of the column type.
      *
-     * @return string a string containing the column type category name.
+     * @return string|null a string containing the column type category name.
      */
-    protected function getTypeCategory()
+    protected function getTypeCategory(): ?string
     {
         return isset($this->categoryMap[$this->type]) ? $this->categoryMap[$this->type] : null;
     }
@@ -442,7 +456,7 @@ class ColumnSchemaBuilder
      *
      * @return string a string containing the COMMENT keyword and the comment itself
      */
-    protected function buildCommentString()
+    protected function buildCommentString(): string
     {
         return '';
     }
@@ -454,7 +468,7 @@ class ColumnSchemaBuilder
      *
      * @return string a string containing the complete column definition.
      */
-    protected function buildCompleteString($format)
+    protected function buildCompleteString(string $format): string
     {
         $placeholderValues = [
             '{type}'     => $this->type,

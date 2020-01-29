@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db;
 
 /**
@@ -11,7 +13,7 @@ namespace Yiisoft\Db;
  * read-only.
  * @property string $sql SQL code. This property is read-only.
  */
-class SqlToken extends BaseObject implements \ArrayAccess
+class SqlToken implements \ArrayAccess
 {
     const TYPE_CODE = 0;
 

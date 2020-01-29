@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Yiisoft\Db\Contracts\ConnectionInterface;
+use Yiisoft\Db\Constraints\Constraint;
+use Yiisoft\Db\Expressions\Expression;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Profiler\Profiler;
@@ -50,7 +54,7 @@ use Yiisoft\Profiler\Profiler;
  * {@see sql}.
  * @property string $sql The SQL statement to be executed.
  */
-class Command extends Database
+class Command
 {
     /**
      * @var ConnectionInterface the DB connection that this command is associated with

@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
 use Yiisoft\Db\Conditions\BetweenColumnsCondition;
 use Yiisoft\Db\Connection;
-use Yiisoft\Db\Expression;
 use Yiisoft\Db\Mysql\QueryBuilder as MysqlQueryBuilder;
 use Yiisoft\Db\Pgsql\QueryBuilder as PgsqlQueryBuilder;
 use Yiisoft\Db\Query;
@@ -15,6 +15,7 @@ use Yiisoft\Db\SchemaBuilderTrait;
 use Yiisoft\Db\Sqlite\QueryBuilder as SqliteQueryBuilder;
 use Yiisoft\Db\Tests\Util\TraversableObject;
 use Yiisoft\Arrays\ArrayHelper;
+use Yiisoft\Db\Expressions\Expression;
 
 abstract class QueryBuilderTest extends DatabaseTestCase
 {
@@ -866,6 +867,8 @@ abstract class QueryBuilderTest extends DatabaseTestCase
 
     public function conditionProvider(): array
     {
+        $db = $this->createConnection();
+
         $conditions = [
             // empty values
             [['like', 'name', []], '0=1', []],
@@ -875,13 +878,13 @@ abstract class QueryBuilderTest extends DatabaseTestCase
 
             // not
             [['not', 'name'], 'NOT (name)', []],
-            [['not', (new Query())->select('exists')->from('some_table')], 'NOT ((SELECT [[exists]] FROM [[some_table]]))', []],
+            [['not', (new Query($db))->select('exists')->from('some_table')], 'NOT ((SELECT [[exists]] FROM [[some_table]]))', []],
 
             // and
             [['and', 'id=1', 'id=2'], '(id=1) AND (id=2)', []],
             [['and', 'type=1', ['or', 'id=1', 'id=2']], '(type=1) AND ((id=1) OR (id=2))', []],
             [['and', 'id=1', new Expression('id=:qp0', [':qp0' => 2])], '(id=1) AND (id=:qp0)', [':qp0' => 2]],
-            [['and', ['expired' => false], (new Query())->select('count(*) > 1')->from('queue')], '([[expired]]=:qp0) AND ((SELECT count(*) > 1 FROM [[queue]]))', [':qp0' => false]],
+            [['and', ['expired' => false], (new Query($db))->select('count(*) > 1')->from('queue')], '([[expired]]=:qp0) AND ((SELECT count(*) > 1 FROM [[queue]]))', [':qp0' => false]],
 
             // or
             [['or', 'id=1', 'id=2'], '(id=1) OR (id=2)', []],
@@ -899,13 +902,13 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             [new BetweenColumnsCondition('2018-02-11', 'NOT BETWEEN', 'NOW()', 'update_time'), ':qp0 NOT BETWEEN NOW() AND [[update_time]]', [':qp0' => '2018-02-11']],
             [new BetweenColumnsCondition(new Expression('NOW()'), 'BETWEEN', 'create_time', 'update_time'), 'NOW() BETWEEN [[create_time]] AND [[update_time]]', []],
             [new BetweenColumnsCondition(new Expression('NOW()'), 'NOT BETWEEN', 'create_time', 'update_time'), 'NOW() NOT BETWEEN [[create_time]] AND [[update_time]]', []],
-            [new BetweenColumnsCondition(new Expression('NOW()'), 'NOT BETWEEN', (new Query())->select('min_date')->from('some_table'), 'max_date'), 'NOW() NOT BETWEEN (SELECT [[min_date]] FROM [[some_table]]) AND [[max_date]]', []],
+            [new BetweenColumnsCondition(new Expression('NOW()'), 'NOT BETWEEN', (new Query($db))->select('min_date')->from('some_table'), 'max_date'), 'NOW() NOT BETWEEN (SELECT [[min_date]] FROM [[some_table]]) AND [[max_date]]', []],
 
             // in
-            [['in', 'id', [1, 2, (new Query())->select('three')->from('digits')]], '[[id]] IN (:qp0, :qp1, (SELECT [[three]] FROM [[digits]]))', [':qp0' => 1, ':qp1' => 2]],
+            [['in', 'id', [1, 2, (new Query($db))->select('three')->from('digits')]], '[[id]] IN (:qp0, :qp1, (SELECT [[three]] FROM [[digits]]))', [':qp0' => 1, ':qp1' => 2]],
             [['not in', 'id', [1, 2, 3]], '[[id]] NOT IN (:qp0, :qp1, :qp2)', [':qp0' => 1, ':qp1' => 2, ':qp2' => 3]],
-            [['in', 'id', (new Query())->select('id')->from('users')->where(['active' => 1])], '[[id]] IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1]],
-            [['not in', 'id', (new Query())->select('id')->from('users')->where(['active' => 1])], '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1]],
+            [['in', 'id', (new Query($db))->select('id')->from('users')->where(['active' => 1])], '[[id]] IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1]],
+            [['not in', 'id', (new Query($db))->select('id')->from('users')->where(['active' => 1])], '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1]],
 
             [['in', 'id', 1],   '[[id]]=:qp0', [':qp0' => 1]],
             [['in', 'id', [1]], '[[id]]=:qp0', [':qp0' => 1]],
@@ -930,8 +933,8 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 [':qp0' => 1, ':qp1' => 'oy', ':qp2' => 2, ':qp3' => 'yo'],
             ],
             // exists
-            [['exists', (new Query())->select('id')->from('users')->where(['active' => 1])], 'EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1]],
-            [['not exists', (new Query())->select('id')->from('users')->where(['active' => 1])], 'NOT EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1]],
+            [['exists', (new Query($db))->select('id')->from('users')->where(['active' => 1])], 'EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1]],
+            [['not exists', (new Query($db))->select('id')->from('users')->where(['active' => 1])], 'NOT EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1]],
 
             // simple conditions
             [['=', 'a', 'b'], '[[a]] = :qp0', [':qp0' => 'b']],
@@ -943,7 +946,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             [['!=', 'a', 'b'], '[[a]] != :qp0', [':qp0' => 'b']],
             [['>=', 'date', new Expression('DATE_SUB(NOW(), INTERVAL 1 MONTH)')], '[[date]] >= DATE_SUB(NOW(), INTERVAL 1 MONTH)', []],
             [['>=', 'date', new Expression('DATE_SUB(NOW(), INTERVAL :month MONTH)', [':month' => 2])], '[[date]] >= DATE_SUB(NOW(), INTERVAL :month MONTH)', [':month' => 2]],
-            [['=', 'date', (new Query())->select('max(date)')->from('test')->where(['id' => 5])], '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]]=:qp0)', [':qp0' => 5]],
+            [['=', 'date', (new Query($db))->select('max(date)')->from('test')->where(['id' => 5])], '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]]=:qp0)', [':qp0' => 5]],
 
             // hash condition
             [['a' => 1, 'b' => 2], '([[a]]=:qp0) AND ([[b]]=:qp1)', [':qp0' => 1, ':qp1' => 2]],
@@ -962,16 +965,16 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 $conditions = array_merge($conditions, [
                     [['in', ['id', 'name'], [['id' => 1, 'name' => 'foo'], ['id' => 2, 'name' => 'bar']]], '(([[id]] = :qp0 AND [[name]] = :qp1) OR ([[id]] = :qp2 AND [[name]] = :qp3))', [':qp0' => 1, ':qp1' => 'foo', ':qp2' => 2, ':qp3' => 'bar']],
                     [['not in', ['id', 'name'], [['id' => 1, 'name' => 'foo'], ['id' => 2, 'name' => 'bar']]], '(([[id]] != :qp0 OR [[name]] != :qp1) AND ([[id]] != :qp2 OR [[name]] != :qp3))', [':qp0' => 1, ':qp1' => 'foo', ':qp2' => 2, ':qp3' => 'bar']],
-                    //[ ['in', ['id', 'name'], (new Query())->select(['id', 'name'])->from('users')->where(['active' => 1])], 'EXISTS (SELECT 1 FROM (SELECT [[id]], [[name]] FROM [[users]] WHERE [[active]]=:qp0) AS a WHERE a.[[id]] = [[id AND a.]]name[[ = ]]name`)', [':qp0' => 1] ],
-                    //[ ['not in', ['id', 'name'], (new Query())->select(['id', 'name'])->from('users')->where(['active' => 1])], 'NOT EXISTS (SELECT 1 FROM (SELECT [[id]], [[name]] FROM [[users]] WHERE [[active]]=:qp0) AS a WHERE a.[[id]] = [[id]] AND a.[[name = ]]name`)', [':qp0' => 1] ],
+                    [['in', ['id', 'name'], (new Query($db))->select(['id', 'name'])->from('users')->where(['active' => 1])], 'EXISTS (SELECT 1 FROM (SELECT [[id]], [[name]] FROM [[users]] WHERE [[active]]=:qp0) AS a WHERE a.[[id]] = [[id AND a.]]name[[ = ]]name`)', [':qp0' => 1] ],
+                    [['not in', ['id', 'name'], (new Query($db))->select(['id', 'name'])->from('users')->where(['active' => 1])], 'NOT EXISTS (SELECT 1 FROM (SELECT [[id]], [[name]] FROM [[users]] WHERE [[active]]=:qp0) AS a WHERE a.[[id]] = [[id]] AND a.[[name = ]]name`)', [':qp0' => 1] ],
                 ]);
                 break;
             default:
                 $conditions = array_merge($conditions, [
                     [['in', ['id', 'name'], [['id' => 1, 'name' => 'foo'], ['id' => 2, 'name' => 'bar']]], '([[id]], [[name]]) IN ((:qp0, :qp1), (:qp2, :qp3))', [':qp0' => 1, ':qp1' => 'foo', ':qp2' => 2, ':qp3' => 'bar']],
                     [['not in', ['id', 'name'], [['id' => 1, 'name' => 'foo'], ['id' => 2, 'name' => 'bar']]], '([[id]], [[name]]) NOT IN ((:qp0, :qp1), (:qp2, :qp3))', [':qp0' => 1, ':qp1' => 'foo', ':qp2' => 2, ':qp3' => 'bar']],
-                    [['in', ['id', 'name'], (new Query())->select(['id', 'name'])->from('users')->where(['active' => 1])], '([[id]], [[name]]) IN (SELECT [[id]], [[name]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1]],
-                    [['not in', ['id', 'name'], (new Query())->select(['id', 'name'])->from('users')->where(['active' => 1])], '([[id]], [[name]]) NOT IN (SELECT [[id]], [[name]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1]],
+                    [['in', ['id', 'name'], (new Query($db))->select(['id', 'name'])->from('users')->where(['active' => 1])], '([[id]], [[name]]) IN (SELECT [[id]], [[name]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1]],
+                    [['not in', ['id', 'name'], (new Query($db))->select(['id', 'name'])->from('users')->where(['active' => 1])], '([[id]], [[name]]) NOT IN (SELECT [[id]], [[name]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1]],
                 ]);
                 break;
         }
@@ -1041,7 +1044,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      */
     public function testBuildCondition($condition, $expected, array $expectedParams): void
     {
-        $query = (new Query())->where($condition);
+        $query = (new Query($this->getConnection()))->where($condition);
 
         [$sql, $params] = $this->getQueryBuilder()->build($query);
 
@@ -1058,7 +1061,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      */
     public function testBuildFilterCondition(array $condition, string $expected, array $expectedParams): void
     {
-        $query = (new Query())->filterWhere($condition);
+        $query = (new Query($this->getConnection()))->filterWhere($condition);
 
         [$sql, $params] = $this->getQueryBuilder()->build($query);
         $this->assertEquals('SELECT *'.(empty($expected) ? '' : ' WHERE '.$this->replaceQuotes($expected)), $sql);
@@ -1311,11 +1314,11 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     {
         $expectedQueryParams = [];
 
-        $subQuery = new Query();
+        $subQuery = new Query($this->getConnection());
         $subQuery->select('1')
             ->from('Website w');
 
-        $query = new Query();
+        $query = new Query($this->getConnection());
         $query->select('id')
             ->from('TotalExample t')
             ->where([$cond, $subQuery]);
@@ -1332,13 +1335,13 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         );
         $expectedQueryParams = [':some_value' => 'asd', ':merchant_id' => 6];
 
-        $subQuery = new Query();
+        $subQuery = new Query($this->getConnection());
         $subQuery->select('1')
             ->from('Website w')
             ->where('w.id = t.website_id')
             ->andWhere('w.merchant_id = :merchant_id', [':merchant_id' => 6]);
 
-        $query = new Query();
+        $query = new Query($this->getConnection());
         $query->select('id')
             ->from('TotalExample t')
             ->where(['exists', $subQuery])
@@ -1356,13 +1359,13 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         );
         $expectedQueryParams = [':qp0' => 6, ':qp1' => 210, ':qp2' => 'asd'];
 
-        $subQuery = new Query();
+        $subQuery = new Query($this->getConnection());
         $subQuery->select('1')
             ->from('Website w')
             ->where('w.id = t.website_id')
             ->andWhere(['w.merchant_id' => 6, 'w.user_id' => '210']);
 
-        $query = new Query();
+        $query = new Query($this->getConnection());
         $query->select('id')
             ->from('TotalExample t')
             ->where(['exists', $subQuery])
@@ -1383,14 +1386,14 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             '(SELECT [[id]] FROM [[TotalExample]] [[t1]] WHERE (w > 0) AND (x < 2)) UNION ( SELECT [[id]] FROM [[TotalTotalExample]] [[t2]] WHERE w > 5 ) UNION ALL ( SELECT [[id]] FROM [[TotalTotalExample]] [[t3]] WHERE w = 3 )'
         );
 
-        $query = new Query();
-        $secondQuery = new Query();
+        $query = new Query($this->getConnection());
+        $secondQuery = new Query($this->getConnection());
 
         $secondQuery->select('id')
               ->from('TotalTotalExample t2')
               ->where('w > 5');
 
-        $thirdQuery = new Query();
+        $thirdQuery = new Query($this->getConnection());
 
         $thirdQuery->select('id')
               ->from('TotalTotalExample t3')
@@ -1409,12 +1412,12 @@ abstract class QueryBuilderTest extends DatabaseTestCase
 
     public function testSelectSubquery(): void
     {
-        $subquery = (new Query())
+        $subquery = (new Query($this->getConnection()))
             ->select('COUNT(*)')
             ->from('operations')
             ->where('account_id = accounts.id');
 
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select('*')
             ->from('accounts')
             ->addSelect(['operations_count' => $subquery]);
@@ -1427,7 +1430,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
 
     public function testComplexSelect(): void
     {
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select([
                 'ID' => 't.id',
                 'gsm.username as GSM',
@@ -1448,7 +1451,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
 
     public function testSelectExpression(): void
     {
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select(new Expression('1 AS ab'))
             ->from('tablename');
         [$sql, $params] = $this->getQueryBuilder()->build($query);
@@ -1456,7 +1459,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEquals($expected, $sql);
         $this->assertEmpty($params);
 
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select(new Expression('1 AS ab'))
             ->addSelect(new Expression('2 AS cd'))
             ->addSelect(['ef' => new Expression('3')])
@@ -1466,7 +1469,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEquals($expected, $sql);
         $this->assertEmpty($params);
 
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select(new Expression('SUBSTR(name, 0, :len)', [':len' => 4]))
             ->from('tablename');
         [$sql, $params] = $this->getQueryBuilder()->build($query);
@@ -1480,14 +1483,14 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      */
     public function testFromIndexHint(): void
     {
-        $query = (new Query())->from([new Expression('{{%user}} USE INDEX (primary)')]);
+        $query = (new Query($this->getConnection()))->from([new Expression('{{%user}} USE INDEX (primary)')]);
 
         [$sql, $params] = $this->getQueryBuilder()->build($query);
         $expected = $this->replaceQuotes('SELECT * FROM {{%user}} USE INDEX (primary)');
         $this->assertEquals($expected, $sql);
         $this->assertEmpty($params);
 
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->from([new Expression('{{user}} {{t}} FORCE INDEX (primary) IGNORE INDEX FOR ORDER BY (i1)')])
             ->leftJoin(['p' => 'profile'], 'user.id = profile.user_id USE INDEX (i2)');
 
@@ -1500,8 +1503,8 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     public function testFromSubquery(): void
     {
         // query subquery
-        $subquery = (new Query())->from('user')->where('account_id = accounts.id');
-        $query = (new Query())->from(['activeusers' => $subquery]);
+        $subquery = (new Query($this->getConnection()))->from('user')->where('account_id = accounts.id');
+        $query = (new Query($this->getConnection()))->from(['activeusers' => $subquery]);
 
         // SELECT * FROM (SELECT * FROM [[user]] WHERE [[active]] = 1) [[activeusers]];
         [$sql, $params] = $this->getQueryBuilder()->build($query);
@@ -1510,8 +1513,8 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEmpty($params);
 
         // query subquery with params
-        $subquery = (new Query())->from('user')->where('account_id = :id', ['id' => 1]);
-        $query = (new Query())->from(['activeusers' => $subquery])->where('abc = :abc', ['abc' => 'abc']);
+        $subquery = (new Query($this->getConnection()))->from('user')->where('account_id = :id', ['id' => 1]);
+        $query = (new Query($this->getConnection()))->from(['activeusers' => $subquery])->where('abc = :abc', ['abc' => 'abc']);
 
         // SELECT * FROM (SELECT * FROM [[user]] WHERE [[active]] = 1) [[activeusers]];
         [$sql, $params] = $this->getQueryBuilder()->build($query);
@@ -1524,7 +1527,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
 
         // simple subquery
         $subquery = '(SELECT * FROM user WHERE account_id = accounts.id)';
-        $query = (new Query())->from(['activeusers' => $subquery]);
+        $query = (new Query($this->getConnection()))->from(['activeusers' => $subquery]);
 
         // SELECT * FROM (SELECT * FROM [[user]] WHERE [[active]] = 1) [[activeusers]];
         [$sql, $params] = $this->getQueryBuilder()->build($query);
@@ -1536,7 +1539,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     public function testOrderBy(): void
     {
         // simple string
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select('*')
             ->from('operations')
             ->orderBy('name ASC, date DESC');
@@ -1546,7 +1549,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEmpty($params);
 
         // array syntax
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select('*')
             ->from('operations')
             ->orderBy(['name' => SORT_ASC, 'date' => SORT_DESC]);
@@ -1556,7 +1559,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEmpty($params);
 
         // expression
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select('*')
             ->from('operations')
             ->where('account_id = accounts.id')
@@ -1567,7 +1570,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEmpty($params);
 
         // expression with params
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select('*')
             ->from('operations')
             ->orderBy(new Expression('SUBSTR(name, 3, :to) DESC, x ASC', [':to' => 4]));
@@ -1580,7 +1583,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     public function testGroupBy(): void
     {
         // simple string
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select('*')
             ->from('operations')
             ->groupBy('name, date');
@@ -1590,7 +1593,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEmpty($params);
 
         // array syntax
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select('*')
             ->from('operations')
             ->groupBy(['name', 'date']);
@@ -1600,7 +1603,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEmpty($params);
 
         // expression
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select('*')
             ->from('operations')
             ->where('account_id = accounts.id')
@@ -1613,7 +1616,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $this->assertEmpty($params);
 
         // expression with params
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->select('*')
             ->from('operations')
             ->groupBy(new Expression('SUBSTR(name, 0, :to), x', [':to' => 4]));
@@ -1625,6 +1628,8 @@ abstract class QueryBuilderTest extends DatabaseTestCase
 
     public function insertProvider(): array
     {
+        $db = $this->createConnection();
+
         return [
             'regular-values' => [
                 'customer',
@@ -1681,7 +1686,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             ],
             'carry passed params (query)' => [
                 'customer',
-                (new Query())
+                (new Query($db))
                     ->select([
                         'email',
                         'name',
@@ -1740,6 +1745,8 @@ abstract class QueryBuilderTest extends DatabaseTestCase
 
     public function upsertProvider(): array
     {
+        $db = $this->createConnection();
+
         return [
             'regular values' => [
                 'T_upsert',
@@ -1800,7 +1807,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             ],
             'query' => [
                 'T_upsert',
-                (new Query())
+                (new Query($db))
                     ->select([
                         'email',
                         'status' => new Expression('2'),
@@ -1816,7 +1823,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             ],
             'query with update part' => [
                 'T_upsert',
-                (new Query())
+                (new Query($db))
                     ->select([
                         'email',
                         'status' => new Expression('2'),
@@ -1838,7 +1845,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             ],
             'query without update part' => [
                 'T_upsert',
-                (new Query())
+                (new Query($db))
                     ->select([
                         'email',
                         'status' => new Expression('2'),
@@ -1892,7 +1899,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             ],
             'query, values and expressions with update part' => [
                 '{{%T_upsert}}',
-                (new Query())
+                (new Query($db))
                     ->select([
                         'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
                         '[[time]]' => new Expression('now()'),
@@ -1909,7 +1916,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             ],
             'query, values and expressions without update part' => [
                 '{{%T_upsert}}',
-                (new Query())
+                (new Query($db))
                     ->select([
                         'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
                         '[[time]]' => new Expression('now()'),
@@ -1939,7 +1946,6 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     }
 
     /**
-     * @depends testInitFixtures
      * @dataProvider upsertProvider
      *
      * @param string $table
@@ -2202,7 +2208,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      */
     public function testBuildLikeCondition(array $condition, string $expected, array $expectedParams): void
     {
-        $query = (new Query())->where($condition);
+        $query = (new Query($this->getConnection()))->where($condition);
 
         [$sql, $params] = $this->getQueryBuilder()->build($query);
 
@@ -2215,7 +2221,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      */
     public function testIssue15653(): void
     {
-        $query = (new Query())
+        $query = (new Query($this->getConnection()))
             ->from('admin_user')
             ->where(['is_deleted' => false]);
 

@@ -44,7 +44,7 @@ trait QueryTrait
      * The array may also contain [[ExpressionInterface]] objects. If that is the case, the expressions
      * will be converted into strings without any change.
      */
-    public $orderBy;
+    public $orderBy = [];
 
     /**
      * @var string|callable the name of the column by which the query results should be indexed by.
@@ -466,5 +466,53 @@ trait QueryTrait
         $this->emulateExecution = $value;
 
         return $this;
+    }
+
+    /**
+     * Configures an object with the given configuration.
+     *
+     * @param object $object the object to be configured
+     * @param iterable $config property values and methods to call
+     *
+     * @return object the object itself
+     */
+    public function configure($object, iterable $config)
+    {
+        foreach ($config as $action => $arguments) {
+            if (substr($action, -2) === '()') {
+                // method call
+                \call_user_func_array([$object, substr($action, 0, -2)], $arguments);
+            } else {
+                // property
+                $object->$action = $arguments;
+            }
+        }
+
+        return $object;
+    }
+
+    public function setWhere($value): void
+    {
+        $this->where = $value;
+    }
+
+    public function setLimit($value): void
+    {
+        $this->limit = $value;
+    }
+
+    public function setOffset($value): void
+    {
+        $this->offset = $value;
+    }
+
+    public function setOrderBy(?array $value): void
+    {
+        $this->orderBy = $value;
+    }
+
+    public function setIndexBy($value): void
+    {
+        $this->indexBy = $value;
     }
 }

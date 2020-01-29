@@ -15,9 +15,9 @@ class ForeignKeyConstraint extends Constraint
     private ?string $foreignSchemaName = null;
 
     /**
-     * @var string|null referenced table name.
+     * @var object|string|null referenced table name.
      */
-    private ?string $foreignTableName = null;
+    private $foreignTableName;
 
     /**
      * @var array list of referenced table column names.
@@ -39,7 +39,7 @@ class ForeignKeyConstraint extends Constraint
         return $this->foreignSchemaName;
     }
 
-    public function getForeignTableName(): ?string
+    public function getForeignTableName()
     {
         return $this->foreignTableName;
     }
@@ -64,7 +64,7 @@ class ForeignKeyConstraint extends Constraint
         $this->foreignSchemaName = $value;
     }
 
-    public function setForeignTableName(?string $value): void
+    public function setForeignTableName($value): void
     {
         $this->foreignTableName = $value;
     }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
@@ -9,10 +10,10 @@ use Yiisoft\Db\Connection;
 use Yiisoft\Db\DataReader;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
-use Yiisoft\Db\Expression;
-use Yiisoft\Db\JsonExpression;
 use Yiisoft\Db\Query;
 use Yiisoft\Db\Schema;
+use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Expressions\JsonExpression;
 
 abstract class CommandTest extends DatabaseTestCase
 {
@@ -109,7 +110,7 @@ abstract class CommandTest extends DatabaseTestCase
         // query
         $sql = 'SELECT * FROM {{customer}}';
 
-        $reader = $db->createCommand($sql)->query();
+        $reader = $db->createCommand($sql)->Query($this->getConnection());
 
         $this->assertInstanceOf(DataReader::class, $reader);
 
@@ -182,7 +183,7 @@ abstract class CommandTest extends DatabaseTestCase
 
         $this->expectException(Exception::class);
 
-        $command->query();
+        $command->Query($this->getConnection());
     }
 
     public function testBindParamValue(): void
@@ -605,7 +606,7 @@ SQL;
             ]
         )->execute();
 
-        $query = new \Yiisoft\Db\Query();
+        $query = new Query($this->getConnection());
 
         $query->select(
             [
@@ -666,7 +667,7 @@ SQL;
             ]
         )->execute();
 
-        $query = new \Yiisoft\Db\Query();
+        $query = new Query($this->getConnection());
 
         $query->select(
             [
@@ -730,7 +731,7 @@ SQL;
      */
     public function testInsertSelectFailed($invalidSelectColumns)
     {
-        $query = new \Yiisoft\Db\Query();
+        $query = new Query($this->getConnection());
 
         $query->select($invalidSelectColumns)->from('{{customer}}');
 
@@ -803,7 +804,7 @@ SQL;
             'total'       => 42,
         ])->execute();
 
-        $columnValueQuery = new \Yiisoft\Db\Query();
+        $columnValueQuery = new Query($this->getConnection());
 
         $columnValueQuery->select('created_at')->from('{{order}}')->where(['id' => '42']);
 
@@ -923,6 +924,8 @@ SQL;
 
     public function upsertProvider(): array
     {
+        $db = $this->createConnection();
+
         return [
             'regular values' => [
                 [
@@ -1014,7 +1017,7 @@ SQL;
                 [
                     'params' => [
                         'T_upsert',
-                        (new Query())
+                        (new Query($db))
                             ->select([
                                 'email',
                                 'address',
@@ -1033,7 +1036,7 @@ SQL;
                 [
                     'params' => [
                         'T_upsert',
-                        (new Query())
+                        (new Query($db))
                             ->select([
                                 'email',
                                 'address',
@@ -1054,7 +1057,7 @@ SQL;
                 [
                     'params' => [
                         'T_upsert',
-                        (new Query())
+                        (new Query($db))
                             ->select([
                                 'email',
                                 'address',
@@ -1077,7 +1080,7 @@ SQL;
                 [
                     'params' => [
                         'T_upsert',
-                        (new Query())
+                        (new Query($db))
                             ->select([
                                 'email',
                                 'address',
@@ -1102,7 +1105,7 @@ SQL;
                 [
                     'params' => [
                         'T_upsert',
-                        (new Query())
+                        (new Query($db))
                             ->select([
                                 'email',
                                 'address',
@@ -1122,7 +1125,7 @@ SQL;
                 [
                     'params' => [
                         'T_upsert',
-                        (new Query())
+                        (new Query($db))
                             ->select([
                                 'email',
                                 'address',
@@ -1173,7 +1176,7 @@ SQL;
 
         $command->execute();
 
-        $actual = (new Query())
+        $actual = (new Query($this->getConnection()))
             ->select([
                 'email',
                 'address' => new Expression($this->upsertTestCharCast),
@@ -1684,7 +1687,7 @@ SQL;
     {
         $db = $this->getConnection();
 
-        $subquery = (new \Yiisoft\Db\Query())
+        $subquery = (new Query($this->getConnection()))
             ->select('bar')
             ->from('testCreateViewTable')
             ->where(['>', 'bar', '5']);

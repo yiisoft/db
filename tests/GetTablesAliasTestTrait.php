@@ -1,10 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
 use Yiisoft\ActiveRecord\ActiveQuery;
 use Yiisoft\Db\Query;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Expressions\Expression;
 
 trait GetTablesAliasTestTrait
 {
@@ -13,9 +17,10 @@ trait GetTablesAliasTestTrait
      */
     abstract protected function createQuery();
 
-    public function testGetTableNames_isFromArrayWithAlias()
+    public function testGetTableNamesIsFromArrayWithAlias()
     {
-        $query = $this->createQuery();
+        $query = $this->createQuery($this->getConnection());
+
         $query->from = [
             'prf'     => 'profile',
             '{{usr}}' => '{{user}}',
@@ -33,9 +38,9 @@ trait GetTablesAliasTestTrait
         ], $tables);
     }
 
-    public function testGetTableNames_isFromArrayWithoutAlias()
+    public function testGetTableNamesIsFromArrayWithoutAlias()
     {
-        $query = $this->createQuery();
+        $query = $this->createQuery($this->getConnection());
         $query->from = [
             '{{profile}}',
             'user',
@@ -49,9 +54,9 @@ trait GetTablesAliasTestTrait
         ], $tables);
     }
 
-    public function testGetTableNames_isFromString()
+    public function testGetTableNamesIsFromString()
     {
-        $query = $this->createQuery();
+        $query = $this->createQuery($this->getConnection());
         $query->from = 'profile AS \'prf\', user "usr", `order`, "customer", "a b" as "c d"';
 
         $tables = $query->getTablesUsedInFrom();
@@ -65,19 +70,21 @@ trait GetTablesAliasTestTrait
         ], $tables);
     }
 
-    public function testGetTableNames_isFromObject_generateException()
+    public function testGetTableNamesIsFromObjectgenerateException()
     {
-        $query = $this->createQuery();
+        $query = $this->createQuery($this->getConnection());
+
         $query->from = new \stdClass();
 
-        $this->expectException(\Yiisoft\Db\Exception\InvalidConfigException::class);
+        $this->expectException(InvalidConfigException::class);
 
         $query->getTablesUsedInFrom();
     }
 
-    public function testGetTablesAlias_isFromString()
+    public function testGetTablesAliasisFromString()
     {
-        $query = $this->createQuery();
+        $query = $this->createQuery($this->getConnection());
+
         $query->from = 'profile AS \'prf\', user "usr", service srv, order, [a b] [c d], {{something}} AS myalias';
 
         $tables = $query->getTablesUsedInFrom();
@@ -95,9 +102,10 @@ trait GetTablesAliasTestTrait
     /**
      * @see https://github.com/yiisoft/yii2/issues/14150
      */
-    public function testGetTableNames_isFromPrefixedTableName()
+    public function testGetTableNamesIsFromPrefixedTableName()
     {
-        $query = $this->createQuery();
+        $query = $this->createQuery($this->getConnection());
+
         $query->from = '{{%order_item}}';
 
         $tables = $query->getTablesUsedInFrom();
@@ -110,9 +118,10 @@ trait GetTablesAliasTestTrait
     /**
      * @see https://github.com/yiisoft/yii2/issues/14211
      */
-    public function testGetTableNames_isFromTableNameWithDatabase()
+    public function testGetTableNamesIsFromTableNameWithDatabase()
     {
-        $query = $this->createQuery();
+        $query = $this->createQuery($this->getConnection());
+
         $query->from = 'tickets.workflows';
 
         $tables = $query->getTablesUsedInFrom();
@@ -122,23 +131,26 @@ trait GetTablesAliasTestTrait
         ], $tables);
     }
 
-    public function testGetTableNames_isFromAliasedExpression()
+    public function testGetTableNamesIsFromAliasedExpression()
     {
-        $query = $this->createQuery();
-        $expression = new \Yiisoft\Db\Expression('(SELECT id FROM user)');
+        $query = $this->createQuery($this->getConnection());
+
+        $expression = new Expression('(SELECT id FROM user)');
+
         $query->from = $expression;
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('To use Expression in from() method, pass it in array format with alias.');
         $tables = $query->getTablesUsedInFrom();
 
         $this->assertEquals(['{{x}}' => $expression], $tables);
     }
 
-    public function testGetTableNames_isFromAliasedArrayWithExpression()
+    public function testGetTableNamesIsFromAliasedArrayWithExpression()
     {
-        $query = $this->createQuery();
-        $query->from = ['x' => new \Yiisoft\Db\Expression('(SELECT id FROM user)')];
+        $query = $this->createQuery($this->getConnection());
+
+        $query->from = ['x' => new Expression('(SELECT id FROM user)')];
 
         $tables = $query->getTablesUsedInFrom();
 
@@ -147,10 +159,12 @@ trait GetTablesAliasTestTrait
         ], $tables);
     }
 
-    public function testGetTableNames_isFromAliasedSubquery()
+    public function testGetTableNamesIsFromAliasedSubquery()
     {
-        $query = $this->createQuery();
-        $subQuery = $this->createQuery();
+        $query = $this->createQuery($this->getConnection());
+
+        $subQuery = $this->createQuery($this->getConnection());
+
         $subQuery->from('user');
         $query->from(['x' => $subQuery]);
         $expected = ['{{x}}' => $subQuery];

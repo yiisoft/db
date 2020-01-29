@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db;
+
+use Yiisoft\Db\Contracts\ExpressionInterface;
 
 /**
  * Class PdoValue represents a $value that should be bound to PDO with exact $type.

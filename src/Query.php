@@ -10,6 +10,7 @@ use Yiisoft\Db\Contracts\ExpressionInterface;
 use Yiisoft\Db\Contracts\QueryInterface;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Expressions\Expression;
 
 /**
  * Query represents a SELECT SQL statement in a way that is independent of DBMS.
@@ -43,7 +44,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  *
  * @property string[] $tablesUsedInFrom Table names indexed by aliases. This property is read-only.
  */
-class Query extends Database implements QueryInterface, ExpressionInterface
+class Query implements QueryInterface, ExpressionInterface
 {
     use QueryTrait;
 
@@ -60,16 +61,16 @@ class Query extends Database implements QueryInterface, ExpressionInterface
      * @var string additional option that should be appended to the 'SELECT' keyword. For example, in MySQL, the option
      * 'SQL_CALC_FOUND_ROWS' can be used.
      */
-    public $selectOption;
+    public ?string $selectOption = null;
 
     /**
      * @var bool whether to select distinct rows of data only. If this is set true, the SELECT clause would be changed
      * to SELECT DISTINCT.
      */
-    public $distinct;
+    public ?bool $distinct = null;
 
     /**
-     * @var array the table(s) to be selected from. For example, `['user', 'post']`.
+     * @var array|string the table(s) to be selected from. For example, `['user', 'post']`.
      *
      * This is used to construct the FROM clause in a SQL statement.
      *
@@ -82,7 +83,7 @@ class Query extends Database implements QueryInterface, ExpressionInterface
      *
      * This is used to construct the GROUP BY clause in a SQL statement.
      */
-    public $groupBy;
+    public array $groupBy = [];
 
     /**
      * @var array how to join with other tables. Each array element represents the specification of one join which has
@@ -146,25 +147,27 @@ class Query extends Database implements QueryInterface, ExpressionInterface
      */
     public $queryCacheDependency;
 
-    public function __construct(array $config = [])
+    private ConnectionInterface $db;
+
+    public function __construct(ConnectionInterface $db, array $config = [])
     {
-        parent::__construct($config);
+        $this->db = $db;
+
+        $this->configure($this, $config);
     }
 
     /**
      * Creates a DB command that can be used to execute this query.
      *
-     * @param Connection $db the database connection used to generate the SQL statement.
-     *
      * If this parameter is not given, the `db` application component will be used.
      *
      * @return Command the created DB command instance.
      */
-    public function createCommand(ConnectionInterface $db)
+    public function createCommand()
     {
-        [$sql, $params] = $db->getQueryBuilder()->build($this);
+        [$sql, $params] = $this->db->getQueryBuilder()->build($this);
 
-        $command = $db->createCommand($sql, $params);
+        $command = $this->db->createCommand($sql, $params);
 
         $this->setCommandCache($command);
 
@@ -203,18 +206,17 @@ class Query extends Database implements QueryInterface, ExpressionInterface
      * ```
      *
      * @param int $batchSize the number of records to be fetched in each batch.
-     * @param Connection $db the database connection. If not set, the "db" application component will be used.
      *
      * @return BatchQueryResult the batch query result. It implements the {@see \Iterator} interface and can be
      * traversed to retrieve the data in batches.
      */
-    public function batch(ConnectionInterface $db, $batchSize = 100)
+    public function batch($batchSize = 100)
     {
         $bq = new BatchQueryResult();
 
         $bq->setQuery($this);
         $bq->setBatchSize($batchSize);
-        $bq->setDb($db);
+        $bq->setDb($this->db);
         $bq->setEach(false);
 
         return $bq;
@@ -233,18 +235,17 @@ class Query extends Database implements QueryInterface, ExpressionInterface
      * ```
      *
      * @param int $batchSize the number of records to be fetched in each batch.
-     * @param Connection $db the database connection. If not set, the "db" application component will be used.
      *
      * @return BatchQueryResult the batch query result. It implements the {@see \Iterator} interface and can be
      * traversed to retrieve the data in batches.
      */
-    public function each(ConnectionInterface $db, $batchSize = 100)
+    public function each($batchSize = 100)
     {
         $bq = new BatchQueryResult();
 
         $bq->setQuery($this);
         $bq->setBatchSize($batchSize);
-        $bq->setDb($db);
+        $bq->setDb($this->db);
         $bq->setEach(true);
 
         return $bq;
@@ -253,19 +254,17 @@ class Query extends Database implements QueryInterface, ExpressionInterface
     /**
      * Executes the query and returns all results as an array.
      *
-     * @param Connection $db the database connection used to generate the SQL statement.
-     *
      * If this parameter is not given, the `db` application component will be used.
      *
      * @return array the query results. If the query results in nothing, an empty array will be returned.
      */
-    public function all(ConnectionInterface $db)
+    public function all()
     {
         if ($this->emulateExecution) {
             return [];
         }
 
-        $rows = $this->createCommand($db)->queryAll();
+        $rows = $this->createCommand($this->db)->queryAll();
 
         return $this->populate($rows);
     }
@@ -298,20 +297,18 @@ class Query extends Database implements QueryInterface, ExpressionInterface
     /**
      * Executes the query and returns a single row of result.
      *
-     * @param Connection $db the database connection used to generate the SQL statement.
-     *
      * If this parameter is not given, the `db` application component will be used.
      *
      * @return array|bool the first row (in terms of an array) of the query result. False is returned if the query
      * results in nothing.
      */
-    public function one(ConnectionInterface $db)
+    public function one()
     {
         if ($this->emulateExecution) {
             return false;
         }
 
-        return $this->createCommand($db)->queryOne();
+        return $this->createCommand($this->db)->queryOne();
     }
 
     /**
@@ -319,38 +316,33 @@ class Query extends Database implements QueryInterface, ExpressionInterface
      *
      * The value returned will be the first column in the first row of the query results.
      *
-     * @param Connection $db the database connection used to generate the SQL statement. If this parameter is not given,
-     * the `db` application component will be used.
-     *
      * @return string|null|false the value of the first column in the first row of the query result. False is returned
      * if the query result is empty.
      */
-    public function scalar(ConnectionInterface $db)
+    public function scalar()
     {
         if ($this->emulateExecution) {
             return;
         }
 
-        return $this->createCommand($db)->queryScalar();
+        return $this->createCommand($this->db)->queryScalar();
     }
 
     /**
      * Executes the query and returns the first column of the result.
      *
-     * @param Connection $db the database connection used to generate the SQL statement.
-     *
      * If this parameter is not given, the `db` application component will be used.
      *
      * @return array the first column of the query result. An empty array is returned if the query results in nothing.
      */
-    public function column($db = null)
+    public function column()
     {
         if ($this->emulateExecution) {
             return [];
         }
 
         if ($this->indexBy === null) {
-            return $this->createCommand($db)->queryColumn();
+            return $this->createCommand($this->db)->queryColumn();
         }
 
         if (is_string($this->indexBy) && is_array($this->select) && count($this->select) === 1) {
@@ -360,7 +352,7 @@ class Query extends Database implements QueryInterface, ExpressionInterface
                 $this->select[] = $this->indexBy;
             }
         }
-        $rows = $this->createCommand($db)->queryAll();
+        $rows = $this->createCommand($this->db)->queryAll();
         $results = [];
         foreach ($rows as $row) {
             $value = reset($row);
@@ -380,19 +372,17 @@ class Query extends Database implements QueryInterface, ExpressionInterface
      *
      * @param string $q the COUNT expression. Defaults to '*'.
      * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
-     * @param ConnectionInterface $db the database connection used to generate the SQL statement.
-     * If this parameter is not given (or null), the `db` application component will be used.
      *
      * @return int|string number of records. The result may be a string depending on the underlying database engine and
      * to support integer values higher than a 32bit PHP integer can handle.
      */
-    public function count($q = '*', ConnectionInterface $db = null)
+    public function count($q = '*')
     {
         if ($this->emulateExecution) {
             return 0;
         }
 
-        return $this->queryScalar("COUNT($q)", $db);
+        return $this->queryScalar("COUNT($q)");
     }
 
     /**
@@ -400,18 +390,16 @@ class Query extends Database implements QueryInterface, ExpressionInterface
      *
      * @param string $q the column name or expression.
      * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
-     * @param ConnectionInterface $db the database connection used to generate the SQL statement. If this parameter is
-     * not given, the `db` application component will be used.
      *
      * @return mixed the sum of the specified column values.
      */
-    public function sum($q, ConnectionInterface $db = null)
+    public function sum($q)
     {
         if ($this->emulateExecution) {
             return 0;
         }
 
-        return $this->queryScalar("SUM($q)", $db);
+        return $this->queryScalar("SUM($q)");
     }
 
     /**
@@ -419,18 +407,16 @@ class Query extends Database implements QueryInterface, ExpressionInterface
      *
      * @param string $q the column name or expression.
      * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
-     * @param ConnectionInterface $db the database connection used to generate the SQL statement. If this parameter is
-     * not given, the `db` application component will be used.
      *
      * @return mixed the average of the specified column values.
      */
-    public function average($q, ConnectionInterface $db = null)
+    public function average($q)
     {
         if ($this->emulateExecution) {
             return 0;
         }
 
-        return $this->queryScalar("AVG($q)", $db);
+        return $this->queryScalar("AVG($q)");
     }
 
     /**
@@ -438,14 +424,12 @@ class Query extends Database implements QueryInterface, ExpressionInterface
      *
      * @param string $q the column name or expression.
      * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
-     * @param ConnectionInterface $db the database connection used to generate the SQL statement. If this parameter is
-     * not given, the `db` application component will be used.
      *
      * @return mixed the minimum of the specified column values.
      */
-    public function min($q, ConnectionInterface $db = null)
+    public function min($q)
     {
-        return $this->queryScalar("MIN($q)", $db);
+        return $this->queryScalar("MIN($q)");
     }
 
     /**
@@ -453,30 +437,26 @@ class Query extends Database implements QueryInterface, ExpressionInterface
      *
      * @param string $q the column name or expression.
      * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
-     * @param ConnectionInterface $db the database connection used to generate the SQL statement.
-     * If this parameter is not given, the `db` application component will be used.
      *
      * @return mixed the maximum of the specified column values.
      */
-    public function max($q, $db = null)
+    public function max($q)
     {
-        return $this->queryScalar("MAX($q)", $db);
+        return $this->queryScalar("MAX($q)");
     }
 
     /**
      * Returns a value indicating whether the query result contains any row of data.
      *
-     * @param Connection $db the database connection used to generate the SQL statement.
-     *                       If this parameter is not given, the `db` application component will be used.
-     *
      * @return bool whether the query result contains any row of data.
      */
-    public function exists($db = null)
+    public function exists()
     {
         if ($this->emulateExecution) {
             return false;
         }
-        $command = $this->createCommand($db);
+
+        $command = $this->createCommand($this->db);
         $params = $command->params;
         $command->setSql($command->db->getQueryBuilder()->selectExists($command->getSql()));
         $command->bindValues($params);
@@ -490,11 +470,10 @@ class Query extends Database implements QueryInterface, ExpressionInterface
      * Restores the value of select to make this query reusable.
      *
      * @param string|ExpressionInterface $selectExpression
-     * @param Connection|null $db
      *
      * @return bool|string
      */
-    protected function queryScalar($selectExpression, ConnectionInterface $db)
+    protected function queryScalar($selectExpression)
     {
         if ($this->emulateExecution) {
             return;
@@ -513,7 +492,8 @@ class Query extends Database implements QueryInterface, ExpressionInterface
             $this->orderBy = null;
             $this->limit = null;
             $this->offset = null;
-            $command = $this->createCommand($db);
+
+            $command = $this->createCommand($this->db);
 
             $this->select = $select;
             $this->orderBy = $order;
@@ -523,10 +503,11 @@ class Query extends Database implements QueryInterface, ExpressionInterface
             return $command->queryScalar();
         }
 
-        $command = (new self())
+        $command = (new self($this->db))
             ->select([$selectExpression])
             ->from(['c' => $this])
-            ->createCommand($db);
+            ->createCommand($this->db);
+
         $this->setCommandCache($command);
 
         return $command->queryScalar();
@@ -891,6 +872,7 @@ PATTERN;
         } else {
             $this->where = ['and', $this->where, $condition];
         }
+
         $this->addParams($params);
 
         return $this;
@@ -1424,24 +1406,71 @@ PATTERN;
      *
      * @return Query the new Query object
      */
-    public static function create($from)
+    public static function create($db, $from)
     {
-        return new self([
-            'where'        => $from->where,
-            'limit'        => $from->limit,
-            'offset'       => $from->offset,
-            'orderBy'      => $from->orderBy,
-            'indexBy'      => $from->indexBy,
-            'select'       => $from->select,
-            'selectOption' => $from->selectOption,
-            'distinct'     => $from->distinct,
-            'from'         => $from->from,
-            'groupBy'      => $from->groupBy,
-            'join'         => $from->join,
-            'having'       => $from->having,
-            'union'        => $from->union,
-            'params'       => $from->params,
-        ]);
+        return new self(
+            $db,
+            [
+                'where'        => $from->where,
+                'limit'        => $from->limit,
+                'offset'       => $from->offset,
+                'orderBy'      => $from->orderBy,
+                'indexBy'      => $from->indexBy,
+                'select'       => $from->select,
+                'selectOption' => $from->selectOption,
+                'distinct'     => $from->distinct,
+                'from'         => $from->from,
+                'groupBy'      => $from->groupBy,
+                'join'         => $from->join,
+                'having'       => $from->having,
+                'union'        => $from->union,
+                'params'       => $from->params,
+            ]);
+    }
+
+    public function setParams(array $value): void
+    {
+        $this->params = $value;
+    }
+
+    public function setUnion(?array $value): void
+    {
+        $this->union = $value;
+    }
+
+    public function setHaving($value)
+    {
+        $this->having = $value;
+    }
+
+    public function setJoin(?array $value): void
+    {
+        $this->join = $value;
+    }
+
+    public function setGroupBy(array $value): void
+    {
+        $this->groupBy = $value;
+    }
+
+    public function setFrom($value): void
+    {
+        $this->from = $value;
+    }
+
+    public function setSelect(?array $value): void
+    {
+        $this->select = $value;
+    }
+
+    public function setSelectOption(?string $value): void
+    {
+        $this->selectOptions = $value;
+    }
+
+    public function setDistinct(?bool $value): void
+    {
+        $this->distinct = $value;
     }
 
     /**

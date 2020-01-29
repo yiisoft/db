@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Conditions;
 
+use Yiisoft\Db\ExpressionBuilderTrait;
 use Yiisoft\Db\Contracts\ExpressionInterface;
 use Yiisoft\Db\Contracts\ExpressionBuilderInterface;
-use Yiisoft\Db\ExpressionBuilderTrait;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 
 /**
  * Class LikeConditionBuilder builds objects of {@see LikeCondition}.
@@ -99,7 +100,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     protected function parseOperator($operator): array
     {
         if (!preg_match('/^(AND |OR |)(((NOT |))I?LIKE)/', $operator, $matches)) {
-            throw new \InvalidArgumentException("Invalid operator '$operator'.");
+            throw new InvalidArgumentException("Invalid operator '$operator'.");
         }
         $andor = ' '.(!empty($matches[1]) ? $matches[1] : 'AND ');
         $not = !empty($matches[3]);

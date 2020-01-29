@@ -1,7 +1,9 @@
 <?php
 
-namespace Yiisoft\Db;
+namespace Yiisoft\Db\Expressions;
 
+use Yiisoft\Db\Contracts\ExpressionInterface;
+use Yiisoft\Db\Contracts\QueryInterface;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
 /**
@@ -86,7 +88,9 @@ class JsonExpression implements ExpressionInterface, \JsonSerializable
     {
         $value = $this->getValue();
         if ($value instanceof QueryInterface) {
-            throw new InvalidConfigException('The JsonExpression class can not be serialized to JSON when the value is a QueryInterface object');
+            throw new InvalidConfigException(
+                'The JsonExpression class can not be serialized to JSON when the value is a QueryInterface object'
+            );
         }
 
         return $value;

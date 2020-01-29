@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\ActiveRecord\Tests\Data\ActiveRecord;
 use Yiisoft\ActiveRecord\Tests\Data\Customer;
 use Yiisoft\Db\BatchQueryResult;
 use Yiisoft\Db\Query;
@@ -14,33 +13,31 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        ActiveRecord::$db = $this->getConnection();
     }
 
     public function testQuery(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true, true, true);
 
         // initialize property test
-        $query = new Query();
+        $query = new Query($db);
 
         $query->from('customer')->orderBy('id');
 
-        $result = $query->batch($db, 2);
+        $result = $query->batch(2);
 
         $this->assertInstanceOf(BatchQueryResult::class, $result);
         $this->assertEquals(2, $result->getBatchSize());
         $this->assertSame($result->getQuery(), $query);
 
         // normal query
-        $query = new Query();
+        $query = new Query($db);
 
         $query->from('customer')->orderBy('id');
 
         $allRows = [];
 
-        $batch = $query->batch($db, 2);
+        $batch = $query->batch(2);
 
         foreach ($batch as $rows) {
             $allRows = array_merge($allRows, $rows);
@@ -64,13 +61,13 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
         $batch->reset();
 
         // empty query
-        $query = new Query();
+        $query = new Query($db);
 
         $query->from('customer')->where(['id' => 100]);
 
         $allRows = [];
 
-        $batch = $query->batch($db, 2);
+        $batch = $query->batch(2);
 
         foreach ($batch as $rows) {
             $allRows = array_merge($allRows, $rows);
@@ -79,13 +76,13 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
         $this->assertCount(0, $allRows);
 
         // query with index
-        $query = new Query();
+        $query = new Query($db);
 
         $query->from('customer')->indexBy('name');
 
         $allRows = [];
 
-        foreach ($query->batch($db, 2) as $rows) {
+        foreach ($query->batch(2) as $rows) {
             $allRows = array_merge($allRows, $rows);
         }
 
@@ -95,12 +92,12 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
         $this->assertEquals('address3', $allRows['user3']['address']);
 
         // each
-        $query = new Query();
+        $query = new Query($db);
 
         $query->from('customer')->orderBy('id');
         $allRows = [];
 
-        foreach ($query->each($db, 2) as $index => $row) {
+        foreach ($query->each(2) as $index => $row) {
             $allRows[$index] = $row;
         }
         $this->assertCount(3, $allRows);
@@ -109,13 +106,13 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
         $this->assertEquals('user3', $allRows[2]['name']);
 
         // each with key
-        $query = new Query();
+        $query = new Query($db);
 
         $query->from('customer')->orderBy('id')->indexBy('name');
 
         $allRows = [];
 
-        foreach ($query->each($db, 100) as $key => $row) {
+        foreach ($query->each(100) as $key => $row) {
             $allRows[$key] = $row;
         }
 
@@ -130,9 +127,9 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
         $db = $this->getConnection();
 
         // batch with eager loading
-        $query = Customer::find()->with('orders')->orderBy('id');
+        $query = (new Customer($db))->find()->with('orders')->orderBy('id');
 
-        $customers = $this->getAllRowsFromBatch($query->batch($db, 2));
+        $customers = $this->getAllRowsFromBatch($query->batch(2));
 
         foreach ($customers as $customer) {
             $this->assertTrue($customer->isRelationPopulated('orders'));
@@ -148,9 +145,9 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
     {
         $db = $this->getConnection();
 
-        $query = Customer::find()->orderBy('id')->limit(3)->indexBy('id');
+        $query = (new Customer($db))->find()->orderBy('id')->limit(3)->indexBy('id');
 
-        $customers = $this->getAllRowsFromBatch($query->batch($db, 2), $db);
+        $customers = $this->getAllRowsFromBatch($query->batch(2), $db);
 
         $this->assertCount(3, $customers);
         $this->assertEquals('user1', $customers[0]->name);

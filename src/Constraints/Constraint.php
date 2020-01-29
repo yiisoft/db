@@ -15,16 +15,16 @@ class Constraint
     private array $columnNames = [];
 
     /**
-     * @var string|null the constraint name.
+     * @var object|string|null the constraint name.
      */
-    private ?string $name = null;
+    public $name;
 
     public function getColumnNames(): array
     {
         return $this->columnNames;
     }
 
-    public function getName(): ?string
+    public function getName()
     {
         return $this->name;
     }
@@ -34,7 +34,7 @@ class Constraint
         $this->columnNames = $value;
     }
 
-    public function setName(?string $value): void
+    public function setName($value): void
     {
         $this->name = $value;
     }

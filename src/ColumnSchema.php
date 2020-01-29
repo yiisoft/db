@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db;
 
+use Yiisoft\Db\Contracts\ExpressionInterface;
 use Yiisoft\Strings\StringHelper;
 
 /**
@@ -21,14 +24,14 @@ class ColumnSchema
 
     /**
      * @var string abstract type of this column. Possible abstract types include:
-     *             char, string, text, boolean, smallint, integer, bigint, float, decimal, datetime,
-     *             timestamp, time, date, binary, and money.
+     * char, string, text, boolean, smallint, integer, bigint, float, decimal, datetime, timestamp, time, date, binary,
+     * and money.
      */
     public $type;
 
     /**
      * @var string the PHP type of this column. Possible PHP types include:
-     *             `string`, `boolean`, `integer`, `double`, `array`.
+     * `string`, `boolean`, `integer`, `double`, `array`.
      */
     public $phpType;
 
@@ -105,12 +108,14 @@ class ColumnSchema
      * @param mixed $value input value
      *
      * @return mixed converted value. This may also be an array containing the value as the first element
-     *               and the PDO type as the second element.
+     * and the PDO type as the second element.
      */
     public function dbTypecast($value)
     {
-        // the default implementation does the same as casting for PHP, but it should be possible
-        // to override this with annotation of explicit PDO type.
+        /**
+         * the default implementation does the same as casting for PHP, but it should be possible to override this with
+         * annotation of explicit PDO type.
+         */
         return $this->typecast($value);
     }
 
@@ -171,8 +176,10 @@ class ColumnSchema
             case 'integer':
                 return (int) $value;
             case 'boolean':
-                // treating a 0 bit value as false too
-                // https://github.com/yiisoft/yii2/issues/9006
+                /**
+                 * treating a 0 bit value as false too
+                 * https://github.com/yiisoft/yii2/issues/9006
+                 */
                 return (bool) $value && $value !== "\0";
             case 'double':
                 return (float) $value;
@@ -194,5 +201,10 @@ class ColumnSchema
             \PDO::PARAM_NULL,
             \PDO::PARAM_STMT
         ];
+    }
+
+    public function setType(string $value): void
+    {
+        $this->type = $value;
     }
 }

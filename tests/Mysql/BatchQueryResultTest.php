@@ -10,5 +10,5 @@ namespace Yiisoft\Db\Tests\Mysql;
  */
 class BatchQueryResultTest extends \Yiisoft\Db\Tests\BatchQueryResultTest
 {
-    public $driverName = 'mysql';
+    public ?string $driverName = 'mysql';
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db\Tests\Mysql;
 
 /**
@@ -8,5 +10,5 @@ namespace Yiisoft\Db\Tests\Mysql;
  */
 class ConnectionTest extends \Yiisoft\Db\Tests\ConnectionTest
 {
-    protected $driverName = 'mysql';
+    protected ?string $driverName = 'mysql';
 }

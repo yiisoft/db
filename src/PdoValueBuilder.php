@@ -1,6 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db;
+
+use Yiisoft\Db\Contracts\ExpressionInterface;
+use Yiisoft\Db\Contracts\ExpressionBuilderInterface;
 
 /**
  * Class PdoValueBuilder builds object of the {@see PdoValue} expression class.

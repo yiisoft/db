@@ -1,6 +1,10 @@
 <?php
 
-namespace Yiisoft\Db;
+declare(strict_types=1);
+
+namespace Yiisoft\Db\Expressions;
+
+use Yiisoft\Db\Contracts\ExpressionInterface;
 
 /**
  * Expression represents a DB expression that does not need escaping or quoting.

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
@@ -6,46 +7,19 @@ namespace Yiisoft\Db\Tests;
 use Yiisoft\Cache\NullCache;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Db\Connection;
+use Yiisoft\Db\Connectors\ConnectionPool;
+use Yiisoft\Db\Contracts\ConnectionInterface;
 use Yiisoft\Db\Tests\TestCase;
 
 abstract class DatabaseTestCase extends TestCase
 {
-    /**
-     * @var
-     */
+    protected static ?ConnectionInterface $cn = null;
+    private ?ConnectionInterface $db = null;
     protected $databases;
-
-    /**
-     * @var Connection
-     */
-    private ?Connection $db = null;
-
-    /**
-     * @var string the driver name of this test class. Must be set by a subclass.
-     */
-    protected $driverName;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        if ($this->driverName === null) {
-            throw new \Exception('driverName is not set for a DatabaseTestCase.');
-        }
-
-        $databases = self::getParam('databases');
-
-        $this->databases = $databases[$this->driverName];
-
-        $pdo_database = 'pdo_' . $this->driverName;
-
-        if ($this->driverName === 'oci') {
-            $pdo_database = 'oci8';
-        }
-
-        if (!\extension_loaded('pdo') || !\extension_loaded($pdo_database)) {
-            $this->markTestSkipped('pdo and '.$pdo_database.' extension are required.');
-        }
     }
 
     protected function tearDown(): void
@@ -78,13 +52,38 @@ abstract class DatabaseTestCase extends TestCase
         return $this->db;
     }
 
-    public function prepareDatabase($fixture, $open)
+    public function createConnection(): ConnectionInterface
     {
-        /* @var $db \Yiisoft\Db\Connection */
+        $this->configContainer();
+
+        $this->databases = self::getParam('databases');
+
+        $this->databases = $this->databases[$this->driverName];
+
+        $pdo_database = 'pdo_' . $this->driverName;
+
+        if ($this->driverName === 'oci') {
+            $pdo_database = 'oci8';
+        }
+
+        if (!\extension_loaded('pdo') || !\extension_loaded($pdo_database)) {
+            $this->markTestSkipped('pdo and '. $pdo_database . ' extension are required.');
+        }
+
         $db = new Connection($this->cache, $this->logger, $this->profiler, $this->databases['dsn']);
 
         $db->setUsername($this->databases['username']);
         $db->setPassword($this->databases['password']);
+
+
+        ConnectionPool::setConnectionsPool('mysql', $db);
+
+        return $db;
+    }
+
+    private function prepareDatabase(bool $fixture, bool $open)
+    {
+        $db = $this->createConnection();
 
         if (!$open) {
             return $db;
@@ -114,6 +113,23 @@ abstract class DatabaseTestCase extends TestCase
         }
 
         return $db;
+    }
+
+    /**
+     * Returns a test configuration params from /config/params.php.
+     *
+     * @param string $name params name
+     * @param mixed $default default value to use when param is not set.
+     *
+     * @return mixed  the value of the configuration param
+     */
+    protected static function getParam($name, $default = null)
+    {
+        if (empty(static::$params)) {
+            static::$params = require __DIR__ . '/data/config.php';
+        }
+
+        return isset(static::$params[$name]) ? static::$params[$name] : $default;
     }
 
     /**

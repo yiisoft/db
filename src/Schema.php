@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db;
 
 use Yiisoft\Cache\Cache;
@@ -71,6 +73,7 @@ abstract class Schema
      * @var string the default schema name used for the current session.
      */
     public $defaultSchema;
+
     /**
      * @var array map of DB errors and corresponding exceptions. If left part is found in DB error message exception
      * class from the right part is used.
@@ -128,7 +131,7 @@ abstract class Schema
     public function __construct(Connection $db)
     {
         $this->db = $db;
-        $this->cache = $this->db->getCache();
+        $this->cache = $this->db->getSchemaCache();
     }
 
     /**
@@ -313,7 +316,7 @@ abstract class Schema
         /* @var $cache CacheInterface */
         $cache = is_string($this->db->schemaCache) ? $this->cache : $this->db->schemaCache;
 
-        if ($this->db->enableSchemaCache && $cache instanceof CacheInterface) {
+        if ($this->db->getEnableSchemaCache() && $cache instanceof CacheInterface) {
             TagDependency::invalidate($cache, $this->getCacheTag());
         }
 
@@ -337,11 +340,8 @@ abstract class Schema
 
         $this->tableNames = [];
 
-        /* @var $cache CacheInterface */
-        $cache = is_string($this->db->schemaCache) ? $this->cache : $this->db->schemaCache;
-
-        if ($this->db->enableSchemaCache && $cache instanceof CacheInterface) {
-            $cache->delete($this->getCacheKey($rawName));
+        if ($this->db->getEnableSchemaCache() && $this->cache instanceof CacheInterface) {
+            $this->cache->delete($this->getCacheKey($rawName));
         }
     }
 
@@ -425,7 +425,7 @@ abstract class Schema
      */
     public function supportsSavepoint()
     {
-        return $this->db->enableSavepoint;
+        return $this->db->getEnableSavepoint();
     }
 
     /**
@@ -691,7 +691,7 @@ abstract class Schema
         if (strpos($name, '{{') !== false) {
             $name = preg_replace('/\\{\\{(.*?)\\}\\}/', '\1', $name);
 
-            return str_replace('%', $this->db->tablePrefix, $name);
+            return str_replace('%', $this->db->getTablePrefix(), $name);
         }
 
         return $name;
@@ -834,25 +834,19 @@ abstract class Schema
      */
     protected function getTableMetadata($name, $type, $refresh)
     {
-        $cache = null;
-
-        if ($this->db->enableSchemaCache && !in_array($name, $this->db->schemaCacheExclude, true)) {
-            $schemaCache = is_string($this->db->schemaCache) ? $this->cache : $this->db->schemaCache;
-
-            if ($schemaCache instanceof CacheInterface) {
-                $cache = $schemaCache;
-            }
+        if ($this->db->getEnableSchemaCache() && !in_array($name, $this->db->getSchemaCacheExclude(), true)) {
+            $schemaCache = $this->cache;
         }
 
         $rawName = $this->getRawTableName($name);
 
         if (!isset($this->tableMetadata[$rawName])) {
-            $this->loadTableMetadataFromCache($cache, $rawName);
+            $this->loadTableMetadataFromCache($schemaCache, $rawName);
         }
 
         if ($refresh || !array_key_exists($type, $this->tableMetadata[$rawName])) {
             $this->tableMetadata[$rawName][$type] = $this->{'loadTable'.ucfirst($type)}($rawName);
-            $this->saveTableMetadataToCache($cache, $rawName);
+            $this->saveTableMetadataToCache($schemaCache, $rawName);
         }
 
         return $this->tableMetadata[$rawName][$type];
@@ -969,7 +963,7 @@ abstract class Schema
         $cache->set(
             $this->getCacheKey($name),
             $metadata,
-            $this->db->schemaCacheDuration,
+            $this->db->getSchemaCacheDuration(),
             new TagDependency(['tags' => $this->getCacheTag()])
         );
     }

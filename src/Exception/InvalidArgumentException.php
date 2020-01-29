@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Db\Exception;
+namespace Yiisoft\Db\Exception;
 
 /**
  * Class InvalidArgumentException.

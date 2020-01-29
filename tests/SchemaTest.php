@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PDO;
-use Yiisoft\Db\CheckConstraint;
 use Yiisoft\Db\ColumnSchema;
-use Yiisoft\Db\Expression;
 use Yiisoft\Db\Schema;
 use Yiisoft\Db\TableSchema;
+use Yiisoft\Db\Constraints\CheckConstraint;
 use Yiisoft\Db\Constraints\Constraint;
 use Yiisoft\Db\Constraints\ForeignKeyConstraint;
 use Yiisoft\Db\Constraints\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expressions\Expression;
 
 abstract class SchemaTest extends DatabaseTestCase
 {
@@ -630,11 +630,12 @@ abstract class SchemaTest extends DatabaseTestCase
     public function constraintsProvider()
     {
         return [
-            '3: index' => [
-                'T_constraints_3',
+            '1: index' => [
+                'T_constraints_1',
                 'indexes',
                 [
-                    $this->indexConstraint('CN_constraints_3', ['C_fk_id_1', 'C_fk_id_2'], false, false)
+                    $this->indexConstraint(AnyValue::getInstance(), ['C_id'], true, true),
+                    $this->indexConstraint('CN_unique', ['C_unique'], false, true)
                 ]
             ],
             '1: primary key' => [
@@ -655,14 +656,6 @@ abstract class SchemaTest extends DatabaseTestCase
                 [
                     $this->constraint('CN_unique', ['C_unique'])
                 ],
-            ],
-            '1: index' => [
-                'T_constraints_1',
-                'indexes',
-                [
-                    $this->indexConstraint(AnyValue::getInstance(), ['C_id'], true, true),
-                    $this->indexConstraint('CN_unique', ['C_unique'], false, true)
-                ]
             ],
             '1: default' => ['T_constraints_1', 'defaultValues', false],
             '2: primary key' => [
@@ -688,7 +681,17 @@ abstract class SchemaTest extends DatabaseTestCase
             ],
             '2: check' => ['T_constraints_2', 'checks', []],
             '2: default' => ['T_constraints_2', 'defaultValues', false],
+            '3: index' => [
+                'T_constraints_3',
+                'indexes',
+                [
+                    $this->indexConstraint('CN_constraints_3', ['C_fk_id_1', 'C_fk_id_2'], false, false)
+                ]
+            ],
             '3: primary key' => ['T_constraints_3', 'primaryKey', null],
+            '3: unique' => ['T_constraints_3', 'uniques', []],
+            '3: check' => ['T_constraints_3', 'checks', []],
+            '3: default' => ['T_constraints_3', 'defaultValues', false],
             '3: foreign key' => [
                 'T_constraints_3',
                 'foreignKeys',
@@ -703,9 +706,6 @@ abstract class SchemaTest extends DatabaseTestCase
                     )
                 ]
             ],
-            '3: unique' => ['T_constraints_3', 'uniques', []],
-            '3: check' => ['T_constraints_3', 'checks', []],
-            '3: default' => ['T_constraints_3', 'defaultValues', false],
             '4: primary key' => [
                 'T_constraints_4',
                 'primaryKey',
@@ -747,6 +747,7 @@ abstract class SchemaTest extends DatabaseTestCase
         }
 
         $constraints = $this->getConnection(false)->getSchema()->{'getTable'.ucfirst($type)}($tableName);
+
         $this->assertMetadataEquals($expected, $constraints);
     }
 
@@ -871,16 +872,17 @@ abstract class SchemaTest extends DatabaseTestCase
         $ic->setIsPrimary($isPrimary);
 
         return $ic;
-
     }
 
     private function normalizeArrayKeys(array &$array, $caseSensitive)
     {
         $newArray = [];
+
         foreach ($array as $value) {
             if ($value instanceof Constraint) {
                 $key = (array) $value;
                 unset($key['name'], $key['foreignSchemaName']);
+
                 foreach ($key as $keyName => $keyValue) {
                     if ($keyValue instanceof AnyCaseValue) {
                         $key[$keyName] = $keyValue->value;
@@ -888,13 +890,16 @@ abstract class SchemaTest extends DatabaseTestCase
                         $key[$keyName] = '[AnyValue]';
                     }
                 }
+
                 ksort($key, SORT_STRING);
                 $newArray[$caseSensitive ? json_encode($key) : strtolower(json_encode($key))] = $value;
             } else {
                 $newArray[] = $value;
             }
         }
+
         ksort($newArray, SORT_STRING);
+
         $array = $newArray;
     }
 
@@ -920,10 +925,10 @@ abstract class SchemaTest extends DatabaseTestCase
         }
 
         foreach (array_keys((array) $expectedConstraint) as $name) {
-            if ($expectedConstraint->$name instanceof AnyValue) {
-                $actualConstraint->$name = $expectedConstraint->$name;
-            } elseif ($expectedConstraint->$name instanceof AnyCaseValue) {
-                $actualConstraint->$name = new AnyCaseValue($actualConstraint->$name);
+            if ($expectedConstraint->getName() instanceof AnyValue) {
+                $actualConstraint->setName($expectedConstraint->getName());
+            } elseif ($expectedConstraint->getName() instanceof AnyCaseValue) {
+                $actualConstraint->setName(new AnyCaseValue($actualConstraint->getName()));
             }
         }
     }

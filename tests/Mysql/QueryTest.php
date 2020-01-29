@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db\Tests\Mysql;
 
-use Yiisoft\Db\Expression;
 use Yiisoft\Db\Query;
+use Yiisoft\Db\Expressions\Expression;
 
 /**
  * @group db
@@ -11,17 +13,17 @@ use Yiisoft\Db\Query;
  */
 class QueryTest extends \Yiisoft\Db\Tests\QueryTest
 {
-    protected $driverName = 'mysql';
+    protected ?string $driverName = 'mysql';
 
     /**
      * Tests MySQL specific syntax for index hints.
      */
     public function testQueryIndexHint(): void
     {
-        $db = $this->getConnection();
+        $query = (new Query($this->getConnection()))->from([new Expression('{{%customer}} USE INDEX (primary)')]);
 
-        $query = (new Query())->from([new Expression('{{%customer}} USE INDEX (primary)')]);
-        $row = $query->one($db);
+        $row = $query->one();
+
         $this->assertArrayHasKey('id', $row);
         $this->assertArrayHasKey('name', $row);
         $this->assertArrayHasKey('email', $row);
@@ -29,13 +31,12 @@ class QueryTest extends \Yiisoft\Db\Tests\QueryTest
 
     public function testLimitOffsetWithExpression(): void
     {
-        $query = (new Query())->from('customer')->select('id')->orderBy('id');
-        // In MySQL limit and offset arguments must both be nonnegative integer constant
-        $query
-            ->limit(new Expression('2'))
-            ->offset(new Expression('1'));
+        $query = (new Query($this->getConnection()))->from('customer')->select('id')->orderBy('id');
 
-        $result = $query->column($this->getConnection());
+        // In MySQL limit and offset arguments must both be nonnegative integer constant
+        $query->limit(new Expression('2'))->offset(new Expression('1'));
+
+        $result = $query->column();
 
         $this->assertCount(2, $result);
 

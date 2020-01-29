@@ -1,20 +1,12 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
 
 namespace Yiisoft\Db\Data;
 
 use yii\data\BaseDataProvider;
 use Yiisoft\Db\Connection;
-use Yiisoft\Db\Expression;
 use Yiisoft\Db\Query;
-use yii\di\Instance;
-use yii\exceptions\InvalidConfigException;
-use yii\helpers\Yii;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Expressions\Expression;
 
 /**
  * SqlDataProvider implements a data provider based on a plain SQL statement.

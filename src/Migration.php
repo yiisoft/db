@@ -1,8 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
+use Yiisoft\Db\Constraints\Constraint;
 use Yiisoft\Strings\StringHelper;
 
 /**
@@ -33,7 +35,7 @@ use Yiisoft\Strings\StringHelper;
  *
  * For more details and usage information on Migration, see the [guide article on Migration](guide:db-migrations).
  */
-class Migration extends Component implements MigrationInterface
+class Migration implements MigrationInterface
 {
     use SchemaBuilderTrait;
 

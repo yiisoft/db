@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
@@ -8,6 +9,8 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Cache\CacheInterface;
+use Yiisoft\Db\Connection;
+use Yiisoft\Db\Connectors\ConnectionPool;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Di\Container;
 use Yiisoft\Files\FileHelper;
@@ -18,9 +21,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected static array $params = [];
     protected Aliases $aliases;
     protected CacheInterface $cache;
+    protected Connection $connection;
     protected ContainerInterface $container;
+    protected ?string $driverName = null;
     protected LoggerInterface $logger;
     protected Profiler $profiler;
+    protected array $dataProvider;
 
     /**
      * setUp
@@ -31,6 +37,15 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         parent::setUp();
 
+        if ($this->driverName === null) {
+            throw new \Exception('driverName is not set for a DatabaseTestCase.');
+        }
+
+        $this->configContainer();
+    }
+
+    protected function configContainer(): void
+    {
         $config = require Builder::path('tests');
 
         $this->container = new Container($config);
@@ -74,20 +89,15 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Returns a test configuration params from /config/params.php.
+     * Asserts that value is one of expected values.
      *
-     * @param string $name params name
-     * @param mixed $default default value to use when param is not set.
-     *
-     * @return mixed  the value of the configuration param
+     * @param mixed $actual
+     * @param array $expected
+     * @param string $message
      */
-    public static function getParam($name, $default = null)
+    protected function assertIsOneOf($actual, array $expected, $message = '')
     {
-        if (empty(static::$params)) {
-            static::$params = require __DIR__ . '/data/config.php';
-        }
-
-        return isset(static::$params[$name]) ? static::$params[$name] : $default;
+        self::assertThat($actual, new IsOneOfAssert($expected), $message);
     }
 
     /**
@@ -136,18 +146,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $method->setAccessible(false);
         }
         return $result;
-    }
-
-    /**
-     * Asserts that value is one of expected values.
-     *
-     * @param mixed $actual
-     * @param array $expected
-     * @param string $message
-     */
-    public function assertIsOneOf($actual, array $expected, $message = '')
-    {
-        self::assertThat($actual, new IsOneOfAssert($expected), $message);
     }
 
     protected function removeDirectory(string $basePath): void
