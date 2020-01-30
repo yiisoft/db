@@ -13,7 +13,6 @@ use Yiisoft\Db\QueryBuilder;
 use Yiisoft\Db\Schema;
 use Yiisoft\Db\SchemaBuilderTrait;
 use Yiisoft\Db\Sqlite\QueryBuilder as SqliteQueryBuilder;
-use Yiisoft\Db\Tests\Util\TraversableObject;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\Expressions\Expression;
 
