@@ -1,0 +1,41 @@
+name: phpunit
+
+on: [push, pull_request]
+
+env:
+  DEFAULT_COMPOSER_FLAGS: "--prefer-dist --no-interaction --no-progress --optimize-autoloader"
+  PHPUNIT_EXCLUDE_GROUP: mssql,oci,wincache,xcache,zenddata,cubrid
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install PHP
+        uses: shivammathur/setup-php@v1
+        with:
+          php-version: 7.4
+          extensions: apc, curl, mbstring, dom, intl, mysql, pgsql, pdo, pdo_sqlite, imagick
+          ini-values: date.timezone='UTC'
+      - name: Install Postgres
+        uses: harmon758/postgresql-action@v1
+        with:
+          postgresql version: 9.6
+          postgresql db: yiitest
+          postgresql user: root
+          postgresql password: root
+      - name: Create mysql db
+        run: mysql -uroot -proot -e 'CREATE DATABASE `yiitest`;'
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - name: Install dependencies
+        run: composer update $DEFAULT_COMPOSER_FLAGS
+      - name: PHP Unit tests
+        run: vendor/bin/phpunit --verbose --coverage-clover=coverage.clover --exclude-group oci,wincache,xcache,zenddata,cubrid
+      - name: Code coverage
+        run: |
+          wget https://scrutinizer-ci.com/ocular.phar
+          php ocular.phar code-coverage:upload --format=php-clover coverage.clover
