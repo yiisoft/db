@@ -20,9 +20,9 @@ class ForeignKeyConstraint extends Constraint
     private $foreignTableName;
 
     /**
-     * @var array list of referenced table column names.
+     * @var array|string list of referenced table column names.
      */
-    private array $foreignColumnNames = [];
+    private $foreignColumnNames;
 
     /**
      * @var string|null referential action if rows in a referenced table are to be updated.
@@ -69,7 +69,7 @@ class ForeignKeyConstraint extends Constraint
         $this->foreignTableName = $value;
     }
 
-    public function setForeignColumnNames(array $value): void
+    public function setForeignColumnNames($value): void
     {
         $this->foreignColumnNames = $value;
     }

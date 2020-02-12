@@ -19,6 +19,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.4",
+        "ext-mbstring": "*",
         "ext-pdo": "*",
         "psr/log": "^1.1",
         "yiisoft/arrays": "^3.0@dev",
@@ -29,19 +30,18 @@
     },
     "require-dev": {
         "hiqdev/composer-config-plugin": "^1.0@dev",
-        "phpunit/phpunit": "^8.4",
+        "phpunit/phpunit": "^9.0",
         "yiisoft/aliases": "^3.0@dev",
         "yiisoft/db-mysql": "^3.0@dev",
+        "yiisoft/db-pgsql": "^3.0@dev",
+        "yiisoft/db-sqlite": "^3.0@dev",
         "yiisoft/di": "^3.0@dev",
+        "yiisoft/json": "^3.0@dev",
         "yiisoft/log-target-file": "^3.0@dev"
     },
     "autoload": {
         "psr-4": {
-            "Yiisoft\\Db\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
+            "Yiisoft\\Db\\": "src",
             "Yiisoft\\Db\\Tests\\": "tests"
         }
     },

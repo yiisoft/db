@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\ActiveRecord\ActiveQuery;
-use Yiisoft\Db\Query;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Querys\Query;
+use Yiisoft\Db\Exceptions\InvalidArgumentException;
+use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Db\Expressions\Expression;
 
 trait GetTablesAliasTestTrait
 {
     /**
-     * @return Query|ActiveQuery
+     * @return Query
      */
     abstract protected function createQuery();
 
-    public function testGetTableNamesIsFromArrayWithAlias()
+    public function testGetTableNamesIsFromArrayWithAlias(): void
     {
-        $query = $this->createQuery($this->getConnection());
+        $query = $this->createQuery();
 
         $query->from = [
             'prf'     => 'profile',
@@ -38,9 +37,9 @@ trait GetTablesAliasTestTrait
         ], $tables);
     }
 
-    public function testGetTableNamesIsFromArrayWithoutAlias()
+    public function testGetTableNamesIsFromArrayWithoutAlias(): void
     {
-        $query = $this->createQuery($this->getConnection());
+        $query = $this->createQuery();
         $query->from = [
             '{{profile}}',
             'user',
@@ -54,9 +53,9 @@ trait GetTablesAliasTestTrait
         ], $tables);
     }
 
-    public function testGetTableNamesIsFromString()
+    public function testGetTableNamesIsFromString(): void
     {
-        $query = $this->createQuery($this->getConnection());
+        $query = $this->createQuery();
         $query->from = 'profile AS \'prf\', user "usr", `order`, "customer", "a b" as "c d"';
 
         $tables = $query->getTablesUsedInFrom();
@@ -70,9 +69,9 @@ trait GetTablesAliasTestTrait
         ], $tables);
     }
 
-    public function testGetTableNamesIsFromObjectgenerateException()
+    public function testGetTableNamesIsFromObjectgenerateException(): void
     {
-        $query = $this->createQuery($this->getConnection());
+        $query = $this->createQuery();
 
         $query->from = new \stdClass();
 
@@ -81,9 +80,9 @@ trait GetTablesAliasTestTrait
         $query->getTablesUsedInFrom();
     }
 
-    public function testGetTablesAliasisFromString()
+    public function testGetTablesAliasisFromString(): void
     {
-        $query = $this->createQuery($this->getConnection());
+        $query = $this->createQuery();
 
         $query->from = 'profile AS \'prf\', user "usr", service srv, order, [a b] [c d], {{something}} AS myalias';
 
@@ -102,9 +101,9 @@ trait GetTablesAliasTestTrait
     /**
      * @see https://github.com/yiisoft/yii2/issues/14150
      */
-    public function testGetTableNamesIsFromPrefixedTableName()
+    public function testGetTableNamesIsFromPrefixedTableName(): void
     {
-        $query = $this->createQuery($this->getConnection());
+        $query = $this->createQuery();
 
         $query->from = '{{%order_item}}';
 
@@ -118,9 +117,9 @@ trait GetTablesAliasTestTrait
     /**
      * @see https://github.com/yiisoft/yii2/issues/14211
      */
-    public function testGetTableNamesIsFromTableNameWithDatabase()
+    public function testGetTableNamesIsFromTableNameWithDatabase(): void
     {
-        $query = $this->createQuery($this->getConnection());
+        $query = $this->createQuery();
 
         $query->from = 'tickets.workflows';
 
@@ -131,9 +130,9 @@ trait GetTablesAliasTestTrait
         ], $tables);
     }
 
-    public function testGetTableNamesIsFromAliasedExpression()
+    public function testGetTableNamesIsFromAliasedExpression(): void
     {
-        $query = $this->createQuery($this->getConnection());
+        $query = $this->createQuery();
 
         $expression = new Expression('(SELECT id FROM user)');
 
@@ -146,9 +145,9 @@ trait GetTablesAliasTestTrait
         $this->assertEquals(['{{x}}' => $expression], $tables);
     }
 
-    public function testGetTableNamesIsFromAliasedArrayWithExpression()
+    public function testGetTableNamesIsFromAliasedArrayWithExpression(): void
     {
-        $query = $this->createQuery($this->getConnection());
+        $query = $this->createQuery();
 
         $query->from = ['x' => new Expression('(SELECT id FROM user)')];
 
@@ -159,11 +158,11 @@ trait GetTablesAliasTestTrait
         ], $tables);
     }
 
-    public function testGetTableNamesIsFromAliasedSubquery()
+    public function testGetTableNamesIsFromAliasedSubquery(): void
     {
-        $query = $this->createQuery($this->getConnection());
+        $query = $this->createQuery();
 
-        $subQuery = $this->createQuery($this->getConnection());
+        $subQuery = $this->createQuery();
 
         $subQuery->from('user');
         $query->from(['x' => $subQuery]);

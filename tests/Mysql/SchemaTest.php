@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Mysql;
 
-use Yiisoft\Db\Tests\AnyCaseValue;
 use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Tests\SchemaTest as AbstractSchemaTest;
 
-/**
- * @group db
- * @group mysql
- */
-class SchemaTest extends \Yiisoft\Db\Tests\SchemaTest
+final class SchemaTest extends AbstractSchemaTest
 {
     protected ?string $driverName = 'mysql';
 
@@ -39,7 +35,7 @@ SQL;
         $this->assertEquals('CURRENT_TIMESTAMP', (string)$dt->defaultValue);
     }
 
-    public function testDefaultDatetimeColumnWithMicrosecs()
+    public function testDefaultDatetimeColumnWithMicrosecs(): void
     {
         if (!version_compare($this->getConnection()->getPDO()->getAttribute(\PDO::ATTR_SERVER_VERSION), '5.6.4', '>=')) {
             $this->markTestSkipped('CURRENT_TIMESTAMP with microseconds as default column value is supported since MySQL 5.6.4.');
@@ -95,7 +91,7 @@ SQL;
      * @see https://mariadb.com/kb/en/library/now/#description
      * @see https://github.com/yiisoft/yii2/issues/15167
      */
-    public function testAlternativeDisplayOfDefaultCurrentTimestampInMariaDB()
+    public function testAlternativeDisplayOfDefaultCurrentTimestampInMariaDB(): void
     {
         /**
          * We do not have a real database MariaDB >= 10.2.3 for tests, so we emulate the information that database

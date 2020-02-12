@@ -17,7 +17,7 @@ class AnyCaseValue extends CompareValue
     public function __construct($value, $config = [])
     {
         if (\is_array($value)) {
-            $this->value = array_map('strtolower', $value);
+            $this->value = \array_map('strtolower', $value);
         } else {
             $this->value = strtolower($value);
         }

@@ -19,7 +19,7 @@ class DefaultValueConstraint extends Constraint
         return $this->value;
     }
 
-    public function setValue(): void
+    public function setValue($value): void
     {
         $this->value = $value;
     }

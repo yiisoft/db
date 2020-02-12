@@ -15,12 +15,6 @@
  */
 $config = [
     'databases' => [
-        'cubrid' => [
-            'dsn' => 'cubrid:dbname=demodb;host=localhost;port=33000',
-            'username' => 'dba',
-            'password' => '',
-            'fixture' => __DIR__ . '/cubrid.sql',
-        ],
         'mysql' => [
             'dsn' => [
                 'driver' => 'mysql',
@@ -30,10 +24,13 @@ $config = [
             ],
             'fixture' => __DIR__ . '/mysql.sql',
             'username' => 'root',
-            'password' => '',
+            'password' => 'root',
         ],
         'sqlite' => [
-            'dsn' => 'sqlite::memory:',
+            'dsn' => [
+                'driver' => 'sqlite',
+                'host' => 'sqlite:' .  __DIR__ . '/yiitest.sq3',
+            ],
             'fixture' => __DIR__ . '/sqlite.sql',
         ],
         'sqlsrv' => [
@@ -43,9 +40,14 @@ $config = [
             'fixture' => __DIR__ . '/mssql.sql',
         ],
         'pgsql' => [
-            'dsn' => 'pgsql:host=localhost;dbname=yiitest;port=5432;',
-            'username' => 'postgres',
-            'password' => 'postgres',
+            'dsn' => [
+                'driver' => 'pgsql',
+                'host' => '127.0.0.1',
+                'dbname' => 'yiitest',
+                'port' => '5432'
+            ],
+            'username' => 'root',
+            'password' => 'root',
             'fixture' => __DIR__ . '/postgres.sql',
         ],
         'oci' => [

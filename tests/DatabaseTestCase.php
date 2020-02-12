@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
+use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Drivers\ConnectionPool;
 use Yiisoft\Cache\NullCache;
-use Yiisoft\Cache\CacheInterface;
-use Yiisoft\Db\Connection;
-use Yiisoft\Db\Connectors\ConnectionPool;
-use Yiisoft\Db\Contracts\ConnectionInterface;
-use Yiisoft\Db\Tests\TestCase;
 
 abstract class DatabaseTestCase extends TestCase
 {
-    protected static ?ConnectionInterface $cn = null;
-    private ?ConnectionInterface $db = null;
+    protected static ?Connection $cn = null;
+    private ?Connection $db = null;
     protected $databases;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        if ($this->driverName === null) {
+            throw new \Exception('driverName is not set for a DatabaseTestCase.');
+        }
     }
 
     protected function tearDown(): void
@@ -33,11 +34,12 @@ abstract class DatabaseTestCase extends TestCase
 
     /**
      * @param bool $reset whether to clean up the test database
-     * @param bool $open  whether to open and populate test database
+     * @param bool $open whether to open and populate test database
+     * @param bool $fixture
      *
-     * @return \Yiisoft\Db\Connection
+     * @return Connection
      */
-    public function getConnection(bool $reset = true, bool $open = true, $fixture = false)
+    public function getConnection(bool $reset = true, bool $open = true, $fixture = false): Connection
     {
         if (!$reset && $this->db) {
             return $this->db;
@@ -52,7 +54,7 @@ abstract class DatabaseTestCase extends TestCase
         return $this->db;
     }
 
-    public function createConnection(): ConnectionInterface
+    public function createConnection(array $config = []): Connection
     {
         $this->configContainer();
 
@@ -67,23 +69,27 @@ abstract class DatabaseTestCase extends TestCase
         }
 
         if (!\extension_loaded('pdo') || !\extension_loaded($pdo_database)) {
-            $this->markTestSkipped('pdo and '. $pdo_database . ' extension are required.');
+            $this->markTestSkipped('pdo and ' . $pdo_database . ' extension are required.');
         }
 
-        $db = new Connection($this->cache, $this->logger, $this->profiler, $this->databases['dsn']);
+        $dsn = $config['dsn'] ?? $this->databases['dsn'];
 
-        $db->setUsername($this->databases['username']);
-        $db->setPassword($this->databases['password']);
+        $db = new Connection($this->cache, $this->logger, $this->profiler, $dsn);
+
+        if ($this->driverName !== 'sqlite') {
+            $db->setUsername($this->databases['username']);
+            $db->setPassword($this->databases['password']);
+        }
 
 
-        ConnectionPool::setConnectionsPool('mysql', $db);
+        ConnectionPool::setConnectionsPool($this->driverName, $db);
 
         return $db;
     }
 
-    private function prepareDatabase(bool $fixture, bool $open)
+    protected function prepareDatabase(bool $fixture, bool $open, array $config = []): Connection
     {
-        $db = $this->createConnection();
+        $db = $this->createConnection($config);
 
         if (!$open) {
             return $db;
@@ -129,7 +135,7 @@ abstract class DatabaseTestCase extends TestCase
             static::$params = require __DIR__ . '/data/config.php';
         }
 
-        return isset(static::$params[$name]) ? static::$params[$name] : $default;
+        return static::$params[$name] ?? $default;
     }
 
     /**
@@ -158,9 +164,9 @@ abstract class DatabaseTestCase extends TestCase
     }
 
     /**
-     * @return \Yiisoft\Db\Connection
+     * @return Connection
      */
-    protected function getConnectionWithInvalidSlave()
+    protected function getConnectionWithInvalidSlave(): Connection
     {
         $config = array_merge($this->database, [
             'serverStatusCache' => new NullCache(),

@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Expressions;
 
 use Traversable;
-use Yiisoft\Db\Contracts\ExpressionInterface;
-use Yiisoft\Db\Contracts\QueryInterface;
-use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exceptions\InvalidConfigException;
 
 /**
  * Class ArrayExpression represents an array SQL expression.

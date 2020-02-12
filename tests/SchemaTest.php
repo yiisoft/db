@@ -5,24 +5,24 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PDO;
-use Yiisoft\Db\ColumnSchema;
-use Yiisoft\Db\Schema;
-use Yiisoft\Db\TableSchema;
 use Yiisoft\Db\Constraints\CheckConstraint;
 use Yiisoft\Db\Constraints\Constraint;
 use Yiisoft\Db\Constraints\ForeignKeyConstraint;
 use Yiisoft\Db\Constraints\IndexConstraint;
-use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Exceptions\NotSupportedException;
 use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Schemas\ColumnSchema;
+use Yiisoft\Db\Schemas\Schema;
+use Yiisoft\Db\Schemas\TableSchema;
 
 abstract class SchemaTest extends DatabaseTestCase
 {
     /**
      * @var string[]
      */
-    protected $expectedSchemas;
+    protected array $expectedSchemas;
 
-    public function pdoAttributesProvider()
+    public function pdoAttributesProvider(): array
     {
         return [
             [[PDO::ATTR_EMULATE_PREPARES => true]],
@@ -49,7 +49,7 @@ abstract class SchemaTest extends DatabaseTestCase
      *
      * @param array $pdoAttributes
      */
-    public function testGetTableNames($pdoAttributes)
+    public function testGetTableNames($pdoAttributes): void
     {
         $connection = $this->getConnection();
 
@@ -93,7 +93,7 @@ abstract class SchemaTest extends DatabaseTestCase
         $this->assertEquals(\count($schema->getTableNames()), \count($tables));
 
         foreach ($tables as $table) {
-            $this->assertInstanceOf('Yiisoft\Db\TableSchema', $table);
+            $this->assertInstanceOf(TableSchema::class, $table);
         }
     }
 
@@ -623,13 +623,20 @@ abstract class SchemaTest extends DatabaseTestCase
 
         foreach ($tableNames as $tableName) {
             $tableSchema = $schema->getTableSchema($tableName);
-            $this->assertInstanceOf('Yiisoft\Db\TableSchema', $tableSchema, $tableName);
+            $this->assertInstanceOf(TableSchema::class, $tableSchema, $tableName);
         }
     }
 
     public function constraintsProvider()
     {
         return [
+            '1: check' => [
+                'T_constraints_1',
+                'checks',
+                [
+                    $this->checkConstraint(AnyValue::getInstance(), "C_check <> ''", ['C_check'])
+                ]
+            ],
             '1: index' => [
                 'T_constraints_1',
                 'indexes',
@@ -642,13 +649,6 @@ abstract class SchemaTest extends DatabaseTestCase
                 'T_constraints_1',
                 'primaryKey',
                 $this->constraint(AnyValue::getInstance(), ['C_id'])
-            ],
-            '1: check' => [
-                'T_constraints_1',
-                'checks',
-                [
-                    $this->checkConstraint(AnyValue::getInstance(), "C_check <> ''", ['C_check'])
-                ]
             ],
             '1: unique' => [
                 'T_constraints_1',
@@ -746,7 +746,7 @@ abstract class SchemaTest extends DatabaseTestCase
             $this->expectException(NotSupportedException::class);
         }
 
-        $constraints = $this->getConnection(false)->getSchema()->{'getTable'.ucfirst($type)}($tableName);
+        $constraints = $this->getConnection(false)->getSchema()->{'getTable' . ucfirst($type)}($tableName);
 
         $this->assertMetadataEquals($expected, $constraints);
     }

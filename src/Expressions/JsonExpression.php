@@ -2,9 +2,8 @@
 
 namespace Yiisoft\Db\Expressions;
 
-use Yiisoft\Db\Contracts\ExpressionInterface;
-use Yiisoft\Db\Contracts\QueryInterface;
-use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exceptions\InvalidConfigException;
+use Yiisoft\Db\Querys\QueryInterface;
 
 /**
  * Class JsonExpression represents data that should be encoded to JSON.
@@ -17,30 +16,33 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  */
 class JsonExpression implements ExpressionInterface, \JsonSerializable
 {
-    const TYPE_JSON = 'json';
+    public const TYPE_JSON = 'json';
 
-    const TYPE_JSONB = 'jsonb';
+    public const TYPE_JSONB = 'jsonb';
 
     /**
      * @var mixed the value to be encoded to JSON.
-     *            The value must be compatible with [\yii\helpers\Json::encode()|Json::encode()]] input requirements.
+     *
+     * The value must be compatible with {@see \Yiisoft\Json\Json::encode()|Json::encode()]} input requirements.
      */
     protected $value;
 
     /**
      * @var string|null Type of JSON, expression should be casted to. Defaults to `null`, meaning
-     *                  no explicit casting will be performed.
-     *                  This property will be encountered only for DBMSs that support different types of JSON.
-     *                  For example, PostgreSQL has `json` and `jsonb` types.
+     * no explicit casting will be performed.
+     *
+     * This property will be encountered only for DBMSs that support different types of JSON.
+     *
+     * For example, PostgreSQL has `json` and `jsonb` types.
      */
-    protected $type;
+    protected ?string $type;
 
     /**
      * JsonExpression constructor.
      *
-     * @param mixed       $value the value to be encoded to JSON.
-     *                           The value must be compatible with [\yii\helpers\Json::encode()|Json::encode()]] requirements.
-     * @param string|null $type  the type of the JSON. See [[JsonExpression::type]]
+     * @param mixed $value the value to be encoded to JSON. The value must be compatible with
+     * {@see \Yiisoft\Json\Json::encode()|Json::encode()} requirements.
+     * @param string|null $type  the type of the JSON. See {@see JsonExpression::type}
      *
      * @see type
      */
@@ -69,7 +71,7 @@ class JsonExpression implements ExpressionInterface, \JsonSerializable
      *
      * @see type
      */
-    public function getType()
+    public function getType(): ?string
     {
         return $this->type;
     }

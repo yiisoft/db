@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\Cache\ArrayCache;
-use Yiisoft\Cache\Cache;
-use Yiisoft\Db\Connection;
-use Yiisoft\Db\Query;
-use Yiisoft\Db\Schema;
+use Yiisoft\Db\Drivers\Connection;
 use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Querys\Query;
+use Yiisoft\Db\Schemas\Schema;
 
 abstract class QueryTest extends DatabaseTestCase
 {
@@ -326,11 +324,13 @@ abstract class QueryTest extends DatabaseTestCase
         $query
             ->limit(new Expression('1 + 1'))
             ->offset(new Expression('1 + 0'));
+
         $result = $query->column($this->getConnection());
+
         $this->assertCount(2, $result);
-        $this->assertNotContains(1, $result);
         $this->assertContains(2, $result);
         $this->assertContains(3, $result);
+        $this->assertNotContains(1, $result);
     }
 
     public function testUnion(): void
@@ -468,7 +468,7 @@ abstract class QueryTest extends DatabaseTestCase
         $query = new Query($this->getConnection());
 
         $result = $query->andFilterCompare('name', null);
-        $this->assertInstanceOf('Yiisoft\Db\Query', $result);
+        $this->assertInstanceOf('Yiisoft\Db\Querys\Query', $result);
         $this->assertNull($query->where);
 
         $query->andFilterCompare('name', '');

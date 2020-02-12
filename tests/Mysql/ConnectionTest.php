@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Mysql;
 
-/**
- * @group db
- * @group mysql
- */
-class ConnectionTest extends \Yiisoft\Db\Tests\ConnectionTest
+use Yiisoft\Db\Tests\ConnectionTest as AbstractConnectionTest;
+
+final class ConnectionTest extends AbstractConnectionTest
 {
     protected ?string $driverName = 'mysql';
 }

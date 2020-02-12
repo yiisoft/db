@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\Db\Connection;
-use Yiisoft\Db\Transaction;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Tests\TestCase;
+use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Exceptions\Exception;
+use Yiisoft\Db\Exceptions\InvalidConfigException;
+use Yiisoft\Db\Exceptions\NotSupportedException;
+use Yiisoft\Db\Transactions\Transaction;
 
 abstract class ConnectionTest extends DatabaseTestCase
 {
@@ -17,8 +16,6 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection = $this->getConnection(false);
 
         $this->assertEquals($this->buildDSN($this->databases['dsn']), $connection->getDsn());
-        $this->assertEquals($this->databases['username'], $connection->getUsername());
-        $this->assertEquals($this->databases['password'], $connection->getPassword());
     }
 
     public function testOpenClose(): void
@@ -193,7 +190,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
     public function testTransactionShortcutException(): void
     {
-        $connection = $this->getConnection(true);
+        $connection = $this->getConnection(true, true, true);
 
         $result = $connection->transaction(function (Connection $db) {
             $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
@@ -328,7 +325,7 @@ abstract class ConnectionTest extends DatabaseTestCase
             $this->assertStringContainsString(
                 'INSERT INTO qlog1(a) VALUES(1);',
                 $e->getMessage(),
-                'Exception message should contain raw SQL query: ' . (string) $e
+                'Exceptions message should contain raw SQL query: ' . (string) $e
             );
 
             $thrown = true;
@@ -346,7 +343,7 @@ abstract class ConnectionTest extends DatabaseTestCase
             $this->assertStringContainsString(
                 'SELECT * FROM qlog1 WHERE id=1 ORDER BY nonexistingcolumn;',
                 $e->getMessage(),
-                'Exception message should contain raw SQL query: ' . (string) $e
+                'Exceptions message should contain raw SQL query: ' . (string) $e
             );
 
             $thrown = true;
@@ -379,13 +376,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertNotNull($connection->getPDO());
 
         $this->assertNull($conn2->getTransaction());
-
-        if ($this->driverName === 'sqlite') {
-            // in-memory sqlite should not reset PDO
-            $this->assertNotNull($conn2->getPDO());
-        } else {
-            $this->assertNull($conn2->getPDO());
-        }
+        $this->assertNull($conn2->getPDO());
 
         $connection->beginTransaction();
 
@@ -393,26 +384,14 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertNotNull($connection->getPDO());
 
         $this->assertNull($conn2->getTransaction());
-
-        if ($this->driverName === 'sqlite') {
-            // in-memory sqlite should not reset PDO
-            $this->assertNotNull($conn2->getPDO());
-        } else {
-            $this->assertNull($conn2->getPDO());
-        }
+        $this->assertNull($conn2->getPDO());
 
         $conn3 = clone $connection;
 
         $this->assertNotNull($connection->getTransaction());
         $this->assertNotNull($connection->getPDO());
         $this->assertNull($conn3->getTransaction());
-
-        if ($this->driverName === 'sqlite') {
-            // in-memory sqlite should not reset PDO
-            $this->assertNotNull($conn3->getPDO());
-        } else {
-            $this->assertNull($conn3->getPDO());
-        }
+        $this->assertNull($conn3->getPDO());
     }
 
     /**
@@ -479,7 +458,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection->shuffleMasters = false;
 
-        $cacheKey = ['Yiisoft\Db\Connection::openFromPoolSequentially', $connection->getDsn()];
+        $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', $connection->getDsn()];
 
         $this->assertFalse($this->cache->has($cacheKey));
 
@@ -494,7 +473,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection = $this->getConnection(true, false);
 
-        $cacheKey = ['Yiisoft\Db\Connection::openFromPoolSequentially', 'host:invalid'];
+        $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', 'host:invalid'];
 
         $connection->masters[] = [
             'cache'    => $this->cache,
@@ -539,7 +518,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection->shuffleMasters = false;
 
-        $cacheKey = ['Yiisoft\Db\Connection::openFromPoolSequentially', $connection->getDsn()];
+        $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', $connection->getDsn()];
 
         $this->assertFalse($this->cache->has($cacheKey));
 
@@ -549,7 +528,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection->close();
 
-        $cacheKey = ['Yiisoft\Db\Connection::openFromPoolSequentially', 'host:invalid'];
+        $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', 'host:invalid'];
 
         $connection->masters[0]['dsn'] = 'host:invalid';
 

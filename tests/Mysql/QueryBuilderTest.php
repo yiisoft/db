@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Mysql;
 
-use Yiisoft\Db\Query;
-use Yiisoft\Db\Schema;
-use Yiisoft\Helpers\Json;
 use Yiisoft\Db\Expressions\Expression;
 use Yiisoft\Db\Expressions\JsonExpression;
+use Yiisoft\Db\Querys\Query;
+use Yiisoft\Db\Schemas\Schema;
+use Yiisoft\Db\Tests\QueryBuilderTest as AbstractQueryBuilderTest;
 
-/**
- * @group db
- * @group mysql
- */
-class QueryBuilderTest extends \Yiisoft\Db\Tests\QueryBuilderTest
+final class QueryBuilderTest extends AbstractQueryBuilderTest
 {
     protected ?string $driverName = 'mysql';
 

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expressions;
 
-use Yiisoft\Db\Contracts\ExpressionInterface;
-
 /**
  * Expression represents a DB expression that does not need escaping or quoting.
  *
@@ -14,7 +12,7 @@ use Yiisoft\Db\Contracts\ExpressionInterface;
  *
  * ```php
  * $expression = new Expression('NOW()');
- * $now = (new \Yiisoft\Db\Query)->select($expression)->scalar();  // SELECT NOW();
+ * $now = (new \Yiisoft\Db\Querys\Query)->select($expression)->scalar();  // SELECT NOW();
  * echo $now; // prints the current date
  * ```
  *
@@ -26,22 +24,21 @@ class Expression implements ExpressionInterface
     /**
      * @var string the DB expression
      */
-    public $expression;
+    public string $expression;
 
     /**
      * @var array list of parameters that should be bound for this expression.
      * The keys are placeholders appearing in {@see expression} and the values are the corresponding parameter values.
      */
-    public $params = [];
+    public array $params = [];
 
     /**
      * Constructor.
      *
      * @param string $expression the DB expression
      * @param array $params parameters
-     * @param array $config name-value pairs that will be used to initialize the object properties
      */
-    public function __construct($expression, $params = [])
+    public function __construct(string $expression, array $params = [])
     {
         $this->expression = $expression;
         $this->params = $params;
@@ -52,7 +49,7 @@ class Expression implements ExpressionInterface
      *
      * @return string the DB expression.
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->expression;
     }

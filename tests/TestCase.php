@@ -7,11 +7,10 @@ namespace Yiisoft\Db\Tests;
 use hiqdev\composer\config\Builder;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Cache\CacheInterface;
-use Yiisoft\Db\Connection;
-use Yiisoft\Db\Connectors\ConnectionPool;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Di\Container;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Profiler\Profiler;
@@ -28,18 +27,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected Profiler $profiler;
     protected array $dataProvider;
 
-    /**
-     * setUp
-     *
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
-
-        if ($this->driverName === null) {
-            throw new \Exception('driverName is not set for a DatabaseTestCase.');
-        }
 
         $this->configContainer();
     }
@@ -63,11 +53,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      */
     protected function tearDown(): void
     {
-        unset($this->aliases);
-        unset($this->cache);
-        unset($this->container);
-        unset($this->logger);
-        unset($this->profiler);
+        unset($this->aliases, $this->cache, $this->container, $this->logger, $this->profiler);
 
         parent::tearDown();
     }
@@ -95,7 +81,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
      * @param array $expected
      * @param string $message
      */
-    protected function assertIsOneOf($actual, array $expected, $message = '')
+    protected function assertIsOneOf($actual, array $expected, $message = ''): void
     {
         self::assertThat($actual, new IsOneOfAssert($expected), $message);
     }

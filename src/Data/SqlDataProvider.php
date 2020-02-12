@@ -3,9 +3,9 @@
 namespace Yiisoft\Db\Data;
 
 use yii\data\BaseDataProvider;
-use Yiisoft\Db\Connection;
-use Yiisoft\Db\Query;
-use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Querys\Query;
+use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Db\Expressions\Expression;
 
 /**
@@ -53,17 +53,14 @@ use Yiisoft\Db\Expressions\Expression;
  * to be the total number of rows (without pagination). And if you want to use the sorting feature,
  * you must configure the [[sort]] property so that the provider knows which columns can be sorted.
  *
- * For more details and usage information on SqlDataProvider, see the [guide article on data providers](guide:output-data-providers).
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- *
- * @since 2.0
+ * For more details and usage information on SqlDataProvider, see the
+ * [guide article on data providers](guide:output-data-providers).
  */
 class SqlDataProvider extends BaseDataProvider
 {
     /**
      * @var Connection|array|string the DB connection object or the application component ID of the DB connection.
-     *                              Starting from version 2.0.2, this can also be a configuration array for creating the object.
+     * Starting, this can also be a configuration array for creating the object.
      */
     public $db = 'db';
     /**
@@ -76,7 +73,7 @@ class SqlDataProvider extends BaseDataProvider
     public $params = [];
     /**
      * @var string|callable the column that is used as the key of the data models.
-     *                      This can be either a column name, or a callable that returns the key value of a given data model.
+     * This can be either a column name, or a callable that returns the key value of a given data model.
      *
      * If this is not set, the keys of the [[models]] array will be used.
      */
@@ -158,9 +155,9 @@ class SqlDataProvider extends BaseDataProvider
      */
     protected function prepareTotalCount()
     {
-        return (new Query([
+        return (new Query($this->db, [
             'from'   => ['sub' => "({$this->sql})"],
             'params' => $this->params,
-        ]))->count('*', $this->db);
+        ]))->count('*');
     }
 }

@@ -4,17 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\ActiveRecord\Tests\Data\Customer;
-use Yiisoft\Db\BatchQueryResult;
-use Yiisoft\Db\Query;
+use Yiisoft\Db\Querys\BatchQueryResult;
+use Yiisoft\Db\Querys\Query;
 
 abstract class BatchQueryResultTest extends DatabaseTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
     public function testQuery(): void
     {
         $db = $this->getConnection(true, true, true);
@@ -40,7 +34,7 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
         $batch = $query->batch(2);
 
         foreach ($batch as $rows) {
-            $allRows = array_merge($allRows, $rows);
+            $allRows = \array_merge($allRows, $rows);
         }
 
         $this->assertCount(3, $allRows);
@@ -52,7 +46,7 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
         $allRows = [];
 
         foreach ($batch as $rows) {
-            $allRows = array_merge($allRows, $rows);
+            $allRows = \array_merge($allRows, $rows);
         }
 
         $this->assertCount(3, $allRows);
@@ -70,7 +64,7 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
         $batch = $query->batch(2);
 
         foreach ($batch as $rows) {
-            $allRows = array_merge($allRows, $rows);
+            $allRows = \array_merge($allRows, $rows);
         }
 
         $this->assertCount(0, $allRows);
@@ -83,7 +77,7 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
         $allRows = [];
 
         foreach ($query->batch(2) as $rows) {
-            $allRows = array_merge($allRows, $rows);
+            $allRows = \array_merge($allRows, $rows);
         }
 
         $this->assertCount(3, $allRows);
@@ -124,13 +118,13 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
 
     public function testBatchWithIndexBy(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true, true, true);
 
         $query = new Query($db);
 
         $query->from('customer')->orderBy('id')->limit(3)->indexBy('id');
 
-        $customers = $this->getAllRowsFromBatch($query->batch(2), $db);
+        $customers = $this->getAllRowsFromBatch($query->batch(2));
 
         $this->assertCount(3, $customers);
         $this->assertEquals('user1', $customers[0]['name']);
@@ -143,7 +137,7 @@ abstract class BatchQueryResultTest extends DatabaseTestCase
         $allRows = [];
 
         foreach ($batch as $rows) {
-            $allRows = array_merge($allRows, $rows);
+            $allRows = \array_merge($allRows, $rows);
         }
 
         return $allRows;

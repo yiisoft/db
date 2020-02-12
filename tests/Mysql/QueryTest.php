@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Mysql;
 
-use Yiisoft\Db\Query;
+use Yiisoft\Db\Querys\Query;
 use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Tests\QueryTest as AbstractQueryTest;
 
-/**
- * @group db
- * @group mysql
- */
-class QueryTest extends \Yiisoft\Db\Tests\QueryTest
+final class QueryTest extends AbstractQueryTest
 {
     protected ?string $driverName = 'mysql';
 
@@ -33,15 +30,14 @@ class QueryTest extends \Yiisoft\Db\Tests\QueryTest
     {
         $query = (new Query($this->getConnection()))->from('customer')->select('id')->orderBy('id');
 
-        // In MySQL limit and offset arguments must both be nonnegative integer constant
+        // In MySQL limit and offset arguments must both be non negative integer constant
         $query->limit(new Expression('2'))->offset(new Expression('1'));
 
         $result = $query->column();
 
         $this->assertCount(2, $result);
-
-        $this->assertNotContains(1, $result);
-        $this->assertContains(2, $result);
-        $this->assertContains(3, $result);
+        $this->assertContains("2", $result);
+        $this->assertContains("3", $result);
+        $this->assertNotContains("1", $result);
     }
 }

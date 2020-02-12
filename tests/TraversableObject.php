@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
@@ -11,9 +12,9 @@ namespace Yiisoft\Db\Tests;
  */
 class TraversableObject implements \Iterator, \Countable
 {
-    protected $data;
+    protected array $data = [];
 
-    private $position = 0;
+    private int $position = 0;
 
     public function __construct(array $array)
     {

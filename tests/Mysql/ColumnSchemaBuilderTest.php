@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Mysql;
 
-use Yiisoft\Db\Schema;
-use Yiisoft\Db\Contracts\ConnectionInterface;
 use Yiisoft\Db\Mysql\ColumnSchemaBuilder;
+use Yiisoft\Db\Schemas\Schema;
+use Yiisoft\Db\Tests\ColumnSchemaBuilderTest as AbstractColumnSchemaBuilderTest;
 
-class ColumnSchemaBuilderTest extends \Yiisoft\Db\Tests\ColumnSchemaBuilderTest
+final class ColumnSchemaBuilderTest extends AbstractColumnSchemaBuilderTest
 {
     protected ?string $driverName = 'mysql';
 

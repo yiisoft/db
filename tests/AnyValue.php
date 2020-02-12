@@ -9,9 +9,9 @@ class AnyValue extends CompareValue
     /**
      * @var self
      */
-    private static $instance;
+    private static ?AnyValue $instance = null;
 
-    public static function getInstance()
+    public static function getInstance(): AnyValue
     {
         if (self::$instance === null) {
             self::$instance = new self();

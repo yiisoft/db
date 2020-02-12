@@ -10,9 +10,9 @@ namespace Yiisoft\Db\Constraints;
 class Constraint
 {
     /**
-     * @var array list of column names the constraint belongs to.
+     * @var array|string|null list of column names the constraint belongs to.
      */
-    private array $columnNames = [];
+    private $columnNames;
 
     /**
      * @var object|string|null the constraint name.
@@ -29,7 +29,7 @@ class Constraint
         return $this->name;
     }
 
-    public function setColumnNames(array $value): void
+    public function setColumnNames($value): void
     {
         $this->columnNames = $value;
     }

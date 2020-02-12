@@ -11,7 +11,7 @@ use Yiisoft\VarDumper\VarDumper;
  */
 class IsOneOfAssert extends \PHPUnit\Framework\Constraint\Constraint
 {
-    private $allowedValues;
+    private array $allowedValues;
 
     /**
      * IsOneOfAssert constructor.
@@ -30,7 +30,7 @@ class IsOneOfAssert extends \PHPUnit\Framework\Constraint\Constraint
      */
     public function toString(): string
     {
-        $allowedValues = array_map(function ($value) {
+        $allowedValues = \array_map(static function ($value) {
             return VarDumper::dumpAsString($value);
         }, $this->allowedValues);
 
