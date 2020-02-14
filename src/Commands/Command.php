@@ -610,7 +610,7 @@ class Command
     {
         $table = $this->db->quoteSql($table);
 
-        $columns = array_map(fn($column) => $this->db->quoteSql($column), $columns);
+        $columns = array_map(fn ($column) => $this->db->quoteSql($column), $columns);
 
         $params = [];
 
@@ -930,7 +930,6 @@ class Command
         ?string $delete = null,
         ?string $update = null
     ): self {
-
         $sql = $this->db->getQueryBuilder()->addForeignKey(
             $name,
             $table,
@@ -1473,7 +1472,7 @@ class Command
                     && $this->isolationLevel !== null
                     && $this->db->getTransaction() === null
                 ) {
-                    $this->db->transaction(fn($rawSql) => $this->internalExecute($rawSql), $this->isolationLevel);
+                    $this->db->transaction(fn ($rawSql) => $this->internalExecute($rawSql), $this->isolationLevel);
                 } else {
                     $this->pdoStatement->execute();
                 }

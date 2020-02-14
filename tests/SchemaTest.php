@@ -804,7 +804,7 @@ abstract class SchemaTest extends DatabaseTestCase
             case 'null':
                 $this->assertNull($actual);
                 break;
-        };
+        }
 
         if (\is_array($expected)) {
             $this->normalizeArrayKeys($expected, false);
