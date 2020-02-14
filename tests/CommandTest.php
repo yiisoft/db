@@ -1456,6 +1456,7 @@ SQL;
         $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
 
         $db->cache(function (Connection $db) use ($command, $update) {
+
             $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
 
             $update->bindValues([':id' => 2, ':name' => 'user22'])->execute();

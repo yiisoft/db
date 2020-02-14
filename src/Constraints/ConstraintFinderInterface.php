@@ -30,7 +30,7 @@ interface ConstraintFinderInterface
      * @return Constraint[] primary keys for all tables in the database.
      * Each array element is an instance of {@see Constraint} or its child class.
      */
-    public function getSchemaPrimaryKeys($schema = '', $refresh = false);
+    public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false);
 
     /**
      * Obtains the foreign keys information for the named table.

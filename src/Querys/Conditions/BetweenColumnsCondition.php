@@ -38,7 +38,7 @@ class BetweenColumnsCondition implements ConditionInterface
     /**
      * @var string the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`)
      */
-    private string $operator;
+    private string $operator = '';
 
     /**
      * @var mixed the value to compare against
@@ -75,7 +75,7 @@ class BetweenColumnsCondition implements ConditionInterface
     /**
      * @return string
      */
-    public function getOperator(): ?string
+    public function getOperator(): string
     {
         return $this->operator;
     }

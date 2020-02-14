@@ -89,9 +89,11 @@ class Command
     public array $params = [];
 
     /**
-     * @var int the default number of seconds that query results can remain valid in cache.
-     * Use 0 to indicate that the cached data will never expire. And use a negative number to indicate query cache
-     * should not be used.
+     * @var int|null the default number of seconds that query results can remain valid in cache.
+     *
+     * If this is not set, the value will be used instead.
+     * Use 0 to indicate that the cached data will never expire.
+     * And use a negative number to indicate query cache should not be used.
      *
      * @see cache()
      */
@@ -111,7 +113,7 @@ class Command
     private array $pendingParams = [];
 
     /**
-     * @var string|null ?string the SQL statement that this command represents
+     * @var string|null the SQL statement that this command represents
      */
     private ?string $sql = null;
 
@@ -121,10 +123,10 @@ class Command
     private ?string $refreshTableName = null;
 
     /**
-     * @var string|false|null the isolation level to use for this transaction.
+     * @var string|null the isolation level to use for this transaction.
      * See {@see Transaction::begin()} for details.
      */
-    private $isolationLevel = false;
+    private ?string $isolationLevel = null;
 
     /**
      * @var callable a callable (e.g. anonymous function) that is called when {@see Exception}
@@ -155,7 +157,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function cache(?int $duration = null, ?Dependency $dependency = null): Command
+    public function cache(?int $duration = null, ?Dependency $dependency = null): self
     {
         $this->queryCacheDuration = $duration ?? $this->db->getQueryCacheDuration();
         $this->queryCacheDependency = $dependency;
@@ -168,7 +170,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function noCache(): Command
+    public function noCache(): self
     {
         $this->queryCacheDuration = -1;
 
@@ -199,7 +201,7 @@ class Command
      * {@see reset()}
      * {@see cancel()}
      */
-    public function setSql(string $sql): Command
+    public function setSql(string $sql): self
     {
         if ($sql !== $this->sql) {
             $this->cancel();
@@ -223,7 +225,7 @@ class Command
      * {@see reset()}
      * {@see cancel()}
      */
-    public function setRawSql(string $sql): Command
+    public function setRawSql(string $sql): self
     {
         if ($sql !== $this->sql) {
             $this->cancel();
@@ -353,7 +355,7 @@ class Command
      *
      * {@see http://www.php.net/manual/en/function.PDOStatement-bindParam.php}
      */
-    public function bindParam($name, &$value, ?int $dataType = null, ?int $length = null, $driverOptions = null): Command
+    public function bindParam($name, &$value, ?int $dataType = null, ?int $length = null, $driverOptions = null): self
     {
         $this->prepare();
 
@@ -402,7 +404,7 @@ class Command
      *
      * {@see http://www.php.net/manual/en/function.PDOStatement-bindValue.php}
      */
-    public function bindValue($name, $value, ?int $dataType = null): Command
+    public function bindValue($name, $value, ?int $dataType = null): self
     {
         if ($dataType === null) {
             $dataType = $this->db->getSchema()->getPdoType($value);
@@ -431,7 +433,7 @@ class Command
      *
      * @return Command the current command being executed
      */
-    public function bindValues(array $values): Command
+    public function bindValues(array $values): self
     {
         if (empty($values)) {
             return $this;
@@ -571,7 +573,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function insert(string $table, $columns): Command
+    public function insert(string $table, $columns): self
     {
         $params = [];
         $sql = $this->db->getQueryBuilder()->insert($table, $columns, $params);
@@ -600,17 +602,15 @@ class Command
      *
      * @param string $table the table that new rows will be inserted into.
      * @param array $columns the column names
-     * @param array|Generator $rows    the rows to be batch inserted into the table
+     * @param iterable $rows the rows to be batch inserted into the table
      *
      * @return Command the command object itself
      */
-    public function batchInsert(string $table, array $columns, $rows): Command
+    public function batchInsert(string $table, array $columns, iterable $rows): self
     {
         $table = $this->db->quoteSql($table);
 
-        $columns = array_map(function ($column) {
-            return $this->db->quoteSql($column);
-        }, $columns);
+        $columns = array_map(fn($column) => $this->db->quoteSql($column), $columns);
 
         $params = [];
 
@@ -650,7 +650,7 @@ class Command
      *
      * @return Command the command object itself.
      */
-    public function upsert(string $table, $insertColumns, $updateColumns = true, array $params = []): Command
+    public function upsert(string $table, $insertColumns, $updateColumns = true, array $params = []): self
     {
         $sql = $this->db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
 
@@ -690,7 +690,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function update(string $table, array $columns, $condition = '', array $params = []): Command
+    public function update(string $table, array $columns, $condition = '', array $params = []): self
     {
         $sql = $this->db->getQueryBuilder()->update($table, $columns, $condition, $params);
 
@@ -724,7 +724,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function delete(string $table, $condition = '', array $params = []): Command
+    public function delete(string $table, $condition = '', array $params = []): self
     {
         $sql = $this->db->getQueryBuilder()->delete($table, $condition, $params);
 
@@ -750,7 +750,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function createTable(string $table, array $columns, string $options = null): Command
+    public function createTable(string $table, array $columns, string $options = null): self
     {
         $sql = $this->db->getQueryBuilder()->createTable($table, $columns, $options);
 
@@ -765,7 +765,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function renameTable(string $table, string $newName): Command
+    public function renameTable(string $table, string $newName): self
     {
         $sql = $this->db->getQueryBuilder()->renameTable($table, $newName);
 
@@ -779,7 +779,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function dropTable(string $table): Command
+    public function dropTable(string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropTable($table);
 
@@ -793,7 +793,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function truncateTable(string $table): Command
+    public function truncateTable(string $table): self
     {
         $sql = $this->db->getQueryBuilder()->truncateTable($table);
 
@@ -812,7 +812,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function addColumn(string $table, string $column, string $type): Command
+    public function addColumn(string $table, string $column, string $type): self
     {
         $sql = $this->db->getQueryBuilder()->addColumn($table, $column, $type);
 
@@ -827,7 +827,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function dropColumn(string $table, string $column): Command
+    public function dropColumn(string $table, string $column): self
     {
         $sql = $this->db->getQueryBuilder()->dropColumn($table, $column);
 
@@ -843,7 +843,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function renameColumn(string $table, string $oldName, string $newName): Command
+    public function renameColumn(string $table, string $oldName, string $newName): self
     {
         $sql = $this->db->getQueryBuilder()->renameColumn($table, $oldName, $newName);
 
@@ -862,7 +862,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function alterColumn(string $table, string $column, string $type): Command
+    public function alterColumn(string $table, string $column, string $type): self
     {
         $sql = $this->db->getQueryBuilder()->alterColumn($table, $column, $type);
 
@@ -880,7 +880,7 @@ class Command
      *
      * @return Command the command object itself.
      */
-    public function addPrimaryKey(string $name, string $table, $columns): Command
+    public function addPrimaryKey(string $name, string $table, $columns): self
     {
         $sql = $this->db->getQueryBuilder()->addPrimaryKey($name, $table, $columns);
 
@@ -895,7 +895,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function dropPrimaryKey(string $name, string $table): Command
+    public function dropPrimaryKey(string $name, string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropPrimaryKey($name, $table);
 
@@ -929,7 +929,7 @@ class Command
         $refColumns,
         ?string $delete = null,
         ?string $update = null
-    ): Command {
+    ): self {
 
         $sql = $this->db->getQueryBuilder()->addForeignKey(
             $name,
@@ -953,7 +953,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function dropForeignKey(string $name, string $table): Command
+    public function dropForeignKey(string $name, string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropForeignKey($name, $table);
 
@@ -972,9 +972,9 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function createIndex(string $name, string $table, $columns, bool $unique = false): Command
+    public function createIndex(string $name, string $table, $columns, bool $unique = false): self
     {
-        $sql = $this->db->getSchema()->getQueryBuilder()->createIndex($name, $table, $columns, $unique);
+        $sql = $this->db->getQueryBuilder()->createIndex($name, $table, $columns, $unique);
 
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
@@ -987,7 +987,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function dropIndex(string $name, string $table): Command
+    public function dropIndex(string $name, string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropIndex($name, $table);
 
@@ -1005,7 +1005,7 @@ class Command
      *
      * @return Command the command object itself.
      */
-    public function addUnique(string $name, string $table, $columns): Command
+    public function addUnique(string $name, string $table, $columns): self
     {
         $sql = $this->db->getQueryBuilder()->addUnique($name, $table, $columns);
 
@@ -1022,7 +1022,7 @@ class Command
      *
      * @return Command the command object itself.
      */
-    public function dropUnique(string $name, string $table): Command
+    public function dropUnique(string $name, string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropUnique($name, $table);
 
@@ -1039,7 +1039,7 @@ class Command
      *
      * @return Command the command object itself.
      */
-    public function addCheck(string $name, string $table, string $expression): Command
+    public function addCheck(string $name, string $table, string $expression): self
     {
         $sql = $this->db->getQueryBuilder()->addCheck($name, $table, $expression);
 
@@ -1056,7 +1056,7 @@ class Command
      *
      * @return Command the command object itself.
      */
-    public function dropCheck(string $name, string $table): Command
+    public function dropCheck(string $name, string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropCheck($name, $table);
 
@@ -1075,7 +1075,7 @@ class Command
      *
      * @return Command the command object itself.
      */
-    public function addDefaultValue(string $name, string $table, string $column, $value): Command
+    public function addDefaultValue(string $name, string $table, string $column, $value): self
     {
         $sql = $this->db->getQueryBuilder()->addDefaultValue($name, $table, $column, $value);
 
@@ -1092,7 +1092,7 @@ class Command
      *
      * @return Command the command object itself.
      */
-    public function dropDefaultValue(string $name, string $table): Command
+    public function dropDefaultValue(string $name, string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropDefaultValue($name, $table);
 
@@ -1111,7 +1111,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function resetSequence(string $table, $value = null): Command
+    public function resetSequence(string $table, $value = null): self
     {
         $sql = $this->db->getQueryBuilder()->resetSequence($table, $value);
 
@@ -1129,7 +1129,7 @@ class Command
      *
      * @return Command
      */
-    public function executeResetSequence(string $table, $value = null): Command
+    public function executeResetSequence(string $table, $value = null): self
     {
         return $this->resetSequence($table, $value);
     }
@@ -1144,9 +1144,9 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function checkIntegrity(bool $check = true, string $schema, string $table): Command
+    public function checkIntegrity(string $schema, string $table, bool $check = true): Command
     {
-        $sql = $this->db->getQueryBuilder()->checkIntegrity($check, $schema, $table);
+        $sql = $this->db->getQueryBuilder()->checkIntegrity($schema, $table, $check);
 
         return $this->setSql($sql);
     }
@@ -1162,7 +1162,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function addCommentOnColumn(string $table, string $column, string $comment): Command
+    public function addCommentOnColumn(string $table, string $column, string $comment): self
     {
         $sql = $this->db->getQueryBuilder()->addCommentOnColumn($table, $column, $comment);
 
@@ -1178,7 +1178,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function addCommentOnTable(string $table, string $comment): Command
+    public function addCommentOnTable(string $table, string $comment): self
     {
         $sql = $this->db->getQueryBuilder()->addCommentOnTable($table, $comment);
 
@@ -1195,7 +1195,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function dropCommentFromColumn(string $table, string $column): Command
+    public function dropCommentFromColumn(string $table, string $column): self
     {
         $sql = $this->db->getQueryBuilder()->dropCommentFromColumn($table, $column);
 
@@ -1210,7 +1210,7 @@ class Command
      *
      * @return Command the command object itself
      */
-    public function dropCommentFromTable(string $table): Command
+    public function dropCommentFromTable(string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropCommentFromTable($table);
 
@@ -1226,7 +1226,7 @@ class Command
      *
      * @return Command the command object itself.
      */
-    public function createView(string $viewName, $subquery): Command
+    public function createView(string $viewName, $subquery): self
     {
         $sql = $this->db->getQueryBuilder()->createView($viewName, $subquery);
 
@@ -1240,7 +1240,7 @@ class Command
      *
      * @return Command the command object itself.
      */
-    public function dropView(string $viewName): Command
+    public function dropView(string $viewName): self
     {
         $sql = $this->db->getQueryBuilder()->dropView($viewName);
 
@@ -1257,7 +1257,7 @@ class Command
      *
      * @return int number of rows affected by the execution.
      */
-    public function execute(): ?int
+    public function execute(): int
     {
         $sql = $this->getSql();
 
@@ -1396,7 +1396,7 @@ class Command
      *
      * @return Command this command instance
      */
-    protected function requireTableSchemaRefresh(string $name): Command
+    protected function requireTableSchemaRefresh(string $name): self
     {
         $this->refreshTableName = $name;
 
@@ -1422,7 +1422,7 @@ class Command
      *
      * @return Command this command instance.
      */
-    protected function requireTransaction(?string $isolationLevel = null): Command
+    protected function requireTransaction(?string $isolationLevel = null): self
     {
         $this->isolationLevel = $isolationLevel;
 
@@ -1447,7 +1447,7 @@ class Command
      *
      * @return Command this command instance.
      */
-    protected function setRetryHandler(callable $handler): Command
+    protected function setRetryHandler(callable $handler): self
     {
         $this->retryHandler = $handler;
 
@@ -1470,12 +1470,10 @@ class Command
             try {
                 if (
                     ++$attempt === 1
-                    && $this->isolationLevel !== false
+                    && $this->isolationLevel !== null
                     && $this->db->getTransaction() === null
                 ) {
-                    $this->db->transaction(function () use ($rawSql) {
-                        $this->internalExecute($rawSql);
-                    }, $this->isolationLevel);
+                    $this->db->transaction(fn($rawSql) => $this->internalExecute($rawSql), $this->isolationLevel);
                 } else {
                     $this->pdoStatement->execute();
                 }
@@ -1500,7 +1498,7 @@ class Command
         $this->pendingParams = [];
         $this->params = [];
         $this->refreshTableName = null;
-        $this->isolationLevel = false;
+        $this->isolationLevel = null;
         $this->retryHandler = null;
     }
 
@@ -1525,5 +1523,19 @@ class Command
             $this->db->getUsername(),
             $rawSql,
         ];
+    }
+
+    /**
+     * Set the default number of seconds that query results can remain valid in cache.
+     *
+     * @param  int  $queryCacheDuration  the default number of seconds that query results can remain valid in cache.
+     *
+     * @return  self
+     */
+    public function setQueryCacheDuration(int $queryCacheDuration)
+    {
+        $this->queryCacheDuration = $queryCacheDuration;
+
+        return $this;
     }
 }

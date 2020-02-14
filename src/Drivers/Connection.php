@@ -369,7 +369,7 @@ class Connection
     public bool $enableSlaves = true;
 
     /**
-     * @var array list of slave connection configurations. Each configuration is used to create a slave DB connection.
+     * @var []Connection list of slave connection configurations. Each configuration is used to create a slave DB connection.
      * When {@see enableSlaves} is true, one of these configurations will be chosen and used to create a DB connection
      * for performing read queries only.
      *
@@ -464,14 +464,14 @@ class Connection
     private ?string $driverName = null;
 
     /**
-     * @var Connection|false the currently active master connection
+     * @var Connection|null the currently active master connection
      */
-    private $master = false;
+    private ?Connection $master = null;
 
     /**
-     * @var Connection|false the currently active slave connection
+     * @var Connection|null the currently active slave connection
      */
-    private $slave = false;
+    private ?Connection $slave = null;
 
     /**
      * @var array query cache parameters for the {cache()} calls
@@ -731,7 +731,7 @@ class Connection
 
             $this->master->close();
 
-            $this->master = false;
+            $this->master = null;
         }
 
         if ($this->pdo !== null) {
@@ -744,7 +744,7 @@ class Connection
 
         if ($this->slave) {
             $this->slave->close();
-            $this->slave = false;
+            $this->slave = null;
         }
     }
 
@@ -1185,7 +1185,7 @@ class Connection
             return $fallbackToMaster ? $this : null;
         }
 
-        if ($this->slave === false) {
+        if ($this->slave === null) {
             $this->slave = $this->openFromPool($this->slaves, $this->slaveConfig);
         }
 
@@ -1204,7 +1204,7 @@ class Connection
      */
     public function getMaster(): ?Connection
     {
-        if ($this->master === false) {
+        if ($this->master === null) {
             $this->master = $this->shuffleMasters
                 ? $this->openFromPool($this->masters, $this->masterConfig)
                 : $this->openFromPoolSequentially($this->masters, $this->masterConfig);
@@ -1397,8 +1397,8 @@ class Connection
      */
     public function __clone()
     {
-        $this->master = false;
-        $this->slave = false;
+        $this->master = null;
+        $this->slave = null;
         $this->schema = null;
         $this->transaction = null;
 

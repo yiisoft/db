@@ -30,13 +30,13 @@ class BatchQueryResult implements \Iterator
      * @var Connection|null the DB connection to be used when performing batch query.
      * If null, the "db" application component will be used.
      */
-    private ?Connection $db;
+    private ?Connection $db = null;
 
     /**
      * @var Query the query object associated with this batch query.
      * Do not modify this property directly unless after {@see reset()} is called explicitly.
      */
-    private Query $query;
+    private ?Query $query = null;
 
     /**
      * @var int the number of rows to be returned in each batch.
@@ -70,7 +70,12 @@ class BatchQueryResult implements \Iterator
      */
     private $key;
 
-    private $mssqlNoMoreRowsErrorCode;
+    /**
+     * @var int MSSQL error code for exception that is thrown when last batch is size less than specified batch size
+     *
+     * {@see https://github.com/yiisoft/yii2/issues/10023}
+     */
+    private int $mssqlNoMoreRowsErrorCode = -13;
 
     /**
      * Destructor.

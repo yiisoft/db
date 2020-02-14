@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db;
 
+use Yiisoft\Db\Drivers\Connection;
 use Yiisoft\Db\Constraints\Constraint;
 use Yiisoft\Strings\StringHelper;
 
@@ -40,45 +41,28 @@ class Migration implements MigrationInterface
     use SchemaBuilderTrait;
 
     /**
-     * @var Connection|array|string the DB connection object or the application component ID of the DB connection
-     * that this migration should work with. This can also be a configuration array for creating the object.
-     *
-     * Note that when a Migration object is created by the `migrate` command, this property will be overwritten
-     * by the command. If you do not want to use the DB connection provided by the command, you may override
-     * the {@see init()} method like the following:
-     *
-     * ```php
-     * public function init()
-     * {
-     *     $this->db = 'db2';
-     *     parent::init();
-     * }
-     * ```
+     * @var Connection|array|string the DB connection object or the application component ID of the DB connection that
+     * this migration should work with. This can also be a configuration array for creating the object.
      */
-    public $db = 'db';
+    public ?Connection $db = null;
 
     /**
      * @var int max number of characters of the SQL outputted. Useful for reduction of long statements and making
      * console output more compact.
      */
-    public $maxSqlOutputLength;
+    public int $maxSqlOutputLength = 0;
 
     /**
      * @var bool indicates whether the console output should be compacted.
+     *
      * If this is set to true, the individual commands ran within the migration will not be output to the console.
      * Default is false, in other words the output is fully verbose by default.
      */
-    public $compact = false;
+    public bool $compact = false;
 
-    /**
-     * Initializes the migration.
-     * This method will set {@see db} to be the 'db' application component, if it is `null`.
-     */
-    public function init(): void
+    public function __construct(Connection $db)
     {
-        parent::init();
-
-        $this->db = Yii::ensureObject($this->db, Connection::class);
+        $this->db = $this->db;
         $this->db->getSchema()->refresh();
         $this->db->enableSlaves = false;
     }
@@ -93,28 +77,32 @@ class Migration implements MigrationInterface
 
     /**
      * This method contains the logic to be executed when applying this migration.
+     *
      * Child classes may override this method to provide actual migration logic.
      *
      * @return bool return a false value to indicate the migration fails and should not proceed further. All other
      * return values mean the migration succeeds.
      */
-    public function up()
+    public function up(): bool
     {
         $transaction = $this->db->beginTransaction();
-
         try {
             if ($this->safeUp() === false) {
                 $transaction->rollBack();
-
                 return false;
             }
             $transaction->commit();
+        } catch (\Exception $e) {
+            $this->printException($e);
+            $transaction->rollBack();
+            return false;
         } catch (\Throwable $e) {
             $this->printException($e);
             $transaction->rollBack();
-
             return false;
         }
+
+        return null;
     }
 
     /**
@@ -126,23 +114,27 @@ class Migration implements MigrationInterface
      * @return bool return a false value to indicate the migration fails  and should not proceed further. All other
      * return values mean the migration succeeds.
      */
-    public function down()
+    public function down(): bool
     {
         $transaction = $this->db->beginTransaction();
 
         try {
             if ($this->safeDown() === false) {
                 $transaction->rollBack();
-
                 return false;
             }
             $transaction->commit();
+        } catch (\Exception $e) {
+            $this->printException($e);
+            $transaction->rollBack();
+            return false;
         } catch (\Throwable $e) {
             $this->printException($e);
             $transaction->rollBack();
-
             return false;
         }
+
+        return null;
     }
 
     /**
@@ -156,16 +148,17 @@ class Migration implements MigrationInterface
 
     /**
      * This method contains the logic to be executed when applying this migration.
-     * This method differs from {@see up()} in that the DB logic implemented here will
-     * be enclosed within a DB transaction.
-     * Child classes may implement this method instead of [[up()]] if the DB logic
-     * needs to be within a transaction.
+     *
+     * This method differs from {@see up()} in that the DB logic implemented here will be enclosed within a DB
+     * transaction.
+     *
+     * Child classes may implement this method instead of {@see up()} if the DB logic needs to be within a transaction.
      *
      * Note: Not all DBMS support transactions. And some DB queries cannot be put into a transaction. For some examples,
      * please refer to [implicit commit](http://dev.mysql.com/doc/refman/5.7/en/implicit-commit.html).
      *
-     * @return bool return a false value to indicate the migration fails
-     *              and should not proceed further. All other return values mean the migration succeeds.
+     * @return bool return a false value to indicate the migration fails and should not proceed further. All other
+     * return values mean the migration succeeds.
      */
     public function safeUp()
     {
@@ -183,8 +176,8 @@ class Migration implements MigrationInterface
      * Note: Not all DBMS support transactions. And some DB queries cannot be put into a transaction. For some examples,
      * please refer to [implicit commit](http://dev.mysql.com/doc/refman/5.7/en/implicit-commit.html).
      *
-     * @return bool return a false value to indicate the migration fails
-     *              and should not proceed further. All other return values mean the migration succeeds.
+     * @return bool return a false value to indicate the migration fails and should not proceed further. All other
+     * return values mean the migration succeeds.
      */
     public function safeDown()
     {
@@ -203,6 +196,7 @@ class Migration implements MigrationInterface
     public function execute($sql, $params = [])
     {
         $sqlOutput = $sql;
+
         if ($this->maxSqlOutputLength !== null) {
             $sqlOutput = StringHelper::truncate($sql, $this->maxSqlOutputLength, '[... hidden]');
         }
@@ -279,7 +273,7 @@ class Migration implements MigrationInterface
      * @param array $columns the column data (name => value) to be updated.
      * @param array|string $condition the conditions that will be put in the WHERE part. Please refer to
      * {@see Query::where()} on how to specify conditions.
-     * @param array        $params    the parameters to be bound to the query.
+     * @param array $params the parameters to be bound to the query.
      */
     public function update($table, $columns, $condition = '', $params = [])
     {
@@ -296,7 +290,7 @@ class Migration implements MigrationInterface
      * @param string $table the table where the data will be deleted from.
      * @param array|string $condition the conditions that will be put in the WHERE part. Please refer to
      * {@see Query::where()} on how to specify conditions.
-     * @param array        $params    the parameters to be bound to the query.
+     * @param array $params the parameters to be bound to the query.
      */
     public function delete($table, $condition = '', $params = [])
     {
@@ -319,7 +313,7 @@ class Migration implements MigrationInterface
      * If a column is specified with definition only (e.g. 'PRIMARY KEY (name, type)'), it will be directly
      * put into the generated SQL.
      *
-     * @param string $table   the name of the table to be created. The name will be properly quoted by the method.
+     * @param string $table the name of the table to be created. The name will be properly quoted by the method.
      * @param array  $columns the columns (name => definition) in the new table.
      * @param string $options additional SQL fragment that will be appended to the generated SQL.
      */
@@ -341,7 +335,7 @@ class Migration implements MigrationInterface
     /**
      * Builds and executes a SQL statement for renaming a DB table.
      *
-     * @param string $table   the table to be renamed. The name will be properly quoted by the method.
+     * @param string $table the table to be renamed. The name will be properly quoted by the method.
      * @param string $newName the new table name. The name will be properly quoted by the method.
      */
     public function renameTable($table, $newName)

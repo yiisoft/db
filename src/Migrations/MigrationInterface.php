@@ -18,7 +18,7 @@ interface MigrationInterface
      * @return bool return a false value to indicate the migration fails and should not proceed further. All other
      * return values mean the migration succeeds.
      */
-    public function up();
+    public function up(): bool;
 
     /**
      * This method contains the logic to be executed when removing this migration.
@@ -28,5 +28,5 @@ interface MigrationInterface
      * @return bool return a false value to indicate the migration fails and should not proceed further. All other
      * return values mean the migration succeeds.
      */
-    public function down();
+    public function down(): bool;
 }
