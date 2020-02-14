@@ -13,6 +13,6 @@ It is used in [Yii Framework] but is supposed to be usable separately.
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db/v/stable.png)](https://packagist.org/packages/yiisoft/db)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db/downloads.png)](https://packagist.org/packages/yiisoft/db)
-![phpunit](https://github.com/yiisoft/db/workflows/phpunit/badge.svg)
+![Build status](https://github.com/yiisoft/db/workflows/phpunit/badge.svg)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/db/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/db/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/db/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/db/?branch=master)
