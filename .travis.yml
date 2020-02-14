@@ -1,11 +1,3 @@
-#
-# Travis Setup
-#
-
-#
-# Test Matrix
-#
-
 language: php
 
 env:
@@ -40,16 +32,7 @@ addons:
 matrix:
   fast_finish: true
   include:
-    - php: 7.2
-    # run tests coverage on PHP 7.3
-    - php: 7.3
-    - php: nightly
-      services:
-        - mysql
-        - postgresql
-
-  allow_failures:
-    - php: nightly
+    - php: 7.4
 
 before_install:
   # Always remove xdebug.
@@ -70,14 +53,14 @@ before_script:
   - php -r "echo INTL_ICU_DATA_VERSION . \"\n\";"
   - psql --version
   - mysql --version
-  # initialize databases
+  # Config Mysql
   - mysql_upgrade
-  - travis_retry mysql -e 'CREATE DATABASE `yiitest`;';
-  - mysql -e "SET GLOBAL sql_mode = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';";
-  - psql -U postgres -c 'CREATE DATABASE yiitest;';
+  - mysql -e 'CREATE DATABASE yiitest;'
+
 script:
   # PHP tests
   - phpdbg -qrr vendor/bin/phpunit --verbose --coverage-clover=coverage.clover --exclude-group wincache,xcache
+
 after_script:
   - travis_retry wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload --format=php-clover coverage.clover

@@ -1,16 +1,12 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\Db\ColumnSchemaBuilder;
-use Yiisoft\Db\Expression;
-use Yiisoft\Db\Schema;
+use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Schemas\ColumnSchemaBuilder;
+use Yiisoft\Db\Schemas\Schema;
 
 abstract class ColumnSchemaBuilderTest extends DatabaseTestCase
 {
@@ -57,7 +53,7 @@ abstract class ColumnSchemaBuilderTest extends DatabaseTestCase
      * @param int|null $length
      * @param mixed    $calls
      */
-    public function testCustomTypes($expected, $type, $length, $calls)
+    public function testCustomTypes($expected, $type, $length, $calls): void
     {
         $this->checkBuildString($expected, $type, $length, $calls);
     }
@@ -68,7 +64,7 @@ abstract class ColumnSchemaBuilderTest extends DatabaseTestCase
      * @param int|null $length
      * @param array    $calls
      */
-    public function checkBuildString($expected, $type, $length, $calls)
+    public function checkBuildString($expected, $type, $length, $calls): void
     {
         $builder = $this->getColumnSchemaBuilder($type, $length);
         foreach ($calls as $call) {

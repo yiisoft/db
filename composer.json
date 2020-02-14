@@ -8,53 +8,6 @@
     ],
     "homepage": "http://www.yiiframework.com/",
     "license": "BSD-3-Clause",
-    "authors": [
-        {
-            "name": "Qiang Xue",
-            "email": "qiang.xue@gmail.com",
-            "homepage": "http://www.yiiframework.com/",
-            "role": "Founder and project lead"
-        },
-        {
-            "name": "Alexander Makarov",
-            "email": "sam@rmcreative.ru",
-            "homepage": "http://rmcreative.ru/",
-            "role": "Core framework development"
-        },
-        {
-            "name": "Maurizio Domba",
-            "homepage": "http://mdomba.info/",
-            "role": "Core framework development"
-        },
-        {
-            "name": "Carsten Brandt",
-            "email": "mail@cebe.cc",
-            "homepage": "http://cebe.cc/",
-            "role": "Core framework development"
-        },
-        {
-            "name": "Timur Ruziev",
-            "email": "resurtm@gmail.com",
-            "homepage": "http://resurtm.com/",
-            "role": "Core framework development"
-        },
-        {
-            "name": "Paul Klimov",
-            "email": "klimov.paul@gmail.com",
-            "role": "Core framework development"
-        },
-        {
-            "name": "Dmitry Naumenko",
-            "email": "d.naumenko.a@gmail.com",
-            "role": "Core framework development"
-        },
-        {
-            "name": "Boudewijn Vahrmeijer",
-            "email": "info@dynasource.eu",
-            "homepage": "http://dynasource.eu",
-            "role": "Core framework development"
-        }
-    ],
     "support": {
         "source": "https://github.com/yiisoft/db",
         "issues": "https://github.com/yiisoft/db/issues",
@@ -65,21 +18,26 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "yiisoft/arrays": "^3.0@dev",
-        "yiisoft/strings": "^3.0@dev",
+        "php": "^7.4",
+        "ext-mbstring": "*",
         "ext-pdo": "*",
-        "php": "^7.4"
+        "psr/log": "^1.1",
+        "yiisoft/arrays": "^3.0@dev",
+        "yiisoft/cache": "^3.0@dev",
+        "yiisoft/log": "^3.0@dev",
+        "yiisoft/strings": "^3.0@dev",
+        "yiisoft/profiler": "^3.0@dev"
     },
     "require-dev": {
-        "yiisoft/yii-console": "^3.0@dev",
-        "yiisoft/active-record": "^3.0@dev",
-        "yiisoft/db-mysql": "^3.0@dev",
-        "yiisoft/db-sqlite": "^3.0@dev",
-        "yiisoft/cache": "^3.0@dev",
-        "yiisoft/di": "^3.0@dev",
-        "yiisoft/log": "^3.0@dev",
         "hiqdev/composer-config-plugin": "^1.0@dev",
-        "phpunit/phpunit": "^8.4"
+        "phpunit/phpunit": "^9.0",
+        "yiisoft/aliases": "^3.0@dev",
+        "yiisoft/db-mysql": "^3.0@dev",
+        "yiisoft/db-pgsql": "^3.0@dev",
+        "yiisoft/db-sqlite": "^3.0@dev",
+        "yiisoft/di": "^3.0@dev",
+        "yiisoft/json": "^3.0@dev",
+        "yiisoft/log-target-file": "^3.0@dev"
     },
     "autoload": {
         "psr-4": {
@@ -92,8 +50,6 @@
             "dev-master": "3.0.x-dev"
         },
         "config-plugin": {
-            "params": "config/params.php",
-            "common": "config/common.php",
             "tests": "config/tests.php"
         }
     },

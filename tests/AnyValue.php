@@ -1,10 +1,6 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
@@ -13,14 +9,14 @@ class AnyValue extends CompareValue
     /**
      * @var self
      */
-    private static $_instance;
+    private static ?AnyValue $instance = null;
 
-    public static function getInstance()
+    public static function getInstance(): AnyValue
     {
-        if (self::$_instance === null) {
-            self::$_instance = new self();
+        if (self::$instance === null) {
+            self::$instance = new self();
         }
 
-        return self::$_instance;
+        return self::$instance;
     }
 }

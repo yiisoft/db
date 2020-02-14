@@ -1,112 +1,141 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
+use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Drivers\ConnectionPool;
 use Yiisoft\Cache\NullCache;
-use Yiisoft\Db\Connection;
-use yii\tests\TestCase;
 
 abstract class DatabaseTestCase extends TestCase
 {
-    protected $database;
-    /**
-     * @var string the driver name of this test class. Must be set by a subclass.
-     */
-    protected $driverName;
-    /**
-     * @var Connection
-     */
-    private $_db;
+    protected static ?Connection $cn = null;
+    private ?Connection $db = null;
+    protected $databases;
 
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
+
         if ($this->driverName === null) {
             throw new \Exception('driverName is not set for a DatabaseTestCase.');
         }
+    }
 
-        parent::setUp();
-        $databases = self::getParam('databases');
-        $this->database = $databases[$this->driverName];
-        $pdo_database = 'pdo_'.$this->driverName;
+    protected function tearDown(): void
+    {
+        if ($this->db) {
+            $this->db->close();
+        }
+
+        parent::tearDown();
+    }
+
+    /**
+     * @param bool $reset whether to clean up the test database
+     * @param bool $open whether to open and populate test database
+     * @param bool $fixture
+     *
+     * @return Connection
+     */
+    public function getConnection(bool $reset = true, bool $open = true, $fixture = false): Connection
+    {
+        if (!$reset && $this->db) {
+            return $this->db;
+        }
+
+        try {
+            $this->db = $this->prepareDatabase($fixture, $open);
+        } catch (\Exception $e) {
+            $this->markTestSkipped('Something wrong when preparing database: ' . $e->getMessage());
+        }
+
+        return $this->db;
+    }
+
+    public function createConnection(array $config = []): Connection
+    {
+        $this->configContainer();
+
+        $this->databases = self::getParam('databases');
+
+        $this->databases = $this->databases[$this->driverName];
+
+        $pdo_database = 'pdo_' . $this->driverName;
+
         if ($this->driverName === 'oci') {
             $pdo_database = 'oci8';
         }
 
         if (!\extension_loaded('pdo') || !\extension_loaded($pdo_database)) {
-            $this->markTestSkipped('pdo and '.$pdo_database.' extension are required.');
+            $this->markTestSkipped('pdo and ' . $pdo_database . ' extension are required.');
         }
-        $this->mockApplication();
+
+        $dsn = $config['dsn'] ?? $this->databases['dsn'];
+
+        $db = new Connection($this->cache, $this->logger, $this->profiler, $dsn);
+
+        if ($this->driverName !== 'sqlite') {
+            $db->setUsername($this->databases['username']);
+            $db->setPassword($this->databases['password']);
+        }
+
+
+        ConnectionPool::setConnectionsPool($this->driverName, $db);
+
+        return $db;
     }
 
-    protected function tearDown()
+    protected function prepareDatabase(bool $fixture, bool $open, array $config = []): Connection
     {
-        if ($this->_db) {
-            $this->_db->close();
-        }
-        $this->destroyApplication();
-    }
+        $db = $this->createConnection($config);
 
-    /**
-     * @param bool $reset whether to clean up the test database
-     * @param bool $open  whether to open and populate test database
-     *
-     * @return \Yiisoft\Db\Connection
-     */
-    public function getConnection($reset = true, $open = true)
-    {
-        if (!$reset && $this->_db) {
-            return $this->_db;
-        }
-        $config = $this->database;
-        if (isset($config['fixture'])) {
-            $fixture = $config['fixture'];
-            unset($config['fixture']);
-        } else {
-            $fixture = null;
-        }
-
-        try {
-            $this->_db = $this->prepareDatabase($config, $fixture, $open);
-        } catch (\Exception $e) {
-            $this->markTestSkipped('Something wrong when preparing database: '.$e->getMessage());
-        }
-
-        return $this->_db;
-    }
-
-    public function prepareDatabase($config, $fixture, $open = true)
-    {
-        if (!isset($config['__class'])) {
-            $config['__class'] = \Yiisoft\Db\Connection::class;
-        }
-        /* @var $db \Yiisoft\Db\Connection */
-        $db = $this->factory->create($config);
         if (!$open) {
             return $db;
         }
+
         $db->open();
-        if ($fixture !== null) {
+
+        if ($fixture) {
             if ($this->driverName === 'oci') {
-                [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($fixture), 2);
+                [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($this->databases['fixture']), 2);
                 [$statements, $triggers, $data] = explode('/* TRIGGERS */', $creates, 3);
-                $lines = array_merge(explode('--', $drops), explode(';', $statements), explode('/', $triggers), explode(';', $data));
+                $lines = array_merge(
+                    explode('--', $drops),
+                    explode(';', $statements),
+                    explode('/', $triggers),
+                    explode(';', $data)
+                );
             } else {
-                $lines = explode(';', file_get_contents($fixture));
+                $lines = explode(';', file_get_contents($this->databases['fixture']));
             }
+
             foreach ($lines as $line) {
                 if (trim($line) !== '') {
-                    $db->pdo->exec($line);
+                    $db->getPDO()->exec($line);
                 }
             }
         }
 
         return $db;
+    }
+
+    /**
+     * Returns a test configuration params from /config/params.php.
+     *
+     * @param string $name params name
+     * @param mixed $default default value to use when param is not set.
+     *
+     * @return mixed  the value of the configuration param
+     */
+    protected static function getParam($name, $default = null)
+    {
+        if (empty(static::$params)) {
+            static::$params = require __DIR__ . '/data/config.php';
+        }
+
+        return static::$params[$name] ?? $default;
     }
 
     /**
@@ -135,9 +164,9 @@ abstract class DatabaseTestCase extends TestCase
     }
 
     /**
-     * @return \Yiisoft\Db\Connection
+     * @return Connection
      */
-    protected function getConnectionWithInvalidSlave()
+    protected function getConnectionWithInvalidSlave(): Connection
     {
         $config = array_merge($this->database, [
             'serverStatusCache' => new NullCache(),

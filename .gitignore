@@ -23,9 +23,6 @@ Thumbs.db
 # composer itself is not needed
 composer.phar
 
-# composer.lock in applications is ignored since it's automatically created by composer when application is installed
-/apps/*/composer.lock
-
 # Mac DS_Store Files
 .DS_Store
 
@@ -33,12 +30,8 @@ composer.phar
 phpunit.phar
 # local phpunit config
 /phpunit.xml
+# phpunit result cache
+/.phpunit.result.cache
 
-# ignore dev installed apps and extensions
-/apps
-/extensions
-/packages
-
-# NPM packages
-/node_modules
-.env
+#data tests
+/tests/data/runtime

@@ -1,10 +1,6 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- *
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+
+declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
@@ -21,7 +17,7 @@ class AnyCaseValue extends CompareValue
     public function __construct($value, $config = [])
     {
         if (\is_array($value)) {
-            $this->value = array_map('strtolower', $value);
+            $this->value = \array_map('strtolower', $value);
         } else {
             $this->value = strtolower($value);
         }
