@@ -167,10 +167,7 @@ final class ConnectionTest extends AbstractConnectionTest
                 ]
             ]);
             $db->masters[] = [
-                'cache'    => $this->cache,
-                'logger'   => $this->logger,
-                'profiler' => $this->profiler,
-                'dsn'      => 'sqlite:' .  dirname(__DIR__) . "/data/yii_test_master{$i}.sq3",
+                'setDsn()' => ['sqlite:' .  dirname(__DIR__) . "/data/yii_test_master{$i}.sq3"],
             ];
         }
 
@@ -182,10 +179,7 @@ final class ConnectionTest extends AbstractConnectionTest
                 ]
             ]);
             $db->slaves[] = [
-                'cache'    => $this->cache,
-                'logger'   => $this->logger,
-                'profiler' => $this->profiler,
-                'dsn'      => 'sqlite:' .  dirname(__DIR__) . "/data/yii_test_slave{$i}.sq3",
+                'setDsn()' => ['sqlite:' .  dirname(__DIR__) . "/data/yii_test_slave{$i}.sq3"],
             ];
         }
 

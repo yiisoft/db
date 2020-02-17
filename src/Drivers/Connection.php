@@ -12,6 +12,7 @@ use Yiisoft\Db\Exceptions\Exception;
 use Yiisoft\Db\Exceptions\InvalidCallException;
 use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Db\Exceptions\NotSupportedException;
+use Yiisoft\Db\Factory\DatabaseFactory;
 use Yiisoft\Db\Querys\QueryBuilder;
 use Yiisoft\Db\Schemas\Schema;
 use Yiisoft\Db\Schemas\TableSchema;
@@ -183,7 +184,7 @@ class Connection
     /**
      * @var LoggerInterface $logger
      */
-    private LoggerInterface $logger;
+    private ?LoggerInterface $logger = null;
 
     /**
      * @var string the username for establishing DB connection. Defaults to `null` meaning no username to use.
@@ -503,14 +504,8 @@ class Connection
      *
      * @throws InvalidConfigException
      */
-    public function __construct(CacheInterface $cache, LoggerInterface $logger, Profiler $profiler, array $config)
+    public function __construct(CacheInterface $cache, LoggerInterface $logger, Profiler $profiler)
     {
-        if (\array_key_exists('dsn', $config)) {
-            $this->dsn = $config['dsn'];
-        } else {
-            $this->dsn = $this->buildDSN($config);
-        }
-
         $this->schemaCache = $cache;
         $this->logger = $logger;
         $this->profiler = $profiler;
@@ -1295,29 +1290,27 @@ class Connection
             return null;
         }
 
+        if (!isset($sharedConfig['__class'])) {
+            $sharedConfig['__class'] = get_class($this);
+        }
+
         foreach ($pool as $config) {
-            if (empty($config['dsn'])) {
+            $config = array_merge($sharedConfig, $config);
+
+            $dsn = \implode(';', $config['setDsn()']);
+
+            if (empty($dsn)) {
                 throw new InvalidConfigException('The "dsn" option must be specified.');
             }
 
-            $key = [__METHOD__, $config['dsn']];
+            $key = [__METHOD__, $dsn];
+
+            /* @var $db Connection */
+            $db = DatabaseFactory::createClass($config);
 
             if ($this->schemaCache instanceof CacheInterface && $this->schemaCache->get($key)) {
                 // should not try this dead server now
                 continue;
-            }
-
-            /* @var $db Connection */
-            $db = new Connection(
-                $config['cache'],
-                $config['logger'],
-                $config['profiler'],
-                $config
-            );
-
-            if ($this->getDriverName() !== 'sqlite') {
-                $db->setUsername($config['username']);
-                $db->setPassword($config['password']);
             }
 
             try {
@@ -1327,7 +1320,7 @@ class Connection
             } catch (Exception $e) {
                 $this->logger->log(
                     LogLevel::WARNING,
-                    "Connection ({$config['dsn']}) failed: " . $e->getMessage() . ' ' . __METHOD__
+                    "Connection ({$dsn}) failed: " . $e->getMessage() . ' ' . __METHOD__
                 );
 
                 if ($this->schemaCache instanceof CacheInterface) {
@@ -1349,11 +1342,11 @@ class Connection
      *
      * @return string the formated DSN
      */
-    private function buildDSN(array $config): string
+    public function setBuildDsn(array $config): string
     {
         if (isset($config['driver'])) {
             if (($config['driver']) === 'sqlite') {
-                return $config['host'];
+                return $this->dsn = $config['host'];
             }
 
             $driver = $config['driver'];
@@ -1366,10 +1359,15 @@ class Connection
                 $parts[] = "$key=$value";
             }
 
-            return "$driver:" . implode(';', $parts);
+            return $this->dsn = "$driver:" . implode(';', $parts);
         }
 
         throw new InvalidConfigException("Connection DSN 'driver' must be set.");
+    }
+
+    public function setDsn(string $value): void
+    {
+        $this->dsn = $value;
     }
 
     /**

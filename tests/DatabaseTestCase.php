@@ -74,7 +74,9 @@ abstract class DatabaseTestCase extends TestCase
 
         $dsn = $config['dsn'] ?? $this->databases['dsn'];
 
-        $db = new Connection($this->cache, $this->logger, $this->profiler, $dsn);
+        $db = new Connection($this->cache, $this->logger, $this->profiler);
+
+        $db->setBuildDsn($this->databases['dsn']);
 
         if ($this->driverName !== 'sqlite') {
             $db->setUsername($this->databases['username']);
