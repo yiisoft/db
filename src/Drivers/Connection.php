@@ -155,30 +155,6 @@ use Yiisoft\Profiler\Profiler;
  */
 class Connection
 {
-    /**
-     * @var string|null the Data Source Name, or DSN, contains the information required to connect to the database.
-     *                   Please refer to the [PHP manual](http://php.net/manual/en/pdo.construct.php) on
-     *                   the format of the DSN string.
-     *
-     * For [SQLite](http://php.net/manual/en/ref.pdo-sqlite.connection.php) you may use a
-     * [path alias](guide:concept-aliases) for specifying the database path, e.g. `sqlite:@app/data/db.sql`.
-     *
-     * Since version 3.0.0 an array can be passed to contruct a DSN string.
-     *
-     * The `driver` array key is used as the driver prefix of the DSN, all further key-value pairs are rendered as
-     * `key=value` and concatenated by `;`. For example:
-     *
-     * ```php
-     * 'dsn' => [
-     *     'driver' => 'mysql',
-     *     'host' => '127.0.0.1',
-     *     'dbname' => 'demo',
-     *     'charset' => 'utf8',
-     * ],
-     * ```
-     *
-     * Will result in the DSN string `mysql:host=127.0.0.1;dbname=demo`.
-     */
     private ?string $dsn = null;
 
     /**
@@ -1334,7 +1310,26 @@ class Connection
     }
 
     /**
-     * Build the Data Source Name or DSN.
+     * The Data Source Name, or DSN, contains the information required to connect to the database.
+     *
+     * Please refer to the [PHP manual](http://php.net/manual/en/pdo.construct.php) on the format of the DSN string.
+     *
+     * For [SQLite](http://php.net/manual/en/ref.pdo-sqlite.connection.php),
+     * you may use a [path alias](guide:concept-aliases) for specifying the database path, e.g.
+     * `sqlite:@app/data/db.sql`.
+     *
+     * The `driver` array key is used as the driver prefix of the DSN, all further key-value pairs are rendered as
+     * `key=value` and concatenated by `;`. For example:
+     *
+     * ```php
+     * 'dsn' => [
+     *     'driver' => 'mysql',
+     *     'host'   => '127.0.0.1',
+     *     'dbname' => 'yiitest',
+     * ],
+     * ```
+     *
+     * Will result in the DSN string `mysql:host=127.0.0.1;dbname=yiitest`.
      *
      * @param array $config the DSN configurations
      *
@@ -1365,6 +1360,20 @@ class Connection
         throw new InvalidConfigException("Connection DSN 'driver' must be set.");
     }
 
+    /**
+     * The Data Source Name, or DSN, contains the information required to connect to the database.
+     *
+     * Please refer to the [PHP manual](http://php.net/manual/en/pdo.construct.php) on the format of the DSN string.
+     *
+     * ```php
+     * $db = new Connection($cache, $logger, $profiler);
+     *
+     * $db->setDsn('mysql:host=127.0.0.1;dbname=yiitest');
+     * ```
+     * @param string $value
+     *
+     * @return void
+     */
     public function setDsn(string $value): void
     {
         $this->dsn = $value;
