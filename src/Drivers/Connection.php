@@ -480,8 +480,9 @@ class Connection
      *
      * @throws InvalidConfigException
      */
-    public function __construct(CacheInterface $cache, LoggerInterface $logger, Profiler $profiler)
+    public function __construct(?CacheInterface $cache, LoggerInterface $logger, Profiler $profiler, string $dsn)
     {
+        $this->dsn = $dsn;
         $this->schemaCache = $cache;
         $this->logger = $logger;
         $this->profiler = $profiler;
@@ -1273,13 +1274,27 @@ class Connection
         foreach ($pool as $config) {
             $config = array_merge($sharedConfig, $config);
 
-            $dsn = \implode(';', $config['setDsn()']);
-
-            if (empty($dsn)) {
+            if (empty($config['dsn'])) {
                 throw new InvalidConfigException('The "dsn" option must be specified.');
             }
 
+            $dsn = $config['dsn'];
+
+            unset($config['dsn']);
+
             $key = [__METHOD__, $dsn];
+
+            $config = array_merge(
+                [
+                    '__construct()' => [
+                        $this->schemaCache,
+                        $this->logger,
+                        $this->profiler,
+                        $dsn
+                    ]
+                ],
+                $config
+            );
 
             /* @var $db Connection */
             $db = DatabaseFactory::createClass($config);
@@ -1307,76 +1322,6 @@ class Connection
                 return null;
             }
         }
-    }
-
-    /**
-     * The Data Source Name, or DSN, contains the information required to connect to the database.
-     *
-     * Please refer to the [PHP manual](http://php.net/manual/en/pdo.construct.php) on the format of the DSN string.
-     *
-     * For [SQLite](http://php.net/manual/en/ref.pdo-sqlite.connection.php),
-     * you may use a [path alias](guide:concept-aliases) for specifying the database path, e.g.
-     * `sqlite:@app/data/db.sql`.
-     *
-     * The `driver` array key is used as the driver prefix of the DSN, all further key-value pairs are rendered as
-     * `key=value` and concatenated by `;`. For example:
-     *
-     * ```php
-     * 'dsn' => [
-     *     'driver' => 'mysql',
-     *     'host'   => '127.0.0.1',
-     *     'dbname' => 'yiitest',
-     * ],
-     * ```
-     *
-     * Will result in the DSN string `mysql:host=127.0.0.1;dbname=yiitest`.
-     *
-     * @param array $config the DSN configurations
-     *
-     * @throws InvalidConfigException if 'driver' key was not defined
-     *
-     * @return string the formated DSN
-     */
-    public function setBuildDsn(array $config): string
-    {
-        if (isset($config['driver'])) {
-            if (($config['driver']) === 'sqlite') {
-                return $this->dsn = $config['host'];
-            }
-
-            $driver = $config['driver'];
-
-            unset($config['driver']);
-
-            $parts = [];
-
-            foreach ($config as $key => $value) {
-                $parts[] = "$key=$value";
-            }
-
-            return $this->dsn = "$driver:" . implode(';', $parts);
-        }
-
-        throw new InvalidConfigException("Connection DSN 'driver' must be set.");
-    }
-
-    /**
-     * The Data Source Name, or DSN, contains the information required to connect to the database.
-     *
-     * Please refer to the [PHP manual](http://php.net/manual/en/pdo.construct.php) on the format of the DSN string.
-     *
-     * ```php
-     * $db = new Connection($cache, $logger, $profiler);
-     *
-     * $db->setDsn('mysql:host=127.0.0.1;dbname=yiitest');
-     * ```
-     * @param string $value
-     *
-     * @return void
-     */
-    public function setDsn(string $value): void
-    {
-        $this->dsn = $value;
     }
 
     /**

@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
+use Yiisoft\Cache\NullCache;
 use Yiisoft\Db\Drivers\Connection;
 use Yiisoft\Db\Drivers\ConnectionPool;
-use Yiisoft\Cache\NullCache;
+use Yiisoft\Db\Helper\Dsn;
 
 abstract class DatabaseTestCase extends TestCase
 {
-    protected static ?Connection $cn = null;
     private ?Connection $db = null;
-    protected $databases;
+    protected array $databases = [];
+    protected ?Dsn $dsn = null;
 
     protected function setUp(): void
     {
@@ -72,11 +73,19 @@ abstract class DatabaseTestCase extends TestCase
             $this->markTestSkipped('pdo and ' . $pdo_database . ' extension are required.');
         }
 
-        $dsn = $config['dsn'] ?? $this->databases['dsn'];
+        if ($this->driverName !== 'sqlite') {
+            $this->dsn = new Dsn(
+                $this->databases['dsn']['driver'],
+                $this->databases['dsn']['host'],
+                $this->databases['dsn']['dbname'],
+                $this->databases['dsn']['port'],
+            );
+            $dsn = $this->dsn->getDsn();
+        } else {
+            $dsn = $config['dsn'] ?? $this->databases['dsn'];
+        }
 
-        $db = new Connection($this->cache, $this->logger, $this->profiler);
-
-        $db->setBuildDsn($this->databases['dsn']);
+        $db = new Connection($this->cache, $this->logger, $this->profiler, $dsn);
 
         if ($this->driverName !== 'sqlite') {
             $db->setUsername($this->databases['username']);

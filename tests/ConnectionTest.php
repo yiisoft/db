@@ -16,7 +16,7 @@ abstract class ConnectionTest extends DatabaseTestCase
     {
         $connection = $this->getConnection(false);
 
-        $this->assertEquals($this->buildDSN($this->databases['dsn']), $connection->getDsn());
+        $this->assertEquals($this->dsn->getDsn(), $connection->getDsn());
     }
 
     public function testOpenClose(): void
@@ -36,8 +36,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertFalse($connection->getIsActive());
         $this->assertNull($connection->getPDO());
 
-        $connection = new Connection($this->cache, $this->logger, $this->profiler);
-        $connection->setDsn('unknown::memory:');
+        $connection = new Connection($this->cache, $this->logger, $this->profiler, 'unknown::memory:');
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('could not find driver');
@@ -402,7 +401,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection = $this->getConnection();
 
         $connection->slaves[] = [
-            'setDsn()'      => [$connection->getDsn()],
+            'dsn' => $this->dsn->getDsn(),
             'setUsername()' => [$connection->getUsername()],
             'setPassword()' => [$connection->getPassword()],
         ];
@@ -421,33 +420,12 @@ abstract class ConnectionTest extends DatabaseTestCase
         $this->assertNotSame($masterPdo, $slavePdo);
     }
 
-    public function testDSNConfig(): void
-    {
-        $dsn = [
-            'driver' => 'mysql',
-            'host'   => '127.0.0.1',
-            'dbname' => 'yiitest',
-        ];
-
-        $connection = new Connection($this->cache, $this->logger, $this->profiler);
-        $connection->setBuildDsn($dsn);
-
-        $this->assertEquals('mysql:host=127.0.0.1;dbname=yiitest', $connection->getDsn());
-
-        unset($dsn['driver']);
-
-        $this->expectException(InvalidConfigException::class);
-
-        $connection = new Connection($this->cache, $this->logger, $this->profiler);
-        $connection->setBuildDsn($dsn);
-    }
-
     public function testServerStatusCacheWorks(): void
     {
         $connection = $this->getConnection(true, false);
 
         $connection->masters[] = [
-            'setDsn()'      => [$connection->getDsn()],
+            'dsn' => $this->dsn->getDsn(),
             'setUsername()' => [$connection->getUsername()],
             'setPassword()' => [$connection->getPassword()],
         ];
@@ -472,7 +450,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', 'host:invalid'];
 
         $connection->masters[] = [
-            'setDsn()'      => ['host:invalid'],
+            'dsn' => 'host:invalid',
             'setUsername()' => [$connection->getUsername()],
             'setPassword()' => [$connection->getPassword()],
         ];
@@ -499,7 +477,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection = $this->getConnection(true, false);
 
         $connection->masters[] = [
-            'setDsn()'      => [$connection->getDsn()],
+            'dsn' => $this->dsn->getDsn(),
             'setUsername()' => [$connection->getUsername()],
             'setPassword()' => [$connection->getPassword()],
         ];
@@ -521,7 +499,7 @@ abstract class ConnectionTest extends DatabaseTestCase
         $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', 'host:invalid'];
 
         $connection->masters[] = [
-            'setDsn()'      => ['host:invalid'],
+            'dsn' => 'host:invalid',
             'setUsername()' => [$connection->getUsername()],
             'setPassword()' => [$connection->getPassword()],
         ];
