@@ -12,6 +12,7 @@ use Yiisoft\Db\Exceptions\Exception;
 use Yiisoft\Db\Exceptions\InvalidCallException;
 use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Db\Exceptions\NotSupportedException;
+use Yiisoft\Db\Factory\DatabaseFactory;
 use Yiisoft\Db\Querys\QueryBuilder;
 use Yiisoft\Db\Schemas\Schema;
 use Yiisoft\Db\Schemas\TableSchema;
@@ -154,36 +155,12 @@ use Yiisoft\Profiler\Profiler;
  */
 class Connection
 {
-    /**
-     * @var string|null the Data Source Name, or DSN, contains the information required to connect to the database.
-     *                   Please refer to the [PHP manual](http://php.net/manual/en/pdo.construct.php) on
-     *                   the format of the DSN string.
-     *
-     * For [SQLite](http://php.net/manual/en/ref.pdo-sqlite.connection.php) you may use a
-     * [path alias](guide:concept-aliases) for specifying the database path, e.g. `sqlite:@app/data/db.sql`.
-     *
-     * Since version 3.0.0 an array can be passed to contruct a DSN string.
-     *
-     * The `driver` array key is used as the driver prefix of the DSN, all further key-value pairs are rendered as
-     * `key=value` and concatenated by `;`. For example:
-     *
-     * ```php
-     * 'dsn' => [
-     *     'driver' => 'mysql',
-     *     'host' => '127.0.0.1',
-     *     'dbname' => 'demo',
-     *     'charset' => 'utf8',
-     * ],
-     * ```
-     *
-     * Will result in the DSN string `mysql:host=127.0.0.1;dbname=demo`.
-     */
     private ?string $dsn = null;
 
     /**
      * @var LoggerInterface $logger
      */
-    private LoggerInterface $logger;
+    private ?LoggerInterface $logger = null;
 
     /**
      * @var string the username for establishing DB connection. Defaults to `null` meaning no username to use.
@@ -503,14 +480,9 @@ class Connection
      *
      * @throws InvalidConfigException
      */
-    public function __construct(CacheInterface $cache, LoggerInterface $logger, Profiler $profiler, array $config)
+    public function __construct(?CacheInterface $cache, LoggerInterface $logger, Profiler $profiler, string $dsn)
     {
-        if (\array_key_exists('dsn', $config)) {
-            $this->dsn = $config['dsn'];
-        } else {
-            $this->dsn = $this->buildDSN($config);
-        }
-
+        $this->dsn = $dsn;
         $this->schemaCache = $cache;
         $this->logger = $logger;
         $this->profiler = $profiler;
@@ -1295,29 +1267,41 @@ class Connection
             return null;
         }
 
+        if (!isset($sharedConfig['__class'])) {
+            $sharedConfig['__class'] = get_class($this);
+        }
+
         foreach ($pool as $config) {
+            $config = array_merge($sharedConfig, $config);
+
             if (empty($config['dsn'])) {
                 throw new InvalidConfigException('The "dsn" option must be specified.');
             }
 
-            $key = [__METHOD__, $config['dsn']];
+            $dsn = $config['dsn'];
+
+            unset($config['dsn']);
+
+            $key = [__METHOD__, $dsn];
+
+            $config = array_merge(
+                [
+                    '__construct()' => [
+                        $this->schemaCache,
+                        $this->logger,
+                        $this->profiler,
+                        $dsn
+                    ]
+                ],
+                $config
+            );
+
+            /* @var $db Connection */
+            $db = DatabaseFactory::createClass($config);
 
             if ($this->schemaCache instanceof CacheInterface && $this->schemaCache->get($key)) {
                 // should not try this dead server now
                 continue;
-            }
-
-            /* @var $db Connection */
-            $db = new Connection(
-                $config['cache'],
-                $config['logger'],
-                $config['profiler'],
-                $config
-            );
-
-            if ($this->getDriverName() !== 'sqlite') {
-                $db->setUsername($config['username']);
-                $db->setPassword($config['password']);
             }
 
             try {
@@ -1327,7 +1311,7 @@ class Connection
             } catch (Exception $e) {
                 $this->logger->log(
                     LogLevel::WARNING,
-                    "Connection ({$config['dsn']}) failed: " . $e->getMessage() . ' ' . __METHOD__
+                    "Connection ({$dsn}) failed: " . $e->getMessage() . ' ' . __METHOD__
                 );
 
                 if ($this->schemaCache instanceof CacheInterface) {
@@ -1338,38 +1322,6 @@ class Connection
                 return null;
             }
         }
-    }
-
-    /**
-     * Build the Data Source Name or DSN.
-     *
-     * @param array $config the DSN configurations
-     *
-     * @throws InvalidConfigException if 'driver' key was not defined
-     *
-     * @return string the formated DSN
-     */
-    private function buildDSN(array $config): string
-    {
-        if (isset($config['driver'])) {
-            if (($config['driver']) === 'sqlite') {
-                return $config['host'];
-            }
-
-            $driver = $config['driver'];
-
-            unset($config['driver']);
-
-            $parts = [];
-
-            foreach ($config as $key => $value) {
-                $parts[] = "$key=$value";
-            }
-
-            return "$driver:" . implode(';', $parts);
-        }
-
-        throw new InvalidConfigException("Connection DSN 'driver' must be set.");
     }
 
     /**

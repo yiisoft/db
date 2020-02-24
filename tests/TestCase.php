@@ -7,10 +7,11 @@ namespace Yiisoft\Db\Tests;
 use hiqdev\composer\config\Builder;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use Yiisoft\Db\Drivers\Connection;
-use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Cache\CacheInterface;
+use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Factory\DatabaseFactory;
+use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Di\Container;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Profiler\Profiler;
@@ -44,6 +45,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->cache = $this->container->get(CacheInterface::class);
         $this->logger = $this->container->get(LoggerInterface::class);
         $this->profiler = $this->container->get(Profiler::class);
+
+        DatabaseFactory::initialize($this->container, []);
     }
 
     /**

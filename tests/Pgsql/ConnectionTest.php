@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Pgsql;
 
+use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Helper\Dsn;
 use Yiisoft\Db\Transactions\Transaction;
 use Yiisoft\Db\Tests\ConnectionTest as AbstractConnectionTest;
 
@@ -14,6 +16,15 @@ final class ConnectionTest extends AbstractConnectionTest
     public function testConnection(): void
     {
         $this->assertIsObject($this->getConnection(true));
+    }
+
+    public function testDsnHelper(): void
+    {
+        $dsn = new Dsn('pgsql', '127.0.0.1', 'yiitest', '5432');
+
+        $connection = new Connection($this->cache, $this->logger, $this->profiler, $dsn->getDsn());
+
+        $this->assertEquals('pgsql:host=127.0.0.1;dbname=yiitest;port=5432', $connection->getDsn());
     }
 
     public function testQuoteValue(): void

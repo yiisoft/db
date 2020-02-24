@@ -1,4 +1,4 @@
-name: phpunit
+name: build
 
 on: [push, pull_request]
 
@@ -7,7 +7,7 @@ env:
   PHPUNIT_EXCLUDE_GROUP: mssql,oci,wincache,xcache,zenddata,cubrid
 
 jobs:
-  phpunit:
+  build:
     runs-on: ubuntu-latest
 
     steps:

@@ -27,10 +27,7 @@ $config = [
             'password' => 'root',
         ],
         'sqlite' => [
-            'dsn' => [
-                'driver' => 'sqlite',
-                'host' => 'sqlite:' .  __DIR__ . '/yiitest.sq3',
-            ],
+            'dsn' => 'sqlite:' . __DIR__ . '/yiitest.sq3',
             'fixture' => __DIR__ . '/sqlite.sql',
         ],
         'sqlsrv' => [
