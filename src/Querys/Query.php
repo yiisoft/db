@@ -517,7 +517,7 @@ class Query implements QueryInterface, ExpressionInterface
             return $command->queryScalar();
         }
 
-        $command = (new self($this->db))
+        $command = static::createInstance($this->db)
             ->select([$selectExpression])
             ->from(['c' => $this])
             ->createCommand();
@@ -525,6 +525,14 @@ class Query implements QueryInterface, ExpressionInterface
         $this->setCommandCache($command);
 
         return $command->queryScalar();
+    }
+
+   /**
+    * This function can be overridden to customize the returned class.
+    */
+    protected static function createInstance($db)
+    {
+         return new static($db);
     }
 
     /**
