@@ -6,7 +6,10 @@ namespace Yiisoft\Db\Tests\Sqlite;
 
 use Yiisoft\Db\Tests\BatchQueryResultTest as AbstractBatchQueryResultTest;
 
+/**
+ * @group sqlite
+ */
 final class BatchQueryResultTest extends AbstractBatchQueryResultTest
 {
-    public ?string $driverName = 'sqlite';
+    protected ?string $driverName = 'sqlite';
 }

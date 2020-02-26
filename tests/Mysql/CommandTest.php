@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Mysql;
 
-use Yiisoft\Db\Tests\CommandTest as AbstractCommandTest;
+use Yiisoft\Db\Mysql\Tests\CommandTest as MysqlCommandTest;
 
-final class CommandTest extends AbstractCommandTest
+/**
+ * @group mysql
+ */
+final class CommandTest extends MysqlCommandTest
 {
-    public ?string $driverName = 'mysql';
-
-    protected string $upsertTestCharCast = 'CONVERT([[address]], CHAR)';
-
-    public function testAddDropCheck(): void
-    {
-        $this->markTestSkipped('MySQL does not support adding/dropping check constraints.');
-    }
+    protected ?string $driverName = 'mysql';
 }

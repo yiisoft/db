@@ -6,7 +6,10 @@ namespace Yiisoft\Db\Tests\Mysql;
 
 use Yiisoft\Db\Tests\BatchQueryResultTest as AbstractBatchQueryResultTest;
 
+/**
+ * @group mysql
+ */
 final class BatchQueryResultTest extends AbstractBatchQueryResultTest
 {
-    public ?string $driverName = 'mysql';
+    protected ?string $driverName = 'mysql';
 }

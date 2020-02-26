@@ -4,21 +4,12 @@ declare(strict_types=1);
 
 namespace yiiunit\framework\db\pgsql;
 
-use Yiisoft\Db\Schemas\ColumnSchemaBuilder;
-use Yiisoft\Db\Tests\ColumnSchemaBuilderTest as AbstractColumnSchemaBuilderTest;
+use Yiisoft\Db\Pgsql\Tests\ColumnSchemaBuilderTest as PgsqlColumnSchemaBuilderTest;
 
-final class ColumnSchemaBuilderTest extends AbstractColumnSchemaBuilderTest
+/**
+ * @group pgsql
+ */
+final class ColumnSchemaBuilderTest extends PgsqlColumnSchemaBuilderTest
 {
-    public ?string $driverName = 'pgsql';
-
-    /**
-     * @param string $type
-     * @param int $length
-     *
-     * @return ColumnSchemaBuilder
-     */
-    public function getColumnSchemaBuilder($type, $length = null)
-    {
-        return new ColumnSchemaBuilder($type, $length, $this->getConnection());
-    }
+    protected ?string $driverName = 'pgsql';
 }
