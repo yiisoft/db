@@ -527,12 +527,12 @@ class Query implements QueryInterface, ExpressionInterface
         return $command->queryScalar();
     }
 
-   /**
-    * This function can be overridden to customize the returned class.
-    */
+    /**
+     * This function can be overridden to customize the returned class.
+     */
     protected static function createInstance($db)
     {
-         return new static($db);
+        return new static($db);
     }
 
     /**
