@@ -507,12 +507,22 @@ class Query implements QueryInterface, ExpressionInterface
             $this->limit = null;
             $this->offset = null;
 
-            $command = $this->createCommand();
+            try {
+                $command = $this->createCommand();
+            } catch (\Exception $e) {
+                // throw it later
+            } catch (\Throwable $e) {
+                // throw it later
+            }
 
             $this->select = $select;
             $this->orderBy = $order;
             $this->limit = $limit;
             $this->offset = $offset;
+
+            if (!empty($e)) {
+                throw $e;
+            }
 
             return $command->queryScalar();
         }
