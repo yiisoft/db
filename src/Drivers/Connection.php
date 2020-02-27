@@ -29,22 +29,23 @@ use Yiisoft\Profiler\Profiler;
  * [PDO PHP extension](http://php.net/manual/en/book.pdo.php).
  *
  * Connection supports database replication and read-write splitting. In particular, a Connection component can be
- * configured with multiple {@see masters} and {@see slaves}. It will do load balancing and failover by choosing
- * appropriate servers. It will also automatically direct read operations to the slaves and write operations to
- * the masters.
+ * configured with multiple {@see setMasters()} and {@see setSlaves()}. It will do load balancing and failover by
+ * choosing appropriate servers. It will also automatically direct read operations to the slaves and write operations
+ * to the masters.
  *
- * To establish a DB connection, set {@see dsn}, {@see username} and {@see password}, and then call {@see open()}
- * to connect to the database server. The current state of the connection can be checked using {@see $isActive}.
+ * To establish a DB connection, set {@see dsn}, {@see setUsername()} and {@see setPassword}, and then call
+ * {@see open()} to connect to the database server. The current state of the connection can be checked using
+ * {@see $isActive}.
  *
- * The following example shows how to create a Connection instance and establish
- * the DB connection:
+ * The following example shows how to create a Connection instance and establish the DB connection:
  *
  * ```php
- * $connection = new \\Yiisoft\Db\Drivers\Connection([
- *     'dsn' => $dsn,
- *     'username' => $username,
- *     'password' => $password,
- * ]);
+ * $connection = new \Yiisoft\Db\Drivers\Connection(
+ *     $cache,
+ *     $logger,
+ *     $profiler,
+ *     $dsn
+ * );
  * $connection->open();
  * ```
  *
@@ -58,8 +59,8 @@ use Yiisoft\Profiler\Profiler;
  * ```
  *
  * One can also do prepared SQL execution and bind parameters to the prepared SQL.
- * When the parameters are coming from user input, you should use this approach
- * to prevent SQL injection attacks. The following is an example:
+ * When the parameters are coming from user input, you should use this approach to prevent SQL injection attacks. The
+ * following is an example:
  *
  * ```php
  * $command = $connection->createCommand('SELECT * FROM post WHERE id=:id');
@@ -67,10 +68,9 @@ use Yiisoft\Profiler\Profiler;
  * $post = $command->query();
  * ```
  *
- * For more information about how to perform various DB queries, please refer to [[Command]].
+ * For more information about how to perform various DB queries, please refer to {@see Command}.
  *
- * If the underlying DBMS supports transactions, you can perform transactional SQL queries
- * like the following:
+ * If the underlying DBMS supports transactions, you can perform transactional SQL queries like the following:
  *
  * ```php
  * $transaction = $connection->beginTransaction();
@@ -102,36 +102,43 @@ use Yiisoft\Profiler\Profiler;
  * }, Transaction::READ_UNCOMMITTED);
  * ```
  *
- * Connection is often used as an application component and configured in the application
- * configuration like the following:
+ * Connection is often used as an application component and configured in the container-di configuration like the
+ * following:
  *
  * ```php
- * 'components' => [
- *     'db' => [
- *         '__class' => \\Yiisoft\Db\Drivers::class,
- *         'dsn' => 'mysql:host=127.0.0.1;dbname=demo;charset=utf8',
- *         'username' => 'root',
- *         'password' => '',
- *     ],
- * ],
+ * Connection::class => static function (ContainerInterface $container) {
+ *     $connection = new Connection(
+ *         $container->get(CacheInterface::class),
+ *         $container->get(LoggerInterface::class),
+ *         $container->get(Profiler::class),
+ *         'mysql:host=127.0.0.1;dbname=demo;charset=utf8'
+ *     );
+ *
+ *     $connection->setUsername(root);
+ *     $connection->setPassword('');
+ *
+ *     return $connection;
+ * },
  * ```
  *
- * The {@see dsn} property can be defined via configuration array:
+ * The {@see dsn} property can be defined via configuration {@see \Yiisoft\Db\Helper\Dsn}:
  *
  * ```php
- * 'components' => [
- *     'db' => [
- *         '__class' => \\Yiisoft\Db\Drivers::class,
- *         'dsn' => [
- *             'driver' => 'mysql',
- *             'host' => '127.0.0.1',
- *             'dbname' => 'demo',
- *             'charset' => 'utf8',
- *          ],
- *         'username' => 'root',
- *         'password' => '',
- *     ],
- * ],
+ * Connection::class => static function (ContainerInterface $container) {
+ *     $dsn = new Dsn('mysql', '127.0.0.1', 'yiitest', '3306');
+ *
+ *     $connection = new Connection(
+ *         $container->get(CacheInterface::class),
+ *         $container->get(LoggerInterface::class),
+ *         $container->get(Profiler::class),
+ *         $dsn->getDsn()
+ *     );
+ *
+ *     $connection->setUsername(root);
+ *     $connection->setPassword('');
+ *
+ *     return $connection;
+ * },
  * ```
  *
  * @property string $driverName Name of the DB driver.
@@ -157,19 +164,10 @@ class Connection
 {
     private ?string $dsn = null;
 
-    /**
-     * @var LoggerInterface $logger
-     */
     private ?LoggerInterface $logger = null;
 
-    /**
-     * @var string the username for establishing DB connection. Defaults to `null` meaning no username to use.
-     */
     private ?string $username = null;
 
-    /**
-     * @var string the password for establishing DB connection. Defaults to `null` meaning no password to use.
-     */
     private ?string $password = null;
 
     /**
@@ -222,15 +220,6 @@ class Connection
      */
     private ?CacheInterface $schemaCache = null;
 
-    /**
-     * @var bool whether to enable query caching. Note that in order to enable query caching, a valid cache component as
-     * specified by {@see queryCache} must be enabled and {@see enableQueryCache} must be set true. Also, only the
-     * results of the queries enclosed within {@see cache()} will be cached.
-     *
-     * {@see queryCache}
-     * {@see cache()}
-     * {@see noCache()}
-     */
     private bool $enableQueryCache = true;
 
     /**
@@ -243,39 +232,12 @@ class Connection
      */
     private int $queryCacheDuration = 3600;
 
-    /**
-     * @var CacheInterface the cache object or the ID of the cache application component that is used for query
-     * caching.
-     *
-     * @see enableQueryCache
-     */
     private CacheInterface $queryCache;
 
-    /**
-     * @var string|null the charset used for database connection. The property is only used for MySQL, PostgreSQL and
-     * CUBRID databases. Defaults to null, meaning using default charset as configured by the database.
-     *
-     * For Oracle Database, the charset must be specified in the {@see dsn}, for example for UTF-8 by appending
-     * `;charset=UTF-8` to the DSN string.
-     *
-     * The same applies for if you're using GBK or BIG5 charset with MySQL, then it's highly recommended to specify
-     * charset via {@see dsn} like `'mysql:dbname=mydatabase;host=127.0.0.1;charset=GBK;'`.
-     */
     private ?string $charset = null;
 
-    /**
-     * @var bool whether to turn on prepare emulation. Defaults to false, meaning PDO will use the native prepare
-     * support if available. For some databases (such as MySQL), this may need to be set true so that PDO can emulate
-     * the prepare support to bypass the buggy native prepare support. The default value is null, which means the PDO
-     * ATTR_EMULATE_PREPARES value will not be changed.
-     */
     private ?bool $emulatePrepare = null;
 
-    /**
-     * @var string the common prefix or suffix for table names. If a table name is given as `{{%TableName}}`, then the
-     * percentage character `%` will be replaced with this property value. For example, `{{%post}}` becomes
-     * `{{tbl_post}}`.
-     */
     private string $tablePrefix = '';
 
     /**
@@ -327,127 +289,34 @@ class Connection
         'dblib'   => Command::class, // dblib drivers on GNU/Linux (and maybe other OSes) hosts
     ];
 
-    /**
-     * @var bool whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint). Note that if the underlying
-     * DBMS does not support savepoint, setting this property to be true will have no effect.
-     */
     private bool $enableSavepoint = true;
 
-    /**
-     * @var int the retry interval in seconds for dead servers listed in {@see masters} and {@see slaves}. This is used
-     * together with {@see serverStatusCache}.
-     */
     public int $serverRetryInterval = 600;
 
-    /**
-     * @var bool whether to enable read/write splitting by using {@see slaves} to read data. Note that if {@see slaves}
-     * is empty, read/write splitting will NOT be enabled no matter what value this property takes.
-     */
     public bool $enableSlaves = true;
 
-    /**
-     * @var []Connection list of slave connection configurations. Each configuration is used to create a slave DB connection.
-     * When {@see enableSlaves} is true, one of these configurations will be chosen and used to create a DB connection
-     * for performing read queries only.
-     *
-     * {@see enableSlaves}
-     * {@see slaveConfig}
-     */
     public array $slaves = [];
 
-    /**
-     * @var array the configuration that should be merged with every slave configuration listed in {@see slaves}.
-     *
-     * For example,
-     *
-     * ```php
-     * [
-     *     'username' => 'slave',
-     *     'password' => 'slave',
-     *     'attributes' => [
-     *         // use a smaller connection timeout
-     *         PDO::ATTR_TIMEOUT => 10,
-     *     ],
-     * ]
-     * ```
-     */
     public array $slaveConfig = [];
 
-    /**
-     * @var array list of master connection configurations. Each configuration is used to create a master DB connection.
-     * When {@see open()} is called, one of these configurations will be chosen and used to create a DB connection which
-     * will be used by this object. Note that when this property is not empty, the connection setting (e.g. "dsn",
-     * "username") of this object will be ignored.
-     *
-     * {@see masterConfig}
-     * {@see shuffleMasters}
-     */
     public array $masters = [];
 
-    /**
-     * @var array the configuration that should be merged with every master configuration listed in {@see masters}.
-     *
-     * For example,
-     *
-     * ```php
-     * [
-     *     'username' => 'master',
-     *     'password' => 'master',
-     *     'attributes' => [
-     *         // use a smaller connection timeout
-     *         PDO::ATTR_TIMEOUT => 10,
-     *     ],
-     * ]
-     * ```
-     */
     public array $masterConfig = [];
 
-    /**
-     * @var bool whether to shuffle {@see masters} before getting one.
-     * {@see masters}
-     */
     public bool $shuffleMasters = true;
 
-    /**
-     * @var bool whether to enable logging of database queries. Defaults to true. You may want to disable this option in
-     * a production environment to gain performance if you do not need the information being logged.
-     *
-     * {@see enableProfiling}
-     */
     public bool $enableLogging = true;
 
-    /**
-     * @var bool whether to enable profiling of opening database connection and database queries. Defaults to true. You
-     * may want to disable this option in a production environment to gain performance if you do not need the
-     * information being logged.
-     *
-     * {@see enableLogging}
-     */
     public bool $enableProfiling = true;
 
-    /**
-     * @var Transaction|null the currently active transaction
-     */
     private ?Transaction $transaction = null;
 
-    /**
-     * @var Schema|null the database schema
-     */
     private ?Schema $schema = null;
 
-    /**
-     * @var string|null driver name
-     */
     private ?string $driverName = null;
 
-    /**
-     * @var Connection|null the currently active master connection
-     */
     private ?Connection $master = null;
 
-    /**
-     * @var Connection|null the currently active slave connection
-     */
     private ?Connection $slave = null;
 
     /**
@@ -455,37 +324,18 @@ class Connection
      */
     private array $queryCacheInfo = [];
 
-    /**
-     * @var Profiler $profiler
-     */
     private Profiler $profiler;
 
-    /**
-     * @var string[] quoted table name cache for {@see quoteTableName()} calls
-     */
     private array $quotedTableNames = [];
 
-    /**
-     * @var string[] quoted column name cache for {@see quoteColumnName()} calls
-     */
     private array $quotedColumnNames = [];
 
-    /**
-     * Constructor.
-     *
-     * @param CacheInterface $cache
-     * @param LoggerInterface $logger
-     * @param Profiler $profiler
-     * @param array dns connection
-     *
-     * @throws InvalidConfigException
-     */
     public function __construct(?CacheInterface $cache, LoggerInterface $logger, Profiler $profiler, string $dsn)
     {
-        $this->dsn = $dsn;
         $this->schemaCache = $cache;
         $this->logger = $logger;
         $this->profiler = $profiler;
+        $this->dsn = $dsn;
     }
 
     /**
@@ -525,9 +375,9 @@ class Connection
      * @param Dependency $dependency the cache dependency associated with the cached query
      * results.
      *
-     * @return mixed the return result of the callable
-     *
      * @throws \Throwable if there is any exception during query
+     *
+     * @return mixed the return result of the callable
      *
      * {@see enableQueryCache}
      * {@see queryCache}
@@ -570,9 +420,9 @@ class Connection
      * @param callable $callable a PHP callable that contains DB queries which should not use query cache. The signature
      * of the callable is `function (Connection $db)`.
      *
-     * @return mixed the return result of the callable
-     *
      * @throws \Throwable if there is any exception during query
+     *
+     * @return mixed the return result of the callable
      *
      * {@see enableQueryCache}
      * {@see queryCache}
@@ -787,11 +637,6 @@ class Connection
      * @param array $params the parameters to be bound to the SQL statement
      *
      * @return Command the DB command
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     *
      */
     public function createCommand($sql = null, $params = []): Command
     {
@@ -825,11 +670,6 @@ class Connection
      * {@see Transaction::begin()} for details.
      *
      * @return Transaction the transaction initiated
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws InvalidArgumentException
      */
     public function beginTransaction($isolationLevel = null): Transaction
     {
@@ -851,11 +691,9 @@ class Connection
      * @param string|null $isolationLevel The isolation level to use for this transaction. {@see Transaction::begin()}
      * for details.
      *
-     * @return mixed result of callback function
-     *
      * @throws \Throwable if there is any exception during query. In this case the transaction will be rolled back.
-     * @throws InvalidArgumentException
      *
+     * @return mixed result of callback function
      */
     public function transaction(callable $callback, $isolationLevel = null)
     {
@@ -885,6 +723,8 @@ class Connection
      *
      * @param Transaction $transaction Transaction object given from {@see beginTransaction()}.
      * @param int $level Transaction level just after {@see beginTransaction()} call.
+     *
+     * @return void
      */
     private function rollbackTransactionOnLevel(Transaction $transaction, int $level): void
     {
@@ -902,12 +742,9 @@ class Connection
     /**
      * Returns the schema information for the database opened by this connection.
      *
-     * @return Schema the schema information for the database opened by this connection.
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
      * @throws NotSupportedException if there is no support for the current driver type
-     * @throws InvalidArgumentException
+     *
+     * @return Schema the schema information for the database opened by this connection.
      */
     public function getSchema(): Schema
     {
@@ -930,11 +767,6 @@ class Connection
      * Returns the query builder for the current DB connection.
      *
      * @return QueryBuilder the query builder for the current DB connection.
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws InvalidArgumentException
      */
     public function getQueryBuilder(): QueryBuilder
     {
@@ -945,11 +777,6 @@ class Connection
      * Can be used to set {@see QueryBuilder} configuration via Connection configuration array.
      *
      * @param iterable $config the {@see QueryBuilder} properties to be configured.
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
      */
     public function setQueryBuilder(iterable $config): void
     {
@@ -967,11 +794,6 @@ class Connection
      * @param bool $refresh whether to reload the table schema even if it is found in the cache.
      *
      * @return TableSchema
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
      */
     public function getTableSchema($name, $refresh = false): ?TableSchema
     {
@@ -984,12 +806,6 @@ class Connection
      * @param string $sequenceName name of the sequence object (required by some DBMS)
      *
      * @return string the row ID of the last row inserted, or the last value retrieved from the sequence object
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidCallException
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
      *
      * {@see http://php.net/manual/en/pdo.lastinsertid.php'>http://php.net/manual/en/pdo.lastinsertid.php}
      */
@@ -1006,11 +822,6 @@ class Connection
      * @param string|int $value string to be quoted
      *
      * @return string|int the properly quoted string
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws InvalidArgumentException
      *
      * {@see http://php.net/manual/en/pdo.quote.php}
      */
@@ -1046,14 +857,10 @@ class Connection
     }
 
     /**
-     * Returns the name of the DB driver. Based on the the current {@see dsn}, in case it was not set explicitly
-     * by an end user.
+     * Returns the name of the DB driver. Based on the the current {@see dsn}, in case it was not set explicitly by an
+     * end user.
      *
      * @return string name of the DB driver
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
      */
     public function getDriverName(): string
     {
@@ -1082,11 +889,6 @@ class Connection
      * Returns a server version as a string comparable by {@see \version_compare()}.
      *
      * @return string server version as a string.
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws InvalidArgumentException
      */
     public function getServerVersion(): string
     {
@@ -1103,10 +905,6 @@ class Connection
      *
      * @return PDO the PDO instance for the currently active slave connection. `null` is returned if no slave connection
      * is available and `$fallbackToMaster` is false.
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
      */
     public function getSlavePdo(bool $fallbackToMaster = true): PDO
     {
@@ -1125,9 +923,6 @@ class Connection
      * This method will open the master DB connection and then return {@see pdo}.
      *
      * @return PDO the PDO instance for the currently active master connection.
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
      */
     public function getMasterPdo(): PDO
     {
@@ -1147,9 +942,6 @@ class Connection
      *
      * @return Connection the currently active slave connection. `null` is returned if there is no slave available and
      * `$fallbackToMaster` is false.
-     *
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
      */
     public function getSlave(bool $fallbackToMaster = true)
     {
@@ -1170,9 +962,6 @@ class Connection
      * If this method is called for the first time, it will try to open a master connection.
      *
      * @return Connection the currently active master connection. `null` is returned if there is no master available.
-     *
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
      */
     public function getMaster(): ?Connection
     {
@@ -1234,10 +1023,7 @@ class Connection
      * @param array $pool the list of connection configurations in the server pool
      * @param array $sharedConfig the configuration common to those given in `$pool`.
      *
-     * @return Connection the opened DB connection, or `null` if no server is available
-     *
-     * @throws InvalidConfigException if a configuration does not specify "dsn"
-     * @throws InvalidArgumentException
+     * @return Connection|null the opened DB connection, or `null` if no server is available
      */
     protected function openFromPool(array $pool, array $sharedConfig): ?Connection
     {
@@ -1256,10 +1042,9 @@ class Connection
      * @param array $pool the list of connection configurations in the server pool
      * @param array $sharedConfig the configuration common to those given in `$pool`.
      *
-     * @return Connection the opened DB connection, or `null` if no server is available
-     *
      * @throws InvalidConfigException if a configuration does not specify "dsn"
-     * @throws InvalidArgumentException
+     *
+     * @return Connection|null the opened DB connection, or `null` if no server is available
      */
     protected function openFromPoolSequentially(array $pool, array $sharedConfig): ?Connection
     {
@@ -1380,11 +1165,25 @@ class Connection
         return $this->pdo;
     }
 
+    /**
+     * The username for establishing DB connection. Defaults to `null` meaning no username to use.
+     *
+     * @param string|null $value
+     *
+     * @return void
+     */
     public function setUsername(?string $value): void
     {
         $this->username = $value;
     }
 
+    /**
+     * The password for establishing DB connection. Defaults to `null` meaning no password to use.
+     *
+     * @param string|null $value
+     *
+     * @return void
+     */
     public function setPassword(?string $value): void
     {
         $this->password = $value;
@@ -1430,11 +1229,33 @@ class Connection
         return $this->enableQueryCache;
     }
 
+    /**
+     * Whether to enable query caching. Note that in order to enable query caching, a valid cache component as specified
+     * by {@see setQueryCache()} must be enabled and {@see enableQueryCache} must be set true. Also, only the results of
+     * the queries enclosed within {@see cache()} will be cached.
+     *
+     * @param bool $value
+     *
+     * @return void
+     *
+     * {@see setQueryCache()}
+     * {@see cache()}
+     * {@see noCache()}
+     */
     public function setEnableQueryCache(bool $value): void
     {
         $this->enableQueryCache = $value;
     }
 
+    /**
+     * The cache object or the ID of the cache application component that is used for query caching.
+     *
+     * @param CacheInterface $value
+     *
+     * @return void
+     *
+     * {@see enableQueryCache}
+     */
     public function setQueryCache(CacheInterface $value): void
     {
         $this->queryCache = $value;
@@ -1445,6 +1266,16 @@ class Connection
         return $this->queryCacheDuration;
     }
 
+    /**
+     * Whether to turn on prepare emulation. Defaults to false, meaning PDO will use the native prepare support if
+     * available. For some databases (such as MySQL), this may need to be set true so that PDO can emulate the prepare
+     * support to bypass the buggy native prepare support. The default value is null, which means the PDO
+     * ATTR_EMULATE_PREPARES value will not be changed.
+     *
+     * @param bool $value
+     *
+     * @return void
+     */
     public function setEmulatePrepare(bool $value): void
     {
         $this->emulatePrepare = $value;
@@ -1455,6 +1286,14 @@ class Connection
         return $this->tablePrefix;
     }
 
+    /**
+     * The common prefix or suffix for table names. If a table name is given as `{{%TableName}}`, then the percentage
+     * character `%` will be replaced with this property value. For example, `{{%post}}` becomes `{{tbl_post}}`.
+     *
+     * @param string $value
+     *
+     * @return void
+     */
     public function setTablePrefix(string $value): void
     {
         $this->tablePrefix = $value;
@@ -1465,6 +1304,14 @@ class Connection
         return $this->enableSavepoint;
     }
 
+    /**
+     * Whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint). Note that if the underlying DBMS does not
+     * support savepoint, setting this property to be true will have no effect.
+     *
+     * @param bool $value
+     *
+     * @return void
+     */
     public function setEnableSavepoint(bool $value): void
     {
         $this->enableSavepoint = $value;
@@ -1518,5 +1365,180 @@ class Connection
         }
 
         return $this->quotedColumnNames[$name] = $this->getSchema()->quoteColumnName($name);
+    }
+
+    /**
+     * The retry interval in seconds for dead servers listed in {@see masters} and {@see slaves}. This is used together
+     * with {@see serverStatusCache}.
+     *
+     * @param int $value
+     *
+     * @return void
+     */
+    public function setServerRetryInterval(int $value): void
+    {
+        $this->serverRetryInterval = $value;
+    }
+
+
+    /**
+     * Whether to enable read/write splitting by using {@see slaves} to read data. Note that if {@see slaves} is empty,
+     * read/write splitting will NOT be enabled no matter what value this property takes.
+     *
+     * @param bool $value
+     *
+     * @return void
+     */
+    public function setEnableSlaves(bool $value): void
+    {
+        $this->enableSlaves = $value;
+    }
+
+    /**
+     * Connection list of slave connection configurations. Each configuration is used to create a slave DB connection.
+     * When {@see enableSlaves} is true, one of these configurations will be chosen and used to create a DB connection
+     * for performing read queries only.
+     *
+     * @param array $value
+     *
+     * @return void
+     *
+     * {@see enableSlaves}
+     * {@see slaveConfig}
+     */
+    public function setSlaves(array $value): void
+    {
+        $this->slaves = $value;
+    }
+
+    /**
+     * The configuration that should be merged with every slave configuration listed in {@see slaves}.
+     *
+     * For example,
+     *
+     * ```php
+     * [
+     *     'username' => 'slave',
+     *     'password' => 'slave',
+     *     'attributes' => [
+     *         // use a smaller connection timeout
+     *         PDO::ATTR_TIMEOUT => 10,
+     *     ],
+     * ]
+     * ```
+     *
+     * @param array $value
+     *
+     * @return void
+     */
+    public function setSlaveConfig(array $value): void
+    {
+        $this->slaveConfig = $value;
+    }
+
+    /**
+     * List of master connection configurations. Each configuration is used to create a master DB connection. When
+     * {@see open()} is called, one of these configurations will be chosen and used to create a DB connection which
+     * will be used by this object. Note that when this property is not empty, the connection setting (e.g. "dsn",
+     * "username") of this object will be ignored.
+     *
+     * @param array $value
+     *
+     * @return void
+     *
+     * {@see setMasterConfig()}
+     * {@see setShuffleMasters()}
+     */
+    public function setMasters(array $value): void
+    {
+        $this->masters = $value;
+    }
+
+    /**
+     * The configuration that should be merged with every master configuration listed in {@see setMasters()}.
+     *
+     * For example,
+     *
+     * ```php
+     * [
+     *     'username' => 'master',
+     *     'password' => 'master',
+     *     'attributes' => [
+     *         // use a smaller connection timeout
+     *         PDO::ATTR_TIMEOUT => 10,
+     *     ],
+     * ]
+     * ```
+     * @param array $value
+     *
+     * @return void
+     */
+    public function setMasterConfig(array $value): void
+    {
+        $this->masterConfig = $value;
+    }
+
+    /**
+     * Whether to shuffle {@see setMasters()} before getting one.
+     *
+     * @param bool $value
+     *
+     * @return void
+     *
+     * {@see setMasters()}
+     */
+    public function setShuffleMasters(bool $value): void
+    {
+        $this->shuffleMasters = $value;
+    }
+
+    /**
+     * Whether to enable logging of database queries. Defaults to true. You may want to disable this option in a
+     * production environment to gain performance if you do not need the information being logged.
+     *
+     * @param bool $value
+     *
+     * @return void
+     *
+     * {@see setEnableProfiling()}
+     */
+    public function setEnableLogging(bool $value): void
+    {
+        $this->enableLogging = $value;
+    }
+
+    /**
+     * Whether to enable profiling of opening database connection and database queries. Defaults to true. You may want
+     * to disable this option in a production environment to gain performance if you do not need the information being
+     * logged.
+     *
+     * @param bool $value
+     *
+     * @return void
+     *
+     * {@see setEnableLogging()}
+     */
+    public function setEnableProfiling(bool $value): void
+    {
+        $this->enableProfiling = $enableProfiling;
+    }
+
+    /**
+     * The charset used for database connection. The property is only used for MySQL, PostgreSQL databases. Defaults to
+     * null, meaning using default charset as configured by the database.
+     *
+     * For Oracle Database, the charset must be specified in the {@see dsn}, for example for UTF-8 by appending
+     * `;charset=UTF-8` to the DSN string.
+     *
+     * The same applies for if you're using GBK or BIG5 charset with MySQL, then it's highly recommended to specify
+     * charset via {@see dsn} like `'mysql:dbname=mydatabase;host=127.0.0.1;charset=GBK;'`.
+     *
+     * @param string $value
+     *
+     * @return void
+     */
+    public function setCharset(?string $value): void
+    {
+        $this->charset = $value;
     }
 }
