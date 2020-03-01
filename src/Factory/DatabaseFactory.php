@@ -25,14 +25,13 @@ final class DatabaseFactory extends Factory
     /**
      * Creates a Class defined by config passed.
      *
-     * @param string|array|callable $config parameters for creating a class.
+     * @param array $config parameters for creating a class.
      *
      * @throws \RuntimeException if factory was not initialized
-     * @throws \Yiisoft\Factory\Exceptions\InvalidConfigException
      *
      * @return object
      */
-    public static function createClass($config): object
+    public static function createClass(array $config): object
     {
         if (static::$factory === null) {
             throw new \RuntimeException(

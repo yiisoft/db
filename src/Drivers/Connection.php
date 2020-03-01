@@ -1579,4 +1579,179 @@ class Connection
 
         return $result;
     }
+
+    /**
+     * The retry interval in seconds for dead servers listed in {@see masters} and {@see slaves}. This is used together
+     * with {@see serverStatusCache}.
+     *
+     * @param int $value
+     *
+     * @return void
+     */
+    public function setServerRetryInterval(int $value): void
+    {
+        $this->serverRetryInterval = $value;
+    }
+
+
+    /**
+     * Whether to enable read/write splitting by using {@see slaves} to read data. Note that if {@see slaves} is empty,
+     * read/write splitting will NOT be enabled no matter what value this property takes.
+     *
+     * @param bool $value
+     *
+     * @return void
+     */
+    public function setEnableSlaves(bool $value): void
+    {
+        $this->enableSlaves = $value;
+    }
+
+    /**
+     * Connection list of slave connection configurations. Each configuration is used to create a slave DB connection.
+     * When {@see enableSlaves} is true, one of these configurations will be chosen and used to create a DB connection
+     * for performing read queries only.
+     *
+     * @param array $value
+     *
+     * @return void
+     *
+     * {@see enableSlaves}
+     * {@see slaveConfig}
+     */
+    public function setSlaves(array $value): void
+    {
+        $this->slaves = $value;
+    }
+
+    /**
+     * The configuration that should be merged with every slave configuration listed in {@see slaves}.
+     *
+     * For example,
+     *
+     * ```php
+     * [
+     *     'username' => 'slave',
+     *     'password' => 'slave',
+     *     'attributes' => [
+     *         // use a smaller connection timeout
+     *         PDO::ATTR_TIMEOUT => 10,
+     *     ],
+     * ]
+     * ```
+     *
+     * @param array $value
+     *
+     * @return void
+     */
+    public function setSlaveConfig(array $value): void
+    {
+        $this->slaveConfig = $value;
+    }
+
+    /**
+     * List of master connection configurations. Each configuration is used to create a master DB connection. When
+     * {@see open()} is called, one of these configurations will be chosen and used to create a DB connection which
+     * will be used by this object. Note that when this property is not empty, the connection setting (e.g. "dsn",
+     * "username") of this object will be ignored.
+     *
+     * @param array $value
+     *
+     * @return void
+     *
+     * {@see setMasterConfig()}
+     * {@see setShuffleMasters()}
+     */
+    public function setMasters(array $value): void
+    {
+        $this->masters = $value;
+    }
+
+    /**
+     * The configuration that should be merged with every master configuration listed in {@see setMasters()}.
+     *
+     * For example,
+     *
+     * ```php
+     * [
+     *     'username' => 'master',
+     *     'password' => 'master',
+     *     'attributes' => [
+     *         // use a smaller connection timeout
+     *         PDO::ATTR_TIMEOUT => 10,
+     *     ],
+     * ]
+     * ```
+     * @param array $value
+     *
+     * @return void
+     */
+    public function setMasterConfig(array $value): void
+    {
+        $this->masterConfig = $value;
+    }
+
+    /**
+     * Whether to shuffle {@see setMasters()} before getting one.
+     *
+     * @param bool $value
+     *
+     * @return void
+     *
+     * {@see setMasters()}
+     */
+    public function setShuffleMasters(bool $value): void
+    {
+        $this->shuffleMasters = $value;
+    }
+
+    /**
+     * Whether to enable logging of database queries. Defaults to true. You may want to disable this option in a
+     * production environment to gain performance if you do not need the information being logged.
+     *
+     * @param bool $value
+     *
+     * @return void
+     *
+     * {@see setEnableProfiling()}
+     */
+    public function setEnableLogging(bool $value): void
+    {
+        $this->enableLogging = $value;
+    }
+
+    /**
+     * Whether to enable profiling of opening database connection and database queries. Defaults to true. You may want
+     * to disable this option in a production environment to gain performance if you do not need the information being
+     * logged.
+     *
+     * @param bool $value
+     *
+     * @return void
+     *
+     * {@see setEnableLogging()}
+     */
+    public function setEnableProfiling(bool $value): void
+    {
+        $this->enableProfiling = $enableProfiling;
+    }
+
+    /**
+     * The charset used for database connection. The property is only used for MySQL, PostgreSQL databases. Defaults to
+     * null, meaning using default charset as configured by the database.
+     *
+     * For Oracle Database, the charset must be specified in the {@see dsn}, for example for UTF-8 by appending
+     * `;charset=UTF-8` to the DSN string.
+     *
+     * The same applies for if you're using GBK or BIG5 charset with MySQL, then it's highly recommended to specify
+     * charset via {@see dsn} like `'mysql:dbname=mydatabase;host=127.0.0.1;charset=GBK;'`.
+     *
+     * @param string $value
+     *
+     * @return void
+     */
+    public function setCharset(?string $value): void
+    {
+        $this->charset = $value;
+    }
 }
