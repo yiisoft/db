@@ -23,17 +23,17 @@ abstract class ConnectionTest extends DatabaseTestCase
     {
         $connection = $this->getConnection(false, false);
 
-        $this->assertFalse($connection->getIsActive());
+        $this->assertFalse($connection->isActive());
         $this->assertNull($connection->getPDO());
 
         $connection->open();
 
-        $this->assertTrue($connection->getIsActive());
+        $this->assertTrue($connection->isActive());
         $this->assertInstanceOf('\\PDO', $connection->getPDO());
 
         $connection->close();
 
-        $this->assertFalse($connection->getIsActive());
+        $this->assertFalse($connection->isActive());
         $this->assertNull($connection->getPDO());
 
         $connection = new Connection($this->cache, $this->logger, $this->profiler, 'unknown::memory:');
@@ -285,26 +285,26 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection->setEmulatePrepare(true);
 
         // profiling and logging
-        $connection->enableLogging = true;
-        $connection->enableProfiling = true;
+        $connection->setEnableLogging(true);
+        $connection->setEnableProfiling(true);
 
         $this->runExceptionTest($connection);
 
         // profiling only
-        $connection->enableLogging = false;
-        $connection->enableProfiling = true;
+        $connection->setEnableLogging(false);
+        $connection->setEnableProfiling(true);
 
         $this->runExceptionTest($connection);
 
         // logging only
-        $connection->enableLogging = true;
-        $connection->enableProfiling = false;
+        $connection->setEnableLogging(true);
+        $connection->setEnableProfiling(false);
 
         $this->runExceptionTest($connection);
 
         // disabled
-        $connection->enableLogging = false;
-        $connection->enableProfiling = false;
+        $connection->setEnableLogging(false);
+        $connection->setEnableProfiling(false);
 
         $this->runExceptionTest($connection);
     }
@@ -400,11 +400,14 @@ abstract class ConnectionTest extends DatabaseTestCase
     {
         $connection = $this->getConnection();
 
-        $connection->slaves[] = [
-            'dsn' => $this->dsn->getDsn(),
-            'setUsername()' => [$connection->getUsername()],
-            'setPassword()' => [$connection->getPassword()],
-        ];
+        $connection->setSlaves(
+            '1',
+            $this->dsn->getDsn(),
+            [
+                'setUsername()' => [$connection->getUsername()],
+                'setPassword()' => [$connection->getPassword()],
+            ]
+        );
 
         $this->assertNotNull($connection->getSlavePdo(false));
 
@@ -424,13 +427,16 @@ abstract class ConnectionTest extends DatabaseTestCase
     {
         $connection = $this->getConnection(true, false);
 
-        $connection->masters[] = [
-            'dsn' => $this->dsn->getDsn(),
-            'setUsername()' => [$connection->getUsername()],
-            'setPassword()' => [$connection->getPassword()],
-        ];
+        $connection->setMasters(
+            '1',
+            $this->dsn->getDsn(),
+            [
+                'setUsername()' => [$connection->getUsername()],
+                'setPassword()' => [$connection->getPassword()],
+            ]
+        );
 
-        $connection->shuffleMasters = false;
+        $connection->setShuffleMasters(false);
 
         $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', $connection->getDsn()];
 
@@ -449,13 +455,16 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', 'host:invalid'];
 
-        $connection->masters[] = [
-            'dsn' => 'host:invalid',
-            'setUsername()' => [$connection->getUsername()],
-            'setPassword()' => [$connection->getPassword()],
-        ];
+        $connection->setMasters(
+            '1',
+            'host:invalid',
+            [
+                'setUsername()' => [$connection->getUsername()],
+                'setPassword()' => [$connection->getPassword()],
+            ]
+        );
 
-        $connection->shuffleMasters = true;
+        $connection->setShuffleMasters(true);
 
         try {
             $connection->open();
@@ -476,15 +485,18 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection = $this->getConnection(true, false);
 
-        $connection->masters[] = [
-            'dsn' => $this->dsn->getDsn(),
-            'setUsername()' => [$connection->getUsername()],
-            'setPassword()' => [$connection->getPassword()],
-        ];
+        $connection->setMasters(
+            '1',
+            $this->dsn->getDsn(),
+            [
+                'setUsername()' => [$connection->getUsername()],
+                'setPassword()' => [$connection->getPassword()],
+            ]
+        );
 
         $connection->setSchemaCache(null);
 
-        $connection->shuffleMasters = false;
+        $connection->setShuffleMasters(false);
 
         $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', $connection->getDsn()];
 
@@ -498,11 +510,14 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', 'host:invalid'];
 
-        $connection->masters[] = [
-            'dsn' => 'host:invalid',
-            'setUsername()' => [$connection->getUsername()],
-            'setPassword()' => [$connection->getPassword()],
-        ];
+        $connection->setMasters(
+            '1',
+            'host:invalid',
+            [
+                'setUsername()' => [$connection->getUsername()],
+                'setPassword()' => [$connection->getPassword()],
+            ]
+        );
 
         try {
             $connection->open();

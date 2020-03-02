@@ -1297,12 +1297,12 @@ class Command
      */
     protected function logQuery(string $category): array
     {
-        if ($this->db->enableLogging) {
+        if ($this->db->isLoggingEnabled()) {
             $rawSql = $this->getRawSql();
 
             $this->logger->log(LogLevel::INFO, $rawSql, [$category]);
         }
-        if (!$this->db->enableProfiling) {
+        if (!$this->db->isProfilingEnabled()) {
             return [false, $rawSql ?? null];
         }
 

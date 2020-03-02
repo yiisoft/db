@@ -337,7 +337,7 @@ abstract class Schema
         /* @var $cache CacheInterface */
         $cache = \is_string($this->db->getSchemaCache()) ? $this->cache : $this->db->getSchemaCache();
 
-        if ($this->db->getEnableSchemaCache() && $cache instanceof CacheInterface) {
+        if ($this->db->isSchemaCacheEnabled() && $cache instanceof CacheInterface) {
             TagDependency::invalidate($cache, $this->getCacheTag());
         }
 
@@ -361,7 +361,7 @@ abstract class Schema
 
         $this->tableNames = [];
 
-        if ($this->db->getEnableSchemaCache() && $this->cache instanceof CacheInterface) {
+        if ($this->db->isSchemaCacheEnabled() && $this->cache instanceof CacheInterface) {
             $this->cache->delete($this->getCacheKey($rawName));
         }
     }
@@ -432,7 +432,7 @@ abstract class Schema
      */
     public function getLastInsertID(string $sequenceName = ''): string
     {
-        if ($this->db->getIsActive()) {
+        if ($this->db->isActive()) {
             return $this->db->getPDO()->lastInsertId(
                 $sequenceName === '' ? null : $this->quoteTableName($sequenceName)
             );
@@ -446,7 +446,7 @@ abstract class Schema
      */
     public function supportsSavepoint(): bool
     {
-        return $this->db->getEnableSavepoint();
+        return $this->db->isSavepointEnabled();
     }
 
     /**
@@ -858,7 +858,7 @@ abstract class Schema
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh)
     {
-        if ($this->db->getEnableSchemaCache() && !\in_array($name, $this->db->getSchemaCacheExclude(), true)) {
+        if ($this->db->isSchemaCacheEnabled() && !\in_array($name, $this->db->getSchemaCacheExclude(), true)) {
             $schemaCache = $this->cache;
         }
 
