@@ -190,8 +190,8 @@ class Connection
         'pgsql' => \Yiisoft\Db\Pgsql\Schema::class, // PostgreSQL
         'mysqli' => \Yiisoft\Db\Mysql\Schema::class, // MySQL
         'mysql' => \Yiisoft\Db\Mysql\Schema::class, // MySQL
-        'sqlite' => \Yiisoft\Db\Sqlite\Schema::class, // sqlite 3
-        'sqlite2' => \Yiisoft\Db\Sqlite\Schema::class, // sqlite 2
+        'sqlite' => \Yiisoft\Db\Sqlite\Schema\Schema::class, // sqlite 3
+        'sqlite2' => \Yiisoft\Db\Sqlite\Schema\Schema::class, // sqlite 2
         'sqlsrv' => \Yiisoft\Db\Mssql\Schema::class, // newer MSSQL driver on MS Windows hosts
         'oci' => \Yiisoft\Db\Oci\Schema::class, // Oracle driver
         'mssql' => \Yiisoft\Db\Mssql\Schema::class, // older MSSQL driver on MS Windows hosts
@@ -219,8 +219,8 @@ class Connection
         'mysqli'  => Command::class, // MySQL
         'mysql'   => Command::class, // MySQL
         'mariadb' => Command::class, // MySQL
-        'sqlite'  => \Yiisoft\Db\Sqlite\Command::class, // sqlite 3
-        'sqlite2' => \Yiisoft\Db\Sqlite\Command::class, // sqlite 2
+        'sqlite'  => \Yiisoft\Db\Sqlite\Command\Command::class, // sqlite 3
+        'sqlite2' => \Yiisoft\Db\Sqlite\Command\Command::class, // sqlite 2
         'sqlsrv'  => Command::class, // newer MSSQL driver on MS Windows hosts
         'oci'     => Command::class, // Oracle driver
         'mssql'   => Command::class, // older MSSQL driver on MS Windows hosts
