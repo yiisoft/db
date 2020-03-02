@@ -94,7 +94,7 @@ class Transaction
      */
     public function getIsActive(): bool
     {
-        return $this->level > 0 && $this->db && $this->db->getIsActive();
+        return $this->level > 0 && $this->db && $this->db->isActive();
     }
 
     /**

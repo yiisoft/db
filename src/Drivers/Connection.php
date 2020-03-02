@@ -424,32 +424,32 @@ class Connection
         return $this->dsn;
     }
 
-    public function getEnableLogging(): bool
+    public function isLoggingEnabled(): bool
     {
         return $this->enableLogging;
     }
 
-    public function getEnableProfiling(): bool
+    public function isProfilingEnabled(): bool
     {
         return $this->enableProfiling;
     }
 
-    public function getEnableQueryCache(): bool
+    public function isQueryCacheEnabled(): bool
     {
         return $this->enableQueryCache;
     }
 
-    public function getEnableSavepoint(): bool
+    public function isSavepointEnabled(): bool
     {
         return $this->enableSavepoint;
     }
 
-    public function getEnableSchemaCache(): bool
+    public function isSchemaCacheEnabled(): bool
     {
         return $this->enableSchemaCache;
     }
 
-    public function getEnableSlaves(): bool
+    public function areSlavesEnabled(): bool
     {
         return $this->enableSlaves;
     }
@@ -459,7 +459,7 @@ class Connection
      *
      * @return bool whether the DB connection is established
      */
-    public function getIsActive(): bool
+    public function isActive(): bool
     {
         return $this->pdo !== null;
     }

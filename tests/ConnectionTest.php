@@ -23,17 +23,17 @@ abstract class ConnectionTest extends DatabaseTestCase
     {
         $connection = $this->getConnection(false, false);
 
-        $this->assertFalse($connection->getIsActive());
+        $this->assertFalse($connection->isActive());
         $this->assertNull($connection->getPDO());
 
         $connection->open();
 
-        $this->assertTrue($connection->getIsActive());
+        $this->assertTrue($connection->isActive());
         $this->assertInstanceOf('\\PDO', $connection->getPDO());
 
         $connection->close();
 
-        $this->assertFalse($connection->getIsActive());
+        $this->assertFalse($connection->isActive());
         $this->assertNull($connection->getPDO());
 
         $connection = new Connection($this->cache, $this->logger, $this->profiler, 'unknown::memory:');
