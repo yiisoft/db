@@ -10,7 +10,7 @@ use Yiisoft\Db\Pgsql\QueryBuilder as PgsqlQueryBuilder;
 use Yiisoft\Db\Querys\Query;
 use Yiisoft\Db\Querys\QueryBuilder;
 use Yiisoft\Db\Querys\Conditions\BetweenColumnsCondition;
-use Yiisoft\Db\Sqlite\QueryBuilder as SqliteQueryBuilder;
+use Yiisoft\Db\Sqlite\Query\QueryBuilder as SqliteQueryBuilder;
 use Yiisoft\Db\Schemas\Schema;
 use Yiisoft\Db\Schemas\SchemaBuilderTrait;
 use Yiisoft\Arrays\ArrayHelper;
