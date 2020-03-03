@@ -67,14 +67,14 @@ abstract class CommandTest extends DatabaseTestCase
 
         $command = $db->createCommand('SELECT * FROM {{customer}}');
 
-        $this->assertNull($command->pdoStatement);
+        $this->assertNull($command->getPdoStatement());
 
         $command->prepare();
 
-        $this->assertNotNull($command->pdoStatement);
+        $this->assertNotNull($command->getPdoStatement());
         $command->cancel();
 
-        $this->assertNull($command->pdoStatement);
+        $this->assertNull($command->getPdoStatement());
     }
 
     public function testExecute(): void
@@ -246,7 +246,7 @@ SQL;
         );
 
         $command->prepare();
-        $command->pdoStatement->bindColumn('blob_col', $bc, \PDO::PARAM_LOB);
+        $command->getPdoStatement()->bindColumn('blob_col', $bc, \PDO::PARAM_LOB);
         $row = $command->queryOne();
 
         $this->assertEquals($intCol, $row['int_col']);
@@ -341,7 +341,7 @@ SQL;
 
         $command = $db->createCommand($sql);
 
-        $command->fetchMode = \PDO::FETCH_OBJ;
+        $command->setFetchMode(\PDO::FETCH_OBJ);
 
         $result = $command->queryOne();
 
@@ -529,7 +529,7 @@ SQL;
         $command->prepare(false);
 
         $this->assertSame($expected, $command->getSql());
-        $this->assertSame($expectedParams, $command->params);
+        $this->assertSame($expectedParams, $command->getParams());
     }
 
     public function testInsert(): void
