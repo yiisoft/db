@@ -62,7 +62,7 @@ class DataReader implements \Iterator, \Countable
      */
     public function __construct(Command $command)
     {
-        $this->statement = $command->pdoStatement;
+        $this->statement = $command->getPDOStatement();
         $this->statement->setFetchMode(\PDO::FETCH_ASSOC);
     }
 

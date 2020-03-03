@@ -468,8 +468,8 @@ class Query implements QueryInterface, ExpressionInterface
         }
 
         $command = $this->createCommand();
-        $params = $command->params;
-        $command->setSql($command->db->getQueryBuilder()->selectExists($command->getSql()));
+        $params = $command->getParams();
+        $command->setSql($command->getDb()->getQueryBuilder()->selectExists($command->getSql()));
         $command->bindValues($params);
 
         return (bool) $command->queryScalar();
