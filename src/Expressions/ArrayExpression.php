@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Expressions;
 
 use Traversable;
 use Yiisoft\Db\Exceptions\InvalidConfigException;
+use Yiisoft\Db\Querys\QueryInterface;
 
 /**
  * Class ArrayExpression represents an array SQL expression.
@@ -16,41 +17,15 @@ use Yiisoft\Db\Exceptions\InvalidConfigException;
  * $query->andWhere(['@>', 'items', new ArrayExpression([1, 2, 3], 'integer')])
  * ```
  *
- * which, depending on DBMS, will result in a well-prepared condition. For example, in
- * PostgreSQL it will be compiled to `WHERE "items" @> ARRAY[1, 2, 3]::integer[]`.
+ * which, depending on DBMS, will result in a well-prepared condition. For example, in PostgreSQL it will be compiled to
+ * `WHERE "items" @> ARRAY[1, 2, 3]::integer[]`.
  */
 class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, \IteratorAggregate
 {
-    /**
-     * @var null|string the type of the array elements. Defaults to `null` which means the type is
-     *                  not explicitly specified.
-     *
-     * Note that in case when type is not specified explicitly and DBMS can not guess it from the context,
-     * SQL error will be raised.
-     */
     private ?string $type = null;
-
-    /**
-     * @var array|QueryInterface the array's content.
-     * In can be represented as an array of values or a {@see Query} that returns these values.
-     */
     private $value;
+    private int $dimension;
 
-    /**
-     * @var int the number of indices needed to select an element
-     */
-    private int $dimension = 0;
-
-    /**
-     * ArrayExpression constructor.
-     *
-     * @param array|QueryInterface|mixed $value the array content. Either represented as an array of values or a Query
-     * that returns these values. A single value will be considered as an array containing one element.
-     * @param string|null $type the type of the array elements. Defaults to `null` which means the type is not
-     * explicitly specified. In case when type is not specified explicitly and DBMS can not guess it from the context,
-     * SQL error will be raised.
-     * @param int $dimension the number of indices needed to select an element
-     */
     public function __construct($value = [], $type = null, $dimension = 1)
     {
         if ($value instanceof self) {
@@ -63,9 +38,12 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
     }
 
     /**
-     * @return null|string
+     * The type of the array elements. Defaults to `null` which means the type is not explicitly specified.
      *
-     * @see type
+     * Note that in case when type is not specified explicitly and DBMS can not guess it from the context, SQL error
+     * will be raised.
+     *
+     * @return string|null
      */
     public function getType(): ?string
     {
@@ -73,9 +51,9 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
     }
 
     /**
-     * @return array|mixed|QueryInterface
+     * The array's content. In can be represented as an array of values or a {@see Query} that returns these values.
      *
-     * @see value
+     * @return array|QueryInterface
      */
     public function getValue()
     {
@@ -84,8 +62,6 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
 
     /**
      * @return int the number of indices needed to select an element
-     *
-     * @see dimensions
      */
     public function getDimension(): int
     {
@@ -162,7 +138,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      */
     public function count(): int
     {
-        return count($this->value);
+        return \count($this->value);
     }
 
     /**

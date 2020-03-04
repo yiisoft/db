@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db\Expressions;
 
 use Yiisoft\Db\Exceptions\InvalidConfigException;
@@ -17,36 +19,11 @@ use Yiisoft\Db\Querys\QueryInterface;
 class JsonExpression implements ExpressionInterface, \JsonSerializable
 {
     public const TYPE_JSON = 'json';
-
     public const TYPE_JSONB = 'jsonb';
-
-    /**
-     * @var mixed the value to be encoded to JSON.
-     *
-     * The value must be compatible with {@see \Yiisoft\Json\Json::encode()|Json::encode()]} input requirements.
-     */
     protected $value;
-
-    /**
-     * @var string|null Type of JSON, expression should be casted to. Defaults to `null`, meaning
-     * no explicit casting will be performed.
-     *
-     * This property will be encountered only for DBMSs that support different types of JSON.
-     *
-     * For example, PostgreSQL has `json` and `jsonb` types.
-     */
     protected ?string $type;
 
-    /**
-     * JsonExpression constructor.
-     *
-     * @param mixed $value the value to be encoded to JSON. The value must be compatible with
-     * {@see \Yiisoft\Json\Json::encode()|Json::encode()} requirements.
-     * @param string|null $type  the type of the JSON. See {@see JsonExpression::type}
-     *
-     * @see type
-     */
-    public function __construct($value, $type = null)
+    public function __construct($value, ?string $type = null)
     {
         if ($value instanceof self) {
             $value = $value->getValue();
@@ -57,9 +34,9 @@ class JsonExpression implements ExpressionInterface, \JsonSerializable
     }
 
     /**
-     * @return mixed
+     * The value must be compatible with {@see \Yiisoft\Json\Json::encode()|Json::encode()} input requirements.
      *
-     * @see value
+     * @return mixed
      */
     public function getValue()
     {
@@ -67,9 +44,13 @@ class JsonExpression implements ExpressionInterface, \JsonSerializable
     }
 
     /**
-     * @return null|string the type of JSON
+     * Type of JSON, expression should be casted to. Defaults to `null`, meaning no explicit casting will be performed.
      *
-     * @see type
+     * This property will be encountered only for DBMSs that support different types of JSON.
+     *
+     * For example, PostgreSQL has `json` and `jsonb` types.
+     *
+     * @return string|null
      */
     public function getType(): ?string
     {
@@ -83,8 +64,8 @@ class JsonExpression implements ExpressionInterface, \JsonSerializable
      *
      * @throws InvalidConfigException when JsonExpression contains QueryInterface object
      *
-     * @return mixed data which can be serialized by <b>json_encode</b>,
-     *               which is a value of any type other than a resource.
+     * @return mixed data which can be serialized by <b>json_encode</b>, which is a value of any type other than a
+     * resource.
      */
     public function jsonSerialize()
     {

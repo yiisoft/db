@@ -16,28 +16,14 @@ namespace Yiisoft\Db\Expressions;
  * echo $now; // prints the current date
  * ```
  *
- * Expression objects are mainly created for passing raw SQL expressions to methods of
- * {@see Query}, {@see ActiveQuery}, and related classes.
+ * Expression objects are mainly created for passing raw SQL expressions to methods of {@see Query}, {@see ActiveQuery},
+ * and related classes.
  */
 class Expression implements ExpressionInterface
 {
-    /**
-     * @var string the DB expression
-     */
-    public string $expression;
+    private string $expression;
+    private array $params = [];
 
-    /**
-     * @var array list of parameters that should be bound for this expression.
-     * The keys are placeholders appearing in {@see expression} and the values are the corresponding parameter values.
-     */
-    public array $params = [];
-
-    /**
-     * Constructor.
-     *
-     * @param string $expression the DB expression
-     * @param array $params parameters
-     */
     public function __construct(string $expression, array $params = [])
     {
         $this->expression = $expression;
@@ -52,5 +38,17 @@ class Expression implements ExpressionInterface
     public function __toString(): string
     {
         return $this->expression;
+    }
+
+    /**
+     * List of parameters that should be bound for this expression.
+     *
+     * The keys are placeholders appearing in {@see expression} and the values are the corresponding parameter values.
+     *
+     * @return array
+     */
+    public function getParams(): array
+    {
+        return $this->params;
     }
 }
