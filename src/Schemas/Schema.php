@@ -210,7 +210,7 @@ abstract class Schema
      *
      * @return TableSchema|null DBMS-dependent table metadata, `null` if the table does not exist.
      */
-    abstract protected function loadTableSchema($name);
+    abstract protected function loadTableSchema(string $name): ?TableSchema;
 
     /**
      * Creates a column schema for the database.

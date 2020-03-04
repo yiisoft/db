@@ -9,9 +9,6 @@ namespace Yiisoft\Db\Constraints;
  */
 class CheckConstraint extends Constraint
 {
-    /**
-     * @var string the SQL of the `CHECK` constraint.
-     */
     private string $expression;
 
     public function getExpression(): string
@@ -19,6 +16,11 @@ class CheckConstraint extends Constraint
         return $this->expression;
     }
 
+    /**
+     * @param string $value the SQL of the `CHECK` constraint.
+     *
+     * @return void
+     */
     public function setExpression(string $value): void
     {
         $this->expression = $value;
