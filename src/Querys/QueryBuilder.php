@@ -1489,7 +1489,7 @@ class QueryBuilder
         foreach ($columns as $i => $column) {
             if ($column instanceof ExpressionInterface) {
                 $columns[$i] = $this->buildExpression($column);
-                $params = \array_merge($params, $column->params);
+                $params = \array_merge($params, $column->getParams());
             } elseif (strpos($column, '(') === false) {
                 $columns[$i] = $this->db->quoteColumnName($column);
             }
@@ -1559,7 +1559,7 @@ class QueryBuilder
         foreach ($columns as $name => $direction) {
             if ($direction instanceof ExpressionInterface) {
                 $orders[] = $this->buildExpression($direction);
-                $params = \array_merge($params, $direction->params);
+                $params = \array_merge($params, $direction->getParams());
             } else {
                 $orders[] = $this->db->quoteColumnName($name) . ($direction === SORT_DESC ? ' DESC' : '');
             }
