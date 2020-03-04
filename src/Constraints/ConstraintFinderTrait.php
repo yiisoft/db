@@ -7,18 +7,18 @@ namespace Yiisoft\Db\Constraints;
 /**
  * ConstraintFinderTrait provides methods for getting a table constraint information.
  *
- * @property CheckConstraint[][] $schemaChecks Check constraints for all tables in the database.
- * Each array element is an array of {@see CheckConstraint} or its child classes. This property is read-only.
+ * @property CheckConstraint[] $schemaChecks Check constraints for all tables in the database. Each array element is an
+ * array of {@see CheckConstraint} or its child classes. This property is read-only.
  * @property DefaultValueConstraint[] $schemaDefaultValues Default value constraints for all tables in the database.
  * Each array element is an array of {@see DefaultValueConstraint} or its child classes. This property is read-only.
- * @property ForeignKeyConstraint[][] $schemaForeignKeys Foreign keys for all tables in the database. Each
- * array element is an array of {@see ForeignKeyConstraint} or its child classes. This property is read-only.
- * @property IndexConstraint[][] $schemaIndexes Indexes for all tables in the database. Each array element is
+ * @property ForeignKeyConstraint[] $schemaForeignKeys Foreign keys for all tables in the database. Each array element
+ * is an array of {@see ForeignKeyConstraint} or its child classes. This property is read-only.
+ * @property IndexConstraint[] $schemaIndexes Indexes for all tables in the database. Each array element is an array of
+ * {@see IndexConstraint} or its child classes. This property is read-only.
+ * @property Constraint[] $schemaPrimaryKeys Primary keys for all tables in the database. Each array element is an
+ * instance of {@see Constraint} or its child class. This property is read-only.
+ * @property IndexConstraint[] $schemaUniques Unique constraints for all tables in the database. Each array element is
  * an array of {@see IndexConstraint} or its child classes. This property is read-only.
- * @property Constraint[] $schemaPrimaryKeys Primary keys for all tables in the database. Each array element
- * is an instance of {@see Constraint} or its child class. This property is read-only.
- * @property IndexConstraint[][] $schemaUniques Unique constraints for all tables in the database.
- * Each array element is an array of {@see IndexConstraint} or its child classes. This property is read-only.
  */
 trait ConstraintFinderTrait
 {
@@ -53,7 +53,7 @@ trait ConstraintFinderTrait
      *
      * @return Constraint|null primary key for the given table, `null` if the table has no primary key.
      */
-    abstract protected function loadTablePrimaryKey($tableName);
+    abstract protected function loadTablePrimaryKey(string $tableName): ?Constraint;
 
     /**
      * Loads all foreign keys for the given table.
@@ -62,7 +62,7 @@ trait ConstraintFinderTrait
      *
      * @return ForeignKeyConstraint[] foreign keys for the given table.
      */
-    abstract protected function loadTableForeignKeys($tableName);
+    abstract protected function loadTableForeignKeys(string $tableName): array;
 
     /**
      * Loads all indexes for the given table.
@@ -71,7 +71,7 @@ trait ConstraintFinderTrait
      *
      * @return IndexConstraint[] indexes for the given table.
      */
-    abstract protected function loadTableIndexes($tableName);
+    abstract protected function loadTableIndexes(string $tableName): array;
 
     /**
      * Loads all unique constraints for the given table.
@@ -80,7 +80,7 @@ trait ConstraintFinderTrait
      *
      * @return Constraint[] unique constraints for the given table.
      */
-    abstract protected function loadTableUniques($tableName);
+    abstract protected function loadTableUniques(string $tableName): array;
 
     /**
      * Loads all check constraints for the given table.
@@ -89,7 +89,7 @@ trait ConstraintFinderTrait
      *
      * @return CheckConstraint[] check constraints for the given table.
      */
-    abstract protected function loadTableChecks($tableName);
+    abstract protected function loadTableChecks(string $tableName): array;
 
     /**
      * Loads all default value constraints for the given table.
@@ -98,7 +98,7 @@ trait ConstraintFinderTrait
      *
      * @return DefaultValueConstraint[] default value constraints for the given table.
      */
-    abstract protected function loadTableDefaultValues($tableName);
+    abstract protected function loadTableDefaultValues(string $tableName): array;
 
     /**
      * Obtains the primary key for the named table.
@@ -108,7 +108,7 @@ trait ConstraintFinderTrait
      *
      * @return Constraint|null table primary key, `null` if the table has no primary key.
      */
-    public function getTablePrimaryKey($name, $refresh = false)
+    public function getTablePrimaryKey(string $name, bool $refresh = false): ?Constraint
     {
         return $this->getTableMetadata($name, 'primaryKey', $refresh);
     }
@@ -124,7 +124,7 @@ trait ConstraintFinderTrait
      * @return Constraint[] primary keys for all tables in the database. Each array element is an instance of
      * {@see Constraint} or its child class.
      */
-    public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false)
+    public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array
     {
         return $this->getSchemaMetadata($schema, 'primaryKey', $refresh);
     }
@@ -137,7 +137,7 @@ trait ConstraintFinderTrait
      *
      * @return ForeignKeyConstraint[] table foreign keys.
      */
-    public function getTableForeignKeys($name, $refresh = false)
+    public function getTableForeignKeys(string $name, bool $refresh = false): array
     {
         return $this->getTableMetadata($name, 'foreignKeys', $refresh);
     }
@@ -153,7 +153,7 @@ trait ConstraintFinderTrait
      * @return ForeignKeyConstraint[][] foreign keys for all tables in the database. Each array element is an array of
      * {@see ForeignKeyConstraint} or its child classes.
      */
-    public function getSchemaForeignKeys($schema = '', $refresh = false)
+    public function getSchemaForeignKeys(string $schema = '', bool $refresh = false): array
     {
         return $this->getSchemaMetadata($schema, 'foreignKeys', $refresh);
     }
@@ -166,7 +166,7 @@ trait ConstraintFinderTrait
      *
      * @return IndexConstraint[] table indexes.
      */
-    public function getTableIndexes($name, $refresh = false)
+    public function getTableIndexes(string $name, bool $refresh = false): array
     {
         return $this->getTableMetadata($name, 'indexes', $refresh);
     }
@@ -179,10 +179,10 @@ trait ConstraintFinderTrait
      * @param bool $refresh whether to fetch the latest available table schemas. If this is false, cached data may be
      * returned if available.
      *
-     * @return IndexConstraint[][] indexes for all tables in the database.
-     * Each array element is an array of {@see IndexConstraint} or its child classes.
+     * @return IndexConstraint[][] indexes for all tables in the database. Each array element is an array of
+     * {@see IndexConstraint} or its child classes.
      */
-    public function getSchemaIndexes($schema = '', $refresh = false)
+    public function getSchemaIndexes(string $schema = '', bool $refresh = false): array
     {
         return $this->getSchemaMetadata($schema, 'indexes', $refresh);
     }
@@ -195,7 +195,7 @@ trait ConstraintFinderTrait
      *
      * @return Constraint[] table unique constraints.
      */
-    public function getTableUniques($name, $refresh = false)
+    public function getTableUniques(string $name, bool $refresh = false): array
     {
         return $this->getTableMetadata($name, 'uniques', $refresh);
     }
@@ -208,10 +208,10 @@ trait ConstraintFinderTrait
      * @param bool $refresh whether to fetch the latest available table schemas. If this is false, cached data may be
      * returned if available.
      *
-     * @return Constraint[][] unique constraints for all tables in the database.
-     * Each array element is an array of {@see Constraint} or its child classes.
+     * @return Constraint[][] unique constraints for all tables in the database. Each array element is an array of
+     * {@see Constraint} or its child classes.
      */
-    public function getSchemaUniques($schema = '', $refresh = false)
+    public function getSchemaUniques(string $schema = '', bool $refresh = false): array
     {
         return $this->getSchemaMetadata($schema, 'uniques', $refresh);
     }
@@ -224,7 +224,7 @@ trait ConstraintFinderTrait
      *
      * @return CheckConstraint[] table check constraints.
      */
-    public function getTableChecks($name, $refresh = false)
+    public function getTableChecks(string $name, bool $refresh = false): array
     {
         return $this->getTableMetadata($name, 'checks', $refresh);
     }
@@ -237,10 +237,10 @@ trait ConstraintFinderTrait
      * @param bool $refresh whether to fetch the latest available table schemas. If this is false, cached data may be
      * returned if available.
      *
-     * @return CheckConstraint[][] check constraints for all tables in the database.
-     * Each array element is an array of {@see CheckConstraint} or its child classes.
+     * @return CheckConstraint[][] check constraints for all tables in the database. Each array element is an array of
+     * {@see CheckConstraint} or its child classes.
      */
-    public function getSchemaChecks($schema = '', $refresh = false)
+    public function getSchemaChecks(string $schema = '', bool $refresh = false): array
     {
         return $this->getSchemaMetadata($schema, 'checks', $refresh);
     }
@@ -253,7 +253,7 @@ trait ConstraintFinderTrait
      *
      * @return DefaultValueConstraint[] table default value constraints.
      */
-    public function getTableDefaultValues($name, $refresh = false)
+    public function getTableDefaultValues(string $name, bool $refresh = false): array
     {
         return $this->getTableMetadata($name, 'defaultValues', $refresh);
     }
@@ -266,10 +266,10 @@ trait ConstraintFinderTrait
      * @param bool $refresh whether to fetch the latest available table schemas. If this is false,
      * cached data may be returned if available.
      *
-     * @return DefaultValueConstraint[] default value constraints for all tables in the database.
-     * Each array element is an array of [[DefaultValueConstraint]] or its child classes.
+     * @return DefaultValueConstraint[] default value constraints for all tables in the database. Each array element is
+     * an array of {@see DefaultValueConstraint} or its child classes.
      */
-    public function getSchemaDefaultValues($schema = '', $refresh = false)
+    public function getSchemaDefaultValues(string $schema = '', bool $refresh = false): array
     {
         return $this->getSchemaMetadata($schema, 'defaultValues', $refresh);
     }

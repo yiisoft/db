@@ -9,29 +9,10 @@ namespace Yiisoft\Db\Constraints;
  */
 class ForeignKeyConstraint extends Constraint
 {
-    /**
-     * @var string|null referenced table schema name.
-     */
     private ?string $foreignSchemaName = null;
-
-    /**
-     * @var object|string|null referenced table name.
-     */
     private $foreignTableName;
-
-    /**
-     * @var array|string list of referenced table column names.
-     */
     private $foreignColumnNames;
-
-    /**
-     * @var string|null referential action if rows in a referenced table are to be updated.
-     */
     private ?string $onUpdate = null;
-
-    /**
-     * @var string|null referential action if rows in a referenced table are to be deleted.
-     */
     private ?string $onDelete = null;
 
     public function getForeignSchemaName(): ?string
@@ -59,26 +40,51 @@ class ForeignKeyConstraint extends Constraint
         return $this->onDelete;
     }
 
+    /**
+     * @param string|null $value referenced table schema name.
+     *
+     * @return void
+     */
     public function setForeignSchemaName(?string $value): void
     {
         $this->foreignSchemaName = $value;
     }
 
+    /**
+     * @param object|string|null $value referenced table name.
+     *
+     * @return void
+     */
     public function setForeignTableName($value): void
     {
         $this->foreignTableName = $value;
     }
 
+    /**
+     * @param array|string $value list of referenced table column names.
+     *
+     * @return void
+     */
     public function setForeignColumnNames($value): void
     {
         $this->foreignColumnNames = $value;
     }
 
+    /**
+     * @param string|null $value referential action if rows in a referenced table are to be updated.
+     *
+     * @return void
+     */
     public function setOnUpdate(?string $value): void
     {
         $this->onUpdate = $value;
     }
 
+    /**
+     * @param string|null $value referential action if rows in a referenced table are to be deleted.
+     *
+     * @return void
+     */
     public function setOnDelete(?string $value): void
     {
         $this->onDelete = $value;

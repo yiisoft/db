@@ -9,14 +9,7 @@ namespace Yiisoft\Db\Constraints;
  */
 class IndexConstraint extends Constraint
 {
-    /**
-     * @var bool whether the index is unique.
-     */
     private bool $isUnique = false;
-
-    /**
-     * @var bool whether the index was created for a primary key.
-     */
     private bool $isPrimary = false;
 
     public function getIsUnique(): bool
@@ -29,11 +22,17 @@ class IndexConstraint extends Constraint
         return $this->isPrimary;
     }
 
+    /**
+     * @param bool $value whether the index is unique.
+     */
     public function setIsUnique(bool $value): void
     {
         $this->isUnique = $value;
     }
 
+    /**
+     * @var bool $value whether the index was created for a primary key.
+     */
     public function setIsPrimary(bool $value): void
     {
         $this->isPrimary = $value;

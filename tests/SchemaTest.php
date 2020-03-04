@@ -630,19 +630,19 @@ abstract class SchemaTest extends DatabaseTestCase
     public function constraintsProvider()
     {
         return [
-            '1: check' => [
-                'T_constraints_1',
-                'checks',
-                [
-                    $this->checkConstraint(AnyValue::getInstance(), "C_check <> ''", ['C_check'])
-                ]
-            ],
             '1: index' => [
                 'T_constraints_1',
                 'indexes',
                 [
                     $this->indexConstraint(AnyValue::getInstance(), ['C_id'], true, true),
                     $this->indexConstraint('CN_unique', ['C_unique'], false, true)
+                ]
+            ],
+            '1: check' => [
+                'T_constraints_1',
+                'checks',
+                [
+                    $this->checkConstraint(AnyValue::getInstance(), "C_check <> ''", ['C_check'])
                 ]
             ],
             '1: primary key' => [
@@ -881,7 +881,10 @@ abstract class SchemaTest extends DatabaseTestCase
         foreach ($array as $value) {
             if ($value instanceof Constraint) {
                 $key = (array) $value;
-                unset($key['name'], $key['foreignSchemaName']);
+                unset(
+                    $key["\000Yiisoft\Db\Constraints\Constraint\000name"],
+                    $key["\u0000Yiisoft\\Db\\Constraints\\ForeignKeyConstraint\u0000foreignSchemaName"]
+                );
 
                 foreach ($key as $keyName => $keyValue) {
                     if ($keyValue instanceof AnyCaseValue) {
