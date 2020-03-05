@@ -25,12 +25,6 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         '_'  => '\_',
         '\\' => '\\\\',
     ];
-
-    /**
-     * @var string|null character used to escape special characters in LIKE conditions.
-     *
-     * By default it's assumed to be `\`.
-     */
     protected ?string $escapeCharacter = null;
 
     /**
@@ -82,9 +76,11 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @return string
+     * @var string|null character used to escape special characters in LIKE conditions.
+     *
+     * By default it's assumed to be `\`.
      */
-    private function getEscapeSql(): string
+    private function getEscapeSql(): ?string
     {
         if ($this->escapeCharacter !== null) {
             return " ESCAPE '{$this->escapeCharacter}'";

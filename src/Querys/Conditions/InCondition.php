@@ -12,31 +12,10 @@ use Yiisoft\Db\Expressions\ExpressionInterface;
  */
 class InCondition implements ConditionInterface
 {
-    /**
-     * @var string the operator to use (e.g. `IN` or `NOT IN`)
-     */
     private string $operator;
-
-    /**
-     * @var string|string[] the column name. If it is an array, a composite `IN` condition will be generated.
-     */
     private $column;
-
-    /**
-     * @var ExpressionInterface[]|string[]|int[] an array of values that {@see column} value should be among. If it is
-     * an empty array the generated expression will be a `false` value if {@see operator} is `IN` and empty if operator
-     * is `NOT IN`.
-     */
     private $values;
 
-    /**
-     * SimpleCondition constructor.
-     *
-     * @param string|string[] the column name. If it is an array, a composite `IN` condition will be generated.
-     * @param string $operator the operator to use (e.g. `IN` or `NOT IN`)
-     * @param array an array of values that {@see column} value should be among. If it is an empty array the generated
-     * expression will be a `false` value if {@see operator} is `IN` and empty if operator is `NOT IN`.
-     */
     public function __construct($column, string $operator, $values)
     {
         $this->column = $column;
@@ -45,7 +24,7 @@ class InCondition implements ConditionInterface
     }
 
     /**
-     * @return string
+     * @return string the operator to use (e.g. `IN` or `NOT IN`).
      */
     public function getOperator(): string
     {
@@ -53,7 +32,7 @@ class InCondition implements ConditionInterface
     }
 
     /**
-     * @return mixed
+     * @return string|string[] the column name. If it is an array, a composite `IN` condition will be generated.
      */
     public function getColumn()
     {
@@ -61,7 +40,9 @@ class InCondition implements ConditionInterface
     }
 
     /**
-     * @return ExpressionInterface[]|string[]|int[]
+     * @return ExpressionInterface[]|string[]|int[] an array of values that {@see column} value should be among. If it
+     * is an empty array the generated expression will be a `false` value if {@see operator} is `IN` and empty if
+     * operator is `NOT IN`.
      */
     public function getValues()
     {

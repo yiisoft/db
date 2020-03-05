@@ -35,9 +35,6 @@ class NotConditionBuilder implements ExpressionBuilderInterface
         return "{$this->getNegationOperator()} ($expession)";
     }
 
-    /**
-     * @return string
-     */
     protected function getNegationOperator(): string
     {
         return 'NOT';

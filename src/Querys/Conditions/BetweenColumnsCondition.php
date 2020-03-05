@@ -35,35 +35,11 @@ use Yiisoft\Db\Querys\Query;
  */
 class BetweenColumnsCondition implements ConditionInterface
 {
-    /**
-     * @var string the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`)
-     */
     private string $operator = '';
-
-    /**
-     * @var mixed the value to compare against
-     */
     private $value;
-
-    /**
-     * @var string|ExpressionInterface|Query the column name or expression that is a beginning of the interval
-     */
     private $intervalStartColumn;
-
-    /**
-     * @var string|ExpressionInterface|Query the column name or expression that is an end of the interval
-     */
     private $intervalEndColumn;
 
-    /**
-     * Creates a condition with the `BETWEEN` operator.
-     *
-     * @param mixed the value to compare against
-     * @param string $operator the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`)
-     * @param string|ExpressionInterface $intervalStartColumn the column name or expression that is a beginning of the
-     * interval
-     * @param string|ExpressionInterface $intervalEndColumn the column name or expression that is an end of the interval
-     */
     public function __construct($value, string $operator, $intervalStartColumn, $intervalEndColumn)
     {
         $this->value = $value;
@@ -73,7 +49,7 @@ class BetweenColumnsCondition implements ConditionInterface
     }
 
     /**
-     * @return string
+     * @return string the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`).
      */
     public function getOperator(): string
     {
@@ -81,7 +57,7 @@ class BetweenColumnsCondition implements ConditionInterface
     }
 
     /**
-     * @return mixed
+     * @return mixed the value to compare against.
      */
     public function getValue()
     {
@@ -89,7 +65,7 @@ class BetweenColumnsCondition implements ConditionInterface
     }
 
     /**
-     * @return string|ExpressionInterface|Query
+     * @return string|ExpressionInterface|Query the column name or expression that is a beginning of the interval.
      */
     public function getIntervalStartColumn()
     {
@@ -97,7 +73,7 @@ class BetweenColumnsCondition implements ConditionInterface
     }
 
     /**
-     * @return string|ExpressionInterface|Query
+     * @return string|ExpressionInterface|Query the column name or expression that is an end of the interval.
      */
     public function getIntervalEndColumn()
     {

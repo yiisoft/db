@@ -11,22 +11,9 @@ use Yiisoft\Db\Querys\Query;
  */
 class ExistsCondition implements ConditionInterface
 {
-    /**
-     * @var string the operator to use (e.g. `EXISTS` or `NOT EXISTS`)
-     */
     private string $operator;
-
-    /**
-     * @var Query the {@see Query} object representing the sub-query.
-     */
     private Query $query;
 
-    /**
-     * ExistsCondition constructor.
-     *
-     * @param string $operator the operator to use (e.g. `EXISTS` or `NOT EXISTS`)
-     * @param Query  $query the {@see Query} object representing the sub-query.
-     */
     public function __construct(string $operator, Query $query)
     {
         $this->operator = $operator;
@@ -46,7 +33,7 @@ class ExistsCondition implements ConditionInterface
     }
 
     /**
-     * @return string
+     * @return string the operator to use (e.g. `EXISTS` or `NOT EXISTS`).
      */
     public function getOperator(): string
     {
@@ -54,7 +41,7 @@ class ExistsCondition implements ConditionInterface
     }
 
     /**
-     * @return Query
+     * @return Query the {@see Query} object representing the sub-query.
      */
     public function getQuery(): Query
     {

@@ -18,8 +18,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
     use ExpressionBuilderTrait;
 
     /**
-     * Method builds the raw SQL from the $expression that will not be additionally
-     * escaped or quoted.
+     * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
      *
      * @param ExpressionInterface|HashCondition $expression the expression to be built.
      * @param array $params the binding parameters.
