@@ -334,7 +334,8 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         try {
             $connection->createCommand(
-                'SELECT * FROM qlog1 WHERE id=:a ORDER BY nonexistingcolumn;', [':a' => 1]
+                'SELECT * FROM qlog1 WHERE id=:a ORDER BY nonexistingcolumn;',
+                [':a' => 1]
             )->queryAll();
         } catch (Exception $e) {
             $this->assertStringContainsString(

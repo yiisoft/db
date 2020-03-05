@@ -269,7 +269,7 @@ abstract class SchemaTest extends DatabaseTestCase
         $schema = $this->getConnection()->getSchema();
 
         foreach ($values as $value) {
-            $this->assertEquals($value[1], $schema->getPdoType($value[0]), 'type for value '.print_r($value[0], true).' does not match.');
+            $this->assertEquals($value[1], $schema->getPdoType($value[0]), 'type for value ' . print_r($value[0], true) . ' does not match.');
         }
         fclose($fp);
     }
@@ -766,7 +766,7 @@ abstract class SchemaTest extends DatabaseTestCase
 
         $connection = $this->getConnection(false);
         $connection->getSlavePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
-        $constraints = $connection->getSchema()->{'getTable'.ucfirst($type)}($tableName, true);
+        $constraints = $connection->getSchema()->{'getTable' . ucfirst($type)}($tableName, true);
         $this->assertMetadataEquals($expected, $constraints);
     }
 

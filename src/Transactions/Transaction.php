@@ -195,7 +195,7 @@ class Transaction
         if ($schema->supportsSavepoint()) {
             $this->logger->log(
                 LogLevel::DEBUG,
-                'Release savepoint ' . $this->level . ' ' .  __METHOD__
+                'Release savepoint ' . $this->level . ' ' . __METHOD__
             );
             $schema->releaseSavepoint('LEVEL' . $this->level);
         } else {

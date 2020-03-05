@@ -513,7 +513,7 @@ class Migration implements MigrationInterface
     public function addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete = null, $update = null)
     {
         $time = $this->beginCommand(
-            "add foreign key $name: $table (" . implode(',', (array) $columns)  . ") references $refTable ("
+            "add foreign key $name: $table (" . implode(',', (array) $columns) . ") references $refTable ("
             . implode(',', (array) $refColumns) . ')'
         );
 
