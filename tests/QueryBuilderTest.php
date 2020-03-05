@@ -815,11 +815,12 @@ abstract class QueryBuilderTest extends DatabaseTestCase
 
         foreach ($this->columnTypes() as [$column, $builder, $expected]) {
             if (
-                !(strncmp($column, Schema::TYPE_PK, 2) === 0 ||
-                strncmp($column, Schema::TYPE_UPK, 3) === 0 ||
-                strncmp($column, Schema::TYPE_BIGPK, 5) === 0 ||
-                strncmp($column, Schema::TYPE_UBIGPK, 6) === 0 ||
-                strncmp(substr($column, -5), 'FIRST', 5) === 0
+                !(
+                    strncmp($column, Schema::TYPE_PK, 2) === 0 ||
+                    strncmp($column, Schema::TYPE_UPK, 3) === 0 ||
+                    strncmp($column, Schema::TYPE_BIGPK, 5) === 0 ||
+                    strncmp($column, Schema::TYPE_UBIGPK, 6) === 0 ||
+                    strncmp(substr($column, -5), 'FIRST', 5) === 0
                 )
             ) {
                 $columns['col' . ++$i] = str_replace('CHECK (value', 'CHECK ([[col' . $i . ']]', $column);
@@ -1405,7 +1406,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
 
         [$sql, $params] = $this->getQueryBuilder()->build($query);
         $expected = $this->replaceQuotes(
-            'SELECT [[t]].[[id]] AS [[ID]], [[gsm]].[[username]] AS [[GSM]], [[part]].[[Part]], [[t]].[[Part_Cost]] AS [[Part Cost]], st_x(location::geometry) as lon,'
+            'SELECT [[t]].[[id]] AS [[ID]], [[gsm]].[[username]] AS [[GSM]], [[part]].[[Part]], [[t]].[[Part_Cost]] AS [[Part Cost]], st_x(location::geometry) AS [[lon]],'
             . ' case t.Status_Id when 1 then \'Acknowledge\' when 2 then \'No Action\' else \'Unknown Action\' END as [[Next Action]] FROM [[tablename]]'
         );
 

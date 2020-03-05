@@ -1351,7 +1351,7 @@ class QueryBuilder
             } elseif ($column instanceof Query) {
                 [$sql, $params] = $this->build($column, $params);
                 $columns[$i] = "($sql) AS " . $this->db->quoteColumnName($i);
-            } elseif (\is_string($i)) {
+            } elseif (\is_string($i) && $i !== $column) {
                 if (strpos($column, '(') === false) {
                     $column = $this->db->quoteColumnName($column);
                 }
