@@ -44,7 +44,7 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
      * @param ExpressionInterface|ConjunctionCondition $condition the expression to be built.
      * @param array $params the binding parameters.
      *
-     * @return string[]
+     * @return array
      */
     private function buildExpressionsFrom(ExpressionInterface $condition, array &$params = []): array
     {

@@ -11,23 +11,15 @@ use Yiisoft\Db\Exceptions\InvalidArgumentException;
  */
 class NotCondition implements ConditionInterface
 {
-    /**
-     * @var mixed the condition to be negated
-     */
     private $condition;
 
-    /**
-     * NotCondition constructor.
-     *
-     * @param mixed $condition the condition to be negated
-     */
     public function __construct($condition)
     {
         $this->condition = $condition;
     }
 
     /**
-     * @return mixed
+     * @return mixed the condition to be negated.
      */
     public function getCondition()
     {

@@ -11,34 +11,11 @@ use Yiisoft\Db\Exceptions\InvalidArgumentException;
  */
 class BetweenCondition implements ConditionInterface
 {
-    /**
-     * @var string the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`)
-     */
     private string $operator;
-
-    /**
-     * @var mixed the column name to the left of {@see operator}
-     */
     private $column;
-
-    /**
-     * @var mixed beginning of the interval
-     */
     private $intervalStart;
-
-    /**
-     * @var mixed end of the interval
-     */
     private $intervalEnd;
 
-    /**
-     * Creates a condition with the `BETWEEN` operator.
-     *
-     * @param mixed $column the literal to the left of $operator
-     * @param string $operator the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`)
-     * @param mixed $intervalStart beginning of the interval
-     * @param mixed $intervalEnd end of the interval
-     */
     public function __construct($column, string $operator, $intervalStart, $intervalEnd)
     {
         $this->column = $column;
@@ -48,7 +25,7 @@ class BetweenCondition implements ConditionInterface
     }
 
     /**
-     * @return string
+     * @return string the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`).
      */
     public function getOperator(): string
     {
@@ -56,7 +33,7 @@ class BetweenCondition implements ConditionInterface
     }
 
     /**
-     * @return mixed
+     * @return mixed the column name to the left of {@see operator}.
      */
     public function getColumn()
     {
@@ -64,7 +41,7 @@ class BetweenCondition implements ConditionInterface
     }
 
     /**
-     * @return mixed
+     * @return mixed beginning of the interval.
      */
     public function getIntervalStart()
     {
@@ -72,7 +49,7 @@ class BetweenCondition implements ConditionInterface
     }
 
     /**
-     * @return mixed
+     * @return mixed end of the interval.
      */
     public function getIntervalEnd()
     {

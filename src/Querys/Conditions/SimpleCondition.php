@@ -11,28 +11,10 @@ use Yiisoft\Db\Exceptions\InvalidArgumentException;
  */
 class SimpleCondition implements ConditionInterface
 {
-    /**
-     * @var string the operator to use. Anything could be used e.g. `>`, `<=`, etc.
-     */
     private string $operator;
-
-    /**
-     * @var mixed the column name to the left of {@see operator}
-     */
     private $column;
-
-    /**
-     * @var mixed the value to the right of the {@see operator}
-     */
     private $value;
 
-    /**
-     * SimpleCondition constructor.
-     *
-     * @param mixed $column the literal to the left of $operator
-     * @param string $operator the operator to use. Anything could be used e.g. `>`, `<=`, etc.
-     * @param mixed $value the literal to the right of $operator
-     */
     public function __construct($column, string $operator, $value)
     {
         $this->column = $column;
@@ -41,7 +23,7 @@ class SimpleCondition implements ConditionInterface
     }
 
     /**
-     * @return string
+     * @return string the operator to use. Anything could be used e.g. `>`, `<=`, etc.
      */
     public function getOperator(): string
     {
@@ -49,7 +31,7 @@ class SimpleCondition implements ConditionInterface
     }
 
     /**
-     * @return mixed
+     * @return mixed the column name to the left of {@see operator}.
      */
     public function getColumn()
     {
@@ -57,7 +39,7 @@ class SimpleCondition implements ConditionInterface
     }
 
     /**
-     * @return mixed
+     * @return mixed the value to the right of the {@see operator}.
      */
     public function getValue()
     {
