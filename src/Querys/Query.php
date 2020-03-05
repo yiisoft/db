@@ -665,41 +665,27 @@ PATTERN;
      * Sets the SELECT part of the query.
      *
      * @param string|array|ExpressionInterface $columns the columns to be selected.
-     *
      * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
      * Columns can be prefixed with table names (e.g. "user.id") and/or contain column aliases
      * (e.g. "user.id AS user_id").
+     *
      * The method will automatically quote the column names unless a column contains some parenthesis (which means the
      * column contains a DB expression). A DB expression may also be passed in form of an {@see ExpressionInterface}
      * object.
      *
-     * Note that if you are selecting an expression like `CONCAT(first_name, ' ', last_name)`, you should
-     * use an array to specify the columns. Otherwise, the expression may be incorrectly split into several parts.
+     * Note that if you are selecting an expression like `CONCAT(first_name, ' ', last_name)`, you should use an array
+     * to specify the columns. Otherwise, the expression may be incorrectly split into several parts.
      *
-     * When the columns are specified as an array, you may also use array keys as the column aliases (if a column
-     * does not need alias, do not use a string key).
+     * When the columns are specified as an array, you may also use array keys as the column aliases (if a column does
+     * not need alias, do not use a string key).
+     * @param string $option additional option that should be appended to the 'SELECT' keyword. For example, in MySQL,
+     * the option 'SQL_CALC_FOUND_ROWS' can be used.
      *
-     * You may also select sub-queries as columns by specifying each such column as a `Query` instance representing
-     * the sub-query.
-     * @param string $option additional option that should be appended to the 'SELECT' keyword. For example,
-     * in MySQL, the option 'SQL_CALC_FOUND_ROWS' can be used.
-     *
-     * @return Query the query object itself
+     * @return self $this the query object itself
      */
-    public function select($columns, string $option = null): Query
+    public function select($columns, $option = null): self
     {
-        if ($columns instanceof ExpressionInterface) {
-            $columns = [$columns];
-        } elseif (!\is_array($columns)) {
-            $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
-        }
-
-        /**
-         * this sequantial assignment is needed in order to make sure select is being reset before using
-         * getUniqueColumns() that checks it
-         */
-        $this->select = [];
-        $this->select = $this->getUniqueColumns($columns);
+        $this->select = $this->normalizeSelect($columns);
         $this->selectOption = $option;
 
         return $this;
@@ -718,81 +704,68 @@ PATTERN;
      * @param string|array|ExpressionInterface $columns the columns to add to the select. See {@see select()} for more
      * details about the format of this parameter.
      *
-     * @return Query the query object itself
+     * @return self $this the query object itself
      *
      * {@see select()}
      */
-    public function addSelect($columns): Query
+    public function addSelect($columns): self
     {
-        if ($columns instanceof ExpressionInterface) {
-            $columns = [$columns];
-        } elseif (!\is_array($columns)) {
-            $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
-        }
-        $columns = $this->getUniqueColumns($columns);
         if ($this->select === null) {
-            $this->select = $columns;
-        } else {
-            $this->select = \array_merge($this->select, $columns);
+            return $this->select($columns);
         }
+
+        if (!\is_array($this->select)) {
+            $this->select = $this->normalizeSelect($this->select);
+        }
+
+        $this->select = \array_merge($this->select, $this->normalizeSelect($columns));
 
         return $this;
     }
 
     /**
-     * Returns unique column names excluding duplicates.
+     * Normalizes the SELECT columns passed to {@see select()} or {@see addSelect()}.
      *
-     * Columns to be removed:
-     * - if column definition already present in SELECT part with same alias
-     * - if column definition without alias already present in SELECT part without alias too.
-     *
-     * @param array $columns the columns to be merged to the select.
+     * @param string|array|ExpressionInterface $columns
      *
      * @return array
      */
-    protected function getUniqueColumns(array $columns): array
+    protected function normalizeSelect($columns): array
     {
-        $unaliasedColumns = $this->getUnaliasedColumnsFromSelect();
+        if ($columns instanceof ExpressionInterface) {
+            $columns = [$columns];
+        } elseif (!\is_array($columns)) {
+            $columns = \preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
+        }
 
-        $result = [];
-
+        $select = [];
         foreach ($columns as $columnAlias => $columnDefinition) {
-            if (!$columnDefinition instanceof self) {
-                if (\is_string($columnAlias)) {
-                    $existsInSelect = isset($this->select[$columnAlias]) && $this->select[$columnAlias] === $columnDefinition;
-                    if ($existsInSelect) {
-                        continue;
-                    }
-                } elseif (\is_int($columnAlias)) {
-                    $existsInSelect = \in_array($columnDefinition, $unaliasedColumns, true);
-                    $existsInResultSet = \in_array($columnDefinition, $result, true);
-                    if ($existsInSelect || $existsInResultSet) {
-                        continue;
-                    }
+            if (\is_string($columnAlias)) {
+                // Already in the normalized format, good for them
+                $select[$columnAlias] = $columnDefinition;
+                continue;
+            }
+            if (\is_string($columnDefinition)) {
+                if (
+                    \preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_\.]+)$/', $columnDefinition, $matches) &&
+                    !\preg_match('/^\d+$/', $matches[2]) &&
+                    strpos($matches[2], '.') === false
+                ) {
+                    // Using "columnName as alias" or "columnName alias" syntax
+                    $select[$matches[2]] = $matches[1];
+                    continue;
+                }
+                if (strpos($columnDefinition, '(') === false) {
+                    // Normal column name, just alias it to itself to ensure it's not selected twice
+                    $select[$columnDefinition] = $columnDefinition;
+                    continue;
                 }
             }
-
-            $result[$columnAlias] = $columnDefinition;
+            // Either a string calling a function, DB expression, or sub-query
+            $select[] = $columnDefinition;
         }
 
-        return $result;
-    }
-
-    /**
-     * @return array List of columns without aliases from SELECT statement.
-     */
-    protected function getUnaliasedColumnsFromSelect(): array
-    {
-        $result = [];
-        if (\is_array($this->select)) {
-            foreach ($this->select as $name => $value) {
-                if (\is_int($name)) {
-                    $result[] = $value;
-                }
-            }
-        }
-
-        return array_unique($result);
+        return $select;
     }
 
     /**
