@@ -117,7 +117,8 @@ abstract class QueryTest extends DatabaseTestCase
         $query = new Query($this->getConnection());
         $query->select('DISTINCT ON(tour_dates.date_from) tour_dates.date_from, tour_dates.id');
         $this->assertEquals(
-            ['DISTINCT ON(tour_dates.date_from) tour_dates.date_from', 'tour_dates.id' => 'tour_dates.id'], $query->select
+            ['DISTINCT ON(tour_dates.date_from) tour_dates.date_from', 'tour_dates.id' => 'tour_dates.id'],
+            $query->select
         );
     }
 
