@@ -57,7 +57,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         }
 
         if (strpos($column, '(') === false) {
-            $column = $this->queryBuilder->db->quoteColumnName($column);
+            $column = $this->queryBuilder->getDb()->quoteColumnName($column);
         }
 
         $escapeSql = $this->getEscapeSql();

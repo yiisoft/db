@@ -57,7 +57,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
         }
 
         if (strpos($column, '(') === false) {
-            $column = $this->queryBuilder->db->quoteColumnName($column);
+            $column = $this->queryBuilder->getDb()->quoteColumnName($column);
         }
         if (count($sqlValues) > 1) {
             return "$column $operator (" . implode(', ', $sqlValues) . ')';
@@ -115,7 +115,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
         if (\is_array($columns)) {
             foreach ($columns as $i => $col) {
                 if (strpos($col, '(') === false) {
-                    $columns[$i] = $this->queryBuilder->db->quoteColumnName($col);
+                    $columns[$i] = $this->queryBuilder->getDb()->quoteColumnName($col);
                 }
             }
 
@@ -123,7 +123,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
         }
 
         if (strpos($columns, '(') === false) {
-            $columns = $this->queryBuilder->db->quoteColumnName($columns);
+            $columns = $this->queryBuilder->getDb()->quoteColumnName($columns);
         }
 
         return "$columns $operator $sql";
@@ -161,7 +161,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
         $sqlColumns = [];
         foreach ($columns as $i => $column) {
             $sqlColumns[] = strpos($column, '(') === false
-            ? $this->queryBuilder->db->quoteColumnName($column) : $column;
+            ? $this->queryBuilder->getDb()->quoteColumnName($column) : $column;
         }
 
         return '(' . implode(', ', $sqlColumns) . ") $operator (" . implode(', ', $vss) . ')';

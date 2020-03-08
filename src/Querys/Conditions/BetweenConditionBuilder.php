@@ -29,7 +29,7 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
         $column = $expression->getColumn();
 
         if (strpos($column, '(') === false) {
-            $column = $this->queryBuilder->db->quoteColumnName($column);
+            $column = $this->queryBuilder->getDb()->quoteColumnName($column);
         }
 
         $phName1 = $this->createPlaceholder($expression->getIntervalStart(), $params);

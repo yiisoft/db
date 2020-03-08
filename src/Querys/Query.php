@@ -6,8 +6,10 @@ namespace Yiisoft\Db\Querys;
 
 use Yiisoft\Db\Commands\Command;
 use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Exceptions\Exception;
 use Yiisoft\Db\Exceptions\InvalidArgumentException;
 use Yiisoft\Db\Exceptions\InvalidConfigException;
+use Yiisoft\Db\Exceptions\NotSupportedException;
 use Yiisoft\Db\Expressions\Expression;
 use Yiisoft\Db\Expressions\ExpressionInterface;
 use Yiisoft\Arrays\ArrayHelper;
@@ -49,115 +51,18 @@ class Query implements QueryInterface, ExpressionInterface
 {
     use QueryTrait;
 
-    /**
-     * @var array the columns being selected. For example, `['id', 'name']`.
-     *
-     * This is used to construct the SELECT clause in a SQL statement. If not set, it means selecting all columns.
-     *
-     * @see select()
-     */
-    public array $select = [];
-
-    /**
-     * @var string additional option that should be appended to the 'SELECT' keyword. For example, in MySQL, the option
-     * 'SQL_CALC_FOUND_ROWS' can be used.
-     */
-    public ?string $selectOption = null;
-
-    /**
-     * @var bool whether to select distinct rows of data only. If this is set true, the SELECT clause would be changed
-     * to SELECT DISTINCT.
-     */
-    public ?bool $distinct = null;
-
-    /**
-     * @var array|string the table(s) to be selected from. For example, `['user', 'post']`.
-     *
-     * This is used to construct the FROM clause in a SQL statement.
-     *
-     * {@see from()}
-     */
-    public $from;
-
-    /**
-     * @var array how to group the query results. For example, `['company', 'department']`.
-     *
-     * This is used to construct the GROUP BY clause in a SQL statement.
-     */
-    public array $groupBy = [];
-
-    /**
-     * @var array how to join with other tables. Each array element represents the specification of one join which has
-     * the following structure:
-     *
-     * ```php
-     * [$joinType, $tableName, $joinCondition]
-     * ```
-     *
-     * For example,
-     *
-     * ```php
-     * [
-     *     ['INNER JOIN', 'user', 'user.id = author_id'],
-     *     ['LEFT JOIN', 'team', 'team.id = team_id'],
-     * ]
-     * ```
-     */
-    public array $join = [];
-
-    /**
-     * @var string|array|ExpressionInterface the condition to be applied in the GROUP BY clause.
-     *
-     * It can be either a string or an array. Please refer to {@see where()} on how to specify the condition.
-     */
-    public $having;
-
-    /**
-     * @var array this is used to construct the UNION clause(s) in a SQL statement.
-     *
-     * Each array element is an array of the following structure:
-     *
-     * - `query`: either a string or a {@see Query} object representing a query
-     * - `all`: boolean, whether it should be `UNION ALL` or `UNION`
-     */
-    public array $union = [];
-
-    /**
-     * @var array this is used to construct the WITH section in a SQL query.
-     * Each array element is an array of the following structure:
-     *
-     * - `query`: either a string or a [[Query]] object representing a query
-     * - `alias`: string, alias of query for further usage
-     * - `recursive`: boolean, whether it should be `WITH RECURSIVE` or `WITH`
-     */
-    public array $withQueries = [];
-
-    /**
-     * @var array list of query parameter values indexed by parameter placeholders.
-     *
-     * For example, `[':name' => 'Dan', ':age' => 31]`.
-     */
-    public array $params = [];
-
-    /**
-     * @var int|true the default number of seconds that query results can remain valid in cache.
-     *
-     * Use 0 to indicate that the cached data will never expire.
-     * Use a negative number to indicate that query cache should not be used.
-     * Use boolean `true` to indicate that {@see Connection::queryCacheDuration} should be used.
-     *
-     * {@see cache()}
-     */
-    public $queryCacheDuration;
-
-    /**
-     * @var Dependency|null the dependency to be associated with the cached query result for this
-     * query
-     *
-     * {@see cache()}
-     */
-    public ?Dependency $queryCacheDependency = null;
-
+    protected array $select = [];
+    protected ?string $selectOption = null;
+    protected ?bool $distinct = null;
+    protected $from;
+    protected array $groupBy = [];
+    protected array $join = [];
+    protected $having;
+    protected array $union = [];
+    protected array $withQueries = [];
+    protected array $params = [];
+    private $queryCacheDuration;
+    private ?Dependency $queryCacheDependency = null;
     private ?Connection $db = null;
 
     public function __construct(Connection $db, array $config = [])
@@ -171,6 +76,10 @@ class Query implements QueryInterface, ExpressionInterface
      * Creates a DB command that can be used to execute this query.
      *
      * If this parameter is not given, the `db` application component will be used.
+     *
+     * @throws InvalidConfigException
+     * @throws Exception
+     * @throws NotSupportedException
      *
      * @return Command the created DB command instance.
      */
@@ -193,9 +102,9 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @param QueryBuilder $builder
      *
-     * @return Query a prepared query instance which will be used by {@see QueryBuilder} to build the SQL
+     * @return self a prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
      */
-    public function prepare(QueryBuilder $builder): Query
+    public function prepare(QueryBuilder $builder): self
     {
         return $this;
     }
@@ -204,8 +113,9 @@ class Query implements QueryInterface, ExpressionInterface
      * Starts a batch query.
      *
      * A batch query supports fetching data in batches, which can keep the memory usage under a limit.
-     * This method will return a {@see BatchQueryResult} object which implements the {@see \Iterator} interface
-     * and can be traversed to retrieve the data in batches.
+     *
+     * This method will return a {@see BatchQueryResult} object which implements the {@see \Iterator} interface and can
+     * be traversed to retrieve the data in batches.
      *
      * For example,
      *
@@ -267,9 +177,14 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * If this parameter is not given, the `db` application component will be used.
      *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     *
      * @return array the query results. If the query results in nothing, an empty array will be returned.
      */
-    public function all()
+    public function all(): array
     {
         if ($this->emulateExecution) {
             return [];
@@ -286,9 +201,9 @@ class Query implements QueryInterface, ExpressionInterface
      * This method is internally used to convert the data fetched from database into the format as required by this
      * query.
      *
-     * @param array $rows the raw query result from database
+     * @param array $rows the raw query result from database.
      *
-     * @return array the converted query result
+     * @return array the converted query result.
      */
     public function populate(array $rows): array
     {
@@ -310,6 +225,11 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * If this parameter is not given, the `db` application component will be used.
      *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     *
      * @return array|bool the first row (in terms of an array) of the query result. False is returned if the query
      * results in nothing.
      */
@@ -327,13 +247,18 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * The value returned will be the first column in the first row of the query results.
      *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     *
      * @return string|null|false the value of the first column in the first row of the query result. False is returned
      * if the query result is empty.
      */
     public function scalar()
     {
         if ($this->emulateExecution) {
-            return;
+            return null;
         }
 
         return $this->createCommand()->queryScalar();
@@ -343,6 +268,11 @@ class Query implements QueryInterface, ExpressionInterface
      * Executes the query and returns the first column of the result.
      *
      * If this parameter is not given, the `db` application component will be used.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      *
      * @return array the first column of the query result. An empty array is returned if the query results in nothing.
      */
@@ -356,20 +286,21 @@ class Query implements QueryInterface, ExpressionInterface
             return $this->createCommand()->queryColumn();
         }
 
-        if (\is_string($this->indexBy) && \is_array($this->select) && count($this->select) === 1) {
-            if (strpos($this->indexBy, '.') === false && count($tables = $this->getTablesUsedInFrom()) > 0) {
-                $this->select[] = key($tables) . '.' . $this->indexBy;
+        if (\is_string($this->indexBy) && \is_array($this->select) && \count($this->select) === 1) {
+            if (\strpos($this->indexBy, '.') === false && \count($tables = $this->getTablesUsedInFrom()) > 0) {
+                $this->select[] = \key($tables) . '.' . $this->indexBy;
             } else {
                 $this->select[] = $this->indexBy;
             }
         }
+
         $rows = $this->createCommand()->queryAll();
         $results = [];
         foreach ($rows as $row) {
-            $value = reset($row);
+            $value = \reset($row);
 
             if ($this->indexBy instanceof \Closure) {
-                $results[call_user_func($this->indexBy, $row)] = $value;
+                $results[\call_user_func($this->indexBy, $row)] = $value;
             } else {
                 $results[$row[$this->indexBy]] = $value;
             }
@@ -384,8 +315,13 @@ class Query implements QueryInterface, ExpressionInterface
      * @param string $q the COUNT expression. Defaults to '*'.
      * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
      *
-     * @return mixed number of records. The result may be a string depending on the underlying database engine and
-     * to support integer values higher than a 32bit PHP integer can handle.
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     *
+     * @return mixed number of records. The result may be a string depending on the underlying database engine and to
+     * support integer values higher than a 32bit PHP integer can handle.
      */
     public function count(string $q = '*')
     {
@@ -401,6 +337,11 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @param string $q the column name or expression.
      * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      *
      * @return mixed the sum of the specified column values.
      */
@@ -419,6 +360,8 @@ class Query implements QueryInterface, ExpressionInterface
      * @param string $q the column name or expression.
      * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
      *
+     * @throws \Throwable
+     *
      * @return mixed the average of the specified column values.
      */
     public function average(string $q)
@@ -436,6 +379,11 @@ class Query implements QueryInterface, ExpressionInterface
      * @param string $q the column name or expression.
      * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
      *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     *
      * @return mixed the minimum of the specified column values.
      */
     public function min(string $q)
@@ -449,6 +397,11 @@ class Query implements QueryInterface, ExpressionInterface
      * @param string $q the column name or expression.
      * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
      *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     *
      * @return mixed the maximum of the specified column values.
      */
     public function max(string $q)
@@ -458,6 +411,11 @@ class Query implements QueryInterface, ExpressionInterface
 
     /**
      * Returns a value indicating whether the query result contains any row of data.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      *
      * @return bool whether the query result contains any row of data.
      */
@@ -481,6 +439,11 @@ class Query implements QueryInterface, ExpressionInterface
      * Restores the value of select to make this query reusable.
      *
      * @param string|ExpressionInterface $selectExpression
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      *
      * @return bool|string
      */
@@ -511,7 +474,7 @@ class Query implements QueryInterface, ExpressionInterface
                 $command = $this->createCommand();
             } catch (\Exception $e) {
                 // throw it later
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 // throw it later
             }
 
@@ -538,21 +501,14 @@ class Query implements QueryInterface, ExpressionInterface
     }
 
     /**
-     * This function can be overridden to customize the returned class.
-     */
-    protected static function createInstance($db)
-    {
-        return new static($db);
-    }
-
-    /**
      * Returns table names used in {@see from} indexed by aliases.
      *
      * Both aliases and names are enclosed into {{ and }}.
      *
+     * @throws InvalidArgumentException
      * @throws InvalidConfigException
      *
-     * @return string[] table names indexed by aliases
+     * @return array table names indexed by aliases
      */
     public function getTablesUsedInFrom(): array
     {
@@ -563,11 +519,11 @@ class Query implements QueryInterface, ExpressionInterface
         if (\is_array($this->from)) {
             $tableNames = $this->from;
         } elseif (\is_string($this->from)) {
-            $tableNames = preg_split('/\s*,\s*/', trim($this->from), -1, PREG_SPLIT_NO_EMPTY);
+            $tableNames = \preg_split('/\s*,\s*/', \trim($this->from), -1, PREG_SPLIT_NO_EMPTY);
         } elseif ($this->from instanceof Expression) {
             $tableNames = [$this->from];
         } else {
-            throw new InvalidConfigException(gettype($this->from) . ' in $from is not supported.');
+            throw new InvalidConfigException(\gettype($this->from) . ' in $from is not supported.');
         }
 
         return $this->cleanUpTableNames($tableNames);
@@ -579,6 +535,8 @@ class Query implements QueryInterface, ExpressionInterface
      * Both aliases and names are enclosed into {{ and }}.
      *
      * @param array $tableNames non-empty array
+     *
+     * @throws InvalidArgumentException
      *
      * @return string[] table names indexed by aliases
      */
@@ -618,7 +576,7 @@ class Query implements QueryInterface, ExpressionInterface
 $
 ~iux
 PATTERN;
-                if (preg_match($pattern, $tableName, $matches)) {
+                if (\preg_match($pattern, $tableName, $matches)) {
                     if (isset($matches[2])) {
                         [, $tableName, $alias] = $matches;
                     } else {
@@ -653,8 +611,8 @@ PATTERN;
      */
     private function ensureNameQuoted(string $name): string
     {
-        $name = str_replace(["'", '"', '`', '[', ']'], '', $name);
-        if ($name && !preg_match('/^{{.*}}$/', $name)) {
+        $name = \str_replace(["'", '"', '`', '[', ']'], '', $name);
+        if ($name && !\preg_match('/^{{.*}}$/', $name)) {
             return '{{' . $name . '}}';
         }
 
@@ -681,7 +639,7 @@ PATTERN;
      * @param string $option additional option that should be appended to the 'SELECT' keyword. For example, in MySQL,
      * the option 'SQL_CALC_FOUND_ROWS' can be used.
      *
-     * @return self $this the query object itself
+     * @return self $this the query object itself.
      */
     public function select($columns, $option = null): self
     {
@@ -704,7 +662,7 @@ PATTERN;
      * @param string|array|ExpressionInterface $columns the columns to add to the select. See {@see select()} for more
      * details about the format of this parameter.
      *
-     * @return self $this the query object itself
+     * @return self $this the query object itself.
      *
      * {@see select()}
      */
@@ -735,7 +693,7 @@ PATTERN;
         if ($columns instanceof ExpressionInterface) {
             $columns = [$columns];
         } elseif (!\is_array($columns)) {
-            $columns = \preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
+            $columns = \preg_split('/\s*,\s*/', \trim($columns), -1, PREG_SPLIT_NO_EMPTY);
         }
 
         $select = [];
@@ -749,13 +707,13 @@ PATTERN;
                 if (
                     \preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_\.]+)$/', $columnDefinition, $matches) &&
                     !\preg_match('/^\d+$/', $matches[2]) &&
-                    strpos($matches[2], '.') === false
+                    \strpos($matches[2], '.') === false
                 ) {
                     // Using "columnName as alias" or "columnName alias" syntax
                     $select[$matches[2]] = $matches[1];
                     continue;
                 }
-                if (strpos($columnDefinition, '(') === false) {
+                if (\strpos($columnDefinition, '(') === false) {
                     // Normal column name, just alias it to itself to ensure it's not selected twice
                     $select[$columnDefinition] = $columnDefinition;
                     continue;
@@ -773,9 +731,9 @@ PATTERN;
      *
      * @param bool $value whether to SELECT DISTINCT or not.
      *
-     * @return Query the query object itself
+     * @return self the query object itself
      */
-    public function distinct(bool $value = true): Query
+    public function distinct(bool $value = true): self
     {
         $this->distinct = $value;
 
@@ -790,14 +748,14 @@ PATTERN;
      *
      * Table names can contain schema prefixes (e.g. `'public.user'`) and/or table aliases (e.g. `'user u'`).
      *
-     * The method will automatically quote the table names unless it contains some parenthesis
-     * (which means the table is given as a sub-query or DB expression).
+     * The method will automatically quote the table names unless it contains some parenthesis (which means the table is
+     * given as a sub-query or DB expression).
      *
-     * When the tables are specified as an array, you may also use the array keys as the table aliases
-     * (if a table does not need alias, do not use a string key).
+     * When the tables are specified as an array, you may also use the array keys as the table aliases (if a table does
+     * not need alias, do not use a string key).
      *
-     * Use a Query object to represent a sub-query. In this case, the corresponding array key will be used
-     * as the alias for the sub-query.
+     * Use a Query object to represent a sub-query. In this case, the corresponding array key will be used as the alias
+     * for the sub-query.
      *
      * To specify the `FROM` part in plain SQL, you may pass an instance of {@see ExpressionInterface}.
      *
@@ -817,15 +775,15 @@ PATTERN;
      * $query = (new \Yiisoft\Db\Querys\Query)->from(['activeusers' => $subquery]);
      * ```
      *
-     * @return Query the query object itself
+     * @return self the query object itself
      */
-    public function from($tables): Query
+    public function from($tables): self
     {
         if ($tables instanceof Expression) {
             $tables = [$tables];
         }
         if (\is_string($tables)) {
-            $tables = preg_split('/\s*,\s*/', trim($tables), -1, PREG_SPLIT_NO_EMPTY);
+            $tables = \preg_split('/\s*,\s*/', \trim($tables), -1, PREG_SPLIT_NO_EMPTY);
         }
         $this->from = $tables;
 
@@ -835,23 +793,23 @@ PATTERN;
     /**
      * Sets the WHERE part of the query.
      *
-     * The method requires a `$condition` parameter, and optionally a `$params` parameter
-     * specifying the values to be bound to the query.
+     * The method requires a `$condition` parameter, and optionally a `$params` parameter specifying the values to be
+     * bound to the query.
      *
      * The `$condition` parameter should be either a string (e.g. `'id=1'`) or an array.
      *
      * {@inheritdoc}
      *
      * @param string|array|ExpressionInterface $condition the conditions that should be put in the WHERE part.
-     * @param array                            $params    the parameters (name => value) to be bound to the query.
+     * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      *
      * {@see andWhere()}
      * {@see orWhere()}
      * {@see QueryInterface::where()}
      */
-    public function where($condition, array $params = []): Query
+    public function where($condition, array $params = []): self
     {
         $this->where = $condition;
         $this->addParams($params);
@@ -868,16 +826,16 @@ PATTERN;
      * to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      *
      * {@see where()}
      * {@see orWhere()}
      */
-    public function andWhere($condition, array $params = []): Query
+    public function andWhere($condition, array $params = []): self
     {
         if ($this->where === null) {
             $this->where = $condition;
-        } elseif (\is_array($this->where) && isset($this->where[0]) && strcasecmp($this->where[0], 'and') === 0) {
+        } elseif (\is_array($this->where) && isset($this->where[0]) && \strcasecmp($this->where[0], 'and') === 0) {
             $this->where[] = $condition;
         } else {
             $this->where = ['and', $this->where, $condition];
@@ -893,16 +851,16 @@ PATTERN;
      *
      * The new condition and the existing one will be joined using the `OR` operator.
      *
-     * @param string|array|ExpressionInterface $condition the new WHERE condition. Please refer to {@see where()}
-     * on how to specify this parameter.
+     * @param string|array|ExpressionInterface $condition the new WHERE condition. Please refer to {@see where()} on how
+     * to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      *
      * {@see where()}
      * {@see andWhere()}
      */
-    public function orWhere($condition, array $params = []): Query
+    public function orWhere($condition, array $params = []): self
     {
         if ($this->where === null) {
             $this->where = $condition;
@@ -918,8 +876,9 @@ PATTERN;
     /**
      * Adds a filtering condition for a specific column and allow the user to choose a filter operator.
      *
-     * It adds an additional WHERE condition for the given field and determines the comparison operator
-     * based on the first few characters of the given value.
+     * It adds an additional WHERE condition for the given field and determines the comparison operator based on the
+     * first few characters of the given value.
+     *
      * The condition is added in the same way as in {@see andFilterWhere} so {@see isEmpty()|empty values} are ignored.
      * The new condition and the existing one will be joined using the `AND` operator.
      *
@@ -939,13 +898,13 @@ PATTERN;
      * @param string $defaultOperator The operator to use, when no operator is given in `$value`.
      * Defaults to `=`, performing an exact match.
      *
-     * @return Query The query object itself
+     * @return self The query object itself.
      */
-    public function andFilterCompare(string $name, ?string $value, string $defaultOperator = '='): Query
+    public function andFilterCompare(string $name, ?string $value, string $defaultOperator = '='): self
     {
-        if (preg_match('/^(<>|>=|>|<=|<|=)/', (string) $value, $matches)) {
+        if (\preg_match('/^(<>|>=|>|<=|<|=)/', (string) $value, $matches)) {
             $operator = $matches[1];
-            $value = substr($value, strlen($operator));
+            $value = \substr($value, \strlen($operator));
         } else {
             $operator = $defaultOperator;
         }
@@ -955,14 +914,15 @@ PATTERN;
 
     /**
      * Appends a JOIN part to the query.
+     *
      * The first parameter specifies what type of join it is.
      *
      * @param string $type  the type of join, such as INNER JOIN, LEFT JOIN.
      * @param string|array $table the table to be joined.
      * Use a string to represent the name of the table to be joined.
      * The table name can contain a schema prefix (e.g. 'public.user') and/or table alias (e.g. 'user u').
-     * The method will automatically quote the table name unless it contains some parenthesis
-     * (which means the table is given as a sub-query or DB expression).
+     * The method will automatically quote the table name unless it contains some parenthesis (which means the table is
+     * given as a sub-query or DB expression).
      * Use an array to represent joining with a sub-query. The array must contain only one element.
      * The value must be a {@see Query} object representing the sub-query while the corresponding key represents the
      * alias for the sub-query.
@@ -970,8 +930,8 @@ PATTERN;
      * Please refer to {@see where()} on how to specify this parameter.
      *
      * Note that the array format of {@see where()} is designed to match columns to values instead of columns to
-     * columns, so the following would **not** work as expected: `['post.author_id' => 'user.id']`, it would
-     * match the `post.author_id` column value against the string `'user.id'`.
+     * columns, so the following would **not** work as expected: `['post.author_id' => 'user.id']`, it would match the
+     * `post.author_id` column value against the string `'user.id'`.
      *
      * It is recommended to use the string syntax here which is more suited for a join:
      *
@@ -980,9 +940,9 @@ PATTERN;
      * ```
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      */
-    public function join(string $type, $table, $on = '', array $params = []): Query
+    public function join(string $type, $table, $on = '', array $params = []): self
     {
         $this->join[] = [$type, $table, $on];
 
@@ -997,18 +957,16 @@ PATTERN;
      * The table name can contain a schema prefix (e.g. 'public.user') and/or table alias (e.g. 'user u').
      * The method will automatically quote the table name unless it contains some parenthesis (which means the table is
      * given as a sub-query or DB expression).
-     *
      * Use an array to represent joining with a sub-query. The array must contain only one element.
-     *
-     * The value must be a {@see Query} object representing the sub-query while the corresponding key
-     * represents the alias for the sub-query.
+     * The value must be a {@see Query} object representing the sub-query while the corresponding key represents the
+     * alias for the sub-query.
      * @param string|array $on the join condition that should appear in the ON part.
      * Please refer to {@see join()} on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      */
-    public function innerJoin($table, $on = '', array $params = []): Query
+    public function innerJoin($table, $on = '', array $params = []): self
     {
         $this->join[] = ['INNER JOIN', $table, $on];
 
@@ -1028,11 +986,11 @@ PATTERN;
      * alias for the sub-query.
      * @param string|array $on the join condition that should appear in the ON part.
      * Please refer to {@see join()} on how to specify this parameter.
-     * @param array $params the parameters (name => value) to be bound to the query
+     * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return $this the query object itself
+     * @return self the query object itself.
      */
-    public function leftJoin($table, $on = '', array $params = []): Query
+    public function leftJoin($table, $on = '', array $params = []): self
     {
         $this->join[] = ['LEFT JOIN', $table, $on];
 
@@ -1052,11 +1010,11 @@ PATTERN;
      * alias for the sub-query.
      * @param string|array $on the join condition that should appear in the ON part.
      * Please refer to {@see join()} on how to specify this parameter.
-     * @param array $params the parameters (name => value) to be bound to the query
+     * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      */
-    public function rightJoin($table, $on = '', array $params = []): Query
+    public function rightJoin($table, $on = '', array $params = []): self
     {
         $this->join[] = ['RIGHT JOIN', $table, $on];
 
@@ -1077,16 +1035,16 @@ PATTERN;
      * {@see ExpressionInterface} object can be passed to specify the GROUP BY part explicitly in plain SQL.
      * {@see ExpressionInterface} object can be passed as well.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      *
      * {@see addGroupBy()}
      */
-    public function groupBy($columns): Query
+    public function groupBy($columns): self
     {
         if ($columns instanceof ExpressionInterface) {
             $columns = [$columns];
         } elseif (!\is_array($columns)) {
-            $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
+            $columns = \preg_split('/\s*,\s*/', \trim($columns), -1, PREG_SPLIT_NO_EMPTY);
         }
         $this->groupBy = $columns;
 
@@ -1101,23 +1059,22 @@ PATTERN;
      * The method will automatically quote the column names unless a column contains some parenthesis (which means the
      * column contains a DB expression).
      *
-     * Note that if your group-by is an expression containing commas, you should always use an array
-     * to represent the group-by information. Otherwise, the method will not be able to correctly determine
-     * the group-by columns.
+     * Note that if your group-by is an expression containing commas, you should always use an array to represent the
+     * group-by information. Otherwise, the method will not be able to correctly determine the group-by columns.
      *
      * {@see Expression} object can be passed to specify the GROUP BY part explicitly in plain SQL.
      * {@see ExpressionInterface} object can be passed as well.
      *
-     * @return Query the query object itself
+     * @return self the query object itself
      *
      * {@see groupBy()}
      */
-    public function addGroupBy($columns): Query
+    public function addGroupBy($columns): self
     {
         if ($columns instanceof ExpressionInterface) {
             $columns = [$columns];
         } elseif (!\is_array($columns)) {
-            $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
+            $columns = \preg_split('/\s*,\s*/', \trim($columns), -1, PREG_SPLIT_NO_EMPTY);
         }
         if ($this->groupBy === null) {
             $this->groupBy = $columns;
@@ -1135,12 +1092,12 @@ PATTERN;
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      *
      * {@see andHaving()}
      * {@see orHaving()}
      */
-    public function having($condition, array $params = []): Query
+    public function having($condition, array $params = []): self
     {
         $this->having = $condition;
         $this->addParams($params);
@@ -1156,12 +1113,12 @@ PATTERN;
      * on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      *
      * {@see having()}
      * {@see orHaving()}
      */
-    public function andHaving($condition, array $params = []): Query
+    public function andHaving($condition, array $params = []): self
     {
         if ($this->having === null) {
             $this->having = $condition;
@@ -1176,18 +1133,19 @@ PATTERN;
 
     /**
      * Adds an additional HAVING condition to the existing one.
+     *
      * The new condition and the existing one will be joined using the `OR` operator.
      *
      * @param string|array|ExpressionInterface $condition the new HAVING condition. Please refer to {@see where()}
      * on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      *
      * {@see having()}
      * {@see andHaving()}
      */
-    public function orHaving($condition, $params = []): Query
+    public function orHaving($condition, $params = []): self
     {
         if ($this->having === null) {
             $this->having = $condition;
@@ -1223,7 +1181,9 @@ PATTERN;
      * @param array $condition the conditions that should be put in the HAVING part.
      * See {@see having()} on how to specify this parameter.
      *
-     * @return Query the query object itself
+     * @throws NotSupportedException
+     *
+     * @return Query the query object itself.
      *
      * {@see having()}
      * {@see andFilterHaving()}
@@ -1245,19 +1205,21 @@ PATTERN;
      *
      * The new condition and the existing one will be joined using the `AND` operator.
      *
-     * This method is similar to [[andHaving()]]. The main difference is that this method will remove
+     * This method is similar to {@see andHaving()}. The main difference is that this method will remove
      * {@see isEmpty()|empty query operands}. As a result, this method is best suited for building query conditions
      * based on filter values entered by users.
      *
      * @param array $condition the new HAVING condition. Please refer to {@see having()} on how to specify this
      * parameter.
      *
-     * @return Query the query object itself
+     * @throws NotSupportedException
+     *
+     * @return self the query object itself.
      *
      * {@see filterHaving()}
      * {@see orFilterHaving()}
      */
-    public function andFilterHaving(array $condition): Query
+    public function andFilterHaving(array $condition): self
     {
         $condition = $this->filterCondition($condition);
 
@@ -1280,12 +1242,14 @@ PATTERN;
      * @param array $condition the new HAVING condition. Please refer to {@see having()} on how to specify this
      * parameter.
      *
-     * @return Query the query object itself
+     * @throws NotSupportedException
+     *
+     * @return self the query object itself.
      *
      * {@see filterHaving()}
      * {@see andFilterHaving()}
      */
-    public function orFilterHaving(array $condition): Query
+    public function orFilterHaving(array $condition): self
     {
         $condition = $this->filterCondition($condition);
 
@@ -1299,12 +1263,12 @@ PATTERN;
     /**
      * Appends a SQL statement using UNION operator.
      *
-     * @param string|Query $sql the SQL statement to be appended using UNION
-     * @param bool $all TRUE if using UNION ALL and FALSE if using UNION
+     * @param string|Query $sql the SQL statement to be appended using UNION.
+     * @param bool $all TRUE if using UNION ALL and FALSE if using UNION.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      */
-    public function union($sql, $all = false): Query
+    public function union($sql, $all = false): self
     {
         $this->union[] = ['query' => $sql, 'all' => $all];
 
@@ -1317,11 +1281,11 @@ PATTERN;
      * @param array $params list of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      *
      * {@see addParams()}
      */
-    public function params(array $params): Query
+    public function params(array $params): self
     {
         $this->params = $params;
 
@@ -1334,11 +1298,11 @@ PATTERN;
      * @param array $params list of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
      *
-     * @return Query the query object itself
+     * @return self the query object itself.
      *
      * {@see params()}
      */
-    public function addParams(array $params): Query
+    public function addParams(array $params): self
     {
         if (!empty($params)) {
             if (empty($this->params)) {
@@ -1367,9 +1331,9 @@ PATTERN;
      * Defaults to `true`.
      * @param Dependency $dependency the cache dependency associated with the cached result.
      *
-     * @return Query the Query object itself
+     * @return self the Query object itself.
      */
-    public function cache($duration = true, Dependency $dependency = null): Query
+    public function cache($duration = true, Dependency $dependency = null): self
     {
         $this->queryCacheDuration = $duration;
         $this->queryCacheDependency = $dependency;
@@ -1380,9 +1344,9 @@ PATTERN;
     /**
      * Disables query cache for this Query.
      *
-     * @return Query the Query object itself
+     * @return self the Query object itself.
      */
-    public function noCache(): Query
+    public function noCache(): self
     {
         $this->queryCacheDuration = -1;
 
@@ -1411,12 +1375,12 @@ PATTERN;
      *
      * The properties being copies are the ones to be used by query builders.
      *
-     * @param Connection $db the source query object
-     * @param Query $from the source query object
+     * @param Connection $db the source query object.
+     * @param Query $from the source query object.
      *
-     * @return Query the new Query object
+     * @return self the new Query object.
      */
-    public static function create($db, $from): Query
+    public static function create($db, $from): self
     {
         return new self(
             $db,
@@ -1439,51 +1403,6 @@ PATTERN;
         );
     }
 
-    public function setParams(array $value): void
-    {
-        $this->params = $value;
-    }
-
-    public function setUnion(?array $value): void
-    {
-        $this->union = $value;
-    }
-
-    public function setHaving($value)
-    {
-        $this->having = $value;
-    }
-
-    public function setJoin(?array $value): void
-    {
-        $this->join = $value;
-    }
-
-    public function setGroupBy(array $value): void
-    {
-        $this->groupBy = $value;
-    }
-
-    public function setFrom($value): void
-    {
-        $this->from = $value;
-    }
-
-    public function setSelect(?array $value): void
-    {
-        $this->select = $value;
-    }
-
-    public function setSelectOption(?string $value): void
-    {
-        $this->selectOptions = $value;
-    }
-
-    public function setDistinct(?bool $value): void
-    {
-        $this->distinct = $value;
-    }
-
     /**
      * Returns the SQL representation of Query.
      *
@@ -1494,19 +1413,81 @@ PATTERN;
         return serialize($this);
     }
 
+    public function getDistinct(): ?bool
+    {
+        return $this->distinct;
+    }
+
+    public function getFrom()
+    {
+        return $this->from;
+    }
+
+    public function getGroupBy(): array
+    {
+        return $this->groupBy;
+    }
+
+    public function getHaving()
+    {
+        return $this->having;
+    }
+
+    public function getJoin(): array
+    {
+        return $this->join;
+    }
+
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
+    public function getSelect(): array
+    {
+        return $this->select;
+    }
+
+    public function getSelectOption(): ?string
+    {
+        return $this->selectOption;
+    }
+
+    public function getUnion(): array
+    {
+        return $this->union;
+    }
+
+    public function getWithQueries(): array
+    {
+        return $this->withQueries;
+    }
+
     /**
      * Prepends a SQL statement using WITH syntax.
      *
-     * @param string|Query $query the SQL statement to be appended using UNION
-     * @param string $alias query alias in WITH construction
-     * @param bool $recursive TRUE if using WITH RECURSIVE and FALSE if using WITH
+     * @param string|Query $query the SQL statement to be appended using UNION.
+     * @param string $alias query alias in WITH construction.
+     * @param bool $recursive TRUE if using WITH RECURSIVE and FALSE if using WITH.
      *
-     * @return $this the query object itself
+     * @return self the query object itself.
      */
-    public function withQuery($query, $alias, $recursive = false)
+    public function withQuery($query, $alias, $recursive = false): self
     {
         $this->withQueries[] = ['query' => $query, 'alias' => $alias, 'recursive' => $recursive];
 
         return $this;
+    }
+
+    /**
+     * This function can be overridden to customize the returned class.
+     *
+     * @param Connection $value
+     *
+     * @return self
+     */
+    protected static function createInstance(Connection $value): self
+    {
+        return new self($value);
     }
 }

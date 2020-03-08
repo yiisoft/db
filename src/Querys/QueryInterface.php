@@ -18,7 +18,7 @@ interface QueryInterface
      *
      * @return array the query results. If the query results in nothing, an empty array will be returned.
      */
-    public function all();
+    public function all(): array;
 
     /**
      * Executes the query and returns a single row of result.
@@ -42,14 +42,14 @@ interface QueryInterface
      *
      * @return bool whether the query result contains any row of data.
      */
-    public function exists();
+    public function exists(): bool;
 
     /**
      * Sets the {@see indexBy} property.
      *
      * @param string|callable $column the name of the column by which the query results should be indexed by.
-     * This can also be a callable (e.g. anonymous function) that returns the index value based on the given
-     * row data. The signature of the callable should be:
+     * This can also be a callable (e.g. anonymous function) that returns the index value based on the given row data.
+     * The signature of the callable should be:
      *
      * ```php
      * function ($row)
@@ -58,9 +58,9 @@ interface QueryInterface
      * }
      * ```
      *
-     * @return $this the query object itself
+     * @return Query the query object itself.
      */
-    public function indexBy($column);
+    public function indexBy($column): Query;
 
     /**
      * Sets the WHERE part of the query.
@@ -72,15 +72,15 @@ interface QueryInterface
      *
      * A condition in hash format represents the following SQL expression in general:
      * `column1=value1 AND column2=value2 AND ...`. In case when a value is an array,
-     * an `IN` expression will be generated. And if a value is `null`, `IS NULL` will be used
-     * in the generated expression. Below are some examples:
+     * an `IN` expression will be generated. And if a value is `null`, `IS NULL` will be used in the generated
+     * expression. Below are some examples:
      *
      * - `['type' => 1, 'status' => 2]` generates `(type = 1) AND (status = 2)`.
      * - `['id' => [1, 2, 3], 'status' => 2]` generates `(id IN (1, 2, 3)) AND (status = 2)`.
      * - `['status' => null]` generates `status IS NULL`.
      *
-     * A condition in operator format generates the SQL expression according to the specified operator, which
-     * can be one of the following:
+     * A condition in operator format generates the SQL expression according to the specified operator, which can be one
+     * of the following:
      *
      * - **and**: the operands should be concatenated together using `AND`. For example,
      *   `['and', 'id=1', 'id=2']` will generate `id=1 AND id=2`. If an operand is an array,
@@ -126,14 +126,14 @@ interface QueryInterface
      *   a third operand `false` to do so. For example, `['like', 'name', '%tester', false]` will generate
      *   `name LIKE '%tester'`.
      *
-     * - **or like**: similar to the `like` operator except that `OR` is used to concatenate the `LIKE`
-     *   predicates when operand 2 is an array.
+     * - **or like**: similar to the `like` operator except that `OR` is used to concatenate the `LIKE` predicates when
+     *   operand 2 is an array.
      *
-     * - **not like**: similar to the `like` operator except that `LIKE` is replaced with `NOT LIKE`
-     *   in the generated condition.
+     * - **not like**: similar to the `like` operator except that `LIKE` is replaced with `NOT LIKE` in the generated
+     *   condition.
      *
-     * - **or not like**: similar to the `not like` operator except that `OR` is used to concatenate
-     *   the `NOT LIKE` predicates.
+     * - **or not like**: similar to the `not like` operator except that `OR` is used to concatenate the `NOT LIKE`
+     *   predicates.
      *
      * - **exists**: operand 1 is a query object that used to build an `EXISTS` condition. For example
      *   `['exists', (new Query())->select('id')->from('users')->where(['active' => 1])]` will result in the following
@@ -151,12 +151,12 @@ interface QueryInterface
      *
      * @param array $condition the conditions that should be put in the WHERE part.
      *
-     * @return $this the query object itself
+     * @return Query the query object itself.
      *
      * {@see andWhere()}
      * {@see orWhere()}
      */
-    public function where($condition);
+    public function where(array $condition): Query;
 
     /**
      * Adds an additional WHERE condition to the existing one.
@@ -165,12 +165,12 @@ interface QueryInterface
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
-     * @return $this the query object itself
+     * @return Query the query object itself.
      *
      * {@see where()}
      * {@see orWhere()}
      */
-    public function andWhere($condition);
+    public function andWhere(array $condition): Query;
 
     /**
      * Adds an additional WHERE condition to the existing one.
@@ -179,25 +179,25 @@ interface QueryInterface
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
-     * @return $this the query object itself
+     * @return Query the query object itself.
      *
      * {@see where()}
      * {@see andWhere()}
      */
-    public function orWhere($condition);
+    public function orWhere(array $condition): Query;
 
     /**
      * Sets the WHERE part of the query ignoring empty parameters.
      *
-     * @param array $condition the conditions that should be put in the WHERE part. Please refer to {@see where()}
-     * on how to specify this parameter.
+     * @param array $condition the conditions that should be put in the WHERE part. Please refer to {@see where()} on
+     * how to specify this parameter.
      *
-     * @return $this the query object itself
+     * @return Query the query object itself.
      *
      * {@see andFilterWhere()}
      * {@see orFilterWhere()}
      */
-    public function filterWhere(array $condition);
+    public function filterWhere(array $condition): Query;
 
     /**
      * Adds an additional WHERE condition to the existing one ignoring empty parameters.
@@ -205,12 +205,12 @@ interface QueryInterface
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
-     * @return $this the query object itself
+     * @return Query the query object itself.
      *
      * {@see filterWhere()}
      * {@see orFilterWhere()}
      */
-    public function andFilterWhere(array $condition);
+    public function andFilterWhere(array $condition): Query;
 
     /**
      * Adds an additional WHERE condition to the existing one ignoring empty parameters.
@@ -218,67 +218,65 @@ interface QueryInterface
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
-     * @return $this the query object itself
+     * @return Query the query object itself.
      *
      * {@see filterWhere()}
      * {@see andFilterWhere()}
      */
-    public function orFilterWhere(array $condition);
+    public function orFilterWhere(array $condition): Query;
 
     /**
      * Sets the ORDER BY part of the query.
      *
-     * @param string|array $columns the columns (and the directions) to be ordered by.
-     * Columns can be specified in either a string (e.g. "id ASC, name DESC") or an array
-     * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
-     * The method will automatically quote the column names unless a column contains some parenthesis
-     * (which means the column contains a DB expression).
+     * @param string|array $columns the columns (and the directions) to be ordered by. Columns can be specified in
+     * either a string (e.g. "id ASC, name DESC") or an array (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
+     * The method will automatically quote the column names unless a column contains some parenthesis (which means the
+     * column contains a DB expression).
      *
-     * @return $this the query object itself
+     * @return Query the query object itself.
      *
      * {@see addOrderBy()}
      */
-    public function orderBy($columns);
+    public function orderBy($columns): Query;
 
     /**
      * Adds additional ORDER BY columns to the query.
      *
-     * @param string|array $columns the columns (and the directions) to be ordered by.
-     * Columns can be specified in either a string (e.g. "id ASC, name DESC") or an array
-     * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
-     * The method will automatically quote the column names unless a column contains some parenthesis
-     * (which means the column contains a DB expression).
+     * @param string|array $columns the columns (and the directions) to be ordered by. Columns can be specified in
+     * either a string (e.g. "id ASC, name DESC") or an array (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
+     * The method will automatically quote the column names unless a column contains some parenthesis (which means the
+     * column contains a DB expression).
      *
-     * @return $this the query object itself
+     * @return Query the query object itself.
      *
      * {@see orderBy()}
      */
-    public function addOrderBy($columns);
+    public function addOrderBy($columns): Query;
 
     /**
      * Sets the LIMIT part of the query.
      *
      * @param int|null $limit the limit. Use null or negative value to disable limit.
      *
-     * @return $this the query object itself
+     * @return Query the query object itself
      */
-    public function limit($limit);
+    public function limit(?int $limit): Query;
 
     /**
      * Sets the OFFSET part of the query.
      *
      * @param int|null $offset the offset. Use null or negative value to disable offset.
      *
-     * @return $this the query object itself
+     * @return Query the query object itself
      */
-    public function offset($offset);
+    public function offset(?int $offset): Query;
 
     /**
      * Sets whether to emulate query execution, preventing any interaction with data storage.
      * After this mode is enabled, methods, returning query results like {@see one()}, {@see all()}, {@see exists()}
      * and so on, will return empty or false values.
-     * You should use this method in case your program logic indicates query should not return any results, like
-     * in case you set false where condition like `0=1`.
+     * You should use this method in case your program logic indicates query should not return any results, like in case
+     * you set false where condition like `0=1`.
      *
      * @param bool $value whether to prevent query execution.
      *

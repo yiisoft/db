@@ -11,9 +11,11 @@ use Yiisoft\Db\Exceptions\Exception;
 /**
  * BatchQueryResult represents a batch query from which you can retrieve data in batches.
  *
- * You usually do not instantiate BatchQueryResult directly. Instead, you obtain it by
- * calling {@see Query::batch()} or {@see Query::each()}. Because BatchQueryResult implements the {@see \Iterator}
- * interface, you can iterate it to obtain a batch of data in each iteration. For example,
+ * You usually do not instantiate BatchQueryResult directly. Instead, you obtain it by calling {@see Query::batch()} or
+ * {@see Query::each()}. Because BatchQueryResult implements the {@see \Iterator} interface, you can iterate it to
+ * obtain a batch of data in each iteration.
+ *
+ * For example,
  *
  * ```php
  * $query = (new Query)->from('user');
@@ -26,29 +28,11 @@ use Yiisoft\Db\Exceptions\Exception;
  */
 class BatchQueryResult implements \Iterator
 {
-    /**
-     * @var Connection|null the DB connection to be used when performing batch query.
-     * If null, the "db" application component will be used.
-     */
-    private ?Connection $db = null;
-
-    /**
-     * @var Query the query object associated with this batch query.
-     * Do not modify this property directly unless after {@see reset()} is called explicitly.
-     */
-    private ?Query $query = null;
-
-    /**
-     * @var int the number of rows to be returned in each batch.
-     */
     private int $batchSize = 100;
-
-    /**
-     * @var bool whether to return a single row during each iteration.
-     *
-     * If false, a whole batch of rows will be returned in each iteration.
-     */
+    private ?Connection $db = null;
     private bool $each = false;
+    private $key;
+    private ?Query $query = null;
 
     /**
      * @var DataReader the data reader associated with this batch query.
@@ -64,11 +48,6 @@ class BatchQueryResult implements \Iterator
      * @var mixed the value for the current iteration
      */
     private $value;
-
-    /**
-     * @var string|int the key for the current iteration
-     */
-    private $key;
 
     /**
      * @var int MSSQL error code for exception that is thrown when last batch is size less than specified batch size
@@ -127,7 +106,7 @@ class BatchQueryResult implements \Iterator
 
         if ($this->each) {
             $this->value = current($this->batch);
-            if ($this->query->indexBy !== null) {
+            if ($this->query->getIndexBy() !== null) {
                 $this->key = key($this->batch);
             } elseif (key($this->batch) !== null) {
                 $this->key = $this->key === null ? 0 : $this->key + 1;
@@ -261,11 +240,8 @@ class BatchQueryResult implements \Iterator
     }
 
     /**
-     * {@see query}
-     *
-     * @param Query $value
-     *
-     * @return void
+     * @param Query $value the query object associated with this batch query. Do not modify this property directly
+     * unless after {@see reset()} is called explicitly.
      */
     public function setQuery(Query $value): void
     {
@@ -273,11 +249,7 @@ class BatchQueryResult implements \Iterator
     }
 
     /**
-     * {@see batchSize}
-     *
-     * @param integer $value
-     *
-     * @return void
+     * @param int $value the number of rows to be returned in each batch.
      */
     public function setBatchSize(int $value): void
     {
@@ -285,11 +257,7 @@ class BatchQueryResult implements \Iterator
     }
 
     /**
-     * {@see db}
-     *
-     * @param Connection $value
-     *
-     * @return void
+     * @param Connection $value the DB connection to be used when performing batch query.
      */
     public function setDb(Connection $value): void
     {
@@ -297,11 +265,9 @@ class BatchQueryResult implements \Iterator
     }
 
     /**
-     * {@see each}
+     * @param bool $value whether to return a single row during each iteration.
      *
-     * @param boolean $value
-     *
-     * @return void
+     * If false, a whole batch of rows will be returned in each iteration.
      */
     public function setEach(bool $value): void
     {
