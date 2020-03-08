@@ -133,12 +133,11 @@ class Query implements QueryInterface, ExpressionInterface
      */
     public function batch(int $batchSize = 100): BatchQueryResult
     {
-        $bq = new BatchQueryResult();
-
-        $bq->setQuery($this);
-        $bq->setBatchSize($batchSize);
-        $bq->setDb($this->db);
-        $bq->setEach(false);
+        $bq = (new BatchQueryResult())
+            ->query($this)
+            ->batchSize($batchSize)
+            ->db($this->db)
+            ->each(false);
 
         return $bq;
     }
@@ -162,12 +161,11 @@ class Query implements QueryInterface, ExpressionInterface
      */
     public function each(int $batchSize = 100): BatchQueryResult
     {
-        $bq = new BatchQueryResult();
-
-        $bq->setQuery($this);
-        $bq->setBatchSize($batchSize);
-        $bq->setDb($this->db);
-        $bq->setEach(true);
+        $bq = (new BatchQueryResult())
+            ->query($this)
+            ->batchSize($batchSize)
+            ->db($this->db)
+            ->each(true);
 
         return $bq;
     }

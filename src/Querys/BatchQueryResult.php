@@ -242,35 +242,51 @@ class BatchQueryResult implements \Iterator
     /**
      * @param Query $value the query object associated with this batch query. Do not modify this property directly
      * unless after {@see reset()} is called explicitly.
+     *
+     * @return self
      */
-    public function setQuery(Query $value): void
+    public function query(Query $value): self
     {
         $this->query = $value;
+
+        return $this;
     }
 
     /**
      * @param int $value the number of rows to be returned in each batch.
+     *
+     * @return self
      */
-    public function setBatchSize(int $value): void
+    public function batchSize(int $value): self
     {
         $this->batchSize = $value;
+
+        return $this;
     }
 
     /**
      * @param Connection $value the DB connection to be used when performing batch query.
+     *
+     * @return self
      */
-    public function setDb(Connection $value): void
+    public function db(Connection $value): self
     {
         $this->db = $value;
+
+        return $this;
     }
 
     /**
      * @param bool $value whether to return a single row during each iteration.
      *
      * If false, a whole batch of rows will be returned in each iteration.
+     *
+     * @return self
      */
-    public function setEach(bool $value): void
+    public function each(bool $value): self
     {
         $this->each = $value;
+
+        return $this;
     }
 }
