@@ -14,49 +14,12 @@ use Yiisoft\Db\Expressions\ExpressionInterface;
  */
 trait QueryTrait
 {
-    /**
-     * @var array|string|bool query condition. This refers to the WHERE clause in a SQL statement.
-     * For example, `['age' => 31, 'team' => 1]`.
-     *
-     * @see where() for valid syntax on specifying this value.
-     */
-    public $where;
-
-    /**
-     * @var int|ExpressionInterface maximum number of records to be returned. May be an instance of
-     * {@see ExpressionInterface}. If not set or less than 0, it means no limit.
-     */
-    public $limit;
-
-    /**
-     * @var int|ExpressionInterface zero-based offset from where the records are to be returned.
-     * May be an instance of {@see ExpressionInterface}. If not set or less than 0, it means starting from the
-     * beginning.
-     */
-    public $offset;
-
-    /**
-     * @var array how to sort the query results. This is used to construct the ORDER BY clause in a SQL statement.
-     * The array keys are the columns to be sorted by, and the array values are the corresponding sort directions which
-     * can be either [SORT_ASC](http://php.net/manual/en/array.constants.php#constant.sort-asc)
-     * or [SORT_DESC](http://php.net/manual/en/array.constants.php#constant.sort-desc).
-     * The array may also contain [[ExpressionInterface]] objects. If that is the case, the expressions
-     * will be converted into strings without any change.
-     */
-    public array $orderBy = [];
-
-    /**
-     * @var string|callable the name of the column by which the query results should be indexed by.
-     * This can also be a callable (e.g. anonymous function) that returns the index value based on the given
-     * row data. For more details, see {@see indexBy()}. This property is only used by
-     * {@see QueryInterface::all()|all()}.
-     */
-    public $indexBy;
-
-    /**
-     * @var bool whether to emulate the actual query execution, returning empty or false results.
-     */
-    public bool $emulateExecution = false;
+    private $where;
+    private $limit;
+    private $offset;
+    private array $orderBy = [];
+    private $indexBy;
+    private bool $emulateExecution = false;
 
     /**
      * Sets the {@see indexBy} property.
@@ -492,28 +455,28 @@ trait QueryTrait
         return $object;
     }
 
-    public function setWhere($value): void
+    public function getWhere()
     {
-        $this->where = $value;
+        return $this->where;
     }
 
-    public function setLimit($value): void
+    public function getLimit()
     {
-        $this->limit = $value;
+        return $this->limit;
     }
 
-    public function setOffset($value): void
+    public function getOffset()
     {
-        $this->offset = $value;
+        return $this->offset;
     }
 
-    public function setOrderBy(?array $value): void
+    public function getOrderBy(): array
     {
-        $this->orderBy = $value;
+        return $this->orderBy;
     }
 
-    public function setIndexBy($value): void
+    public function getIndexBy()
     {
-        $this->indexBy = $value;
+        return $this->indexBy;
     }
 }

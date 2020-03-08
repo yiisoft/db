@@ -16,42 +16,42 @@ abstract class QueryTest extends DatabaseTestCase
         // default
         $query = new Query($this->getConnection());
         $query->select('*');
-        $this->assertEquals(['*' => '*'], $query->select);
-        $this->assertNull($query->distinct);
-        $this->assertNull($query->selectOption);
+        $this->assertEquals(['*' => '*'], $query->getSelect());
+        $this->assertNull($query->getDistinct());
+        $this->assertNull($query->getSelectOption());
 
         $query = new Query($this->getConnection());
         $query->select('id, name', 'something')->distinct(true);
-        $this->assertEquals(['id' => 'id', 'name' => 'name'], $query->select);
-        $this->assertTrue($query->distinct);
-        $this->assertEquals('something', $query->selectOption);
+        $this->assertEquals(['id' => 'id', 'name' => 'name'], $query->getSelect());
+        $this->assertTrue($query->getDistinct());
+        $this->assertEquals('something', $query->getSelectOption());
 
         $query = new Query($this->getConnection());
         $query->addSelect('email');
-        $this->assertEquals(['email' => 'email'], $query->select);
+        $this->assertEquals(['email' => 'email'], $query->getSelect());
 
         $query = new Query($this->getConnection());
         $query->select('id, name');
         $query->addSelect('email');
-        $this->assertEquals(['id' => 'id', 'name' => 'name', 'email' => 'email'], $query->select);
+        $this->assertEquals(['id' => 'id', 'name' => 'name', 'email' => 'email'], $query->getSelect());
 
         $query = new Query($this->getConnection());
         $query->select('name, lastname');
         $query->addSelect('name');
-        $this->assertEquals(['name' => 'name', 'lastname' => 'lastname'], $query->select);
+        $this->assertEquals(['name' => 'name', 'lastname' => 'lastname'], $query->getSelect());
 
         $query = new Query($this->getConnection());
         $query->addSelect(['*', 'abc']);
         $query->addSelect(['*', 'bca']);
-        $this->assertEquals(['*' => '*', 'abc' => 'abc', 'bca' => 'bca'], $query->select);
+        $this->assertEquals(['*' => '*', 'abc' => 'abc', 'bca' => 'bca'], $query->getSelect());
 
         $query = new Query($this->getConnection());
         $query->addSelect(['field1 as a', 'field 1 as b']);
-        $this->assertEquals(['a' => 'field1', 'b' => 'field 1'], $query->select);
+        $this->assertEquals(['a' => 'field1', 'b' => 'field 1'], $query->getSelect());
 
         $query = new Query($this->getConnection());
         $query->addSelect(['field1 a', 'field 1 b']);
-        $this->assertEquals(['a' => 'field1', 'b' => 'field 1'], $query->select);
+        $this->assertEquals(['a' => 'field1', 'b' => 'field 1'], $query->getSelect());
 
         $query = new Query($this->getConnection());
         $query->select(['name' => 'firstname', 'lastname']);
@@ -59,42 +59,42 @@ abstract class QueryTest extends DatabaseTestCase
         $query->addSelect(['firstname', 'lastname']);
         $this->assertEquals(
             ['name' => 'firstname', 'lastname' => 'lastname', 'firstname' => 'firstname', 'surname' => 'lastname'],
-            $query->select
+            $query->getSelect()
         );
 
         $query = new Query($this->getConnection());
         $query->select('name, name, name as X, name as X');
-        $this->assertEquals(['name' => 'name', 'X' => 'name'], $query->select);
+        $this->assertEquals(['name' => 'name', 'X' => 'name'], $query->getSelect());
 
         /** @see https://github.com/yiisoft/yii2/issues/15676 */
         $query = (new Query($this->getConnection()))->select('id');
-        $this->assertSame(['id' => 'id'], $query->select);
+        $this->assertSame(['id' => 'id'], $query->getSelect());
 
         $query->select(['id', 'brand_id']);
-        $this->assertSame(['id' => 'id', 'brand_id' => 'brand_id'], $query->select);
+        $this->assertSame(['id' => 'id', 'brand_id' => 'brand_id'], $query->getSelect());
 
         /** @see https://github.com/yiisoft/yii2/issues/15676 */
         $query = (new Query($this->getConnection()))
             ->select(['prefix' => 'LEFT(name, 7)', 'prefix_key' => 'LEFT(name, 7)']);
 
-        $this->assertSame(['prefix' => 'LEFT(name, 7)', 'prefix_key' => 'LEFT(name, 7)'], $query->select);
+        $this->assertSame(['prefix' => 'LEFT(name, 7)', 'prefix_key' => 'LEFT(name, 7)'], $query->getSelect());
 
         $query->addSelect(['LEFT(name,7) as test']);
         $this->assertSame(
             ['prefix' => 'LEFT(name, 7)', 'prefix_key' => 'LEFT(name, 7)', 'test' => 'LEFT(name,7)'],
-            $query->select
+            $query->getSelect()
         );
 
         $query->addSelect(['LEFT(name,7) as test']);
         $this->assertSame(
             ['prefix' => 'LEFT(name, 7)', 'prefix_key' => 'LEFT(name, 7)', 'test' => 'LEFT(name,7)'],
-            $query->select
+            $query->getSelect()
         );
 
         $query->addSelect(['test' => 'LEFT(name,7)']);
         $this->assertSame(
             ['prefix' => 'LEFT(name, 7)', 'prefix_key' => 'LEFT(name, 7)', 'test' => 'LEFT(name,7)'],
-            $query->select
+            $query->getSelect()
         );
 
         /** @see https://github.com/yiisoft/yii2/issues/15731 */
@@ -108,17 +108,17 @@ abstract class QueryTest extends DatabaseTestCase
             ':type_out'     => 'out',
             ':type_partner' => 'partner',
         ]);
-        $this->assertSame($selectedCols, $query->select);
+        $this->assertSame($selectedCols, $query->getSelect());
 
         $query->select($selectedCols);
-        $this->assertSame($selectedCols, $query->select);
+        $this->assertSame($selectedCols, $query->getSelect());
 
         /** @see https://github.com/yiisoft/yii2/issues/17384 */
         $query = new Query($this->getConnection());
         $query->select('DISTINCT ON(tour_dates.date_from) tour_dates.date_from, tour_dates.id');
         $this->assertEquals(
             ['DISTINCT ON(tour_dates.date_from) tour_dates.date_from', 'tour_dates.id' => 'tour_dates.id'],
-            $query->select
+            $query->getSelect()
         );
     }
 
@@ -126,7 +126,7 @@ abstract class QueryTest extends DatabaseTestCase
     {
         $query = new Query($this->getConnection());
         $query->from('user');
-        $this->assertEquals(['user'], $query->from);
+        $this->assertEquals(['user'], $query->getFrom());
     }
 
     public function testFromTableIsArrayWithExpression(): void
@@ -134,7 +134,7 @@ abstract class QueryTest extends DatabaseTestCase
         $query = new Query($this->getConnection());
         $tables = new Expression('(SELECT id,name FROM user) u');
         $query->from($tables);
-        $this->assertInstanceOf(Expression::class, $query->from[0]);
+        $this->assertInstanceOf(Expression::class, $query->getFrom()[0]);
     }
 
     use GetTablesAliasTestTrait;
@@ -148,16 +148,16 @@ abstract class QueryTest extends DatabaseTestCase
     {
         $query = new Query($this->getConnection());
         $query->where('id = :id', [':id' => 1]);
-        $this->assertEquals('id = :id', $query->where);
-        $this->assertEquals([':id' => 1], $query->params);
+        $this->assertEquals('id = :id', $query->getWhere());
+        $this->assertEquals([':id' => 1], $query->getParams());
 
         $query->andWhere('name = :name', [':name' => 'something']);
-        $this->assertEquals(['and', 'id = :id', 'name = :name'], $query->where);
-        $this->assertEquals([':id' => 1, ':name' => 'something'], $query->params);
+        $this->assertEquals(['and', 'id = :id', 'name = :name'], $query->getWhere());
+        $this->assertEquals([':id' => 1, ':name' => 'something'], $query->getParams());
 
         $query->orWhere('age = :age', [':age' => '30']);
-        $this->assertEquals(['or', ['and', 'id = :id', 'name = :name'], 'age = :age'], $query->where);
-        $this->assertEquals([':id' => 1, ':name' => 'something', ':age' => '30'], $query->params);
+        $this->assertEquals(['or', ['and', 'id = :id', 'name = :name'], 'age = :age'], $query->getWhere());
+        $this->assertEquals([':id' => 1, ':name' => 'something', ':age' => '30'], $query->getParams());
     }
 
     public function testFilterWhereWithHashFormat(): void
@@ -168,13 +168,13 @@ abstract class QueryTest extends DatabaseTestCase
             'title'      => '   ',
             'author_ids' => [],
         ]);
-        $this->assertEquals(['id' => 0], $query->where);
+        $this->assertEquals(['id' => 0], $query->getWhere());
 
         $query->andFilterWhere(['status' => null]);
-        $this->assertEquals(['id' => 0], $query->where);
+        $this->assertEquals(['id' => 0], $query->getWhere());
 
         $query->orFilterWhere(['name' => '']);
-        $this->assertEquals(['id' => 0], $query->where);
+        $this->assertEquals(['id' => 0], $query->getWhere());
     }
 
     public function testFilterWhereWithOperatorFormat(): void
@@ -182,34 +182,34 @@ abstract class QueryTest extends DatabaseTestCase
         $query = new Query($this->getConnection());
         $condition = ['like', 'name', 'Alex'];
         $query->filterWhere($condition);
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
 
         $query->andFilterWhere(['between', 'id', null, null]);
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
 
         $query->orFilterWhere(['not between', 'id', null, null]);
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
 
         $query->andFilterWhere(['in', 'id', []]);
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
 
         $query->andFilterWhere(['not in', 'id', []]);
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
 
         $query->andFilterWhere(['like', 'id', '']);
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
 
         $query->andFilterWhere(['or like', 'id', '']);
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
 
         $query->andFilterWhere(['not like', 'id', '   ']);
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
 
         $query->andFilterWhere(['or not like', 'id', null]);
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
 
         $query->andFilterWhere(['or', ['eq', 'id', null], ['eq', 'id', []]]);
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
     }
 
     public function testFilterHavingWithHashFormat(): void
@@ -220,13 +220,13 @@ abstract class QueryTest extends DatabaseTestCase
             'title'      => '   ',
             'author_ids' => [],
         ]);
-        $this->assertEquals(['id' => 0], $query->having);
+        $this->assertEquals(['id' => 0], $query->getHaving());
 
         $query->andFilterHaving(['status' => null]);
-        $this->assertEquals(['id' => 0], $query->having);
+        $this->assertEquals(['id' => 0], $query->getHaving());
 
         $query->orFilterHaving(['name' => '']);
-        $this->assertEquals(['id' => 0], $query->having);
+        $this->assertEquals(['id' => 0], $query->getHaving());
     }
 
     public function testFilterHavingWithOperatorFormat(): void
@@ -234,109 +234,105 @@ abstract class QueryTest extends DatabaseTestCase
         $query = new Query($this->getConnection());
         $condition = ['like', 'name', 'Alex'];
         $query->filterHaving($condition);
-        $this->assertEquals($condition, $query->having);
+        $this->assertEquals($condition, $query->getHaving());
 
         $query->andFilterHaving(['between', 'id', null, null]);
-        $this->assertEquals($condition, $query->having);
+        $this->assertEquals($condition, $query->getHaving());
 
         $query->orFilterHaving(['not between', 'id', null, null]);
-        $this->assertEquals($condition, $query->having);
+        $this->assertEquals($condition, $query->getHaving());
 
         $query->andFilterHaving(['in', 'id', []]);
-        $this->assertEquals($condition, $query->having);
+        $this->assertEquals($condition, $query->getHaving());
 
         $query->andFilterHaving(['not in', 'id', []]);
-        $this->assertEquals($condition, $query->having);
+        $this->assertEquals($condition, $query->getHaving());
 
         $query->andFilterHaving(['like', 'id', '']);
-        $this->assertEquals($condition, $query->having);
+        $this->assertEquals($condition, $query->getHaving());
 
         $query->andFilterHaving(['or like', 'id', '']);
-        $this->assertEquals($condition, $query->having);
+        $this->assertEquals($condition, $query->getHaving());
 
         $query->andFilterHaving(['not like', 'id', '   ']);
-        $this->assertEquals($condition, $query->having);
+        $this->assertEquals($condition, $query->getHaving());
 
         $query->andFilterHaving(['or not like', 'id', null]);
-        $this->assertEquals($condition, $query->having);
+        $this->assertEquals($condition, $query->getHaving());
 
         $query->andFilterHaving(['or', ['eq', 'id', null], ['eq', 'id', []]]);
-        $this->assertEquals($condition, $query->having);
+        $this->assertEquals($condition, $query->getHaving());
     }
 
     public function testFilterRecursively(): void
     {
         $query = new Query($this->getConnection());
         $query->filterWhere(['and', ['like', 'name', ''], ['like', 'title', ''], ['id' => 1], ['not', ['like', 'name', '']]]);
-        $this->assertEquals(['and', ['id' => 1]], $query->where);
+        $this->assertEquals(['and', ['id' => 1]], $query->getWhere());
     }
-
-    /*public function testJoin()
-    {
-    }*/
 
     public function testGroup(): void
     {
         $query = new Query($this->getConnection());
         $query->groupBy('team');
-        $this->assertEquals(['team'], $query->groupBy);
+        $this->assertEquals(['team'], $query->getGroupBy());
 
         $query->addGroupBy('company');
-        $this->assertEquals(['team', 'company'], $query->groupBy);
+        $this->assertEquals(['team', 'company'], $query->getGroupBy());
 
         $query->addGroupBy('age');
-        $this->assertEquals(['team', 'company', 'age'], $query->groupBy);
+        $this->assertEquals(['team', 'company', 'age'], $query->getGroupBy());
     }
 
     public function testHaving(): void
     {
         $query = new Query($this->getConnection());
         $query->having('id = :id', [':id' => 1]);
-        $this->assertEquals('id = :id', $query->having);
-        $this->assertEquals([':id' => 1], $query->params);
+        $this->assertEquals('id = :id', $query->getHaving());
+        $this->assertEquals([':id' => 1], $query->getParams());
 
         $query->andHaving('name = :name', [':name' => 'something']);
-        $this->assertEquals(['and', 'id = :id', 'name = :name'], $query->having);
-        $this->assertEquals([':id' => 1, ':name' => 'something'], $query->params);
+        $this->assertEquals(['and', 'id = :id', 'name = :name'], $query->getHaving());
+        $this->assertEquals([':id' => 1, ':name' => 'something'], $query->getParams());
 
         $query->orHaving('age = :age', [':age' => '30']);
-        $this->assertEquals(['or', ['and', 'id = :id', 'name = :name'], 'age = :age'], $query->having);
-        $this->assertEquals([':id' => 1, ':name' => 'something', ':age' => '30'], $query->params);
+        $this->assertEquals(['or', ['and', 'id = :id', 'name = :name'], 'age = :age'], $query->getHaving());
+        $this->assertEquals([':id' => 1, ':name' => 'something', ':age' => '30'], $query->getParams());
     }
 
     public function testOrder(): void
     {
         $query = new Query($this->getConnection());
         $query->orderBy('team');
-        $this->assertEquals(['team' => SORT_ASC], $query->orderBy);
+        $this->assertEquals(['team' => SORT_ASC], $query->getOrderBy());
 
         $query->addOrderBy('company');
-        $this->assertEquals(['team' => SORT_ASC, 'company' => SORT_ASC], $query->orderBy);
+        $this->assertEquals(['team' => SORT_ASC, 'company' => SORT_ASC], $query->getOrderBy());
 
         $query->addOrderBy('age');
-        $this->assertEquals(['team' => SORT_ASC, 'company' => SORT_ASC, 'age' => SORT_ASC], $query->orderBy);
+        $this->assertEquals(['team' => SORT_ASC, 'company' => SORT_ASC, 'age' => SORT_ASC], $query->getOrderBy());
 
         $query->addOrderBy(['age' => SORT_DESC]);
-        $this->assertEquals(['team' => SORT_ASC, 'company' => SORT_ASC, 'age' => SORT_DESC], $query->orderBy);
+        $this->assertEquals(['team' => SORT_ASC, 'company' => SORT_ASC, 'age' => SORT_DESC], $query->getOrderBy());
 
         $query->addOrderBy('age ASC, company DESC');
-        $this->assertEquals(['team' => SORT_ASC, 'company' => SORT_DESC, 'age' => SORT_ASC], $query->orderBy);
+        $this->assertEquals(['team' => SORT_ASC, 'company' => SORT_DESC, 'age' => SORT_ASC], $query->getOrderBy());
 
         $expression = new Expression('SUBSTR(name, 3, 4) DESC, x ASC');
         $query->orderBy($expression);
-        $this->assertEquals([$expression], $query->orderBy);
+        $this->assertEquals([$expression], $query->getOrderBy());
 
         $expression = new Expression('SUBSTR(name, 3, 4) DESC, x ASC');
         $query->addOrderBy($expression);
-        $this->assertEquals([$expression, $expression], $query->orderBy);
+        $this->assertEquals([$expression, $expression], $query->getOrderBy());
     }
 
     public function testLimitOffset(): void
     {
         $query = new Query($this->getConnection());
         $query->limit(10)->offset(5);
-        $this->assertEquals(10, $query->limit);
-        $this->assertEquals(5, $query->offset);
+        $this->assertEquals(10, $query->getLimit());
+        $this->assertEquals(5, $query->getOffset());
     }
 
     public function testLimitOffsetWithExpression(): void
@@ -490,26 +486,26 @@ abstract class QueryTest extends DatabaseTestCase
 
         $result = $query->andFilterCompare('name', null);
         $this->assertInstanceOf('Yiisoft\Db\Querys\Query', $result);
-        $this->assertNull($query->where);
+        $this->assertNull($query->getWhere());
 
         $query->andFilterCompare('name', '');
-        $this->assertNull($query->where);
+        $this->assertNull($query->getWhere());
 
         $query->andFilterCompare('name', 'John Doe');
         $condition = ['=', 'name', 'John Doe'];
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
 
         $condition = ['and', $condition, ['like', 'name', 'Doe']];
         $query->andFilterCompare('name', 'Doe', 'like');
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
 
         $condition[] = ['>', 'rating', '9'];
         $query->andFilterCompare('rating', '>9');
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
 
         $condition[] = ['<=', 'value', '100'];
         $query->andFilterCompare('value', '<=100');
-        $this->assertEquals($condition, $query->where);
+        $this->assertEquals($condition, $query->getWhere());
     }
 
     /**

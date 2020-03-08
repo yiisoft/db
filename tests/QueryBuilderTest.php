@@ -806,7 +806,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     {
         $qb = $this->getQueryBuilder();
 
-        if ($qb->db->getTableSchema('column_type_table', true) !== null) {
+        if ($qb->getDb()->getTableSchema('column_type_table', true) !== null) {
             $this->getConnection(false)->createCommand($qb->dropTable('column_type_table'))->execute();
         }
 
@@ -828,7 +828,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         }
 
         $this->getConnection(false)->createCommand($qb->createTable('column_type_table', $columns))->execute();
-        $this->assertNotEmpty($qb->db->getTableSchema('column_type_table', true));
+        $this->assertNotEmpty($qb->getDb()->getTableSchema('column_type_table', true));
     }
 
     public function conditionProvider(): array
