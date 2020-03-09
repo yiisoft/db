@@ -4,7 +4,7 @@ namespace Yiisoft\Db\Data;
 
 use yii\data\BaseDataProvider;
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Querys\Query;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Expression\Expression;
 

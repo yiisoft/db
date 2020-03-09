@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Querys\Conditions;
+namespace Yiisoft\Db\Query\Conditions;
 
 /**
  * Condition that connects two or more SQL expressions with the `AND` operator.

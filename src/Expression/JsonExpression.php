@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Expression;
 
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Querys\QueryInterface;
+use Yiisoft\Db\Query\QueryInterface;
 
 /**
  * Class JsonExpression represents data that should be encoded to JSON.

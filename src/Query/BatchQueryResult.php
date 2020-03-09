@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Querys;
+namespace Yiisoft\Db\Query;
 
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Connection\Connection;

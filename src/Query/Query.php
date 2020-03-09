@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Querys;
+namespace Yiisoft\Db\Query;
 
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\Connection;
@@ -761,16 +761,16 @@ PATTERN;
      *
      * ```php
      * // SELECT * FROM  `user` `u`, `profile`;
-     * $query = (new \Yiisoft\Db\Querys\Query)->from(['u' => 'user', 'profile']);
+     * $query = (new \Yiisoft\Db\Query\Query)->from(['u' => 'user', 'profile']);
      *
      * // SELECT * FROM (SELECT * FROM `user` WHERE `active` = 1) `activeusers`;
-     * $subquery = (new \Yiisoft\Db\Querys\Query)->from('user')->where(['active' => true])
-     * $query = (new \Yiisoft\Db\Querys\Query)->from(['activeusers' => $subquery]);
+     * $subquery = (new \Yiisoft\Db\Query\Query)->from('user')->where(['active' => true])
+     * $query = (new \Yiisoft\Db\Query\Query)->from(['activeusers' => $subquery]);
      *
      * // subquery can also be a string with plain SQL wrapped in parenthesis
      * // SELECT * FROM (SELECT * FROM `user` WHERE `active` = 1) `activeusers`;
      * $subquery = "(SELECT * FROM `user` WHERE `active` = 1)";
-     * $query = (new \Yiisoft\Db\Querys\Query)->from(['activeusers' => $subquery]);
+     * $query = (new \Yiisoft\Db\Query\Query)->from(['activeusers' => $subquery]);
      * ```
      *
      * @return self the query object itself

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\Db\Querys\BatchQueryResult;
-use Yiisoft\Db\Querys\Query;
+use Yiisoft\Db\Query\BatchQueryResult;
+use Yiisoft\Db\Query\Query;
 
 abstract class BatchQueryResultTest extends DatabaseTestCase
 {

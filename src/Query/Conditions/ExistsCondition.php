@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Querys\Conditions;
+namespace Yiisoft\Db\Query\Conditions;
 
-use Yiisoft\Db\Querys\Query;
+use Yiisoft\Db\Query\Query;
 
 /**
  * Condition that represents `EXISTS` operator.

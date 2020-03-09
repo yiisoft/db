@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Querys\Conditions;
+namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Querys\Query;
+use Yiisoft\Db\Query\Query;
 
 /**
  * Class BetweenColumnCondition represents a `BETWEEN` condition where values is between two columns.

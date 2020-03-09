@@ -1,6 +1,6 @@
 <?php
 
-namespace Yiisoft\Db\Querys;
+namespace Yiisoft\Db\Query;
 
 /**
  * The QueryInterface defines the minimum set of methods to be implemented by a database query.

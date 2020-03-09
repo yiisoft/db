@@ -12,7 +12,7 @@ namespace Yiisoft\Db\Expression;
  *
  * ```php
  * $expression = new Expression('NOW()');
- * $now = (new \Yiisoft\Db\Querys\Query)->select($expression)->scalar();  // SELECT NOW();
+ * $now = (new \Yiisoft\Db\Query\Query)->select($expression)->scalar();  // SELECT NOW();
  * echo $now; // prints the current date
  * ```
  *

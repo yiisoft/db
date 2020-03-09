@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Schemas;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Pdo\PdoValue;
-use Yiisoft\Db\Querys\Query;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Strings\StringHelper;
 
 /**

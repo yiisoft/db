@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Expression;
 
 use Traversable;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Querys\QueryInterface;
+use Yiisoft\Db\Query\QueryInterface;
 
 /**
  * Class ArrayExpression represents an array SQL expression.

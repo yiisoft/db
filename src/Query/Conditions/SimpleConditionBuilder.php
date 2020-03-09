@@ -1,6 +1,6 @@
 <?php
 
-namespace Yiisoft\Db\Querys\Conditions;
+namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderTrait;
