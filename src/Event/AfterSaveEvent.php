@@ -1,6 +1,6 @@
 <?php
 
-namespace Yiisoft\Db\Events;
+namespace Yiisoft\Db\Event;
 
 /**
  * AfterSaveEvent represents the information available in {@see ActiveRecord::EVENT_AFTER_INSERT} and
