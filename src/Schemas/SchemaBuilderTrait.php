@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schemas;
 
-use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Connection\Connection;
 
 /**
  * SchemaBuilderTrait contains shortcut methods to create instances of {@see ColumnSchemaBuilder}.

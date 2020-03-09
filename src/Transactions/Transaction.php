@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Transactions;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exceptions\Exception;
 use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Db\Exceptions\NotSupportedException;

@@ -3,7 +3,7 @@
 namespace Yiisoft\Db\Data;
 
 use yii\data\BaseDataProvider;
-use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Querys\Query;
 use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Db\Expressions\Expression;

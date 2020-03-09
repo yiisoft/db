@@ -9,7 +9,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Cache\CacheInterface;
-use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Factory\DatabaseFactory;
 use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Di\Container;

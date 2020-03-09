@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Querys;
 
 use Generator;
-use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exceptions\Exception;
 use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Db\Querys\Conditions\ConditionInterface;

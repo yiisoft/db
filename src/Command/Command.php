@@ -12,7 +12,7 @@ use Psr\Log\LogLevel;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Data\DataReader;
-use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exceptions\InvalidArgumentException;
 use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Db\Exceptions\NotSupportedException;

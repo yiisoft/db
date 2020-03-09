@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Yiisoft\Cache\NullCache;
-use Yiisoft\Db\Drivers\Connection;
-use Yiisoft\Db\Drivers\ConnectionPool;
+use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionPool;
 use Yiisoft\Db\Helper\Dsn;
 
 abstract class DatabaseTestCase extends TestCase

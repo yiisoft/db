@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Mysql\QueryBuilder as MysqlQueryBuilder;
 use Yiisoft\Db\Pgsql\QueryBuilder as PgsqlQueryBuilder;
 use Yiisoft\Db\Querys\Query;

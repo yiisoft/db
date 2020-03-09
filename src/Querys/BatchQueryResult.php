@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Querys;
 
 use Yiisoft\Db\Data\DataReader;
-use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exceptions\Exception;
 
 /**

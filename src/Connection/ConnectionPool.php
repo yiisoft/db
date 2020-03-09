@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Drivers;
+namespace Yiisoft\Db\Connection;
 
 class ConnectionPool
 {

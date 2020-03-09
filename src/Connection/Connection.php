@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Drivers;
+namespace Yiisoft\Db\Connection;
 
 use PDO;
 use Psr\Log\LoggerInterface;
@@ -40,7 +40,7 @@ use Yiisoft\Profiler\Profiler;
  * The following example shows how to create a Connection instance and establish the DB connection:
  *
  * ```php
- * $connection = new \Yiisoft\Db\Drivers\Connection(
+ * $connection = new \Yiisoft\Db\Connection\Connection(
  *     $cache,
  *     $logger,
  *     $profiler,

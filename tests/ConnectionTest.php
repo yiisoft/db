@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exceptions\Exception;
 use Yiisoft\Db\Exceptions\InvalidConfigException;
 use Yiisoft\Db\Exceptions\NotSupportedException;
@@ -439,7 +439,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection->setShuffleMasters(false);
 
-        $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', $connection->getDsn()];
+        $cacheKey = ['Yiisoft\Db\Connection\Connection::openFromPoolSequentially', $connection->getDsn()];
 
         $this->assertFalse($this->cache->has($cacheKey));
 
@@ -454,7 +454,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection = $this->getConnection(true, false);
 
-        $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', 'host:invalid'];
+        $cacheKey = ['Yiisoft\Db\Connection\Connection::openFromPoolSequentially', 'host:invalid'];
 
         $connection->setMasters(
             '1',
@@ -499,7 +499,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection->setShuffleMasters(false);
 
-        $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', $connection->getDsn()];
+        $cacheKey = ['Yiisoft\Db\Connection\Connection::openFromPoolSequentially', $connection->getDsn()];
 
         $this->assertFalse($this->cache->has($cacheKey));
 
@@ -509,7 +509,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $connection->close();
 
-        $cacheKey = ['Yiisoft\Db\Drivers\Connection::openFromPoolSequentially', 'host:invalid'];
+        $cacheKey = ['Yiisoft\Db\Connection\Connection::openFromPoolSequentially', 'host:invalid'];
 
         $connection->setMasters(
             '1',
