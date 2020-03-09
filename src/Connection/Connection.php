@@ -18,7 +18,7 @@ use Yiisoft\Db\Factory\DatabaseFactory;
 use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchema;
-use Yiisoft\Db\Transactions\Transaction;
+use Yiisoft\Db\Transaction\Transaction;
 use Yiisoft\Profiler\Profiler;
 
 /**

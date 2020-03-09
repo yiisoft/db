@@ -8,7 +8,7 @@ use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Transactions\Transaction;
+use Yiisoft\Db\Transaction\Transaction;
 
 abstract class ConnectionTest extends DatabaseTestCase
 {

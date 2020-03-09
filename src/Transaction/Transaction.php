@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Transactions;
+namespace Yiisoft\Db\Transaction;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
