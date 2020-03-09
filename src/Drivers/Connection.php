@@ -9,7 +9,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\Commands\Command;
+use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Exceptions\Exception;
 use Yiisoft\Db\Exceptions\InvalidCallException;
 use Yiisoft\Db\Exceptions\InvalidConfigException;

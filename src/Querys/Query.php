@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Querys;
 
-use Yiisoft\Db\Commands\Command;
+use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Drivers\Connection;
 use Yiisoft\Db\Exceptions\Exception;
 use Yiisoft\Db\Exceptions\InvalidArgumentException;
