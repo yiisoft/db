@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Views;
+namespace Yiisoft\Db\View;
 
 /**
  * ViewFinderTrait implements the method getViewNames for finding views in a database.
