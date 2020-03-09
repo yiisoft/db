@@ -11,8 +11,8 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Query\Conditions\BetweenColumnsCondition;
 use Yiisoft\Db\Sqlite\Query\QueryBuilder as SqliteQueryBuilder;
-use Yiisoft\Db\Schemas\Schema;
-use Yiisoft\Db\Schemas\SchemaBuilderTrait;
+use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\Expression\Expression;
 

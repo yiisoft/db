@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Schemas;
+namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\Exception;
@@ -164,7 +164,7 @@ abstract class Schema
      *
      * @throws NotSupportedException if this method is not supported by the DBMS.
      *
-     * {@see \Yiisoft\Db\Schemas\TableSchema}
+     * {@see \Yiisoft\Db\Schema\TableSchema}
      */
     protected function resolveTableName($name)
     {

@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Schemas\Schema;
+use Yiisoft\Db\Schema\Schema;
 
 abstract class QueryTest extends DatabaseTestCase
 {

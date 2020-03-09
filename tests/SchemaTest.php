@@ -11,9 +11,9 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Schemas\ColumnSchema;
-use Yiisoft\Db\Schemas\Schema;
-use Yiisoft\Db\Schemas\TableSchema;
+use Yiisoft\Db\Schema\ColumnSchema;
+use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\TableSchema;
 
 abstract class SchemaTest extends DatabaseTestCase
 {

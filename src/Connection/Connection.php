@@ -16,8 +16,8 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Factory\DatabaseFactory;
 use Yiisoft\Db\Query\QueryBuilder;
-use Yiisoft\Db\Schemas\Schema;
-use Yiisoft\Db\Schemas\TableSchema;
+use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\TableSchema;
 use Yiisoft\Db\Transactions\Transaction;
 use Yiisoft\Profiler\Profiler;
 

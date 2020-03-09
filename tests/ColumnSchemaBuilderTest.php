@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Schemas\ColumnSchemaBuilder;
-use Yiisoft\Db\Schemas\Schema;
+use Yiisoft\Db\Schema\ColumnSchemaBuilder;
+use Yiisoft\Db\Schema\Schema;
 
 abstract class ColumnSchemaBuilderTest extends DatabaseTestCase
 {

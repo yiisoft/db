@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Schemas;
+namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
 

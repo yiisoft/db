@@ -10,7 +10,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Schemas\Schema;
+use Yiisoft\Db\Schema\Schema;
 
 abstract class CommandTest extends DatabaseTestCase
 {
