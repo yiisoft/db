@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db;
+namespace Yiisoft\Db\Migration;
 
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Constraint\Constraint;

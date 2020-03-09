@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Migrations;
+namespace Yiisoft\Db\Migration;
 
 /**
  * The MigrationInterface defines the minimum set of methods to be implemented by a database migration.
