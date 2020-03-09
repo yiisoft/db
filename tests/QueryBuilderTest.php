@@ -14,7 +14,7 @@ use Yiisoft\Db\Sqlite\Query\QueryBuilder as SqliteQueryBuilder;
 use Yiisoft\Db\Schemas\Schema;
 use Yiisoft\Db\Schemas\SchemaBuilderTrait;
 use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Expression\Expression;
 
 abstract class QueryBuilderTest extends DatabaseTestCase
 {

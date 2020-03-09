@@ -17,7 +17,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Querys\Query;
-use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Profiler\Profiler;
@@ -626,7 +626,7 @@ class Command
      *     'url' => 'http://example.com/', // url is unique
      *     'visits' => 0,
      * ], [
-     *     'visits' => new \Yiisoft\Db\Expressions\Expression('visits + 1'),
+     *     'visits' => new \Yiisoft\Db\Expression\Expression('visits + 1'),
      * ], $params);
      * ```
      *

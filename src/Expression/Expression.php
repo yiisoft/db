@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expressions;
+namespace Yiisoft\Db\Expression;
 
 /**
  * Expression represents a DB expression that does not need escaping or quoting.

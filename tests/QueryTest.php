@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Querys\Query;
 use Yiisoft\Db\Schemas\Schema;
 

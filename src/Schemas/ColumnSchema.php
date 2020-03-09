@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schemas;
 
-use Yiisoft\Db\Expressions\ExpressionInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Querys\Query;
 use Yiisoft\Strings\StringHelper;

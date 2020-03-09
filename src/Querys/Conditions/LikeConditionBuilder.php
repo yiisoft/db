@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Querys\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Expressions\ExpressionBuilderInterface;
-use Yiisoft\Db\Expressions\ExpressionBuilderTrait;
-use Yiisoft\Db\Expressions\ExpressionInterface;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionBuilderTrait;
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * Class LikeConditionBuilder builds objects of {@see LikeCondition}.

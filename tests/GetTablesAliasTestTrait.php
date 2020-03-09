@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests;
 use Yiisoft\Db\Querys\Query;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Expression\Expression;
 
 trait GetTablesAliasTestTrait
 {

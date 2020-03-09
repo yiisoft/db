@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Querys;
 
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expressions\ExpressionInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * The BaseQuery trait represents the minimum method set of a database Query.

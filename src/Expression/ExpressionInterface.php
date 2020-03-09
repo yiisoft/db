@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expressions;
+namespace Yiisoft\Db\Expression;
 
 /**
  * Interface ExpressionInterface should be used to mark classes, that should be built in a special way.

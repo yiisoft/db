@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expressions;
+namespace Yiisoft\Db\Expression;
 
 /**
- * Class ExpressionBuilder builds objects of {@see \Yiisoft\Db\Expressions\Expression} class.
+ * Class ExpressionBuilder builds objects of {@see \Yiisoft\Db\Expression\Expression} class.
  */
 class ExpressionBuilder implements ExpressionBuilderInterface
 {

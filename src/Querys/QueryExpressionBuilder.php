@@ -8,9 +8,9 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expressions\ExpressionBuilderTrait;
-use Yiisoft\Db\Expressions\ExpressionBuilderInterface;
-use Yiisoft\Db\Expressions\ExpressionInterface;
+use Yiisoft\Db\Expression\ExpressionBuilderTrait;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * Class QueryExpressionBuilder is used internally to build {@see Query} object using unified {@see QueryBuilder}

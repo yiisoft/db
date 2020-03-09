@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Expressions;
+namespace Yiisoft\Db\Expression;
 
 use Traversable;
 use Yiisoft\Db\Exception\InvalidConfigException;

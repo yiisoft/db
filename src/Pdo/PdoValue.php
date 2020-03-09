@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Pdo;
 
-use Yiisoft\Db\Expressions\ExpressionInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * Class PdoValue represents a $value that should be bound to PDO with exact $type.

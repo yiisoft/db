@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Querys\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Expressions\ExpressionInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * Class InCondition represents `IN` condition.

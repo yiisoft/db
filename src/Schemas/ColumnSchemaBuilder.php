@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schemas;
 
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Strings\StringHelper;
 
 /**

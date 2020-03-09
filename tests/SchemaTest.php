@@ -10,7 +10,7 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schemas\ColumnSchema;
 use Yiisoft\Db\Schemas\Schema;
 use Yiisoft\Db\Schemas\TableSchema;

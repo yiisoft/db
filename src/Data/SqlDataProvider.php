@@ -6,7 +6,7 @@ use yii\data\BaseDataProvider;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Querys\Query;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Expression\Expression;
 
 /**
  * SqlDataProvider implements a data provider based on a plain SQL statement.
