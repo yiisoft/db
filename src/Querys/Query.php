@@ -6,10 +6,10 @@ namespace Yiisoft\Db\Querys;
 
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Exceptions\Exception;
-use Yiisoft\Db\Exceptions\InvalidArgumentException;
-use Yiisoft\Db\Exceptions\InvalidConfigException;
-use Yiisoft\Db\Exceptions\NotSupportedException;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expressions\Expression;
 use Yiisoft\Db\Expressions\ExpressionInterface;
 use Yiisoft\Arrays\ArrayHelper;

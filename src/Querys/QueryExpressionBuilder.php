@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Querys;
 
-use Yiisoft\Db\Exceptions\Exception;
-use Yiisoft\Db\Exceptions\InvalidArgumentException;
-use Yiisoft\Db\Exceptions\InvalidConfigException;
-use Yiisoft\Db\Exceptions\NotSupportedException;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expressions\ExpressionBuilderTrait;
 use Yiisoft\Db\Expressions\ExpressionBuilderInterface;
 use Yiisoft\Db\Expressions\ExpressionInterface;

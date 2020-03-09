@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schemas;
 
-use Yiisoft\Db\Exceptions\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 
 /**
  * TableSchema represents the metadata of a database table.

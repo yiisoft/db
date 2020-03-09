@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schemas;
 
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Exceptions\Exception;
-use Yiisoft\Db\Exceptions\IntegrityException;
-use Yiisoft\Db\Exceptions\InvalidCallException;
-use Yiisoft\Db\Exceptions\NotSupportedException;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\IntegrityException;
+use Yiisoft\Db\Exception\InvalidCallException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Querys\QueryBuilder;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\TagDependency;

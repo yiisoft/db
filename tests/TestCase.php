@@ -11,7 +11,7 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Factory\DatabaseFactory;
-use Yiisoft\Db\Exceptions\InvalidConfigException;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Di\Container;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Profiler\Profiler;

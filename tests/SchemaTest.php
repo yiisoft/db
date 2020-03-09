@@ -9,7 +9,7 @@ use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
-use Yiisoft\Db\Exceptions\NotSupportedException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expressions\Expression;
 use Yiisoft\Db\Schemas\ColumnSchema;
 use Yiisoft\Db\Schemas\Schema;

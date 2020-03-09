@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Querys;
 
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Exceptions\Exception;
+use Yiisoft\Db\Exception\Exception;
 
 /**
  * BatchQueryResult represents a batch query from which you can retrieve data in batches.

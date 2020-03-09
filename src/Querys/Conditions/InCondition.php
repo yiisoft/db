@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Querys\Conditions;
 
-use Yiisoft\Db\Exceptions\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expressions\ExpressionInterface;
 
 /**

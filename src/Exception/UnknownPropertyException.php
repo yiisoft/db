@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Exceptions;
+namespace Yiisoft\Db\Exception;
 
 /**
  * UnknownPropertyException represents an exception caused by accessing unknown object properties.

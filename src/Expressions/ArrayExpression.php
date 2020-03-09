@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Expressions;
 
 use Traversable;
-use Yiisoft\Db\Exceptions\InvalidConfigException;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Querys\QueryInterface;
 
 /**

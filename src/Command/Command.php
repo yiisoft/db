@@ -13,12 +13,12 @@ use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Exceptions\InvalidArgumentException;
-use Yiisoft\Db\Exceptions\InvalidConfigException;
-use Yiisoft\Db\Exceptions\NotSupportedException;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Querys\Query;
 use Yiisoft\Db\Expressions\Expression;
-use Yiisoft\Db\Exceptions\Exception;
+use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Profiler\Profiler;
 
@@ -1582,7 +1582,7 @@ class Command
      * command. The signature of the callable should be:.
      *
      * ```php
-     * function (\Yiisoft\Db\Exceptions\Exceptions $e, $attempt)
+     * function (\Yiisoft\Db\Exception\Exceptions $e, $attempt)
      * {
      *     // return true or false (whether to retry the command or rethrow $e)
      * }

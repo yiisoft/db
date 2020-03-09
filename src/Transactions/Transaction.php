@@ -7,9 +7,9 @@ namespace Yiisoft\Db\Transactions;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Exceptions\Exception;
-use Yiisoft\Db\Exceptions\InvalidConfigException;
-use Yiisoft\Db\Exceptions\NotSupportedException;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 
 /**
  * Transaction represents a DB transaction.

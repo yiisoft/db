@@ -6,8 +6,8 @@ namespace Yiisoft\Db\Tests;
 
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Exceptions\Exception;
-use Yiisoft\Db\Exceptions\IntegrityException;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Expressions\Expression;
 use Yiisoft\Db\Querys\Query;
 use Yiisoft\Db\Schemas\Schema;
