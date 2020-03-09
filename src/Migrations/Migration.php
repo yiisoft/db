@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db;
 
 use Yiisoft\Db\Drivers\Connection;
-use Yiisoft\Db\Constraints\Constraint;
+use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Strings\StringHelper;
 
 /**

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Constraints;
+namespace Yiisoft\Db\Constraint;
 
 /**
  * ForeignKeyConstraint represents the metadata of a table `FOREIGN KEY` constraint.

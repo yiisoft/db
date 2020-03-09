@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Constraints;
+namespace Yiisoft\Db\Constraint;
 
 /**
  * ConstraintFinderTrait provides methods for getting a table constraint information.

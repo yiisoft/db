@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Constraints;
+namespace Yiisoft\Db\Constraint;
 
 /**
  * Constraint represents the metadata of a table constraint.
