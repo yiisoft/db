@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Data;
 
-use Yiisoft\Db\Commands\Command;
+use Yiisoft\Db\Command\Command;
 
 /**
  * DataReader represents a forward-only stream of rows from a query result set.

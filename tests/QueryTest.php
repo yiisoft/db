@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\Db\Drivers\Connection;
-use Yiisoft\Db\Expressions\Expression;
-use Yiisoft\Db\Querys\Query;
-use Yiisoft\Db\Schemas\Schema;
+use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Schema\Schema;
 
 abstract class QueryTest extends DatabaseTestCase
 {
@@ -267,7 +267,13 @@ abstract class QueryTest extends DatabaseTestCase
     public function testFilterRecursively(): void
     {
         $query = new Query($this->getConnection());
-        $query->filterWhere(['and', ['like', 'name', ''], ['like', 'title', ''], ['id' => 1], ['not', ['like', 'name', '']]]);
+        $query->filterWhere(
+            ['and', ['like', 'name', ''],
+            ['like', 'title', ''],
+            ['id' => 1],
+            ['not',
+            ['like', 'name', '']]]
+        );
         $this->assertEquals(['and', ['id' => 1]], $query->getWhere());
     }
 
@@ -393,7 +399,11 @@ abstract class QueryTest extends DatabaseTestCase
     public function testColumn(): void
     {
         $db = $this->getConnection();
-        $result = (new Query($this->getConnection()))->select('name')->from('customer')->orderBy(['id' => SORT_DESC])->column($db);
+        $result = (new Query($this->getConnection()))
+            ->select('name')
+            ->from('customer')
+            ->orderBy(['id' => SORT_DESC])
+            ->column($db);
         $this->assertEquals(['user3', 'user2', 'user1'], $result);
 
         // https://github.com/yiisoft/yii2/issues/7515
@@ -485,7 +495,7 @@ abstract class QueryTest extends DatabaseTestCase
         $query = new Query($this->getConnection());
 
         $result = $query->andFilterCompare('name', null);
-        $this->assertInstanceOf('Yiisoft\Db\Querys\Query', $result);
+        $this->assertInstanceOf('Yiisoft\Db\Query\Query', $result);
         $this->assertNull($query->getWhere());
 
         $query->andFilterCompare('name', '');
@@ -731,13 +741,21 @@ abstract class QueryTest extends DatabaseTestCase
                 );
             });
 
-            $this->assertEquals('user2', $query->where(['id' => 2])->scalar($db), 'Cache does not get changes after getting newer data from DB in noCache block.');
+            $this->assertEquals(
+                'user2',
+                $query->where(['id' => 2])->scalar($db),
+                'Cache does not get changes after getting newer data from DB in noCache block.'
+            );
         }, 10);
 
         $db->setEnableQueryCache(false);
 
         $db->cache(function ($db) use ($query, $update) {
-            $this->assertEquals('user22', $query->where(['id' => 2])->scalar($db), 'When cache is disabled for the whole connection, Query inside cache block does not get cached');
+            $this->assertEquals(
+                'user22',
+                $query->where(['id' => 2])->scalar($db),
+                'When cache is disabled for the whole connection, Query inside cache block does not get cached'
+            );
             $update->bindValues([':id' => 2, ':name' => 'user2'])->execute();
             $this->assertEquals('user2', $query->where(['id' => 2])->scalar($db));
         }, 10);
@@ -747,8 +765,16 @@ abstract class QueryTest extends DatabaseTestCase
 
         $this->assertEquals('user11', $query->where(['id' => 1])->scalar($db));
         $update->bindValues([':id' => 1, ':name' => 'user1'])->execute();
-        $this->assertEquals('user11', $query->where(['id' => 1])->scalar($db), 'When both Connection and Query have cache enabled, we get cached value');
-        $this->assertEquals('user1', $query->noCache()->where(['id' => 1])->scalar($db), 'When Query has disabled cache, we get actual data');
+        $this->assertEquals(
+            'user11',
+            $query->where(['id' => 1])->scalar($db),
+            'When both Connection and Query have cache enabled, we get cached value'
+        );
+        $this->assertEquals(
+            'user1',
+            $query->noCache()->where(['id' => 1])->scalar($db),
+            'When Query has disabled cache, we get actual data'
+        );
 
         $db->cache(function (Connection $db) use ($query, $update) {
             $this->assertEquals('user1', $query->noCache()->where(['id' => 1])->scalar($db));

@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PDO;
-use Yiisoft\Db\Constraints\CheckConstraint;
-use Yiisoft\Db\Constraints\Constraint;
-use Yiisoft\Db\Constraints\ForeignKeyConstraint;
-use Yiisoft\Db\Constraints\IndexConstraint;
-use Yiisoft\Db\Exceptions\NotSupportedException;
-use Yiisoft\Db\Expressions\Expression;
-use Yiisoft\Db\Schemas\ColumnSchema;
-use Yiisoft\Db\Schemas\Schema;
-use Yiisoft\Db\Schemas\TableSchema;
+use Yiisoft\Db\Constraint\CheckConstraint;
+use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Schema\ColumnSchema;
+use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\TableSchema;
 
 abstract class SchemaTest extends DatabaseTestCase
 {
@@ -882,8 +882,8 @@ abstract class SchemaTest extends DatabaseTestCase
             if ($value instanceof Constraint) {
                 $key = (array) $value;
                 unset(
-                    $key["\000Yiisoft\Db\Constraints\Constraint\000name"],
-                    $key["\u0000Yiisoft\\Db\\Constraints\\ForeignKeyConstraint\u0000foreignSchemaName"]
+                    $key["\000Yiisoft\Db\Constraint\Constraint\000name"],
+                    $key["\u0000Yiisoft\\Db\\Constraint\\ForeignKeyConstraint\u0000foreignSchemaName"]
                 );
 
                 foreach ($key as $keyName => $keyValue) {

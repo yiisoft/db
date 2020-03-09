@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\Db\Querys\Query;
+use Yiisoft\Db\Query\Query;
 
 class UnqueryableQueryMock extends Query
 {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\Db\Querys\Query;
-use Yiisoft\Db\Exceptions\InvalidArgumentException;
-use Yiisoft\Db\Exceptions\InvalidConfigException;
-use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Expression\Expression;
 
 trait GetTablesAliasTestTrait
 {

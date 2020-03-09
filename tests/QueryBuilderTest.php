@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use Yiisoft\Db\Drivers\Connection;
+use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Mysql\QueryBuilder as MysqlQueryBuilder;
 use Yiisoft\Db\Pgsql\QueryBuilder as PgsqlQueryBuilder;
-use Yiisoft\Db\Querys\Query;
-use Yiisoft\Db\Querys\QueryBuilder;
-use Yiisoft\Db\Querys\Conditions\BetweenColumnsCondition;
+use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryBuilder;
+use Yiisoft\Db\Query\Conditions\BetweenColumnsCondition;
 use Yiisoft\Db\Sqlite\Query\QueryBuilder as SqliteQueryBuilder;
-use Yiisoft\Db\Schemas\Schema;
-use Yiisoft\Db\Schemas\SchemaBuilderTrait;
+use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Db\Expressions\Expression;
+use Yiisoft\Db\Expression\Expression;
 
 abstract class QueryBuilderTest extends DatabaseTestCase
 {
