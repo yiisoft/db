@@ -49,11 +49,6 @@ class QueryBuilder
     public const PARAM_PREFIX = ':qp';
 
     protected ?Connection $db = null;
-
-    /**
-     * @var string the separator between different fragments of a SQL statement.
-     * Defaults to an empty space. This is mainly used by {@see build()} when generating a SQL statement.
-     */
     protected string $separator = ' ';
 
     /**
@@ -2018,5 +2013,17 @@ class QueryBuilder
     public function getDb(): ?Connection
     {
         return $this->db;
+    }
+
+    /**
+     * @param string the separator between different fragments of a SQL statement.
+     *
+     * Defaults to an empty space. This is mainly used by {@see build()} when generating a SQL statement.
+     *
+     * @return void
+     */
+    public function setSeparator(string $separator): void
+    {
+        $this->separator = $separator;
     }
 }
