@@ -94,9 +94,6 @@ class SqlDataProvider extends BaseDataProvider
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function prepareModels()
     {
         $sort = $this->getSort();
@@ -129,9 +126,6 @@ class SqlDataProvider extends BaseDataProvider
         return $this->db->createCommand($sql, $this->params)->queryAll();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function prepareKeys($models)
     {
         $keys = [];
@@ -150,9 +144,6 @@ class SqlDataProvider extends BaseDataProvider
         return array_keys($models);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function prepareTotalCount()
     {
         return (new Query($this->db, [

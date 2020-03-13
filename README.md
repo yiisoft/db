@@ -9,7 +9,7 @@
 This database library provides: database access abstraction and query builder.
 It is used in [Yii Framework] but is supposed to be usable separately.
 
-[Yii Framework]: https://github.com/yiisoft/core
+[Yii Framework]: https://www.yiiframework.com
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db/v/stable.png)](https://packagist.org/packages/yiisoft/db)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db/downloads.png)](https://packagist.org/packages/yiisoft/db)

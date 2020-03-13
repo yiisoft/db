@@ -14,9 +14,6 @@ class PdoValueBuilder implements ExpressionBuilderInterface
 {
     public const PARAM_PREFIX = ':pv';
 
-    /**
-     * {@inheritdoc}
-     */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $placeholder = static::PARAM_PREFIX . count($params);

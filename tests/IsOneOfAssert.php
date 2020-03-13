@@ -39,9 +39,6 @@ class IsOneOfAssert extends \PHPUnit\Framework\Constraint\Constraint
         return "is one of $expectedAsString";
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function matches($other): bool
     {
         return in_array($other, $this->allowedValues, false);
