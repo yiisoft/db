@@ -51,7 +51,7 @@ abstract class SchemaTest extends DatabaseTestCase
      */
     public function testGetTableNames($pdoAttributes): void
     {
-        $connection = $this->getConnection();
+        $connection = $this->getConnection(true, true, true);
 
         foreach ($pdoAttributes as $name => $value) {
             $connection->getPDO()->setAttribute($name, $value);
@@ -503,12 +503,12 @@ abstract class SchemaTest extends DatabaseTestCase
 
         $table = $schema->getTableSchema('negative_default_values');
 
-        $this->assertEquals(-123, $table->getColumn('tinyint_col')->defaultValue);
-        $this->assertEquals(-123, $table->getColumn('smallint_col')->defaultValue);
-        $this->assertEquals(-123, $table->getColumn('int_col')->defaultValue);
-        $this->assertEquals(-123, $table->getColumn('bigint_col')->defaultValue);
-        $this->assertEquals(-12345.6789, $table->getColumn('float_col')->defaultValue);
-        $this->assertEquals(-33.22, $table->getColumn('numeric_col')->defaultValue);
+        $this->assertEquals(-123, $table->getColumn('tinyint_col')->getDefaultValue());
+        $this->assertEquals(-123, $table->getColumn('smallint_col')->getDefaultValue());
+        $this->assertEquals(-123, $table->getColumn('int_col')->getDefaultValue());
+        $this->assertEquals(-123, $table->getColumn('bigint_col')->getDefaultValue());
+        $this->assertEquals(-12345.6789, $table->getColumn('float_col')->getDefaultValue());
+        $this->assertEquals(-33.22, $table->getColumn('numeric_col')->getDefaultValue());
     }
 
     public function testColumnSchema()
@@ -529,26 +529,62 @@ abstract class SchemaTest extends DatabaseTestCase
 
         foreach ($table->columns as $name => $column) {
             $expected = $columns[$name];
-            $this->assertSame($expected['dbType'], $column->dbType, "dbType of column $name does not match. type is $column->type, dbType is $column->dbType.");
-            $this->assertSame($expected['phpType'], $column->phpType, "phpType of column $name does not match. type is $column->type, dbType is $column->dbType.");
-            $this->assertSame($expected['type'], $column->type, "type of column $name does not match.");
-            $this->assertSame($expected['allowNull'], $column->allowNull, "allowNull of column $name does not match.");
-            $this->assertSame($expected['autoIncrement'], $column->autoIncrement, "autoIncrement of column $name does not match.");
-            $this->assertSame($expected['enumValues'], $column->enumValues, "enumValues of column $name does not match.");
-            $this->assertSame($expected['size'], $column->size, "size of column $name does not match.");
-            $this->assertSame($expected['precision'], $column->precision, "precision of column $name does not match.");
-            $this->assertSame($expected['scale'], $column->scale, "scale of column $name does not match.");
+            $this->assertSame(
+                $expected['dbType'],
+                $column->getDbType(),
+                "dbType of column $name does not match. type is {$column->getType()}, dbType is {$column->getDbType()}."
+            );
+            $this->assertSame(
+                $expected['phpType'],
+                $column->getPhpType(),
+                "phpType of column $name does not match. type is {$column->getType()}, dbType is {$column->getDbType()}."
+            );
+            $this->assertSame($expected['type'], $column->getType(), "type of column $name does not match.");
+            $this->assertSame(
+                $expected['allowNull'],
+                $column->getAllowNull(),
+                "allowNull of column $name does not match."
+            );
+            $this->assertSame(
+                $expected['autoIncrement'],
+                $column->getAutoIncrement(),
+                "autoIncrement of column $name does not match."
+            );
+            $this->assertSame(
+                $expected['enumValues'],
+                $column->getEnumValues(),
+                "enumValues of column $name does not match."
+            );
+            $this->assertSame($expected['size'], $column->getSize(), "size of column $name does not match.");
+            $this->assertSame(
+                $expected['precision'],
+                $column->getPrecision(),
+                "precision of column $name does not match."
+            );
+            $this->assertSame($expected['scale'], $column->getScale(), "scale of column $name does not match.");
             if (\is_object($expected['defaultValue'])) {
                 $this->assertIsObject(
-                    $column->defaultValue,
+                    $column->getDefaultValue(),
                     "defaultValue of column $name is expected to be an object but it is not."
                 );
-                $this->assertEquals((string) $expected['defaultValue'], (string) $column->defaultValue, "defaultValue of column $name does not match.");
+                $this->assertEquals(
+                    (string) $expected['defaultValue'],
+                    (string) $column->getDefaultValue(),
+                    "defaultValue of column $name does not match."
+                );
             } else {
-                $this->assertEquals($expected['defaultValue'], $column->defaultValue, "defaultValue of column $name does not match.");
+                $this->assertEquals(
+                    $expected['defaultValue'],
+                    $column->getDefaultValue(),
+                    "defaultValue of column $name does not match."
+                );
             }
             if (isset($expected['dimension'])) { // PgSQL only
-                $this->assertSame($expected['dimension'], $column->dimension, "dimension of column $name does not match");
+                $this->assertSame(
+                    $expected['dimension'],
+                    $column->dimension,
+                    "dimension of column $name does not match"
+                );
             }
         }
     }

@@ -741,16 +741,16 @@ abstract class Schema
             self::TYPE_JSON     => 'array',
         ];
 
-        if (isset($typeMap[$column->type])) {
-            if ($column->type === 'bigint') {
-                return PHP_INT_SIZE === 8 && !$column->unsigned ? 'integer' : 'string';
+        if (isset($typeMap[$column->getType()])) {
+            if ($column->getType() === 'bigint') {
+                return PHP_INT_SIZE === 8 && !$column->getUnsigned() ? 'integer' : 'string';
             }
 
-            if ($column->type === 'integer') {
-                return PHP_INT_SIZE === 4 && $column->unsigned ? 'string' : 'integer';
+            if ($column->getType() === 'integer') {
+                return PHP_INT_SIZE === 4 && $column->getUnsigned() ? 'string' : 'integer';
             }
 
-            return $typeMap[$column->type];
+            return $typeMap[$column->getType()];
         }
 
         return 'string';

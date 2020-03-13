@@ -1631,11 +1631,11 @@ SQL;
 
             $db->createCommand()->addCommentOnColumn($tableName, 'id', 'Test comment')->execute();
 
-            $this->assertNotEmpty($db->getSchema()->getTableSchema($tableName)->getColumn('id')->comment);
+            $this->assertNotEmpty($db->getSchema()->getTableSchema($tableName)->getColumn('id')->getComment());
 
             $db->createCommand()->dropCommentFromColumn($tableName, 'id')->execute();
 
-            $this->assertEmpty($db->getSchema()->getTableSchema($tableName)->getColumn('id')->comment);
+            $this->assertEmpty($db->getSchema()->getTableSchema($tableName)->getColumn('id')->getComment());
         }
 
         $db->createCommand()->dropTable($tableName)->execute();
