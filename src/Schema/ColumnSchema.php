@@ -338,5 +338,4 @@ class ColumnSchema
     {
         $this->comment = $value;
     }
-
 }
