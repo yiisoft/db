@@ -14,79 +14,20 @@ use Yiisoft\Strings\StringHelper;
  */
 class ColumnSchema
 {
-    /**
-     * @var string name of this column (without quotes).
-     */
-    public string $name;
-
-    /**
-     * @var bool whether this column can be null.
-     */
-    public bool $allowNull;
-
-    /**
-     * @var string abstract type of this column. Possible abstract types include:
-     * char, string, text, boolean, smallint, integer, bigint, float, decimal, datetime, timestamp, time, date, binary,
-     * and money.
-     */
-    public string $type;
-
-    /**
-     * @var string the PHP type of this column. Possible PHP types include:
-     * `string`, `boolean`, `integer`, `double`, `array`.
-     */
-    public ?string $phpType = null;
-
-    /**
-     * @var string the DB type of this column. Possible DB types vary according to the type of DBMS.
-     */
-    public string $dbType;
-
-    /**
-     * @var mixed default value of this column
-     */
-    public $defaultValue;
-
-    /**
-     * @var array enumerable values. This is set only if the column is declared to be an enumerable type.
-     */
-    public ?array $enumValues = null;
-
-    /**
-     * @var int display size of the column.
-     */
-    public ?int $size = null;
-
-    /**
-     * @var int precision of the column data, if it is numeric.
-     */
-    public ?int $precision = null;
-
-    /**
-     * @var int scale of the column data, if it is numeric.
-     */
-    public ?int $scale = null;
-
-    /**
-     * @var bool whether this column is a primary key
-     */
-    public bool $isPrimaryKey = false;
-
-    /**
-     * @var bool whether this column is auto-incremental
-     */
-    public bool $autoIncrement = false;
-
-    /**
-     * @var bool whether this column is unsigned. This is only meaningful when {@see type} is `smallint`, `integer` or
-     * `bigint`.
-     */
-    public bool $unsigned = false;
-
-    /**
-     * @var string comment of this column. Not all DBMS support this.
-     */
-    public ?string $comment = null;
+    private string $name;
+    private bool $allowNull;
+    private string $type;
+    private ?string $phpType = null;
+    private string $dbType;
+    private $defaultValue;
+    private ?array $enumValues = null;
+    private ?int $size = null;
+    private ?int $precision = null;
+    private ?int $scale = null;
+    private bool $isPrimaryKey = false;
+    private bool $autoIncrement = false;
+    private bool $unsigned = false;
+    private ?string $comment = null;
 
     /**
      * Converts the input value according to {@see phpType} after retrieval from the database.
@@ -211,5 +152,190 @@ class ColumnSchema
     public function setType(string $value): void
     {
         $this->type = $value;
+    }
+
+    /**
+     * @return string name of this column (without quotes).
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return bool whether this column can be null.
+     */
+    public function getAllowNull(): bool
+    {
+        return $this->allowNull;
+    }
+
+    /**
+     * @return string abstract type of this column. Possible abstract types include: char, string, text, boolean,
+     * smallint, integer, bigint, float, decimal, datetime, timestamp, time, date, binary, and money.
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return string the PHP type of this column. Possible PHP types include: `string`, `boolean`, `integer`,
+     * `double`, `array`.
+     */
+    public function getPhpType(): ?string
+    {
+        return $this->phpType;
+    }
+
+    /**
+     * @return string the DB type of this column. Possible DB types vary according to the type of DBMS.
+     */
+    public function getDbType()
+    {
+        return $this->dbType;
+    }
+
+    /**
+     * @return mixed default value of this column
+     */
+    public function getDefaultValue()
+    {
+        return $this->defaultValue;
+    }
+
+    /**
+     * @return array enumerable values. This is set only if the column is declared to be an enumerable type.
+     */
+    public function getEnumValues(): ?array
+    {
+        return $this->enumValues;
+    }
+
+    /**
+     * @return int display size of the column.
+     */
+    public function getSize(): ?int
+    {
+        return $this->size;
+    }
+
+    /**
+     * @return int precision of the column data, if it is numeric.
+     */
+    public function getPrecision(): ?int
+    {
+        return $this->precision;
+    }
+
+    /**
+     * @return int scale of the column data, if it is numeric.
+     */
+    public function getScale(): ?int
+    {
+        return $this->scale;
+    }
+
+    /**
+     * @return bool whether this column is a primary key
+     */
+    public function getIsPrimaryKey(): bool
+    {
+        return $this->isPrimaryKey;
+    }
+
+    /**
+     * @return bool whether this column is auto-incremental
+     */
+    public function getAutoIncrement(): bool
+    {
+        return $this->autoIncrement;
+    }
+
+    /**
+     * @return bool whether this column is unsigned. This is only meaningful when {@see type} is `smallint`, `integer`
+     * or `bigint`.
+     */
+    public function getUnsigned(): bool
+    {
+        return $this->unsigned;
+    }
+
+    /**
+     * @return string comment of this column. Not all DBMS support this.
+     */
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function name(string $value): void
+    {
+        $this->name = $value;
+    }
+
+    public function allowNull(bool $value): void
+    {
+        $this->allowNull =  $value;
+    }
+
+    public function type(string $value): void
+    {
+        $this->type = $value;
+    }
+
+    public function phpType(?string $value): void
+    {
+        $this->phpType = $value;
+    }
+
+    public function dbType(string $value): void
+    {
+        $this->dbType = $value;
+    }
+
+    public function defaultValue($value): void
+    {
+        $this->defaultValue = $value;
+    }
+
+    public function enumValues(?array $value): void
+    {
+        $this->enumValues = $value;
+    }
+
+    public function size(?int $value): void
+    {
+        $this->size = $value;
+    }
+
+    public function precision(?int $value): void
+    {
+        $this->precision = $value;
+    }
+
+    public function scale(?int $value): void
+    {
+        $this->scale = $value;
+    }
+
+    public function isPrimaryKey(bool $value): void
+    {
+        $this->isPrimaryKey = $value;
+    }
+
+    public function autoIncrement(bool $value): void
+    {
+        $this->autoIncrement = $value;
+    }
+
+    public function unsigned(bool $value): void
+    {
+        $this->unsigned = $value;
+    }
+
+    public function comment(?string $value): void
+    {
+        $this->comment = $value;
     }
 }
