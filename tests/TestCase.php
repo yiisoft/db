@@ -49,11 +49,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         DatabaseFactory::initialize($this->container, []);
     }
 
-    /**
-     * tearDown
-     *
-     * @return void
-     */
     protected function tearDown(): void
     {
         unset($this->aliases, $this->cache, $this->container, $this->logger, $this->profiler);

@@ -28,9 +28,6 @@ abstract class ConjunctionCondition implements ConditionInterface
      */
     abstract public function getOperator(): string;
 
-    /**
-     * {@inheritdoc}
-     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         return new static($operands);

@@ -94,11 +94,6 @@ class QueryBuilder
      */
     protected array $expressionBuilders = [];
 
-    /**
-     * Constructor.
-     *
-     * @param Connection $db
-     */
     public function __construct(Connection $db)
     {
         $this->db = $db;

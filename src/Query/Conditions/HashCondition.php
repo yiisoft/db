@@ -24,9 +24,6 @@ class HashCondition implements ConditionInterface
         return $this->hash;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         return new static($operands);

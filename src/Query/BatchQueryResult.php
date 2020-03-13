@@ -56,9 +56,6 @@ class BatchQueryResult implements \Iterator
      */
     private int $mssqlNoMoreRowsErrorCode = -13;
 
-    /**
-     * Destructor.
-     */
     public function __destruct()
     {
         $this->reset();

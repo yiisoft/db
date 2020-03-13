@@ -174,9 +174,6 @@ abstract class DatabaseTestCase extends TestCase
         }
     }
 
-    /**
-     * @return Connection
-     */
     protected function getConnectionWithInvalidSlave(): Connection
     {
         $config = array_merge($this->database, [

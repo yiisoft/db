@@ -20,9 +20,6 @@ class ExistsCondition implements ConditionInterface
         $this->query = $query;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (!isset($operands[0]) || !$operands[0] instanceof Query) {

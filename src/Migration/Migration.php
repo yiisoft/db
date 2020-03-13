@@ -67,9 +67,6 @@ class Migration implements MigrationInterface
         $this->db->enableSlaves = false;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getDb()
     {
         return $this->db;
