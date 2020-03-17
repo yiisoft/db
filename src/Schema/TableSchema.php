@@ -11,54 +11,14 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
  *
  * @property array $columnNames List of column names. This property is read-only.
  */
-class TableSchema
+abstract class TableSchema
 {
-    /**
-     * @var string|null the name of the schema that this table belongs to.
-     */
-    public ?string $schemaName = null;
-
-    /**
-     * @var string the name of this table. The schema name is not included. Use {@see fullName} to get the name with
-     * schema name prefix.
-     */
-    public string $name;
-
-    /**
-     * @var string the full name of this table, which includes the schema name prefix, if any.
-     * Note that if the schema name is the same as the {@see Schema::defaultSchema|default schema name}, the schema name
-     * will not be included.
-     */
-    public string $fullName;
-
-    /**
-     * @var array primary keys of this table.
-     */
-    public array $primaryKey = [];
-
-    /**
-     * @var string sequence name for the primary key. Null if no sequence.
-     */
-    public ?string $sequenceName = null;
-
-    /**
-     * @var array foreign keys of this table. Each array element is of the following structure:
-     *
-     * ```php
-     * [
-     *  'ForeignTableName',
-     *  'fk1' => 'pk1',  // pk1 is in foreign table
-     *  'fk2' => 'pk2',  // if composite foreign key
-     * ]
-     * ```
-     */
-    public array $foreignKeys = [];
-
-    /**
-     * @var ColumnSchema[] column metadata of this table. Each array element is a {@see ColumnSchema} object, indexed by
-     * column names.
-     */
-    public array $columns = [];
+    private ?string $schemaName = null;
+    private ?string $name = null;
+    private ?string $fullName = null;
+    private ?string $sequenceName = null;
+    private array $primaryKey = [];
+    private array $columns = [];
 
     /**
      * Gets the named column metadata.
@@ -69,7 +29,7 @@ class TableSchema
      *
      * @return ColumnSchema metadata of the named column. Null if the named column does not exist.
      */
-    public function getColumn($name): ColumnSchema
+    public function getColumn(?string $name): ColumnSchema
     {
         return $this->columns[$name] ?? null;
     }
@@ -107,5 +67,87 @@ class TableSchema
                 throw new InvalidArgumentException("Primary key '$key' cannot be found in table '{$this->name}'.");
             }
         }
+    }
+
+    /**
+     * @return string|null the name of the schema that this table belongs to.
+     */
+    public function getSchemaName(): ?string
+    {
+        return $this->schemaName;
+    }
+
+    /**
+     * @return string|null the name of this table. The schema name is not included. Use {@see fullName} to get the name
+     * with schema name prefix.
+     */
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string|null the full name of this table, which includes the schema name prefix, if any. Note that if the
+     * schema name is the same as the {@see Schema::defaultSchema|default schema name}, the schema name will not be
+     * included.
+     */
+    public function getFullName(): ?string
+    {
+        return $this->fullName;
+    }
+
+    /**
+     * @return string|null sequence name for the primary key. Null if no sequence.
+     */
+    public function getSequenceName(): ?string
+    {
+        return $this->sequenceName;
+    }
+
+    /**
+     * @return array primary keys of this table.
+     */
+    public function getPrimaryKey(): array
+    {
+        return $this->primaryKey;
+    }
+
+    /**
+     * @return ColumnSchema[] column metadata of this table. Each array element is a {@see ColumnSchema} object, indexed
+     * by column names.
+     */
+    public function getColumns(): array
+    {
+        return $this->columns;
+    }
+
+    public function schemaName(?string $value): void
+    {
+        $this->schemaName = $value;
+    }
+
+    public function name(?string $value): void
+    {
+        $this->name = $value;
+    }
+
+    public function fullName(?string $value): void
+    {
+        $this->fullName = $value;
+    }
+
+    public function sequenceName(?string $value): void
+    {
+        $this->sequenceName = $value;
+    }
+
+    public function primaryKey(string $value): void
+    {
+        $this->primaryKey[] = $value;
+    }
+
+    public function columns(string $index, ColumnSchema $value): void
+    {
+        $this->columns[$index] = $value;
     }
 }

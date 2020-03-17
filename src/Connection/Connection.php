@@ -187,9 +187,9 @@ class Connection
      * supported by Yii.
      */
     private array $schemaMap = [
-        'pgsql' => \Yiisoft\Db\Pgsql\Schema::class, // PostgreSQL
-        'mysqli' => \Yiisoft\Db\Mysql\Schema::class, // MySQL
-        'mysql' => \Yiisoft\Db\Mysql\Schema::class, // MySQL
+        'pgsql' => \Yiisoft\Db\Pgsql\Schema\Schema::class, // PostgreSQL
+        'mysqli' => \Yiisoft\Db\Mysql\Schema\Schema::class, // MySQL
+        'mysql' => \Yiisoft\Db\Mysql\Schema\Schema::class, // MySQL
         'sqlite' => \Yiisoft\Db\Sqlite\Schema\Schema::class, // sqlite 3
         'sqlite2' => \Yiisoft\Db\Sqlite\Schema\Schema::class, // sqlite 2
         'sqlsrv' => \Yiisoft\Db\Mssql\Schema::class, // newer MSSQL driver on MS Windows hosts

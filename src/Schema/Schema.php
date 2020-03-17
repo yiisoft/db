@@ -21,133 +21,78 @@ use Yiisoft\Cache\Dependency\TagDependency;
  * @property string $lastInsertID The row ID of the last row inserted, or the last value retrieved from the sequence
  * object. This property is read-only.
  * @property QueryBuilder $queryBuilder The query builder for this connection. This property is read-only.
- * @property string[] $schemaNames All schema names in the database, except system schemas. This property is
- * read-only.
+ * @property string[] $schemaNames All schema names in the database, except system schemas. This property is read-only.
  * @property string $serverVersion Server version as a string. This property is read-only.
  * @property string[] $tableNames All table names in the database. This property is read-only.
- * @property TableSchema[] $tableSchemas The metadata for all tables in the database. Each array element is an
- * instance of {@see TableSchema} or its child class. This property is read-only.
- * @property string $transactionIsolationLevel The transaction isolation level to use for this transaction.
- * This can be one of {@see Transaction::READ_UNCOMMITTED}, {@see Transaction::READ_COMMITTED},
+ * @property TableSchema[] $tableSchemas The metadata for all tables in the database. Each array element is an instance
+ * of {@see TableSchema} or its child class. This property is read-only.
+ * @property string $transactionIsolationLevel The transaction isolation level to use for this transaction. This can be
+ * one of {@see Transaction::READ_UNCOMMITTED}, {@see Transaction::READ_COMMITTED},
  * {@see Transaction::REPEATABLE_READ} and {@see Transaction::SERIALIZABLE} but also a string containing DBMS specific
  * syntax to be used after `SET TRANSACTION ISOLATION LEVEL`. This property is write-only.
  */
 abstract class Schema
 {
-    /* The following are the supported abstract column data types. */
     public const TYPE_PK = 'pk';
-
     public const TYPE_UPK = 'upk';
-
     public const TYPE_BIGPK = 'bigpk';
-
     public const TYPE_UBIGPK = 'ubigpk';
-
     public const TYPE_CHAR = 'char';
-
     public const TYPE_STRING = 'string';
-
     public const TYPE_TEXT = 'text';
-
     public const TYPE_TINYINT = 'tinyint';
-
     public const TYPE_SMALLINT = 'smallint';
-
     public const TYPE_INTEGER = 'integer';
-
     public const TYPE_BIGINT = 'bigint';
-
     public const TYPE_FLOAT = 'float';
-
     public const TYPE_DOUBLE = 'double';
-
     public const TYPE_DECIMAL = 'decimal';
-
     public const TYPE_DATETIME = 'datetime';
-
     public const TYPE_TIMESTAMP = 'timestamp';
-
     public const TYPE_TIME = 'time';
-
     public const TYPE_DATE = 'date';
-
     public const TYPE_BINARY = 'binary';
-
     public const TYPE_BOOLEAN = 'boolean';
-
     public const TYPE_MONEY = 'money';
-
     public const TYPE_JSON = 'json';
 
     /**
-     * Schema cache version, to detect incompatibilities in cached values when the
-     * data format of the cache changes.
+     * Schema cache version, to detect incompatibilities in cached values when the data format of the cache changes.
      */
-    public const SCHEMA_CACHE_VERSION = 1;
-
-    /**
-     * @var Connection the database connection
-     */
-    public ?Connection $db = null;
+    protected const SCHEMA_CACHE_VERSION = 1;
 
     /**
      * @var string|null the default schema name used for the current session.
      */
-    public ?string $defaultSchema = null;
+    protected ?string $defaultSchema = null;
 
     /**
      * @var array map of DB errors and corresponding exceptions. If left part is found in DB error message exception
      * class from the right part is used.
      */
-    public array $exceptionMap = [
+    protected array $exceptionMap = [
         'SQLSTATE[23' => IntegrityException::class,
     ];
-
-    /**
-     * @var string|array column schema class or class config
-     */
-    public string $columnSchemaClass = ColumnSchema::class;
 
     /**
      * @var string|string[] character used to quote schema, table, etc. names. An array of 2 characters can be used in
      * case starting and ending characters are different.
      */
     protected string $tableQuoteCharacter = "'";
+
     /**
      * @var string|string[] character used to quote column names. An array of 2 characters can be used in case starting
      * and ending characters are different.
      */
     protected string $columnQuoteCharacter = '"';
 
-    /**
-     * @var array list of ALL schema names in the database, except system schemas
-     */
     private array $schemaNames = [];
-
-    /**
-     * @var array list of ALL table names in the database
-     */
     private array $tableNames = [];
-
-    /**
-     * @var array list of loaded table metadata (table name => metadata type => metadata).
-     */
     private array $tableMetadata = [];
-
-    /**
-     * @var QueryBuilder the query builder for this database
-     */
     private ?QueryBuilder $builder = null;
-
-    /**
-     * @var string server version as a string.
-     */
     private ?string $serverVersion = null;
-
-    /**
-     * @var CacheInterface $cache
-     */
     private CacheInterface $cache;
+    private ?Connection $db = null;
 
     public function __construct(Connection $db)
     {
@@ -158,7 +103,7 @@ abstract class Schema
     /**
      * Resolves the table name and schema name (if any).
      *
-     * @param string $name the table name
+     * @param string $name the table name.
      *
      * @return void with resolved table, schema, etc. names.
      *
@@ -206,7 +151,7 @@ abstract class Schema
     /**
      * Loads the metadata for the specified table.
      *
-     * @param string $name table name
+     * @param string $name table name.
      *
      * @return TableSchema|null DBMS-dependent table metadata, `null` if the table does not exist.
      */
@@ -221,7 +166,7 @@ abstract class Schema
      */
     protected function createColumnSchema(): ColumnSchema
     {
-        return new $this->columnSchemaClass();
+        return new ColumnSchema();
     }
 
     /**
@@ -245,8 +190,8 @@ abstract class Schema
      * @param bool $refresh whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
-     * @return TableSchema[] the metadata for all tables in the database.
-     *                       Each array element is an instance of [[TableSchema]] or its child class.
+     * @return TableSchema[] the metadata for all tables in the database. Each array element is an instance of
+     * {@see TableSchema} or its child class.
      */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array
     {
@@ -309,7 +254,7 @@ abstract class Schema
      *
      * @return int the PDO type
      *
-     * @see http://www.php.net/manual/en/pdo.constants.php
+     * {@see http://www.php.net/manual/en/pdo.constants.php}
      */
     public function getPdoType($data): int
     {
@@ -371,7 +316,7 @@ abstract class Schema
      *
      * This method may be overridden by child classes to create a DBMS-specific query builder.
      *
-     * @return QueryBuilder query builder instance
+     * @return QueryBuilder query builder instance.
      */
     public function createQueryBuilder()
     {
@@ -405,8 +350,8 @@ abstract class Schema
      * ]
      * ```
      *
-     * This method should be overridden by child classes in order to support this feature
-     * because the default implementation simply throws an exception
+     * This method should be overridden by child classes in order to support this feature because the default
+     * implementation simply throws an exception
      *
      * @param TableSchema $table the table metadata
      *
@@ -488,7 +433,7 @@ abstract class Schema
      * {@see Transaction::REPEATABLE_READ} and {@see Transaction::SERIALIZABLE} but also a string containing DBMS
      * specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`.
      *
-     * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
      */
     public function setTransactionIsolationLevel(string $level): void
     {
@@ -498,10 +443,10 @@ abstract class Schema
     /**
      * Executes the INSERT command, returning primary key values.
      *
-     * @param string $table   the table that new rows will be inserted into.
-     * @param array  $columns the column data (name => value) to be inserted into the table.
+     * @param string $table the table that new rows will be inserted into.
+     * @param array $columns the column data (name => value) to be inserted into the table.
      *
-     * @return array|false primary key values or false if the command fails
+     * @return array|false primary key values or false if the command fails.
      */
     public function insert(string $table, array $columns)
     {
@@ -528,13 +473,14 @@ abstract class Schema
 
     /**
      * Quotes a string value for use in a query.
+     *
      * Note that if the parameter is not a string, it will be returned without change.
      *
-     * @param string|int $str string to be quoted
+     * @param string|int $str string to be quoted.
      *
-     * @return string|int the properly quoted string
+     * @return string|int the properly quoted string.
      *
-     * @see http://www.php.net/manual/en/function.PDO-quote.php
+     * {@see http://www.php.net/manual/en/function.PDO-quote.php}
      */
     public function quoteValue($str)
     {
@@ -546,7 +492,7 @@ abstract class Schema
             return $value;
         }
 
-        // the driver doesn't support quote (e.g. oci)
+        /** the driver doesn't support quote (e.g. oci) */
         return "'" . addcslashes(str_replace("'", "''", $str), "\000\n\r\\\032") . "'";
     }
 
@@ -556,11 +502,11 @@ abstract class Schema
      * If the table name contains schema prefix, the prefix will also be properly quoted. If the table name is already
      * quoted or contains '(' or '{{', then this method will do nothing.
      *
-     * @param string $name table name
+     * @param string $name table name.
      *
-     * @return string the properly quoted table name
+     * @return string the properly quoted table name.
      *
-     * @see quoteSimpleTableName()
+     * {@see quoteSimpleTableName()}
      */
     public function quoteTableName(string $name): string
     {
@@ -587,11 +533,11 @@ abstract class Schema
      * If the column name contains prefix, the prefix will also be properly quoted. If the column name is already quoted
      * or contains '(', '[[' or '{{', then this method will do nothing.
      *
-     * @param string $name column name
+     * @param string $name column name.
      *
-     * @return string the properly quoted column name
+     * @return string the properly quoted column name.
      *
-     * @see quoteSimpleColumnName()
+     * {@see quoteSimpleColumnName()}
      */
     public function quoteColumnName(string $name): string
     {
@@ -616,12 +562,12 @@ abstract class Schema
     /**
      * Quotes a simple table name for use in a query.
      *
-     * A simple table name should contain the table name only without any schema prefix.
-     * If the table name is already quoted, this method will do nothing.
+     * A simple table name should contain the table name only without any schema prefix. If the table name is already
+     * quoted, this method will do nothing.
      *
-     * @param string $name table name
+     * @param string $name table name.
      *
-     * @return string the properly quoted table name
+     * @return string the properly quoted table name.
      */
     public function quoteSimpleTableName(string $name): string
     {
@@ -637,12 +583,12 @@ abstract class Schema
     /**
      * Quotes a simple column name for use in a query.
      *
-     * A simple column name should contain the column name only without any prefix.
-     * If the column name is already quoted or is the asterisk character '*', this method will do nothing.
+     * A simple column name should contain the column name only without any prefix. If the column name is already quoted
+     * or is the asterisk character '*', this method will do nothing.
      *
-     * @param string $name column name
+     * @param string $name column name.
      *
-     * @return string the properly quoted column name
+     * @return string the properly quoted column name.
      */
     public function quoteSimpleColumnName(string $name): string
     {
@@ -659,8 +605,8 @@ abstract class Schema
     /**
      * Unquotes a simple table name.
      *
-     * A simple table name should contain the table name only without any schema prefix.
-     * If the table name is not quoted, this method will do nothing.
+     * A simple table name should contain the table name only without any schema prefix. If the table name is not
+     * quoted, this method will do nothing.
      *
      * @param string $name table name.
      *
@@ -680,8 +626,8 @@ abstract class Schema
     /**
      * Unquotes a simple column name.
      *
-     * A simple column name should contain the column name only without any prefix.
-     * If the column name is not quoted or is the asterisk character '*', this method will do nothing.
+     * A simple column name should contain the column name only without any prefix. If the column name is not quoted or
+     * is the asterisk character '*', this method will do nothing.
      *
      * @param string $name column name.
      *
@@ -701,12 +647,12 @@ abstract class Schema
     /**
      * Returns the actual name of a given table name.
      *
-     * This method will strip off curly brackets from the given table name
-     * and replace the percentage character '%' with {@see Connection::tablePrefix}.
+     * This method will strip off curly brackets from the given table name and replace the percentage character '%' with
+     * {@see Connection::tablePrefix}.
      *
-     * @param string $name the table name to be converted
+     * @param string $name the table name to be converted.
      *
-     * @return string the real name of the given table name
+     * @return string the real name of the given table name.
      */
     public function getRawTableName(string $name): string
     {
@@ -722,9 +668,9 @@ abstract class Schema
     /**
      * Extracts the PHP type from abstract DB type.
      *
-     * @param ColumnSchema $column the column schema information
+     * @param ColumnSchema $column the column schema information.
      *
-     * @return string PHP type name
+     * @return string PHP type name.
      */
     protected function getColumnPhpType(ColumnSchema $column): string
     {
@@ -760,7 +706,7 @@ abstract class Schema
      * Converts a DB exception to a more concrete one if possible.
      *
      * @param \Exception $e
-     * @param string $rawSql SQL that produced exception
+     * @param string $rawSql SQL that produced exception.
      *
      * @return Exception
      */
@@ -787,7 +733,7 @@ abstract class Schema
     /**
      * Returns a value indicating whether a SQL statement is for read purpose.
      *
-     * @param string $sql the SQL statement
+     * @param string $sql the SQL statement.
      *
      * @return bool whether a SQL statement is for read purpose.
      */
@@ -831,9 +777,10 @@ abstract class Schema
 
     /**
      * Returns the cache tag name.
+     *
      * This allows {@see refresh()} to invalidate all cached table schemas.
      *
-     * @return string the cache tag name
+     * @return string the cache tag name.
      */
     protected function getCacheTag(): string
     {
@@ -847,12 +794,12 @@ abstract class Schema
     /**
      * Returns the metadata of the given type for the given table.
      *
-     * If there's no metadata in the cache, this method will call
-     * a `'loadTable' . ucfirst($type)` named method with the table name to obtain the metadata.
+     * If there's no metadata in the cache, this method will call a `'loadTable' . ucfirst($type)` named method with the
+     * table name to obtain the metadata.
      *
      * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
      * @param string $type metadata type.
-     * @param bool   $refresh whether to reload the table metadata even if it is found in the cache.
+     * @param bool $refresh whether to reload the table metadata even if it is found in the cache.
      *
      * @return mixed metadata.
      */
@@ -878,8 +825,9 @@ abstract class Schema
 
     /**
      * Returns the metadata of the given type for all tables in the given schema.
-     * This method will call a `'getTable' . ucfirst($type)` named method with the table name
-     * and the refresh flag to obtain the metadata.
+     *
+     * This method will call a `'getTable' . ucfirst($type)` named method with the table name and the refresh flag to
+     * obtain the metadata.
      *
      * @param string $schema the schema of the metadata. Defaults to empty string, meaning the current or default schema
      * name.
@@ -923,7 +871,7 @@ abstract class Schema
      * Changes row's array key case to lower if PDO's one is set to uppercase.
      *
      * @param array $row row's array or an array of row's arrays.
-     * @param bool  $multiple whether multiple rows or a single row passed.
+     * @param bool $multiple whether multiple rows or a single row passed.
      *
      * @return array normalized row or rows.
      */
@@ -990,5 +938,10 @@ abstract class Schema
             $this->db->getSchemaCacheDuration(),
             new TagDependency(['tags' => $this->getCacheTag()])
         );
+    }
+
+    public function getDb(): ?Connection
+    {
+        return $this->db;
     }
 }

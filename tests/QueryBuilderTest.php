@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Mysql\QueryBuilder as MysqlQueryBuilder;
-use Yiisoft\Db\Pgsql\QueryBuilder as PgsqlQueryBuilder;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Query\Conditions\BetweenColumnsCondition;
+use Yiisoft\Db\Mysql\Query\QueryBuilder as MysqlQueryBuilder;
+use Yiisoft\Db\Pgsql\Query\QueryBuilder as PgsqlQueryBuilder;
 use Yiisoft\Db\Sqlite\Query\QueryBuilder as SqliteQueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\SchemaBuilderTrait;

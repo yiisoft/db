@@ -1623,11 +1623,11 @@ SQL;
         if ($this->driverName !== 'sqlite') {
             $db->createCommand()->addForeignKey($fkName, $tableName, 'fk', $tableName, 'id')->execute();
 
-            $this->assertNotEmpty($db->getSchema()->getTableSchema($tableName)->foreignKeys);
+            $this->assertNotEmpty($db->getSchema()->getTableSchema($tableName)->getForeignKeys());
 
             $db->createCommand()->dropForeignKey($fkName, $tableName)->execute();
 
-            $this->assertEmpty($db->getSchema()->getTableSchema($tableName)->foreignKeys);
+            $this->assertEmpty($db->getSchema()->getTableSchema($tableName)->getForeignKeys());
 
             $db->createCommand()->addCommentOnColumn($tableName, 'id', 'Test comment')->execute();
 
