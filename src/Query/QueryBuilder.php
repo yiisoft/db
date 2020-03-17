@@ -355,7 +355,7 @@ class QueryBuilder
     {
         $schema = $this->db->getSchema();
         $tableSchema = $schema->getTableSchema($table);
-        $columnSchemas = $tableSchema !== null ? $tableSchema->columns : [];
+        $columnSchemas = $tableSchema !== null ? $tableSchema->getColumns() : [];
         $names = [];
         $placeholders = [];
         $values = ' DEFAULT VALUES';
@@ -453,7 +453,7 @@ class QueryBuilder
         $schema = $this->db->getSchema();
 
         if (($tableSchema = $schema->getTableSchema($table)) !== null) {
-            $columnSchemas = $tableSchema->columns;
+            $columnSchemas = $tableSchema->getColumns();
         } else {
             $columnSchemas = [];
         }
@@ -695,7 +695,7 @@ class QueryBuilder
     {
         $tableSchema = $this->db->getTableSchema($table);
 
-        $columnSchemas = $tableSchema !== null ? $tableSchema->columns : [];
+        $columnSchemas = $tableSchema !== null ? $tableSchema->getColumns() : [];
 
         $sets = [];
 

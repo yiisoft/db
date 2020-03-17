@@ -121,8 +121,8 @@ abstract class SchemaTest extends DatabaseTestCase
         /* @var $schema Schema */
         $schema = $db->getSchema();
 
-        $schema->db->setEnableSchemaCache(true);
-        $schema->db->setSchemaCache($this->cache);
+        $schema->getDb()->setEnableSchemaCache(true);
+        $schema->getDb()->setSchemaCache($this->cache);
 
         $noCacheTable = $schema->getTableSchema('type', true);
         $cachedTable = $schema->getTableSchema('type', false);
@@ -146,8 +146,8 @@ abstract class SchemaTest extends DatabaseTestCase
         /* @var $schema Schema */
         $schema = $this->getConnection()->getSchema();
 
-        $schema->db->setEnableSchemaCache(true);
-        $schema->db->setSchemaCache($this->cache);
+        $schema->getDb()->setEnableSchemaCache(true);
+        $schema->getDb()->setSchemaCache($this->cache);
 
         $noCacheTable = $schema->getTableSchema('type', true);
         $schema->refreshTableSchema('type');
@@ -207,20 +207,20 @@ abstract class SchemaTest extends DatabaseTestCase
         /* @var $schema Schema */
         $schema = $this->getConnection()->getSchema();
 
-        $schema->db->setEnableSchemaCache(true);
-        $schema->db->setSchemaCache($this->cache);
-        $schema->db->setTablePrefix($tablePrefix);
+        $schema->getDb()->setEnableSchemaCache(true);
+        $schema->getDb()->setSchemaCache($this->cache);
+        $schema->getDb()->setTablePrefix($tablePrefix);
         $noCacheTable = $schema->getTableSchema($tableName, true);
 
         $this->assertInstanceOf(TableSchema::class, $noCacheTable);
 
         // Compare
-        $schema->db->setTablePrefix($testTablePrefix);
+        $schema->getDb()->setTablePrefix($testTablePrefix);
         $testNoCacheTable = $schema->getTableSchema($testTableName);
 
         $this->assertSame($noCacheTable, $testNoCacheTable);
 
-        $schema->db->setTablePrefix($tablePrefix);
+        $schema->getDb()->setTablePrefix($tablePrefix);
         $schema->refreshTableSchema($tableName);
         $refreshedTable = $schema->getTableSchema($tableName, false);
 
@@ -228,7 +228,7 @@ abstract class SchemaTest extends DatabaseTestCase
         $this->assertNotSame($noCacheTable, $refreshedTable);
 
         // Compare
-        $schema->db->setTablePrefix($testTablePrefix);
+        $schema->getDb()->setTablePrefix($testTablePrefix);
         $schema->refreshTableSchema($testTablePrefix);
         $testRefreshedTable = $schema->getTableSchema($testTableName, false);
 
@@ -244,11 +244,12 @@ abstract class SchemaTest extends DatabaseTestCase
 
         $table = $schema->getTableSchema('composite_fk');
 
-        $this->assertCount(1, $table->foreignKeys);
-        $this->assertTrue(isset($table->foreignKeys['FK_composite_fk_order_item']));
-        $this->assertEquals('order_item', $table->foreignKeys['FK_composite_fk_order_item'][0]);
-        $this->assertEquals('order_id', $table->foreignKeys['FK_composite_fk_order_item']['order_id']);
-        $this->assertEquals('item_id', $table->foreignKeys['FK_composite_fk_order_item']['item_id']);
+        $fk = $table->getForeignKeys();
+        $this->assertCount(1, $fk);
+        $this->assertTrue(isset($fk['FK_composite_fk_order_item']));
+        $this->assertEquals('order_item', $fk['FK_composite_fk_order_item'][0]);
+        $this->assertEquals('order_id', $fk['FK_composite_fk_order_item']['order_id']);
+        $this->assertEquals('item_id', $fk['FK_composite_fk_order_item']['item_id']);
     }
 
     public function testGetPDOType()
@@ -527,7 +528,7 @@ abstract class SchemaTest extends DatabaseTestCase
 
         $this->assertEquals($expectedColNames, $colNames);
 
-        foreach ($table->columns as $name => $column) {
+        foreach ($table->getColumns() as $name => $column) {
             $expected = $columns[$name];
             $this->assertSame(
                 $expected['dbType'],

@@ -21,72 +21,22 @@ class ColumnSchemaBuilder
      * {@see $categoryMap} for mappings of abstract column types to category.
      */
     public const CATEGORY_PK = 'pk';
-
     public const CATEGORY_STRING = 'string';
-
     public const CATEGORY_NUMERIC = 'numeric';
-
     public const CATEGORY_TIME = 'time';
-
     public const CATEGORY_OTHER = 'other';
 
-    /**
-     * @var string the column type definition such as INTEGER, VARCHAR, DATETIME, etc.
-     */
-    protected string $type;
-
-    /**
-     * @var int|string|array column size or precision definition. This is what goes into the parenthesis after the
-     * column type. This can be either a string, an integer or an array. If it is an array, the array values will be
-     * joined into a string separated by comma.
-     */
-    protected $length;
-
-    /**
-     * @var bool|null whether the column is or not nullable. If this is `true`, a `NOT NULL` constraint will be added.
-     * If this is `false`, a `NULL` constraint will be added.
-     */
-    protected ?bool $isNotNull = null;
-
-    /**
-     * @var bool whether the column values should be unique. If this is `true`, a `UNIQUE` constraint will be added.
-     */
-    protected bool $isUnique = false;
-
-    /**
-     * @var string the `CHECK` constraint for the column.
-     */
-    protected ?string $check = null;
-
-    /**
-     * @var mixed default value of the column.
-     */
-    protected $default;
-
-    /**
-     * @var mixed SQL string to be appended to column schema definition.
-     */
-    protected $append;
-
-    /**
-     * @var bool whether the column values should be unsigned. If this is `true`, an `UNSIGNED` keyword will be added.
-     */
-    protected bool $isUnsigned = false;
-
-    /**
-     * @var string the column after which this column will be added.
-     */
-    protected ?string $after = null;
-
-    /**
-     * @var bool whether this column is to be inserted at the beginning of the table.
-     */
-    protected bool $isFirst = false;
-
-    /**
-     * @var array mapping of abstract column types (keys) to type categories (values).
-     */
-    public array $categoryMap = [
+    private ?string $type = null;
+    private $length;
+    private ?bool $isNotNull = null;
+    private bool $isUnique = false;
+    private ?string $check = null;
+    private $default;
+    private $append;
+    private bool $isUnsigned = false;
+    private ?string $after = null;
+    private bool $isFirst = false;
+    private array $categoryMap = [
         Schema::TYPE_PK        => self::CATEGORY_PK,
         Schema::TYPE_UPK       => self::CATEGORY_PK,
         Schema::TYPE_BIGPK     => self::CATEGORY_PK,
@@ -109,25 +59,9 @@ class ColumnSchemaBuilder
         Schema::TYPE_BOOLEAN   => self::CATEGORY_NUMERIC,
         Schema::TYPE_MONEY     => self::CATEGORY_NUMERIC,
     ];
+    private ?Connection $db;
+    private ?string $comment = null;
 
-    /**
-     * @var Connection|null the current database connection. It is used mainly to escape strings safely
-     * when building the final column schema string.
-     */
-    protected ?Connection $db;
-
-    /**
-     * @var string comment value of the column.
-     */
-    protected ?string $comment = null;
-
-    /**
-     * Create a column schema builder instance giving the type and value precision.
-     *
-     * @param string $type type of the column. See {@see $type}.
-     * @param int|string|array $length length or precision of the column. See {@see $length}.
-     * @param Connection|null $db the current database connection. See {@see $db}.
-     */
     public function __construct(string $type, $length = null, ?Connection $db = null)
     {
         $this->type = $type;
@@ -491,5 +425,114 @@ class ColumnSchemaBuilder
         ];
 
         return strtr($format, $placeholderValues);
+    }
+
+    /**
+     * @return string|null the column type definition such as INTEGER, VARCHAR, DATETIME, etc.
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return int|string|array column size or precision definition. This is what goes into the parenthesis after the
+     * column type. This can be either a string, an integer or an array. If it is an array, the array values will be
+     * joined into a string separated by comma.
+     */
+    public function getLength()
+    {
+        return $this->length;
+    }
+
+    /**
+     * @return bool|null whether the column is or not nullable. If this is `true`, a `NOT NULL` constraint will be
+     * added. If this is `false`, a `NULL` constraint will be added.
+     */
+    public function getIsNotNull(): ?bool
+    {
+        return $this->isNotNull;
+    }
+
+    /**
+     * @return bool whether the column values should be unique. If this is `true`, a `UNIQUE` constraint will be added.
+     */
+    public function getIsUnique(): bool
+    {
+        return $this->isUnique;
+    }
+
+    /**
+     * @return string|null the `CHECK` constraint for the column.
+     */
+    public function getCheck(): ?string
+    {
+        return $this->check;
+    }
+
+    /**
+     * @return mixed default value of the column.
+     */
+    public function getDefault()
+    {
+        return $this->default;
+    }
+
+    /**
+     * @return mixed SQL string to be appended to column schema definition.
+     */
+    public function getAppend()
+    {
+        return $this->append;
+    }
+
+    /**
+     * @return bool whether the column values should be unsigned. If this is `true`, an `UNSIGNED` keyword will be
+     * added.
+     */
+    public function getIsUnsigned(): bool
+    {
+        return $this->isUnsigned;
+    }
+
+    /**
+     * @return string|null the column after which this column will be added.
+     */
+    public function getAfter(): ?string
+    {
+        return $this->after;
+    }
+
+    /**
+     * @return bool whether this column is to be inserted at the beginning of the table.
+     */
+    public function getIsFirst(): bool
+    {
+        return $this->isFirst;
+    }
+
+    /**
+     * @return array mapping of abstract column types (keys) to type categories (values).
+     */
+    public function getCategoryMap(): array
+    {
+        return $this->categoryMap;
+    }
+
+    /**
+     * @return Connection|null the current database connection. It is used mainly to escape strings safely
+     * when building the final column schema string.
+     */
+    public function getDb(): ?Connection
+    {
+        return $this->db;
+    }
+
+    /**
+     * @return string comment value of the column.
+     */
+    public function getComment(): ?string
+    {
+        return $this->comment;
     }
 }
