@@ -33,10 +33,9 @@ use Yiisoft\Db\Exception\NotSupportedException;
  *
  * @property bool $isActive Whether this transaction is active. Only an active transaction can {@see commit()} or
  * {@see rollBack()}. This property is read-only.
- * @property string $isolationLevel The transaction isolation level to use for this transaction. This can be
- * one of {@see READ_UNCOMMITTED}, {@see READ_COMMITTED}, {@see REPEATABLE_READ} and {@see SERIALIZABLE} but also a
- * string containing DBMS specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`. This property is
- * write-only.
+ * @property string $isolationLevel The transaction isolation level to use for this transaction. This can be one of
+ * {@see READ_UNCOMMITTED}, {@see READ_COMMITTED}, {@see REPEATABLE_READ} and {@see SERIALIZABLE} but also a string
+ * containing DBMS specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`. This property is write-only.
  * @property int $level The current nesting level of the transaction. This property is read-only.
  */
 class Transaction
@@ -44,44 +43,36 @@ class Transaction
     /**
      * A constant representing the transaction isolation level `READ UNCOMMITTED`.
      *
-     * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
      */
     public const READ_UNCOMMITTED = 'READ UNCOMMITTED';
 
     /**
      * A constant representing the transaction isolation level `READ COMMITTED`.
      *
-     * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
      */
     public const READ_COMMITTED = 'READ COMMITTED';
 
     /**
      * A constant representing the transaction isolation level `REPEATABLE READ`.
      *
-     * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
      */
     public const REPEATABLE_READ = 'REPEATABLE READ';
 
     /**
      * A constant representing the transaction isolation level `SERIALIZABLE`.
      *
-     * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
      */
     public const SERIALIZABLE = 'SERIALIZABLE';
 
-    /**
-     * @var Connection the database connection that this transaction is associated with.
-     */
-    public Connection $db;
-
-    /**
-     * @var int the nesting level of the transaction. 0 means the outermost level.
-     */
     private int $level = 0;
+    private ?Connection $db = null;
+    private ?LoggerInterface $logger = null;
 
-    private LoggerInterface $logger;
-
-    public function __construct(Connection $db, LoggerInterface $logger)
+    public function __construct(?Connection $db, ?LoggerInterface $logger)
     {
         $this->db = $db;
         $this->logger = $logger;
@@ -90,7 +81,8 @@ class Transaction
     /**
      * Returns a value indicating whether this transaction is active.
      *
-     * @return bool whether this transaction is active. Only an active transaction can {@see commit()} or {rollBack()}.
+     * @return bool whether this transaction is active. Only an active transaction can {@see commit()} or
+     * {@see rollBack()}.
      */
     public function getIsActive(): bool
     {
@@ -106,12 +98,12 @@ class Transaction
      *
      * If not specified (`null`) the isolation level will not be set explicitly and the DBMS default will be used.
      *
-     * > Note: This setting does not work for PostgreSQL, where setting the isolation level before the transaction
-     * has no effect. You have to call {@see setIsolationLevel()} in this case after the transaction has started.
+     * > Note: This setting does not work for PostgreSQL, where setting the isolation level before the transaction has
+     * no effect. You have to call {@see setIsolationLevel()} in this case after the transaction has started.
      *
      * > Note: Some DBMS allow setting of the isolation level only for the whole connection so subsequent transactions
-     * may get the same isolation level even if you did not specify any. When using this feature
-     * you may need to set the isolation level for all transactions explicitly to avoid conflicting settings.
+     * may get the same isolation level even if you did not specify any. When using this feature you may need to set the
+     * isolation level for all transactions explicitly to avoid conflicting settings.
      * At the time of this writing affected DBMS are MSSQL and SQLite.
      *
      * [isolation level]: http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
@@ -119,10 +111,9 @@ class Transaction
      *
      * @throws InvalidConfigException if {@see db} is `null`
      * @throws NotSupportedException if the DBMS does not support nested transactions
-     *
-     * @throws \Exception if DB connection fails
+     * @throws Exception if DB connection fails
      */
-    public function begin(?string $isolationLevel = null)
+    public function begin(?string $isolationLevel = null): void
     {
         if ($this->db === null) {
             throw new InvalidConfigException('Transaction::db must be set.');
@@ -173,7 +164,7 @@ class Transaction
      *
      * @throws Exception if the transaction is not active
      */
-    public function commit()
+    public function commit(): void
     {
         if (!$this->getIsActive()) {
             throw new Exception('Failed to commit transaction: transaction was inactive.');
@@ -209,11 +200,13 @@ class Transaction
     /**
      * Rolls back a transaction.
      */
-    public function rollBack()
+    public function rollBack(): void
     {
         if (!$this->getIsActive()) {
-            // do nothing if transaction is not active: this could be the transaction is committed
-            // but the event handler to "commitTransaction" throw an exception
+            /**
+             * do nothing if transaction is not active: this could be the transaction is committed but the event handler
+             * to "commitTransaction" throw an exception
+             */
             return;
         }
 
@@ -249,21 +242,21 @@ class Transaction
      * Sets the transaction isolation level for this transaction.
      *
      * This method can be used to set the isolation level while the transaction is already active.
-     * However this is not supported by all DBMS so you might rather specify the isolation level directly
-     * when calling {@see begin()}.
+     * However this is not supported by all DBMS so you might rather specify the isolation level directly when calling
+     * {@see begin()}.
      *
      * @param string $level The transaction isolation level to use for this transaction.
      * This can be one of {@see READ_UNCOMMITTED}, {@see READ_COMMITTED}, {@see REPEATABLE_READ} and {@see SERIALIZABLE}
      * but also a string containing DBMS specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`.
      *
-     * @throws \Exception if the transaction is not active
+     * @throws Exception if the transaction is not active.
      *
-     * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
      */
-    public function setIsolationLevel(string $level)
+    public function setIsolationLevel(string $level): void
     {
         if (!$this->getIsActive()) {
-            throw new \Exception('Failed to set isolation level: transaction was inactive.');
+            throw new Exception('Failed to set isolation level: transaction was inactive.');
         }
 
         $this->logger->log(
@@ -275,10 +268,18 @@ class Transaction
     }
 
     /**
-     * @return int The current nesting level of the transaction.
+     * @return int the nesting level of the transaction. 0 means the outermost level.
      */
     public function getLevel(): int
     {
         return $this->level;
+    }
+
+    /**
+     * @return Connection|null the database connection that this transaction is associated with.
+     */
+    public function getDb(): ?Connection
+    {
+        return $this->db;
     }
 }
