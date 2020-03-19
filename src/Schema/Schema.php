@@ -459,13 +459,13 @@ abstract class Schema
         $tableSchema = $this->getTableSchema($table);
         $result = [];
 
-        foreach ($tableSchema->primaryKey as $name) {
-            if ($tableSchema->columns[$name]->autoIncrement) {
-                $result[$name] = $this->getLastInsertID($tableSchema->sequenceName);
+        foreach ($tableSchema->getPrimaryKey() as $name) {
+            if ($tableSchema->getColumn($name)->getAutoIncrement()) {
+                $result[$name] = $this->getLastInsertID($tableSchema->getSequenceName());
                 break;
             }
 
-            $result[$name] = $columns[$name] ?? $tableSchema->columns[$name]->defaultValue;
+            $result[$name] = $columns[$name] ?? $tableSchema->getColumn($name)->getDefaultValue();
         }
 
         return $result;
