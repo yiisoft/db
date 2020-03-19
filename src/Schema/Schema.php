@@ -460,7 +460,7 @@ abstract class Schema
         $result = [];
 
         foreach ($tableSchema->getPrimaryKey() as $name) {
-            if ($tableSchema->getColumn($name)->getAutoIncrement()) {
+            if ($tableSchema->getColumn($name)->isAutoIncrement()) {
                 $result[$name] = $this->getLastInsertID($tableSchema->getSequenceName());
                 break;
             }
@@ -689,11 +689,11 @@ abstract class Schema
 
         if (isset($typeMap[$column->getType()])) {
             if ($column->getType() === 'bigint') {
-                return PHP_INT_SIZE === 8 && !$column->getUnsigned() ? 'integer' : 'string';
+                return PHP_INT_SIZE === 8 && !$column->isUnsigned() ? 'integer' : 'string';
             }
 
             if ($column->getType() === 'integer') {
-                return PHP_INT_SIZE === 4 && $column->getUnsigned() ? 'string' : 'integer';
+                return PHP_INT_SIZE === 4 && $column->isUnsigned() ? 'string' : 'integer';
             }
 
             return $typeMap[$column->getType()];

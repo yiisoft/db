@@ -84,7 +84,7 @@ class Transaction
      * @return bool whether this transaction is active. Only an active transaction can {@see commit()} or
      * {@see rollBack()}.
      */
-    public function getIsActive(): bool
+    public function isActive(): bool
     {
         return $this->level > 0 && $this->db && $this->db->isActive();
     }
@@ -166,7 +166,7 @@ class Transaction
      */
     public function commit(): void
     {
-        if (!$this->getIsActive()) {
+        if (!$this->isActive()) {
             throw new Exception('Failed to commit transaction: transaction was inactive.');
         }
 
@@ -202,7 +202,7 @@ class Transaction
      */
     public function rollBack(): void
     {
-        if (!$this->getIsActive()) {
+        if (!$this->isActive()) {
             /**
              * do nothing if transaction is not active: this could be the transaction is committed but the event handler
              * to "commitTransaction" throw an exception
@@ -255,7 +255,7 @@ class Transaction
      */
     public function setIsolationLevel(string $level): void
     {
-        if (!$this->getIsActive()) {
+        if (!$this->isActive()) {
             throw new Exception('Failed to set isolation level: transaction was inactive.');
         }
 

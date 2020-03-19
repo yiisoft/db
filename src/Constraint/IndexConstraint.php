@@ -12,12 +12,12 @@ class IndexConstraint extends Constraint
     private bool $isUnique = false;
     private bool $isPrimary = false;
 
-    public function getIsUnique(): bool
+    public function isUnique(): bool
     {
         return $this->isUnique;
     }
 
-    public function getIsPrimary(): bool
+    public function isPrimary(): bool
     {
         return $this->isPrimary;
     }
