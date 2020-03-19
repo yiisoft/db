@@ -597,7 +597,7 @@ class QueryBuilder
         }
 
         foreach ($schema->getTableIndexes($name) as $constraint) {
-            if ($constraint->getIsUnique()) {
+            if ($constraint->isUnique()) {
                 $constraints[] = $constraint;
             }
         }

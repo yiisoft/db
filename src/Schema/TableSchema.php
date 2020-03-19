@@ -57,12 +57,12 @@ abstract class TableSchema
         $this->primaryKey = $keys;
 
         foreach ($this->columns as $column) {
-            $column->isPrimaryKey = false;
+            $column->primaryKey(false);
         }
 
         foreach ($keys as $key) {
             if (isset($this->columns[$key])) {
-                $this->columns[$key]->isPrimaryKey = true;
+                $this->columns[$key]->primaryKey(true);
             } else {
                 throw new InvalidArgumentException("Primary key '$key' cannot be found in table '{$this->name}'.");
             }

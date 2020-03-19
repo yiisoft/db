@@ -731,7 +731,7 @@ class Connection
      */
     public function getTransaction(): ?Transaction
     {
-        return $this->transaction && $this->transaction->getIsActive() ? $this->transaction : null;
+        return $this->transaction && $this->transaction->isActive() ? $this->transaction : null;
     }
 
     public function getUsername(): ?string
@@ -942,7 +942,7 @@ class Connection
      */
     private function rollbackTransactionOnLevel(Transaction $transaction, int $level): void
     {
-        if ($transaction->getIsActive() && $transaction->getLevel() === $level) {
+        if ($transaction->isActive() && $transaction->getLevel() === $level) {
             /* https://github.com/yiisoft/yii2/pull/13347 */
             try {
                 $transaction->rollBack();
@@ -1529,7 +1529,7 @@ class Connection
         try {
             $result = $callback($this);
 
-            if ($transaction->getIsActive() && $transaction->getLevel() === $level) {
+            if ($transaction->isActive() && $transaction->getLevel() === $level) {
                 $transaction->commit();
             }
         } catch (\Throwable $e) {

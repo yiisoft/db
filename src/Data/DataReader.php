@@ -180,7 +180,7 @@ class DataReader implements \Iterator, \Countable
      *
      * @return bool whether the reader is closed or not.
      */
-    public function getIsClosed(): bool
+    public function isClosed(): bool
     {
         return $this->closed;
     }

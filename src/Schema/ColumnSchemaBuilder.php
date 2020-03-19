@@ -457,7 +457,7 @@ class ColumnSchemaBuilder
     /**
      * @return bool whether the column values should be unique. If this is `true`, a `UNIQUE` constraint will be added.
      */
-    public function getIsUnique(): bool
+    public function isUnique(): bool
     {
         return $this->isUnique;
     }
@@ -490,7 +490,7 @@ class ColumnSchemaBuilder
      * @return bool whether the column values should be unsigned. If this is `true`, an `UNSIGNED` keyword will be
      * added.
      */
-    public function getIsUnsigned(): bool
+    public function isUnsigned(): bool
     {
         return $this->isUnsigned;
     }
@@ -506,7 +506,7 @@ class ColumnSchemaBuilder
     /**
      * @return bool whether this column is to be inserted at the beginning of the table.
      */
-    public function getIsFirst(): bool
+    public function isFirst(): bool
     {
         return $this->isFirst;
     }

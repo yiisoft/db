@@ -1312,7 +1312,7 @@ SQL;
         $db->createCommand()->createIndex($name, $tableName, ['int1'])->execute();
 
         $this->assertEquals(['int1'], $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
-        $this->assertFalse($schema->getTableIndexes($tableName, true)[0]->getIsUnique());
+        $this->assertFalse($schema->getTableIndexes($tableName, true)[0]->isUnique());
 
         $db->createCommand()->dropIndex($name, $tableName)->execute();
 
@@ -1321,7 +1321,7 @@ SQL;
         $db->createCommand()->createIndex($name, $tableName, ['int1', 'int2'])->execute();
 
         //$this->assertEquals(['int1', 'int2'], $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
-        $this->assertFalse($schema->getTableIndexes($tableName, true)[0]->getIsUnique());
+        $this->assertFalse($schema->getTableIndexes($tableName, true)[0]->isUnique());
 
         $db->createCommand()->dropIndex($name, $tableName)->execute();
 
@@ -1331,7 +1331,7 @@ SQL;
         $db->createCommand()->createIndex($name, $tableName, ['int1'], true)->execute();
 
         //$this->assertEquals(['int1'], $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
-        //$this->assertTrue($schema->getTableIndexes($tableName, true)[0]->getIsUnique());
+        //$this->assertTrue($schema->getTableIndexes($tableName, true)[0]->isUnique());
 
         $db->createCommand()->dropIndex($name, $tableName)->execute();
 
@@ -1340,7 +1340,7 @@ SQL;
         $db->createCommand()->createIndex($name, $tableName, ['int1', 'int2'], true)->execute();
 
         //$this->assertEquals(['int1', 'int2'], $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
-        //$this->assertTrue($schema->getTableIndexes($tableName, true)[0]->getIsUnique());
+        //$this->assertTrue($schema->getTableIndexes($tableName, true)[0]->isUnique());
     }
 
     public function testAddDropUnique(): void

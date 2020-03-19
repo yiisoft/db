@@ -543,12 +543,12 @@ abstract class SchemaTest extends DatabaseTestCase
             $this->assertSame($expected['type'], $column->getType(), "type of column $name does not match.");
             $this->assertSame(
                 $expected['allowNull'],
-                $column->getAllowNull(),
+                $column->isAllowNull(),
                 "allowNull of column $name does not match."
             );
             $this->assertSame(
                 $expected['autoIncrement'],
-                $column->getAutoIncrement(),
+                $column->isAutoIncrement(),
                 "autoIncrement of column $name does not match."
             );
             $this->assertSame(
