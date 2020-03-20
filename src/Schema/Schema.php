@@ -111,7 +111,7 @@ abstract class Schema
      *
      * {@see \Yiisoft\Db\Schema\TableSchema}
      */
-    protected function resolveTableName($name)
+    protected function resolveTableName(string $name): TableSchema
     {
         throw new NotSupportedException(get_class($this) . ' does not support resolving table names.');
     }
@@ -143,7 +143,7 @@ abstract class Schema
      *
      * @throws NotSupportedException if this method is not supported by the DBMS.
      */
-    protected function findTableNames($schema = '')
+    protected function findTableNames(string $schema = ''): array
     {
         throw new NotSupportedException(get_class($this) . ' does not support fetching all table names.');
     }
@@ -359,7 +359,7 @@ abstract class Schema
      *
      * @return array all unique indexes for the given table.
      */
-    public function findUniqueIndexes(TableSchema $table)
+    public function findUniqueIndexes($table): array
     {
         throw new NotSupportedException(get_class($this) . ' does not support getting unique indexes information.');
     }
