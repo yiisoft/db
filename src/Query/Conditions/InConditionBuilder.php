@@ -139,7 +139,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      *
      * @return string SQL
      */
-    protected function buildCompositeInCondition(?string $operator, $columns, $values, &$params): string
+    protected function buildCompositeInCondition(?string $operator, $columns, $values, array &$params = []): string
     {
         $vss = [];
         foreach ($values as $value) {
