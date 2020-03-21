@@ -944,4 +944,9 @@ abstract class Schema
     {
         return $this->db;
     }
+
+    public function getDefaultSchema(): ?string
+    {
+        return $this->defaultSchema;
+    }
 }
