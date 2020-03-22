@@ -518,7 +518,7 @@ abstract class SchemaTest extends DatabaseTestCase
 
         $table = $this->getConnection(false)->getSchema()->getTableSchema('type', true);
 
-        $expectedColNames = array_keys($columns);
+        $expectedColNames = \array_keys($columns);
 
         sort($expectedColNames);
 
@@ -543,12 +543,12 @@ abstract class SchemaTest extends DatabaseTestCase
             $this->assertSame($expected['type'], $column->getType(), "type of column $name does not match.");
             $this->assertSame(
                 $expected['allowNull'],
-                $column->getAllowNull(),
+                $column->isAllowNull(),
                 "allowNull of column $name does not match."
             );
             $this->assertSame(
                 $expected['autoIncrement'],
-                $column->getAutoIncrement(),
+                $column->isAutoIncrement(),
                 "autoIncrement of column $name does not match."
             );
             $this->assertSame(
@@ -583,7 +583,7 @@ abstract class SchemaTest extends DatabaseTestCase
             if (isset($expected['dimension'])) { // PgSQL only
                 $this->assertSame(
                     $expected['dimension'],
-                    $column->dimension,
+                    $column->getDimension(),
                     "dimension of column $name does not match"
                 );
             }

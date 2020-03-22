@@ -165,7 +165,7 @@ class ColumnSchema
     /**
      * @return bool whether this column can be null.
      */
-    public function getAllowNull(): bool
+    public function isAllowNull(): bool
     {
         return $this->allowNull;
     }
@@ -239,7 +239,7 @@ class ColumnSchema
     /**
      * @return bool whether this column is a primary key
      */
-    public function getIsPrimaryKey(): bool
+    public function isPrimaryKey(): bool
     {
         return $this->isPrimaryKey;
     }
@@ -247,7 +247,7 @@ class ColumnSchema
     /**
      * @return bool whether this column is auto-incremental
      */
-    public function getAutoIncrement(): bool
+    public function isAutoIncrement(): bool
     {
         return $this->autoIncrement;
     }
@@ -256,7 +256,7 @@ class ColumnSchema
      * @return bool whether this column is unsigned. This is only meaningful when {@see type} is `smallint`, `integer`
      * or `bigint`.
      */
-    public function getUnsigned(): bool
+    public function isUnsigned(): bool
     {
         return $this->unsigned;
     }
@@ -319,7 +319,7 @@ class ColumnSchema
         $this->scale = $value;
     }
 
-    public function isPrimaryKey(bool $value): void
+    public function primaryKey(bool $value): void
     {
         $this->isPrimaryKey = $value;
     }

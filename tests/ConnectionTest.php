@@ -136,13 +136,13 @@ abstract class ConnectionTest extends DatabaseTestCase
         $transaction = $connection->beginTransaction();
 
         $this->assertNotNull($connection->getTransaction());
-        $this->assertTrue($transaction->getIsActive());
+        $this->assertTrue($transaction->isActive());
 
         $connection->createCommand()->insert('profile', ['description' => 'test transaction'])->execute();
 
         $transaction->rollBack();
 
-        $this->assertFalse($transaction->getIsActive());
+        $this->assertFalse($transaction->isActive());
         $this->assertNull($connection->getTransaction());
 
         $this->assertEquals(0, $connection->createCommand(
@@ -158,7 +158,7 @@ abstract class ConnectionTest extends DatabaseTestCase
 
         $transaction->commit();
 
-        $this->assertFalse($transaction->getIsActive());
+        $this->assertFalse($transaction->isActive());
         $this->assertNull($connection->getTransaction());
 
         $this->assertEquals(1, $connection->createCommand(

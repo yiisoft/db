@@ -111,7 +111,7 @@ abstract class Schema
      *
      * {@see \Yiisoft\Db\Schema\TableSchema}
      */
-    protected function resolveTableName($name)
+    protected function resolveTableName(string $name): TableSchema
     {
         throw new NotSupportedException(get_class($this) . ' does not support resolving table names.');
     }
@@ -143,7 +143,7 @@ abstract class Schema
      *
      * @throws NotSupportedException if this method is not supported by the DBMS.
      */
-    protected function findTableNames($schema = '')
+    protected function findTableNames(string $schema = ''): array
     {
         throw new NotSupportedException(get_class($this) . ' does not support fetching all table names.');
     }
@@ -359,7 +359,7 @@ abstract class Schema
      *
      * @return array all unique indexes for the given table.
      */
-    public function findUniqueIndexes(TableSchema $table)
+    public function findUniqueIndexes($table): array
     {
         throw new NotSupportedException(get_class($this) . ' does not support getting unique indexes information.');
     }
@@ -459,13 +459,13 @@ abstract class Schema
         $tableSchema = $this->getTableSchema($table);
         $result = [];
 
-        foreach ($tableSchema->primaryKey as $name) {
-            if ($tableSchema->columns[$name]->autoIncrement) {
-                $result[$name] = $this->getLastInsertID($tableSchema->sequenceName);
+        foreach ($tableSchema->getPrimaryKey() as $name) {
+            if ($tableSchema->getColumn($name)->isAutoIncrement()) {
+                $result[$name] = $this->getLastInsertID($tableSchema->getSequenceName());
                 break;
             }
 
-            $result[$name] = $columns[$name] ?? $tableSchema->columns[$name]->defaultValue;
+            $result[$name] = $columns[$name] ?? $tableSchema->getColumn($name)->getDefaultValue();
         }
 
         return $result;
@@ -689,11 +689,11 @@ abstract class Schema
 
         if (isset($typeMap[$column->getType()])) {
             if ($column->getType() === 'bigint') {
-                return PHP_INT_SIZE === 8 && !$column->getUnsigned() ? 'integer' : 'string';
+                return PHP_INT_SIZE === 8 && !$column->isUnsigned() ? 'integer' : 'string';
             }
 
             if ($column->getType() === 'integer') {
-                return PHP_INT_SIZE === 4 && $column->getUnsigned() ? 'string' : 'integer';
+                return PHP_INT_SIZE === 4 && $column->isUnsigned() ? 'string' : 'integer';
             }
 
             return $typeMap[$column->getType()];
@@ -943,5 +943,10 @@ abstract class Schema
     public function getDb(): ?Connection
     {
         return $this->db;
+    }
+
+    public function getDefaultSchema(): ?string
+    {
+        return $this->defaultSchema;
     }
 }
