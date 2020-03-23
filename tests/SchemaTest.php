@@ -862,8 +862,8 @@ abstract class SchemaTest extends DatabaseTestCase
     {
         $ct = new Constraint();
 
-        $ct->setName($name);
-        $ct->setColumnNames($columnNames);
+        $ct->name($name);
+        $ct->columnNames($columnNames);
 
         return $ct;
     }
@@ -872,9 +872,9 @@ abstract class SchemaTest extends DatabaseTestCase
     {
         $cht = new CheckConstraint();
 
-        $cht->setName($name);
-        $cht->setColumnNames($columnNames);
-        $cht->setExpression($expression);
+        $cht->name($name);
+        $cht->columnNames($columnNames);
+        $cht->expression($expression);
 
         return $cht;
     }
@@ -889,12 +889,12 @@ abstract class SchemaTest extends DatabaseTestCase
     ): ForeignKeyConstraint {
         $fk = new ForeignKeyConstraint();
 
-        $fk->setName($name);
-        $fk->setColumnNames($columnNames);
-        $fk->setForeignTableName($foreignTableName);
-        $fk->setForeignColumnNames($foreignColumnNames);
-        $fk->setOnUpdate($onUpdate);
-        $fk->setOnDelete($onDelete);
+        $fk->name($name);
+        $fk->columnNames($columnNames);
+        $fk->foreignTableName($foreignTableName);
+        $fk->foreignColumnNames($foreignColumnNames);
+        $fk->onUpdate($onUpdate);
+        $fk->onDelete($onDelete);
 
         return $fk;
     }
@@ -903,10 +903,10 @@ abstract class SchemaTest extends DatabaseTestCase
     {
         $ic = new IndexConstraint();
 
-        $ic->setName($name);
-        $ic->setColumnNames($columnNames);
-        $ic->setIsUnique($isUnique);
-        $ic->setIsPrimary($isPrimary);
+        $ic->name($name);
+        $ic->columnNames($columnNames);
+        $ic->unique($isUnique);
+        $ic->primary($isPrimary);
 
         return $ic;
     }
@@ -966,9 +966,9 @@ abstract class SchemaTest extends DatabaseTestCase
 
         foreach (array_keys((array) $expectedConstraint) as $name) {
             if ($expectedConstraint->getName() instanceof AnyValue) {
-                $actualConstraint->setName($expectedConstraint->getName());
+                $actualConstraint->name($expectedConstraint->getName());
             } elseif ($expectedConstraint->getName() instanceof AnyCaseValue) {
-                $actualConstraint->setName(new AnyCaseValue($actualConstraint->getName()));
+                $actualConstraint->name(new AnyCaseValue($actualConstraint->getName()));
             }
         }
     }

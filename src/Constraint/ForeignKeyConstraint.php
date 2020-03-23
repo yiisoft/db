@@ -43,50 +43,60 @@ class ForeignKeyConstraint extends Constraint
     /**
      * @param string|null $value referenced table schema name.
      *
-     * @return void
+     * @return self
      */
-    public function setForeignSchemaName(?string $value): void
+    public function foreignSchemaName(?string $value): self
     {
         $this->foreignSchemaName = $value;
+
+        return $this;
     }
 
     /**
      * @param object|string|null $value referenced table name.
      *
-     * @return void
+     * @return self
      */
-    public function setForeignTableName($value): void
+    public function foreignTableName($value): self
     {
         $this->foreignTableName = $value;
+
+        return $this;
     }
 
     /**
      * @param array|string $value list of referenced table column names.
      *
-     * @return void
+     * @return self
      */
-    public function setForeignColumnNames($value): void
+    public function foreignColumnNames($value): self
     {
         $this->foreignColumnNames = $value;
+
+        return $this;
     }
 
     /**
      * @param string|null $value referential action if rows in a referenced table are to be updated.
      *
-     * @return void
+     * @return self
      */
-    public function setOnUpdate(?string $value): void
+    public function onUpdate(?string $value): self
     {
         $this->onUpdate = $value;
+
+        return $this;
     }
 
     /**
      * @param string|null $value referential action if rows in a referenced table are to be deleted.
      *
-     * @return void
+     * @return self
      */
-    public function setOnDelete(?string $value): void
+    public function onDelete(?string $value): self
     {
         $this->onDelete = $value;
+
+        return $this;
     }
 }
