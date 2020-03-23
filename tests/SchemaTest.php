@@ -860,21 +860,19 @@ abstract class SchemaTest extends DatabaseTestCase
 
     private function constraint($name, array $columnNames = []): Constraint
     {
-        $ct = new Constraint();
-
-        $ct->name($name);
-        $ct->columnNames($columnNames);
+        $ct = (new Constraint())
+            ->name($name)
+            ->columnNames($columnNames);
 
         return $ct;
     }
 
     private function checkConstraint($name, string $expression, array $columnNames = []): CheckConstraint
     {
-        $cht = new CheckConstraint();
-
-        $cht->name($name);
-        $cht->columnNames($columnNames);
-        $cht->expression($expression);
+        $cht = (new CheckConstraint())
+            ->name($name)
+            ->columnNames($columnNames)
+            ->expression($expression);
 
         return $cht;
     }
@@ -887,26 +885,24 @@ abstract class SchemaTest extends DatabaseTestCase
         array $columnNames = [],
         array $foreignColumnNames = []
     ): ForeignKeyConstraint {
-        $fk = new ForeignKeyConstraint();
-
-        $fk->name($name);
-        $fk->columnNames($columnNames);
-        $fk->foreignTableName($foreignTableName);
-        $fk->foreignColumnNames($foreignColumnNames);
-        $fk->onUpdate($onUpdate);
-        $fk->onDelete($onDelete);
+        $fk = (new ForeignKeyConstraint())
+            ->name($name)
+            ->columnNames($columnNames)
+            ->foreignTableName($foreignTableName)
+            ->foreignColumnNames($foreignColumnNames)
+            ->onUpdate($onUpdate)
+            ->onDelete($onDelete);
 
         return $fk;
     }
 
     private function indexConstraint($name, array $columnNames = [], bool $isPrimary = false, bool $isUnique = false): IndexConstraint
     {
-        $ic = new IndexConstraint();
-
-        $ic->name($name);
-        $ic->columnNames($columnNames);
-        $ic->unique($isUnique);
-        $ic->primary($isPrimary);
+        $ic = (new IndexConstraint())
+            ->name($name)
+            ->columnNames($columnNames)
+            ->unique($isUnique)
+            ->primary($isPrimary);
 
         return $ic;
     }
