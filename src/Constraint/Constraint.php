@@ -25,11 +25,13 @@ class Constraint
     /**
      * @param array|string|null $value list of column names the constraint belongs to.
      *
-     * @return void
+     * @return self
      */
-    public function setColumnNames($value): void
+    public function columnNames($value): self
     {
         $this->columnNames = $value;
+
+        return $this;
     }
 
     /**
@@ -37,8 +39,10 @@ class Constraint
      *
      * @return void
      */
-    public function setName($value): void
+    public function name($value): self
     {
         $this->name = $value;
+
+        return $this;
     }
 }

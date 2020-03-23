@@ -19,10 +19,12 @@ class DefaultValueConstraint extends Constraint
     /**
      * @param mixed default value as returned by the DBMS.
      *
-     * @return void
+     * @return self
      */
-    public function setValue($value): void
+    public function value($value): self
     {
         $this->value = $value;
+
+        return $this;
     }
 }

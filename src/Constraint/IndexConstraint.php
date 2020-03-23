@@ -24,17 +24,25 @@ class IndexConstraint extends Constraint
 
     /**
      * @param bool $value whether the index is unique.
+     *
+     * @return self
      */
-    public function setIsUnique(bool $value): void
+    public function unique(bool $value): self
     {
         $this->isUnique = $value;
+
+        return $this;
     }
 
     /**
-     * @var bool $value whether the index was created for a primary key.
+     * @param bool $value whether the index was created for a primary key.
+     *
+     * @return self
      */
-    public function setIsPrimary(bool $value): void
+    public function primary(bool $value): self
     {
         $this->isPrimary = $value;
+
+        return $this;
     }
 }
