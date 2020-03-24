@@ -24,6 +24,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
      * @var string ` ESCAPE 'char'` part of a LIKE condition SQL.
      */
     protected string $likeEscapeCharSql = '';
+
     /**
      * @var array map of values to their replacements in LIKE query params.
      */
@@ -59,8 +60,8 @@ abstract class QueryBuilderTest extends DatabaseTestCase
     }
 
     /**
-     * This is not used as a dataprovider for testGetColumnType to speed up the test
-     * when used as dataprovider every single line will cause a reconnect with the database which is not needed here.
+     * This is not used as a dataprovider for testGetColumnType to speed up the test when used as dataprovider every
+     * single line will cause a reconnect with the database which is not needed here.
      */
     public function columnTypes(): array
     {
@@ -796,10 +797,10 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 $this->timestamp(),
                 [
                     /**
-                     * MySQL has its own TIMESTAMP test realization
-                     * @see \yiiunit\framework\db\mysql\QueryBuilderTest::columnTypes()
+                     * MySQL has its own TIMESTAMP test realization.
+                     *
+                     * {@see \Yiisoft\Db\Mysql\Tests\QueryBuilderTest::columnTypes()}
                      */
-
                     'postgres' => 'timestamp(0)',
                     'sqlite' => 'timestamp',
                     'oci' => 'TIMESTAMP',
