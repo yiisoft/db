@@ -9,7 +9,24 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: yiitest
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      postgres:
+        image: postgres:9.6
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: yiitest
+        ports:
+          - 5432:5432
+        options: --name=postgres --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -19,17 +36,6 @@ jobs:
           php-version: 7.4
           extensions: apc, curl, mbstring, dom, intl, mysql, pgsql, pdo, pdo_sqlite, imagick
           ini-values: date.timezone='UTC'
-      - name: Install Postgres
-        uses: harmon758/postgresql-action@v1
-        with:
-          postgresql version: 9.6
-          postgresql db: yiitest
-          postgresql user: root
-          postgresql password: root
-      - name: Create mysql db
-        run: |
-          sudo /etc/init.d/mysql start
-          mysql -uroot -proot -e 'CREATE DATABASE `yiitest`;'
       - name: Get composer cache directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
