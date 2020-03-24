@@ -69,87 +69,102 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 Schema::TYPE_BIGINT,
                 $this->bigInteger(),
                 [
-                    'mysql'    => 'bigint(20)',
+                    'mysql' => 'bigint(20)',
                     'postgres' => 'bigint',
-                    'sqlite'   => 'bigint',
+                    'sqlite' => 'bigint',
+                    'oci' => 'NUMBER(20)',
+                    'sqlsrv' => 'bigint',
                 ],
             ],
             [
                 Schema::TYPE_BIGINT . ' NOT NULL',
                 $this->bigInteger()->notNull(),
                 [
-                    'mysql'    => 'bigint(20) NOT NULL',
+                    'mysql' => 'bigint(20) NOT NULL',
                     'postgres' => 'bigint NOT NULL',
-                    'sqlite'   => 'bigint NOT NULL',
+                    'sqlite' => 'bigint NOT NULL',
+                    'oci' => 'NUMBER(20) NOT NULL',
+                    'sqlsrv' => 'bigint NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_BIGINT . ' CHECK (value > 5)',
                 $this->bigInteger()->check('value > 5'),
                 [
-                    'mysql'    => 'bigint(20) CHECK (value > 5)',
+                    'mysql' => 'bigint(20) CHECK (value > 5)',
                     'postgres' => 'bigint CHECK (value > 5)',
-                    'sqlite'   => 'bigint CHECK (value > 5)',
+                    'sqlite' => 'bigint CHECK (value > 5)',
+                    'oci' => 'NUMBER(20) CHECK (value > 5)',
+                    'sqlsrv' => 'bigint CHECK (value > 5)',
                 ],
             ],
             [
                 Schema::TYPE_BIGINT . '(8)',
                 $this->bigInteger(8),
                 [
-                    'mysql'    => 'bigint(8)',
+                    'mysql' => 'bigint(8)',
                     'postgres' => 'bigint',
-                    'sqlite'   => 'bigint',
+                    'sqlite' => 'bigint',
+                    'oci' => 'NUMBER(8)',
+                    'sqlsrv' => 'bigint',
                 ],
             ],
             [
                 Schema::TYPE_BIGINT . '(8) CHECK (value > 5)',
                 $this->bigInteger(8)->check('value > 5'),
                 [
-                    'mysql'    => 'bigint(8) CHECK (value > 5)',
+                    'mysql' => 'bigint(8) CHECK (value > 5)',
                     'postgres' => 'bigint CHECK (value > 5)',
-                    'sqlite'   => 'bigint CHECK (value > 5)',
+                    'sqlite' => 'bigint CHECK (value > 5)',
+                    'oci' => 'NUMBER(8) CHECK (value > 5)',
+                    'sqlsrv' => 'bigint CHECK (value > 5)',
                 ],
             ],
             [
                 Schema::TYPE_BIGPK,
                 $this->bigPrimaryKey(),
                 [
-                    'mysql'    => 'bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY',
+                    'mysql' => 'bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY',
                     'postgres' => 'bigserial NOT NULL PRIMARY KEY',
-                    'sqlite'   => 'integer PRIMARY KEY AUTOINCREMENT NOT NULL',
+                    'sqlite' => 'integer PRIMARY KEY AUTOINCREMENT NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_BINARY,
                 $this->binary(),
                 [
-                    'mysql'    => 'blob',
+                    'mysql' => 'blob',
                     'postgres' => 'bytea',
-                    'sqlite'   => 'blob',
+                    'sqlite' => 'blob',
+                    'oci' => 'BLOB',
+                    'sqlsrv' => 'varbinary(max)',
                 ],
             ],
             [
                 Schema::TYPE_BOOLEAN . ' NOT NULL DEFAULT 1',
                 $this->boolean()->notNull()->defaultValue(1),
                 [
-                    'mysql'  => 'tinyint(1) NOT NULL DEFAULT 1',
+                    'mysql' => 'tinyint(1) NOT NULL DEFAULT 1',
                     'sqlite' => 'boolean NOT NULL DEFAULT 1',
+                    'sqlsrv' => 'bit NOT NULL DEFAULT 1',
                 ],
             ],
             [
                 Schema::TYPE_BOOLEAN,
                 $this->boolean(),
                 [
-                    'mysql'    => 'tinyint(1)',
+                    'mysql' => 'tinyint(1)',
                     'postgres' => 'boolean',
-                    'sqlite'   => 'boolean',
+                    'sqlite' => 'boolean',
+                    'oci' => 'NUMBER(1)',
+                    'sqlsrv' => 'bit',
                 ],
             ],
             [
                 Schema::TYPE_CHAR . ' CHECK (value LIKE "test%")',
                 $this->char()->check('value LIKE "test%"'),
                 [
-                    'mysql'  => 'char(1) CHECK (value LIKE "test%")',
+                    'mysql' => 'char(1) CHECK (value LIKE "test%")',
                     'sqlite' => 'char(1) CHECK (value LIKE "test%")',
                 ],
             ],
@@ -157,16 +172,17 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 Schema::TYPE_CHAR . ' NOT NULL',
                 $this->char()->notNull(),
                 [
-                    'mysql'    => 'char(1) NOT NULL',
+                    'mysql' => 'char(1) NOT NULL',
                     'postgres' => 'char(1) NOT NULL',
-                    'sqlite'   => 'char(1) NOT NULL',
+                    'sqlite' => 'char(1) NOT NULL',
+                    'oci' => 'CHAR(1) NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_CHAR . '(6) CHECK (value LIKE "test%")',
                 $this->char(6)->check('value LIKE "test%"'),
                 [
-                    'mysql'  => 'char(6) CHECK (value LIKE "test%")',
+                    'mysql' => 'char(6) CHECK (value LIKE "test%")',
                     'sqlite' => 'char(6) CHECK (value LIKE "test%")',
                 ],
             ],
@@ -174,286 +190,346 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 Schema::TYPE_CHAR . '(6)',
                 $this->char(6),
                 [
-                    'mysql'    => 'char(6)',
+                    'mysql' => 'char(6)',
                     'postgres' => 'char(6)',
-                    'sqlite'   => 'char(6)',
+                    'sqlite' => 'char(6)',
+                    'oci' => 'CHAR(6)',
                 ],
             ],
             [
                 Schema::TYPE_CHAR,
                 $this->char(),
                 [
-                    'mysql'    => 'char(1)',
+                    'mysql' => 'char(1)',
                     'postgres' => 'char(1)',
-                    'sqlite'   => 'char(1)',
+                    'sqlite' => 'char(1)',
+                    'oci' => 'CHAR(1)',
                 ],
             ],
             [
                 Schema::TYPE_DATE . ' NOT NULL',
                 $this->date()->notNull(),
                 [
-                    'mysql'    => 'date NOT NULL',
+                    'mysql' => 'date NOT NULL',
                     'postgres' => 'date NOT NULL',
-                    'sqlite'   => 'date NOT NULL',
+                    'sqlite' => 'date NOT NULL',
+                    'oci' => 'DATE NOT NULL',
+                    'sqlsrv' => 'date NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_DATE,
                 $this->date(),
                 [
-                    'mysql'    => 'date',
+                    'mysql' => 'date',
                     'postgres' => 'date',
-                    'sqlite'   => 'date',
+                    'sqlite' => 'date',
+                    'oci' => 'DATE',
+                    'sqlsrv' => 'date',
                 ],
             ],
             [
                 Schema::TYPE_DATETIME . ' NOT NULL',
                 $this->dateTime()->notNull(),
                 [
-                    'mysql'    => 'datetime NOT NULL',
                     'postgres' => 'timestamp(0) NOT NULL',
-                    'sqlite'   => 'datetime NOT NULL',
+                    'sqlite' => 'datetime NOT NULL',
+                    'oci' => 'TIMESTAMP NOT NULL',
+                    'sqlsrv' => 'datetime NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_DATETIME,
                 $this->dateTime(),
                 [
-                    'mysql'    => 'datetime',
                     'postgres' => 'timestamp(0)',
-                    'sqlite'   => 'datetime',
+                    'sqlite' => 'datetime',
+                    'oci' => 'TIMESTAMP',
+                    'sqlsrv' => 'datetime',
                 ],
             ],
             [
                 Schema::TYPE_DECIMAL . ' CHECK (value > 5.6)',
                 $this->decimal()->check('value > 5.6'),
                 [
-                    'mysql'    => 'decimal(10,0) CHECK (value > 5.6)',
+                    'mysql' => 'decimal(10,0) CHECK (value > 5.6)',
                     'postgres' => 'numeric(10,0) CHECK (value > 5.6)',
-                    'sqlite'   => 'decimal(10,0) CHECK (value > 5.6)',
+                    'sqlite' => 'decimal(10,0) CHECK (value > 5.6)',
+                    'oci' => 'NUMBER CHECK (value > 5.6)',
+                    'sqlsrv' => 'decimal(18,0) CHECK (value > 5.6)',
                 ],
             ],
             [
                 Schema::TYPE_DECIMAL . ' NOT NULL',
                 $this->decimal()->notNull(),
                 [
-                    'mysql'    => 'decimal(10,0) NOT NULL',
+                    'mysql' => 'decimal(10,0) NOT NULL',
                     'postgres' => 'numeric(10,0) NOT NULL',
-                    'sqlite'   => 'decimal(10,0) NOT NULL',
+                    'sqlite' => 'decimal(10,0) NOT NULL',
+                    'oci' => 'NUMBER NOT NULL',
+                    'sqlsrv' => 'decimal(18,0) NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_DECIMAL . '(12,4) CHECK (value > 5.6)',
                 $this->decimal(12, 4)->check('value > 5.6'),
                 [
-                    'mysql'    => 'decimal(12,4) CHECK (value > 5.6)',
+                    'mysql' => 'decimal(12,4) CHECK (value > 5.6)',
                     'postgres' => 'numeric(12,4) CHECK (value > 5.6)',
-                    'sqlite'   => 'decimal(12,4) CHECK (value > 5.6)',
+                    'sqlite' => 'decimal(12,4) CHECK (value > 5.6)',
+                    'oci' => 'NUMBER CHECK (value > 5.6)',
+                    'sqlsrv' => 'decimal(12,4) CHECK (value > 5.6)',
                 ],
             ],
             [
                 Schema::TYPE_DECIMAL . '(12,4)',
                 $this->decimal(12, 4),
                 [
-                    'mysql'    => 'decimal(12,4)',
+                    'mysql' => 'decimal(12,4)',
                     'postgres' => 'numeric(12,4)',
-                    'sqlite'   => 'decimal(12,4)',
+                    'sqlite' => 'decimal(12,4)',
+                    'oci' => 'NUMBER',
+                    'sqlsrv' => 'decimal(12,4)',
                 ],
             ],
             [
                 Schema::TYPE_DECIMAL,
                 $this->decimal(),
                 [
-                    'mysql'    => 'decimal(10,0)',
+                    'mysql' => 'decimal(10,0)',
                     'postgres' => 'numeric(10,0)',
-                    'sqlite'   => 'decimal(10,0)',
+                    'sqlite' => 'decimal(10,0)',
+                    'oci' => 'NUMBER',
+                    'sqlsrv' => 'decimal(18,0)',
                 ],
             ],
             [
                 Schema::TYPE_DOUBLE . ' CHECK (value > 5.6)',
                 $this->double()->check('value > 5.6'),
                 [
-                    'mysql'    => 'double CHECK (value > 5.6)',
+                    'mysql' => 'double CHECK (value > 5.6)',
                     'postgres' => 'double precision CHECK (value > 5.6)',
-                    'sqlite'   => 'double CHECK (value > 5.6)',
+                    'sqlite' => 'double CHECK (value > 5.6)',
+                    'oci' => 'NUMBER CHECK (value > 5.6)',
+                    'sqlsrv' => 'float CHECK (value > 5.6)',
                 ],
             ],
             [
                 Schema::TYPE_DOUBLE . ' NOT NULL',
                 $this->double()->notNull(),
                 [
-                    'mysql'    => 'double NOT NULL',
+                    'mysql' => 'double NOT NULL',
                     'postgres' => 'double precision NOT NULL',
-                    'sqlite'   => 'double NOT NULL',
+                    'sqlite' => 'double NOT NULL',
+                    'oci' => 'NUMBER NOT NULL',
+                    'sqlsrv' => 'float NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_DOUBLE . '(16) CHECK (value > 5.6)',
                 $this->double(16)->check('value > 5.6'),
                 [
-                    'mysql'    => 'double CHECK (value > 5.6)',
+                    'mysql' => 'double CHECK (value > 5.6)',
                     'postgres' => 'double precision CHECK (value > 5.6)',
-                    'sqlite'   => 'double CHECK (value > 5.6)',
+                    'sqlite' => 'double CHECK (value > 5.6)',
+                    'oci' => 'NUMBER CHECK (value > 5.6)',
+                    'sqlsrv' => 'float CHECK (value > 5.6)',
                 ],
             ],
             [
                 Schema::TYPE_DOUBLE . '(16)',
                 $this->double(16),
                 [
-                    'mysql'  => 'double',
+                    'mysql' => 'double',
                     'sqlite' => 'double',
+                    'oci' => 'NUMBER',
+                    'sqlsrv' => 'float',
                 ],
             ],
             [
                 Schema::TYPE_DOUBLE,
                 $this->double(),
                 [
-                    'mysql'    => 'double',
+                    'mysql' => 'double',
                     'postgres' => 'double precision',
-                    'sqlite'   => 'double',
+                    'sqlite' => 'double',
+                    'oci' => 'NUMBER',
+                    'sqlsrv' => 'float',
                 ],
             ],
             [
                 Schema::TYPE_FLOAT . ' CHECK (value > 5.6)',
                 $this->float()->check('value > 5.6'),
                 [
-                    'mysql'    => 'float CHECK (value > 5.6)',
+                    'mysql' => 'float CHECK (value > 5.6)',
                     'postgres' => 'double precision CHECK (value > 5.6)',
-                    'sqlite'   => 'float CHECK (value > 5.6)',
+                    'sqlite' => 'float CHECK (value > 5.6)',
+                    'oci' => 'NUMBER CHECK (value > 5.6)',
+                    'sqlsrv' => 'float CHECK (value > 5.6)',
                 ],
             ],
             [
                 Schema::TYPE_FLOAT . ' NOT NULL',
                 $this->float()->notNull(),
                 [
-                    'mysql'    => 'float NOT NULL',
+                    'mysql' => 'float NOT NULL',
                     'postgres' => 'double precision NOT NULL',
-                    'sqlite'   => 'float NOT NULL',
+                    'sqlite' => 'float NOT NULL',
+                    'oci' => 'NUMBER NOT NULL',
+                    'sqlsrv' => 'float NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_FLOAT . '(16) CHECK (value > 5.6)',
                 $this->float(16)->check('value > 5.6'),
                 [
-                    'mysql'    => 'float CHECK (value > 5.6)',
+                    'mysql' => 'float CHECK (value > 5.6)',
                     'postgres' => 'double precision CHECK (value > 5.6)',
-                    'sqlite'   => 'float CHECK (value > 5.6)',
+                    'sqlite' => 'float CHECK (value > 5.6)',
+                    'oci' => 'NUMBER CHECK (value > 5.6)',
+                    'sqlsrv' => 'float CHECK (value > 5.6)',
                 ],
             ],
             [
                 Schema::TYPE_FLOAT . '(16)',
                 $this->float(16),
                 [
-                    'mysql'  => 'float',
+                    'mysql' => 'float',
                     'sqlite' => 'float',
+                    'oci' => 'NUMBER',
+                    'sqlsrv' => 'float',
                 ],
             ],
             [
                 Schema::TYPE_FLOAT,
                 $this->float(),
                 [
-                    'mysql'    => 'float',
+                    'mysql' => 'float',
                     'postgres' => 'double precision',
-                    'sqlite'   => 'float',
+                    'sqlite' => 'float',
+                    'oci' => 'NUMBER',
+                    'sqlsrv' => 'float',
                 ],
             ],
             [
                 Schema::TYPE_INTEGER . ' CHECK (value > 5)',
                 $this->integer()->check('value > 5'),
                 [
-                    'mysql'    => 'int(11) CHECK (value > 5)',
+                    'mysql' => 'int(11) CHECK (value > 5)',
                     'postgres' => 'integer CHECK (value > 5)',
-                    'sqlite'   => 'integer CHECK (value > 5)',
+                    'sqlite' => 'integer CHECK (value > 5)',
+                    'oci' => 'NUMBER(10) CHECK (value > 5)',
+                    'sqlsrv' => 'int CHECK (value > 5)',
                 ],
             ],
             [
                 Schema::TYPE_INTEGER . ' NOT NULL',
                 $this->integer()->notNull(),
                 [
-                    'mysql'    => 'int(11) NOT NULL',
+                    'mysql' => 'int(11) NOT NULL',
                     'postgres' => 'integer NOT NULL',
-                    'sqlite'   => 'integer NOT NULL',
+                    'sqlite' => 'integer NOT NULL',
+                    'oci' => 'NUMBER(10) NOT NULL',
+                    'sqlsrv' => 'int NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_INTEGER . '(8) CHECK (value > 5)',
                 $this->integer(8)->check('value > 5'),
                 [
-                    'mysql'    => 'int(8) CHECK (value > 5)',
+                    'mysql' => 'int(8) CHECK (value > 5)',
                     'postgres' => 'integer CHECK (value > 5)',
-                    'sqlite'   => 'integer CHECK (value > 5)',
+                    'sqlite' => 'integer CHECK (value > 5)',
+                    'oci' => 'NUMBER(8) CHECK (value > 5)',
+                    'sqlsrv' => 'int CHECK (value > 5)',
                 ],
             ],
             [
                 Schema::TYPE_INTEGER . '(8)',
                 $this->integer(8),
                 [
-                    'mysql'    => 'int(8)',
+                    'mysql' => 'int(8)',
                     'postgres' => 'integer',
-                    'sqlite'   => 'integer',
+                    'sqlite' => 'integer',
+                    'oci' => 'NUMBER(8)',
+                    'sqlsrv' => 'int',
                 ],
             ],
             [
                 Schema::TYPE_INTEGER,
                 $this->integer(),
                 [
-                    'mysql'    => 'int(11)',
+                    'mysql' => 'int(11)',
                     'postgres' => 'integer',
-                    'sqlite'   => 'integer',
+                    'sqlite' => 'integer',
+                    'oci' => 'NUMBER(10)',
+                    'sqlsrv' => 'int',
                 ],
             ],
             [
                 Schema::TYPE_MONEY . ' CHECK (value > 0.0)',
                 $this->money()->check('value > 0.0'),
                 [
-                    'mysql'    => 'decimal(19,4) CHECK (value > 0.0)',
+                    'mysql' => 'decimal(19,4) CHECK (value > 0.0)',
                     'postgres' => 'numeric(19,4) CHECK (value > 0.0)',
-                    'sqlite'   => 'decimal(19,4) CHECK (value > 0.0)',
-                ],
+                    'sqlite' => 'decimal(19,4) CHECK (value > 0.0)',
+                    'oci' => 'NUMBER(19,4) CHECK (value > 0.0)',
+                    'sqlsrv' => 'decimal(19,4) CHECK (value > 0.0)',
+                ]
             ],
             [
                 Schema::TYPE_MONEY . ' NOT NULL',
                 $this->money()->notNull(),
                 [
-                    'mysql'    => 'decimal(19,4) NOT NULL',
+                    'mysql' => 'decimal(19,4) NOT NULL',
                     'postgres' => 'numeric(19,4) NOT NULL',
-                    'sqlite'   => 'decimal(19,4) NOT NULL',
+                    'sqlite' => 'decimal(19,4) NOT NULL',
+                    'oci' => 'NUMBER(19,4) NOT NULL',
+                    'sqlsrv' => 'decimal(19,4) NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_MONEY . '(16,2) CHECK (value > 0.0)',
                 $this->money(16, 2)->check('value > 0.0'),
                 [
-                    'mysql'    => 'decimal(16,2) CHECK (value > 0.0)',
+                    'mysql' => 'decimal(16,2) CHECK (value > 0.0)',
                     'postgres' => 'numeric(16,2) CHECK (value > 0.0)',
-                    'sqlite'   => 'decimal(16,2) CHECK (value > 0.0)',
+                    'sqlite' => 'decimal(16,2) CHECK (value > 0.0)',
+                    'oci' => 'NUMBER(16,2) CHECK (value > 0.0)',
+                    'sqlsrv' => 'decimal(16,2) CHECK (value > 0.0)',
                 ],
             ],
             [
                 Schema::TYPE_MONEY . '(16,2)',
                 $this->money(16, 2),
                 [
-                    'mysql'    => 'decimal(16,2)',
+                    'mysql' => 'decimal(16,2)',
                     'postgres' => 'numeric(16,2)',
-                    'sqlite'   => 'decimal(16,2)',
+                    'sqlite' => 'decimal(16,2)',
+                    'oci' => 'NUMBER(16,2)',
+                    'sqlsrv' => 'decimal(16,2)',
                 ],
             ],
             [
                 Schema::TYPE_MONEY,
                 $this->money(),
                 [
-                    'mysql'    => 'decimal(19,4)',
+                    'mysql' => 'decimal(19,4)',
                     'postgres' => 'numeric(19,4)',
-                    'sqlite'   => 'decimal(19,4)',
+                    'sqlite' => 'decimal(19,4)',
+                    'oci' => 'NUMBER(19,4)',
+                    'sqlsrv' => 'decimal(19,4)',
                 ],
             ],
             [
                 Schema::TYPE_PK . ' CHECK (value > 5)',
                 $this->primaryKey()->check('value > 5'),
                 [
-                    'mysql'    => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY CHECK (value > 5)',
+                    'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY CHECK (value > 5)',
                     'postgres' => 'serial NOT NULL PRIMARY KEY CHECK (value > 5)',
-                    'sqlite'   => 'integer PRIMARY KEY AUTOINCREMENT NOT NULL CHECK (value > 5)',
+                    'sqlite' => 'integer PRIMARY KEY AUTOINCREMENT NOT NULL CHECK (value > 5)',
+                    'oci' => 'NUMBER(10) NOT NULL PRIMARY KEY CHECK (value > 5)',
+                    'sqlsrv' => 'int IDENTITY PRIMARY KEY CHECK (value > 5)',
                 ],
             ],
             [
@@ -461,6 +537,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 $this->primaryKey(8)->check('value > 5'),
                 [
                     'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY CHECK (value > 5)',
+                    'oci' => 'NUMBER(8) NOT NULL PRIMARY KEY CHECK (value > 5)',
                 ],
             ],
             [
@@ -468,68 +545,80 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 $this->primaryKey(8),
                 [
                     'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY',
+                    'oci' => 'NUMBER(8) NOT NULL PRIMARY KEY',
                 ],
             ],
             [
                 Schema::TYPE_PK,
                 $this->primaryKey(),
                 [
-                    'mysql'    => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY',
+                    'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY',
                     'postgres' => 'serial NOT NULL PRIMARY KEY',
-                    'sqlite'   => 'integer PRIMARY KEY AUTOINCREMENT NOT NULL',
+                    'sqlite' => 'integer PRIMARY KEY AUTOINCREMENT NOT NULL',
+                    'oci' => 'NUMBER(10) NOT NULL PRIMARY KEY',
+                    'sqlsrv' => 'int IDENTITY PRIMARY KEY',
                 ],
             ],
             [
                 Schema::TYPE_TINYINT . '(2)',
                 $this->tinyInteger(2),
                 [
-                    'mysql'    => 'tinyint(2)',
+                    'mysql' => 'tinyint(2)',
                     'postgres' => 'smallint',
-                    'sqlite'   => 'tinyint',
+                    'sqlite' => 'tinyint',
+                    'oci' => 'NUMBER(2)',
+                    'sqlsrv' => 'tinyint',
                 ],
             ],
             [
                 Schema::TYPE_TINYINT . ' UNSIGNED',
                 $this->tinyInteger()->unsigned(),
                 [
-                    'mysql'    => 'tinyint(3) UNSIGNED',
+                    'mysql' => 'tinyint(3) UNSIGNED',
                     'postgres' => 'smallint UNSIGNED',
-                    'sqlite'   => 'tinyint UNSIGNED',
+                    'sqlite' => 'tinyint UNSIGNED',
                 ],
             ],
             [
                 Schema::TYPE_TINYINT,
                 $this->tinyInteger(),
                 [
-                    'mysql'    => 'tinyint(3)',
+                    'mysql' => 'tinyint(3)',
                     'postgres' => 'smallint',
-                    'sqlite'   => 'tinyint',
+                    'sqlite' => 'tinyint',
+                    'oci' => 'NUMBER(3)',
+                    'sqlsrv' => 'tinyint',
                 ],
             ],
             [
                 Schema::TYPE_SMALLINT . '(8)',
                 $this->smallInteger(8),
                 [
-                    'mysql'    => 'smallint(8)',
+                    'mysql' => 'smallint(8)',
                     'postgres' => 'smallint',
-                    'sqlite'   => 'smallint',
+                    'sqlite' => 'smallint',
+                    'oci' => 'NUMBER(8)',
+                    'sqlsrv' => 'smallint',
                 ],
             ],
             [
                 Schema::TYPE_SMALLINT,
                 $this->smallInteger(),
                 [
-                    'mysql'    => 'smallint(6)',
+                    'mysql' => 'smallint(6)',
                     'postgres' => 'smallint',
-                    'sqlite'   => 'smallint',
+                    'sqlite' => 'smallint',
+                    'oci' => 'NUMBER(5)',
+                    'sqlsrv' => 'smallint',
                 ],
             ],
             [
-                Schema::TYPE_STRING . ' CHECK (value LIKE "test%")',
-                $this->string()->check('value LIKE "test%"'),
+                Schema::TYPE_STRING . " CHECK (value LIKE 'test%')",
+                $this->string()->check("value LIKE 'test%'"),
                 [
-                    'mysql'  => 'varchar(255) CHECK (value LIKE "test%")',
-                    'sqlite' => 'varchar(255) CHECK (value LIKE "test%")',
+                    'mysql' => "varchar(255) CHECK (value LIKE 'test%')",
+                    'sqlite' => "varchar(255) CHECK (value LIKE 'test%')",
+                    'sqlsrv' => "nvarchar(255) CHECK (value LIKE 'test%')",
                 ],
             ],
             [
@@ -537,23 +626,27 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 $this->string()->check('value LIKE \'test%\''),
                 [
                     'postgres' => 'varchar(255) CHECK (value LIKE \'test%\')',
+                    'oci' => 'VARCHAR2(255) CHECK (value LIKE \'test%\')',
                 ],
             ],
             [
                 Schema::TYPE_STRING . ' NOT NULL',
                 $this->string()->notNull(),
                 [
-                    'mysql'    => 'varchar(255) NOT NULL',
+                    'mysql' => 'varchar(255) NOT NULL',
                     'postgres' => 'varchar(255) NOT NULL',
-                    'sqlite'   => 'varchar(255) NOT NULL',
+                    'sqlite' => 'varchar(255) NOT NULL',
+                    'oci' => 'VARCHAR2(255) NOT NULL',
+                    'sqlsrv' => 'nvarchar(255) NOT NULL',
                 ],
             ],
             [
-                Schema::TYPE_STRING . '(32) CHECK (value LIKE "test%")',
-                $this->string(32)->check('value LIKE "test%"'),
+                Schema::TYPE_STRING . "(32) CHECK (value LIKE 'test%')",
+                $this->string(32)->check("value LIKE 'test%'"),
                 [
-                    'mysql'  => 'varchar(32) CHECK (value LIKE "test%")',
-                    'sqlite' => 'varchar(32) CHECK (value LIKE "test%")',
+                    'mysql' => "varchar(32) CHECK (value LIKE 'test%')",
+                    'sqlite' => "varchar(32) CHECK (value LIKE 'test%')",
+                    'sqlsrv' => "nvarchar(32) CHECK (value LIKE 'test%')",
                 ],
             ],
             [
@@ -561,32 +654,38 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 $this->string(32)->check('value LIKE \'test%\''),
                 [
                     'postgres' => 'varchar(32) CHECK (value LIKE \'test%\')',
+                    'oci' => 'VARCHAR2(32) CHECK (value LIKE \'test%\')',
                 ],
             ],
             [
                 Schema::TYPE_STRING . '(32)',
                 $this->string(32),
                 [
-                    'mysql'    => 'varchar(32)',
+                    'mysql' => 'varchar(32)',
                     'postgres' => 'varchar(32)',
-                    'sqlite'   => 'varchar(32)',
+                    'sqlite' => 'varchar(32)',
+                    'oci' => 'VARCHAR2(32)',
+                    'sqlsrv' => 'nvarchar(32)',
                 ],
             ],
             [
                 Schema::TYPE_STRING,
                 $this->string(),
                 [
-                    'mysql'    => 'varchar(255)',
+                    'mysql' => 'varchar(255)',
                     'postgres' => 'varchar(255)',
-                    'sqlite'   => 'varchar(255)',
+                    'sqlite' => 'varchar(255)',
+                    'oci' => 'VARCHAR2(255)',
+                    'sqlsrv' => 'nvarchar(255)',
                 ],
             ],
             [
-                Schema::TYPE_TEXT . ' CHECK (value LIKE "test%")',
-                $this->text()->check('value LIKE "test%"'),
+                Schema::TYPE_TEXT . " CHECK (value LIKE 'test%')",
+                $this->text()->check("value LIKE 'test%'"),
                 [
-                    'mysql'  => 'text CHECK (value LIKE "test%")',
-                    'sqlite' => 'text CHECK (value LIKE "test%")',
+                    'mysql' => "text CHECK (value LIKE 'test%')",
+                    'sqlite' => "text CHECK (value LIKE 'test%')",
+                    'sqlsrv' => "nvarchar(max) CHECK (value LIKE 'test%')",
                 ],
             ],
             [
@@ -594,51 +693,60 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 $this->text()->check('value LIKE \'test%\''),
                 [
                     'postgres' => 'text CHECK (value LIKE \'test%\')',
+                    'oci' => 'CLOB CHECK (value LIKE \'test%\')',
                 ],
             ],
             [
                 Schema::TYPE_TEXT . ' NOT NULL',
                 $this->text()->notNull(),
                 [
-                    'mysql'    => 'text NOT NULL',
+                    'mysql' => 'text NOT NULL',
                     'postgres' => 'text NOT NULL',
-                    'sqlite'   => 'text NOT NULL',
+                    'sqlite' => 'text NOT NULL',
+                    'oci' => 'CLOB NOT NULL',
+                    'sqlsrv' => 'nvarchar(max) NOT NULL',
                 ],
             ],
             [
-                Schema::TYPE_TEXT . '(255) CHECK (value LIKE "test%")',
-                $this->text()->check('value LIKE "test%"'),
+                Schema::TYPE_TEXT . " CHECK (value LIKE 'test%')",
+                $this->text()->check("value LIKE 'test%'"),
                 [
-                    'mysql'  => 'text CHECK (value LIKE "test%")',
-                    'sqlite' => 'text CHECK (value LIKE "test%")',
+                    'mysql' => "text CHECK (value LIKE 'test%')",
+                    'sqlite' => "text CHECK (value LIKE 'test%')",
+                    'sqlsrv' => "nvarchar(max) CHECK (value LIKE 'test%')",
                 ],
-                Schema::TYPE_TEXT . ' CHECK (value LIKE "test%")',
+                Schema::TYPE_TEXT . " CHECK (value LIKE 'test%')",
             ],
             [
-                Schema::TYPE_TEXT . '(255) CHECK (value LIKE \'test%\')',
+                Schema::TYPE_TEXT . ' CHECK (value LIKE \'test%\')',
                 $this->text()->check('value LIKE \'test%\''),
                 [
                     'postgres' => 'text CHECK (value LIKE \'test%\')',
+                    'oci' => 'CLOB CHECK (value LIKE \'test%\')',
                 ],
                 Schema::TYPE_TEXT . ' CHECK (value LIKE \'test%\')',
             ],
             [
-                Schema::TYPE_TEXT . '(255) NOT NULL',
+                Schema::TYPE_TEXT . ' NOT NULL',
                 $this->text()->notNull(),
                 [
-                    'mysql'    => 'text NOT NULL',
+                    'mysql' => 'text NOT NULL',
                     'postgres' => 'text NOT NULL',
-                    'sqlite'   => 'text NOT NULL',
+                    'sqlite' => 'text NOT NULL',
+                    'oci' => 'CLOB NOT NULL',
+                    'sqlsrv' => 'nvarchar(max) NOT NULL',
                 ],
                 Schema::TYPE_TEXT . ' NOT NULL',
             ],
             [
-                Schema::TYPE_TEXT . '(255)',
+                Schema::TYPE_TEXT,
                 $this->text(),
                 [
-                    'mysql'    => 'text',
+                    'mysql' => 'text',
                     'postgres' => 'text',
-                    'sqlite'   => 'text',
+                    'sqlite' => 'text',
+                    'oci' => 'CLOB',
+                    'sqlsrv' => 'nvarchar(max)',
                 ],
                 Schema::TYPE_TEXT,
             ],
@@ -646,133 +754,173 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 Schema::TYPE_TEXT,
                 $this->text(),
                 [
-                    'mysql'    => 'text',
+                    'mysql' => 'text',
                     'postgres' => 'text',
-                    'sqlite'   => 'text',
+                    'sqlite' => 'text',
+                    'oci' => 'CLOB',
+                    'sqlsrv' => 'nvarchar(max)',
                 ],
             ],
             [
                 Schema::TYPE_TIME . ' NOT NULL',
                 $this->time()->notNull(),
                 [
-                    'mysql'    => 'time NOT NULL',
                     'postgres' => 'time(0) NOT NULL',
-                    'sqlite'   => 'time NOT NULL',
+                    'sqlite' => 'time NOT NULL',
+                    'oci' => 'TIMESTAMP NOT NULL',
+                    'sqlsrv' => 'time NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_TIME,
                 $this->time(),
                 [
-                    'mysql'    => 'time',
                     'postgres' => 'time(0)',
-                    'sqlite'   => 'time',
+                    'sqlite' => 'time',
+                    'oci' => 'TIMESTAMP',
+                    'sqlsrv' => 'time',
                 ],
             ],
             [
                 Schema::TYPE_TIMESTAMP . ' NOT NULL',
                 $this->timestamp()->notNull(),
                 [
-                    'mysql'    => 'timestamp NOT NULL',
                     'postgres' => 'timestamp(0) NOT NULL',
-                    'sqlite'   => 'timestamp NOT NULL',
+                    'sqlite' => 'timestamp NOT NULL',
+                    'oci' => 'TIMESTAMP NOT NULL',
+                    'sqlsrv' => 'datetime NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_TIMESTAMP,
                 $this->timestamp(),
                 [
-                    /*
+                    /**
                      * MySQL has its own TIMESTAMP test realization
-                     * @see \Yiisoft\Db\Tests\mysql\QueryBuilderTest::columnTypes()
+                     * @see \yiiunit\framework\db\mysql\QueryBuilderTest::columnTypes()
                      */
 
                     'postgres' => 'timestamp(0)',
-                    'sqlite'   => 'timestamp',
+                    'sqlite' => 'timestamp',
+                    'oci' => 'TIMESTAMP',
+                    'sqlsrv' => 'datetime',
                 ],
             ],
             [
                 Schema::TYPE_TIMESTAMP . ' NULL DEFAULT NULL',
                 $this->timestamp()->defaultValue(null),
                 [
-                    'mysql'    => 'timestamp NULL DEFAULT NULL',
                     'postgres' => 'timestamp(0) NULL DEFAULT NULL',
-                    'sqlite'   => 'timestamp NULL DEFAULT NULL',
+                    'sqlite' => 'timestamp NULL DEFAULT NULL',
+                    'sqlsrv' => 'datetime NULL DEFAULT NULL',
                 ],
             ],
             [
                 Schema::TYPE_UPK,
                 $this->primaryKey()->unsigned(),
                 [
-                    'mysql'    => 'int(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
+                    'mysql' => 'int(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
                     'postgres' => 'serial NOT NULL PRIMARY KEY',
-                    'sqlite'   => 'integer UNSIGNED PRIMARY KEY AUTOINCREMENT NOT NULL',
+                    'sqlite' => 'integer UNSIGNED PRIMARY KEY AUTOINCREMENT NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_UBIGPK,
                 $this->bigPrimaryKey()->unsigned(),
                 [
-                    'mysql'    => 'bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
+                    'mysql' => 'bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
                     'postgres' => 'bigserial NOT NULL PRIMARY KEY',
-                    'sqlite'   => 'integer UNSIGNED PRIMARY KEY AUTOINCREMENT NOT NULL',
+                    'sqlite' => 'integer UNSIGNED PRIMARY KEY AUTOINCREMENT NOT NULL',
                 ],
             ],
             [
                 Schema::TYPE_INTEGER . " COMMENT 'test comment'",
                 $this->integer()->comment('test comment'),
                 [
-                    'mysql'    => "int(11) COMMENT 'test comment'",
+                    'mysql' => "int(11) COMMENT 'test comment'",
                     'postgres' => 'integer',
+                    'sqlsrv' => 'int',
                 ],
+                [
+                    'sqlsrv' => 'integer',
+                ]
             ],
             [
                 Schema::TYPE_PK . " COMMENT 'test comment'",
                 $this->primaryKey()->comment('test comment'),
                 [
-                    'mysql'    => "int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'test comment'",
+                    'mysql' => "int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'test comment'",
                     'postgres' => 'serial NOT NULL PRIMARY KEY',
+                    'sqlsrv' => 'int IDENTITY PRIMARY KEY',
                 ],
+                [
+                    'sqlsrv' => 'pk',
+                ]
             ],
             [
                 Schema::TYPE_PK . ' FIRST',
                 $this->primaryKey()->first(),
                 [
-                    'mysql'    => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
+                    'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
                     'postgres' => 'serial NOT NULL PRIMARY KEY',
+                    'oci' => 'NUMBER(10) NOT NULL PRIMARY KEY',
+                    'sqlsrv' => 'int IDENTITY PRIMARY KEY',
                 ],
+                [
+                    'sqlsrv' => 'pk',
+                ]
             ],
             [
                 Schema::TYPE_INTEGER . ' FIRST',
                 $this->integer()->first(),
                 [
-                    'mysql'    => 'int(11) FIRST',
+                    'mysql' => 'int(11) FIRST',
                     'postgres' => 'integer',
+                    'oci' => 'NUMBER(10)',
+                    'sqlsrv' => 'int',
                 ],
+                [
+                    'sqlsrv' => 'integer',
+                ]
             ],
             [
                 Schema::TYPE_STRING . ' FIRST',
                 $this->string()->first(),
                 [
-                    'mysql'    => 'varchar(255) FIRST',
+                    'mysql' => 'varchar(255) FIRST',
                     'postgres' => 'varchar(255)',
+                    'oci' => 'VARCHAR2(255)',
+                    'sqlsrv' => 'nvarchar(255)',
                 ],
+                [
+                    'sqlsrv' => 'string',
+                ]
             ],
             [
                 Schema::TYPE_INTEGER . ' NOT NULL FIRST',
                 $this->integer()->append('NOT NULL')->first(),
                 [
-                    'mysql'    => 'int(11) NOT NULL FIRST',
+                    'mysql' => 'int(11) NOT NULL FIRST',
                     'postgres' => 'integer NOT NULL',
+                    'oci' => 'NUMBER(10) NOT NULL',
+                    'sqlsrv' => 'int NOT NULL',
                 ],
+                [
+                    'sqlsrv' => 'integer NOT NULL',
+                ]
             ],
             [
                 Schema::TYPE_STRING . ' NOT NULL FIRST',
                 $this->string()->append('NOT NULL')->first(),
                 [
-                    'mysql'    => 'varchar(255) NOT NULL FIRST',
+                    'mysql' => 'varchar(255) NOT NULL FIRST',
                     'postgres' => 'varchar(255) NOT NULL',
+                    'oci' => 'VARCHAR2(255) NOT NULL',
+                    'sqlsrv' => 'nvarchar(255) NOT NULL',
                 ],
+                [
+                    'sqlsrv' => 'string NOT NULL',
+                ]
             ],
         ];
 
@@ -793,8 +941,15 @@ abstract class QueryBuilderTest extends DatabaseTestCase
         $qb = $this->getQueryBuilder();
 
         foreach ($this->columnTypes() as $item) {
+            /** @var ColumnSchemaBuilder $builder */
             [$column, $builder, $expected] = $item;
-            $expectedColumnSchemaBuilder = $item[3] ?? $column;
+            if (isset($item[3][$this->driverName])) {
+                $expectedColumnSchemaBuilder = $item[3][$this->driverName];
+            } elseif (isset($item[3]) && !is_array($item[3])) {
+                $expectedColumnSchemaBuilder = $item[3];
+            } else {
+                $expectedColumnSchemaBuilder = $column;
+            }
 
             $this->assertEquals($expected, $qb->getColumnType($column));
             $this->assertEquals($expected, $qb->getColumnType($builder));
