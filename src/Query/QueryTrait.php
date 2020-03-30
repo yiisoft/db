@@ -432,29 +432,6 @@ trait QueryTrait
         return $this;
     }
 
-    /**
-     * Configures an object with the given configuration.
-     *
-     * @param object $object the object to be configured
-     * @param iterable $config property values and methods to call
-     *
-     * @return object the object itself
-     */
-    public function configure($object, iterable $config): object
-    {
-        foreach ($config as $action => $arguments) {
-            if (substr($action, -2) === '()') {
-                // method call
-                \call_user_func_array([$object, substr($action, 0, -2)], $arguments);
-            } else {
-                // property
-                $object->$action = $arguments;
-            }
-        }
-
-        return $object;
-    }
-
     public function getWhere()
     {
         return $this->where;
