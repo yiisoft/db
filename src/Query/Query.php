@@ -65,11 +65,9 @@ class Query implements QueryInterface, ExpressionInterface
     private ?Dependency $queryCacheDependency = null;
     private ?Connection $db = null;
 
-    public function __construct(Connection $db, array $config = [])
+    public function __construct(Connection $db)
     {
         $this->db = $db;
-
-        $this->configure($this, $config);
     }
 
     /**
@@ -731,7 +729,7 @@ PATTERN;
      *
      * @return self the query object itself
      */
-    public function distinct(bool $value = true): self
+    public function distinct(?bool $value = true): self
     {
         $this->distinct = $value;
 
@@ -1380,25 +1378,21 @@ PATTERN;
      */
     public static function create($db, $from): self
     {
-        return new self(
-            $db,
-            [
-                'where'        => $from->where,
-                'limit'        => $from->limit,
-                'offset'       => $from->offset,
-                'orderBy'      => $from->orderBy,
-                'indexBy'      => $from->indexBy,
-                'select'       => $from->select,
-                'selectOption' => $from->selectOption,
-                'distinct'     => $from->distinct,
-                'from'         => $from->from,
-                'groupBy'      => $from->groupBy,
-                'join'         => $from->join,
-                'having'       => $from->having,
-                'union'        => $from->union,
-                'params'       => $from->params,
-            ]
-        );
+        return (new self($db))
+            ->where($from->where)
+            ->limit($from->limit)
+            ->offset($from->offset)
+            ->orderBy($from->orderBy)
+            ->indexBy($from->indexBy)
+            ->select($from->select)
+            ->selectOption($from->selectOption)
+            ->distinct($from->distinct)
+            ->from($from->from)
+            ->groupBy($from->groupBy)
+            ->setJoin($from->join)
+            ->having($from->having)
+            ->setUnion($from->union)
+            ->params($from->params);
     }
 
     /**
@@ -1487,5 +1481,26 @@ PATTERN;
     protected static function createInstance(Connection $value): self
     {
         return new self($value);
+    }
+
+    public function selectOption(?string $value): self
+    {
+        $this->selectOption = $value;
+
+        return $this;
+    }
+
+    public function setJoin($value): self
+    {
+        $this->join = $value;
+
+        return $this;
+    }
+
+    public function setUnion($value): self
+    {
+        $this->union = $value;
+
+        return $this;
     }
 }
