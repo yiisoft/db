@@ -35,7 +35,7 @@ class ForeignKeyConstraint extends Constraint
         return $this->onUpdate;
     }
 
-    public function getOnDelete($value): ?string
+    public function getOnDelete(): ?string
     {
         return $this->onDelete;
     }
