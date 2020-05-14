@@ -11,7 +11,7 @@ abstract class DataReaderProviderTest extends DatabaseTestCase
     public function testGetModels()
     {
         $dataProvider = (new DataReaderProvider())
-            ->sql('select * from `customer`')
+            ->sql('select * from customer')
             ->db($this->getConnection());
 
         $this->assertCount(3, $dataProvider->getModels());
@@ -20,7 +20,7 @@ abstract class DataReaderProviderTest extends DatabaseTestCase
     public function testTotalCount()
     {
         $dataProvider = (new DataReaderProvider())
-            ->sql('select * from `customer`')
+            ->sql('select * from customer')
             ->db($this->getConnection());
 
         $this->assertEquals(3, $dataProvider->getTotalCount());
@@ -29,7 +29,7 @@ abstract class DataReaderProviderTest extends DatabaseTestCase
     public function testTotalCountWithParams()
     {
         $dataProvider = (new DataReaderProvider())
-            ->sql('select * from `customer` where id > :minimum')
+            ->sql('select * from customer where id > :minimum')
             ->params([':minimum' => -1])
             ->db($this->getConnection());
 
