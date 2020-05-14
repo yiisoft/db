@@ -31,11 +31,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install PHP
-        uses: shivammathur/setup-php@v1
+        uses: shivammathur/setup-php@v2
         with:
           php-version: 7.4
           extensions: apc, curl, mbstring, dom, intl, mysql, pgsql, pdo, pdo_sqlite, imagick
           ini-values: date.timezone='UTC'
+      - name: Install Composer 2
+        run: composer self-update --snapshot
       - name: Get composer cache directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
