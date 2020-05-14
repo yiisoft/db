@@ -18,15 +18,16 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": "^7.4",
+        "php": "^7.4 || ^8.0",
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "psr/log": "^1.1",
         "yiisoft/arrays": "^3.0@dev",
         "yiisoft/cache": "^3.0@dev",
+        "yiisoft/data": "^3.0@dev",
         "yiisoft/log": "^3.0@dev",
-        "yiisoft/strings": "^3.0@dev",
-        "yiisoft/profiler": "^3.0@dev"
+        "yiisoft/profiler": "^3.0@dev",
+        "yiisoft/strings": "^3.0@dev"
     },
     "require-dev": {
         "yiisoft/composer-config-plugin": "^1.0@dev",
