@@ -1400,7 +1400,8 @@ SQL;
         $db->createCommand()->addCheck($name, $tableName, '[[int1]] > 1')->execute();
 
         $this->assertMatchesRegularExpression(
-            '/^.*int1.*>.*1.*$/', $schema->getTableChecks($tableName, true)[0]->getExpression()
+            '/^.*int1.*>.*1.*$/',
+            $schema->getTableChecks($tableName, true)[0]->getExpression()
         );
 
         $db->createCommand()->dropCheck($name, $tableName)->execute();
