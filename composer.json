@@ -32,7 +32,7 @@
     "require-dev": {
         "yiisoft/composer-config-plugin": "^1.0@dev",
         "phpunit/phpunit": "^9.0",
-        "yiisoft/aliases": "^3.0@dev",
+        "yiisoft/aliases": "^1.0",
         "yiisoft/db-mysql": "^3.0@dev",
         "yiisoft/db-pgsql": "^3.0@dev",
         "yiisoft/db-sqlite": "^3.0@dev",
