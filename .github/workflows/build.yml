@@ -17,7 +17,6 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
 
         php-version:
           - "7.4"
@@ -25,7 +24,6 @@ jobs:
 
     services:
       mysql:
-        if: matrix.os == 'ubuntu-latest'
         image: mysql:5.7
         env:
           MYSQL_ROOT_PASSWORD: root
@@ -34,7 +32,6 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
       postgres:
-        if: matrix.os == 'ubuntu-latest'
         image: postgres:9.6
         env:
           POSTGRES_USER: root
