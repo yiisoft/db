@@ -24,8 +24,8 @@ jobs:
           - "8.0"
 
     services:
-      if: matrix.os == 'ubuntu-latest'
       mysql:
+        if: matrix.os == 'ubuntu-latest'
         image: mysql:5.7
         env:
           MYSQL_ROOT_PASSWORD: root
