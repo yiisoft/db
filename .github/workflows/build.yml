@@ -24,6 +24,7 @@ jobs:
           - "8.0"
 
     services:
+      if: matrix.os == 'ubuntu-latest'
       mysql:
         image: mysql:5.7
         env:
@@ -33,6 +34,7 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
       postgres:
+        if: matrix.os == 'ubuntu-latest'
         image: postgres:9.6
         env:
           POSTGRES_USER: root
