@@ -10,7 +10,7 @@ jobs:
   mutation:
     name: PHP ${{ matrix.php-version }}-${{ matrix.os }}
     env:
-      COMPOSER_ROOT_VERSION: "dev-master",
+      COMPOSER_ROOT_VERSION: "dev-master"
       extensions: curl, mbstring, dom, intl, json, libxml, mysql, pgsql, pdo, pdo_sqlite, xml, xmlwriter
 
     runs-on: ${{ matrix.os }}
@@ -49,10 +49,10 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          coverage: "pcov"
           php-version: "${{ matrix.php-version }}"
           extensions: ${{ env.extensions }}
           ini-values: memory_limit=-1
+          coverage: "pcov"
           tools: composer:v2
 
       - name: Determine composer cache directory
