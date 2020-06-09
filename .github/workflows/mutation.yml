@@ -1,0 +1,75 @@
+on:
+  pull_request:
+  push:
+    branches:
+      - "master"
+
+name: mutation test
+
+jobs:
+  mutation:
+    name: PHP ${{ matrix.php-version }}-${{ matrix.os }}
+    env:
+      COMPOSER_ROOT_VERSION: "dev-master"
+      extensions: curl, mbstring, dom, intl, json, libxml, mysql, pgsql, pdo, pdo_sqlite, xml, xmlwriter
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+
+        php-version:
+          - "7.4"
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: yiitest
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      postgres:
+        image: postgres:9.6
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: yiitest
+        ports:
+          - 5432:5432
+        options: --name=postgres --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          extensions: ${{ env.extensions }}
+          ini-values: memory_limit=-1
+          coverage: "pcov"
+          tools: composer:v2
+
+      - name: Determine composer cache directory
+        run: echo "::set-env name=COMPOSER_CACHE_DIR::$(composer config cache-dir)"
+
+      - name: Cache dependencies installed with composer
+        uses: actions/cache@v1
+        with:
+          path: ${{ env.COMPOSER_CACHE_DIR }}
+          key: php${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            php${{ matrix.php-version }}-composer-
+
+      - name: Install dependencies with composer
+        run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader
+
+      - name: Run test mutation infection with coverage
+        run: vendor/bin/infection --no-progress
+        env:
+          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}

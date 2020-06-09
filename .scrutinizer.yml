@@ -1,4 +1,8 @@
 build:
+    environment:
+        variables:
+            COMPOSER_ROOT_VERSION: 'dev-master'
+
     nodes:
         analysis:
             tests:

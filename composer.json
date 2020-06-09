@@ -18,7 +18,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^7.4",
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "psr/log": "^1.1",
@@ -31,7 +31,8 @@
     },
     "require-dev": {
         "yiisoft/composer-config-plugin": "^1.0@dev",
-        "phpunit/phpunit": "^9.0",
+        "infection/infection": "^0.16.3",
+        "phpunit/phpunit": "^9.2",
         "yiisoft/aliases": "^1.0",
         "yiisoft/db-mysql": "^3.0@dev",
         "yiisoft/db-pgsql": "^3.0@dev",
