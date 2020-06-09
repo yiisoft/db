@@ -4,6 +4,7 @@
          colors="true"
          verbose="true"
          bootstrap="vendor/autoload.php"
+         executionOrder="default"
          failOnRisky="true"
          failOnWarning="true">
     <php>
