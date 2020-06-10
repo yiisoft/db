@@ -1,4 +1,4 @@
-name: static analysis with phan
+name: static analysis
 
 on:
   - pull_request
@@ -9,6 +9,7 @@ jobs:
     name: PHP ${{ matrix.php-version }}-${{ matrix.os }}
     env:
       COMPOSER_ROOT_VERSION: "dev-master"
+      extensions: ast
 
     runs-on: ${{ matrix.os }}
 
@@ -28,7 +29,8 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php-version }}"
-          tools: cs2pr, composer:v2, phan
+          extensions: ${{ env.extensions }}
+          tools: composer:v2, cs2pr
           coverage: none
 
       - name: Determine composer cache directory
@@ -46,4 +48,4 @@ jobs:
         run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader
 
       - name: Static analysis with phan
-        run: phan --no-progress-bar --output-mode checkstyle | cs2pr --graceful-warnings --colorize
+        run: vendor/bin/phan --no-progress-bar --output-mode checkstyle | cs2pr --graceful-warnings --colorize
