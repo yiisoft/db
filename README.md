@@ -19,7 +19,7 @@ It is used in [Yii Framework] but is supposed to be usable separately.
 [![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fyiisoft%2Fdb%2Fmaster)](https://dashboard.stryker-mutator.io/reports/github.com/yiisoft/db/master)
 [![static analysis](https://github.com/yiisoft/db/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/db/actions?query=workflow%3A%22static+analysis%22)
 
-### Tests
+### Unit testing
 
 The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
 
@@ -27,9 +27,9 @@ The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
 ./vendor/bin/phpunit
 ```
 
-### Tests mutation
+### Mutation testing
 
-The package is tests mutation with [Infection](https://infection.github.io/). To run tests mutation:
+The package tests are checked with [Infection](https://infection.github.io/) mutation framework. To run it:
 
 ```php
 ./vendor/bin/infection
@@ -37,7 +37,7 @@ The package is tests mutation with [Infection](https://infection.github.io/). To
 
 ### Static analysis
 
-Static analysis with [Phan](https://github.com/phan/phan/wiki). To run static analysis:
+The code is statically analyzed with [Phan](https://github.com/phan/phan/wiki). To run static analysis:
 
 ```php
 ./vendor/bin/phan
