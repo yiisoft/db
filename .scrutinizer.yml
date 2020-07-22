@@ -2,7 +2,7 @@ build:
     environment:
         variables:
             COMPOSER_ROOT_VERSION: 'dev-master'
-
+        php: "7.4"
     nodes:
         analysis:
             tests:
