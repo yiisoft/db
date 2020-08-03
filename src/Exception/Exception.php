@@ -20,10 +20,10 @@ class Exception extends \Exception
      *
      * @param string $message PDO error message
      * @param array|null $errorInfo PDO error info
-     * @param int $code PDO error code
+     * @param string $code PDO error code
      * @param \Exception $previous  The previous exception used for the exception chaining.
      */
-    public function __construct(string $message, ?array $errorInfo = [], int $code = 0, \Exception $previous = null)
+    public function __construct(string $message, ?array $errorInfo = [], string $code = '', \Exception $previous = null)
     {
         $this->errorInfo = $errorInfo;
         parent::__construct($message, $code, $previous);
