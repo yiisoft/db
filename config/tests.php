@@ -2,58 +2,49 @@
 
 declare(strict_types=1);
 
-use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
-use Yiisoft\Aliases\Aliases;
-use Yiisoft\Cache\ArrayCache;
-use Yiisoft\Cache\Cache;
-use Yiisoft\Cache\CacheInterface;
-use Yiisoft\Log\Target\File\FileRotator;
-use Yiisoft\Log\Target\File\FileRotatorInterface;
-use Yiisoft\Log\Target\File\FileTarget;
-use Yiisoft\Log\Logger;
-use Yiisoft\Profiler\Profiler;
-
 return [
-    Aliases::class => [
+    \Psr\Container\ContainerInterface::class => static function (\Psr\Container\ContainerInterface $container) {
+        return $container;
+    },
+
+    \Yiisoft\Aliases\Aliases::class => [
         '@root' => dirname(__DIR__, 1),
         '@runtime' => '@root/tests/data/runtime',
     ],
 
-    CacheInterface::class => static function (ContainerInterface $container) {
-        return new Cache(new ArrayCache());
+    \Yiisoft\Cache\CacheInterface::class => static function (\Psr\Container\ContainerInterface $container) {
+        return new \Yiisoft\Cache\Cache(new \Yiisoft\Cache\ArrayCache());
     },
 
-    FileRotatorInterface::class => static function () {
-        return new FileRotator(10);
+    \Yiisoft\Log\Target\File\FileRotatorInterface::class => static function () {
+        return new \Yiisoft\Log\Target\File\FileRotator(10);
     },
 
-    LoggerInterface::class => static function (ContainerInterface $container) {
-        $aliases = $container->get(Aliases::class);
-        $fileRotator = $container->get(FileRotatorInterface::class);
+    \Psr\Log\LoggerInterface::class => static function (\Psr\Container\ContainerInterface $container) {
+        $aliases = $container->get(\Yiisoft\Aliases\Aliases::class);
+        $fileRotator = $container->get(\Yiisoft\Log\Target\File\FileRotatorInterface::class);
 
-        $fileTarget = new FileTarget(
+        $fileTarget = new \Yiisoft\Log\Target\File\FileTarget(
             $aliases->get('@runtime/logs/app.log'),
             $fileRotator
         );
 
         $fileTarget->setLevels(
             [
-                LogLevel::EMERGENCY,
-                LogLevel::ERROR,
-                LogLevel::WARNING,
-                LogLevel::INFO,
-                LogLevel::DEBUG
+                \Psr\Log\LogLevel::EMERGENCY,
+                \Psr\Log\LogLevel::ERROR,
+                \Psr\Log\LogLevel::WARNING,
+                \Psr\Log\LogLevel::INFO,
+                \Psr\Log\LogLevel::DEBUG
             ]
         );
 
-        return new Logger([
+        return new \Yiisoft\Log\Logger([
             'file' => $fileTarget,
         ]);
     },
 
-    Profiler::class => static function (ContainerInterface $container) {
-        return new Profiler($container->get(LoggerInterface::class));
+    \Yiisoft\Profiler\Profiler::class => static function (\Psr\Container\ContainerInterface $container) {
+        return new \Yiisoft\Profiler\Profiler($container->get(\Psr\Log\LoggerInterface::class));
     },
 ];
