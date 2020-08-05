@@ -298,7 +298,7 @@ class Command
             $message = $e->getMessage() . "\nFailed to prepare SQL: $sql";
             $errorInfo = $e instanceof PDOException ? $e->errorInfo : null;
 
-            throw new Exception($message, $errorInfo, (int) $e->getCode(), $e);
+            throw new Exception($message, $errorInfo, (string) $e->getCode(), $e);
         }
     }
 

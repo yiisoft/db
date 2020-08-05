@@ -835,7 +835,7 @@ class Connection
                 $this->profiler->end($token, [__METHOD__]);
             }
 
-            throw new Exception($e->getMessage(), $e->errorInfo, (int) $e->getCode(), $e);
+            throw new Exception($e->getMessage(), $e->errorInfo, (string) $e->getCode(), $e);
         }
     }
 
