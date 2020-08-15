@@ -59,9 +59,10 @@ abstract class DatabaseTestCase extends TestCase
     {
         $this->configContainer();
 
-        $this->databases = self::getParam('databases');
-
-        $this->databases = $this->databases[$this->driverName];
+        if ($config === []) {
+            $this->databases = self::getParam('databases');
+            $this->databases = $this->databases[$this->driverName];
+        }
 
         $pdo_database = 'pdo_' . $this->driverName;
 
@@ -119,7 +120,7 @@ abstract class DatabaseTestCase extends TestCase
                     explode(';', $data)
                 );
             } else {
-                $lines = explode(';', file_get_contents($this->databases['fixture']));
+                $lines = explode(';', file_get_contents($this->aliases->get($this->databases['fixture'])));
             }
 
             foreach ($lines as $line) {
