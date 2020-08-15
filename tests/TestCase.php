@@ -46,6 +46,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->logger = $this->container->get(LoggerInterface::class);
         $this->profiler = $this->container->get(Profiler::class);
 
+        $this->aliases->set('@fixture', __DIR__ . '/data');
+
         DatabaseFactory::initialize($this->container, []);
     }
 
