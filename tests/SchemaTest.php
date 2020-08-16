@@ -480,7 +480,7 @@ abstract class SchemaTest extends DatabaseTestCase
                 'size' => 8,
                 'precision' => 8,
                 'scale' => null,
-                'defaultValue' => 130, // b'10000010'
+                'defaultValue' => 130 //b '10000010'
             ],
             'json_col' => [
                 'type' => 'json',
