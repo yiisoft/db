@@ -30,7 +30,7 @@
         "yiisoft/strings": "^3.0@dev"
     },
     "require-dev": {
-        "infection/infection": "^0.16.3",
+        "infection/infection": "^0.17",
         "phan/phan": "^3.0",
         "phpunit/phpunit": "^9.3",
         "yiisoft/aliases": "^1.0",
@@ -40,8 +40,7 @@
         "yiisoft/db-pgsql": "^3.0@dev",
         "yiisoft/db-sqlite": "^3.0@dev",
         "yiisoft/di": "^3.0@dev",
-        "yiisoft/json": "^3.0@dev",
-        "yiisoft/log-target-file": "^3.0@dev"
+        "yiisoft/json": "^3.0@dev"
     },
     "autoload": {
         "psr-4": {
