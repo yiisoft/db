@@ -409,9 +409,9 @@ class Connection
      * @throws Exception
      * @throws InvalidConfigException
      *
-     * @return string name of the DB driver
+     * @return string|null name of the DB driver
      */
-    public function getDriverName(): string
+    public function getDriverName(): ?string
     {
         if ($this->driverName === null) {
             if (($pos = strpos($this->dsn, ':')) !== false) {
