@@ -397,6 +397,11 @@ class Connection
         return $command->bindValues($params);
     }
 
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
+
     /**
      * Returns the name of the DB driver. Based on the the current {@see dsn}, in case it was not set explicitly by an
      * end user.
@@ -893,9 +898,9 @@ class Connection
 
             if (isset($driver)) {
                 if ($driver === 'mssql' || $driver === 'dblib') {
-                    $pdoClass = mssql\PDO::class;
+                    $pdoClass = Yiisoft\Db\Mssql\Pdo\PDO::class;
                 } elseif ($driver === 'sqlsrv') {
-                    $pdoClass = mssql\SqlsrvPDO::class;
+                    $pdoClass = Yiisoft\Db\Mssql\Pdo\SqlsrvPDO::class;
                 }
             }
         }
