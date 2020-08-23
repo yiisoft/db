@@ -78,13 +78,13 @@ abstract class Schema
      * @var string|string[] character used to quote schema, table, etc. names. An array of 2 characters can be used in
      * case starting and ending characters are different.
      */
-    protected string $tableQuoteCharacter = "'";
+    protected $tableQuoteCharacter = "'";
 
     /**
      * @var string|string[] character used to quote column names. An array of 2 characters can be used in case starting
      * and ending characters are different.
      */
-    protected string $columnQuoteCharacter = '"';
+    protected $columnQuoteCharacter = '"';
 
     private array $schemaNames = [];
     private array $tableNames = [];
@@ -518,13 +518,25 @@ abstract class Schema
             return $this->quoteSimpleTableName($name);
         }
 
-        $parts = explode('.', $name);
+        $parts = $this->getTableNameParts($name);
 
         foreach ($parts as $i => $part) {
             $parts[$i] = $this->quoteSimpleTableName($part);
         }
 
         return implode('.', $parts);
+    }
+
+    /**
+     * Splits full table name into parts
+     *
+     * @param string $name
+     *
+     * @return array
+     */
+    protected function getTableNameParts(string $name): array
+    {
+        return explode('.', $name);
     }
 
     /**
@@ -727,7 +739,7 @@ abstract class Schema
         $message = $e->getMessage() . "\nThe SQL being executed was: $rawSql";
         $errorInfo = $e instanceof \PDOException ? $e->errorInfo : null;
 
-        return new $exceptionClass($message, $errorInfo, $e->getCode(), $e);
+        return new $exceptionClass($message, $errorInfo, (int) $e->getCode(), $e);
     }
 
     /**
@@ -803,7 +815,7 @@ abstract class Schema
      *
      * @return mixed metadata.
      */
-    protected function getTableMetadata(string $name, string $type, bool $refresh)
+    protected function getTableMetadata(string $name, string $type, bool $refresh = false)
     {
         if ($this->db->isSchemaCacheEnabled() && !\in_array($name, $this->db->getSchemaCacheExclude(), true)) {
             $schemaCache = $this->cache;
@@ -815,7 +827,7 @@ abstract class Schema
             $this->loadTableMetadataFromCache($schemaCache, $rawName);
         }
 
-        if ($refresh || !\array_key_exists($type, $this->tableMetadata[$rawName])) {
+        if ($refresh || !array_key_exists($type, $this->tableMetadata[$rawName])) {
             $this->tableMetadata[$rawName][$type] = $this->{'loadTable' . ucfirst($type)}($rawName);
             $this->saveTableMetadataToCache($schemaCache, $rawName);
         }
@@ -846,7 +858,9 @@ abstract class Schema
             if ($schema !== '') {
                 $name = $schema . '.' . $name;
             }
+
             $tableMetadata = $this->$methodName($name, $refresh);
+
             if ($tableMetadata !== null) {
                 $metadata[] = $tableMetadata;
             }
