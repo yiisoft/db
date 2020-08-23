@@ -195,25 +195,13 @@ class BatchQueryResult implements \Iterator
     }
 
     /**
-     * Gets db driver name from the db connection that is passed to the `batch()`, if it is not passed it uses
-     * connection from the active record model
+     * Gets db driver name from the db connection that is passed to the `batch()` or `each()`.
      *
      * @return string|null
      */
     private function getDbDriverName(): ?string
     {
-        if (empty($this->db->getDriverName())) {
-            return $this->db->getDriverName();
-        }
-
-        if (!empty($this->batch)) {
-            $key = array_keys($this->batch)[0];
-            if (empty($this->batch[$key]->db->getDriverName())) {
-                return $this->batch[$key]->db->getDriverName();
-            }
-        }
-
-        return null;
+        return $this->db->getDriverName();
     }
 
     /**
