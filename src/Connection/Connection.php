@@ -250,7 +250,7 @@ class Connection
     private ?Transaction $transaction = null;
     private ?Schema $schema = null;
 
-    public function __construct(?CacheInterface $cache, LoggerInterface $logger, Profiler $profiler, string $dsn)
+    public function __construct(CacheInterface $cache, LoggerInterface $logger, Profiler $profiler, string $dsn)
     {
         $this->schemaCache = $cache;
         $this->logger = $logger;
@@ -488,6 +488,11 @@ class Connection
         return $this->getSchema()->getLastInsertID($sequenceName);
     }
 
+    public function getLogger(): LoggerInterface
+    {
+        return $this->logger;
+    }
+
     /**
      * Returns the currently active master connection.
      *
@@ -541,6 +546,11 @@ class Connection
     public function getPDO(): ?PDO
     {
         return $this->pdo;
+    }
+
+    public function getProfiler(): profiler
+    {
+        return $this->profiler;
     }
 
     /**
@@ -821,7 +831,9 @@ class Connection
         $token = 'Opening DB connection: ' . $this->dsn;
 
         try {
-            $this->logger->log(LogLevel::INFO, $token);
+            if ($this->enableLogging) {
+                $this->logger->log(LogLevel::INFO, $token);
+            }
 
             if ($this->enableProfiling) {
                 $this->profiler->begin($token, [__METHOD__]);
@@ -836,8 +848,11 @@ class Connection
             }
         } catch (\PDOException $e) {
             if ($this->enableProfiling) {
-                $this->logger->log(LogLevel::ERROR, $token);
                 $this->profiler->end($token, [__METHOD__]);
+            }
+
+            if ($this->enableLogging) {
+                $this->logger->log(LogLevel::ERROR, $token);
             }
 
             throw new Exception($e->getMessage(), $e->errorInfo, (string) $e->getCode(), $e);
@@ -862,7 +877,9 @@ class Connection
         }
 
         if ($this->pdo !== null) {
-            $this->logger->log(LogLevel::DEBUG, 'Closing DB connection: ' . $this->dsn . ' ' . __METHOD__);
+            if ($this->enableLogging) {
+                $this->logger->log(LogLevel::DEBUG, 'Closing DB connection: ' . $this->dsn . ' ' . __METHOD__);
+            }
 
             $this->pdo = null;
             $this->schema = null;
@@ -898,9 +915,9 @@ class Connection
 
             if (isset($driver)) {
                 if ($driver === 'mssql' || $driver === 'dblib') {
-                    $pdoClass = Yiisoft\Db\Mssql\Pdo\PDO::class;
+                    $pdoClass = \Yiisoft\Db\Mssql\Pdo\PDO::class;
                 } elseif ($driver === 'sqlsrv') {
-                    $pdoClass = Yiisoft\Db\Mssql\Pdo\SqlsrvPDO::class;
+                    $pdoClass = \Yiisoft\Db\Mssql\Pdo\SqlsrvPDO::class;
                 }
             }
         }
@@ -928,7 +945,10 @@ class Connection
             $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, $this->emulatePrepare);
         }
 
-        if ($this->charset !== null && in_array($this->getDriverName(), ['pgsql', 'mysql', 'mysqli', 'cubrid', 'mariadb'], true)) {
+        if (
+            $this->charset !== null &&
+            in_array($this->getDriverName(), ['pgsql', 'mysql', 'mysqli', 'cubrid', 'mariadb'], true)
+        ) {
             $this->pdo->exec('SET NAMES ' . $this->pdo->quote($this->charset));
         }
 
@@ -999,31 +1019,10 @@ class Connection
         }
 
         foreach ($pool as $config) {
-            if (empty($config['dsn'])) {
-                throw new InvalidConfigException('The "dsn" option must be specified.');
-            }
-
-            $dsn = $config['dsn'];
-
-            unset($config['dsn']);
-
-            $key = [__METHOD__, $dsn];
-
-            $config = array_merge(
-                [
-                    '__class' => Connection::class,
-                    '__construct()' => [
-                        $this->schemaCache,
-                        $this->logger,
-                        $this->profiler,
-                        $dsn
-                    ]
-                ],
-                $config
-            );
-
             /* @var $db Connection */
             $db = DatabaseFactory::createClass($config);
+
+            $key = [__METHOD__, $db->getDsn()];
 
             if ($this->schemaCache instanceof CacheInterface && $this->schemaCache->get($key)) {
                 // should not try this dead server now
@@ -1035,10 +1034,12 @@ class Connection
 
                 return $db;
             } catch (Exception $e) {
-                $this->logger->log(
-                    LogLevel::WARNING,
-                    "Connection ({$dsn}) failed: " . $e->getMessage() . ' ' . __METHOD__
-                );
+                if ($this->enableLogging) {
+                    $this->logger->log(
+                        LogLevel::WARNING,
+                        "Connection ({$db->getDsn()}) failed: " . $e->getMessage() . ' ' . __METHOD__
+                    );
+                }
 
                 if ($this->schemaCache instanceof CacheInterface) {
                     // mark this server as dead and only retry it after the specified interval
@@ -1311,8 +1312,8 @@ class Connection
      * ```php
      * $connection->setMasters(
      *     '1',
-     *     'mysql:host=127.0.0.1;dbname=yiitest;port=3306',
      *     [
+     *         '__construct()' => ['mysql:host=127.0.0.1;dbname=yiitest;port=3306'],
      *         'setUsername()' => [$connection->getUsername()],
      *         'setPassword()' => [$connection->getPassword()],
      *     ]
@@ -1321,9 +1322,9 @@ class Connection
      *
      * {@see setShuffleMasters()}
      */
-    public function setMasters(string $key, string $dsn, array $config = []): void
+    public function setMasters(string $key, array $config = []): void
     {
-        $this->masters[$key] = array_merge(['dsn' => $dsn], $config);
+        $this->masters[$key] = $config;
     }
 
     /**
@@ -1474,19 +1475,19 @@ class Connection
      * ```php
      * $connection->setSlaves(
      *     '1',
-     *     'mysql:host=127.0.0.1;dbname=yiitest;port=3306',
      *     [
+     *         '__construct()' => ['mysql:host=127.0.0.1;dbname=yiitest;port=3306'],
      *         'setUsername()' => [$connection->getUsername()],
-     *         'setPassword()' => [$connection->getPassword()],
+     *         'setPassword()' => [$connection->getPassword()]
      *     ]
      * );
      * ```
      *
      * {@see setEnableSlaves()}
      */
-    public function setSlaves(string $key, string $dsn, array $config = []): void
+    public function setSlaves(string $key, array $config = []): void
     {
-        $this->slaves[$key] = array_merge(['dsn' => $dsn], $config);
+        $this->slaves[$key] = $config;
     }
 
     /**
