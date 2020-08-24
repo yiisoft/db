@@ -1388,18 +1388,24 @@ class Command
         $this->prepare(false);
 
         try {
-            $this->profiler->begin((string) $rawSql, [__METHOD__]);
+            if ($this->db->isProfilingEnabled()) {
+                $this->profiler->begin((string) $rawSql, [__METHOD__]);
+            }
 
             $this->internalExecute($rawSql);
             $n = $this->pdoStatement->rowCount();
 
-            $this->profiler->end((string) $rawSql, [__METHOD__]);
+            if ($this->db->isProfilingEnabled()) {
+                $this->profiler->end((string) $rawSql, [__METHOD__]);
+            }
 
             $this->refreshTableSchema();
 
             return $n;
         } catch (Exception $e) {
-            $this->profiler->end((string) $rawSql, [__METHOD__]);
+            if ($this->db->isProfilingEnabled()) {
+                $this->profiler->end((string) $rawSql, [__METHOD__]);
+            }
 
             throw $e;
         }
@@ -1422,9 +1428,9 @@ class Command
     {
         if ($this->db->isLoggingEnabled()) {
             $rawSql = $this->getRawSql();
-
             $this->logger->log(LogLevel::INFO, $rawSql, [$category]);
         }
+
         if (!$this->db->isProfilingEnabled()) {
             return [false, $rawSql ?? null];
         }
@@ -1455,7 +1461,7 @@ class Command
         if ($method !== '') {
             $info = $this->db->getQueryCacheInfo($this->queryCacheDuration, $this->queryCacheDependency);
 
-            if (\is_array($info)) {
+            if (is_array($info)) {
                 /* @var $cache CacheInterface */
                 $cache = $info[0];
                 $rawSql = $rawSql ?: $this->getRawSql();
@@ -1464,12 +1470,14 @@ class Command
 
                 $result = $cache->get($cacheKey);
 
-                if (\is_array($result) && isset($result[0])) {
-                    $this->logger->log(
-                        LogLevel::DEBUG,
-                        'Query result served from cache',
-                        ['\Yiisoft\Db\Command\Command::query']
-                    );
+                if (is_array($result) && isset($result[0])) {
+                    if ($this->db->isLoggingEnabled()) {
+                        $this->logger->log(
+                            LogLevel::DEBUG,
+                            'Query result served from cache',
+                            ['\Yiisoft\Db\Command\Command::query']
+                        );
+                    }
 
                     return $result[0];
                 }
@@ -1479,7 +1487,9 @@ class Command
         $this->prepare(true);
 
         try {
-            $this->profiler->begin((string) $rawSql, ['\Yiisoft\Db\Command\Command::query']);
+            if ($this->db->isProfilingEnabled()) {
+                $this->profiler->begin((string) $rawSql, ['\Yiisoft\Db\Command\Command::query']);
+            }
 
             $this->internalExecute($rawSql);
 
@@ -1495,20 +1505,26 @@ class Command
                 $this->pdoStatement->closeCursor();
             }
 
-            $this->profiler->end((string) $rawSql, ['\Yiisoft\Db\Command\Command::query']);
+            if ($this->db->isProfilingEnabled()) {
+                $this->profiler->end((string) $rawSql, ['\Yiisoft\Db\Command\Command::query']);
+            }
         } catch (Exception $e) {
-            $this->profiler->end((string) $rawSql, ['\Yiisoft\Db\Command\Command::query']);
+            if ($this->db->isProfilingEnabled()) {
+                $this->profiler->end((string) $rawSql, ['\Yiisoft\Db\Command\Command::query']);
+            }
 
             throw $e;
         }
 
         if (isset($cache, $cacheKey, $info)) {
             $cache->set($cacheKey, [$result], $info[1], $info[2]);
-            $this->logger->log(
-                LogLevel::DEBUG,
-                'Saved query result in cache',
-                ['\Yiisoft\Db\Command\Command::query']
-            );
+            if ($this->db->isLoggingEnabled()) {
+                $this->logger->log(
+                    LogLevel::DEBUG,
+                    'Saved query result in cache',
+                    ['\Yiisoft\Db\Command\Command::query']
+                );
+            }
         }
 
         return $result;
