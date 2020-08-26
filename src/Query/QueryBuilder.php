@@ -216,7 +216,23 @@ class QueryBuilder
 
         $sql = \implode($this->separator, \array_filter($clauses));
 
-        $sql = $this->buildOrderByAndLimit($sql, $query->getOrderBy(), $query->getLimit(), $query->getOffset(), $params);
+        $sql = $this->buildOrderByAndLimit($sql, $query->getOrderBy(), $query->getLimit(), $query->getOffset());
+
+        if (!empty($query->getOrderBy())) {
+            foreach ($query->getOrderBy() as $expression) {
+                if ($expression instanceof ExpressionInterface) {
+                    $this->buildExpression($expression, $params);
+                }
+            }
+        }
+
+        if (!empty($query->getGroupBy())) {
+            foreach ($query->getGroupBy() as $expression) {
+                if ($expression instanceof ExpressionInterface) {
+                    $this->buildExpression($expression, $params);
+                }
+            }
+        }
 
         $union = $this->buildUnion($query->getUnion(), $params);
 
@@ -394,7 +410,7 @@ class QueryBuilder
     protected function prepareInsertSelectSubQuery(Query $columns, Schema $schema, array $params = []): array
     {
         if (!\is_array($columns->getSelect()) || empty($columns->getSelect()) || \in_array('*', $columns->getSelect(), true)) {
-            throw new \InvalidArgumentException('Expected select query object with enumerated (named) parameters');
+            throw new InvalidArgumentException('Expected select query object with enumerated (named) parameters');
         }
 
         [$values, $params] = $this->build($columns, $params);

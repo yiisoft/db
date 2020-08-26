@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use Traversable;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -20,18 +21,19 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
      *
      * @param ExpressionInterface|InCondition $expression the expression to be built.
+     *
      * @param array $params the binding parameters.
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operator = $expression->getOperator();
+        $operator = strtoupper($expression->getOperator());
         $column = $expression->getColumn();
         $values = $expression->getValues();
 
         if ($column === []) {
-            // no columns to test against
+            /* no columns to test against */
             return $operator === 'IN' ? '0=1' : '';
         }
 
@@ -39,55 +41,92 @@ class InConditionBuilder implements ExpressionBuilderInterface
             return $this->buildSubqueryInCondition($operator, $column, $values, $params);
         }
 
-        if (!\is_array($values) && !$values instanceof \Traversable) {
-            // ensure values is an array
+        if (!is_array($values) && !$values instanceof Traversable) {
+            /* ensure values is an array */
             $values = (array) $values;
         }
-        if ($column instanceof \Traversable || ((\is_array($column) || $column instanceof \Countable) && count($column) > 1)) {
-            return $this->buildCompositeInCondition($operator, $column, $values, $params);
+
+        if (is_array($column)) {
+            if (count($column) > 1) {
+                return $this->buildCompositeInCondition($operator, $column, $values, $params);
+            } else {
+                $column = reset($column);
+            }
         }
 
-        if (\is_array($column)) {
-            $column = reset($column);
+        if ($column instanceof Traversable) {
+            if (iterator_count($column) > 1) {
+                return $this->buildCompositeInCondition($operator, $column, $values, $params);
+            } else {
+                $column->rewind();
+                $column = $column->current();
+            }
+        }
+
+        if (is_array($values)) {
+            $rawValues = $values;
+        } elseif ($values instanceof Traversable) {
+            $rawValues = $this->getRawValuesFromTraversableObject($values);
+        }
+
+        if (isset($rawValues) && in_array(null, $rawValues, true)) {
+            $nullCondition = $this->getNullCondition($operator, $column);
+            $nullConditionOperator = $operator === 'IN' ? 'OR' : 'AND';
         }
 
         $sqlValues = $this->buildValues($expression, $values, $params);
+
         if (empty($sqlValues)) {
-            return $operator === 'IN' ? '0=1' : '';
+            if (!isset($nullCondition)) {
+                return $operator === 'IN' ? '0=1' : '';
+            }
+            return $nullCondition;
         }
 
         if (strpos($column, '(') === false) {
             $column = $this->queryBuilder->getDb()->quoteColumnName($column);
         }
+
         if (count($sqlValues) > 1) {
-            return "$column $operator (" . implode(', ', $sqlValues) . ')';
+            $sql = "$column $operator (" . implode(', ', $sqlValues) . ')';
+        } else {
+            $operator = $operator === 'IN' ? '=' : '<>';
+            $sql = $column . $operator . reset($sqlValues);
         }
 
-        $operator = $operator === 'IN' ? '=' : '<>';
-
-        return $column . $operator . reset($sqlValues);
+        return isset($nullCondition) ? sprintf('%s %s %s', $sql, $nullConditionOperator, $nullCondition) : $sql;
     }
 
     /**
      * Builds $values to be used in {@see InCondition}.
      *
      * @param ConditionInterface|InCondition $condition
-     * @param array $values
+     * @param object|array $values
      * @param array $params the binding parameters
      *
      * @return array of prepared for SQL placeholders
      */
-    protected function buildValues(ConditionInterface $condition, $values, array &$params): array
+    protected function buildValues(ConditionInterface $condition, $values, array &$params = []): array
     {
         $sqlValues = [];
         $column = $condition->getColumn();
 
+        if (is_array($column)) {
+            $column = reset($column);
+        }
+
+        if ($column instanceof Traversable) {
+            $column->rewind();
+            $column = $column->current();
+        }
+
         foreach ($values as $i => $value) {
-            if (\is_array($value) || $value instanceof \ArrayAccess) {
-                $value = $value[$column] ?? null;
+            if (is_array($value) || $value instanceof ArrayAccess) {
+                $value = isset($value[$column]) ? $value[$column] : null;
             }
+
             if ($value === null) {
-                $sqlValues[$i] = 'NULL';
+                continue;
             } elseif ($value instanceof ExpressionInterface) {
                 $sqlValues[$i] = $this->queryBuilder->buildExpression($value, $params);
             } else {
@@ -108,11 +147,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
      *
      * @return string SQL
      */
-    protected function buildSubqueryInCondition(string $operator, $columns, Query $values, array &$params): string
+    protected function buildSubqueryInCondition(string $operator, $columns, Query $values, array &$params = []): string
     {
         $sql = $this->queryBuilder->buildExpression($values, $params);
 
-        if (\is_array($columns)) {
+        if (is_array($columns)) {
             foreach ($columns as $i => $col) {
                 if (strpos($col, '(') === false) {
                     $columns[$i] = $this->queryBuilder->getDb()->quoteColumnName($col);
@@ -133,17 +172,18 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * Builds SQL for IN condition.
      *
      * @param string $operator
-     * @param array|\Traversable $columns
+     * @param array|Traversable $columns
      * @param array $values
      * @param array $params
      *
      * @return string SQL
      */
-    protected function buildCompositeInCondition(?string $operator, $columns, $values, array &$params = []): string
+    protected function buildCompositeInCondition(string $operator, $columns, array $values, array &$params = []): string
     {
         $vss = [];
         foreach ($values as $value) {
             $vs = [];
+
             foreach ($columns as $column) {
                 if (isset($value[$column])) {
                     $vs[] = $this->queryBuilder->bindParam($value[$column], $params);
@@ -161,9 +201,48 @@ class InConditionBuilder implements ExpressionBuilderInterface
         $sqlColumns = [];
         foreach ($columns as $i => $column) {
             $sqlColumns[] = strpos($column, '(') === false
-            ? $this->queryBuilder->getDb()->quoteColumnName($column) : $column;
+                ? $this->queryBuilder->getDb()->quoteColumnName($column) : $column;
         }
 
         return '(' . implode(', ', $sqlColumns) . ") $operator (" . implode(', ', $vss) . ')';
+    }
+
+    /**
+     * Builds is null/is not null condition for column based on operator.
+     *
+     * @param string $operator
+     * @param string $column
+     *
+     * @return string is null or is not null condition
+     */
+    protected function getNullCondition(string $operator, string $column): string
+    {
+        $column = $this->queryBuilder->getDb()->quoteColumnName($column);
+
+        if ($operator === 'IN') {
+            return sprintf('%s IS NULL', $column);
+        }
+
+        return sprintf('%s IS NOT NULL', $column);
+    }
+
+    /**
+     * @param Traversable $traversableObject
+     *
+     * @return array raw values
+     */
+    protected function getRawValuesFromTraversableObject(Traversable $traversableObject): array
+    {
+        $rawValues = [];
+        foreach ($traversableObject as $value) {
+            if (is_array($value)) {
+                $values = array_values($value);
+                $rawValues = array_merge($rawValues, $values);
+            } else {
+                $rawValues[] = $value;
+            }
+        }
+
+        return $rawValues;
     }
 }

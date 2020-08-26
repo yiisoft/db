@@ -13,7 +13,7 @@ class LikeCondition extends SimpleCondition
 {
     protected $escapingReplacements = null;
 
-    public function __construct(string $column, string $operator, $value)
+    public function __construct($column, string $operator, $value)
     {
         parent::__construct($column, $operator, $value);
     }
@@ -51,6 +51,7 @@ class LikeCondition extends SimpleCondition
         }
 
         $condition = new static($operands[0], $operator, $operands[1]);
+
         if (isset($operands[2])) {
             $condition->escapingReplacements = $operands[2];
         }
