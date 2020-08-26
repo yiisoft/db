@@ -40,7 +40,7 @@
         "yiisoft/db-pgsql": "^3.0@dev",
         "yiisoft/db-sqlite": "^3.0@dev",
         "yiisoft/di": "^3.0@dev",
-        "yiisoft/json": "^3.0@dev"
+        "yiisoft/json": "^1.0"
     },
     "autoload": {
         "psr-4": {
