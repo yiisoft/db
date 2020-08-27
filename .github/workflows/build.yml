@@ -7,6 +7,7 @@ name: build
 jobs:
   tests:
     name: PHP ${{ matrix.php-version }}-${{ matrix.os }}
+
     env:
       COMPOSER_ROOT_VERSION: "dev-master"
       extensions: curl, mbstring, dom, intl, json, libxml, pdo, pdo_mysql, pdo_pgsql, pdo_sqlite, pdo_sqlsrv, xml, xmlwriter
@@ -54,6 +55,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Create MS SQL Database
+        if: matrix.php-version == '7.4'
+        run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
 
       - name: Setup cache environment
         id: cache-env
