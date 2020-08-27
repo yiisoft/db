@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Connection;
 
 use PDO;
+use PDOException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Throwable;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Command\Command;
@@ -177,61 +179,7 @@ class Connection
     private ?string $charset = null;
     private ?bool $emulatePrepare = null;
     private string $tablePrefix = '';
-
-    /**
-     * @var array mapping between PDO driver names and {@see Schema} classes. The keys of the array are PDO driver names
-     * while the values are either the corresponding schema class names or configurations.
-     *
-     * This property is mainly used by {@see getSchema()} when fetching the database schema information. You normally do
-     * not need to set this property unless you want to use your own {@see Schema} class to support DBMS that is not
-     * supported by Yii.
-     */
-    private array $schemaMap = [
-        'pgsql' => \Yiisoft\Db\Pgsql\Schema\Schema::class, // PostgreSQL
-        'mysqli' => \Yiisoft\Db\Mysql\Schema\Schema::class, // MySQL
-        'mysql' => \Yiisoft\Db\Mysql\Schema\Schema::class, // MySQL
-        'sqlite' => \Yiisoft\Db\Sqlite\Schema\Schema::class, // sqlite 3
-        'sqlite2' => \Yiisoft\Db\Sqlite\Schema\Schema::class, // sqlite 2
-        'sqlsrv' => \Yiisoft\Db\Mssql\Schema::class, // newer MSSQL driver on MS Windows hosts
-        'oci' => \Yiisoft\Db\Oci\Schema::class, // Oracle driver
-        'mssql' => \Yiisoft\Db\Mssql\Schema::class, // older MSSQL driver on MS Windows hosts
-        'dblib' => \Yiisoft\Db\Mssql\Schema::class, // dblib drivers on GNU/Linux (and maybe other OSes) hosts
-    ];
-
-    /**
-     * @var string Custom PDO wrapper class. If not set, it will use {@see PDO} or {@see \Yiisoft\Db\mssql\PDO}
-     * when MSSQL is used.
-     *
-     * @see pdo
-     */
-    private ?string $pdoClass = null;
-
-    /**
-     * @var array mapping between PDO driver names and {@see Command} classes. The keys of the array are PDO driver
-     * names while the values are either the corresponding command class names or configurations.
-     *
-     * This property is mainly used by {@see createCommand()} to create new database {@see Command} objects. You
-     * normally do not need to set this property unless you want to use your own {@see Command} class or support
-     * DBMS that is not supported by Yii.
-     */
-    private array $commandMap = [
-        'pgsql'   => Command::class, // PostgreSQL
-        'mysqli'  => Command::class, // MySQL
-        'mysql'   => Command::class, // MySQL
-        'mariadb' => Command::class, // MySQL
-        'sqlite'  => \Yiisoft\Db\Sqlite\Command\Command::class, // sqlite 3
-        'sqlite2' => \Yiisoft\Db\Sqlite\Command\Command::class, // sqlite 2
-        'sqlsrv'  => Command::class, // newer MSSQL driver on MS Windows hosts
-        'oci'     => Command::class, // Oracle driver
-        'mssql'   => Command::class, // older MSSQL driver on MS Windows hosts
-        'dblib'   => Command::class, // dblib drivers on GNU/Linux (and maybe other OSes) hosts
-    ];
-
-    /**
-     * @var array query cache parameters for the {cache()} calls
-     */
     private array $queryCacheInfo = [];
-
     private bool $enableSavepoint = true;
     private int $serverRetryInterval = 600;
     private bool $enableSlaves = true;
@@ -372,34 +320,14 @@ class Connection
         }
     }
 
-    /**
-     * Creates a command for execution.
-     *
-     * @param string $sql the SQL statement to be executed
-     * @param array $params the parameters to be bound to the SQL statement
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     *
-     * @return Command the DB command
-     */
-    public function createCommand($sql = null, $params = []): Command
-    {
-        $driver = $this->getDriverName();
-
-        if ($sql !== null) {
-            $sql = $this->quoteSql($sql);
-        }
-
-        /** @var Command $command */
-        $command = new $this->commandMap[$driver]($this->profiler, $this->logger, $this, $sql);
-
-        return $command->bindValues($params);
-    }
-
     public function getAttributes(): array
     {
         return $this->attributes;
+    }
+
+    public function getCharset(): ?string
+    {
+        return $this->charset;
     }
 
     /**
@@ -427,6 +355,11 @@ class Connection
     public function getDsn(): ?string
     {
         return $this->dsn;
+    }
+
+    public function getEmulatePrepare(): ?bool
+    {
+        return $this->emulatePrepare;
     }
 
     public function isLoggingEnabled(): bool
@@ -610,32 +543,6 @@ class Connection
         return $result;
     }
 
-    /**
-     * Returns the schema information for the database opened by this connection.
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException if there is no support for the current driver type
-     *
-     * @return Schema the schema information for the database opened by this connection.
-     */
-    public function getSchema(): Schema
-    {
-        if ($this->schema !== null) {
-            return $this->schema;
-        }
-
-        $driver = $this->getDriverName();
-
-        if (isset($this->schemaMap[$driver])) {
-            $class = $this->schemaMap[$driver];
-
-            return $this->schema = new $class($this);
-        }
-
-        throw new NotSupportedException("Connection does not support reading schema information for '$driver' DBMS.");
-    }
-
     public function getSchemaCache(): CacheInterface
     {
         return $this->schemaCache;
@@ -774,7 +681,7 @@ class Connection
      * @param callable $callable a PHP callable that contains DB queries which should not use query cache. The signature
      * of the callable is `function (Connection $db)`.
      *
-     * @throws \Throwable if there is any exception during query
+     * @throws Throwable if there is any exception during query
      *
      * @return mixed the return result of the callable
      *
@@ -791,7 +698,7 @@ class Connection
             array_pop($this->queryCacheInfo);
 
             return $result;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             array_pop($this->queryCacheInfo);
 
             throw $e;
@@ -846,7 +753,7 @@ class Connection
             if ($this->enableProfiling) {
                 $this->profiler->end($token, [__METHOD__]);
             }
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             if ($this->enableProfiling) {
                 $this->profiler->end($token, [__METHOD__]);
             }
@@ -893,69 +800,6 @@ class Connection
     }
 
     /**
-     * Creates the PDO instance.
-     *
-     * This method is called by {@see open} to establish a DB connection. The default implementation will create a PHP
-     * PDO instance. You may override this method if the default PDO needs to be adapted for certain DBMS.
-     *
-     * @return PDO the pdo instance
-     */
-    protected function createPdoInstance(): PDO
-    {
-        $pdoClass = $this->pdoClass;
-
-        if ($pdoClass === null) {
-            $pdoClass = 'PDO';
-
-            if ($this->driverName !== null) {
-                $driver = $this->driverName;
-            } elseif (($pos = strpos($this->dsn, ':')) !== false) {
-                $driver = strtolower(substr($this->dsn, 0, $pos));
-            }
-
-            if (isset($driver)) {
-                if ($driver === 'mssql' || $driver === 'dblib') {
-                    $pdoClass = \Yiisoft\Db\Mssql\Pdo\PDO::class;
-                } elseif ($driver === 'sqlsrv') {
-                    $pdoClass = \Yiisoft\Db\Mssql\Pdo\SqlsrvPDO::class;
-                }
-            }
-        }
-
-        $dsn = $this->dsn;
-
-        if (strncmp('sqlite:@', $dsn, 8) === 0) {
-            $dsn = 'sqlite:' . substr($dsn, 7);
-        }
-
-        return new $pdoClass($dsn, $this->username, $this->password, $this->attributes);
-    }
-
-    /**
-     * Initializes the DB connection.
-     *
-     * This method is invoked right after the DB connection is established. The default implementation turns on
-     * `PDO::ATTR_EMULATE_PREPARES` if {@see emulatePrepare} is true. It then triggers an {@see EVENT_AFTER_OPEN} event.
-     */
-    protected function initConnection(): void
-    {
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        if ($this->emulatePrepare !== null && constant('PDO::ATTR_EMULATE_PREPARES')) {
-            $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, $this->emulatePrepare);
-        }
-
-        if (
-            $this->charset !== null &&
-            in_array($this->getDriverName(), ['pgsql', 'mysql', 'mysqli', 'cubrid', 'mariadb'], true)
-        ) {
-            $this->pdo->exec('SET NAMES ' . $this->pdo->quote($this->charset));
-        }
-
-        //$this->trigger(self::EVENT_AFTER_OPEN);
-    }
-
-    /**
      * Rolls back given {@see Transaction} object if it's still active and level match. In some cases rollback can fail,
      * so this method is fail safe. Exceptions thrown from rollback will be caught and just logged with
      * {@see logger->log()}.
@@ -968,7 +812,9 @@ class Connection
     private function rollbackTransactionOnLevel(Transaction $transaction, int $level): void
     {
         if ($transaction->isActive() && $transaction->getLevel() === $level) {
-            /* https://github.com/yiisoft/yii2/pull/13347 */
+            /**
+             * {@see https://github.com/yiisoft/yii2/pull/13347}
+             */
             try {
                 $transaction->rollBack();
             } catch (Exception $e) {
@@ -1522,7 +1368,7 @@ class Connection
      * @param string|null $isolationLevel The isolation level to use for this transaction. {@see Transaction::begin()}
      * for details.
      *
-     * @throws \Throwable if there is any exception during query. In this case the transaction will be rolled back.
+     * @throws Throwable if there is any exception during query. In this case the transaction will be rolled back.
      *
      * @return mixed result of callback function
      */
@@ -1538,7 +1384,7 @@ class Connection
             if ($transaction->isActive() && $transaction->getLevel() === $level) {
                 $transaction->commit();
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->rollbackTransactionOnLevel($transaction, $level);
 
             throw $e;
@@ -1562,7 +1408,7 @@ class Connection
      * @param callable $callback a PHP callable to be executed by this method. Its signature is
      * `function (Connection $db)`. Its return value will be returned by this method.
      *
-     * @throws \Throwable if there is any exception thrown from the callback
+     * @throws Throwable if there is any exception thrown from the callback
      *
      * @return mixed the return value of the callback
      */
@@ -1573,7 +1419,7 @@ class Connection
 
             try {
                 $result = $callback($this);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $this->enableSlaves = true;
 
                 throw $e;
