@@ -775,7 +775,7 @@ PATTERN;
      */
     public function from($tables): self
     {
-        if ($tables instanceof Expression) {
+        if ($tables instanceof ExpressionInterface) {
             $tables = [$tables];
         }
         if (\is_string($tables)) {

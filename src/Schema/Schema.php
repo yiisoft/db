@@ -339,32 +339,6 @@ abstract class Schema
     }
 
     /**
-     * Returns all unique indexes for the given table.
-     *
-     * Each array element is of the following structure:
-     *
-     * ```php
-     * [
-     *  'IndexName1' => ['col1' [, ...]],
-     *  'IndexName2' => ['col2' [, ...]],
-     * ]
-     * ```
-     *
-     * This method should be overridden by child classes in order to support this feature because the default
-     * implementation simply throws an exception
-     *
-     * @param TableSchema $table the table metadata
-     *
-     * @throws NotSupportedException if this method is called
-     *
-     * @return array all unique indexes for the given table.
-     */
-    public function findUniqueIndexes($table): array
-    {
-        throw new NotSupportedException(get_class($this) . ' does not support getting unique indexes information.');
-    }
-
-    /**
      * Returns the ID of the last inserted row or sequence value.
      *
      * @param string $sequenceName name of the sequence object (required by some DBMS)

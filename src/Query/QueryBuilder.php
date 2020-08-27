@@ -1612,7 +1612,7 @@ class QueryBuilder
         foreach ($tables as $i => $table) {
             if ($table instanceof Query) {
                 [$sql, $params] = $this->build($table, $params);
-                $tables[$i] = "($sql) " . $this->db->quoteTableName($i);
+                $tables[$i] = "($sql) " . $this->db->quoteTableName((string) $i);
             } elseif (\is_string($i)) {
                 if (\strpos($table, '(') === false) {
                     $table = $this->db->quoteTableName($table);
@@ -1912,10 +1912,15 @@ class QueryBuilder
     public function createConditionFromArray($condition): ConditionInterface
     {
         if (isset($condition[0])) { // operator format: operator, operand 1, operand 2, ...
-            $operator = \strtoupper(\array_shift($condition));
-            $className = $this->conditionClasses[$operator] ?? SimpleCondition::class;
+            $operator = strtoupper(array_shift($condition));
 
-            /* @var ConditionInterface $className */
+            if (isset($this->conditionClasses[$operator])) {
+                $className = $this->conditionClasses[$operator];
+            } else {
+                $className = SimpleCondition::class;
+            }
+
+            /** @var ConditionInterface $className */
             return $className::fromArrayDefinition($operator, $condition);
         }
 
