@@ -671,7 +671,7 @@ trait TestCommandTrait
     {
         $time = time();
 
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $db->createCommand('DELETE FROM {{order_with_null_fk}}')->execute();
 
