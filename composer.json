@@ -19,6 +19,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^7.4|^8.0",
+        "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "psr/log": "^1.1",
@@ -34,18 +35,22 @@
         "phan/phan": "^3.0",
         "phpunit/phpunit": "^9.3",
         "yiisoft/aliases": "^1.0",
-        "yiisoft/db-oracle": "@dev",
-        "yiisoft/db-mssql": "@dev",
+        "yiisoft/db-oracle": "^1.0@dev",
+        "yiisoft/db-mssql": "^1.0@dev",
         "yiisoft/db-mysql": "^3.0@dev",
         "yiisoft/db-pgsql": "^3.0@dev",
         "yiisoft/db-sqlite": "^3.0@dev",
         "yiisoft/di": "^3.0@dev",
-        "yiisoft/json": "^3.0@dev"
+        "yiisoft/json": "^1.0"
     },
     "autoload": {
         "psr-4": {
-            "Yiisoft\\Db\\": "src",
-            "Yiisoft\\Db\\Tests\\": "tests"
+            "Yiisoft\\Db\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yiisoft\\Db\\Mssql\\Tests\\": "vendor/yiisoft/db-mssql/tests"
         }
     },
     "extra": {

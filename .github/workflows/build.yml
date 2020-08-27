@@ -9,7 +9,7 @@ jobs:
     name: PHP ${{ matrix.php-version }}-${{ matrix.os }}
     env:
       COMPOSER_ROOT_VERSION: "dev-master"
-      extensions: curl, mbstring, dom, intl, json, libxml, mysql, pgsql, pdo, pdo_sqlite, xml, xmlwriter
+      extensions: curl, mbstring, dom, intl, json, libxml, pdo, pdo_mysql, pdo_pgsql, pdo_sqlite, pdo_sqlsrv, xml, xmlwriter
       key: cache-v1
 
     runs-on: ${{ matrix.os }}
@@ -41,6 +41,15 @@ jobs:
         ports:
           - 5432:5432
         options: --name=postgres --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
+      mssql:
+          image: mcr.microsoft.com/mssql/server:2017-latest
+          env:
+              SA_PASSWORD: YourStrong!Passw0rd
+              ACCEPT_EULA: Y
+              MSSQL_PID: Developer
+          ports:
+              - 1433:1433
+          options: --name=mssql --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout
@@ -68,7 +77,7 @@ jobs:
           extensions: ${{ env.extensions }}
           ini-values: date.timezone='UTC'
           coverage: pcov
-          tools: composer:v2
+          tools: composer:v2, pecl
 
       - name: Determine composer cache directory on Linux
         run: echo "::set-env name=COMPOSER_CACHE_DIR::$(composer config cache-dir)"
@@ -95,7 +104,7 @@ jobs:
 
       - name: Run tests with phpunit without coverage on Linux php 8.0
         if: matrix.php-version == '8.0'
-        run: vendor/bin/phpunit
+        run: vendor/bin/phpunit --exclude-group mssql
 
       - name: Upload code coverage scrutinizer on Linux php 7.4
         if: matrix.php-version == '7.4'

@@ -13,8 +13,8 @@
     <ini name="error_reporting" value="-1"/>
   </php>
   <testsuites>
-    <testsuite name="Yiisoft Db Tests">
-      <directory>./tests</directory>
+    <testsuite name="Yiisoft Db-MSSQL Tests">
+      <directory>./vendor/yiisoft/db-mssql/tests</directory>
     </testsuite>
   </testsuites>
 </phpunit>
