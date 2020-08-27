@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestUtility;
 
-use PDO;
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Transaction\Transaction;
@@ -15,31 +14,6 @@ use function unserialize;
 
 trait TestConnectionTrait
 {
-    public function testOpenClose(): void
-    {
-        $db = $this->getConnection();
-
-        $this->assertFalse($db->isActive());
-        $this->assertNull($db->getPDO());
-
-        $db->open();
-
-        $this->assertTrue($db->isActive());
-        $this->assertInstanceOf(PDO::class, $db->getPDO());
-
-        $db->close();
-
-        $this->assertFalse($db->isActive());
-        $this->assertNull($db->getPDO());
-
-        $db = new Connection($this->cache, $this->logger, $this->profiler, 'unknown::memory:');
-
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessage('could not find driver');
-
-        $db->open();
-    }
-
     public function testSerialize(): void
     {
         $db = $this->getConnection();
@@ -52,7 +26,7 @@ trait TestConnectionTrait
 
         $unserialized = unserialize($serialized);
 
-        $this->assertInstanceOf(Connection::class, $unserialized);
+        $this->assertInstanceOf(ConnectionInterface::class, $unserialized);
         $this->assertNull($unserialized->getPDO());
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
     }
@@ -119,7 +93,7 @@ trait TestConnectionTrait
     {
         $db = $this->getConnection();
 
-        $result = $db->transaction(static function (Connection $db) {
+        $result = $db->transaction(static function (ConnectionInterface $db) {
             $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
             return true;
         }, Transaction::READ_UNCOMMITTED);
@@ -155,7 +129,7 @@ trait TestConnectionTrait
     {
         $db = $this->getConnection(true);
 
-        $result = $db->transaction(static function (Connection $db) {
+        $result = $db->transaction(static function (ConnectionInterface $db) {
             $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
             return true;
         }, Transaction::READ_UNCOMMITTED);
@@ -178,10 +152,10 @@ trait TestConnectionTrait
     {
         $db = $this->getConnection();
 
-        $db->transaction(function (Connection $db) {
+        $db->transaction(function (ConnectionInterface $db) {
             $this->assertNotNull($db->getTransaction());
 
-            $db->transaction(function (Connection $db) {
+            $db->transaction(function (ConnectionInterface $db) {
                 $this->assertNotNull($db->getTransaction());
                 $db->getTransaction()->rollBack();
             });
@@ -196,7 +170,7 @@ trait TestConnectionTrait
 
         $db->setEnableSavepoint(false);
 
-        $db->transaction(function (Connection $db) {
+        $db->transaction(function (ConnectionInterface $db) {
             $this->assertNotNull($db->getTransaction());
             $this->expectException(NotSupportedException::class);
             $db->beginTransaction();
@@ -331,9 +305,9 @@ trait TestConnectionTrait
     }
 
     /**
-     * @param Connection $db
+     * @param ConnectionInterface $db
      */
-    private function runExceptionTest(Connection $db): void
+    private function runExceptionTest(ConnectionInterface $db): void
     {
         $thrown = false;
 

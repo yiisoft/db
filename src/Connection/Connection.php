@@ -162,7 +162,7 @@ use Yiisoft\Profiler\Profiler;
  * @property Transaction|null $transaction The currently active transaction. Null if no active transaction. This
  * property is read-only.
  */
-class Connection
+abstract class Connection implements ConnectionInterface
 {
     private ?string $driverName = null;
     private ?string $dsn = null;
@@ -205,6 +205,49 @@ class Connection
         $this->profiler = $profiler;
         $this->dsn = $dsn;
     }
+
+    /**
+     * Creates a command for execution.
+     *
+     * @param string $sql the SQL statement to be executed
+     * @param array $params the parameters to be bound to the SQL statement
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     *
+     * @return Command the DB command
+     */
+    abstract public function createCommand($sql = null, $params = []): Command;
+
+    /**
+     * Returns the schema information for the database opened by this connection.
+     *
+     * @return Schema the schema information for the database opened by this connection.
+     */
+    abstract public function getSchema(): Schema;
+
+    /**
+     * Creates the PDO instance.
+     *
+     * This method is called by {@see open} to establish a DB connection. The default implementation will create a PHP
+     * PDO instance. You may override this method if the default PDO needs to be adapted for certain DBMS.
+     *
+     * @return PDO the pdo instance
+     */
+    abstract protected function createPdoInstance(): PDO;
+
+    /**
+     * Initializes the DB connection.
+     *
+     * This method is invoked right after the DB connection is established.
+     *
+     * The default implementation turns on `PDO::ATTR_EMULATE_PREPARES`.
+     *
+     * if {@see emulatePrepare} is true, and sets the database {@see charset} if it is not empty.
+     *
+     * It then triggers an {@see EVENT_AFTER_OPEN} event.
+     */
+    abstract protected function initConnection(): void;
 
     /**
      * Reset the connection after cloning.
