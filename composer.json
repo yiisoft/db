@@ -50,6 +50,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Yiisoft\\Db\\Pgsql\\Tests\\": "vendor/yiisoft/db-pgsql/tests",
             "Yiisoft\\Db\\Mssql\\Tests\\": "vendor/yiisoft/db-mssql/tests"
         }
     },

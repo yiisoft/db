@@ -13,6 +13,7 @@ use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -22,6 +23,9 @@ use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchema;
 use Yiisoft\Db\Transaction\Transaction;
 use Yiisoft\Profiler\Profiler;
+
+use function end;
+use function is_array;
 
 /**
  * Connection represents a connection to a database via [PDO](http://php.net/manual/en/book.pdo.php).
@@ -209,7 +213,7 @@ abstract class Connection implements ConnectionInterface
     /**
      * Creates a command for execution.
      *
-     * @param string $sql the SQL statement to be executed
+     * @param string|null $sql the SQL statement to be executed
      * @param array $params the parameters to be bound to the SQL statement
      *
      * @throws Exception
@@ -217,7 +221,7 @@ abstract class Connection implements ConnectionInterface
      *
      * @return Command the DB command
      */
-    abstract public function createCommand($sql = null, $params = []): Command;
+    abstract public function createCommand(?string $sql = null, $params = []): Command;
 
     /**
      * Returns the schema information for the database opened by this connection.
@@ -338,13 +342,13 @@ abstract class Connection implements ConnectionInterface
      * @param Dependency $dependency the cache dependency associated with the cached query
      * results.
      *
-     * @throws \Throwable if there is any exception during query
-     *
      * @return mixed the return result of the callable
      *
      * {@see setEnableQueryCache()}
      * {@see queryCache}
      * {@see noCache()}
+     *@throws Throwable if there is any exception during query
+     *
      */
     public function cache(callable $callable, $duration = null, $dependency = null)
     {
@@ -356,7 +360,7 @@ abstract class Connection implements ConnectionInterface
             array_pop($this->queryCacheInfo);
 
             return $result;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             array_pop($this->queryCacheInfo);
 
             throw $e;
@@ -451,8 +455,6 @@ abstract class Connection implements ConnectionInterface
      * @param string $sequenceName name of the sequence object (required by some DBMS)
      *
      * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
      * @throws InvalidCallException
      *
      * @return string the row ID of the last row inserted, or the last value retrieved from the sequence object
@@ -532,10 +534,6 @@ abstract class Connection implements ConnectionInterface
     /**
      * Returns the query builder for the current DB connection.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
      * @return QueryBuilder the query builder for the current DB connection.
      */
     public function getQueryBuilder(): QueryBuilder
@@ -564,9 +562,9 @@ abstract class Connection implements ConnectionInterface
         $result = null;
 
         if ($this->enableQueryCache) {
-            $info = \end($this->queryCacheInfo);
+            $info = end($this->queryCacheInfo);
 
-            if (\is_array($info)) {
+            if (is_array($info)) {
                 if ($duration === null) {
                     $duration = $info[0];
                 }
@@ -603,10 +601,6 @@ abstract class Connection implements ConnectionInterface
 
     /**
      * Returns a server version as a string comparable by {@see \version_compare()}.
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
      *
      * @return string server version as a string.
      */
@@ -677,10 +671,6 @@ abstract class Connection implements ConnectionInterface
      *
      * @param string $name table name.
      * @param bool $refresh whether to reload the table schema even if it is found in the cache.
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
      *
      * @return TableSchema
      */
@@ -753,8 +743,8 @@ abstract class Connection implements ConnectionInterface
      *
      * It does nothing if a DB connection has already been established.
      *
-     * @throws Exception if connection fails
-     * @throws InvalidArgumentException
+     * @throws Exception
+     * @throws InvalidConfigException if connection fails
      */
     public function open()
     {
@@ -875,7 +865,6 @@ abstract class Connection implements ConnectionInterface
      * Connections will be tried in random order.
      *
      * @param array $pool the list of connection configurations in the server pool
-     * @param array $sharedConfig the configuration common to those given in `$pool`.
      *
      * @throws InvalidConfigException
      *
@@ -897,7 +886,7 @@ abstract class Connection implements ConnectionInterface
      *
      * @param array $pool
      *
-     * @throws InvalidConfigException if a configuration does not specify "dsn"
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      *
      * @return Connection|null the opened DB connection, or `null` if no server is available
      */
@@ -914,7 +903,7 @@ abstract class Connection implements ConnectionInterface
             $key = [__METHOD__, $db->getDsn()];
 
             if ($this->schemaCache instanceof CacheInterface && $this->schemaCache->get($key)) {
-                // should not try this dead server now
+                /* should not try this dead server now */
                 continue;
             }
 
@@ -931,7 +920,7 @@ abstract class Connection implements ConnectionInterface
                 }
 
                 if ($this->schemaCache instanceof CacheInterface) {
-                    // mark this server as dead and only retry it after the specified interval
+                    /* mark this server as dead and only retry it after the specified interval */
                     $this->schemaCache->set($key, 1, $this->serverRetryInterval);
                 }
 
@@ -948,11 +937,6 @@ abstract class Connection implements ConnectionInterface
      * method will do nothing.
      *
      * @param string $name column name
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws InvalidArgumentException
      *
      * @return string the properly quoted column name
      */
@@ -979,7 +963,7 @@ abstract class Connection implements ConnectionInterface
     public function quoteSql(string $sql): string
     {
         return preg_replace_callback(
-            '/(\\{\\{(%?[\w\-\. ]+%?)}}|\\[\\[([\w\-\. ]+)]])/',
+            '/({{(%?[\w\-. ]+%?)}}|\\[\\[([\w\-. ]+)]])/',
             function ($matches) {
                 if (isset($matches[3])) {
                     return $this->quoteColumnName($matches[3]);
@@ -1001,11 +985,6 @@ abstract class Connection implements ConnectionInterface
      * @param string $name table name
      *
      * @return string the properly quoted table name
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws InvalidArgumentException
      */
     public function quoteTableName(string $name): string
     {
@@ -1022,10 +1001,6 @@ abstract class Connection implements ConnectionInterface
      * Note that if the parameter is not a string, it will be returned without change.
      *
      * @param string|int $value string to be quoted
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
      *
      * @return string|int the properly quoted string
      *
@@ -1191,7 +1166,6 @@ abstract class Connection implements ConnectionInterface
      * of these configurations will be chosen and used to create a DB connection which will be used by this object.
      *
      * @param string $key index master connection.
-     * @param string $dsn the Data Source Name, or DSN, contains the information required to connect to the database
      * @param array $config The configuration that should be merged with every master configuration
      *
      * @return void
@@ -1230,10 +1204,6 @@ abstract class Connection implements ConnectionInterface
 
     /**
      * Can be used to set {@see QueryBuilder} configuration via Connection configuration array.
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
      *
      * @param iterable $config the {@see QueryBuilder} properties to be configured.
      *
@@ -1354,7 +1324,6 @@ abstract class Connection implements ConnectionInterface
      * one of these configurations will be chosen and used to create a DB connection for performing read queries only.
      *
      * @param string $key index slave connection.
-     * @param string $dsn the Data Source Name, or DSN, contains the information required to connect to the database
      * @param array $config The configuration that should be merged with every slave configuration
      *
      * @return void

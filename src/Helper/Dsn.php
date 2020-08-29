@@ -42,7 +42,7 @@ final class Dsn
         $this->dsn = "$this->driver:" . "host=$this->host" . ';' . "dbname=$this->dbname";
 
         if ($this->port !== null) {
-            $this->dsn = $this->dsn . ';' . "port=$this->port";
+            $this->dsn .= ';' . "port=$this->port";
         }
 
         $parts = [];
@@ -56,5 +56,10 @@ final class Dsn
         }
 
         return $this->dsn;
+    }
+
+    public function getDriver(): string
+    {
+        return $this->driver;
     }
 }

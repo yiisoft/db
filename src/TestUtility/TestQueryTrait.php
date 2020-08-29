@@ -483,8 +483,13 @@ trait TestQueryTrait
         $result = $query->column();
 
         $this->assertCount(2, $result);
-        $this->assertContains("2", $result);
-        $this->assertContains("3", $result);
+        if ($db->getDriverName() !== 'sqlsrv') {
+            $this->assertContains(2, $result);
+            $this->assertContains(3, $result);
+        } else {
+            $this->assertContains("2", $result);
+            $this->assertContains("3", $result);
+        }
         $this->assertNotContains(1, $result);
     }
 

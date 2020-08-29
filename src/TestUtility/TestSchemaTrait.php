@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Yiisoft\Db\TestUtility;
 
 use PDO;
+use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
-use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Schema\ColumnSchema;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchema;
 
 use function array_keys;
-use function array_map;
 use function fclose;
 use function fopen;
 use function gettype;
@@ -23,19 +24,9 @@ use function print_r;
 use function sort;
 use function sprintf;
 use function strtolower;
-use function trim;
-use function ucfirst;
 
 trait TestSchemaTrait
 {
-    public function pdoAttributesProvider(): array
-    {
-        return [
-            [[PDO::ATTR_EMULATE_PREPARES => true]],
-            [[PDO::ATTR_EMULATE_PREPARES => false]],
-        ];
-    }
-
     public function testGetSchemaNames(): void
     {
         $schema = $this->getConnection()->getSchema();
@@ -46,71 +37,6 @@ trait TestSchemaTrait
 
         foreach ($this->expectedSchemas as $schema) {
             $this->assertContains($schema, $schemas);
-        }
-    }
-
-    /**
-     * @dataProvider pdoAttributesProvider
-     *
-     * @param array $pdoAttributes
-     */
-    public function testGetTableNames(array $pdoAttributes): void
-    {
-        $connection = $this->getConnection(true);
-
-        foreach ($pdoAttributes as $name => $value) {
-            if ($name === PDO::ATTR_EMULATE_PREPARES && $connection->getDriverName() === 'sqlsrv') {
-                continue;
-            }
-
-            $connection->getPDO()->setAttribute($name, $value);
-        }
-
-        $schema = $connection->getSchema();
-
-        $tables = $schema->getTableNames();
-
-        if ($connection->getDriverName() === 'sqlsrv') {
-            $tables = array_map(static function ($item) {
-                return trim($item, '[]');
-            }, $tables);
-        }
-
-        $this->assertContains('customer', $tables);
-        $this->assertContains('category', $tables);
-        $this->assertContains('item', $tables);
-        $this->assertContains('order', $tables);
-        $this->assertContains('order_item', $tables);
-        $this->assertContains('type', $tables);
-        $this->assertContains('animal', $tables);
-        $this->assertContains('animal_view', $tables);
-    }
-
-    /**
-     * @dataProvider pdoAttributesProvider
-     *
-     * @param array $pdoAttributes
-     */
-    public function testGetTableSchemas(array $pdoAttributes): void
-    {
-        $connection = $this->getConnection();
-
-        foreach ($pdoAttributes as $name => $values) {
-            if ($name === PDO::ATTR_EMULATE_PREPARES  && $connection->getDriverName() === 'sqlsrv') {
-                continue;
-            }
-
-            $connection->getPDO()->setAttribute($name, $value);
-        }
-
-        $schema = $connection->getSchema();
-
-        $tables = $schema->getTableSchemas();
-
-        $this->assertCount(count($schema->getTableNames()), $tables);
-
-        foreach ($tables as $table) {
-            $this->assertInstanceOf(TableSchema::class, $table);
         }
     }
 
@@ -172,103 +98,6 @@ trait TestSchemaTrait
         $refreshedTable = $schema->getTableSchema('type', false);
 
         $this->assertNotSame($noCacheTable, $refreshedTable);
-    }
-
-    public function tableSchemaCachePrefixesProvider(): array
-    {
-        $configs = [
-            [
-                'prefix' => '',
-                'name'   => 'type',
-            ],
-            [
-                'prefix' => '',
-                'name'   => '{{%type}}',
-            ],
-            [
-                'prefix' => 'ty',
-                'name'   => '{{%pe}}',
-            ],
-        ];
-
-        $data = [];
-        foreach ($configs as $config) {
-            foreach ($configs as $testConfig) {
-                if ($config === $testConfig) {
-                    continue;
-                }
-
-                $description = sprintf(
-                    "%s (with '%s' prefix) against %s (with '%s' prefix)",
-                    $config['name'],
-                    $config['prefix'],
-                    $testConfig['name'],
-                    $testConfig['prefix']
-                );
-                $data[$description] = [
-                    $config['prefix'],
-                    $config['name'],
-                    $testConfig['prefix'],
-                    $testConfig['name'],
-                ];
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * @depends testSchemaCache
-     *
-     * @dataProvider tableSchemaCachePrefixesProvider
-     *
-     * @param string $tablePrefix
-     * @param string $tableName
-     * @param string $testTablePrefix
-     * @param string $testTableName
-     */
-    public function testTableSchemaCacheWithTablePrefixes(
-        string $tablePrefix,
-        string $tableName,
-        string $testTablePrefix,
-        string $testTableName
-    ): void {
-        $schema = $this->getConnection()->getSchema();
-
-        $schema->getDb()->setEnableSchemaCache(true);
-        $schema->getDb()->setSchemaCache($this->cache);
-        $schema->getDb()->setTablePrefix($tablePrefix);
-
-        $noCacheTable = $schema->getTableSchema($tableName, true);
-
-        $this->assertInstanceOf(TableSchema::class, $noCacheTable);
-
-        /* Compare */
-        $schema->getDb()->setTablePrefix($testTablePrefix);
-
-        $testNoCacheTable = $schema->getTableSchema($testTableName);
-
-        $this->assertSame($noCacheTable, $testNoCacheTable);
-
-        $schema->getDb()->setTablePrefix($tablePrefix);
-
-        $schema->refreshTableSchema($tableName);
-
-        $refreshedTable = $schema->getTableSchema($tableName, false);
-
-        $this->assertInstanceOf(TableSchema::class, $refreshedTable);
-        $this->assertNotSame($noCacheTable, $refreshedTable);
-
-        /* Compare */
-        $schema->getDb()->setTablePrefix($testTablePrefix);
-
-        $schema->refreshTableSchema($testTablePrefix);
-
-        $testRefreshedTable = $schema->getTableSchema($testTableName, false);
-
-        $this->assertInstanceOf(TableSchema::class, $testRefreshedTable);
-        $this->assertEquals($refreshedTable, $testRefreshedTable);
-        $this->assertNotSame($testNoCacheTable, $testRefreshedTable);
     }
 
     public function testCompositeFk(): void
@@ -377,7 +206,8 @@ trait TestSchemaTrait
                     "defaultValue of column $name does not match."
                 );
             }
-            if (isset($expected['dimension'])) { // PgSQL only
+            /* Pgsql only */
+            if (isset($expected['dimension'])) {
                 $this->assertSame(
                     $expected['dimension'],
                     $column->getDimension(),
@@ -425,73 +255,6 @@ trait TestSchemaTrait
             $tableSchema = $schema->getTableSchema($tableName);
             $this->assertInstanceOf(TableSchema::class, $tableSchema, $tableName);
         }
-    }
-
-    public function lowercaseConstraintsProvider(): array
-    {
-        return $this->constraintsProvider();
-    }
-
-    public function uppercaseConstraintsProvider(): array
-    {
-        return $this->constraintsProvider();
-    }
-
-    /**
-     * @dataProvider constraintsProvider
-     *
-     * @param string $tableName
-     * @param string $type
-     * @param mixed $expected
-     */
-    public function testTableSchemaConstraints(string $tableName, string $type, $expected): void
-    {
-        if ($expected === false) {
-            $this->expectException(NotSupportedException::class);
-        }
-
-        $constraints = $this->getConnection(false)->getSchema()->{'getTable' . ucfirst($type)}($tableName);
-
-        $this->assertMetadataEquals($expected, $constraints);
-    }
-
-    /**
-     * @dataProvider uppercaseConstraintsProvider
-     *
-     * @param string $tableName
-     * @param string $type
-     * @param mixed $expected
-     */
-    public function testTableSchemaConstraintsWithPdoUppercase(string $tableName, string $type, $expected): void
-    {
-        if ($expected === false) {
-            $this->expectException(NotSupportedException::class);
-        }
-
-        $connection = $this->getConnection();
-        $connection->getSlavePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
-        $constraints = $connection->getSchema()->{'getTable' . ucfirst($type)}($tableName, true);
-        $this->assertMetadataEquals($expected, $constraints);
-    }
-
-    /**
-     * @dataProvider lowercaseConstraintsProvider
-     *
-     * @param string $tableName
-     * @param string $type
-     * @param mixed $expected
-     */
-    public function testTableSchemaConstraintsWithPdoLowercase(string $tableName, string $type, $expected): void
-    {
-        if ($expected === false) {
-            $this->expectException(NotSupportedException::class);
-        }
-
-        $connection = $this->getConnection();
-        $connection->getSlavePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
-        $constraints = $connection->getSchema()->{'getTable' . ucfirst($type)}($tableName, true);
-
-        $this->assertMetadataEquals($expected, $constraints);
     }
 
     private function assertMetadataEquals($expected, $actual): void
@@ -586,5 +349,203 @@ trait TestSchemaTrait
                 $actualConstraint->name(new AnyCaseValue($actualConstraint->getName()));
             }
         }
+    }
+
+    public function constraintsProviderTrait(): array
+    {
+        return [
+            '1: primary key' => [
+                'T_constraints_1',
+                'primaryKey',
+                (new Constraint())
+                    ->name(AnyValue::getInstance())
+                    ->columnNames(['C_id'])
+            ],
+            '1: check' => [
+                'T_constraints_1',
+                'checks',
+                [
+                    (new CheckConstraint())
+                        ->name(AnyValue::getInstance())
+                        ->columnNames(['C_check'])
+                        ->expression("C_check <> ''")
+                ]
+            ],
+            '1: unique' => [
+                'T_constraints_1',
+                'uniques',
+                [
+                    (new Constraint())
+                        ->name('CN_unique')
+                        ->columnNames(['C_unique'])
+                ]
+            ],
+            '1: index' => [
+                'T_constraints_1',
+                'indexes',
+                [
+                    (new IndexConstraint())
+                        ->name(AnyValue::getInstance())
+                        ->columnNames(['C_id'])
+                        ->unique(true)
+                        ->primary(true),
+                    (new IndexConstraint())
+                        ->name('CN_unique')
+                        ->columnNames(['C_unique'])
+                        ->primary(false)
+                        ->unique(true)
+                ]
+            ],
+            '1: default' => ['T_constraints_1', 'defaultValues', false],
+
+            '2: primary key' => [
+                'T_constraints_2',
+                'primaryKey',
+                (new Constraint())
+                    ->name('CN_pk')
+                    ->columnNames(['C_id_1', 'C_id_2'])
+            ],
+            '2: unique' => [
+                'T_constraints_2',
+                'uniques',
+                [
+                    (new Constraint())
+                        ->name('CN_constraints_2_multi')
+                        ->columnNames(['C_index_2_1', 'C_index_2_2'])
+                ]
+            ],
+            '2: index' => [
+                'T_constraints_2',
+                'indexes',
+                [
+                    (new IndexConstraint())
+                        ->name(AnyValue::getInstance())
+                        ->columnNames(['C_id_1', 'C_id_2'])
+                        ->unique(true)
+                        ->primary(true),
+                    (new IndexConstraint())
+                        ->name('CN_constraints_2_single')
+                        ->columnNames(['C_index_1'])
+                        ->primary(false)
+                        ->unique(false),
+                    (new IndexConstraint())
+                        ->name('CN_constraints_2_multi')
+                        ->columnNames(['C_index_2_1', 'C_index_2_2'])
+                        ->primary(false)
+                        ->unique(true)
+                ]
+            ],
+            '2: check' => ['T_constraints_2', 'checks', []],
+            '2: default' => ['T_constraints_2', 'defaultValues', false],
+
+            '3: primary key' => ['T_constraints_3', 'primaryKey', null],
+            '3: foreign key' => [
+                'T_constraints_3',
+                'foreignKeys',
+                [
+                    (new ForeignKeyConstraint())
+                        ->name('CN_constraints_3')
+                        ->columnNames(['C_fk_id_1', 'C_fk_id_2'])
+                        ->foreignTableName('T_constraints_2')
+                        ->foreignColumnNames(['C_id_1', 'C_id_2'])
+                        ->onDelete('CASCADE')
+                        ->onUpdate('CASCADE')
+                ]
+            ],
+            '3: unique' => ['T_constraints_3', 'uniques', []],
+            '3: index' => [
+                'T_constraints_3',
+                'indexes',
+                [
+                    (new IndexConstraint())
+                        ->name('CN_constraints_3')
+                        ->columnNames(['C_fk_id_1', 'C_fk_id_2'])
+                        ->unique(false)
+                        ->primary(false)
+                ]
+            ],
+            '3: check' => ['T_constraints_3', 'checks', []],
+            '3: default' => ['T_constraints_3', 'defaultValues', false],
+
+            '4: primary key' => [
+                'T_constraints_4',
+                'primaryKey',
+                (new Constraint())
+                    ->name(AnyValue::getInstance())
+                    ->columnNames(['C_id'])
+            ],
+            '4: unique' => [
+                'T_constraints_4',
+                'uniques',
+                [
+                    (new Constraint())
+                        ->name('CN_constraints_4')
+                        ->columnNames(['C_col_1', 'C_col_2'])
+                ]
+            ],
+            '4: check' => ['T_constraints_4', 'checks', []],
+            '4: default' => ['T_constraints_4', 'defaultValues', false],
+        ];
+    }
+
+    public function pdoAttributesProviderTrait(): array
+    {
+        return [
+            [[PDO::ATTR_EMULATE_PREPARES => true]],
+            [[PDO::ATTR_EMULATE_PREPARES => false]],
+        ];
+    }
+
+    public function tableSchemaCachePrefixesProviderTrait(): array
+    {
+        $configs = [
+            [
+                'prefix' => '',
+                'name'   => 'type',
+            ],
+            [
+                'prefix' => '',
+                'name'   => '{{%type}}',
+            ],
+            [
+                'prefix' => 'ty',
+                'name'   => '{{%pe}}',
+            ],
+        ];
+
+        $data = [];
+        foreach ($configs as $config) {
+            foreach ($configs as $testConfig) {
+                if ($config === $testConfig) {
+                    continue;
+                }
+
+                $description = sprintf(
+                    "%s (with '%s' prefix) against %s (with '%s' prefix)",
+                    $config['name'],
+                    $config['prefix'],
+                    $testConfig['name'],
+                    $testConfig['prefix']
+                );
+                $data[$description] = [
+                    $config['prefix'],
+                    $config['name'],
+                    $testConfig['prefix'],
+                    $testConfig['name'],
+                ];
+            }
+        }
+
+        return $data;
+    }
+
+    public function lowercaseConstraintsProviderTrait(): array
+    {
+        return $this->constraintsProvider();
+    }
+
+    public function uppercaseConstraintsProviderTrait(): array
+    {
+        return $this->constraintsProvider();
     }
 }

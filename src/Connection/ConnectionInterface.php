@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Connection;
 
-use PDO;
 use Yiisoft\Db\Command\Command;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Schema\Schema;
 
 interface ConnectionInterface
@@ -13,7 +14,7 @@ interface ConnectionInterface
     /**
      * Creates a command for execution.
      *
-     * @param string $sql the SQL statement to be executed
+     * @param string|null $sql the SQL statement to be executed
      * @param array $params the parameters to be bound to the SQL statement
      *
      * @throws Exception
@@ -21,7 +22,7 @@ interface ConnectionInterface
      *
      * @return Command the DB command
      */
-    public function createCommand($sql = null, $params = []): Command;
+    public function createCommand(?string $sql = null, $params = []): Command;
 
     /**
      * Returns the schema information for the database opened by this connection.
