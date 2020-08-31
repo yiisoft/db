@@ -27,19 +27,6 @@ use function strtolower;
 
 trait TestSchemaTrait
 {
-    public function testGetSchemaNames(): void
-    {
-        $schema = $this->getConnection()->getSchema();
-
-        $schemas = $schema->getSchemaNames();
-
-        $this->assertNotEmpty($schemas);
-
-        foreach ($this->expectedSchemas as $schema) {
-            $this->assertContains($schema, $schemas);
-        }
-    }
-
     public function testGetTableSchemasWithAttrCase(): void
     {
         $db = $this->getConnection(false);

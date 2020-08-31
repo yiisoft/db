@@ -38,6 +38,8 @@ trait TestQueryBuilderTrait
      */
     public function columnTypes(): array
     {
+        $version = $this->getConnection()->getServerVersion();
+
         $items = [
             [
                 Schema::TYPE_BIGINT,
@@ -205,7 +207,6 @@ trait TestQueryBuilderTrait
                 Schema::TYPE_DATE . ' NOT NULL',
                 $this->date()->notNull(),
                 [
-                    'mysql' => 'date NOT NULL',
                     'pgsql' => 'date NOT NULL',
                     'sqlite' => 'date NOT NULL',
                     'oci' => 'DATE NOT NULL',
@@ -227,6 +228,7 @@ trait TestQueryBuilderTrait
                 Schema::TYPE_DATETIME . ' NOT NULL',
                 $this->dateTime()->notNull(),
                 [
+                    'mysql' => version_compare($version, '5.6.4', '>=') ? 'datetime(0) NOT NULL' : 'datetime NOT NULL',
                     'pgsql' => 'timestamp(0) NOT NULL',
                     'sqlite' => 'datetime NOT NULL',
                     'oci' => 'TIMESTAMP NOT NULL',
@@ -237,6 +239,7 @@ trait TestQueryBuilderTrait
                 Schema::TYPE_DATETIME,
                 $this->dateTime(),
                 [
+                    'mysql' => version_compare($version, '5.6.4', '>=') ? 'datetime(0)' : 'datetime',
                     'pgsql' => 'timestamp(0)',
                     'sqlite' => 'datetime',
                     'oci' => 'TIMESTAMP',
@@ -524,6 +527,63 @@ trait TestQueryBuilderTrait
                 ]
             ],
             [
+                Schema::TYPE_PK . ' AFTER `col_before`',
+                $this->primaryKey()->after('col_before'),
+                [
+                    'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY AFTER `col_before`'
+                ]
+            ],
+            [
+                Schema::TYPE_PK . ' FIRST',
+                $this->primaryKey()->first(),
+                [
+                    'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST'
+                ]
+            ],
+            [
+                Schema::TYPE_PK . ' FIRST',
+                $this->primaryKey()->first()->after('col_before'),
+                [
+                    'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST'
+                ]
+            ],
+            [
+                Schema::TYPE_PK . '(8) AFTER `col_before`',
+                $this->primaryKey(8)->after('col_before'),
+                [
+                    'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY AFTER `col_before`'
+                ]
+            ],
+            [
+                Schema::TYPE_PK . '(8) FIRST',
+                $this->primaryKey(8)->first(),
+                [
+                    'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST'
+                ]
+            ],
+            [
+                Schema::TYPE_PK . '(8) FIRST',
+                $this->primaryKey(8)->first()->after('col_before'),
+                [
+                    'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST'
+                ]
+            ],
+            [
+                Schema::TYPE_PK . " COMMENT 'test' AFTER `col_before`",
+                $this->primaryKey()->comment('test')->after('col_before'),
+                [
+                    'mysql' => "int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'test' AFTER `col_before`"
+                ]
+            ],
+            [
+                Schema::TYPE_PK . " COMMENT 'testing \'quote\'' AFTER `col_before`",
+                $this->primaryKey()->comment('testing \'quote\'')->after('col_before'),
+                [
+                    'mysql' => "int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'testing \'quote\''"
+                        . " AFTER `col_before`"
+                ]
+            ],
+            [
                 Schema::TYPE_PK . ' CHECK (value > 5)',
                 $this->primaryKey()->check('value > 5'),
                 [
@@ -766,6 +826,7 @@ trait TestQueryBuilderTrait
                 Schema::TYPE_TIME . ' NOT NULL',
                 $this->time()->notNull(),
                 [
+                    'mysql' => version_compare($version, '5.6.4', '>=') ? 'time(0) NOT NULL' : 'time NOT NULL',
                     'pgsql' => 'time(0) NOT NULL',
                     'sqlite' => 'time NOT NULL',
                     'oci' => 'TIMESTAMP NOT NULL',
@@ -776,6 +837,7 @@ trait TestQueryBuilderTrait
                 Schema::TYPE_TIME,
                 $this->time(),
                 [
+                    'mysql' => version_compare($version, '5.6.4', '>=') ? 'time(0)' : 'time',
                     'pgsql' => 'time(0)',
                     'sqlite' => 'time',
                     'oci' => 'TIMESTAMP',
@@ -786,6 +848,8 @@ trait TestQueryBuilderTrait
                 Schema::TYPE_TIMESTAMP . ' NOT NULL',
                 $this->timestamp()->notNull(),
                 [
+                    'mysql' => version_compare($version, '5.6.4', '>=') ? 'timestamp(0) NOT NULL'
+                        : 'timestamp NOT NULL',
                     'pgsql' => 'timestamp(0) NOT NULL',
                     'sqlite' => 'timestamp NOT NULL',
                     'oci' => 'TIMESTAMP NOT NULL',
@@ -796,6 +860,8 @@ trait TestQueryBuilderTrait
                 Schema::TYPE_TIMESTAMP . ' NULL DEFAULT NULL',
                 $this->timestamp()->defaultValue(null),
                 [
+                    'mysql' => version_compare($version, '5.6.4', '>=') ? 'timestamp(0) NULL DEFAULT NULL'
+                        : 'timestamp NULL DEFAULT NULL',
                     'pgsql' => 'timestamp(0) NULL DEFAULT NULL',
                     'sqlite' => 'timestamp NULL DEFAULT NULL',
                     'sqlsrv' => 'datetime NULL DEFAULT NULL'
@@ -1506,7 +1572,7 @@ trait TestQueryBuilderTrait
         ];
     }
 
-    public function addDropForeignKeysTrait(): array
+    public function addDropForeignKeysProviderTrait(): array
     {
         $tableName = 'T_constraints_3';
         $name = 'CN_constraints_3';
@@ -1552,7 +1618,7 @@ trait TestQueryBuilderTrait
         ];
     }
 
-    public function addDropPrimaryKeysTrait(): array
+    public function addDropPrimaryKeysProviderTrait(): array
     {
         $tableName = 'T_constraints_1';
         $name = 'CN_pk';

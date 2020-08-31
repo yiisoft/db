@@ -6,7 +6,7 @@ namespace Yiisoft\Db\TestUtility;
 
 use PDO;
 use Throwable;
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
@@ -26,8 +26,6 @@ use function time;
 
 trait TestCommandTrait
 {
-    protected string $upsertTestCharCast = 'CAST([[address]] AS VARCHAR(255))';
-
     public function testConstruct(): void
     {
         $db = $this->getConnection();
@@ -689,7 +687,7 @@ trait TestCommandTrait
         $this->assertNotNull($db->getSchema()->getTableSchema($toTableName, true));
     }
 
-    protected function performAndCompareUpsertResult(Connection $db, array $data): void
+    protected function performAndCompareUpsertResult(ConnectionInterface $db, array $data): void
     {
         $params = $data['params'];
         $expected = $data['expected'] ?? $params[1];
@@ -883,37 +881,6 @@ trait TestCommandTrait
         $this->assertEquals(['int1', 'int2'], $schema->getTableUniques($tableName, true)[0]->getColumnNames());
     }
 
-    public function testAddDropCheck(): void
-    {
-        $db = $this->getConnection();
-
-        $tableName = 'test_ck';
-        $name = 'test_ck_constraint';
-
-        $schema = $db->getSchema();
-
-        if ($schema->getTableSchema($tableName) !== null) {
-            $db->createCommand()->dropTable($tableName)->execute();
-        }
-
-        $db->createCommand()->createTable($tableName, [
-            'int1' => 'integer',
-        ])->execute();
-
-        $this->assertEmpty($schema->getTableChecks($tableName, true));
-
-        $db->createCommand()->addCheck($name, $tableName, '[[int1]] > 1')->execute();
-
-        $this->assertMatchesRegularExpression(
-            '/^.*int1.*>.*1.*$/',
-            $schema->getTableChecks($tableName, true)[0]->getExpression()
-        );
-
-        $db->createCommand()->dropCheck($name, $tableName)->execute();
-
-        $this->assertEmpty($schema->getTableChecks($tableName, true));
-    }
-
     public function testIntegrityViolation(): void
     {
         $this->expectException(IntegrityException::class);
@@ -930,7 +897,7 @@ trait TestCommandTrait
 
     public function testLastInsertId(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $sql = 'INSERT INTO {{profile}}([[description]]) VALUES (\'non duplicate\')';
 
