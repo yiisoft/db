@@ -468,6 +468,7 @@ class QueryBuilder
 
         $schema = $this->db->getSchema();
 
+
         if (($tableSchema = $schema->getTableSchema($table)) !== null) {
             $columnSchemas = $tableSchema->getColumns();
         } else {

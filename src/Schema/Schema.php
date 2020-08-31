@@ -333,7 +333,7 @@ abstract class Schema
      *
      * @return ColumnSchemaBuilder column schema builder instance
      */
-    public function createColumnSchemaBuilder(string $type, $length = null)
+    public function createColumnSchemaBuilder(string $type, $length = null): ColumnSchemaBuilder
     {
         return new ColumnSchemaBuilder($type, $length);
     }
@@ -484,7 +484,11 @@ abstract class Schema
      */
     public function quoteTableName(string $name): string
     {
-        if (strpos($name, '(') !== false || strpos($name, '{{') !== false) {
+        if (strpos($name, '(') === 0 && strpos($name, ')') === strlen($name) - 1) {
+            return $name;
+        }
+
+        if (strpos($name, '{{') !== false) {
             return $name;
         }
 
@@ -578,7 +582,7 @@ abstract class Schema
      */
     public function quoteSimpleColumnName(string $name): string
     {
-        if (is_string($this->tableQuoteCharacter)) {
+        if (is_string($this->columnQuoteCharacter)) {
             $startingCharacter = $endingCharacter = $this->columnQuoteCharacter;
         } else {
             [$startingCharacter, $endingCharacter] = $this->columnQuoteCharacter;
