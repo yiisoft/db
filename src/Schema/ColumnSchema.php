@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Schema;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Strings\NumericHelper;
 use Yiisoft\Strings\StringHelper;
 
 /**
@@ -115,7 +116,7 @@ class ColumnSchema
                 }
                 if (is_float($value)) {
                     // ensure type cast always has . as decimal separator in all locales
-                    return StringHelper::floatToString($value);
+                    return NumericHelper::normalize($value);
                 }
 
                 return (string) $value;

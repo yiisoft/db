@@ -23,6 +23,7 @@ use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Pdo\PdoValueBuilder;
+use Yiisoft\Strings\NumericHelper;
 use Yiisoft\Strings\StringHelper;
 
 /**
@@ -487,7 +488,7 @@ class QueryBuilder
                     $value = $schema->quoteValue($value);
                 } elseif (\is_float($value)) {
                     // ensure type cast always has . as decimal separator in all locales
-                    $value = StringHelper::floatToString($value);
+                    $value = NumericHelper::normalize($value);
                 } elseif ($value === false) {
                     $value = 0;
                 } elseif ($value === null) {
