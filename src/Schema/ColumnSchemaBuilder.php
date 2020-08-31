@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Strings\NumericHelper;
 use Yiisoft\Strings\StringHelper;
 
 /**
@@ -320,7 +321,7 @@ class ColumnSchemaBuilder
                 break;
             case 'double':
                 // ensure type cast always has . as decimal separator in all locales
-                $string .= StringHelper::floatToString($this->default);
+                $string .= NumericHelper::normalize($this->default);
                 break;
             case 'boolean':
                 $string .= $this->default ? 'TRUE' : 'FALSE';
