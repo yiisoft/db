@@ -221,7 +221,7 @@ abstract class Connection implements ConnectionInterface
      *
      * @return Command the DB command
      */
-    abstract public function createCommand(?string $sql = null, $params = []): Command;
+    abstract public function createCommand(?string $sql = null, array $params = []): Command;
 
     /**
      * Returns the schema information for the database opened by this connection.

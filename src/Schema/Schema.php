@@ -158,18 +158,6 @@ abstract class Schema
     abstract protected function loadTableSchema(string $name): ?TableSchema;
 
     /**
-     * Creates a column schema for the database.
-     *
-     * This method may be overridden by child classes to create a DBMS-specific column schema.
-     *
-     * @return ColumnSchema column schema instance.
-     */
-    protected function createColumnSchema(): ColumnSchema
-    {
-        return new ColumnSchema();
-    }
-
-    /**
      * Obtains the metadata for the named table.
      *
      * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
@@ -309,33 +297,6 @@ abstract class Schema
         if ($this->db->isSchemaCacheEnabled() && $this->cache instanceof CacheInterface) {
             $this->cache->delete($this->getCacheKey($rawName));
         }
-    }
-
-    /**
-     * Creates a query builder for the database.
-     *
-     * This method may be overridden by child classes to create a DBMS-specific query builder.
-     *
-     * @return QueryBuilder query builder instance.
-     */
-    public function createQueryBuilder()
-    {
-        return new QueryBuilder($this->db);
-    }
-
-    /**
-     * Create a column schema builder instance giving the type and value precision.
-     *
-     * This method may be overridden by child classes to create a DBMS-specific column schema builder.
-     *
-     * @param string $type type of the column. See {@see ColumnSchemaBuilder::$type}.
-     * @param int|string|array $length length or precision of the column. See {@see ColumnSchemaBuilder::$length}.
-     *
-     * @return ColumnSchemaBuilder column schema builder instance
-     */
-    public function createColumnSchemaBuilder(string $type, $length = null): ColumnSchemaBuilder
-    {
-        return new ColumnSchemaBuilder($type, $length);
     }
 
     /**

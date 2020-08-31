@@ -7,7 +7,9 @@ name: db-mysql
 jobs:
   tests:
     name: PHP ${{ matrix.php-version }}-mysql-${{ matrix.mysql-version }}
+
     env:
+      COMPOSER_ROOT_VERSION: "dev-master"
       extensions: curl, mbstring, dom, intl, pdo, mysql, pdo_mysql
       key: cache-v1
 

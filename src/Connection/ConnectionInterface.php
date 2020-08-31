@@ -22,7 +22,7 @@ interface ConnectionInterface
      *
      * @return Command the DB command
      */
-    public function createCommand(?string $sql = null, $params = []): Command;
+    public function createCommand(?string $sql = null, array $params = []): Command;
 
     /**
      * Returns the schema information for the database opened by this connection.
