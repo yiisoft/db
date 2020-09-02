@@ -66,6 +66,11 @@ use Yiisoft\Profiler\Profiler;
  */
 class Command
 {
+    /**
+     * @var array pending parameters to be bound to the current PDO statement.
+     */
+    protected array $pendingParams = [];
+
     protected array $params = [];
     private ?Connection $db = null;
     private int $fetchMode = PDO::FETCH_ASSOC;
@@ -80,11 +85,6 @@ class Command
      * {@see cache()}
      */
     private ?Dependency $queryCacheDependency = null;
-
-    /**
-     * @var array pending parameters to be bound to the current PDO statement.
-     */
-    private array $pendingParams = [];
 
     /**
      * @var string|null the SQL statement that this command represents
@@ -602,7 +602,7 @@ class Command
     {
         $table = $this->db->quoteSql($table);
 
-        $columns = \array_map(fn ($column) => $this->db->quoteSql($column), $columns);
+        $columns = array_map(fn ($column) => $this->db->quoteSql($column), $columns);
 
         $params = [];
 

@@ -11,8 +11,8 @@ trait TestDataReaderProviderTrait
     public function testGetModels(): void
     {
         $dataProvider = (new DataReaderProvider())
-            ->sql('select * from customer')
-            ->db($this->getConnection());
+            ->sql('SELECT * FROM {{customer}}')
+            ->db($this->getConnection(true));
 
         $this->assertCount(3, $dataProvider->getModels());
     }
@@ -20,7 +20,7 @@ trait TestDataReaderProviderTrait
     public function testTotalCount(): void
     {
         $dataProvider = (new DataReaderProvider())
-            ->sql('select * from customer')
+            ->sql('SELECT * FROM {{customer}}')
             ->db($this->getConnection());
 
         $this->assertEquals(3, $dataProvider->getTotalCount());
@@ -29,7 +29,7 @@ trait TestDataReaderProviderTrait
     public function testTotalCountWithParams(): void
     {
         $dataProvider = (new DataReaderProvider())
-            ->sql('select * from customer where id > :minimum')
+            ->sql('SELECT * FROM {{customer}} WHERE [[id]] > :minimum')
             ->params([':minimum' => -1])
             ->db($this->getConnection());
 
