@@ -77,20 +77,5 @@ jobs:
         if: matrix.php-version == '8.0'
         run: composer update --ignore-platform-reqs --prefer-dist --no-interaction --no-progress --optimize-autoloader
 
-      - name: Run tests with phpunit and coverage on Linux php 7.4
-        if: matrix.os == 'ubuntu-latest' && matrix.php-version == '7.4'
-        run: vendor/bin/phpunit --coverage-clover=coverage.clover
-
-      - name: Run tests with phpunit without coverage on Linux php 8.0
-        if: matrix.os == 'ubuntu-latest' && matrix.php-version == '8.0'
-        run: vendor/bin/phpunit
-
-      - name: Run tests with phpunit without coverage on Windows
-        if: matrix.os == 'windows-latest'
-        run: vendor/bin/phpunit
-
-      - name: Upload code coverage scrutinizer on Linux php 7.4
-        if: matrix.os == 'ubuntu-latest' && matrix.php-version == '7.4'
-        run: |
-          wget https://scrutinizer-ci.com/ocular.phar
-          php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+      - name: Run sqlite tests with phpunit
+        run: vendor/bin/phpunit --testsuite Sqlite
