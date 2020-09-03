@@ -545,6 +545,9 @@ trait TestQueryBuilderTrait
                 $this->primaryKey()->first()->after('col_before'),
                 [
                     'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST'
+                ],
+                [
+                    'sqlite' => 'integer PRIMARY KEY AUTOINCREMENT NOT NULL'
                 ]
             ],
             [

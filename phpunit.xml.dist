@@ -19,11 +19,11 @@
     <testsuite name="Mysql">
       <directory>./vendor/yiisoft/db-mysql/tests</directory>
     </testsuite>
-    <testsuite name="Oracle">
-      <directory>./vendor/yiisoft/db-oracle/tests</directory>
-    </testsuite>
     <testsuite name="Pgsql">
       <directory>./vendor/yiisoft/db-pgsql/tests</directory>
+    </testsuite>
+    <testsuite name="Sqlite">
+      <directory>./vendor/yiisoft/db-sqlite/tests</directory>
     </testsuite>
   </testsuites>
 </phpunit>

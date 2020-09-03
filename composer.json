@@ -52,8 +52,8 @@
         "psr-4": {
             "Yiisoft\\Db\\Mssql\\Tests\\": "vendor/yiisoft/db-mssql/tests",
             "Yiisoft\\Db\\Mysql\\Tests\\": "vendor/yiisoft/db-mysql/tests",
-            "Yiisoft\\Db\\Oracle\\Tests\\": "vendor/yiisoft/db-oracle/tests",
-            "Yiisoft\\Db\\Pgsql\\Tests\\": "vendor/yiisoft/db-pgsql/tests"
+            "Yiisoft\\Db\\Pgsql\\Tests\\": "vendor/yiisoft/db-pgsql/tests",
+            "Yiisoft\\Db\\Sqlite\\Tests\\": "vendor/yiisoft/db-sqlite/tests"
         }
     },
     "extra": {
