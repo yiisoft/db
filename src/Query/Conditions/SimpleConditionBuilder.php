@@ -29,13 +29,16 @@ class SimpleConditionBuilder implements ExpressionBuilderInterface
         $column = $expression->getColumn();
         $value = $expression->getValue();
 
-        if (strpos((string) $column, '(') === false) {
+        if ($column instanceof ExpressionInterface) {
+            $column = $this->queryBuilder->buildExpression($column, $params);
+        } elseif (is_string($column) && strpos($column, '(') === false) {
             $column = $this->queryBuilder->getDb()->quoteColumnName($column);
         }
 
         if ($value === null) {
             return "$column $operator NULL";
         }
+
         if ($value instanceof ExpressionInterface) {
             return "$column $operator {$this->queryBuilder->buildExpression($value, $params)}";
         }

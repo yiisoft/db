@@ -8,7 +8,6 @@ final class Dsn
 {
     private ?string $dbname;
     private string $driver;
-    private ?string $dsn = null;
     private ?string $host;
     private ?string $port;
     private array $options;
@@ -39,10 +38,10 @@ final class Dsn
 
     public function getDsn(): string
     {
-        $this->dsn = "$this->driver:" . "host=$this->host" . ';' . "dbname=$this->dbname";
+        $dsn = "$this->driver:" . "host=$this->host" . ';' . "dbname=$this->dbname";
 
         if ($this->port !== null) {
-            $this->dsn = $this->dsn . ';' . "port=$this->port";
+            $dsn .= ';' . "port=$this->port";
         }
 
         $parts = [];
@@ -52,9 +51,14 @@ final class Dsn
         }
 
         if (!empty($parts)) {
-            $this->dsn . ';' . implode(';', $parts);
+            $dsn . ';' . implode(';', $parts);
         }
 
-        return $this->dsn;
+        return $dsn;
+    }
+
+    public function getDriver(): string
+    {
+        return $this->driver;
     }
 }

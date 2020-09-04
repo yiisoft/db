@@ -13,8 +13,17 @@
     <ini name="error_reporting" value="-1"/>
   </php>
   <testsuites>
-    <testsuite name="Yiisoft Db Tests">
-      <directory>./tests</directory>
+    <testsuite name="Mssql">
+      <directory>./vendor/yiisoft/db-mssql/tests</directory>
+    </testsuite>
+    <testsuite name="Mysql">
+      <directory>./vendor/yiisoft/db-mysql/tests</directory>
+    </testsuite>
+    <testsuite name="Pgsql">
+      <directory>./vendor/yiisoft/db-pgsql/tests</directory>
+    </testsuite>
+    <testsuite name="Sqlite">
+      <directory>./vendor/yiisoft/db-sqlite/tests</directory>
     </testsuite>
   </testsuites>
 </phpunit>

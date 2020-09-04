@@ -114,9 +114,14 @@ class ColumnSchema
                 if (is_resource($value)) {
                     return $value;
                 }
+
                 if (is_float($value)) {
-                    // ensure type cast always has . as decimal separator in all locales
+                    /* ensure type cast always has . as decimal separator in all locales */
                     return NumericHelper::normalize($value);
+                }
+
+                if (is_bool($value)) {
+                    return $value ? '1' : '0';
                 }
 
                 return (string) $value;

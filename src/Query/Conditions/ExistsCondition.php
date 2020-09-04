@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Query\Query;
 
 /**
@@ -23,7 +24,7 @@ class ExistsCondition implements ConditionInterface
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (!isset($operands[0]) || !$operands[0] instanceof Query) {
-            throw new \InvalidArgumentException('Subquery for EXISTS operator must be a Query object.');
+            throw new InvalidArgumentException('Subquery for EXISTS operator must be a Query object.');
         }
 
         return new static($operator, $operands[0]);

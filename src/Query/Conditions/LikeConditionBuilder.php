@@ -35,9 +35,9 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operator = $expression->getOperator();
+        $operator = strtoupper($expression->getOperator());
         $column = $expression->getColumn();
         $values = $expression->getValue();
         $escape = $expression->getEscapingReplacements();
@@ -48,7 +48,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
 
         [$andor, $not, $operator] = $this->parseOperator($operator);
 
-        if (!\is_array($values)) {
+        if (!is_array($values)) {
             $values = [$values];
         }
 
@@ -56,18 +56,23 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
             return $not ? '' : '0=1';
         }
 
-        if (strpos($column, '(') === false) {
+        if ($column instanceof ExpressionInterface) {
+            $column = $this->queryBuilder->buildExpression($column, $params);
+        } elseif (is_string($column) && strpos($column, '(') === false) {
             $column = $this->queryBuilder->getDb()->quoteColumnName($column);
         }
 
         $escapeSql = $this->getEscapeSql();
+
         $parts = [];
         foreach ($values as $value) {
             if ($value instanceof ExpressionInterface) {
                 $phName = $this->queryBuilder->buildExpression($value, $params);
             } else {
-                $phName = $this->queryBuilder->bindParam(empty($escape)
-                    ? $value : ('%' . strtr($value, $escape) . '%'), $params);
+                $phName = $this->queryBuilder->bindParam(
+                    empty($escape) ? $value : ('%' . strtr($value, $escape) . '%'),
+                    $params
+                );
             }
             $parts[] = "{$column} {$operator} {$phName}{$escapeSql}";
         }
@@ -99,6 +104,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         if (!preg_match('/^(AND |OR |)(((NOT |))I?LIKE)/', $operator, $matches)) {
             throw new InvalidArgumentException("Invalid operator '$operator'.");
         }
+
         $andor = ' ' . (!empty($matches[1]) ? $matches[1] : 'AND ');
         $not = !empty($matches[3]);
         $operator = $matches[2];
