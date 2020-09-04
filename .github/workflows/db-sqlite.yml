@@ -10,7 +10,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: "dev-master"
-      extensions: curl, mbstring, dom, intl, json, libxml, pdo, pdo_sqlite, xml, xmlwriter
+      extensions: curl, mbstring, dom, intl, json, libxml, pdo, pdo_pgsql, pdo_sqlite, xml, xmlwriter
       key: cache-v1
 
     runs-on: ${{ matrix.os }}
