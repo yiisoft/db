@@ -9,7 +9,6 @@ jobs:
     name: PHP ${{ matrix.php-version }}-pgsql-${{ matrix.pgsql-version }}
 
     env:
-      COMPOSER_ROOT_VERSION: "dev-master"
       extensions: curl, intl, pdo, pdo_pgsql
       key: cache-v1
 

@@ -9,7 +9,6 @@ jobs:
     name: PHP ${{ matrix.php-version }}-${{ matrix.os }}
 
     env:
-      COMPOSER_ROOT_VERSION: "dev-master"
       extensions: curl, mbstring, dom, intl, json, libxml, pdo, pdo_mysql, pdo_pgsql, pdo_sqlite, pdo_sqlsrv, xml, xmlwriter
       key: cache-v1
 

@@ -8,8 +8,6 @@ jobs:
   mutation:
     name: PHP ${{ matrix.php-version }}-${{ matrix.os }}
     env:
-      COMPOSER_ROOT_VERSION: "dev-master"
-      extensions: ast
 
     runs-on: ${{ matrix.os }}
 
@@ -48,4 +46,4 @@ jobs:
         run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader
 
       - name: Static analysis with phan
-        run: vendor/bin/phan --no-progress-bar --output-mode checkstyle | cs2pr --graceful-warnings --colorize
+        run: vendor/bin/psalm --shepherd --stats --output-format=checkstyle | cs2pr --graceful-warnings --colorize

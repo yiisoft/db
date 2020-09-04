@@ -32,8 +32,8 @@
     },
     "require-dev": {
         "infection/infection": "^0.17",
-        "phan/phan": "^3.0",
         "phpunit/phpunit": "^9.3",
+        "vimeo/psalm": "^3.15",
         "yiisoft/aliases": "^1.0",
         "yiisoft/db-oracle": "^1.0@dev",
         "yiisoft/db-mssql": "^1.0@dev",
