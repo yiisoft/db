@@ -9,6 +9,7 @@ jobs:
     name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql }}
 
     env:
+      COMPOSER_ROOT_VERSION: "dev-master"
       extensions: curl, intl, pdo, pdo_sqlsrv
       key: cache
 

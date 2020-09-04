@@ -37,6 +37,7 @@
         "yiisoft/aliases": "^1.0",
         "yiisoft/db-mssql": "^1.0@dev",
         "yiisoft/db-mysql": "^3.0@dev",
+        "yiisoft/db-oracle": "^1.0@dev",
         "yiisoft/db-pgsql": "^3.0@dev",
         "yiisoft/db-sqlite": "^3.0@dev",
         "yiisoft/di": "^3.0@dev",

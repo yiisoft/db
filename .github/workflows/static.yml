@@ -7,7 +7,9 @@ on:
 jobs:
   mutation:
     name: PHP ${{ matrix.php-version }}-${{ matrix.os }}
+
     env:
+      COMPOSER_ROOT_VERSION: "dev-master"
 
     runs-on: ${{ matrix.os }}
 
@@ -29,7 +31,7 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           extensions: ${{ env.extensions }}
           tools: composer:v2, cs2pr
-          coverage: none
+          coverage: pcov
 
       - name: Determine composer cache directory
         run: echo "::set-env name=COMPOSER_CACHE_DIR::$(composer config cache-dir)"
