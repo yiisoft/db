@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Strings\NumericHelper;
-use Yiisoft\Strings\StringHelper;
 
 /**
  * ColumnSchemaBuilder helps to define database schema types using a PHP interface.
@@ -33,7 +32,7 @@ class ColumnSchemaBuilder
     private bool $isUnique = false;
     private ?string $check = null;
     private $default;
-    private $append;
+    private ?string $append = null;
     private bool $isUnsigned = false;
     private ?string $after = null;
     private bool $isFirst = false;
@@ -60,10 +59,10 @@ class ColumnSchemaBuilder
         Schema::TYPE_BOOLEAN   => self::CATEGORY_NUMERIC,
         Schema::TYPE_MONEY     => self::CATEGORY_NUMERIC,
     ];
-    private ?Connection $db;
+    private ?ConnectionInterface $db;
     private ?string $comment = null;
 
-    public function __construct(string $type, $length = null, ?Connection $db = null)
+    public function __construct(string $type, $length = null, ?ConnectionInterface $db = null)
     {
         $this->type = $type;
         $this->length = $length;
@@ -245,12 +244,10 @@ class ColumnSchemaBuilder
      */
     public function __toString(): string
     {
-        switch ($this->getTypeCategory()) {
-            case self::CATEGORY_PK:
-                $format = '{type}{check}{comment}{append}';
-                break;
-            default:
-                $format = '{type}{length}{notnull}{unique}{default}{check}{comment}{append}';
+        if ($this->getTypeCategory() === self::CATEGORY_PK) {
+            $format = '{type}{check}{comment}{append}';
+        } else {
+            $format = '{type}{length}{notnull}{unique}{default}{check}{comment}{append}';
         }
 
         return $this->buildCompleteString($format);
@@ -320,8 +317,8 @@ class ColumnSchemaBuilder
                 $string .= (string) $this->default;
                 break;
             case 'double':
-                // ensure type cast always has . as decimal separator in all locales
-                $string .= NumericHelper::normalize($this->default);
+                /* ensure type cast always has . as decimal separator in all locales */
+                $string .= NumericHelper::normalize((string) $this->default);
                 break;
             case 'boolean':
                 $string .= $this->default ? 'TRUE' : 'FALSE';
@@ -480,9 +477,9 @@ class ColumnSchemaBuilder
     }
 
     /**
-     * @return mixed SQL string to be appended to column schema definition.
+     * @return string SQL string to be appended to column schema definition.
      */
-    public function getAppend()
+    public function getAppend(): string
     {
         return $this->append;
     }
@@ -521,10 +518,10 @@ class ColumnSchemaBuilder
     }
 
     /**
-     * @return Connection|null the current database connection. It is used mainly to escape strings safely
+     * @return ConnectionInterface|null the current database connection. It is used mainly to escape strings safely
      * when building the final column schema string.
      */
-    public function getDb(): ?Connection
+    public function getDb(): ?ConnectionInterface
     {
         return $this->db;
     }
