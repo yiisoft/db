@@ -521,7 +521,7 @@ class QueryBuilder
                 }
                 if (is_string($value)) {
                     $value = $schema->quoteValue($value);
-                } elseif (\is_float($value)) {
+                } elseif (is_float($value)) {
                     /* ensure type cast always has . as decimal separator in all locales */
                     $value = NumericHelper::normalize((string) $value);
                 } elseif ($value === false) {
@@ -658,7 +658,7 @@ class QueryBuilder
                     $columns = $constraint->getColumnNames();
                     sort($columns, SORT_STRING);
 
-                    return json_encode($columns);
+                    return json_encode($columns, JSON_THROW_ON_ERROR);
                 },
                 $constraints
             ),

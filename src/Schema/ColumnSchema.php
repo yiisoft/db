@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
+use PDO;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Strings\NumericHelper;
-use Yiisoft\Strings\StringHelper;
 
 /**
  * ColumnSchema class describes the metadata of a column in a database table.
@@ -117,7 +117,7 @@ class ColumnSchema
 
                 if (is_float($value)) {
                     /* ensure type cast always has . as decimal separator in all locales */
-                    return NumericHelper::normalize($value);
+                    return NumericHelper::normalize((string) $value);
                 }
 
                 if (is_bool($value)) {
@@ -146,12 +146,12 @@ class ColumnSchema
     private function getPdoParamTypes(): array
     {
         return [
-            \PDO::PARAM_BOOL,
-            \PDO::PARAM_INT,
-            \PDO::PARAM_STR,
-            \PDO::PARAM_LOB,
-            \PDO::PARAM_NULL,
-            \PDO::PARAM_STMT
+            PDO::PARAM_BOOL,
+            PDO::PARAM_INT,
+            PDO::PARAM_STR,
+            PDO::PARAM_LOB,
+            PDO::PARAM_NULL,
+            PDO::PARAM_STMT
         ];
     }
 
@@ -197,7 +197,7 @@ class ColumnSchema
     /**
      * @return string the DB type of this column. Possible DB types vary according to the type of DBMS.
      */
-    public function getDbType()
+    public function getDbType(): string
     {
         return $this->dbType;
     }
