@@ -32,7 +32,7 @@ class ColumnSchemaBuilder
     private bool $isUnique = false;
     private ?string $check = null;
     private $default;
-    private string $append;
+    private ?string $append = null;
     private bool $isUnsigned = false;
     private ?string $after = null;
     private bool $isFirst = false;
