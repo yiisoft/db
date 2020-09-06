@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Yiisoft\Db\Data\DataReader;
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 
 /**
@@ -29,7 +29,7 @@ use Yiisoft\Db\Exception\Exception;
 class BatchQueryResult implements \Iterator
 {
     private int $batchSize = 100;
-    private ?Connection $db = null;
+    private ?ConnectionInterface $db = null;
     private bool $each = false;
     private $key;
     private ?Query $query = null;
@@ -250,11 +250,11 @@ class BatchQueryResult implements \Iterator
     }
 
     /**
-     * @param Connection $value the DB connection to be used when performing batch query.
+     * @param ConnectionInterface $value the DB connection to be used when performing batch query.
      *
      * @return self
      */
-    public function db(Connection $value): self
+    public function db(ConnectionInterface $value): self
     {
         $this->db = $value;
 

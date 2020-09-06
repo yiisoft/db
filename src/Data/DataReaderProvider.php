@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Data;
 
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Data\Reader\CountableDataInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Data\Reader\Sort;
 
 class DataReaderProvider implements CountableDataInterface
 {
-    private ?Connection $db = null;
+    private ?ConnectionInterface $db = null;
     private ?string $sql = null;
     private array $params = [];
     private bool $pagination = false;
@@ -78,11 +78,11 @@ class DataReaderProvider implements CountableDataInterface
     /**
      * Set the DB connection the application.
      *
-     * @param Connection $value
+     * @param ConnectionInterface $value
      *
      * @return self
      */
-    public function db(Connection $value): self
+    public function db(ConnectionInterface $value): self
     {
         $this->db = $value;
 
