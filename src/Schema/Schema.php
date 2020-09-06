@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -92,9 +92,9 @@ abstract class Schema
     private ?QueryBuilder $builder = null;
     private ?string $serverVersion = null;
     private CacheInterface $cache;
-    private ?Connection $db = null;
+    private ?ConnectionInterface $db = null;
 
-    public function __construct(Connection $db)
+    public function __construct(ConnectionInterface $db)
     {
         $this->db = $db;
         $this->cache = $this->db->getSchemaCache();
@@ -599,7 +599,7 @@ abstract class Schema
      * Returns the actual name of a given table name.
      *
      * This method will strip off curly brackets from the given table name and replace the percentage character '%' with
-     * {@see Connection::tablePrefix}.
+     * {@see ConnectionInterface::tablePrefix}.
      *
      * @param string $name the table name to be converted.
      *
@@ -893,7 +893,7 @@ abstract class Schema
         );
     }
 
-    public function getDb(): ?Connection
+    public function getDb(): ?ConnectionInterface
     {
         return $this->db;
     }

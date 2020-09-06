@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Yiisoft\Db\Command\Command;
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -63,9 +63,9 @@ class Query implements QueryInterface, ExpressionInterface
     protected array $params = [];
     private $queryCacheDuration;
     private ?Dependency $queryCacheDependency = null;
-    private ?Connection $db = null;
+    private ?ConnectionInterface $db = null;
 
-    public function __construct(Connection $db)
+    public function __construct(ConnectionInterface $db)
     {
         $this->db = $db;
     }
@@ -1323,7 +1323,7 @@ PATTERN;
      * @param int|true $duration the number of seconds that query results can remain valid in cache.
      * Use 0 to indicate that the cached data will never expire.
      * Use a negative number to indicate that query cache should not be used.
-     * Use boolean `true` to indicate that {@see Connection::queryCacheDuration} should be used.
+     * Use boolean `true` to indicate that {@see ConnectionInterface::queryCacheDuration} should be used.
      * Defaults to `true`.
      * @param Dependency $dependency the cache dependency associated with the cached result.
      *
@@ -1371,7 +1371,7 @@ PATTERN;
      *
      * The properties being copies are the ones to be used by query builders.
      *
-     * @param Connection $db the source query object.
+     * @param ConnectionInterface $db the source query object.
      * @param Query $from the source query object.
      *
      * @return self the new Query object.
@@ -1474,11 +1474,11 @@ PATTERN;
     /**
      * This function can be overridden to customize the returned class.
      *
-     * @param Connection $value
+     * @param ConnectionInterface $value
      *
      * @return self
      */
-    protected static function createInstance(Connection $value): self
+    protected static function createInstance(ConnectionInterface $value): self
     {
         return new self($value);
     }

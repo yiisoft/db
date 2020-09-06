@@ -46,7 +46,7 @@ use function is_array;
  * The following example shows how to create a Connection instance and establish the DB connection:
  *
  * ```php
- * $connection = new \Yiisoft\Db\Connection\Connection(
+ * $connection = new \Yiisoft\Db\Mysql\Connection(
  *     $cache,
  *     $logger,
  *     $profiler,

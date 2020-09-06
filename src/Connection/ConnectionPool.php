@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Connection;
+namespace Yiisoft\Db\ConnectionInterface;
 
 class ConnectionPool
 {
     private static array $connectionsPool = [];
 
-    public static function getConnectionPool(string $key): Connection
+    public static function getConnectionPool(string $key): ConnectionInterface
     {
         return static::$connectionsPool[$key];
     }
 
-    public static function setConnectionsPool(string $key, Connection $config): void
+    public static function setConnectionsPool(string $key, ConnectionInterface $config): void
     {
         static::$connectionsPool[$key] = $config;
     }

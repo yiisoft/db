@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 
 /**
  * SchemaBuilderTrait contains shortcut methods to create instances of {@see ColumnSchemaBuilder}.
@@ -31,9 +31,9 @@ use Yiisoft\Db\Connection\Connection;
 trait SchemaBuilderTrait
 {
     /**
-     * @return Connection|null the database connection to be used for schema building.
+     * @return ConnectionInterface|null the database connection to be used for schema building.
      */
-    abstract protected function getDb(): ?Connection;
+    abstract protected function getDb(): ?ConnectionInterface;
 
     /**
      * Creates a primary key column.

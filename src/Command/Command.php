@@ -13,7 +13,7 @@ use Psr\SimpleCache\InvalidArgumentException;
 use Throwable;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -38,7 +38,7 @@ use function strtr;
 /**
  * Command represents a SQL statement to be executed against a database.
  *
- * A command object is usually created by calling {@see Connection::createCommand()}.
+ * A command object is usually created by calling {@see ConnectionInterface::createCommand()}.
  *
  * The SQL statement it represents can be set via the {@see sql} property.
  *
@@ -49,7 +49,7 @@ use function strtr;
  * For example,
  *
  * ```php
- * $users = $connection->createCommand('SELECT * FROM user')->queryAll();
+ * $users = $connectionInterface->createCommand('SELECT * FROM user')->queryAll();
  * ```
  *
  * Command supports SQL statement preparation and parameter binding.
@@ -63,7 +63,7 @@ use function strtr;
  * For example, the following code will create and execute an INSERT SQL statement:
  *
  * ```php
- * $connection->createCommand()->insert('user', [
+ * $connectionInterface->createCommand()->insert('user', [
  *     'name' => 'Sam',
  *     'age' => 30,
  * ])->execute();
@@ -85,7 +85,7 @@ class Command
     protected array $pendingParams = [];
 
     protected array $params = [];
-    private ?Connection $db = null;
+    private ?ConnectionInterface $db = null;
     private int $fetchMode = PDO::FETCH_ASSOC;
     private ?LoggerInterface $logger = null;
     private ?PDOStatement $pdoStatement = null;
@@ -122,7 +122,7 @@ class Command
      */
     private $retryHandler;
 
-    public function __construct(Profiler $profiler, LoggerInterface $logger, Connection $db, ?string $sql)
+    public function __construct(Profiler $profiler, LoggerInterface $logger, ConnectionInterface $db, ?string $sql)
     {
         $this->db = $db;
         $this->logger = $logger;
@@ -134,7 +134,7 @@ class Command
      * Enables query cache for this command.
      *
      * @param int $duration the number of seconds that query result of this command can remain valid in the cache.
-     * If this is not set, the value of {@see Connection::queryCacheDuration} will be used instead.
+     * If this is not set, the value of {@see ConnectionInterface::queryCacheDuration} will be used instead.
      * Use 0 to indicate that the cached data will never expire.
      * @param Dependency $dependency the cache dependency associated with the cached query result.
      *
@@ -171,7 +171,7 @@ class Command
     }
 
     /**
-     * Specifies the SQL statement to be executed. The SQL statement will be quoted using {@see Connection::quoteSql()}.
+     * Specifies the SQL statement to be executed. The SQL statement will be quoted using {@see ConnectionInterface::quoteSql()}.
      *
      * The previous SQL (if any) will be discarded, and {@see params} will be cleared as well. See {@see reset()} for
      * details.
@@ -538,7 +538,7 @@ class Command
      * For example,
      *
      * ```php
-     * $connection->createCommand()->insert('user', [
+     * $connectionInterface->createCommand()->insert('user', [
      *     'name' => 'Sam',
      *     'age' => 30,
      * ])->execute();
@@ -572,7 +572,7 @@ class Command
      * For example,
      *
      * ```php
-     * $connection->createCommand()->batchInsert('user', ['name', 'age'], [
+     * $connectionInterface->createCommand()->batchInsert('user', ['name', 'age'], [
      *     ['Tom', 30],
      *     ['Jane', 20],
      *     ['Linda', 25],
@@ -656,14 +656,14 @@ class Command
      * For example,
      *
      * ```php
-     * $connection->createCommand()->update('user', ['status' => 1], 'age > 30')->execute();
+     * $connectionInterface->createCommand()->update('user', ['status' => 1], 'age > 30')->execute();
      * ```
      *
      * or with using parameter binding for the condition:
      *
      * ```php
      * $minAge = 30;
-     * $connection->createCommand()->update(
+     * $connectionInterface->createCommand()->update(
      *     'user',
      *     ['status' => 1],
      *     'age > :minAge',
@@ -700,14 +700,14 @@ class Command
      * For example,
      *
      * ```php
-     * $connection->createCommand()->delete('user', 'status = 0')->execute();
+     * $connectionInterface->createCommand()->delete('user', 'status = 0')->execute();
      * ```
      *
      * or with using parameter binding for the condition:
      *
      * ```php
      * $status = 0;
-     * $connection->createCommand()->delete('user', 'status = :status', [':status' => $status])->execute();
+     * $connectionInterface->createCommand()->delete('user', 'status = :status', [':status' => $status])->execute();
      * ```
      *
      * The method will properly escape the table and column names.
@@ -1666,7 +1666,7 @@ class Command
         $this->retryHandler = null;
     }
 
-    public function getDb(): ?Connection
+    public function getDb(): ?ConnectionInterface
     {
         return $this->db;
     }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Generator;
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\Conditions\ConditionInterface;
@@ -82,7 +82,7 @@ class QueryBuilder
      */
     public const PARAM_PREFIX = ':qp';
 
-    protected ?Connection $db = null;
+    protected ?ConnectionInterface $db = null;
     protected string $separator = ' ';
 
     /**
@@ -128,7 +128,7 @@ class QueryBuilder
      */
     protected array $expressionBuilders = [];
 
-    public function __construct(Connection $db)
+    public function __construct(ConnectionInterface $db)
     {
         $this->db = $db;
         $this->expressionBuilders = $this->defaultExpressionBuilders();
@@ -1955,9 +1955,9 @@ class QueryBuilder
     }
 
     /**
-     * @return Connection|null the database connection.
+     * @return ConnectionInterface|null the database connection.
      */
-    public function getDb(): ?Connection
+    public function getDb(): ?ConnectionInterface
     {
         return $this->db;
     }
