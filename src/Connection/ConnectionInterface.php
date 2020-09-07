@@ -36,6 +36,17 @@ interface ConnectionInterface
      */
     public function getDriverName(): ?string;
 
+    /**
+     * @var string the Data Source Name, or DSN, contains the information required to connect to the database.
+     *
+     * Please refer to the [PHP manual](https://secure.php.net/manual/en/pdo.construct.php) on the format of the DSN
+     * string.
+     *
+     * For [SQLite](https://secure.php.net/manual/en/ref.pdo-sqlite.connection.php) you may use a [path alias](guide:concept-aliases)
+     * for specifying the database path, e.g. `sqlite:@app/data/db.sql`.
+     *
+     * {@see charset}
+     */
     public function getDsn(): ?string;
 
     /**
@@ -61,6 +72,23 @@ interface ConnectionInterface
      * @return TableSchema|null
      */
     public function getTableSchema($name, $refresh = false): ?TableSchema;
+
+    /**
+     * The charset used for database connection. The property is only used for MySQL, PostgreSQL databases.
+     *
+     * Defaults to null, meaning using default charset as configured by the database.
+     *
+     * For Oracle Database, the charset must be specified in the {@see dsn}, for example for UTF-8 by appending
+     * `;charset=UTF-8` to the DSN string.
+     *
+     * The same applies for if you're using GBK or BIG5 charset with MySQL, then it's highly recommended to specify
+     * charset via {@see dsn} like `'mysql:dbname=mydatabase;host=127.0.0.1;charset=GBK;'`.
+     *
+     * @param string|null $value
+     *
+     * @return void
+     */
+    public function setCharset(?string $value): void;
 
     /**
      * Whether to enable read/write splitting by using {@see setSlaves()} to read data. Note that if {@see setSlaves()}
