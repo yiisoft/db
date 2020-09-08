@@ -1376,7 +1376,7 @@ PATTERN;
      *
      * @return self the new Query object.
      */
-    public static function create($db, $from): self
+    public static function create(ConnectionInterface $db, Query $from): self
     {
         return (new self($db))
             ->where($from->where)
@@ -1392,7 +1392,8 @@ PATTERN;
             ->setJoin($from->join)
             ->having($from->having)
             ->setUnion($from->union)
-            ->params($from->params);
+            ->params($from->params)
+            ->withQueries($from->withQueries);
     }
 
     /**
@@ -1500,6 +1501,13 @@ PATTERN;
     public function setUnion($value): self
     {
         $this->union = $value;
+
+        return $this;
+    }
+
+    public function withQueries(array $value): self
+    {
+        $this->withQueries = $value;
 
         return $this;
     }
