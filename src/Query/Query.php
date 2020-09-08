@@ -1376,7 +1376,7 @@ PATTERN;
      *
      * @return self the new Query object.
      */
-    public static function create($db, $from): self
+    public static function create(ConnectionInterface $db, Query $from): self
     {
         return (new self($db))
             ->where($from->where)
