@@ -876,4 +876,73 @@ trait TestQueryTrait
             $this->assertEquals('user11', $query->cache()->where(['id' => 1])->scalar());
         }, 10);
     }
+
+    /**
+     * checks that all needed properties copied from source to new query
+     */
+    public function testQueryCreation(): void
+    {
+        $db = $this->getConnection();
+
+        $where = 'id > :min_user_id';
+        $limit = 50;
+        $offset = 2;
+        $orderBy = ['name' => SORT_ASC];
+        $indexBy = 'id';
+        $select = ['id' => 'id', 'name' => 'name', 'articles_count' => 'count(*)'];
+        $selectOption = 'SQL_NO_CACHE';
+        $from = 'recent_users';
+        $groupBy = 'id';
+        $having = ['>', 'articles_count', 0];
+        $params = [':min_user_id' => 100];
+
+        [$joinType, $joinTable, $joinOn] = $join = ['INNER', 'articles', 'articles.author_id=users.id'];
+
+        $unionQuery = (new Query($db))
+            ->select('id, name, 1000 as articles_count')
+            ->from('admins');
+
+        $withQuery = (new Query($db))
+            ->select('id, name')
+            ->from('users')
+            ->where('DATE(registered_at) > "2020-01-01"');
+
+        /** build target query */
+        $sourceQuery = (new Query($db))
+            ->where($where)
+            ->limit($limit)
+            ->offset($offset)
+            ->orderBy($orderBy)
+            ->indexBy($indexBy)
+            ->select($select, $selectOption)
+            ->distinct()
+            ->from($from)
+            ->groupBy($groupBy)
+            ->having($having)
+            ->addParams($params)
+            ->join($joinType, $joinTable, $joinOn)
+            ->union($unionQuery)
+            ->withQuery($withQuery, $from);
+
+        $newQuery = Query::create($db, $sourceQuery);
+
+        $this->assertEquals($where, $newQuery->getWhere());
+        $this->assertEquals($limit, $newQuery->getLimit());
+        $this->assertEquals($offset, $newQuery->getOffset());
+        $this->assertEquals($orderBy, $newQuery->getOrderBy());
+        $this->assertEquals($indexBy, $newQuery->getIndexBy());
+        $this->assertEquals($select, $newQuery->getSelect());
+        $this->assertEquals($selectOption, $newQuery->getSelectOption());
+        $this->assertTrue($newQuery->getDistinct());
+        $this->assertEquals([$from], $newQuery->getFrom());
+        $this->assertEquals([$groupBy], $newQuery->getGroupBy());
+        $this->assertEquals($having, $newQuery->getHaving());
+        $this->assertEquals($params, $newQuery->getParams());
+        $this->assertEquals([$join], $newQuery->getJoin());
+        $this->assertEquals([['query' => $unionQuery, 'all' => false]], $newQuery->getUnion());
+        $this->assertEquals(
+            [['query' => $withQuery, 'alias' => $from, 'recursive' => false]],
+            $newQuery->getWithQueries()
+        );
+    }
 }

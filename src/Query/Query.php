@@ -1392,7 +1392,8 @@ PATTERN;
             ->setJoin($from->join)
             ->having($from->having)
             ->setUnion($from->union)
-            ->params($from->params);
+            ->params($from->params)
+            ->withQueries($from->withQueries);
     }
 
     /**
@@ -1500,6 +1501,13 @@ PATTERN;
     public function setUnion($value): self
     {
         $this->union = $value;
+
+        return $this;
+    }
+
+    public function withQueries(array $value): self
+    {
+        $this->withQueries = $value;
 
         return $this;
     }
