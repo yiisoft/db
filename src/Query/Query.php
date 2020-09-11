@@ -210,7 +210,7 @@ class Query implements QueryInterface, ExpressionInterface
         $result = [];
 
         foreach ($rows as $row) {
-            $result[ArrayHelper::getValue($row, $this->indexBy)] = $row;
+            $result[ArrayHelper::getValueByPath($row, $this->indexBy)] = $row;
         }
 
         return $result;
