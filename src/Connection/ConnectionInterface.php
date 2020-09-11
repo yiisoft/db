@@ -26,18 +26,14 @@ interface ConnectionInterface
     public function createCommand(?string $sql = null, array $params = []): Command;
 
     /**
-     * Returns the name of the DB driver. Based on the the current {@see dsn}, in case it was not set explicitly by an
-     * end user.
+     * Returns the name of the DB driver.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     *
-     * @return string|null name of the DB driver
+     * @return string name of the DB driver
      */
-    public function getDriverName(): ?string;
+    public function getDriverName(): string;
 
     /**
-     * @var string the Data Source Name, or DSN, contains the information required to connect to the database.
+     * @return string the Data Source Name, or DSN, contains the information required to connect to the database.
      *
      * Please refer to the [PHP manual](https://secure.php.net/manual/en/pdo.construct.php) on the format of the DSN
      * string.
@@ -47,7 +43,7 @@ interface ConnectionInterface
      *
      * {@see charset}
      */
-    public function getDsn(): ?string;
+    public function getDsn(): string;
 
     /**
      * Returns the schema information for the database opened by this connection.
