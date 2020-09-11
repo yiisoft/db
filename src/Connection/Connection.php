@@ -169,7 +169,7 @@ use function is_array;
 abstract class Connection implements ConnectionInterface
 {
     private ?string $driverName = null;
-    private ?string $dsn = null;
+    private string $dsn;
     private ?string $username = null;
     private ?string $password = null;
     private array $attributes = [];
@@ -377,29 +377,7 @@ abstract class Connection implements ConnectionInterface
         return $this->charset;
     }
 
-    /**
-     * Returns the name of the DB driver. Based on the the current {@see dsn}, in case it was not set explicitly by an
-     * end user.
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     *
-     * @return string|null name of the DB driver
-     */
-    public function getDriverName(): ?string
-    {
-        if ($this->driverName === null) {
-            if (($pos = strpos($this->dsn, ':')) !== false) {
-                $this->driverName = strtolower(substr($this->dsn, 0, $pos));
-            } else {
-                $this->driverName = strtolower($this->getSlavePdo()->getAttribute(PDO::ATTR_DRIVER_NAME));
-            }
-        }
-
-        return $this->driverName;
-    }
-
-    public function getDsn(): ?string
+    public function getDsn(): string
     {
         return $this->dsn;
     }
