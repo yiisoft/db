@@ -457,7 +457,7 @@ trait QueryTrait
         return $this->indexBy;
     }
 
-    public function isEmulateExecution(): bool
+    public function shouldEmulateExecution(): bool
     {
         return $this->emulateExecution;
     }
