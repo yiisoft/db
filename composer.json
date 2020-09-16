@@ -51,7 +51,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Yiisoft\\Db\\Tests": "tests",
+            "Yiisoft\\Db\\Tests\\": "tests",
             "Yiisoft\\ActiveRecord\\Tests\\": "vendor/yiisoft/active-record/tests",
             "Yiisoft\\Db\\Mssql\\Tests\\": "vendor/yiisoft/db-mssql/tests",
             "Yiisoft\\Db\\Mysql\\Tests\\": "vendor/yiisoft/db-mysql/tests",
