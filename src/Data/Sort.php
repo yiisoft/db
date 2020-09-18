@@ -4,8 +4,16 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Data;
 
-use Traversable;
 use Yiisoft\Db\Exception\InvalidConfigException;
+
+use function array_merge;
+use function explode;
+use function implode;
+use function is_array;
+use function is_iterable;
+use function is_scalar;
+use function strncmp;
+use function substr;
 
 /**
  * Sort represents information relevant to sorting.
@@ -19,46 +27,21 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  * ```php
  * public function actionIndex()
  * {
- *     $sort = new Sort([
- *         'attributes' => [
+ *     $sort = new Sort();
+ *
+ *     $sort->attributes(
+ *         [
  *             'age',
  *             'name' => [
- *                 'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
- *                 'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
- *                 'default' => SORT_DESC,
- *                 'label' => 'Name',
- *             ],
- *         ],
- *     ]);
- *
- *     $models = Article::find()
- *         ->where(['status' => 1])
- *         ->orderBy($sort->orders)
- *         ->all();
- *
- *     return $this->render('index', [
- *          'models' => $models,
- *          'sort' => $sort,
- *     ]);
- * }
- * ```
- *
- * View:
- *
- * ```php
- * // display links leading to sort actions
- * echo $sort->link('name') . ' | ' . $sort->link('age');
- *
- * foreach ($models as $model) {
- *     // display $model here
+ *                  'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
+ *                  'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
+ *             ]
+ *         ]
+ *     )->params(['sort' => 'age,-name'])->enableMultiSort(true);
  * }
  * ```
  *
  * In the above, we declare two {@see attributes]] that support sorting: `name` and `age`.
- *
- * We pass the sort information to the Article query so that the query results are sorted by the orders specified by the
- * Sort object. In the view, we show two hyperlinks that can lead to pages with the data sorted by the corresponding
- * attributes.
  *
  * For more details and usage information on Sort, see the [guide article on sorting](guide:output-sorting).
  *
@@ -66,23 +49,21 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  * for ascending order or `SORT_DESC` for descending order. Note that the type of this property differs in getter and
  * setter. See {@see getAttributeOrders()} and {@see attributeOrders()} for details.
  *
- * @property array $orders The columns (keys) and their corresponding sort directions (values). This can be
- * passed to {@see Yiisoft\Db\Query\Query::orderBy()]] to construct a DB query. This property is read-only.
+ * @property array $orders The columns (keys) and their corresponding sort directions (values). This can be passed to
+ * {@see \Yiisoft\Db\Query\Query::orderBy()]] to construct a DB query. This property is read-only.
  */
 final class Sort
 {
+    /**
+     * @var array|null the currently requested sort order as computed by {@see getAttributeOrders}.
+     */
+    private ?array $attributeOrders = null;
     private bool $enableMultiSort = false;
     private array $attributes = [];
     private string $sortParam = 'sort';
     private array $defaultOrder = [];
     private string $separator = ',';
     private array $params = [];
-    private int $sortFlags = SORT_REGULAR;
-
-    /**
-     * @var array the currently requested sort order as computed by {@see getAttributeOrders}.
-     */
-    private ?array $attributeOrders = null;
 
     /**
      * @param array $value list of attributes that are allowed to be sorted. Its syntax can be described using the
@@ -100,13 +81,15 @@ final class Sort
      * ]
      * ```
      *
-     * In the above, two attributes are declared: `age` and `name`. The `age` attribute is
-     * a simple attribute which is equivalent to the following:
+     * In the above, two attributes are declared: `age` and `name`. The `age` attribute is a simple attribute which is
+     * equivalent to the following:
      *
      * ```php
-     * 'age' => [
-     *     'asc' => ['age' => SORT_ASC],
-     *     'desc' => ['age' => SORT_DESC],
+     * [
+     *     'age' => [
+     *         'asc' => ['age' => SORT_ASC],
+     *         'desc' => ['age' => SORT_DESC],
+     *     ],
      *     'default' => SORT_ASC,
      *     'label' => Inflector::camel2words('age'),
      * ]
@@ -128,8 +111,7 @@ final class Sort
      * - The `default` element specifies by which direction the attribute should be sorted if it is not currently sorted
      *   (the default value is ascending order).
      * - The `label` element specifies what label should be used when calling {@see link()} to create a sort link.
-     *   If not set, {@see Inflector::camel2words()} will be called to get a label. Note that it will not be
-     *   HTML-encoded.
+     *   If not set, {@see Inflector::toWords()} will be called to get a label. Note that it will not be HTML-encoded.
      *
      * Note that if the Sort object is already created, you can only use the full format to configure every attribute.
      * Each attribute must include these elements: `asc` and `desc`.
@@ -212,7 +194,7 @@ final class Sort
             $direction = $directions[$attribute] === SORT_DESC ? SORT_ASC : SORT_DESC;
             unset($directions[$attribute]);
         } else {
-            $direction = isset($definition['default']) ? $definition['default'] : SORT_ASC;
+            $direction = $definition['default'] ?? SORT_ASC;
         }
 
         if ($this->enableMultiSort) {
@@ -222,6 +204,7 @@ final class Sort
         }
 
         $sorts = [];
+
         foreach ($directions as $attribute => $direction) {
             $sorts[] = $direction === SORT_DESC ? '-' . $attribute : $attribute;
         }
@@ -241,6 +224,8 @@ final class Sort
      * ```
      *
      * {@see attributeOrders}
+     *
+     * @return $this
      */
     public function defaultOrder(array $value): self
     {
@@ -268,14 +253,14 @@ final class Sort
      *
      * @param string $attribute the attribute name.
      *
-     * @return int|null Sort direction of the attribute. Can be either `SORT_ASC` for ascending order or `SORT_DESC`
-     * for descending order. Null is returned if the attribute is invalid or does not need to be sorted.
+     * @return int|null Sort direction of the attribute. Can be either `SORT_ASC` for ascending order or `SORT_DESC` for
+     * descending order. Null is returned if the attribute is invalid or does not need to be sorted.
      */
     public function getAttributeOrder(string $attribute): ?int
     {
         $orders = $this->getAttributeOrders();
 
-        return isset($orders[$attribute]) ? $orders[$attribute] : null;
+        return $orders[$attribute] ?? null;
     }
 
     /**
@@ -322,7 +307,7 @@ final class Sort
      * @param bool $recalculate whether to recalculate the sort directions.
      *
      * @return array the columns (keys) and their corresponding sort directions (values). This can be passed to
-     * {@see Yiisoft\Db\Query\Query::orderBy()} to construct a DB query.
+     * {@see \Yiisoft\Db\Query\Query::orderBy()} to construct a DB query.
      */
     public function getOrders(bool $recalculate = false): array
     {
@@ -333,7 +318,7 @@ final class Sort
         foreach ($attributeOrders as $attribute => $direction) {
             $definition = $this->attributes[$attribute];
             $columns = $definition[$direction === SORT_ASC ? 'asc' : 'desc'];
-            if (is_array($columns) || $columns instanceof Traversable) {
+            if (is_iterable($columns)) {
                 foreach ($columns as $name => $dir) {
                     $orders[$name] = $dir;
                 }
@@ -348,7 +333,7 @@ final class Sort
     /**
      * Returns a value indicating whether the sort definition supports sorting by the named attribute.
      *
-     * @param string $name the attribute name
+     * @param string $name the attribute name.
      *
      * @return bool whether the sort definition supports sorting by the named attribute.
      */
@@ -365,19 +350,6 @@ final class Sort
     public function separator(string $value): self
     {
         $this->separator = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param int $value Allow to control a value of the fourth parameter which will be passed to
-     * {@see ArrayHelper::multisort()}.
-     *
-     * @return self
-     */
-    public function sortFlags(int $value): self
-    {
-        $this->sortFlags = $value;
 
         return $this;
     }
@@ -421,11 +393,10 @@ final class Sort
     /**
      * Parses the value of {@see sortParam} into an array of sort attributes.
      *
-     * The format must be the attribute name only for ascending
-     * or the attribute name prefixed with `-` for descending.
+     * The format must be the attribute name only for ascending or the attribute name prefixed with `-` for descending.
      *
-     * For example the following return value will result in ascending sort by
-     * `category` and descending sort by `created_at`:
+     * For example the following return value will result in ascending sort by `category` and descending sort by
+     * `created_at`:
      *
      * ```php
      * [

@@ -17,7 +17,7 @@ abstract class DataProvider implements DataProviderInterface
     /**
      * @var int Number of data providers on the current page. Used to generate unique IDs.
      */
-    private static $counter = 0;
+    private static int $counter = 0;
 
     /**
      * @var string an ID that uniquely identifies the data provider among all data providers.
@@ -27,7 +27,7 @@ abstract class DataProvider implements DataProviderInterface
      * - Second and all subsequent data provider IDs are: "dp-1", "dp-2", etc.
      */
     private string $id;
-    private $sort = null;
+    private Sort $sort;
     private ?PaginatorInterface $pagination = null;
     private array $keys = [];
     private array $models = [];
@@ -48,7 +48,7 @@ abstract class DataProvider implements DataProviderInterface
      *
      * @return array the available data models.
      */
-    abstract protected function prepareModels();
+    abstract protected function prepareModels(): array;
 
     /**
      * Prepares the keys associated with the currently available data models.
@@ -57,7 +57,7 @@ abstract class DataProvider implements DataProviderInterface
      *
      * @return array the keys.
      */
-    abstract protected function prepareKeys(array $models = []): array;
+    abstract protected function prepareKeys(array $value = []): array;
 
     /**
      * Returns a value indicating the total number of data models in this data provider.
@@ -129,7 +129,7 @@ abstract class DataProvider implements DataProviderInterface
      */
     public function keys(array $value): void
     {
-        $this->keys = $keys;
+        $this->keys = $value;
     }
 
     /**
@@ -154,7 +154,9 @@ abstract class DataProvider implements DataProviderInterface
     {
         if ($this->getPagination() === false) {
             return $this->getCount();
-        } elseif ($this->totalCount === 0) {
+        }
+
+        if ($this->totalCount === 0) {
             $this->totalCount = $this->prepareTotalCount();
         }
 
@@ -204,9 +206,9 @@ abstract class DataProvider implements DataProviderInterface
     /**
      * Sets the sort definition for this data provider.
      *
-     * @param array $value the sort definition to be used by this data provider.
+     * @param Sort $value the sort definition to be used by this data provider.
      */
-    public function withSort($value): void
+    public function withSort(Sort $value): void
     {
         $this->sort = $value;
     }
@@ -219,8 +221,8 @@ abstract class DataProvider implements DataProviderInterface
      */
     public function refresh(): void
     {
-        $this->totalCount = null;
-        $this->models = null;
-        $this->keys = null;
+        $this->totalCount = 0;
+        $this->models = [];
+        $this->keys = [];
     }
 }

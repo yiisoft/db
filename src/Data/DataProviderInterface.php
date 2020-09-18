@@ -23,7 +23,7 @@ interface DataProviderInterface
      * This method will prepare the data models and keys that can be retrieved via {@see getModels()}
      * {@see getKeys()}.
      *
-     * This method will be implicitly called by {@see getModels()]] and {@see getKeys()} if it has not been called
+     * This method will be implicitly called by {@see getModels()} and {@see getKeys()} if it has not been called
      * before.
      *
      * @param bool $forcePrepare whether to force data preparation even if it has been done before.
@@ -35,7 +35,7 @@ interface DataProviderInterface
      *
      * This is equivalent to `count($provider->getModels())`.
      *
-     * When {@see getPagination|pagination} is false, this is the same as {@see getTotalCount|totalCount}.
+     * When {@see getPagination()|pagination} is false, this is the same as {@see getTotalCount()|totalCount}.
      *
      * @return int the number of data models in the current page.
      */
@@ -44,7 +44,7 @@ interface DataProviderInterface
     /**
      * Returns the total number of data models.
      *
-     * When {@see getPagination|pagination} is false, this is the same as {@see getCount|count}.
+     * When {@see getPagination|pagination} is false, this is the same as {@see getCount()|count}.
      *
      * @return int total number of possible data models.
      */
@@ -61,17 +61,17 @@ interface DataProviderInterface
      * Returns the key values associated with the data models.
      *
      * @return array the list of key values corresponding to {@see getModels|models}. Each data model in
-     * {@see getModels|ActiveRecord} is uniquely identified by the corresponding key value in this array.
+     * {@see getModels()|ActiveRecord} is uniquely identified by the corresponding key value in this array.
      */
     public function getKeys(): array;
 
     /**
-     * @return array|null the sorting object. If this is false, it means the sorting is disabled.
+     * @return Sort the sorting object. If this is false, it means the sorting is disabled.
      */
-    public function getSort();
+    public function getSort(): Sort;
 
     /**
-     * @return the pagination object. If this is false, it means the pagination is disabled.
+     * @return PaginatorInterface|null pagination object. If this is false, it means the pagination is disabled.
      */
     public function getPagination(): ?PaginatorInterface;
 }
