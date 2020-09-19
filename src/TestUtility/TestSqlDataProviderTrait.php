@@ -21,8 +21,9 @@ trait TestSqlDataProviderTrait
         $this->assertEquals([0, 1, 2], $dataProvider->getKeys());
     }
 
-    public function testSort(): void
+    public function testWithSort(): void
     {
+        /** with sql statments select */
         $dataProvider = new SqlDataProvider(
             $this->getConnection(),
             'SELECT * FROM {{customer}} ORDER BY id DESC'
@@ -36,9 +37,10 @@ trait TestSqlDataProviderTrait
 
         $this->assertEquals([3, 2, 1], $ids);
 
+        /** with {@see Sort::class} options {@see withSort()} */
         $ids = [];
         $dataProvider = new SqlDataProvider($this->getConnection(), 'SELECT * FROM {{customer}}');
-        $dataProvider->withSort((new Sort(['id']))->defaultOrder(['id' => ['default' => 'desc']]));
+        $dataProvider->withSort((new Sort())->attributes(['id'])->defaultOrder(['id' => ['default' => 'desc']]));
 
         $models = $dataProvider->getModels();
 

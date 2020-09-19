@@ -15,11 +15,6 @@ use Yiisoft\Data\Paginator\PaginatorInterface;
 abstract class DataProvider implements DataProviderInterface
 {
     /**
-     * @var int Number of data providers on the current page. Used to generate unique IDs.
-     */
-    private static int $counter = 0;
-
-    /**
      * @var string an ID that uniquely identifies the data provider among all data providers.
      * Generated automatically the following way in case it is not set:
      *
@@ -27,19 +22,19 @@ abstract class DataProvider implements DataProviderInterface
      * - Second and all subsequent data provider IDs are: "dp-1", "dp-2", etc.
      */
     private string $id;
-    private Sort $sort;
+    private ?Sort $sort = null;
     private ?PaginatorInterface $pagination = null;
     private array $keys = [];
     private array $models = [];
     private int $totalCount = 0;
+    private bool $autoGenerate = true;
+    private string $autoIdPrefix = 'dp';
+    private static int $counter = 0;
 
     public function __construct()
     {
-        if ($this->id === null) {
-            if (self::$counter > 0) {
-                $this->id = 'dp-' . self::$counter;
-            }
-            self::$counter++;
+        if (isset($this->id)) {
+            $this->id = $this->getId();
         }
     }
 
@@ -196,9 +191,9 @@ abstract class DataProvider implements DataProviderInterface
     /**
      * Returns the sorting object used by this data provider.
      *
-     * @return array|bool the sorting object. If this is false, it means the sorting is disabled.
+     * @return Sort|null the sorting object. If this is false, it means the sorting is disabled.
      */
-    public function getSort()
+    public function getSort(): ?Sort
     {
         return $this->sort;
     }
@@ -224,5 +219,56 @@ abstract class DataProvider implements DataProviderInterface
         $this->totalCount = 0;
         $this->models = [];
         $this->keys = [];
+    }
+
+    /**
+     * Set the Id of the widget.
+     *
+     * @param string $value
+     *
+     * @return Widget
+     */
+    public function id(string $value): self
+    {
+        $this->id = $value;
+        return $this;
+    }
+
+    /**
+     * Counter used to generate {@see id} for widgets.
+     *
+     * @param int $value
+     */
+    public static function counterId(int $value): void
+    {
+        self::$counterId = $value;
+    }
+
+    /**
+     * The prefix to the automatically generated widget IDs.
+     *
+     * @param string $value
+     *
+     * @return $this
+     *
+     * {@see getId()}
+     */
+    public function autoIdPrefix(string $value): self
+    {
+        $this->autoIdPrefix = $value;
+        return $this;
+    }
+
+
+    /**
+     * @return string|null Id of the widget.
+     */
+    protected function getId(): ?string
+    {
+        if ($this->autoGenerate && $this->id === null) {
+            $this->id = $this->autoIdPrefix . ++self::$counterId;
+        }
+
+        return $this->id;
     }
 }
