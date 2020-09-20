@@ -16,8 +16,6 @@ use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Query;
@@ -27,11 +25,13 @@ use function array_map;
 use function call_user_func;
 use function call_user_func_array;
 use function explode;
+use function get_resource_type;
 use function is_array;
 use function is_bool;
 use function is_object;
 use function is_resource;
 use function is_string;
+use function stream_get_contents;
 use function strncmp;
 use function strtr;
 
@@ -53,10 +53,12 @@ use function strtr;
  * ```
  *
  * Command supports SQL statement preparation and parameter binding.
+ *
  * Call {@see bindValue()} to bind a value to a SQL parameter;
  * Call {@see bindParam()} to bind a PHP variable to a SQL parameter.
- * When binding a parameter, the SQL statement is automatically prepared.
- * You may also call {@see prepare()} explicitly to prepare a SQL statement.
+ *
+ * When binding a parameter, the SQL statement is automatically prepared. You may also call {@see prepare()} explicitly
+ * to prepare a SQL statement.
  *
  * Command also supports building SQL statements by providing methods such as {@see insert()}, {@see update()}, etc.
  *
@@ -83,9 +85,8 @@ class Command
      * @var array pending parameters to be bound to the current PDO statement.
      */
     protected array $pendingParams = [];
-
     protected array $params = [];
-    private ?ConnectionInterface $db = null;
+    private ConnectionInterface $db;
     private int $fetchMode = PDO::FETCH_ASSOC;
     private ?LoggerInterface $logger = null;
     private ?PDOStatement $pdoStatement = null;
@@ -93,7 +94,7 @@ class Command
     private ?int $queryCacheDuration = null;
 
     /**
-     * @var Dependency the dependency to be associated with the cached query result for this command.
+     * @var Dependency|null the dependency to be associated with the cached query result for this command.
      *
      * {@see cache()}
      */
@@ -133,12 +134,12 @@ class Command
     /**
      * Enables query cache for this command.
      *
-     * @param int $duration the number of seconds that query result of this command can remain valid in the cache.
+     * @param int|null $duration the number of seconds that query result of this command can remain valid in the cache.
      * If this is not set, the value of {@see ConnectionInterface::queryCacheDuration} will be used instead.
      * Use 0 to indicate that the cached data will never expire.
-     * @param Dependency $dependency the cache dependency associated with the cached query result.
+     * @param ?Dependency $dependency the cache dependency associated with the cached query result.
      *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function cache(?int $duration = null, ?Dependency $dependency = null): self
     {
@@ -151,7 +152,7 @@ class Command
     /**
      * Disables query cache for this command.
      *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function noCache(): self
     {
@@ -171,7 +172,8 @@ class Command
     }
 
     /**
-     * Specifies the SQL statement to be executed. The SQL statement will be quoted using {@see ConnectionInterface::quoteSql()}.
+     * Specifies the SQL statement to be executed. The SQL statement will be quoted using
+     * {@see ConnectionInterface::quoteSql()}.
      *
      * The previous SQL (if any) will be discarded, and {@see params} will be cleared as well. See {@see reset()} for
      * details.
@@ -267,8 +269,8 @@ class Command
     /**
      * Prepares the SQL statement to be executed.
      *
-     * For complex SQL statement that is to be executed multiple times, this may improve performance.
-     * For SQL statement with binding parameters, this method is invoked automatically.
+     * For complex SQL statement that is to be executed multiple times, this may improve performance. For SQL statement
+     * with binding parameters, this method is invoked automatically.
      *
      * @param bool|null $forRead whether this method is called for a read query. If null, it means the SQL statement
      * should be used to determine whether it is for read or write.
@@ -277,7 +279,7 @@ class Command
      */
     public function prepare(?bool $forRead = null): void
     {
-        if ($this->pdoStatement) {
+        if (isset($this->pdoStatement)) {
             $this->bindPendingParams();
 
             return;
@@ -286,7 +288,7 @@ class Command
         $sql = $this->getSql();
 
         if ($this->db->getTransaction()) {
-            /* master is in a transaction. use the same connection. */
+            /** master is in a transaction. use the same connection. */
             $forRead = false;
         }
 
@@ -323,7 +325,6 @@ class Command
      * @param string|int $name parameter identifier. For a prepared statement using named placeholders, this will be a
      * parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
-     *
      * @param mixed $value the PHP variable to bind to the SQL statement parameter (passed by reference).
      * @param int|null $dataType SQL data type of the parameter. If null, the type is determined by the PHP type of the
      * value.
@@ -332,7 +333,7 @@ class Command
      *
      * @throws Exception
      *
-     * @return self the current command being executed.
+     * @return $this the current command being executed.
      *
      * {@see http://www.php.net/manual/en/function.PDOStatement-bindParam.php}
      */
@@ -378,10 +379,10 @@ class Command
      * parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
      * @param mixed $value The value to bind to the parameter.
-     * @param int $dataType SQL data type of the parameter. If null, the type is determined by the PHP type of the
+     * @param int|null $dataType SQL data type of the parameter. If null, the type is determined by the PHP type of the
      * value.
      *
-     * @return Command the current command being executed.
+     * @return $this the current command being executed.
      *
      * {@see http://www.php.net/manual/en/function.PDOStatement-bindValue.php}
      */
@@ -412,7 +413,7 @@ class Command
      * using a {@see PdoValue} class: `new PdoValue(value, type)`,
      * e.g. `[':name' => 'John', ':profile' => new PdoValue($profile, \PDO::PARAM_LOB)]`.
      *
-     * @return self the current command being executed.
+     * @return $this the current command being executed.
      */
     public function bindValues(array $values): self
     {
@@ -446,7 +447,7 @@ class Command
      * This method is for executing a SQL query that returns result set, such as `SELECT`.
      *
      * @throws Throwable
-     * @throws Exception execution failed.
+     * @throws Exception|InvalidArgumentException execution failed.
      *
      * @return DataReader the reader object for fetching the query result.
      */
@@ -458,12 +459,12 @@ class Command
     /**
      * Executes the SQL statement and returns ALL rows at once.
      *
-     * @param int $fetchMode the result fetch mode.
+     * @param int|null $fetchMode the result fetch mode.
      * Please refer to [PHP manual](http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php) for valid fetch
      * modes. If this parameter is null, the value set in {@see fetchMode} will be used.
      *
      * @throws Throwable
-     * @throws Exception execution failed.
+     * @throws Exception|InvalidArgumentException execution failed.
      *
      * @return array all rows of the query result. Each array element is an array representing a row of data. An empty
      * array is returned if the query results in nothing.
@@ -484,7 +485,7 @@ class Command
      * for valid fetch modes. If this parameter is null, the value set in {@see fetchMode} will be used.
      *
      * @throws Throwable
-     * @throws Exception execution failed.
+     * @throws Exception|InvalidArgumentException execution failed.
      *
      * @return array|false the first row (in terms of an array) of the query result. False is returned if the query
      * results in nothing.
@@ -499,18 +500,16 @@ class Command
      *
      * This method is best used when only a single value is needed for a query.
      *
-     * @throws Exception execution failed.
-     * @throws Throwable
-     *
      * @return string|null|false the value of the first column in the first row of the query result. False is returned
      * if there is no value.
+     * @throws Exception|Throwable|InvalidArgumentException failed.
      */
     public function queryScalar()
     {
         $result = $this->queryInternal('fetchColumn', 0);
 
-        if (is_resource($result) && \get_resource_type($result) === 'stream') {
-            return \stream_get_contents($result);
+        if (is_resource($result) && get_resource_type($result) === 'stream') {
+            return stream_get_contents($result);
         }
 
         return $result;
@@ -522,8 +521,7 @@ class Command
      * This method is best used when only the first column of result (i.e. the first element in each row) is needed for
      * a query.
      *
-     * @throws Throwable
-     * @throws Exception execution failed.
+     * @throws Exception|InvalidArgumentException|Throwable execution failed.
      *
      * @return array the first column of the query result. Empty array is returned if the query results in nothing.
      */
@@ -552,11 +550,7 @@ class Command
      * @param array|Query $columns the column data (name => value) to be inserted into the table or instance of
      * {@see Query} to perform INSERT INTO ... SELECT SQL statement. Passing of {@see Query}.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself
+     * @return $this the command object itself
      */
     public function insert(string $table, $columns): self
     {
@@ -589,11 +583,7 @@ class Command
      * @param array $columns the column names
      * @param iterable $rows the rows to be batch inserted into the table.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function batchInsert(string $table, array $columns, iterable $rows): self
     {
@@ -637,11 +627,7 @@ class Command
      * If `false` is passed, no update will be performed if the column data already exists.
      * @param array $params the parameters to be bound to the command.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function upsert(string $table, $insertColumns, $updateColumns = true, array $params = []): self
     {
@@ -681,11 +667,7 @@ class Command
      * Please refer to {@see Query::where()} on how to specify condition.
      * @param array $params the parameters to be bound to the command.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function update(string $table, array $columns, $condition = '', array $params = []): self
     {
@@ -719,11 +701,7 @@ class Command
      * {@see Query::where()} on how to specify condition.
      * @param array $params the parameters to be bound to the command.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function delete(string $table, $condition = '', array $params = []): self
     {
@@ -748,15 +726,11 @@ class Command
      *
      * @param string $table the name of the table to be created. The name will be properly quoted by the method.
      * @param array $columns the columns (name => definition) in the new table.
-     * @param string $options additional SQL fragment that will be appended to the generated SQL.
+     * @param string|null $options additional SQL fragment that will be appended to the generated SQL.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
-    public function createTable(string $table, array $columns, string $options = null): self
+    public function createTable(string $table, array $columns, ?string $options = null): self
     {
         $sql = $this->db->getQueryBuilder()->createTable($table, $columns, $options);
 
@@ -769,11 +743,7 @@ class Command
      * @param string $table the table to be renamed. The name will be properly quoted by the method.
      * @param string $newName the new table name. The name will be properly quoted by the method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function renameTable(string $table, string $newName): self
     {
@@ -787,11 +757,7 @@ class Command
      *
      * @param string $table the table to be dropped. The name will be properly quoted by the method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself
+     * @return $this the command object itself
      */
     public function dropTable(string $table): self
     {
@@ -805,11 +771,7 @@ class Command
      *
      * @param string $table the table to be truncated. The name will be properly quoted by the method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function truncateTable(string $table): self
     {
@@ -828,11 +790,7 @@ class Command
      * column type to the physical one. For example, `string` will be converted as `varchar(255)`, and `string not null`
      * becomes `varchar(255) not null`.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function addColumn(string $table, string $column, string $type): self
     {
@@ -847,11 +805,7 @@ class Command
      * @param string $table the table whose column is to be dropped. The name will be properly quoted by the method.
      * @param string $column the name of the column to be dropped. The name will be properly quoted by the method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function dropColumn(string $table, string $column): self
     {
@@ -867,11 +821,7 @@ class Command
      * @param string $oldName the old name of the column. The name will be properly quoted by the method.
      * @param string $newName the new name of the column. The name will be properly quoted by the method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function renameColumn(string $table, string $oldName, string $newName): self
     {
@@ -890,11 +840,7 @@ class Command
      * convert the give column type to the physical one. For example, `string` will be converted as `varchar(255)`, and
      * `string not null` becomes `varchar(255) not null`.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function alterColumn(string $table, string $column, string $type): self
     {
@@ -912,11 +858,7 @@ class Command
      * @param string $table the table that the primary key constraint will be added to.
      * @param string|array $columns comma separated string or array of columns that the primary key will consist of.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function addPrimaryKey(string $name, string $table, $columns): self
     {
@@ -931,11 +873,7 @@ class Command
      * @param string $name the name of the primary key constraint to be removed.
      * @param string $table the table that the primary key constraint will be removed from.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function dropPrimaryKey(string $name, string $table): self
     {
@@ -961,11 +899,7 @@ class Command
      * @param string|null $update the ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION,
      * SET DEFAULT, SET NULL.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function addForeignKey(
         string $name,
@@ -996,11 +930,7 @@ class Command
      * the method.
      * @param string $table the table whose foreign is to be dropped. The name will be properly quoted by the method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function dropForeignKey(string $name, string $table): self
     {
@@ -1019,11 +949,7 @@ class Command
      * please separate them by commas. The column names will be properly quoted by the method.
      * @param bool $unique whether to add UNIQUE constraint on the created index.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return Command the command object itself.
+     * @return $this the command object itself.
      */
     public function createIndex(string $name, string $table, $columns, bool $unique = false): self
     {
@@ -1038,11 +964,7 @@ class Command
      * @param string $name the name of the index to be dropped. The name will be properly quoted by the method.
      * @param string $table the table whose index is to be dropped. The name will be properly quoted by the method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function dropIndex(string $name, string $table): self
     {
@@ -1060,11 +982,7 @@ class Command
      * @param string|array $columns the name of the column to that the constraint will be added on. If there are
      * multiple columns, separate them with commas. The name will be properly quoted by the method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function addUnique(string $name, string $table, $columns): self
     {
@@ -1081,11 +999,7 @@ class Command
      * @param string $table the table whose unique constraint is to be dropped. The name will be properly quoted by
      * the method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function dropUnique(string $name, string $table): self
     {
@@ -1102,11 +1016,7 @@ class Command
      * the method.
      * @param string $expression the SQL of the `CHECK` constraint.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function addCheck(string $name, string $table, string $expression): self
     {
@@ -1123,11 +1033,7 @@ class Command
      * @param string $table the table whose check constraint is to be dropped. The name will be properly quoted by the
      * method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function dropCheck(string $name, string $table): self
     {
@@ -1146,11 +1052,7 @@ class Command
      * quoted by the method.
      * @param mixed $value default value.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function addDefaultValue(string $name, string $table, string $column, $value): self
     {
@@ -1167,11 +1069,7 @@ class Command
      * @param string $table the table whose default value constraint is to be dropped. The name will be properly quoted
      * by the method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function dropDefaultValue(string $name, string $table): self
     {
@@ -1190,11 +1088,7 @@ class Command
      * @param mixed $value the value for the primary key of the next new row inserted. If this is not set, the next new
      * row's primary key will have a value 1.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function resetSequence(string $table, $value = null): self
     {
@@ -1215,11 +1109,7 @@ class Command
      * @param mixed $value the value for the primary key of the next new row inserted. If this is not set, the next new
      * row's primary key will have the maximum existing value +1.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self
+     * @return $this
      */
     public function executeResetSequence(string $table, $value = null): self
     {
@@ -1234,11 +1124,7 @@ class Command
      * @param string $table the table name.
      * @param bool $check whether to turn on or off the integrity check.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself
+     * @return $this the command object itself
      */
     public function checkIntegrity(string $schema, string $table, bool $check = true): self
     {
@@ -1256,11 +1142,7 @@ class Command
      * method.
      * @param string $comment the text of the comment to be added. The comment will be properly quoted by the method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function addCommentOnColumn(string $table, string $column, string $comment): self
     {
@@ -1276,11 +1158,7 @@ class Command
      * method.
      * @param string $comment the text of the comment to be added. The comment will be properly quoted by the method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function addCommentOnTable(string $table, string $comment): self
     {
@@ -1297,11 +1175,7 @@ class Command
      * @param string $column the name of the column to be commented. The column name will be properly quoted by the
      * method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function dropCommentFromColumn(string $table, string $column): self
     {
@@ -1316,11 +1190,7 @@ class Command
      * @param string $table the table whose column is to be commented. The table name will be properly quoted by the
      * method.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself
+     * @return $this the command object itself.
      */
     public function dropCommentFromTable(string $table): self
     {
@@ -1336,11 +1206,7 @@ class Command
      * @param string|Query $subquery the select statement which defines the view. This can be either a string or a
      * {@see Query} object.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function createView(string $viewName, $subquery): self
     {
@@ -1354,11 +1220,7 @@ class Command
      *
      * @param string $viewName the name of the view to be dropped.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
-     * @return self the command object itself.
+     * @return $this the command object itself.
      */
     public function dropView(string $viewName): self
     {
@@ -1533,7 +1395,7 @@ class Command
      * Returns the cache key for the query.
      *
      * @param string $method method of PDOStatement to be called.
-     * @param int $fetchMode the result fetch mode.
+     * @param int|null $fetchMode the result fetch mode.
      * Please refer to [PHP manual](https://secure.php.net/manual/en/function.PDOStatement-setFetchMode.php) for valid
      * fetch modes.
      * @param string $rawSql the raw SQL with parameter values inserted into the corresponding placeholders.
@@ -1557,7 +1419,7 @@ class Command
      *
      * @param string $name name of the table, which schema should be refreshed.
      *
-     * @return self this command instance.
+     * @return $this this command instance.
      */
     protected function requireTableSchemaRefresh(string $name): self
     {
@@ -1583,7 +1445,7 @@ class Command
      *
      * See {@see Transaction::begin()} for details.
      *
-     * @return self this command instance.
+     * @return $this this command instance.
      */
     protected function requireTransaction(?string $isolationLevel = null): self
     {
@@ -1608,7 +1470,7 @@ class Command
      *
      * @param callable $handler a PHP callback to handle database exceptions.
      *
-     * @return self this command instance.
+     * @return $this this command instance.
      */
     protected function setRetryHandler(callable $handler): self
     {
@@ -1620,14 +1482,12 @@ class Command
     /**
      * Executes a prepared statement.
      *
-     * It's a wrapper around {@see \PDOStatement::execute()} to support transactions and retry handlers.
+     * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
      *
      * @param string|null $rawSql the rawSql if it has been created.
      *
      * @throws Exception
      * @throws Throwable
-     *
-     * @return void
      */
     protected function internalExecute(?string $rawSql): void
     {
@@ -1666,7 +1526,7 @@ class Command
         $this->retryHandler = null;
     }
 
-    public function getDb(): ?ConnectionInterface
+    public function getDb(): ConnectionInterface
     {
         return $this->db;
     }
@@ -1691,8 +1551,6 @@ class Command
      *
      * @param int $value
      *
-     * @return void
-     *
      * {@see http://www.php.net/manual/en/pdostatement.setfetchmode.php}
      */
     public function setFetchMode(int $value): void
@@ -1707,8 +1565,6 @@ class Command
      * is used to generate {@see rawSql}. Do not modify it directly.
      *
      * @param $value
-     *
-     * @return void
      */
     public function setParams(array $value): void
     {
@@ -1721,7 +1577,7 @@ class Command
      * @param int $value If this is not set, the value will be used instead. Use 0 to indicate that the cached data will
      * never expire. And use a negative number to indicate query cache should not be used.
      *
-     * @return self
+     * @return $this
      */
     public function setQueryCacheDuration(int $value): self
     {
