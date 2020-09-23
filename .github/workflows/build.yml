@@ -56,6 +56,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Start Redis v6
+        uses: superchargejs/redis-github-action@1.1.0
+        with:
+          redis-version: 4
+
       - name: Create MS SQL Database
         if: matrix.php-version == '7.4'
         run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'

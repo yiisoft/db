@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
-use Yiisoft\Arrays\ArrayHelper;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
+
+use function count;
+use function implode;
+use function is_iterable;
+use function strpos;
 
 /**
  * Class HashConditionBuilder builds objects of {@see HashCondition}.
@@ -23,6 +28,8 @@ class HashConditionBuilder implements ExpressionBuilderInterface
      * @param ExpressionInterface|HashCondition $expression the expression to be built.
      * @param array $params the binding parameters.
      *
+     * @throws InvalidArgumentException
+     *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
@@ -31,8 +38,8 @@ class HashConditionBuilder implements ExpressionBuilderInterface
         $parts = [];
 
         foreach ($hash as $column => $value) {
-            if (ArrayHelper::isTraversable($value) || $value instanceof Query) {
-                // IN condition
+            if (is_iterable($value) || $value instanceof Query) {
+                /** IN condition */
                 $parts[] = $this->queryBuilder->buildCondition(new InCondition($column, 'IN', $value), $params);
             } else {
                 if (strpos($column, '(') === false) {
