@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Yiisoft\Db\Expression\ExpressionInterface;
+
 /**
  * The QueryInterface defines the minimum set of methods to be implemented by a database query.
  *
@@ -151,14 +153,15 @@ interface QueryInterface
      * **Note that this method will override any existing WHERE condition. You might want to use {@see andWhere()}
      * or {@see orWhere()} instead.**
      *
-     * @param array $condition the conditions that should be put in the WHERE part.
+     * @param string|array|ExpressionInterface $condition the conditions that should be put in the WHERE part.
+     * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return Query the query object itself.
+     * @return QueryInterface the query object itself.
      *
      * {@see andWhere()}
      * {@see orWhere()}
      */
-    public function where(array $condition): Query;
+    public function where($condition, array $params = []): QueryInterface;
 
     /**
      * Adds an additional WHERE condition to the existing one.
@@ -267,11 +270,11 @@ interface QueryInterface
     /**
      * Sets the OFFSET part of the query.
      *
-     * @param int|null $offset the offset. Use null or negative value to disable offset.
+     * @param int|ExpressionInterface|null $offset $offset the offset. Use null or negative value to disable offset.
      *
      * @return Query the query object itself
      */
-    public function offset(?int $offset): Query;
+    public function offset($offset): Query;
 
     /**
      * Sets whether to emulate query execution, preventing any interaction with data storage.
