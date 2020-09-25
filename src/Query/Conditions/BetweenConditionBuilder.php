@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
+
+use function strpos;
 
 /**
  * Class BetweenConditionBuilder builds objects of {@see BetweenCondition}.
@@ -20,6 +23,8 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      *
      * @param ExpressionInterface|BetweenCondition $expression the expression to be built.
      * @param array $params the binding parameters.
+     *
+     * @throws InvalidArgumentException
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
@@ -44,9 +49,11 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      * @param mixed $value
      * @param array $params passed by reference
      *
-     * @return string
+     * @throws InvalidArgumentException
+     *
+     * @return array|string
      */
-    protected function createPlaceholder($value, array &$params): string
+    protected function createPlaceholder($value, array &$params)
     {
         if ($value instanceof ExpressionInterface) {
             return $this->queryBuilder->buildExpression($value, $params);

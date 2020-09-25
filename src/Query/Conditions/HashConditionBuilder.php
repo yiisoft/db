@@ -30,9 +30,9 @@ class HashConditionBuilder implements ExpressionBuilderInterface
      *
      * @throws InvalidArgumentException
      *
-     * @return string the raw SQL that will not be additionally escaped or quoted.
+     * @return array|string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = [])
     {
         $hash = $expression->getHash();
         $parts = [];

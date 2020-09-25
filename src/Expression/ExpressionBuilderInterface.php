@@ -16,7 +16,7 @@ interface ExpressionBuilderInterface
      * @param ExpressionInterface $expression the expression to be built.
      * @param array $params the binding parameters.
      *
-     * @return string the raw SQL that will not be additionally escaped or quoted.
+     * @return string|array the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = []): string;
+    public function build(ExpressionInterface $expression, array &$params = []);
 }

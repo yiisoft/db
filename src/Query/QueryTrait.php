@@ -7,6 +7,18 @@ namespace Yiisoft\Db\Query;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
+use function array_key_exists;
+use function array_merge;
+use function array_shift;
+use function array_unshift;
+use function is_array;
+use function is_string;
+use function preg_match;
+use function preg_split;
+use function strcasecmp;
+use function strtoupper;
+use function trim;
+
 /**
  * The BaseQuery trait represents the minimum method set of a database Query.
  *
@@ -14,11 +26,15 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  */
 trait QueryTrait
 {
-    private $where;
+    /** @var int|ExpressionInterface|null $limit */
     private $limit;
+    /** @var int|ExpressionInterface|null $offset */
     private $offset;
-    private array $orderBy = [];
+    /** @var string|callable $indexBy */
     private $indexBy;
+    /** @var array|string|null $indexBy */
+    private $where;
+    private array $orderBy = [];
     private bool $emulateExecution = false;
 
     /**
@@ -51,14 +67,14 @@ trait QueryTrait
      *
      * See {@see QueryInterface::where()} for detailed documentation.
      *
-     * @param array $condition the conditions that should be put in the WHERE part.
+     * @param array|string|null $condition the conditions that should be put in the WHERE part.
      *
      * @return $this the query object itself
      *
      * {@see andWhere()}
      * {@see orWhere()}
      */
-    public function where(array $condition): self
+    public function where($condition): self
     {
         $this->where = $condition;
 
@@ -70,7 +86,8 @@ trait QueryTrait
      *
      * The new condition and the existing one will be joined using the 'AND' operator.
      *
-     * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
+     * @param array|string|null $condition the new WHERE condition. Please refer to {@see where()} on how to specify
+     * this parameter.
      *
      * @return $this the query object itself
      *
@@ -93,7 +110,8 @@ trait QueryTrait
      *
      * The new condition and the existing one will be joined using the 'OR' operator.
      *
-     * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
+     * @param array|string|null $condition the new WHERE condition. Please refer to {@see where()} on how to specify
+     * this parameter.
      *
      * @return $this the query object itself
      *
@@ -135,6 +153,8 @@ trait QueryTrait
      *
      * See {@see where()} on how to specify this parameter.
      *
+     * @throws NotSupportedException
+     *
      * @return $this the query object itself
      *
      * {@see where()}
@@ -163,6 +183,8 @@ trait QueryTrait
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
+     * @throws NotSupportedException
+     *
      * @return $this the query object itself
      *
      * {@see filterWhere()}
@@ -189,6 +211,8 @@ trait QueryTrait
      * based on filter values entered by users.
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
+     *
+     * @throws NotSupportedException
      *
      * @return $this the query object itself
      *
@@ -217,12 +241,12 @@ trait QueryTrait
      */
     protected function filterCondition($condition)
     {
-        if (!\is_array($condition)) {
+        if (!is_array($condition)) {
             return $condition;
         }
 
         if (!isset($condition[0])) {
-            // hash format: 'column1' => 'value1', 'column2' => 'value2', ...
+            /** hash format: 'column1' => 'value1', 'column2' => 'value2', ... */
             foreach ($condition as $name => $value) {
                 if ($this->isEmpty($value)) {
                     unset($condition[$name]);
@@ -232,9 +256,9 @@ trait QueryTrait
             return $condition;
         }
 
-        // operator format: operator, operand 1, operand 2, ...
+        /** operator format: operator, operand 1, operand 2, ... */
 
-        $operator = \array_shift($condition);
+        $operator = array_shift($condition);
 
         switch (strtoupper($operator)) {
             case 'NOT':
@@ -256,7 +280,7 @@ trait QueryTrait
                 break;
             case 'BETWEEN':
             case 'NOT BETWEEN':
-                if (\array_key_exists(1, $condition) && \array_key_exists(2, $condition)) {
+                if (array_key_exists(1, $condition) && array_key_exists(2, $condition)) {
                     if ($this->isEmpty($condition[1]) || $this->isEmpty($condition[2])) {
                         return [];
                     }
@@ -264,12 +288,12 @@ trait QueryTrait
 
                 break;
             default:
-                if (\array_key_exists(1, $condition) && $this->isEmpty($condition[1])) {
+                if (array_key_exists(1, $condition) && $this->isEmpty($condition[1])) {
                     return [];
                 }
         }
 
-        \array_unshift($condition, $operator);
+        array_unshift($condition, $operator);
 
         return $condition;
     }
@@ -290,7 +314,7 @@ trait QueryTrait
      */
     protected function isEmpty($value): bool
     {
-        return $value === '' || $value === [] || $value === null || (\is_string($value) && trim($value) === '');
+        return $value === '' || $value === [] || $value === null || (is_string($value) && trim($value) === '');
     }
 
     /**
@@ -347,7 +371,7 @@ trait QueryTrait
         if ($this->orderBy === null) {
             $this->orderBy = $columns;
         } else {
-            $this->orderBy = \array_merge($this->orderBy, $columns);
+            $this->orderBy = array_merge($this->orderBy, $columns);
         }
 
         return $this;
@@ -368,7 +392,7 @@ trait QueryTrait
             return [$columns];
         }
 
-        if (\is_array($columns)) {
+        if (is_array($columns)) {
             return $columns;
         }
 
@@ -402,7 +426,7 @@ trait QueryTrait
     /**
      * Sets the OFFSET part of the query.
      *
-     * @param int|ExpressionInterface|null $offset the offset. Use null or negative value to disable offset.
+     * @param int|ExpressionInterface|null $offset $offset the offset. Use null or negative value to disable offset.
      *
      * @return $this the query object itself
      */

@@ -33,7 +33,7 @@ class QueryExpressionBuilder implements ExpressionBuilderInterface
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = []): string
+    public function build($expression, array &$params = []): string
     {
         [$sql, $params] = $this->queryBuilder->build($expression, $params);
 
