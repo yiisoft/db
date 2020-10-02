@@ -6,7 +6,10 @@ namespace Yiisoft\Db\Query\Conditions;
 
 use ArrayAccess;
 use Traversable;
+use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -37,7 +40,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      *
      * @param array $params the binding parameters.
      *
-     * @throws InvalidArgumentException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
@@ -57,7 +60,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
         }
 
         if (!is_array($values) && !$values instanceof Traversable) {
-            /* ensure values is an array */
+            /** ensure values is an array */
             $values = (array) $values;
         }
 
@@ -116,7 +119,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @param object|array $values
      * @param array $params the binding parameters.
      *
-     * @throws InvalidArgumentException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return array of prepared for SQL placeholders.
      */
@@ -161,7 +164,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @param Query $values
      * @param array $params
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgumentException|Exception|InvalidConfigException|NotSupportedException
      *
      * @return string SQL
      */

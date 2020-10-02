@@ -120,7 +120,7 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @param QueryBuilder $builder
      *
-     * @return self a prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
+     * @return $this a prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
      */
     public function prepare(QueryBuilder $builder): self
     {
@@ -425,9 +425,9 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @param string|ExpressionInterface $selectExpression
      *
-     * @return bool|string
-     *@throws Exception|InvalidConfigException|Throwable
+     * @throws Exception|InvalidConfigException|Throwable
      *
+     * @return bool|string
      */
     protected function queryScalar($selectExpression)
     {
@@ -621,7 +621,7 @@ PATTERN;
      * @param string|null $option additional option that should be appended to the 'SELECT' keyword. For example,
      * in MySQL, the option 'SQL_CALC_FOUND_ROWS' can be used.
      *
-     * @return self $this the query object itself.
+     * @return $this the query object itself.
      */
     public function select($columns, ?string $option = null): self
     {
@@ -644,7 +644,7 @@ PATTERN;
      * @param string|array|ExpressionInterface $columns the columns to add to the select. See {@see select()} for more
      * details about the format of this parameter.
      *
-     * @return self $this the query object itself.
+     * @return $this the query object itself.
      *
      * {@see select()}
      */
@@ -713,7 +713,7 @@ PATTERN;
      *
      * @param bool $value whether to SELECT DISTINCT or not.
      *
-     * @return self the query object itself
+     * @return $this the query object itself
      */
     public function distinct(?bool $value = true): self
     {
@@ -757,7 +757,7 @@ PATTERN;
      * $query = (new \Yiisoft\Db\Query\Query)->from(['activeusers' => $subquery]);
      * ```
      *
-     * @return self the query object itself
+     * @return $this the query object itself
      */
     public function from($tables): self
     {
@@ -785,7 +785,7 @@ PATTERN;
      * @param string|array|ExpressionInterface $condition the conditions that should be put in the WHERE part.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      *
      * {@see andWhere()}
      * {@see orWhere()}
@@ -808,7 +808,7 @@ PATTERN;
      * to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      *
      * {@see where()}
      * {@see orWhere()}
@@ -837,7 +837,7 @@ PATTERN;
      * to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      *
      * {@see where()}
      * {@see andWhere()}
@@ -880,7 +880,7 @@ PATTERN;
      * @param string $defaultOperator The operator to use, when no operator is given in `$value`.
      * Defaults to `=`, performing an exact match.
      *
-     * @return self The query object itself.
+     * @return $this the query object itself.
      */
     public function andFilterCompare(string $name, ?string $value, string $defaultOperator = '='): self
     {
@@ -922,7 +922,7 @@ PATTERN;
      * ```
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      */
     public function join(string $type, $table, $on = '', array $params = []): self
     {
@@ -946,7 +946,7 @@ PATTERN;
      * Please refer to {@see join()} on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      */
     public function innerJoin($table, $on = '', array $params = []): self
     {
@@ -970,7 +970,7 @@ PATTERN;
      * Please refer to {@see join()} on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      */
     public function leftJoin($table, $on = '', array $params = []): self
     {
@@ -994,7 +994,7 @@ PATTERN;
      * Please refer to {@see join()} on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      */
     public function rightJoin($table, $on = '', array $params = []): self
     {
@@ -1017,7 +1017,7 @@ PATTERN;
      * {@see ExpressionInterface} object can be passed to specify the GROUP BY part explicitly in plain SQL.
      * {@see ExpressionInterface} object can be passed as well.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      *
      * {@see addGroupBy()}
      */
@@ -1047,7 +1047,7 @@ PATTERN;
      * {@see Expression} object can be passed to specify the GROUP BY part explicitly in plain SQL.
      * {@see ExpressionInterface} object can be passed as well.
      *
-     * @return self the query object itself
+     * @return $this the query object itself
      *
      * {@see groupBy()}
      */
@@ -1074,7 +1074,7 @@ PATTERN;
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      *
      * {@see andHaving()}
      * {@see orHaving()}
@@ -1095,7 +1095,7 @@ PATTERN;
      * on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      *
      * {@see having()}
      * {@see orHaving()}
@@ -1122,7 +1122,7 @@ PATTERN;
      * on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      *
      * {@see having()}
      * {@see andHaving()}
@@ -1165,13 +1165,13 @@ PATTERN;
      *
      * @throws NotSupportedException
      *
-     * @return Query the query object itself.
+     * @return $this the query object itself.
      *
      * {@see having()}
      * {@see andFilterHaving()}
      * {@see orFilterHaving()}
      */
-    public function filterHaving(array $condition): Query
+    public function filterHaving(array $condition): self
     {
         $condition = $this->filterCondition($condition);
 
@@ -1196,7 +1196,7 @@ PATTERN;
      *
      * @throws NotSupportedException
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      *
      * {@see filterHaving()}
      * {@see orFilterHaving()}
@@ -1226,7 +1226,7 @@ PATTERN;
      *
      * @throws NotSupportedException
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      *
      * {@see filterHaving()}
      * {@see andFilterHaving()}
@@ -1248,7 +1248,7 @@ PATTERN;
      * @param string|Query $sql the SQL statement to be appended using UNION.
      * @param bool $all TRUE if using UNION ALL and FALSE if using UNION.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      */
     public function union($sql, $all = false): self
     {
@@ -1263,7 +1263,7 @@ PATTERN;
      * @param array $params list of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      *
      * {@see addParams()}
      */
@@ -1280,7 +1280,7 @@ PATTERN;
      * @param array $params list of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      *
      * {@see params()}
      */
@@ -1313,7 +1313,7 @@ PATTERN;
      * Defaults to `true`.
      * @param Dependency|null $dependency the cache dependency associated with the cached result.
      *
-     * @return self the Query object itself.
+     * @return $this the Query object itself.
      */
     public function cache($duration = true, ?Dependency $dependency = null): self
     {
@@ -1326,7 +1326,7 @@ PATTERN;
     /**
      * Disables query cache for this Query.
      *
-     * @return self the Query object itself.
+     * @return $this the Query object itself.
      */
     public function noCache(): self
     {
@@ -1360,7 +1360,7 @@ PATTERN;
      * @param ConnectionInterface $db the source query object.
      * @param Query $from the source query object.
      *
-     * @return self the new Query object.
+     * @return $this the new Query object.
      */
     public static function create(ConnectionInterface $db, Query $from): self
     {
@@ -1449,7 +1449,7 @@ PATTERN;
      * @param string $alias query alias in WITH construction.
      * @param bool $recursive TRUE if using WITH RECURSIVE and FALSE if using WITH.
      *
-     * @return self the query object itself.
+     * @return $this the query object itself.
      */
     public function withQuery($query, string $alias, bool $recursive = false): self
     {
@@ -1463,7 +1463,7 @@ PATTERN;
      *
      * @param ConnectionInterface $value
      *
-     * @return self
+     * @return $this
      */
     protected static function createInstance(ConnectionInterface $value): self
     {

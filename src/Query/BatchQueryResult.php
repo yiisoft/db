@@ -4,15 +4,24 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Iterator;
+use PDOException;
+use Throwable;
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
+
+use function current;
+use function key;
+use function next;
+use function reset;
 
 /**
  * BatchQueryResult represents a batch query from which you can retrieve data in batches.
  *
  * You usually do not instantiate BatchQueryResult directly. Instead, you obtain it by calling {@see Query::batch()} or
- * {@see Query::each()}. Because BatchQueryResult implements the {@see \Iterator} interface, you can iterate it to
+ * {@see Query::each()}. Because BatchQueryResult implements the {@see Iterator} interface, you can iterate it to
  * obtain a batch of data in each iteration.
  *
  * For example,
@@ -26,7 +35,7 @@ use Yiisoft\Db\Exception\Exception;
  * }
  * ```
  */
-class BatchQueryResult implements \Iterator
+class BatchQueryResult implements Iterator
 {
     private int $batchSize = 100;
     private ?ConnectionInterface $db = null;
@@ -35,12 +44,12 @@ class BatchQueryResult implements \Iterator
     private ?Query $query = null;
 
     /**
-     * @var DataReader the data reader associated with this batch query.
+     * @var DataReader|null the data reader associated with this batch query.
      */
     private ?DataReader $dataReader = null;
 
     /**
-     * @var array the data retrieved in the current batch
+     * @var array|null the data retrieved in the current batch
      */
     private ?array $batch = null;
 
@@ -81,7 +90,7 @@ class BatchQueryResult implements \Iterator
     /**
      * Resets the iterator to the initial state.
      *
-     * This method is required by the interface {@see \Iterator}.
+     * This method is required by the interface {@see Iterator}.
      */
     public function rewind(): void
     {
@@ -92,7 +101,7 @@ class BatchQueryResult implements \Iterator
     /**
      * Moves the internal pointer to the next dataset.
      *
-     * This method is required by the interface {@see \Iterator}.
+     * This method is required by the interface {@see Iterator}.
      */
     public function next(): void
     {
@@ -119,9 +128,9 @@ class BatchQueryResult implements \Iterator
     /**
      * Fetches the next batch of data.
      *
-     * @return array the data fetched
+     * @throws Exception|Throwable|InvalidConfigException
      *
-     * @throws Exception
+     * @return array the data fetched.
      */
     protected function fetchData(): array
     {
@@ -135,7 +144,7 @@ class BatchQueryResult implements \Iterator
     }
 
     /**
-     * Reads and collects rows for batch
+     * Reads and collects rows for batch.
      *
      * @return array
      */
@@ -148,7 +157,7 @@ class BatchQueryResult implements \Iterator
             while ($count++ < $this->batchSize && ($row = $this->dataReader->read())) {
                 $rows[] = $row;
             }
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             $errorCode = $e->errorInfo[1] ?? null;
             if ($this->getDbDriverName() !== 'sqlsrv' || $errorCode !== $this->mssqlNoMoreRowsErrorCode) {
                 throw $e;
@@ -161,7 +170,7 @@ class BatchQueryResult implements \Iterator
     /**
      * Returns the index of the current dataset.
      *
-     * This method is required by the interface {@see \Iterator}.
+     * This method is required by the interface {@see Iterator}.
      *
      * @return string|int|null the index of the current row.
      */
@@ -228,7 +237,7 @@ class BatchQueryResult implements \Iterator
      * @param Query $value the query object associated with this batch query. Do not modify this property directly
      * unless after {@see reset()} is called explicitly.
      *
-     * @return self
+     * @return $this
      */
     public function query(Query $value): self
     {
@@ -240,7 +249,7 @@ class BatchQueryResult implements \Iterator
     /**
      * @param int $value the number of rows to be returned in each batch.
      *
-     * @return self
+     * @return $this
      */
     public function batchSize(int $value): self
     {
@@ -252,7 +261,7 @@ class BatchQueryResult implements \Iterator
     /**
      * @param ConnectionInterface $value the DB connection to be used when performing batch query.
      *
-     * @return self
+     * @return $this
      */
     public function db(ConnectionInterface $value): self
     {
@@ -266,7 +275,7 @@ class BatchQueryResult implements \Iterator
      *
      * If false, a whole batch of rows will be returned in each iteration.
      *
-     * @return self
+     * @return $this
      */
     public function each(bool $value): self
     {

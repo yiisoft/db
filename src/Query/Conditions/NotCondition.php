@@ -6,6 +6,9 @@ namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
 
+use function array_shift;
+use function count;
+
 /**
  * Condition that inverts passed {@see condition}.
  */

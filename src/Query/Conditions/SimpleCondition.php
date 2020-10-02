@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
 
+use function count;
+
 /**
  * Class SimpleCondition represents a simple condition like `"column" operator value`.
  */

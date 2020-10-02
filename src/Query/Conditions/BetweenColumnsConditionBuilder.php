@@ -78,7 +78,7 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
      * @param mixed $value
      * @param array $params passed by reference
      *
-     * @throws InvalidArgumentException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return array|string
      */

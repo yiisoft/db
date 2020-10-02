@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -24,7 +27,7 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      * @param ExpressionInterface|BetweenCondition $expression the expression to be built.
      * @param array $params the binding parameters.
      *
-     * @throws InvalidArgumentException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
@@ -49,7 +52,7 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      * @param mixed $value
      * @param array $params passed by reference
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgumentException|Exception|InvalidConfigException|NotSupportedException
      *
      * @return array|string
      */

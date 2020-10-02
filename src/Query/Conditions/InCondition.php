@@ -14,6 +14,8 @@ class InCondition implements ConditionInterface
 {
     private string $operator;
     private $column;
+
+    /** @var ExpressionInterface[]|string[]|int @values */
     private $values;
 
     public function __construct($column, string $operator, $values)
@@ -40,9 +42,13 @@ class InCondition implements ConditionInterface
     }
 
     /**
-     * @return ExpressionInterface[]|string[]|int[] an array of values that {@see column} value should be among. If it
-     * is an empty array the generated expression will be a `false` value if {@see operator} is `IN` and empty if
+     * @return int|string[]|ExpressionInterface[] (ExpressionInterface|string)[]|int an array of values that
+     * {@see columns} value should be among.
+     *
+     * If it is an empty array the generated expression will be a `false` value if {@see operator} is `IN` and empty if
      * operator is `NOT IN`.
+     *
+     * @psalm-return array<array-key, ExpressionInterface|string>|int
      */
     public function getValues()
     {
