@@ -9,6 +9,13 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
+use function implode;
+use function is_array;
+use function is_string;
+use function preg_match;
+use function strpos;
+use function strtoupper;
+
 /**
  * Class LikeConditionBuilder builds objects of {@see LikeCondition}.
  */
@@ -81,7 +88,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @var string|null character used to escape special characters in LIKE conditions.
+     * @return string|null character used to escape special characters in LIKE conditions.
      *
      * By default it's assumed to be `\`.
      */
@@ -97,9 +104,11 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     /**
      * @param string $operator
      *
+     * @throws InvalidArgumentException
+     *
      * @return array
      */
-    protected function parseOperator($operator): array
+    protected function parseOperator(string $operator): array
     {
         if (!preg_match('/^(AND |OR |)(((NOT |))I?LIKE)/', $operator, $matches)) {
             throw new InvalidArgumentException("Invalid operator '$operator'.");

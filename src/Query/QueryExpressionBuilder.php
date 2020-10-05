@@ -26,14 +26,11 @@ class QueryExpressionBuilder implements ExpressionBuilderInterface
      * @param ExpressionInterface|Query $expression the expression to be built.
      * @param array $params the binding parameters.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = []): string
+    public function build($expression, array &$params = []): string
     {
         [$sql, $params] = $this->queryBuilder->build($expression, $params);
 

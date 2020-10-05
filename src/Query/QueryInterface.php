@@ -62,9 +62,9 @@ interface QueryInterface
      * }
      * ```
      *
-     * @return Query the query object itself.
+     * @return QueryInterface the query object itself.
      */
-    public function indexBy($column): Query;
+    public function indexBy($column): QueryInterface;
 
     /**
      * Sets the WHERE part of the query.
@@ -170,12 +170,12 @@ interface QueryInterface
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
-     * @return Query the query object itself.
+     * @return QueryInterface the query object itself.
      *
      * {@see where()}
      * {@see orWhere()}
      */
-    public function andWhere(array $condition): Query;
+    public function andWhere(array $condition): QueryInterface;
 
     /**
      * Adds an additional WHERE condition to the existing one.
@@ -184,12 +184,12 @@ interface QueryInterface
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
-     * @return Query the query object itself.
+     * @return QueryInterface the query object itself.
      *
      * {@see where()}
      * {@see andWhere()}
      */
-    public function orWhere(array $condition): Query;
+    public function orWhere(array $condition): QueryInterface;
 
     /**
      * Sets the WHERE part of the query ignoring empty parameters.
@@ -197,12 +197,12 @@ interface QueryInterface
      * @param array $condition the conditions that should be put in the WHERE part. Please refer to {@see where()} on
      * how to specify this parameter.
      *
-     * @return Query the query object itself.
+     * @return QueryInterface the query object itself.
      *
      * {@see andFilterWhere()}
      * {@see orFilterWhere()}
      */
-    public function filterWhere(array $condition): Query;
+    public function filterWhere(array $condition): QueryInterface;
 
     /**
      * Adds an additional WHERE condition to the existing one ignoring empty parameters.
@@ -210,12 +210,12 @@ interface QueryInterface
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
-     * @return Query the query object itself.
+     * @return QueryInterface the query object itself.
      *
      * {@see filterWhere()}
      * {@see orFilterWhere()}
      */
-    public function andFilterWhere(array $condition): Query;
+    public function andFilterWhere(array $condition): QueryInterface;
 
     /**
      * Adds an additional WHERE condition to the existing one ignoring empty parameters.
@@ -223,12 +223,12 @@ interface QueryInterface
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
-     * @return Query the query object itself.
+     * @return QueryInterface the query object itself.
      *
      * {@see filterWhere()}
      * {@see andFilterWhere()}
      */
-    public function orFilterWhere(array $condition): Query;
+    public function orFilterWhere(array $condition): QueryInterface;
 
     /**
      * Sets the ORDER BY part of the query.
@@ -238,11 +238,11 @@ interface QueryInterface
      * The method will automatically quote the column names unless a column contains some parenthesis (which means the
      * column contains a DB expression).
      *
-     * @return Query the query object itself.
+     * @return QueryInterface the query object itself.
      *
      * {@see addOrderBy()}
      */
-    public function orderBy($columns): Query;
+    public function orderBy($columns): QueryInterface;
 
     /**
      * Adds additional ORDER BY columns to the query.
@@ -252,29 +252,29 @@ interface QueryInterface
      * The method will automatically quote the column names unless a column contains some parenthesis (which means the
      * column contains a DB expression).
      *
-     * @return Query the query object itself.
+     * @return QueryInterface the query object itself.
      *
      * {@see orderBy()}
      */
-    public function addOrderBy($columns): Query;
+    public function addOrderBy($columns): QueryInterface;
 
     /**
      * Sets the LIMIT part of the query.
      *
      * @param int|null $limit the limit. Use null or negative value to disable limit.
      *
-     * @return Query the query object itself
+     * @return QueryInterface the query object itself
      */
-    public function limit(?int $limit): Query;
+    public function limit(?int $limit): QueryInterface;
 
     /**
      * Sets the OFFSET part of the query.
      *
      * @param int|ExpressionInterface|null $offset $offset the offset. Use null or negative value to disable offset.
      *
-     * @return Query the query object itself
+     * @return QueryInterface the query object itself
      */
-    public function offset($offset): Query;
+    public function offset($offset): QueryInterface;
 
     /**
      * Sets whether to emulate query execution, preventing any interaction with data storage.
@@ -285,7 +285,7 @@ interface QueryInterface
      *
      * @param bool $value whether to prevent query execution.
      *
-     * @return Query the query object itself.
+     * @return QueryInterface the query object itself.
      */
-    public function emulateExecution(bool $value = true): Query;
+    public function emulateExecution(bool $value = true): QueryInterface;
 }

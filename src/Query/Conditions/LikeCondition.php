@@ -13,11 +13,6 @@ class LikeCondition extends SimpleCondition
 {
     protected $escapingReplacements = null;
 
-    public function __construct($column, string $operator, $value)
-    {
-        parent::__construct($column, $operator, $value);
-    }
-
     /**
      * @return array|bool|null
      */

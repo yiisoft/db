@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Query\Query;
+
+use function strpos;
 
 /**
  * Class BetweenColumnsConditionBuilder builds objects of {@see BetweenColumnsCondition}.
@@ -21,6 +27,8 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
      *
      * @param ExpressionInterface|BetweenColumnsCondition $expression the expression to be built.
      * @param array $params the binding parameters.
+     *
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
@@ -41,6 +49,8 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
      * @param Query|ExpressionInterface|string $columnName
      * @param array $params the binding parameters.
      *
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     *
      * @return string
      */
     protected function escapeColumnName($columnName, array &$params = []): string
@@ -49,9 +59,13 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
             [$sql, $params] = $this->queryBuilder->build($columnName, $params);
 
             return "($sql)";
-        } elseif ($columnName instanceof ExpressionInterface) {
+        }
+
+        if ($columnName instanceof ExpressionInterface) {
             return $this->queryBuilder->buildExpression($columnName, $params);
-        } elseif (strpos($columnName, '(') === false) {
+        }
+
+        if (strpos($columnName, '(') === false) {
             return $this->queryBuilder->getDb()->quoteColumnName($columnName);
         }
 
@@ -63,6 +77,8 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
      *
      * @param mixed $value
      * @param array $params passed by reference
+     *
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string
      */
