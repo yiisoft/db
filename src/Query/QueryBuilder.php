@@ -292,17 +292,17 @@ class QueryBuilder
      * @throws Exception|InvalidConfigException|NotSupportedException|InvalidArgumentException when $expression building
      * is not supported by this QueryBuilder.
      *
-     * @return array|string the SQL statement that will not be neither quoted nor encoded before passing to DBMS.
+     * @return string the SQL statement that will not be neither quoted nor encoded before passing to DBMS.
      *
      * {@see ExpressionInterface}
      * {@see ExpressionBuilderInterface}
      * {@see expressionBuilders}
      */
-    public function buildExpression(ExpressionInterface $expression, array &$params = [])
+    public function buildExpression(ExpressionInterface $expression, array &$params = []): string
     {
         $builder = $this->getExpressionBuilder($expression);
 
-        return $builder->build($expression, $params);
+        return (string) $builder->build($expression, $params);
     }
 
     /**

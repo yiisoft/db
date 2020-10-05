@@ -54,9 +54,9 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      *
      * @throws InvalidArgumentException|Exception|InvalidConfigException|NotSupportedException
      *
-     * @return array|string
+     * @return string
      */
-    protected function createPlaceholder($value, array &$params)
+    protected function createPlaceholder($value, array &$params): string
     {
         if ($value instanceof ExpressionInterface) {
             return $this->queryBuilder->buildExpression($value, $params);

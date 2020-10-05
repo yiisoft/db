@@ -51,9 +51,9 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
-     * @return array|string
+     * @return string
      */
-    protected function escapeColumnName($columnName, array &$params = [])
+    protected function escapeColumnName($columnName, array &$params = []): string
     {
         if ($columnName instanceof Query) {
             [$sql, $params] = $this->queryBuilder->build($columnName, $params);
@@ -80,9 +80,9 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
-     * @return array|string
+     * @return string
      */
-    protected function createPlaceholder($value, array &$params)
+    protected function createPlaceholder($value, array &$params): string
     {
         if ($value instanceof ExpressionInterface) {
             return $this->queryBuilder->buildExpression($value, $params);
