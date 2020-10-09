@@ -101,6 +101,13 @@ abstract class Schema
     }
 
     /**
+     * Creates a query builder for the MSSQL database.
+     *
+     * @return QueryBuilder query builder interface.
+     */
+    abstract public function createQueryBuilder(): QueryBuilder;
+
+    /**
      * Resolves the table name and schema name (if any).
      *
      * @param string $name the table name.
@@ -122,11 +129,11 @@ abstract class Schema
      * This method should be overridden by child classes in order to support this feature because the default
      * implementation simply throws an exception.
      *
-     * @return void all schema names in the database, except system schemas.
+     * @return array all schema names in the database, except system schemas.
      *
      * @throws NotSupportedException if this method is not supported by the DBMS.
      */
-    protected function findSchemaNames()
+    protected function findSchemaNames(): array
     {
         throw new NotSupportedException(get_class($this) . ' does not support fetching all schema names.');
     }
@@ -139,7 +146,7 @@ abstract class Schema
      *
      * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
      *
-     * @return void all table names in the database. The names have NO schema name prefix.
+     * @return array all table names in the database. The names have NO schema name prefix.
      *
      * @throws NotSupportedException if this method is not supported by the DBMS.
      */
