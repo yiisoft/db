@@ -101,7 +101,7 @@ abstract class Schema
     }
 
     /**
-     * Creates a query builder for the MSSQL database.
+     * Creates a query builder.
      *
      * @return QueryBuilder query builder interface.
      */
