@@ -100,11 +100,6 @@ abstract class Schema
         $this->cache = $this->db->getSchemaCache();
     }
 
-    /**
-     * Creates a query builder.
-     *
-     * @return QueryBuilder query builder interface.
-     */
     abstract public function createQueryBuilder(): QueryBuilder;
 
     /**
