@@ -84,8 +84,6 @@ class QueryBuilder
      * The prefix for automatically generated query binding parameters.
      */
     public const PARAM_PREFIX = ':qp';
-    protected ConnectionInterface $db;
-    protected string $separator = ' ';
 
     /**
      * @var array the abstract column types mapped to physical column types.
@@ -129,6 +127,8 @@ class QueryBuilder
      * {@see defaultExpressionBuilders()}
      */
     protected array $expressionBuilders = [];
+    protected string $separator = ' ';
+    private ConnectionInterface $db;
 
     public function __construct(ConnectionInterface $db)
     {
@@ -1919,9 +1919,6 @@ class QueryBuilder
         return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);
     }
 
-    /**
-     * @return ConnectionInterface|null the database connection.
-     */
     public function getDb(): ConnectionInterface
     {
         return $this->db;

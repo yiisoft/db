@@ -85,13 +85,13 @@ abstract class Schema
      * and ending characters are different.
      */
     protected $columnQuoteCharacter = '"';
-    protected ConnectionInterface $db;
     private array $schemaNames = [];
     private array $tableNames = [];
     private array $tableMetadata = [];
     private ?QueryBuilder $builder = null;
     private ?string $serverVersion = null;
     private CacheInterface $cache;
+    private ConnectionInterface $db;
 
     public function __construct(ConnectionInterface $db)
     {
