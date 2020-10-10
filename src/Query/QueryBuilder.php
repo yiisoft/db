@@ -84,7 +84,7 @@ class QueryBuilder
      * The prefix for automatically generated query binding parameters.
      */
     public const PARAM_PREFIX = ':qp';
-    protected ?ConnectionInterface $db = null;
+    protected ConnectionInterface $db;
     protected string $separator = ' ';
 
     /**
