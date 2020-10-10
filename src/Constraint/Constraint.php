@@ -9,10 +9,12 @@ namespace Yiisoft\Db\Constraint;
  */
 class Constraint
 {
+    /** @var array|string|null */
     private $columnNames;
+    /** @var object|string|null */
     private $name;
 
-    public function getColumnNames(): array
+    public function getColumnNames()
     {
         return $this->columnNames;
     }
@@ -25,7 +27,7 @@ class Constraint
     /**
      * @param array|string|null $value list of column names the constraint belongs to.
      *
-     * @return self
+     * @return $this
      */
     public function columnNames($value): self
     {
@@ -37,7 +39,7 @@ class Constraint
     /**
      * @param object|string|null $value the constraint name.
      *
-     * @return void
+     * @return $this
      */
     public function name($value): self
     {

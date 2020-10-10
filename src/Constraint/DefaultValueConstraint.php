@@ -9,6 +9,7 @@ namespace Yiisoft\Db\Constraint;
  */
 class DefaultValueConstraint extends Constraint
 {
+    /** @var mixed $value */
     private $value;
 
     public function getValue()
@@ -19,7 +20,7 @@ class DefaultValueConstraint extends Constraint
     /**
      * @param mixed default value as returned by the DBMS.
      *
-     * @return self
+     * @return $this
      */
     public function value($value): self
     {

@@ -10,7 +10,9 @@ namespace Yiisoft\Db\Constraint;
 class ForeignKeyConstraint extends Constraint
 {
     private ?string $foreignSchemaName = null;
+    /** @var object|string|null $foreignTableName */
     private $foreignTableName;
+    /** @var array|string $foreignColumnNames */
     private $foreignColumnNames;
     private ?string $onUpdate = null;
     private ?string $onDelete = null;
@@ -25,7 +27,7 @@ class ForeignKeyConstraint extends Constraint
         return $this->foreignTableName;
     }
 
-    public function getForeignColumnNames(): array
+    public function getForeignColumnNames()
     {
         return $this->foreignColumnNames;
     }
@@ -43,7 +45,7 @@ class ForeignKeyConstraint extends Constraint
     /**
      * @param string|null $value referenced table schema name.
      *
-     * @return self
+     * @return $this
      */
     public function foreignSchemaName(?string $value): self
     {
@@ -55,7 +57,7 @@ class ForeignKeyConstraint extends Constraint
     /**
      * @param object|string|null $value referenced table name.
      *
-     * @return self
+     * @return $this
      */
     public function foreignTableName($value): self
     {
@@ -67,7 +69,7 @@ class ForeignKeyConstraint extends Constraint
     /**
      * @param array|string $value list of referenced table column names.
      *
-     * @return self
+     * @return $this
      */
     public function foreignColumnNames($value): self
     {
@@ -79,7 +81,7 @@ class ForeignKeyConstraint extends Constraint
     /**
      * @param string|null $value referential action if rows in a referenced table are to be updated.
      *
-     * @return self
+     * @return $this
      */
     public function onUpdate(?string $value): self
     {
@@ -91,7 +93,7 @@ class ForeignKeyConstraint extends Constraint
     /**
      * @param string|null $value referential action if rows in a referenced table are to be deleted.
      *
-     * @return self
+     * @return $this
      */
     public function onDelete(?string $value): self
     {
