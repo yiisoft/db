@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Query;
 
 use Generator;
 use JsonException;
-use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\Conditions\ConditionInterface;
@@ -84,8 +84,6 @@ class QueryBuilder
      * The prefix for automatically generated query binding parameters.
      */
     public const PARAM_PREFIX = ':qp';
-    protected ?ConnectionInterface $db = null;
-    protected string $separator = ' ';
 
     /**
      * @var array the abstract column types mapped to physical column types.
@@ -129,8 +127,10 @@ class QueryBuilder
      * {@see defaultExpressionBuilders()}
      */
     protected array $expressionBuilders = [];
+    protected string $separator = ' ';
+    private Connection $db;
 
-    public function __construct(ConnectionInterface $db)
+    public function __construct(Connection $db)
     {
         $this->db = $db;
         $this->expressionBuilders = $this->defaultExpressionBuilders();
@@ -1919,10 +1919,7 @@ class QueryBuilder
         return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);
     }
 
-    /**
-     * @return ConnectionInterface|null the database connection.
-     */
-    public function getDb(): ConnectionInterface
+    public function getDb(): Connection
     {
         return $this->db;
     }

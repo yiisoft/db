@@ -10,8 +10,8 @@ namespace Yiisoft\Db\Constraint;
 class ForeignKeyConstraint extends Constraint
 {
     private ?string $foreignSchemaName = null;
-    private $foreignTableName;
-    private $foreignColumnNames;
+    private ?string $foreignTableName;
+    private array $foreignColumnNames;
     private ?string $onUpdate = null;
     private ?string $onDelete = null;
 
@@ -43,7 +43,7 @@ class ForeignKeyConstraint extends Constraint
     /**
      * @param string|null $value referenced table schema name.
      *
-     * @return self
+     * @return $this
      */
     public function foreignSchemaName(?string $value): self
     {
@@ -53,11 +53,11 @@ class ForeignKeyConstraint extends Constraint
     }
 
     /**
-     * @param object|string|null $value referenced table name.
+     * @param string|null $value referenced table name.
      *
-     * @return self
+     * @return $this
      */
-    public function foreignTableName($value): self
+    public function foreignTableName(?string $value): self
     {
         $this->foreignTableName = $value;
 
@@ -65,11 +65,11 @@ class ForeignKeyConstraint extends Constraint
     }
 
     /**
-     * @param array|string $value list of referenced table column names.
+     * @param array $value list of referenced table column names.
      *
-     * @return self
+     * @return $this
      */
-    public function foreignColumnNames($value): self
+    public function foreignColumnNames(array $value): self
     {
         $this->foreignColumnNames = $value;
 
@@ -79,7 +79,7 @@ class ForeignKeyConstraint extends Constraint
     /**
      * @param string|null $value referential action if rows in a referenced table are to be updated.
      *
-     * @return self
+     * @return $this
      */
     public function onUpdate(?string $value): self
     {
@@ -91,7 +91,7 @@ class ForeignKeyConstraint extends Constraint
     /**
      * @param string|null $value referential action if rows in a referenced table are to be deleted.
      *
-     * @return self
+     * @return $this
      */
     public function onDelete(?string $value): self
     {

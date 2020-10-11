@@ -25,7 +25,7 @@ class IndexConstraint extends Constraint
     /**
      * @param bool $value whether the index is unique.
      *
-     * @return self
+     * @return $this
      */
     public function unique(bool $value): self
     {
@@ -37,7 +37,7 @@ class IndexConstraint extends Constraint
     /**
      * @param bool $value whether the index was created for a primary key.
      *
-     * @return self
+     * @return $this
      */
     public function primary(bool $value): self
     {

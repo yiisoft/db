@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -85,16 +85,15 @@ abstract class Schema
      * and ending characters are different.
      */
     protected $columnQuoteCharacter = '"';
-
     private array $schemaNames = [];
     private array $tableNames = [];
     private array $tableMetadata = [];
     private ?QueryBuilder $builder = null;
     private ?string $serverVersion = null;
     private CacheInterface $cache;
-    private ?ConnectionInterface $db = null;
+    private Connection $db;
 
-    public function __construct(ConnectionInterface $db)
+    public function __construct(Connection $db)
     {
         $this->db = $db;
         $this->cache = $this->db->getSchemaCache();
@@ -107,9 +106,9 @@ abstract class Schema
      *
      * @param string $name the table name.
      *
-     * @return void with resolved table, schema, etc. names.
-     *
      * @throws NotSupportedException if this method is not supported by the DBMS.
+     *
+     * @return TableSchema with resolved table, schema, etc. names.
      *
      * {@see \Yiisoft\Db\Schema\TableSchema}
      */
@@ -124,9 +123,9 @@ abstract class Schema
      * This method should be overridden by child classes in order to support this feature because the default
      * implementation simply throws an exception.
      *
-     * @return array all schema names in the database, except system schemas.
-     *
      * @throws NotSupportedException if this method is not supported by the DBMS.
+     *
+     * @return array all schema names in the database, except system schemas.
      */
     protected function findSchemaNames(): array
     {
@@ -141,9 +140,9 @@ abstract class Schema
      *
      * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
      *
-     * @return array all table names in the database. The names have NO schema name prefix.
-     *
      * @throws NotSupportedException if this method is not supported by the DBMS.
+     *
+     * @return array all table names in the database. The names have NO schema name prefix.
      */
     protected function findTableNames(string $schema = ''): array
     {
@@ -895,7 +894,7 @@ abstract class Schema
         );
     }
 
-    public function getDb(): ?ConnectionInterface
+    public function getDb(): Connection
     {
         return $this->db;
     }
