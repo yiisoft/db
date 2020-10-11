@@ -894,6 +894,9 @@ abstract class Schema
         );
     }
 
+    /**
+     * @psalm-return Connection
+     */
     public function getDb(): ConnectionInterface
     {
         return $this->db;

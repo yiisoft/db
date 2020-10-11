@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Query;
 
 use Generator;
 use JsonException;
+use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -1919,6 +1920,9 @@ class QueryBuilder
         return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);
     }
 
+    /**
+     * @psalm-return Connection
+     */
     public function getDb(): ConnectionInterface
     {
         return $this->db;
