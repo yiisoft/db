@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -92,9 +91,9 @@ abstract class Schema
     private ?QueryBuilder $builder = null;
     private ?string $serverVersion = null;
     private CacheInterface $cache;
-    private ConnectionInterface $db;
+    private Connection $db;
 
-    public function __construct(ConnectionInterface $db)
+    public function __construct(Connection $db)
     {
         $this->db = $db;
         $this->cache = $this->db->getSchemaCache();
@@ -895,10 +894,7 @@ abstract class Schema
         );
     }
 
-    /**
-     * @psalm-return Connection
-     */
-    public function getDb(): ConnectionInterface
+    public function getDb(): Connection
     {
         return $this->db;
     }

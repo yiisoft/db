@@ -10,10 +10,8 @@ namespace Yiisoft\Db\Constraint;
 class ForeignKeyConstraint extends Constraint
 {
     private ?string $foreignSchemaName = null;
-    /** @var object|string|null $foreignTableName */
-    private $foreignTableName;
-    /** @var array|string $foreignColumnNames */
-    private $foreignColumnNames;
+    private ?string $foreignTableName;
+    private array $foreignColumnNames;
     private ?string $onUpdate = null;
     private ?string $onDelete = null;
 
@@ -27,7 +25,7 @@ class ForeignKeyConstraint extends Constraint
         return $this->foreignTableName;
     }
 
-    public function getForeignColumnNames()
+    public function getForeignColumnNames(): array
     {
         return $this->foreignColumnNames;
     }
@@ -55,11 +53,11 @@ class ForeignKeyConstraint extends Constraint
     }
 
     /**
-     * @param object|string|null $value referenced table name.
+     * @param string|null $value referenced table name.
      *
      * @return $this
      */
-    public function foreignTableName($value): self
+    public function foreignTableName(?string $value): self
     {
         $this->foreignTableName = $value;
 
@@ -67,11 +65,11 @@ class ForeignKeyConstraint extends Constraint
     }
 
     /**
-     * @param array|string $value list of referenced table column names.
+     * @param array $value list of referenced table column names.
      *
      * @return $this
      */
-    public function foreignColumnNames($value): self
+    public function foreignColumnNames(array $value): self
     {
         $this->foreignColumnNames = $value;
 

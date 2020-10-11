@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Query;
 use Generator;
 use JsonException;
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\Conditions\ConditionInterface;
@@ -129,9 +128,9 @@ class QueryBuilder
      */
     protected array $expressionBuilders = [];
     protected string $separator = ' ';
-    private ConnectionInterface $db;
+    private Connection $db;
 
-    public function __construct(ConnectionInterface $db)
+    public function __construct(Connection $db)
     {
         $this->db = $db;
         $this->expressionBuilders = $this->defaultExpressionBuilders();
@@ -1920,10 +1919,7 @@ class QueryBuilder
         return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);
     }
 
-    /**
-     * @psalm-return Connection
-     */
-    public function getDb(): ConnectionInterface
+    public function getDb(): Connection
     {
         return $this->db;
     }
