@@ -717,14 +717,18 @@ abstract class Schema
      *
      * @return mixed the cache key.
      */
-    protected function getCacheKey($name)
+    protected function getCacheKey(string $name)
     {
-        return [
+        $key = [
             __CLASS__,
             $this->db->getDsn(),
             $this->db->getUsername(),
-            $this->getRawTableName($name),
+            $this->getRawTableName($name)
         ];
+
+        $jsonKey = json_encode($key);
+
+        return md5($jsonKey);
     }
 
     /**
