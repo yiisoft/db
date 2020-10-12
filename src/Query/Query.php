@@ -1477,14 +1477,14 @@ PATTERN;
         return $this;
     }
 
-    public function setJoin($value): self
+    public function setJoin(array $value): self
     {
         $this->join = $value;
 
         return $this;
     }
 
-    public function setUnion($value): self
+    public function setUnion(array $value): self
     {
         $this->union = $value;
 

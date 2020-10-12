@@ -226,7 +226,7 @@ abstract class DataProvider implements DataProviderInterface
      *
      * @param string $value
      *
-     * @return Widget
+     * @return $this
      */
     public function id(string $value): self
     {
@@ -241,7 +241,7 @@ abstract class DataProvider implements DataProviderInterface
      */
     public static function counterId(int $value): void
     {
-        self::$counterId = $value;
+        self::$counter = $value;
     }
 
     /**
@@ -266,7 +266,7 @@ abstract class DataProvider implements DataProviderInterface
     protected function getId(): ?string
     {
         if ($this->autoGenerate && $this->id === null) {
-            $this->id = $this->autoIdPrefix . ++self::$counterId;
+            $this->id = $this->autoIdPrefix . ++self::$counter;
         }
 
         return $this->id;
