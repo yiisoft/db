@@ -1808,7 +1808,7 @@ class QueryBuilder
      *
      * {@see ConditionInterface|ConditionInterface} according to {@see conditionClasses} map.
      */
-    public function createConditionFromArray($condition): ConditionInterface
+    public function createConditionFromArray(array $condition): ConditionInterface
     {
         /** operator format: operator, operand 1, operand 2, ... */
         if (isset($condition[0])) {
@@ -1859,7 +1859,7 @@ class QueryBuilder
      *
      * @return bool|array
      */
-    protected function extractAlias($table)
+    protected function extractAlias(string $table)
     {
         if (preg_match('/^(.*?)(?i:\s+as|)\s+([^ ]+)$/', $table, $matches)) {
             return $matches;
@@ -1894,7 +1894,7 @@ class QueryBuilder
         return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);
     }
 
-    public function buildWithQueries($withs, &$params): string
+    public function buildWithQueries(array $withs, array &$params): string
     {
         if (empty($withs)) {
             return '';

@@ -13,7 +13,6 @@ use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -177,7 +176,7 @@ abstract class Connection implements ConnectionInterface
     private bool $enableSchemaCache = true;
     private int $schemaCacheDuration = 3600;
     private array $schemaCacheExclude = [];
-    private ?CacheInterface $schemaCache = null;
+    private ?CacheInterface $schemaCache;
     private bool $enableQueryCache = true;
     private ?CacheInterface $queryCache = null;
     private ?string $charset = null;
@@ -197,8 +196,8 @@ abstract class Connection implements ConnectionInterface
     private array $quotedColumnNames = [];
     private ?Connection $master = null;
     private ?Connection $slave = null;
-    private ?LoggerInterface $logger = null;
-    private ?Profiler $profiler = null;
+    private LoggerInterface $logger;
+    private Profiler $profiler;
     private ?Transaction $transaction = null;
     private ?Schema $schema = null;
 
@@ -216,8 +215,7 @@ abstract class Connection implements ConnectionInterface
      * @param string|null $sql the SQL statement to be executed
      * @param array $params the parameters to be bound to the SQL statement
      *
-     * @throws Exception
-     * @throws InvalidConfigException
+     * @throws Exception|InvalidConfigException
      *
      * @return Command the DB command
      */
@@ -264,7 +262,7 @@ abstract class Connection implements ConnectionInterface
         $this->transaction = null;
 
         if (strncmp($this->dsn, 'sqlite::memory:', 15) !== 0) {
-            /* reset PDO connection, unless its sqlite in-memory, which can only have one connection */
+            /** reset PDO connection, unless its sqlite in-memory, which can only have one connection */
             $this->pdo = null;
         }
     }
@@ -296,9 +294,7 @@ abstract class Connection implements ConnectionInterface
      *
      * {@see Transaction::begin()} for details.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
+     * @throws Exception|InvalidConfigException|NotSupportedException
      *
      * @return Transaction the transaction initiated
      */
@@ -336,21 +332,21 @@ abstract class Connection implements ConnectionInterface
      *
      * @param callable $callable a PHP callable that contains DB queries which will make use of query cache.
      * The signature of the callable is `function (Connection $db)`.
-     * @param int $duration the number of seconds that query results can remain valid in the cache. If this is not set,
-     * the value of {@see queryCacheDuration} will be used instead. Use 0 to indicate that the cached data will never
-     * expire.
-     * @param Dependency $dependency the cache dependency associated with the cached query
+     * @param int|null $duration the number of seconds that query results can remain valid in the cache. If this is not
+     * set, the value of {@see queryCacheDuration} will be used instead. Use 0 to indicate that the cached data will
+     * never expire.
+     * @param Dependency|null $dependency the cache dependency associated with the cached query
      * results.
+     *
+     * @throws Throwable if there is any exception during query
      *
      * @return mixed the return result of the callable
      *
      * {@see setEnableQueryCache()}
      * {@see queryCache}
      * {@see noCache()}
-     *@throws Throwable if there is any exception during query
-     *
      */
-    public function cache(callable $callable, $duration = null, $dependency = null)
+    public function cache(callable $callable, ?int $duration = null, ?Dependency $dependency = null)
     {
         $this->queryCacheInfo[] = [$duration ?? $this->queryCacheDuration, $dependency];
 
@@ -535,7 +531,7 @@ abstract class Connection implements ConnectionInterface
      *
      * @return array|null the current query cache information, or null if query cache is not enabled.
      */
-    public function getQueryCacheInfo(?int $duration, ?Dependency $dependency): ?array
+    public function getQueryCacheInfo(?int $duration, ?Dependency $dependency = null): ?array
     {
         $result = null;
 
@@ -622,13 +618,12 @@ abstract class Connection implements ConnectionInterface
      *
      * @param bool $fallbackToMaster whether to return a master PDO in case none of the slave connections is available.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
+     * @throws Exception|InvalidConfigException
      *
      * @return PDO the PDO instance for the currently active slave connection. `null` is returned if no slave connection
      * is available and `$fallbackToMaster` is false.
      */
-    public function getSlavePdo(bool $fallbackToMaster = true): PDO
+    public function getSlavePdo(bool $fallbackToMaster = true): ?PDO
     {
         $db = $this->getSlave(false);
 
@@ -652,7 +647,7 @@ abstract class Connection implements ConnectionInterface
      *
      * @return TableSchema
      */
-    public function getTableSchema($name, $refresh = false): ?TableSchema
+    public function getTableSchema(string $name, $refresh = false): ?TableSchema
     {
         return $this->getSchema()->getTableSchema($name, $refresh);
     }
@@ -721,8 +716,7 @@ abstract class Connection implements ConnectionInterface
      *
      * It does nothing if a DB connection has already been established.
      *
-     * @throws Exception
-     * @throws InvalidConfigException if connection fails
+     * @throws Exception|InvalidConfigException if connection fails
      */
     public function open()
     {
@@ -773,7 +767,7 @@ abstract class Connection implements ConnectionInterface
                 $this->logger->log(LogLevel::ERROR, $token);
             }
 
-            throw new Exception($e->getMessage(), $e->errorInfo, (string) $e->getCode(), $e);
+            throw new Exception($e->getMessage(), $e->errorInfo, $e);
         }
     }
 
@@ -830,7 +824,7 @@ abstract class Connection implements ConnectionInterface
                 $transaction->rollBack();
             } catch (Exception $e) {
                 $this->logger->log(LogLevel::ERROR, $e, [__METHOD__]);
-                /* hide this exception to be able to continue throwing original exception outside */
+                /** hide this exception to be able to continue throwing original exception outside */
             }
         }
     }
@@ -843,8 +837,6 @@ abstract class Connection implements ConnectionInterface
      * Connections will be tried in random order.
      *
      * @param array $pool the list of connection configurations in the server pool
-     *
-     * @throws InvalidConfigException
      *
      * @return Connection|null the opened DB connection, or `null` if no server is available
      */
@@ -864,8 +856,6 @@ abstract class Connection implements ConnectionInterface
      *
      * @param array $pool
      *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *
      * @return Connection|null the opened DB connection, or `null` if no server is available
      */
     protected function openFromPoolSequentially(array $pool): ?Connection
@@ -880,8 +870,9 @@ abstract class Connection implements ConnectionInterface
 
             $key = [__METHOD__, $db->getDsn()];
 
+            /** @psalm-suppress InvalidArgument */
             if ($this->schemaCache instanceof CacheInterface && $this->schemaCache->get($key)) {
-                /* should not try this dead server now */
+                /** should not try this dead server now */
                 continue;
             }
 
@@ -898,13 +889,15 @@ abstract class Connection implements ConnectionInterface
                 }
 
                 if ($this->schemaCache instanceof CacheInterface) {
-                    /* mark this server as dead and only retry it after the specified interval */
+                    /** mark this server as dead and only retry it after the specified interval */
                     $this->schemaCache->set($key, 1, $this->serverRetryInterval);
                 }
 
                 return null;
             }
         }
+
+        return null;
     }
 
     /**
@@ -920,11 +913,8 @@ abstract class Connection implements ConnectionInterface
      */
     public function quoteColumnName(string $name): string
     {
-        if (isset($this->quotedColumnNames[$name])) {
-            return $this->quotedColumnNames[$name];
-        }
-
-        return $this->quotedColumnNames[$name] = $this->getSchema()->quoteColumnName($name);
+        return $this->quotedColumnNames[$name]
+            ?? ($this->quotedColumnNames[$name] = $this->getSchema()->quoteColumnName($name));
     }
 
     /**
@@ -966,11 +956,8 @@ abstract class Connection implements ConnectionInterface
      */
     public function quoteTableName(string $name): string
     {
-        if (isset($this->quotedTableNames[$name])) {
-            return $this->quotedTableNames[$name];
-        }
-
-        return $this->quotedTableNames[$name] = $this->getSchema()->quoteTableName($name);
+        return $this->quotedTableNames[$name]
+            ?? ($this->quotedTableNames[$name] = $this->getSchema()->quoteTableName($name));
     }
 
     /**
@@ -1013,7 +1000,7 @@ abstract class Connection implements ConnectionInterface
      * The same applies for if you're using GBK or BIG5 charset with MySQL, then it's highly recommended to specify
      * charset via {@see dsn} like `'mysql:dbname=mydatabase;host=127.0.0.1;charset=GBK;'`.
      *
-     * @param string $value
+     * @param string|null $value
      *
      * @return void
      */
@@ -1230,7 +1217,7 @@ abstract class Connection implements ConnectionInterface
     /**
      * The cache object or the ID of the cache application component that is used to cache the table metadata.
      *
-     * @param $value
+     * @param CacheInterface $value
      *
      * @return void
      *

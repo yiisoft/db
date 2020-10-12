@@ -67,7 +67,7 @@ interface ConnectionInterface
      *
      * @return TableSchema|null
      */
-    public function getTableSchema($name, $refresh = false): ?TableSchema;
+    public function getTableSchema(string $name, $refresh = false): ?TableSchema;
 
     /**
      * Whether to enable read/write splitting by using {@see setSlaves()} to read data. Note that if {@see setSlaves()}

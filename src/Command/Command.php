@@ -9,7 +9,6 @@ use PDOException;
 use PDOStatement;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use Psr\SimpleCache\InvalidArgumentException;
 use Throwable;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
@@ -88,9 +87,9 @@ class Command
     protected array $params = [];
     private ConnectionInterface $db;
     private int $fetchMode = PDO::FETCH_ASSOC;
-    private ?LoggerInterface $logger = null;
+    private LoggerInterface $logger;
     private ?PDOStatement $pdoStatement = null;
-    private ?Profiler $profiler = null;
+    private Profiler $profiler;
     private ?int $queryCacheDuration = null;
 
     /**
@@ -305,7 +304,7 @@ class Command
             $message = $e->getMessage() . "\nFailed to prepare SQL: $sql";
             $errorInfo = $e instanceof PDOException ? $e->errorInfo : null;
 
-            throw new Exception($message, $errorInfo, (string) $e->getCode(), $e);
+            throw new Exception($message, $errorInfo, $e);
         }
     }
 
@@ -447,7 +446,7 @@ class Command
      * This method is for executing a SQL query that returns result set, such as `SELECT`.
      *
      * @throws Throwable
-     * @throws Exception|InvalidArgumentException execution failed.
+     * @throws Exception execution failed.
      *
      * @return DataReader the reader object for fetching the query result.
      */
@@ -464,7 +463,7 @@ class Command
      * modes. If this parameter is null, the value set in {@see fetchMode} will be used.
      *
      * @throws Throwable
-     * @throws Exception|InvalidArgumentException execution failed.
+     * @throws Exception execution failed.
      *
      * @return array all rows of the query result. Each array element is an array representing a row of data. An empty
      * array is returned if the query results in nothing.
@@ -484,8 +483,7 @@ class Command
      * Please refer to [PHP manual](http://php.net/manual/en/pdostatement.setfetchmode.php)
      * for valid fetch modes. If this parameter is null, the value set in {@see fetchMode} will be used.
      *
-     * @throws Throwable
-     * @throws Exception|InvalidArgumentException execution failed.
+     * @throws Throwable|Exception execution failed.
      *
      * @return array|false the first row (in terms of an array) of the query result. False is returned if the query
      * results in nothing.
@@ -500,9 +498,10 @@ class Command
      *
      * This method is best used when only a single value is needed for a query.
      *
+     * @throws Exception|Throwable failed.
+     *
      * @return string|null|false the value of the first column in the first row of the query result. False is returned
      * if there is no value.
-     * @throws Exception|Throwable|InvalidArgumentException failed.
      */
     public function queryScalar()
     {
@@ -521,7 +520,7 @@ class Command
      * This method is best used when only the first column of result (i.e. the first element in each row) is needed for
      * a query.
      *
-     * @throws Exception|InvalidArgumentException|Throwable execution failed.
+     * @throws Exception|Throwable execution failed.
      *
      * @return array the first column of the query result. Empty array is returned if the query results in nothing.
      */
@@ -1309,9 +1308,7 @@ class Command
      * modes. If this parameter is null, the value set in {@see fetchMode} will be used.
      *
      *
-     * @throws Throwable
-     * @throws InvalidArgumentException
-     * @throws Exception if the query causes any problem.
+     * @throws Throwable|Exception if the query causes any problem.
      *
      * @return mixed the method execution result.
      */
@@ -1486,8 +1483,7 @@ class Command
      *
      * @param string|null $rawSql the rawSql if it has been created.
      *
-     * @throws Exception
-     * @throws Throwable
+     * @throws Exception|Throwable
      */
     protected function internalExecute(?string $rawSql): void
     {
