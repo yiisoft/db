@@ -1401,10 +1401,18 @@ class Command
      */
     protected function getCacheKey(string $method, ?int $fetchMode, string $rawSql): string
     {
-        $key = __CLASS__ . '::' . $method . ':' . $fetchMode . ':' . $this->db->getDsn() . ':' .
-            $this->db->getUsername() . ':' . $rawSql;
+        $key = [
+            __CLASS__,
+            $method,
+            $fetchMode,
+            $this->db->getDsn(),
+            $this->db->getUsername(),
+            $rawSql
+        ];
 
-        return ctype_alnum($key) && mb_strlen($key, '8bit') <= 32 ? $key : md5($key);
+        $jsonKey = json_encode($key);
+
+        return md5($jsonKey);
     }
 
     /**

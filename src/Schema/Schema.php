@@ -719,10 +719,16 @@ abstract class Schema
      */
     protected function getCacheKey(string $name)
     {
-        $key = __CLASS__ . ':' . $this->db->getDsn() . ':' . $this->db->getUsername() . ':' .
-            $this->getRawTableName($name);
+        $key = [
+            __CLASS__,
+            $this->db->getDsn(),
+            $this->db->getUsername(),
+            $this->getRawTableName($name)
+        ];
 
-        return ctype_alnum($key) && mb_strlen($key, '8bit') <= 32 ? $key : md5($key);
+        $jsonKey = json_encode($key);
+
+        return md5($jsonKey);
     }
 
     /**
