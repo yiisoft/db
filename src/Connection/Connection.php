@@ -868,9 +868,8 @@ abstract class Connection implements ConnectionInterface
             /* @var $db Connection */
             $db = DatabaseFactory::createClass($config);
 
-            $key = [__METHOD__, $db->getDsn()];
+            $key = $this->getCacheKey(__METHOD__ . '::' . $db->getDsn());
 
-            /** @psalm-suppress InvalidArgument */
             if ($this->schemaCache instanceof CacheInterface && $this->schemaCache->get($key)) {
                 /** should not try this dead server now */
                 continue;
@@ -1407,5 +1406,10 @@ abstract class Connection implements ConnectionInterface
         }
 
         return $result;
+    }
+
+    private function getCacheKey(string $key): string
+    {
+        return ctype_alnum($key) && mb_strlen($key, '8bit') <= 32 ? $key : md5($key);
     }
 }

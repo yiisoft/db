@@ -1397,18 +1397,14 @@ class Command
      * fetch modes.
      * @param string $rawSql the raw SQL with parameter values inserted into the corresponding placeholders.
      *
-     * @return array the cache key.
+     * @return string the cache key.
      */
-    protected function getCacheKey(string $method, ?int $fetchMode, string $rawSql): array
+    protected function getCacheKey(string $method, ?int $fetchMode, string $rawSql): string
     {
-        return [
-            __CLASS__,
-            $method,
-            $fetchMode,
-            $this->db->getDsn(),
-            $this->db->getUsername(),
-            $rawSql,
-        ];
+        $key = __CLASS__ . '::' . $method . ':' . $fetchMode . ':' . $this->db->getDsn() . ':' .
+            $this->db->getUsername() . ':' . $rawSql;
+
+        return ctype_alnum($key) && mb_strlen($key, '8bit') <= 32 ? $key : md5($key);
     }
 
     /**
