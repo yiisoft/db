@@ -6,10 +6,11 @@ on:
 
 jobs:
   mutation:
-    name: PHP ${{ matrix.php-version }}-${{ matrix.os }}
+    name: PHP ${{ matrix.php }}-${{ matrix.os }}
 
     env:
       COMPOSER_ROOT_VERSION: "dev-master"
+      extensions: dom, json, libxml, mbstring, pdo, pdo_mysql, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.9.0preview1, tokenizer
 
     runs-on: ${{ matrix.os }}
 
@@ -18,7 +19,7 @@ jobs:
         os:
           - ubuntu-latest
 
-        php-version:
+        php:
           - "7.4"
 
     steps:
@@ -28,7 +29,7 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "${{ matrix.php-version }}"
+          php-version: "${{ matrix.php }}"
           extensions: ${{ env.extensions }}
           tools: composer:v2, cs2pr
           coverage: pcov
@@ -40,12 +41,12 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ${{ env.COMPOSER_CACHE_DIR }}
-          key: php${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.json') }}
+          key: php${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: |
-            php${{ matrix.php-version }}-composer-
+            php${{ matrix.php }}-composer-
 
       - name: Install dependencies with composer
-        run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader
+        run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Static analysis with psalm
         run: vendor/bin/psalm --shepherd --stats --output-format=checkstyle | cs2pr --graceful-warnings --colorize
