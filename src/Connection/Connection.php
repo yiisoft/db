@@ -535,7 +535,7 @@ abstract class Connection implements ConnectionInterface
     public function getQueryCacheProxy(): ?QueryCacheProxy
     {
         if ($this->enableQueryCache) {
-            return end($this->queryCacheInfo);
+            return end($this->queryCacheInfo) ?: null;
         }
         return null;
     }
