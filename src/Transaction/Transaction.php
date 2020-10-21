@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Transaction;
 
+use PDOException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Yiisoft\Db\Connection\Connection;
@@ -199,6 +200,8 @@ class Transaction
 
     /**
      * Rolls back a transaction.
+     *
+     * @throws PDOException
      */
     public function rollBack(): void
     {

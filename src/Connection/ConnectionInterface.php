@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Connection;
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Query\QueryCacheProxy;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchema;
 
@@ -23,7 +24,7 @@ interface ConnectionInterface
      *
      * @return Command the DB command
      */
-    public function createCommand(?string $sql = null, array $params = []): Command;
+    public function createCommand(string $sql = null, array $params = []): Command;
 
     /**
      * Returns the name of the DB driver.
@@ -78,4 +79,14 @@ interface ConnectionInterface
      * @return void
      */
     public function setEnableSlaves(bool $value): void;
+
+    public function isLoggingEnabled(): bool;
+
+    public function isProfilingEnabled(): bool;
+
+    public function isQueryCacheEnabled(): bool;
+
+    public function getQueryCacheProxy(): ?QueryCacheProxy;
+
+    public function isSchemaCacheEnabled(): bool;
 }
