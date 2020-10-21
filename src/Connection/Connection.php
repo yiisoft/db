@@ -584,7 +584,7 @@ abstract class Connection implements ConnectionInterface
         if (!$this->enableSlaves) {
             return $fallbackToMaster ? $this : null;
         }
-        if (!$this->slave === null) {
+        if ($this->slave === null) {
             $this->slave = $this->openFromPool($this->slaves);
         }
         return $this->slave === null && $fallbackToMaster ? $this : $this->slave;
