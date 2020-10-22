@@ -6,9 +6,9 @@ namespace Yiisoft\Db\Helper;
 
 final class Dsn
 {
-    private ?string $dbname;
+    private string $dbname;
     private string $driver;
-    private ?string $host;
+    private string $host;
     private ?string $port;
     private array $options;
 
@@ -30,13 +30,13 @@ final class Dsn
      *
      * ```php
      * $dsn = new Dsn('mysql', '127.0.0.1', 'yiitest', '3306');
-     * $connection = new Connection($this->cache, $this->logger, $this->profiler, $dsn->getDsn());
+     * $connection = new Connection($this->cache, $this->logger, $this->profiler, (string)$dsn);
      * ```
      *
      * Will result in the DSN string `mysql:host=127.0.0.1;dbname=yiitest;port=3306`.
      */
 
-    public function getDsn(): string
+    public function __toString(): string
     {
         $dsn = "$this->driver:" . "host=$this->host" . ';' . "dbname=$this->dbname";
 
@@ -55,10 +55,5 @@ final class Dsn
         }
 
         return $dsn;
-    }
-
-    public function getDriver(): string
-    {
-        return $this->driver;
     }
 }
