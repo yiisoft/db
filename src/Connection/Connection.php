@@ -126,7 +126,7 @@ use function is_array;
  * },
  * ```
  *
- * The {@see dsn} property can be defined via configuration {@see \Yiisoft\Db\Helper\Dsn}:
+ * The {@see dsn} property can be defined via configuration {@see \Yiisoft\Db\Connection\Dsn}:
  *
  * ```php
  * Connection::class => static function (ContainerInterface $container) {
