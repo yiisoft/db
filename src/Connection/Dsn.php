@@ -30,18 +30,24 @@ final class Dsn
      *
      * ```php
      * $dsn = new Dsn('mysql', '127.0.0.1', 'yiitest', '3306');
-     * $connection = new Connection($this->cache, $this->logger, $this->profiler, $dsn->getDsn());
+     * $connection = new Connection($this->cache, $this->logger, $this->profiler, $dsn->asString());
+     * ```
+     *
+     * With autowired container-di:
+     *
+     * ```php
+     * $dsn = new Dsn('mysql', '127.0.0.1', 'yiitest', '3306');
+     * $connection = new Connection('dsn' => $dsn->asString());
      * ```
      *
      * Will result in the DSN string `mysql:host=127.0.0.1;dbname=yiitest;port=3306`.
      */
-
     public function asString(): string
     {
-        $dsn = "$this->driver:" . "host=$this->host" . ';' . "dbname=$this->databaseName";
-
-        if ($this->port !== null) {
-            $dsn .= ';' . "port=$this->port";
+        if ($this->driver === 'sqlsrv') {
+            $dsn = $this->buildDsnSqlSrv();
+        } else {
+            $dsn = $this->buildDsn();
         }
 
         $parts = [];
@@ -65,5 +71,27 @@ final class Dsn
     public function getDriver(): string
     {
         return $this->driver;
+    }
+
+    private function buildDsn(): string
+    {
+        $dsn = "$this->driver:" . "host=$this->host" . ';' . "dbname=$this->databaseName";
+
+        if ($this->port !== null) {
+            $dsn .= ';' . "port=$this->port";
+        }
+
+        return $dsn;
+    }
+
+    private function buildDsnSqlSrv(): string
+    {
+        $dsn = "$this->driver:" . "Server=$this->host" . ";Database=$this->databaseName";
+
+        if ($this->port !== null) {
+            $dsn = "$this->driver:" . "Server=$this->host," . "$this->port" . ";Database=$this->databaseName";
+        }
+
+        return $dsn;
     }
 }
