@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Helper;
+namespace Yiisoft\Db\Connection;
 
 final class Dsn
 {
-    private ?string $dbname;
+    private ?string $databaseName;
     private string $driver;
     private ?string $host;
     private ?string $port;
     private array $options;
 
-    public function __construct(string $driver, string $host, string $dbname, string $port = null, array $options = [])
+    public function __construct(string $driver, string $host, string $databaseName, string $port = null, array $options = [])
     {
         $this->driver = $driver;
         $this->host = $host;
-        $this->dbname = $dbname;
+        $this->databaseName = $databaseName;
         $this->port = $port;
         $this->options = $options;
     }
@@ -36,9 +36,9 @@ final class Dsn
      * Will result in the DSN string `mysql:host=127.0.0.1;dbname=yiitest;port=3306`.
      */
 
-    public function getDsn(): string
+    public function asString(): string
     {
-        $dsn = "$this->driver:" . "host=$this->host" . ';' . "dbname=$this->dbname";
+        $dsn = "$this->driver:" . "host=$this->host" . ';' . "dbname=$this->databaseName";
 
         if ($this->port !== null) {
             $dsn .= ';' . "port=$this->port";
@@ -51,10 +51,15 @@ final class Dsn
         }
 
         if (!empty($parts)) {
-            $dsn . ';' . implode(';', $parts);
+            $dsn .= ';' . implode(';', $parts);
         }
 
         return $dsn;
+    }
+
+    public function __toString(): string
+    {
+        return $this->asString();
     }
 
     public function getDriver(): string
