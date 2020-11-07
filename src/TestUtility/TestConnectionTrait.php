@@ -69,19 +69,19 @@ trait TestConnectionTrait
     {
         $db = $this->getConnection(true);
 
-        $transaction = $db->beginTransaction(Transaction::READ_UNCOMMITTED);
+        $transaction = $db->beginTransaction(Transaction::LEVEL_READ_UNCOMMITTED);
 
         $transaction->commit();
 
-        $transaction = $db->beginTransaction(Transaction::READ_COMMITTED);
+        $transaction = $db->beginTransaction(Transaction::LEVEL_READ_COMMITTED);
 
         $transaction->commit();
 
-        $transaction = $db->beginTransaction(Transaction::REPEATABLE_READ);
+        $transaction = $db->beginTransaction(Transaction::LEVEL_REPEATABLE_READ);
 
         $transaction->commit();
 
-        $transaction = $db->beginTransaction(Transaction::SERIALIZABLE);
+        $transaction = $db->beginTransaction(Transaction::LEVEL_SERIALIZABLE);
 
         $transaction->commit();
 
@@ -96,7 +96,7 @@ trait TestConnectionTrait
         $result = $db->transaction(static function (ConnectionInterface $db) {
             $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
             return true;
-        }, Transaction::READ_UNCOMMITTED);
+        }, Transaction::LEVEL_READ_UNCOMMITTED);
 
         $this->assertTrue($result, 'transaction shortcut valid value should be returned from callback');
 
@@ -132,7 +132,7 @@ trait TestConnectionTrait
         $result = $db->transaction(static function (ConnectionInterface $db) {
             $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
             return true;
-        }, Transaction::READ_UNCOMMITTED);
+        }, Transaction::LEVEL_READ_UNCOMMITTED);
 
         $this->assertTrue($result, 'transaction shortcut valid value should be returned from callback');
 
