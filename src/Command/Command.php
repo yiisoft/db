@@ -9,8 +9,8 @@ use PDOException;
 use PDOStatement;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Psr\SimpleCache\InvalidArgumentException;
 use Throwable;
-use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Data\DataReader;
@@ -18,6 +18,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryCacheProxy;
 use Yiisoft\Profiler\Profiler;
 
 use function array_map;
@@ -30,6 +31,7 @@ use function is_bool;
 use function is_object;
 use function is_resource;
 use function is_string;
+use function md5;
 use function stream_get_contents;
 use function strncmp;
 use function strtr;
@@ -1308,37 +1310,20 @@ class Command
      * modes. If this parameter is null, the value set in {@see fetchMode} will be used.
      *
      *
-     * @throws Throwable|Exception if the query causes any problem.
+     * @throws Throwable|Exception|InvalidArgumentException if the query causes any problem.
      *
      * @return mixed the method execution result.
      */
     protected function queryInternal(string $method, $fetchMode = null)
     {
-        [$profile, $rawSql] = $this->logQuery('\Yiisoft\Db\Command\Command::query');
+        [$profile, $rawSql] = $this->logQuery(__CLASS__ . '::query');
 
         if ($method !== '') {
-            $info = $this->db->getQueryCacheInfo($this->queryCacheDuration, $this->queryCacheDependency);
-
-            if (is_array($info)) {
-                /* @var $cache CacheInterface */
-                $cache = $info[0];
-                $rawSql = $rawSql ?: $this->getRawSql();
-                $cacheKey = $this->getCacheKey($method, $fetchMode, $rawSql);
-
-
-                $result = $cache->get($cacheKey);
-
-                if (is_array($result) && isset($result[0])) {
-                    if ($this->db->isLoggingEnabled()) {
-                        $this->logger->log(
-                            LogLevel::DEBUG,
-                            'Query result served from cache',
-                            ['\Yiisoft\Db\Command\Command::query']
-                        );
-                    }
-
-                    return $result[0];
-                }
+            $cache = $this->db->getQueryCacheProxy();
+            $rawSql = $rawSql ?: $this->getRawSql();
+            $cacheKey = $this->getCacheKey($method, $fetchMode, $rawSql);
+            if ($cache !== null && ($result = $this->fetchQueryResultFromCache($cache, $cacheKey)) !== null) {
+                return $result;
             }
         }
 
@@ -1346,7 +1331,7 @@ class Command
 
         try {
             if ($this->db->isProfilingEnabled()) {
-                $this->profiler->begin((string) $rawSql, ['\Yiisoft\Db\Command\Command::query']);
+                $this->profiler->begin((string) $rawSql, [__CLASS__ . '::query']);
             }
 
             $this->internalExecute($rawSql);
@@ -1364,28 +1349,86 @@ class Command
             }
 
             if ($this->db->isProfilingEnabled()) {
-                $this->profiler->end((string) $rawSql, ['\Yiisoft\Db\Command\Command::query']);
+                $this->profiler->end((string) $rawSql, [__CLASS__ . '::query']);
             }
         } catch (Exception $e) {
             if ($this->db->isProfilingEnabled()) {
-                $this->profiler->end((string) $rawSql, ['\Yiisoft\Db\Command\Command::query']);
+                $this->profiler->end((string) $rawSql, [__CLASS__ . '::query']);
             }
-
             throw $e;
         }
 
-        if (isset($cache, $cacheKey, $info)) {
-            $cache->set($cacheKey, [$result], $info[1], $info[2]);
+        if (isset($cache, $cacheKey)) {
+            $this->storeQueryResultToCache($cache, $cacheKey, $result);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param QueryCacheProxy $cache
+     * @param string $cacheKey
+     * @return mixed
+     * @throws InvalidArgumentException
+     */
+    protected function fetchQueryResultFromCache(QueryCacheProxy $cache, string $cacheKey)
+    {
+        try {
+            $result = $cache->get($cacheKey);
+        } catch (Throwable $e) {
+            if ($this->db->isLoggingEnabled()) {
+                $this->logger->log(
+                    LogLevel::WARNING,
+                    'Error query result served from cache (exception).',
+                    [__CLASS__ . '::query', $cacheKey]
+                );
+            }
+            return null;
+        }
+        if (!is_array($result) || !isset($result[0])) {
+            if ($this->db->isLoggingEnabled()) {
+                $this->logger->log(
+                    LogLevel::WARNING,
+                    'Error query result served from cache (bad data structure).',
+                    [__CLASS__ . '::query', $cacheKey]
+                );
+            }
+            return null;
+        }
+        if ($this->db->isLoggingEnabled()) {
+            $this->logger->log(
+                LogLevel::DEBUG,
+                'Query result served from cache',
+                [__CLASS__ . '::query', $cacheKey]
+            );
+        }
+        return $result[0];
+    }
+
+    /**
+     * @param QueryCacheProxy $cache
+     * @param string $cacheKey
+     * @param $result
+     */
+    protected function storeQueryResultToCache(QueryCacheProxy $cache, string $cacheKey, $result): void
+    {
+        if ($cache->set($cacheKey, [$result], $this->queryCacheDuration, $this->queryCacheDependency)) {
             if ($this->db->isLoggingEnabled()) {
                 $this->logger->log(
                     LogLevel::DEBUG,
                     'Saved query result in cache',
-                    ['\Yiisoft\Db\Command\Command::query']
+                    [__CLASS__ . '::query']
+                );
+            }
+        } else {
+            if ($this->db->isLoggingEnabled()) {
+                $this->logger->log(
+                    LogLevel::WARNING,
+                    'Cannot saved query result in cache',
+                    [__CLASS__ . '::query']
                 );
             }
         }
-
-        return $result;
     }
 
     /**
