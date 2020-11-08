@@ -454,7 +454,21 @@ abstract class Connection implements ConnectionInterface
      *
      * @return Connection the currently active master connection. `null` is returned if there is no master available.
      */
-    public function getMaster(): ?Connection
+    public function getMaster(): Connection
+    {
+        return $this->master ?? $this;
+    }
+
+    /**
+     * Returns the master connection from pool.
+     *
+     * If this method is called for the first time, it will try to open a master connection.
+     *
+     * @throws InvalidConfigException
+     *
+     * @return Connection the currently active master connection. `null` is returned if there is no master available.
+     */
+    public function getMasterFromPool(): ?Connection
     {
         if ($this->master === null) {
             $this->master = $this->shuffleMasters
@@ -583,20 +597,6 @@ abstract class Connection implements ConnectionInterface
         return $this->getSchema()->getServerVersion();
     }
 
-    /**
-     * Returns the currently active slave connection.
-     *
-     * If this method is called for the first time, it will try to open a slave connection when {@see setEnableSlaves()}
-     * is true.
-     *
-     * @param bool $fallbackToMaster whether to return a master connection in case there is no slave connection
-     * available.
-     *
-     * @throws InvalidConfigException
-     *
-     * @return Connection the currently active slave connection. `null` is returned if there is no slave available and
-     * `$fallbackToMaster` is false.
-     */
     public function getSlave(bool $fallbackToMaster = true): ?Connection
     {
         if (!$this->enableSlaves) {
@@ -725,7 +725,7 @@ abstract class Connection implements ConnectionInterface
         }
 
         if (!empty($this->masters)) {
-            $db = $this->getMaster();
+            $db = $this->getMasterFromPool();
 
             if ($db !== null) {
                 $this->pdo = $db->getPDO();
@@ -1369,43 +1369,19 @@ abstract class Connection implements ConnectionInterface
         return $result;
     }
 
-    /**
-     * Executes the provided callback by using the master connection.
-     *
-     * This method is provided so that you can temporarily force using the master connection to perform DB operations
-     * even if they are read queries. For example,
-     *
-     * ```php
-     * $result = $db->useMaster(function ($db) {
-     *     return $db->createCommand('SELECT * FROM user LIMIT 1')->queryOne();
-     * });
-     * ```
-     *
-     * @param callable $callback a PHP callable to be executed by this method. Its signature is
-     * `function (Connection $db)`. Its return value will be returned by this method.
-     *
-     * @throws Throwable if there is any exception thrown from the callback
-     *
-     * @return mixed the return value of the callback
-     */
-    public function useMaster(callable $callback)
+    public function useMaster(callable $callback, ...$params)
     {
-        if ($this->enableSlaves) {
-            $this->enableSlaves = false;
-
-            try {
-                $result = $callback($this);
-            } catch (Throwable $e) {
-                $this->enableSlaves = true;
-
-                throw $e;
-            }
-            $this->enableSlaves = true;
-        } else {
-            $result = $callback($this);
+        if (!$this->enableSlaves) {
+            return $callback($this, ...$params);
         }
 
-        return $result;
+        try {
+            $this->enableSlaves = false;
+
+            return $callback($this, ...$params);
+        } finally {
+            $this->enableSlaves = true;
+        }
     }
 
     private function getCacheKey(array $key): string
@@ -1413,5 +1389,45 @@ abstract class Connection implements ConnectionInterface
         $jsonKey = json_encode($key);
 
         return md5($jsonKey);
+    }
+
+    public function getDual(): self
+    {
+        return $this;
+    }
+
+    public function isTransactionEnabled(): bool
+    {
+        return true;
+    }
+
+    public function noUseCache(callable $callback, ...$params)
+    {
+        return $this->noCache(fn () => $callback($this, ...$params));
+    }
+
+    public function useCache(callable $callback, int $duration = null, Dependency $dependency = null, array $params = [])
+    {
+        return $this->cache(fn () => $callback($this, ...$params), $duration, $dependency);
+    }
+
+    public function useDual(callable $callback, ...$params)
+    {
+        if ($this->enableSlaves) {
+            return $callback($this, ...$params);
+        }
+
+        try {
+            $this->enableSlaves = true;
+
+            return $callback($this, ...$params);
+        } finally {
+            $this->enableSlaves = false;
+        }
+    }
+
+    public function useTransaction(callable $callback, $isolationLevel = null, array $params = [])
+    {
+        $this->transaction(fn () => $callback($this, ...$params), $isolationLevel);
     }
 }
