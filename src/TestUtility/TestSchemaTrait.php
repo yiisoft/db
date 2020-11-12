@@ -51,8 +51,7 @@ trait TestSchemaTrait
 
         $schema = $db->getSchema();
 
-        $schema->getDb()->setEnableSchemaCache(true);
-        $schema->getDb()->setSchemaCache($this->cache);
+        $db->getConnectionCache()->setEnableSchemaCache(true);
 
         $noCacheTable = $schema->getTableSchema('type', true);
         $cachedTable = $schema->getTableSchema('type', false);
@@ -75,8 +74,7 @@ trait TestSchemaTrait
     {
         $schema = $this->getConnection()->getSchema();
 
-        $schema->getDb()->setEnableSchemaCache(true);
-        $schema->getDb()->setSchemaCache($this->cache);
+        $schema->getDb()->getConnectionCache()->setEnableSchemaCache(true);
 
         $noCacheTable = $schema->getTableSchema('type', true);
 
