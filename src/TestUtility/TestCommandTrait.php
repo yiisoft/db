@@ -879,7 +879,7 @@ trait TestCommandTrait
     {
         $db = $this->getConnection(true);
 
-        $db->getConnectionCache()->setEnableQueryCache(true);
+        $db->getQueryCache()->setEnableCache(true);
 
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
 
@@ -905,7 +905,7 @@ trait TestCommandTrait
             $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
         }, 10);
 
-        $db->getConnectionCache()->setEnableQueryCache(false);
+        $db->getQueryCache()->setEnableCache(false);
 
         $db->cache(function () use ($command, $update) {
             $this->assertEquals('user22', $command->bindValue(':id', 2)->queryScalar());
@@ -913,7 +913,7 @@ trait TestCommandTrait
             $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
         }, 10);
 
-        $db->getConnectionCache()->setEnableQueryCache(true);
+        $db->getQueryCache()->setEnableCache(true);
 
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->cache();
 

@@ -10,7 +10,8 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\Cache\ConnectionCache;
+use Yiisoft\Db\Cache\QueryCache;
+use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -192,17 +193,20 @@ abstract class Connection implements ConnectionInterface
     private ?Schema $schema = null;
     private Profiler $profiler;
     private bool $enableProfiling = true;
-    private ConnectionCache $connectionCache;
+    private QueryCache $queryCache;
+    private SchemaCache $schemaCache;
 
     public function __construct(
-        ConnectionCache $connectionCache,
         LoggerInterface $logger,
         Profiler $profiler,
+        QueryCache $queryCache,
+        SchemaCache $schemaCache,
         string $dsn
     ) {
-        $this->connectionCache = $connectionCache;
         $this->logger = $logger;
         $this->profiler = $profiler;
+        $this->queryCache = $queryCache;
+        $this->schemaCache = $schemaCache;
         $this->dsn = $dsn;
     }
 
@@ -345,18 +349,18 @@ abstract class Connection implements ConnectionInterface
      */
     public function cache(callable $callable, int $duration = null, Dependency $dependency = null)
     {
-        $this->connectionCache->setQueryCacheInfo(
-            [$duration ?? $this->connectionCache->getQueryCacheDuration(), $dependency]
+        $this->queryCache->setCacheInfo(
+            [$duration ?? $this->queryCache->getCacheDuration(), $dependency]
         );
 
         try {
             $result = $callable($this);
 
-            $this->connectionCache->queryCacheInfoArrayPop();
+            $this->queryCache->cacheInfoArrayPop();
 
             return $result;
         } catch (Throwable $e) {
-            $this->connectionCache->queryCacheInfoArrayPop();
+            $this->queryCache->cacheInfoArrayPop();
 
             throw $e;
         }
@@ -372,11 +376,6 @@ abstract class Connection implements ConnectionInterface
         return $this->charset;
     }
 
-    public function getConnectionCache(): ConnectionCache
-    {
-        return $this->connectionCache;
-    }
-
     public function getDsn(): string
     {
         return $this->dsn;
@@ -385,6 +384,16 @@ abstract class Connection implements ConnectionInterface
     public function getEmulatePrepare(): ?bool
     {
         return $this->emulatePrepare;
+    }
+
+    public function getQueryCache(): QueryCache
+    {
+        return $this->queryCache;
+    }
+
+    public function getSchemaCache(): SchemaCache
+    {
+        return $this->schemaCache;
     }
 
     public function isLoggingEnabled(): bool
@@ -633,16 +642,16 @@ abstract class Connection implements ConnectionInterface
      */
     public function noCache(callable $callable)
     {
-        $this->connectionCache->setQueryCacheInfo(false);
+        $this->queryCache->setCacheInfo(false);
 
         try {
             $result = $callable($this);
 
-            $this->connectionCache->queryCacheInfoArrayPop();
+            $this->queryCache->cacheInfoArrayPop();
 
             return $result;
         } catch (Throwable $e) {
-            $this->connectionCache->queryCacheInfoArrayPop();
+            $this->queryCache->cacheInfoArrayPop();
 
             throw $e;
         }
@@ -801,13 +810,15 @@ abstract class Connection implements ConnectionInterface
             return null;
         }
 
+        $cache = $this->schemaCache->getCache();
+
         foreach ($pool as $config) {
             /* @var $db Connection */
             $db = DatabaseFactory::createClass($config);
 
-            $key = $this->connectionCache->normalize([__METHOD__, $db->getDsn()]);
+            $key = $this->schemaCache->normalize([__METHOD__, $db->getDsn()]);
 
-            if ($this->connectionCache->isSchemaCacheEnabled() && $this->connectionCache->getSchemaCache()->get($key)) {
+            if ($this->schemaCache->isCacheEnabled() && $cache->get($key)) {
                 /** should not try this dead server now */
                 continue;
             }
@@ -824,9 +835,9 @@ abstract class Connection implements ConnectionInterface
                     );
                 }
 
-                if ($this->connectionCache->isSchemaCacheEnabled()) {
+                if ($this->schemaCache->isCacheEnabled()) {
                     /** mark this server as dead and only retry it after the specified interval */
-                    $this->connectionCache->getSchemaCache()->set($key, 1, $this->serverRetryInterval);
+                    $cache->set($key, 1, $this->serverRetryInterval);
                 }
 
                 return null;

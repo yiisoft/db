@@ -13,7 +13,7 @@ use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\Cache\ConnectionCache;
+use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Exception\Exception;
@@ -118,15 +118,20 @@ class Command
     private int $fetchMode = PDO::FETCH_ASSOC;
     private ?int $queryCacheDuration = null;
     private ?Dependency $queryCacheDependency = null;
-    private ConnectionCache $connectionCache;
+    private QueryCache $queryCache;
 
-    public function __construct(Profiler $profiler, LoggerInterface $logger, ConnectionInterface $db, ?string $sql)
-    {
+    public function __construct(
+        Profiler $profiler,
+        LoggerInterface $logger,
+        ConnectionInterface $db,
+        QueryCache $queryCache,
+        ?string $sql
+    ) {
         $this->db = $db;
         $this->logger = $logger;
         $this->profiler = $profiler;
         $this->sql = $sql;
-        $this->connectionCache = $this->db->getConnectionCache();
+        $this->queryCache = $queryCache;
     }
 
     /**
@@ -141,7 +146,7 @@ class Command
      */
     public function cache(?int $duration = null, Dependency $dependency = null): self
     {
-        $this->queryCacheDuration = $duration ?? $this->connectionCache->getQueryCacheDuration();
+        $this->queryCacheDuration = $duration ?? $this->queryCache->getCacheDuration();
         $this->queryCacheDependency = $dependency;
 
         return $this;
@@ -1316,7 +1321,7 @@ class Command
         [, $rawSql] = $this->logQuery(__CLASS__ . '::query');
 
         if ($method !== '') {
-            $info = $this->connectionCache->queryCacheInfo(
+            $info = $this->queryCache->cacheInfo(
                 $this->queryCacheDuration,
                 $this->queryCacheDependency
             );
@@ -1414,7 +1419,7 @@ class Command
             $rawSql
         ];
 
-        return $this->connectionCache->normalize($key);
+        return $this->queryCache->normalize($key);
     }
 
     /**

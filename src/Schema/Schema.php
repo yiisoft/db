@@ -10,7 +10,7 @@ use PDOException;
 use Psr\SimpleCache\CacheInterface;
 use Throwable;
 use Yiisoft\Cache\Dependency\TagDependency;
-use Yiisoft\Db\Cache\ConnectionCache;
+use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
@@ -118,12 +118,12 @@ abstract class Schema
     private ?QueryBuilder $builder = null;
     private ?string $serverVersion = null;
     private Connection $db;
-    private ConnectionCache $connectionCache;
+    private SchemaCache $schemaCache;
 
-    public function __construct(Connection $db)
+    public function __construct(Connection $db, SchemaCache $schemaCache)
     {
         $this->db = $db;
-        $this->connectionCache = $this->db->getConnectionCache();
+        $this->schemaCache = $schemaCache;
     }
 
     abstract public function createQueryBuilder(): QueryBuilder;
@@ -305,9 +305,9 @@ abstract class Schema
     public function refresh(): void
     {
         /* @var $cache CacheInterface */
-        $cache = $this->connectionCache->getSchemaCache();
+        $cache = $this->schemaCache->getCache();
 
-        if ($this->connectionCache->isSchemaCacheEnabled()) {
+        if ($this->schemaCache->isCacheEnabled()) {
             TagDependency::invalidate($cache, $this->getCacheTag());
         }
 
@@ -333,8 +333,8 @@ abstract class Schema
 
         $this->tableNames = [];
 
-        if ($this->connectionCache->isSchemaCacheEnabled()) {
-            $this->connectionCache->getSchemaCache()->delete($this->getCacheKey($rawName));
+        if ($this->schemaCache->isCacheEnabled()) {
+            $this->schemaCache->getCache()->delete($this->getCacheKey($rawName));
         }
     }
 
@@ -818,10 +818,10 @@ abstract class Schema
     protected function getTableMetadata(string $name, string $type, bool $refresh = false)
     {
         if (
-            $this->connectionCache->isSchemaCacheEnabled() &&
-            !in_array($name, $this->connectionCache->getSchemaCacheExclude(), true)
+            $this->schemaCache->isCacheEnabled() &&
+            !in_array($name, $this->schemaCache->getCacheExclude(), true)
         ) {
-            $schemaCache = $this->connectionCache->getSchemaCache();
+            $schemaCache = $this->schemaCache->getCache();
         }
 
         $rawName = $this->getRawTableName($name);
@@ -964,7 +964,7 @@ abstract class Schema
         $cache->set(
             $this->getCacheKey($name),
             $metadata,
-            $this->connectionCache->getSchemaCacheDuration()
+            $this->schemaCache->getCacheDuration()
         );
     }
 
