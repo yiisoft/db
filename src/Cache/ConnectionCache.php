@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Cache;
 
 use Psr\SimpleCache\CacheInterface;
+use Yiisoft\Cache\CacheKeyNormalizer;
 use Yiisoft\Cache\Dependency\Dependency;
 
 use function array_pop;
@@ -21,16 +22,15 @@ final class ConnectionCache
     public array $queryCacheInfo = [];
     private int $queryCacheDuration = 3600;
 
-    public function __construct(CacheInterface $schemaCache)
+    public function __construct(CacheInterface $schemaCache, CacheKeyNormalizer $cacheKeyNormalizer)
     {
         $this->schemaCache = $schemaCache;
+        $this->cacheKeyNormalizer = $cacheKeyNormalizer;
     }
 
-    public function getCacheKey(array $key): string
+    public function normalize($key): string
     {
-        $jsonKey = json_encode($key, JSON_THROW_ON_ERROR);
-
-        return md5($jsonKey);
+        return $this->cacheKeyNormalizer->normalize($key);
     }
 
     public function getQueryCacheDuration(): ?int

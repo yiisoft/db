@@ -1414,9 +1414,7 @@ class Command
             $rawSql
         ];
 
-        $jsonKey = json_encode($key, JSON_THROW_ON_ERROR);
-
-        return md5($jsonKey);
+        return $this->connectionCache->normalize($key);
     }
 
     /**

@@ -805,7 +805,7 @@ abstract class Connection implements ConnectionInterface
             /* @var $db Connection */
             $db = DatabaseFactory::createClass($config);
 
-            $key = $this->connectionCache->getCacheKey([__METHOD__, $db->getDsn()]);
+            $key = $this->connectionCache->normalize([__METHOD__, $db->getDsn()]);
 
             if ($this->connectionCache->isSchemaCacheEnabled() && $this->connectionCache->getSchemaCache()->get($key)) {
                 /** should not try this dead server now */
