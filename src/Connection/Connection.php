@@ -104,7 +104,7 @@ use function is_array;
  * ```php
  * $connection->transaction(function (Connection $db) {
  *     //return $db->...
- * }, Transaction::READ_UNCOMMITTED);
+ * }, Transaction::LEVEL_READ_UNCOMMITTED);
  * ```
  *
  * Connection is often used as an application component and configured in the container-di configuration like the
@@ -303,7 +303,7 @@ abstract class Connection implements ConnectionInterface
         $this->open();
 
         if (($transaction = $this->getTransaction()) === null) {
-            $transaction = $this->transaction = new Transaction($this, $this->logger);
+            $transaction = $this->transaction = new Transaction($this, $this->logger, $this->getTransactionManager());
         }
 
         $transaction->begin($isolationLevel);
@@ -500,7 +500,7 @@ abstract class Connection implements ConnectionInterface
         return $this->pdo;
     }
 
-    public function getProfiler(): profiler
+    public function getProfiler(): Profiler
     {
         return $this->profiler;
     }
@@ -631,7 +631,7 @@ abstract class Connection implements ConnectionInterface
             return $fallbackToMaster ? $this->getMasterPdo() : null;
         }
 
-        return $db->getPdo();
+        return $db->getPDO();
     }
 
     public function getTablePrefix(): string
@@ -1413,5 +1413,32 @@ abstract class Connection implements ConnectionInterface
         $jsonKey = json_encode($key);
 
         return md5($jsonKey);
+    }
+
+    protected function getTransactionManager(): object
+    {
+        return new class($this) {
+            private Connection $db;
+
+            public function __construct(Connection $db)
+            {
+                $this->db = $db;
+            }
+
+            public function beginTransaction(): void
+            {
+                $this->db->getPDO()->beginTransaction();
+            }
+
+            public function commit(): void
+            {
+                $this->db->getPDO()->commit();
+            }
+
+            public function rollBack(): void
+            {
+                $this->db->getPDO()->rollBack();
+            }
+        };
     }
 }

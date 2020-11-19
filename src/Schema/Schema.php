@@ -27,8 +27,8 @@ use Yiisoft\Cache\Dependency\TagDependency;
  * @property TableSchema[] $tableSchemas The metadata for all tables in the database. Each array element is an instance
  * of {@see TableSchema} or its child class. This property is read-only.
  * @property string $transactionIsolationLevel The transaction isolation level to use for this transaction. This can be
- * one of {@see Transaction::READ_UNCOMMITTED}, {@see Transaction::READ_COMMITTED},
- * {@see Transaction::REPEATABLE_READ} and {@see Transaction::SERIALIZABLE} but also a string containing DBMS specific
+ * one of {@see Transaction::LEVEL_READ_UNCOMMITTED}, {@see Transaction::LEVEL_READ_COMMITTED},
+ * {@see Transaction::LEVEL_REPEATABLE_READ} and {@see Transaction::LEVEL_SERIALIZABLE} but also a string containing DBMS specific
  * syntax to be used after `SET TRANSACTION ISOLATION LEVEL`. This property is write-only.
  */
 abstract class Schema
@@ -365,8 +365,8 @@ abstract class Schema
      *
      * @param string $level The transaction isolation level to use for this transaction.
      *
-     * This can be one of {@see Transaction::READ_UNCOMMITTED}, {@see Transaction::READ_COMMITTED},
-     * {@see Transaction::REPEATABLE_READ} and {@see Transaction::SERIALIZABLE} but also a string containing DBMS
+     * This can be one of {@see Transaction::LEVEL_READ_UNCOMMITTED}, {@see Transaction::LEVEL_READ_COMMITTED},
+     * {@see Transaction::LEVEL_REPEATABLE_READ} and {@see Transaction::LEVEL_SERIALIZABLE} but also a string containing DBMS
      * specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`.
      *
      * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
