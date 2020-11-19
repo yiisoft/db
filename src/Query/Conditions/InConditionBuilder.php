@@ -116,7 +116,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * Builds $values to be used in {@see InCondition}.
      *
      * @param ConditionInterface|InCondition $condition
-     * @param object|array $values
+     * @param mixed $values
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
