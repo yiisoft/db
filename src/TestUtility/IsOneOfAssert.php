@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestUtility;
 
-use PHPUnit\Framework\Constraint\Constraint;
-use Yiisoft\VarDumper\VarDumper;
-
 use function array_map;
 use function implode;
+
 use function in_array;
+use PHPUnit\Framework\Constraint\Constraint;
+use Yiisoft\VarDumper\VarDumper;
 
 /**
  * IsOneOfAssert asserts that the value is one of the expected values.

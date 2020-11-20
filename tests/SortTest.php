@@ -19,7 +19,7 @@ final class SortTest extends TestCase
                 'name' => [
                     'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
                     'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
-                ]
+                ],
             ]
         )->params(['sort' => 'age,-name'])->enableMultiSort(true);
 
@@ -157,12 +157,12 @@ final class SortTest extends TestCase
 
         $sort->params(['sort' => '-name']);
         $orders = $sort->getOrders();
-        $this->assertEquals(1, count($orders));
+        $this->assertCount(1, $orders);
         $this->assertEquals('[[last_name]] DESC NULLS LAST', $orders[0]);
 
         $sort->params(['sort' => 'name']);
         $orders = $sort->getOrders(true);
-        $this->assertEquals(1, count($orders));
+        $this->assertCount(1, $orders);
         $this->assertEquals('[[last_name]] ASC NULLS FIRST', $orders[0]);
     }
 }

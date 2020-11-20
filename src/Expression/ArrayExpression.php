@@ -105,8 +105,6 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      *
      * @param mixed $offset The offset to assign the value to.
      * @param mixed $value  The value to set.
-     *
-     * @return void
      */
     public function offsetSet($offset, $value): void
     {
@@ -119,8 +117,6 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
      *
      * @param mixed $offset
-     *
-     * @return void
      */
     public function offsetUnset($offset): void
     {

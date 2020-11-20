@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
-use Yiisoft\Db\Exception\InvalidArgumentException;
-
 use function array_shift;
+
 use function count;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 
 /**
  * Condition that inverts passed {@see condition}.

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestUtility;
 
-use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Transaction\Transaction;
-
 use function serialize;
 use function unserialize;
+use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Exception\Exception;
+
+use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Transaction\Transaction;
 
 trait TestConnectionTrait
 {

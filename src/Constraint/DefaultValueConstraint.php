@@ -9,7 +9,7 @@ namespace Yiisoft\Db\Constraint;
  */
 class DefaultValueConstraint extends Constraint
 {
-    /** @var mixed $value */
+    /** @var mixed */
     private $value;
 
     public function getValue()

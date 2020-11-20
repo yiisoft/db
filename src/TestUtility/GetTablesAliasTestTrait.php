@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\TestUtility;
 
 use stdClass;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Query\Query;
 
 trait GetTablesAliasTestTrait
 {
@@ -19,7 +19,7 @@ trait GetTablesAliasTestTrait
         $query = $this->createQuery();
 
         $query->from([
-            'prf'     => 'profile',
+            'prf' => 'profile',
             '{{usr}}' => '{{user}}',
             '{{a b}}' => '{{c d}}',
             'post AS p',
@@ -32,7 +32,7 @@ trait GetTablesAliasTestTrait
                 '{{prf}}' => '{{profile}}',
                 '{{usr}}' => '{{user}}',
                 '{{a b}}' => '{{c d}}',
-                '{{p}}'   => '{{post}}',
+                '{{p}}' => '{{post}}',
             ],
             $tables
         );
@@ -49,7 +49,7 @@ trait GetTablesAliasTestTrait
 
         $tables = $query->getTablesUsedInFrom();
 
-        $this->assertEquals(['{{profile}}' => '{{profile}}', '{{user}}'    => '{{user}}'], $tables);
+        $this->assertEquals(['{{profile}}' => '{{profile}}', '{{user}}' => '{{user}}'], $tables);
     }
 
     public function testGetTableNamesIsFromString(): void
@@ -62,11 +62,11 @@ trait GetTablesAliasTestTrait
 
         $this->assertEquals(
             [
-                '{{prf}}'      => '{{profile}}',
-                '{{usr}}'      => '{{user}}',
-                '{{order}}'    => '{{order}}',
+                '{{prf}}' => '{{profile}}',
+                '{{usr}}' => '{{user}}',
+                '{{order}}' => '{{order}}',
                 '{{customer}}' => '{{customer}}',
-                '{{c d}}'      => '{{a b}}',
+                '{{c d}}' => '{{a b}}',
             ],
             $tables
         );
@@ -93,11 +93,11 @@ trait GetTablesAliasTestTrait
 
         $this->assertEquals(
             [
-                '{{prf}}'     => '{{profile}}',
-                '{{usr}}'     => '{{user}}',
-                '{{srv}}'     => '{{service}}',
-                '{{order}}'   => '{{order}}',
-                '{{c d}}'     => '{{a b}}',
+                '{{prf}}' => '{{profile}}',
+                '{{usr}}' => '{{user}}',
+                '{{srv}}' => '{{service}}',
+                '{{order}}' => '{{order}}',
+                '{{c d}}' => '{{a b}}',
                 '{{myalias}}' => '{{something}}',
             ],
             $tables

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Connection;
 
+use function end;
+use function is_array;
 use PDO;
 use PDOException;
 use Psr\Log\LoggerInterface;
@@ -20,11 +22,9 @@ use Yiisoft\Db\Factory\DatabaseFactory;
 use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchema;
+
 use Yiisoft\Db\Transaction\Transaction;
 use Yiisoft\Profiler\Profiler;
-
-use function end;
-use function is_array;
 
 /**
  * Connection represents a connection to a database via [PDO](http://php.net/manual/en/book.pdo.php).
@@ -454,7 +454,7 @@ abstract class Connection implements ConnectionInterface
      *
      * @return Connection the currently active master connection. `null` is returned if there is no master available.
      */
-    public function getMaster(): ?Connection
+    public function getMaster(): ?self
     {
         if ($this->master === null) {
             $this->master = $this->shuffleMasters
@@ -597,7 +597,7 @@ abstract class Connection implements ConnectionInterface
      * @return Connection the currently active slave connection. `null` is returned if there is no slave available and
      * `$fallbackToMaster` is false.
      */
-    public function getSlave(bool $fallbackToMaster = true): ?Connection
+    public function getSlave(bool $fallbackToMaster = true): ?self
     {
         if (!$this->enableSlaves) {
             return $fallbackToMaster ? $this : null;
@@ -811,8 +811,6 @@ abstract class Connection implements ConnectionInterface
      *
      * @param Transaction $transaction Transaction object given from {@see beginTransaction()}.
      * @param int $level Transaction level just after {@see beginTransaction()} call.
-     *
-     * @return void
      */
     private function rollbackTransactionOnLevel(Transaction $transaction, int $level): void
     {
@@ -840,7 +838,7 @@ abstract class Connection implements ConnectionInterface
      *
      * @return Connection|null the opened DB connection, or `null` if no server is available
      */
-    protected function openFromPool(array $pool): ?Connection
+    protected function openFromPool(array $pool): ?self
     {
         shuffle($pool);
 
@@ -858,7 +856,7 @@ abstract class Connection implements ConnectionInterface
      *
      * @return Connection|null the opened DB connection, or `null` if no server is available
      */
-    protected function openFromPoolSequentially(array $pool): ?Connection
+    protected function openFromPoolSequentially(array $pool): ?self
     {
         if (!$pool) {
             return null;
@@ -964,9 +962,9 @@ abstract class Connection implements ConnectionInterface
      *
      * Note that if the parameter is not a string, it will be returned without change.
      *
-     * @param string|int $value string to be quoted
+     * @param int|string $value string to be quoted
      *
-     * @return string|int the properly quoted string
+     * @return int|string the properly quoted string
      *
      * {@see http://php.net/manual/en/pdo.quote.php}
      */
@@ -981,8 +979,6 @@ abstract class Connection implements ConnectionInterface
      * attributes.
      *
      * @param array $value
-     *
-     * @return void
      */
     public function setAttributes(array $value): void
     {
@@ -1000,8 +996,6 @@ abstract class Connection implements ConnectionInterface
      * charset via {@see dsn} like `'mysql:dbname=mydatabase;host=127.0.0.1;charset=GBK;'`.
      *
      * @param string|null $value
-     *
-     * @return void
      */
     public function setCharset(?string $value): void
     {
@@ -1025,8 +1019,6 @@ abstract class Connection implements ConnectionInterface
      * ATTR_EMULATE_PREPARES value will not be changed.
      *
      * @param bool $value
-     *
-     * @return void
      */
     public function setEmulatePrepare(bool $value): void
     {
@@ -1038,10 +1030,6 @@ abstract class Connection implements ConnectionInterface
      * production environment to gain performance if you do not need the information being logged.
      *
      * @param bool $value
-     *
-     * @return void
-     *
-     * {@see setEnableProfiling()}
      */
     public function setEnableLogging(bool $value): void
     {
@@ -1054,10 +1042,6 @@ abstract class Connection implements ConnectionInterface
      * logged.
      *
      * @param bool $value
-     *
-     * @return void
-     *
-     * {@see setEnableLogging()}
      */
     public function setEnableProfiling(bool $value): void
     {
@@ -1070,12 +1054,6 @@ abstract class Connection implements ConnectionInterface
      * the queries enclosed within {@see cache()} will be cached.
      *
      * @param bool $value
-     *
-     * @return void
-     *
-     * {@see setQueryCache()}
-     * {@see cache()}
-     * {@see noCache()}
      */
     public function setEnableQueryCache(bool $value): void
     {
@@ -1087,8 +1065,6 @@ abstract class Connection implements ConnectionInterface
      * support savepoint, setting this property to be true will have no effect.
      *
      * @param bool $value
-     *
-     * @return void
      */
     public function setEnableSavepoint(bool $value): void
     {
@@ -1100,12 +1076,6 @@ abstract class Connection implements ConnectionInterface
      * specified by {@see setSchemaCache()} must be enabled and {@see setEnableSchemaCache()} must be set true.
      *
      * @param bool $value
-     *
-     * @return void
-     *
-     * {@see setSchemaCacheDuration()}
-     * {@see setSchemaCacheExclude()}
-     * {@see setSchemaCache()}
      */
     public function setEnableSchemaCache(bool $value): void
     {
@@ -1117,8 +1087,6 @@ abstract class Connection implements ConnectionInterface
      * is empty, read/write splitting will NOT be enabled no matter what value this property takes.
      *
      * @param bool $value
-     *
-     * @return void
      */
     public function setEnableSlaves(bool $value): void
     {
@@ -1131,23 +1099,6 @@ abstract class Connection implements ConnectionInterface
      *
      * @param string $key index master connection.
      * @param array $config The configuration that should be merged with every master configuration
-     *
-     * @return void
-     *
-     * For example,
-     *
-     * ```php
-     * $connection->setMasters(
-     *     '1',
-     *     [
-     *         '__construct()' => ['mysql:host=127.0.0.1;dbname=yiitest;port=3306'],
-     *         'setUsername()' => [$connection->getUsername()],
-     *         'setPassword()' => [$connection->getPassword()],
-     *     ]
-     * );
-     * ```
-     *
-     * {@see setShuffleMasters()}
      */
     public function setMasters(string $key, array $config = []): void
     {
@@ -1158,8 +1109,6 @@ abstract class Connection implements ConnectionInterface
      * The password for establishing DB connection. Defaults to `null` meaning no password to use.
      *
      * @param string|null $value
-     *
-     * @return void
      */
     public function setPassword(?string $value): void
     {
@@ -1170,8 +1119,6 @@ abstract class Connection implements ConnectionInterface
      * Can be used to set {@see QueryBuilder} configuration via Connection configuration array.
      *
      * @param iterable $config the {@see QueryBuilder} properties to be configured.
-     *
-     * @return void
      */
     public function setQueryBuilder(iterable $config): void
     {
@@ -1186,10 +1133,6 @@ abstract class Connection implements ConnectionInterface
      * The cache object or the ID of the cache application component that is used for query caching.
      *
      * @param CacheInterface $value
-     *
-     * @return void
-     *
-     * {@see setEnableQueryCache()}
      */
     public function setQueryCache(CacheInterface $value): void
     {
@@ -1202,11 +1145,6 @@ abstract class Connection implements ConnectionInterface
      * be used when {@see cache()} is called without a cache duration.
      *
      * @param int $value
-     *
-     * @return void
-     *
-     * {@see setEnableQueryCache()}
-     * {@see cache()}
      */
     public function setQueryCacheDuration(int $value): void
     {
@@ -1217,10 +1155,6 @@ abstract class Connection implements ConnectionInterface
      * The cache object or the ID of the cache application component that is used to cache the table metadata.
      *
      * @param CacheInterface $value
-     *
-     * @return void
-     *
-     * {@see setEnableSchemaCache()}
      */
     public function setSchemaCache(?CacheInterface $value): void
     {
@@ -1232,10 +1166,6 @@ abstract class Connection implements ConnectionInterface
      * never expire.
      *
      * @param int $value
-     *
-     * @return void
-     *
-     * {@see setEnableSchemaCache()}
      */
     public function setSchemaCacheDuration(int $value): void
     {
@@ -1247,10 +1177,6 @@ abstract class Connection implements ConnectionInterface
      * prefix, if any. Do not quote the table names.
      *
      * @param array $value
-     *
-     * @return void
-     *
-     * {@see setEnableSchemaCache()}
      */
     public function setSchemaCacheExclude(array $value): void
     {
@@ -1261,8 +1187,6 @@ abstract class Connection implements ConnectionInterface
      * The retry interval in seconds for dead servers listed in {@see setMasters()} and {@see setSlaves()}.
      *
      * @param int $value
-     *
-     * @return void
      */
     public function setServerRetryInterval(int $value): void
     {
@@ -1273,10 +1197,6 @@ abstract class Connection implements ConnectionInterface
      * Whether to shuffle {@see setMasters()} before getting one.
      *
      * @param bool $value
-     *
-     * @return void
-     *
-     * {@see setMasters()}
      */
     public function setShuffleMasters(bool $value): void
     {
@@ -1289,23 +1209,6 @@ abstract class Connection implements ConnectionInterface
      *
      * @param string $key index slave connection.
      * @param array $config The configuration that should be merged with every slave configuration
-     *
-     * @return void
-     *
-     * For example,
-     *
-     * ```php
-     * $connection->setSlaves(
-     *     '1',
-     *     [
-     *         '__construct()' => ['mysql:host=127.0.0.1;dbname=yiitest;port=3306'],
-     *         'setUsername()' => [$connection->getUsername()],
-     *         'setPassword()' => [$connection->getPassword()]
-     *     ]
-     * );
-     * ```
-     *
-     * {@see setEnableSlaves()}
      */
     public function setSlaves(string $key, array $config = []): void
     {
@@ -1317,8 +1220,6 @@ abstract class Connection implements ConnectionInterface
      * character `%` will be replaced with this property value. For example, `{{%post}}` becomes `{{tbl_post}}`.
      *
      * @param string $value
-     *
-     * @return void
      */
     public function setTablePrefix(string $value): void
     {
@@ -1329,8 +1230,6 @@ abstract class Connection implements ConnectionInterface
      * The username for establishing DB connection. Defaults to `null` meaning no username to use.
      *
      * @param string|null $value
-     *
-     * @return void
      */
     public function setUsername(?string $value): void
     {

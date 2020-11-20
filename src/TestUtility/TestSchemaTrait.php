@@ -4,15 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestUtility;
 
-use PDO;
-use Yiisoft\Db\Constraint\CheckConstraint;
-use Yiisoft\Db\Constraint\Constraint;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
-use Yiisoft\Db\Constraint\IndexConstraint;
-use Yiisoft\Db\Schema\ColumnSchema;
-use Yiisoft\Db\Schema\Schema;
-use Yiisoft\Db\Schema\TableSchema;
-
 use function array_keys;
 use function fclose;
 use function fopen;
@@ -20,10 +11,19 @@ use function gettype;
 use function is_array;
 use function json_encode;
 use function ksort;
+use PDO;
+
 use function print_r;
 use function sort;
 use function sprintf;
 use function strtolower;
+use Yiisoft\Db\Constraint\CheckConstraint;
+use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\Schema\ColumnSchema;
+use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\TableSchema;
 
 trait TestSchemaTrait
 {
@@ -346,7 +346,7 @@ trait TestSchemaTrait
                 'primaryKey',
                 (new Constraint())
                     ->name(AnyValue::getInstance())
-                    ->columnNames(['C_id'])
+                    ->columnNames(['C_id']),
             ],
             '1: check' => [
                 'T_constraints_1',
@@ -355,8 +355,8 @@ trait TestSchemaTrait
                     (new CheckConstraint())
                         ->name(AnyValue::getInstance())
                         ->columnNames(['C_check'])
-                        ->expression("C_check <> ''")
-                ]
+                        ->expression("C_check <> ''"),
+                ],
             ],
             '1: unique' => [
                 'T_constraints_1',
@@ -364,8 +364,8 @@ trait TestSchemaTrait
                 [
                     (new Constraint())
                         ->name('CN_unique')
-                        ->columnNames(['C_unique'])
-                ]
+                        ->columnNames(['C_unique']),
+                ],
             ],
             '1: index' => [
                 'T_constraints_1',
@@ -380,8 +380,8 @@ trait TestSchemaTrait
                         ->name('CN_unique')
                         ->columnNames(['C_unique'])
                         ->primary(false)
-                        ->unique(true)
-                ]
+                        ->unique(true),
+                ],
             ],
             '1: default' => ['T_constraints_1', 'defaultValues', false],
 
@@ -390,7 +390,7 @@ trait TestSchemaTrait
                 'primaryKey',
                 (new Constraint())
                     ->name('CN_pk')
-                    ->columnNames(['C_id_1', 'C_id_2'])
+                    ->columnNames(['C_id_1', 'C_id_2']),
             ],
             '2: unique' => [
                 'T_constraints_2',
@@ -398,8 +398,8 @@ trait TestSchemaTrait
                 [
                     (new Constraint())
                         ->name('CN_constraints_2_multi')
-                        ->columnNames(['C_index_2_1', 'C_index_2_2'])
-                ]
+                        ->columnNames(['C_index_2_1', 'C_index_2_2']),
+                ],
             ],
             '2: index' => [
                 'T_constraints_2',
@@ -419,8 +419,8 @@ trait TestSchemaTrait
                         ->name('CN_constraints_2_multi')
                         ->columnNames(['C_index_2_1', 'C_index_2_2'])
                         ->primary(false)
-                        ->unique(true)
-                ]
+                        ->unique(true),
+                ],
             ],
             '2: check' => ['T_constraints_2', 'checks', []],
             '2: default' => ['T_constraints_2', 'defaultValues', false],
@@ -436,8 +436,8 @@ trait TestSchemaTrait
                         ->foreignTableName('T_constraints_2')
                         ->foreignColumnNames(['C_id_1', 'C_id_2'])
                         ->onDelete('CASCADE')
-                        ->onUpdate('CASCADE')
-                ]
+                        ->onUpdate('CASCADE'),
+                ],
             ],
             '3: unique' => ['T_constraints_3', 'uniques', []],
             '3: index' => [
@@ -448,8 +448,8 @@ trait TestSchemaTrait
                         ->name('CN_constraints_3')
                         ->columnNames(['C_fk_id_1', 'C_fk_id_2'])
                         ->unique(false)
-                        ->primary(false)
-                ]
+                        ->primary(false),
+                ],
             ],
             '3: check' => ['T_constraints_3', 'checks', []],
             '3: default' => ['T_constraints_3', 'defaultValues', false],
@@ -459,7 +459,7 @@ trait TestSchemaTrait
                 'primaryKey',
                 (new Constraint())
                     ->name(AnyValue::getInstance())
-                    ->columnNames(['C_id'])
+                    ->columnNames(['C_id']),
             ],
             '4: unique' => [
                 'T_constraints_4',
@@ -467,8 +467,8 @@ trait TestSchemaTrait
                 [
                     (new Constraint())
                         ->name('CN_constraints_4')
-                        ->columnNames(['C_col_1', 'C_col_2'])
-                ]
+                        ->columnNames(['C_col_1', 'C_col_2']),
+                ],
             ],
             '4: check' => ['T_constraints_4', 'checks', []],
             '4: default' => ['T_constraints_4', 'defaultValues', false],
@@ -488,15 +488,15 @@ trait TestSchemaTrait
         $configs = [
             [
                 'prefix' => '',
-                'name'   => 'type',
+                'name' => 'type',
             ],
             [
                 'prefix' => '',
-                'name'   => '{{%type}}',
+                'name' => '{{%type}}',
             ],
             [
                 'prefix' => 'ty',
-                'name'   => '{{%pe}}',
+                'name' => '{{%pe}}',
             ],
         ];
 

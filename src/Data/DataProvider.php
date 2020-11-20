@@ -259,7 +259,6 @@ abstract class DataProvider implements DataProviderInterface
         return $this;
     }
 
-
     /**
      * @return string|null Id of the widget.
      */

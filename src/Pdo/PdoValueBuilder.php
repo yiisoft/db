@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Pdo;
 
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * Class PdoValueBuilder builds object of the {@see PdoValue} expression class.

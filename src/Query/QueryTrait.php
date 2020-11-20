@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
-use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\ExpressionInterface;
-
 use function array_key_exists;
 use function array_merge;
+
 use function array_shift;
 use function array_unshift;
 use function is_array;
@@ -18,6 +16,8 @@ use function preg_split;
 use function strcasecmp;
 use function strtoupper;
 use function trim;
+use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * The BaseQuery trait represents the minimum method set of a database Query.
@@ -26,13 +26,13 @@ use function trim;
  */
 trait QueryTrait
 {
-    /** @var int|ExpressionInterface|null $limit */
+    /** @var ExpressionInterface|int|null */
     private $limit;
-    /** @var int|ExpressionInterface|null $offset */
+    /** @var ExpressionInterface|int|null */
     private $offset;
-    /** @var string|callable $indexBy */
+    /** @var callable|string */
     private $indexBy;
-    /** @var array|string|null $indexBy */
+    /** @var array|string|null */
     private $where;
     private array $orderBy = [];
     private bool $emulateExecution = false;
@@ -40,7 +40,7 @@ trait QueryTrait
     /**
      * Sets the {@see indexBy} property.
      *
-     * @param string|callable $column the name of the column by which the query results should be indexed by.
+     * @param callable|string $column the name of the column by which the query results should be indexed by.
      *
      * This can also be a callable (e.g. anonymous function) that returns the index value based on the given row data.
      *
@@ -320,7 +320,7 @@ trait QueryTrait
     /**
      * Sets the ORDER BY part of the query.
      *
-     * @param string|array|ExpressionInterface $columns the columns (and the directions) to be ordered by.
+     * @param array|ExpressionInterface|string $columns the columns (and the directions) to be ordered by.
      *
      * Columns can be specified in either a string (e.g. `"id ASC, name DESC"`) or an array
      * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
@@ -348,7 +348,7 @@ trait QueryTrait
     /**
      * Adds additional ORDER BY columns to the query.
      *
-     * @param string|array|ExpressionInterface $columns the columns (and the directions) to be ordered by.
+     * @param array|ExpressionInterface|string $columns the columns (and the directions) to be ordered by.
      * Columns can be specified in either a string (e.g. "id ASC, name DESC") or an array
      * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
      *
@@ -380,7 +380,7 @@ trait QueryTrait
     /**
      * Normalizes format of ORDER BY data.
      *
-     * @param array|string|ExpressionInterface $columns the columns value to normalize.
+     * @param array|ExpressionInterface|string $columns the columns value to normalize.
      *
      * See {@see orderBy} and {@see addOrderBy}.
      *
@@ -412,7 +412,7 @@ trait QueryTrait
     /**
      * Sets the LIMIT part of the query.
      *
-     * @param int|ExpressionInterface|null $limit the limit. Use null or negative value to disable limit.
+     * @param ExpressionInterface|int|null $limit the limit. Use null or negative value to disable limit.
      *
      * @return $this the query object itself
      */
@@ -426,7 +426,7 @@ trait QueryTrait
     /**
      * Sets the OFFSET part of the query.
      *
-     * @param int|ExpressionInterface|null $offset $offset the offset. Use null or negative value to disable offset.
+     * @param ExpressionInterface|int|null $offset $offset the offset. Use null or negative value to disable offset.
      *
      * @return $this the query object itself
      */

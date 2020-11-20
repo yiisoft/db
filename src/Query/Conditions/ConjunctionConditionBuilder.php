@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\ExpressionBuilderInterface;
-use Yiisoft\Db\Expression\ExpressionBuilderTrait;
-use Yiisoft\Db\Expression\ExpressionInterface;
-
 use function count;
 use function implode;
 use function is_array;
 use function reset;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+
+use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionBuilderTrait;
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * Class ConjunctionConditionBuilder builds objects of abstract class {@see ConjunctionCondition}.
@@ -27,7 +27,7 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     /**
      * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
      *
-     * @param ExpressionInterface|ConjunctionCondition $expression the expression to be built.
+     * @param ConjunctionCondition|ExpressionInterface $expression the expression to be built.
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
@@ -52,10 +52,10 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds expressions, that are stored in $condition.
      *
-     * @param ExpressionInterface|ConjunctionCondition $condition the expression to be built.
+     * @param ConjunctionCondition|ExpressionInterface $condition the expression to be built.
      * @param array $params the binding parameters.
      *
-     * @throws InvalidArgumentException|Exception|InvalidConfigException|NotSupportedException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return array
      */

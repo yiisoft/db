@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use function strpos;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Query\Query;
 
-use function strpos;
+use Yiisoft\Db\Query\Query;
 
 /**
  * Class BetweenColumnsConditionBuilder builds objects of {@see BetweenColumnsCondition}.
@@ -25,7 +25,7 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
     /**
      * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
      *
-     * @param ExpressionInterface|BetweenColumnsCondition $expression the expression to be built.
+     * @param BetweenColumnsCondition|ExpressionInterface $expression the expression to be built.
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
@@ -46,7 +46,7 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
     /**
      * Prepares column name to be used in SQL statement.
      *
-     * @param Query|ExpressionInterface|string $columnName
+     * @param ExpressionInterface|Query|string $columnName
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException

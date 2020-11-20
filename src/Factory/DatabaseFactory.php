@@ -33,12 +33,12 @@ final class DatabaseFactory extends Factory
      */
     public static function createClass(array $config): object
     {
-        if (static::$factory === null) {
+        if (self::$factory === null) {
             throw new \RuntimeException(
                 'Database factory should be initialized with DatabaseFactory::initialize() call.'
             );
         }
 
-        return static::$factory->create($config);
+        return self::$factory->create($config);
     }
 }
