@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestUtility;
 
-use Yiisoft\Db\Query\BatchQueryResult;
-use Yiisoft\Db\Query\Query;
-
 use function array_merge;
+use Yiisoft\Db\Query\BatchQueryResult;
+
+use Yiisoft\Db\Query\Query;
 
 trait TestBatchQueryResultTrait
 {

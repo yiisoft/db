@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestUtility;
 
-use Yiisoft\Db\Data\SqlDataProvider;
 use Yiisoft\Db\Data\Sort;
+use Yiisoft\Db\Data\SqlDataProvider;
 
 trait TestSqlDataProviderTrait
 {

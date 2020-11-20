@@ -65,7 +65,7 @@ class BetweenColumnsCondition implements ConditionInterface
     }
 
     /**
-     * @return string|ExpressionInterface|Query the column name or expression that is a beginning of the interval.
+     * @return ExpressionInterface|Query|string the column name or expression that is a beginning of the interval.
      */
     public function getIntervalStartColumn()
     {
@@ -73,7 +73,7 @@ class BetweenColumnsCondition implements ConditionInterface
     }
 
     /**
-     * @return string|ExpressionInterface|Query the column name or expression that is an end of the interval.
+     * @return ExpressionInterface|Query|string the column name or expression that is an end of the interval.
      */
     public function getIntervalEndColumn()
     {

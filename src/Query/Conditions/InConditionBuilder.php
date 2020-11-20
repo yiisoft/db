@@ -4,7 +4,18 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use function array_merge;
+use function array_values;
 use ArrayAccess;
+use function count;
+use function implode;
+use function is_array;
+use function iterator_count;
+use function reset;
+use function sprintf;
+use function strpos;
+
+use function strtoupper;
 use Traversable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -14,17 +25,6 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
-
-use function array_merge;
-use function array_values;
-use function count;
-use function implode;
-use function is_array;
-use function iterator_count;
-use function reset;
-use function sprintf;
-use function strpos;
-use function strtoupper;
 
 /**
  * Class InConditionBuilder builds objects of {@see InCondition}.
@@ -37,7 +37,6 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
      *
      * @param ExpressionInterface|InCondition $expression the expression to be built.
-     *
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
@@ -164,7 +163,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @param Query $values
      * @param array $params
      *
-     * @throws InvalidArgumentException|Exception|InvalidConfigException|NotSupportedException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string SQL
      */

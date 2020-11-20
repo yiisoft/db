@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\ExpressionBuilderInterface;
-use Yiisoft\Db\Expression\ExpressionBuilderTrait;
-use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Query;
-
 use function count;
 use function implode;
 use function is_iterable;
 use function strpos;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
+
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionBuilderTrait;
+use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Query;
 
 /**
  * Class HashConditionBuilder builds objects of {@see HashCondition}.
@@ -31,7 +31,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
      * @param ExpressionInterface|HashCondition $expression the expression to be built.
      * @param array $params the binding parameters.
      *
-     * @throws InvalidArgumentException|Exception|InvalidConfigException|NotSupportedException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
