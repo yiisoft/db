@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestUtility;
 
-use function serialize;
-use function unserialize;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
-
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Transaction\Transaction;
+
+use function serialize;
+use function unserialize;
 
 trait TestConnectionTrait
 {
@@ -49,7 +49,7 @@ trait TestConnectionTrait
         $this->assertFalse($transaction->isActive());
         $this->assertNull($db->getTransaction());
         $this->assertEquals(0, $db->createCommand(
-            "SELECT COUNT(*) FROM profile WHERE description = 'test transaction';"
+            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
         )->queryScalar());
 
         $transaction = $db->beginTransaction();
@@ -61,7 +61,7 @@ trait TestConnectionTrait
         $this->assertFalse($transaction->isActive());
         $this->assertNull($db->getTransaction());
         $this->assertEquals(1, $db->createCommand(
-            "SELECT COUNT(*) FROM profile WHERE description = 'test transaction';"
+            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
         )->queryScalar());
     }
 
@@ -91,20 +91,18 @@ trait TestConnectionTrait
 
     public function testTransactionShortcutException(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
-        $result = $db->transaction(static function (ConnectionInterface $db) {
+        $this->expectException(Exception::class);
+
+        $db->transaction(function () use ($db) {
             $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
-            return true;
-        }, Transaction::READ_UNCOMMITTED);
-
-        $this->assertTrue($result, 'transaction shortcut valid value should be returned from callback');
-
+            throw new Exception('Exception in transaction shortcut');
+        });
         $profilesCount = $db->createCommand(
-            "SELECT COUNT(*) FROM profile WHERE description = 'test transaction shortcut';"
+            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction shortcut'"
         )->queryScalar();
-
-        $this->assertEquals(1, $profilesCount, 'profile should be inserted in transaction shortcut');
+        $this->assertEquals(0, $profilesCount, 'profile should not be inserted in transaction shortcut');
     }
 
     public function testTransactionShortcutCorrect(): void
@@ -119,7 +117,7 @@ trait TestConnectionTrait
         $this->assertTrue($result, 'transaction shortcut valid value should be returned from callback');
 
         $profilesCount = $db->createCommand(
-            "SELECT COUNT(*) FROM profile WHERE description = 'test transaction shortcut';"
+            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction shortcut'"
         )->queryScalar();
 
         $this->assertEquals(1, $profilesCount, 'profile should be inserted in transaction shortcut');
@@ -203,7 +201,7 @@ trait TestConnectionTrait
         $this->logger->flush();
         $this->profiler->flush();
 
-        $db->createCommand('SELECT * FROM qlog1')->queryAll();
+        $db->createCommand('SELECT * FROM {{qlog1}}')->queryAll();
 
         $this->assertCount(1, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
@@ -224,7 +222,7 @@ trait TestConnectionTrait
         $this->logger->flush();
         $this->profiler->flush();
 
-        $db->createCommand('SELECT * FROM qlog2')->queryAll();
+        $db->createCommand('SELECT * FROM {{qlog2}}')->queryAll();
 
         $this->assertCount(0, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
@@ -245,7 +243,7 @@ trait TestConnectionTrait
         $this->logger->flush();
         $this->profiler->flush();
 
-        $db->createCommand('SELECT * FROM qlog3')->queryAll();
+        $db->createCommand('SELECT * FROM {{qlog3}}')->queryAll();
 
         $this->assertCount(1, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
@@ -263,7 +261,7 @@ trait TestConnectionTrait
         $this->assertCount(0, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
-        $db->createCommand('SELECT * FROM qlog4')->queryAll();
+        $db->createCommand('SELECT * FROM {{qlog4}}')->queryAll();
 
         $this->assertCount(0, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));

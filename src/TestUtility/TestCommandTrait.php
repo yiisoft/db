@@ -4,23 +4,25 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestUtility;
 
-use function call_user_func_array;
-use function date;
-use function is_array;
 use PDO;
-use function range;
-use function rtrim;
-use function setlocale;
 use Throwable;
-use function time;
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Schema;
+
+use function call_user_func;
+use function call_user_func_array;
+use function date;
+use function is_array;
+use function range;
+use function rtrim;
+use function setlocale;
+use function time;
 
 trait TestCommandTrait
 {
@@ -251,11 +253,11 @@ trait TestCommandTrait
 
     public function testBatchInsertWithYield(): void
     {
-        $rows = (static function () {
+        $rows = call_user_func(static function () {
             if (false) {
                 yield [];
             }
-        })();
+        });
 
         $command = $this->getConnection()->createCommand();
 
@@ -283,7 +285,7 @@ trait TestCommandTrait
             $this->markTestSkipped('Your platform does not support locales.');
         }
 
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         try {
             /* This one sets decimal mark to comma sign */
@@ -300,12 +302,17 @@ trait TestCommandTrait
             /* clear data in "type" table */
             $db->createCommand()->delete('type')->execute();
 
+            /* change, for point oracle. */
+            if ($db->getDriverName() === 'oci') {
+                $db->createCommand("ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,'")->execute();
+            }
+
             /* batch insert on "type" table */
             $db->createCommand()->batchInsert('type', $cols, $data)->execute();
 
             $data = $db->createCommand(
-                'SELECT int_col, char_col, float_col, bool_col FROM {{type}} WHERE [[int_col]] IN (1,2,3)
-                ORDER BY [[int_col]];'
+                'SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] ' .
+                'FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]'
             )->queryAll();
 
             $this->assertCount(3, $data);
@@ -347,8 +354,8 @@ trait TestCommandTrait
         $command->insert(
             '{{customer}}',
             [
-                'email' => 't1@example.com',
-                'name' => 'test',
+                'email'   => 't1@example.com',
+                'name'    => 'test',
                 'address' => 'test address',
             ]
         )->execute();
@@ -358,8 +365,8 @@ trait TestCommandTrait
         $record = $db->createCommand('SELECT [[email]], [[name]], [[address]] FROM {{customer}}')->queryOne();
 
         $this->assertEquals([
-            'email' => 't1@example.com',
-            'name' => 'test',
+            'email'   => 't1@example.com',
+            'name'    => 'test',
             'address' => 'test address',
         ], $record);
     }
@@ -374,8 +381,8 @@ trait TestCommandTrait
         $db->createCommand()->insert(
             '{{customer}}',
             [
-                'name' => 'Some {{weird}} name',
-                'email' => 'test@example.com',
+                'name'    => 'Some {{weird}} name',
+                'email'   => 'test@example.com',
                 'address' => 'Some {{%weird}} address',
             ]
         )->execute();
@@ -394,7 +401,7 @@ trait TestCommandTrait
         $db->createCommand()->update(
             '{{customer}}',
             [
-                'name' => 'Some {{updated}} name',
+                'name'    => 'Some {{updated}} name',
                 'address' => 'Some {{%updated}} address',
             ],
             ['id' => $customerId]
@@ -420,8 +427,8 @@ trait TestCommandTrait
         $command->insert(
             '{{customer}}',
             [
-                'email' => 't1@example.com',
-                'name' => 'test',
+                'email'   => 't1@example.com',
+                'name'    => 'test',
                 'address' => 'test address',
             ]
         )->execute();
@@ -455,13 +462,13 @@ trait TestCommandTrait
 
         $this->assertEquals([
             [
-                'email' => 't1@example.com',
-                'name' => 'test',
+                'email'   => 't1@example.com',
+                'name'    => 'test',
                 'address' => 'test address',
             ],
             [
-                'email' => 'test',
-                'name' => 't1@example.com',
+                'email'   => 'test',
+                'name'    => 't1@example.com',
                 'address' => 'test address',
             ],
         ], $record);
@@ -481,8 +488,8 @@ trait TestCommandTrait
         $command->insert(
             '{{customer}}',
             [
-                'email' => 't1@example.com',
-                'name' => 'test',
+                'email'   => 't1@example.com',
+                'name'    => 'test',
                 'address' => 'test address',
             ]
         )->execute();
@@ -491,9 +498,9 @@ trait TestCommandTrait
 
         $query->select(
             [
-                'email' => '{{customer}}.[[email]]',
+                'email'   => '{{customer}}.[[email]]',
                 'address' => 'name',
-                'name' => 'address',
+                'name'    => 'address',
             ]
         )
             ->from('{{customer}}')
@@ -516,13 +523,13 @@ trait TestCommandTrait
 
         $this->assertEquals([
             [
-                'email' => 't1@example.com',
-                'name' => 'test',
+                'email'   => 't1@example.com',
+                'name'    => 'test',
                 'address' => 'test address',
             ],
             [
-                'email' => 't1@example.com',
-                'name' => 'test address',
+                'email'   => 't1@example.com',
+                'name'    => 'test address',
                 'address' => 'test',
             ],
         ], $record);
@@ -579,8 +586,8 @@ trait TestCommandTrait
 
         $command->insert('{{order}}', [
             'customer_id' => 1,
-            'created_at' => $time,
-            'total' => 42,
+            'created_at'  => $time,
+            'total'       => 42,
         ])->execute();
 
         if ($db->getDriverName() === 'pgsql') {
@@ -599,8 +606,8 @@ trait TestCommandTrait
             '{{order_with_null_fk}}',
             [
                 'customer_id' => $orderId,
-                'created_at' => $columnValueQuery,
-                'total' => 42,
+                'created_at'  => $columnValueQuery,
+                'total'       => 42,
             ]
         )->execute();
 
@@ -1049,7 +1056,7 @@ trait TestCommandTrait
         }
 
         $db->createCommand()->createTable('testCreateViewTable', [
-            'id' => Schema::TYPE_PK,
+            'id'  => Schema::TYPE_PK,
             'bar' => Schema::TYPE_INTEGER,
         ])->execute();
 
@@ -1088,8 +1095,8 @@ trait TestCommandTrait
                  *
                  * Make sure curly bracelets (`{{..}}`) in values will not be escaped
                  */
-                'expected' => 'INSERT INTO `type` (`int_col`, `float_col`, `char_col`)'
-                    . " VALUES (NULL, NULL, 'Kyiv {{city}}, Ukraine')",
+                'expected' => "INSERT INTO `type` (`int_col`, `float_col`, `char_col`)"
+                    . " VALUES (NULL, NULL, 'Kyiv {{city}}, Ukraine')"
             ],
             'wrongBehavior' => [
                 '{{%type}}',
@@ -1102,8 +1109,8 @@ trait TestCommandTrait
                  * determine the table schema and typecast values properly.
                  * TODO: make it work. Impossible without BC breaking for public methods.
                  */
-                'expected' => 'INSERT INTO `type` (`type`.`int_col`, `float_col`, `char_col`)'
-                    . " VALUES ('', '', 'Kyiv {{city}}, Ukraine')",
+                'expected' => "INSERT INTO `type` (`type`.`int_col`, `float_col`, `char_col`)"
+                    . " VALUES ('', '', 'Kyiv {{city}}, Ukraine')"
             ],
             'batchInsert binds params from expression' => [
                 '{{%type}}',
@@ -1113,8 +1120,8 @@ trait TestCommandTrait
                  * expression objects, such as JsonExpression.
                  */
                 [[new Expression(':qp1', [':qp1' => 42])]],
-                'expected' => 'INSERT INTO `type` (`int_col`) VALUES (:qp1)',
-                'expectedParams' => [':qp1' => 42],
+                'expected'       => 'INSERT INTO `type` (`int_col`) VALUES (:qp1)',
+                'expectedParams' => [':qp1' => 42]
             ],
         ];
     }
@@ -1124,7 +1131,7 @@ trait TestCommandTrait
         return [
             ['SELECT SUBSTR(name, :len) FROM {{customer}} WHERE [[email]] = :email GROUP BY SUBSTR(name, :len)'],
             ['SELECT SUBSTR(name, :len) FROM {{customer}} WHERE [[email]] = :email ORDER BY SUBSTR(name, :len)'],
-            ['SELECT SUBSTR(name, :len) FROM {{customer}} WHERE [[email]] = :email'],
+            ['SELECT SUBSTR(name, :len) FROM {{customer}} WHERE [[email]] = :email']
         ];
     }
 
@@ -1149,7 +1156,7 @@ trait TestCommandTrait
             [
                 'SELECT * FROM customer WHERE id = :base OR id = :basePrefix',
                 [
-                    'base' => 1,
+                    'base'       => 1,
                     'basePrefix' => 2,
                 ],
                 'SELECT * FROM customer WHERE id = 1 OR id = 2',
@@ -1190,9 +1197,9 @@ trait TestCommandTrait
                     'params' => [
                         'T_upsert',
                         [
-                            'email' => 'foo@example.com',
+                            'email'   => 'foo@example.com',
                             'address' => 'Earth',
-                            'status' => 3,
+                            'status'  => 3,
                         ],
                     ],
                 ],
@@ -1200,9 +1207,9 @@ trait TestCommandTrait
                     'params' => [
                         'T_upsert',
                         [
-                            'email' => 'foo@example.com',
+                            'email'   => 'foo@example.com',
                             'address' => 'Universe',
-                            'status' => 1,
+                            'status'  => 1,
                         ],
                     ],
                 ],
@@ -1212,13 +1219,13 @@ trait TestCommandTrait
                     'params' => [
                         'T_upsert',
                         [
-                            'email' => 'foo@example.com',
+                            'email'   => 'foo@example.com',
                             'address' => 'Earth',
-                            'status' => 3,
+                            'status'  => 3,
                         ],
                         [
                             'address' => 'Moon',
-                            'status' => 2,
+                            'status'  => 2,
                         ],
                     ],
                 ],
@@ -1226,19 +1233,19 @@ trait TestCommandTrait
                     'params' => [
                         'T_upsert',
                         [
-                            'email' => 'foo@example.com',
+                            'email'   => 'foo@example.com',
                             'address' => 'Universe',
-                            'status' => 1,
+                            'status'  => 1,
                         ],
                         [
                             'address' => 'Moon',
-                            'status' => 2,
+                            'status'  => 2,
                         ],
                     ],
                     'expected' => [
-                        'email' => 'foo@example.com',
+                        'email'   => 'foo@example.com',
                         'address' => 'Moon',
-                        'status' => 2,
+                        'status'  => 2,
                     ],
                 ],
             ],
@@ -1247,9 +1254,9 @@ trait TestCommandTrait
                     'params' => [
                         'T_upsert',
                         [
-                            'email' => 'foo@example.com',
+                            'email'   => 'foo@example.com',
                             'address' => 'Earth',
-                            'status' => 3,
+                            'status'  => 3,
                         ],
                         false,
                     ],
@@ -1258,16 +1265,16 @@ trait TestCommandTrait
                     'params' => [
                         'T_upsert',
                         [
-                            'email' => 'foo@example.com',
+                            'email'   => 'foo@example.com',
                             'address' => 'Universe',
-                            'status' => 1,
+                            'status'  => 1,
                         ],
                         false,
                     ],
                     'expected' => [
-                        'email' => 'foo@example.com',
+                        'email'   => 'foo@example.com',
                         'address' => 'Earth',
-                        'status' => 3,
+                        'status'  => 3,
                     ],
                 ],
             ],
@@ -1286,9 +1293,9 @@ trait TestCommandTrait
                             ->limit(1),
                     ],
                     'expected' => [
-                        'email' => 'user1@example.com',
+                        'email'   => 'user1@example.com',
                         'address' => 'address1',
-                        'status' => 1,
+                        'status'  => 1,
                     ],
                 ],
                 [
@@ -1305,9 +1312,9 @@ trait TestCommandTrait
                             ->limit(1),
                     ],
                     'expected' => [
-                        'email' => 'user1@example.com',
+                        'email'   => 'user1@example.com',
                         'address' => 'address1',
-                        'status' => 2,
+                        'status'  => 2,
                     ],
                 ],
             ],
@@ -1326,13 +1333,13 @@ trait TestCommandTrait
                             ->limit(1),
                         [
                             'address' => 'Moon',
-                            'status' => 2,
+                            'status'  => 2,
                         ],
                     ],
                     'expected' => [
-                        'email' => 'user1@example.com',
+                        'email'   => 'user1@example.com',
                         'address' => 'address1',
-                        'status' => 1,
+                        'status'  => 1,
                     ],
                 ],
                 [
@@ -1349,13 +1356,13 @@ trait TestCommandTrait
                             ->limit(1),
                         [
                             'address' => 'Moon',
-                            'status' => 2,
+                            'status'  => 2,
                         ],
                     ],
                     'expected' => [
-                        'email' => 'user1@example.com',
+                        'email'   => 'user1@example.com',
                         'address' => 'Moon',
-                        'status' => 2,
+                        'status'  => 2,
                     ],
                 ],
             ],
@@ -1375,9 +1382,9 @@ trait TestCommandTrait
                         false,
                     ],
                     'expected' => [
-                        'email' => 'user1@example.com',
+                        'email'   => 'user1@example.com',
                         'address' => 'address1',
-                        'status' => 1,
+                        'status'  => 1,
                     ],
                 ],
                 [
@@ -1395,12 +1402,45 @@ trait TestCommandTrait
                         false,
                     ],
                     'expected' => [
-                        'email' => 'user1@example.com',
+                        'email'   => 'user1@example.com',
                         'address' => 'address1',
-                        'status' => 1,
+                        'status'  => 1,
                     ],
                 ],
             ],
         ];
+    }
+
+    public function testAlterTable(): void
+    {
+        $db = $this->getConnection();
+
+        if ($db->getDriverName() === 'sqlite') {
+            $this->markTestSkipped('Sqlite does not support alterTable');
+        }
+
+        if ($db->getSchema()->getTableSchema('testAlterTable') !== null) {
+            $db->createCommand()->dropTable('testAlterTable')->execute();
+        }
+
+        $db->createCommand()->createTable(
+            'testAlterTable',
+            [
+                'id' => Schema::TYPE_PK,
+                'bar' => Schema::TYPE_INTEGER
+            ]
+        )->execute();
+
+        $db->createCommand()->insert('testAlterTable', ['bar' => 1])->execute();
+
+        $db->createCommand()->alterColumn('testAlterTable', 'bar', Schema::TYPE_STRING)->execute();
+
+        $db->createCommand()->insert('testAlterTable', ['bar' => 'hello'])->execute();
+
+        $records = $db->createCommand('SELECT [[id]], [[bar]] FROM {{testAlterTable}}')->queryAll();
+        $this->assertEquals([
+            ['id' => 1, 'bar' => 1],
+            ['id' => 2, 'bar' => 'hello'],
+        ], $records);
     }
 }
