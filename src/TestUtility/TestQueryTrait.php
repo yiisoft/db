@@ -139,13 +139,13 @@ trait TestQueryTrait
          */
         $selectedCols = [
             'total_sum' => 'SUM(f.amount)',
-            'in_sum'    => 'SUM(IF(f.type = :type_in, f.amount, 0))',
-            'out_sum'   => 'SUM(IF(f.type = :type_out, f.amount, 0))',
+            'in_sum' => 'SUM(IF(f.type = :type_in, f.amount, 0))',
+            'out_sum' => 'SUM(IF(f.type = :type_out, f.amount, 0))',
         ];
 
         $query = (new Query($db))->select($selectedCols)->addParams([
-            ':type_in'      => 'in',
-            ':type_out'     => 'out',
+            ':type_in' => 'in',
+            ':type_out' => 'out',
             ':type_partner' => 'partner',
         ]);
 
@@ -226,8 +226,8 @@ trait TestQueryTrait
         $query = new Query($db);
 
         $query->filterWhere([
-            'id'         => 0,
-            'title'      => '   ',
+            'id' => 0,
+            'title' => '   ',
             'author_ids' => [],
         ]);
 
@@ -298,8 +298,8 @@ trait TestQueryTrait
         $query = new Query($db);
 
         $query->filterHaving([
-            'id'         => 0,
-            'title'      => '   ',
+            'id' => 0,
+            'title' => '   ',
             'author_ids' => [],
         ]);
 
@@ -371,10 +371,10 @@ trait TestQueryTrait
 
         $query->filterWhere(
             ['and', ['like', 'name', ''],
-            ['like', 'title', ''],
-            ['id' => 1],
-            ['not',
-            ['like', 'name', '']]]
+                ['like', 'title', ''],
+                ['id' => 1],
+                ['not',
+                    ['like', 'name', ''], ], ]
         );
 
         $this->assertEquals(['and', ['id' => 1]], $query->getWhere());
@@ -488,8 +488,8 @@ trait TestQueryTrait
             $this->assertContains(2, $result);
             $this->assertContains(3, $result);
         } else {
-            $this->assertContains("2", $result);
-            $this->assertContains("3", $result);
+            $this->assertContains('2', $result);
+            $this->assertContains('3', $result);
         }
 
         $this->assertNotContains(1, $result);
@@ -877,7 +877,7 @@ trait TestQueryTrait
             'When Query has disabled cache, we get actual data'
         );
 
-        $db->cache(function () use ($query, $update) {
+        $db->cache(function () use ($query) {
             $this->assertEquals('user1', $query->noCache()->where(['id' => 1])->scalar());
             $this->assertEquals('user11', $query->cache()->where(['id' => 1])->scalar());
         }, 10);
