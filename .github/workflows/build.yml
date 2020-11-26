@@ -10,7 +10,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: "dev-master"
-      extensions: dom, json, pdo, pdo_mysql, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.9.0preview1
+      extensions: dom, json, pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.9.0preview1, oci8
       key: cache-v1
 
     runs-on: ${{ matrix.os }}
@@ -33,6 +33,11 @@ jobs:
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      oci:
+          image: wnameless/oracle-xe-11g-r2:latest
+          ports:
+              - 1521:1521
+          options: --name=oci
       postgres:
         image: postgres:13
         env:
