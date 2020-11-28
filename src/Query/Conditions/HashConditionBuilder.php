@@ -31,7 +31,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
      * @param ExpressionInterface|HashCondition $expression the expression to be built.
      * @param array $params the binding parameters.
      *
-     * @throws InvalidArgumentException|Exception|InvalidConfigException|NotSupportedException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */

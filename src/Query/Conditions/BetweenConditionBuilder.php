@@ -24,7 +24,7 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
     /**
      * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
      *
-     * @param ExpressionInterface|BetweenCondition $expression the expression to be built.
+     * @param BetweenCondition|ExpressionInterface $expression the expression to be built.
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
@@ -52,7 +52,7 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      * @param mixed $value
      * @param array $params passed by reference
      *
-     * @throws InvalidArgumentException|Exception|InvalidConfigException|NotSupportedException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string
      */

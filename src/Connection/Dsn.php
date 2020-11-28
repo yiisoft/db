@@ -35,7 +35,6 @@ final class Dsn
      *
      * Will result in the DSN string `mysql:host=127.0.0.1;dbname=yiitest;port=3306`.
      */
-
     public function asString(): string
     {
         $dsn = "$this->driver:" . "host=$this->host" . ';' . "dbname=$this->databaseName";

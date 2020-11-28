@@ -141,7 +141,7 @@ abstract class Schema
      */
     protected function resolveTableName(string $name): TableSchema
     {
-        throw new NotSupportedException(get_class($this) . ' does not support resolving table names.');
+        throw new NotSupportedException(static::class . ' does not support resolving table names.');
     }
 
     /**
@@ -156,7 +156,7 @@ abstract class Schema
      */
     protected function findSchemaNames(): array
     {
-        throw new NotSupportedException(get_class($this) . ' does not support fetching all schema names.');
+        throw new NotSupportedException(static::class . ' does not support fetching all schema names.');
     }
 
     /**
@@ -173,7 +173,7 @@ abstract class Schema
      */
     protected function findTableNames(string $schema = ''): array
     {
-        throw new NotSupportedException(get_class($this) . ' does not support fetching all table names.');
+        throw new NotSupportedException(static::class . ' does not support fetching all table names.');
     }
 
     /**
@@ -284,11 +284,11 @@ abstract class Schema
     {
         static $typeMap = [
             // php type => PDO type
-            'boolean'  => PDO::PARAM_BOOL,
-            'integer'  => PDO::PARAM_INT,
-            'string'   => PDO::PARAM_STR,
+            'boolean' => PDO::PARAM_BOOL,
+            'integer' => PDO::PARAM_INT,
+            'string' => PDO::PARAM_STR,
             'resource' => PDO::PARAM_LOB,
-            'NULL'     => PDO::PARAM_NULL,
+            'NULL' => PDO::PARAM_NULL,
         ];
 
         $type = gettype($data);
@@ -460,11 +460,11 @@ abstract class Schema
      *
      * Note that if the parameter is not a string, it will be returned without change.
      *
-     * @param string|int $str string to be quoted.
+     * @param int|string $str string to be quoted.
      *
      * @throws Exception|InvalidConfigException
      *
-     * @return string|int the properly quoted string.
+     * @return int|string the properly quoted string.
      *
      * {@see http://www.php.net/manual/en/function.PDO-quote.php}
      */
@@ -678,15 +678,15 @@ abstract class Schema
     {
         static $typeMap = [
             // abstract type => php type
-            self::TYPE_TINYINT  => 'integer',
+            self::TYPE_TINYINT => 'integer',
             self::TYPE_SMALLINT => 'integer',
-            self::TYPE_INTEGER  => 'integer',
-            self::TYPE_BIGINT   => 'integer',
-            self::TYPE_BOOLEAN  => 'boolean',
-            self::TYPE_FLOAT    => 'double',
-            self::TYPE_DOUBLE   => 'double',
-            self::TYPE_BINARY   => 'resource',
-            self::TYPE_JSON     => 'array',
+            self::TYPE_INTEGER => 'integer',
+            self::TYPE_BIGINT => 'integer',
+            self::TYPE_BOOLEAN => 'boolean',
+            self::TYPE_FLOAT => 'double',
+            self::TYPE_DOUBLE => 'double',
+            self::TYPE_BINARY => 'resource',
+            self::TYPE_JSON => 'array',
         ];
 
         if (isset($typeMap[$column->getType()])) {
@@ -777,7 +777,7 @@ abstract class Schema
             __CLASS__,
             $this->db->getDsn(),
             $this->db->getUsername(),
-            $this->getRawTableName($name)
+            $this->getRawTableName($name),
         ];
 
         $jsonKey = json_encode($key, JSON_THROW_ON_ERROR);

@@ -27,7 +27,7 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     /**
      * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
      *
-     * @param ExpressionInterface|ConjunctionCondition $expression the expression to be built.
+     * @param ConjunctionCondition|ExpressionInterface $expression the expression to be built.
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
@@ -52,10 +52,10 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds expressions, that are stored in $condition.
      *
-     * @param ExpressionInterface|ConjunctionCondition $condition the expression to be built.
+     * @param ConjunctionCondition|ExpressionInterface $condition the expression to be built.
      * @param array $params the binding parameters.
      *
-     * @throws InvalidArgumentException|Exception|InvalidConfigException|NotSupportedException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return array
      */

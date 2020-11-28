@@ -63,7 +63,7 @@ final class SqlDataProvider extends DataProvider
     private array $params = [];
 
     /**
-     * @var string|callable|null the column that is used as the key of the data models.
+     * @var callable|string|null the column that is used as the key of the data models.
      * This can be either a column name, or a callable that returns the key value of a given data model.
      *
      * If this is not set, the keys of the [[models]] array will be used.
@@ -131,7 +131,7 @@ final class SqlDataProvider extends DataProvider
                 if (is_string($this->key)) {
                     $keys[] = $model[$this->key];
                 } else {
-                    $keys[] = call_user_func($this->key, $model);
+                    $keys[] = ($this->key)($model);
                 }
             }
 
