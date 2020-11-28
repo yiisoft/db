@@ -937,10 +937,10 @@ trait TestQueryBuilderTrait
                 $this->primaryKey()->first(),
                 [
                     'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
-                    'oci' => 'NUMBER(10) NOT NULL PRIMARY KEY',
                     'sqlsrv' => 'int IDENTITY PRIMARY KEY',
                 ],
                 [
+                    'oci' => 'NUMBER(10) NOT NULL PRIMARY KEY FIRST',
                     'sqlsrv' => 'pk',
                 ],
             ],
@@ -949,10 +949,10 @@ trait TestQueryBuilderTrait
                 $this->integer()->first(),
                 [
                     'mysql' => 'int(11) FIRST',
-                    'oci' => 'NUMBER(10)',
                     'sqlsrv' => 'int',
                 ],
                 [
+                    'oci' => 'NUMBER(10) FIRST',
                     'pgsql' => 'integer',
                     'sqlsrv' => 'integer',
                 ],
@@ -962,10 +962,10 @@ trait TestQueryBuilderTrait
                 $this->string()->first(),
                 [
                     'mysql' => 'varchar(255) FIRST',
-                    'oci' => 'VARCHAR2(255)',
                     'sqlsrv' => 'nvarchar(255)',
                 ],
                 [
+                    'oci' => 'VARCHAR2(255) FIRST',
                     'sqlsrv' => 'string',
                 ],
             ],
@@ -974,10 +974,10 @@ trait TestQueryBuilderTrait
                 $this->integer()->append('NOT NULL')->first(),
                 [
                     'mysql' => 'int(11) NOT NULL FIRST',
-                    'oci' => 'NUMBER(10) NOT NULL',
                     'sqlsrv' => 'int NOT NULL',
                 ],
                 [
+                    'oci' => 'NUMBER(10) NOT NULL FIRST',
                     'sqlsrv' => 'integer NOT NULL',
                 ],
             ],
@@ -986,10 +986,10 @@ trait TestQueryBuilderTrait
                 $this->string()->append('NOT NULL')->first(),
                 [
                     'mysql' => 'varchar(255) NOT NULL FIRST',
-                    'oci' => 'VARCHAR2(255) NOT NULL',
                     'sqlsrv' => 'nvarchar(255) NOT NULL',
                 ],
                 [
+                    'oci' => 'VARCHAR2(255) NOT NULL FIRST',
                     'sqlsrv' => 'string NOT NULL',
                 ],
             ],
