@@ -349,21 +349,15 @@ abstract class Connection implements ConnectionInterface
      */
     public function cache(callable $callable, int $duration = null, Dependency $dependency = null)
     {
-        $this->queryCache->setCacheInfo(
-            [$duration ?? $this->queryCache->getCacheDuration(), $dependency]
+        $this->queryCache->setInfo(
+            [$duration ?? $this->queryCache->getDuration(), $dependency]
         );
 
-        try {
-            $result = $callable($this);
+        $result = $callable($this);
 
-            $this->queryCache->cacheInfoArrayPop();
+        $this->queryCache->removeLastInfo();
 
-            return $result;
-        } catch (Throwable $e) {
-            $this->queryCache->cacheInfoArrayPop();
-
-            throw $e;
-        }
+        return $result;
     }
 
     public function getAttributes(): array
@@ -642,19 +636,13 @@ abstract class Connection implements ConnectionInterface
      */
     public function noCache(callable $callable)
     {
-        $this->queryCache->setCacheInfo(false);
+        $this->queryCache->setInfo(false);
 
-        try {
-            $result = $callable($this);
+        $result = $callable($this);
 
-            $this->queryCache->cacheInfoArrayPop();
+        $this->queryCache->removeLastInfo();
 
-            return $result;
-        } catch (Throwable $e) {
-            $this->queryCache->cacheInfoArrayPop();
-
-            throw $e;
-        }
+        return $result;
     }
 
     /**
@@ -816,7 +804,7 @@ abstract class Connection implements ConnectionInterface
 
             $key = $this->schemaCache->normalize([__METHOD__, $db->getDsn()]);
 
-            if ($this->schemaCache->isCacheEnabled() && $cache->get($key)) {
+            if ($this->schemaCache->isEnabled() && $cache->get($key)) {
                 /** should not try this dead server now */
                 continue;
             }
@@ -833,7 +821,7 @@ abstract class Connection implements ConnectionInterface
                     );
                 }
 
-                if ($this->schemaCache->isCacheEnabled()) {
+                if ($this->schemaCache->isEnabled()) {
                     /** mark this server as dead and only retry it after the specified interval */
                     $cache->set($key, 1, $this->serverRetryInterval);
                 }

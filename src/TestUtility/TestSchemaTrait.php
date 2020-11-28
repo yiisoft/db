@@ -4,19 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestUtility;
 
-use function array_keys;
-use function fclose;
-use function fopen;
-use function gettype;
-use function is_array;
-use function json_encode;
-use function ksort;
 use PDO;
-
-use function print_r;
-use function sort;
-use function sprintf;
-use function strtolower;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
@@ -24,6 +12,18 @@ use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Schema\ColumnSchema;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchema;
+
+use function array_keys;
+use function fclose;
+use function fopen;
+use function gettype;
+use function is_array;
+use function json_encode;
+use function ksort;
+use function print_r;
+use function sort;
+use function sprintf;
+use function strtolower;
 
 trait TestSchemaTrait
 {
@@ -51,7 +51,7 @@ trait TestSchemaTrait
 
         $schema = $db->getSchema();
 
-        $db->getSchemaCache()->setEnableCache(true);
+        $db->getSchemaCache()->setEnable(true);
 
         $noCacheTable = $schema->getTableSchema('type', true);
         $cachedTable = $schema->getTableSchema('type', false);
@@ -74,7 +74,7 @@ trait TestSchemaTrait
     {
         $schema = $this->getConnection()->getSchema();
 
-        $schema->getDb()->getSchemaCache()->setEnableCache(true);
+        $schema->getDb()->getSchemaCache()->setEnable(true);
 
         $noCacheTable = $schema->getTableSchema('type', true);
 

@@ -15,35 +15,30 @@ use function is_array;
 final class QueryCache
 {
     private CacheInterface $cache;
-    private bool $enableCache = true;
-    public array $cacheInfo = [];
-    private int $cacheDuration = 3600;
-    private CacheKeyNormalizer $cacheKeyNormalizer;
+    private bool $enabled = true;
+    public array $info = [];
+    private int $duration = 3600;
+    private CacheKeyNormalizer $keyNormalizer;
 
-    public function __construct(CacheInterface $cache, CacheKeyNormalizer $cacheKeyNormalizer)
+    public function __construct(CacheInterface $cache, CacheKeyNormalizer $keyNormalizer)
     {
         $this->cache = $cache;
-        $this->cacheKeyNormalizer = $cacheKeyNormalizer;
+        $this->keyNormalizer = $keyNormalizer;
     }
 
     public function normalize($key): string
     {
-        return $this->cacheKeyNormalizer->normalize($key);
+        return $this->keyNormalizer->normalize($key);
     }
 
-    public function getCacheDuration(): ?int
+    public function getDuration(): ?int
     {
-        return $this->cacheDuration;
+        return $this->duration;
     }
 
-    public function getCacheInfo(): array
+    public function isEnabled(): bool
     {
-        return $this->cacheInfo;
-    }
-
-    public function isCacheEnabled(): bool
-    {
-        return $this->enableCache;
+        return $this->enabled;
     }
 
     /**
@@ -52,17 +47,16 @@ final class QueryCache
      * This method is used internally by {@see Command}.
      *
      * @param int|null $duration the preferred caching duration. If null, it will be ignored.
-     * @param Dependency|null $dependency the preferred caching dependency. If null, it will be
-     * ignored.
+     * @param Dependency|null $dependency the preferred caching dependency. If null, it will be ignored.
      *
      * @return array|null the current query cache information, or null if query cache is not enabled.
      */
-    public function cacheInfo(?int $duration, Dependency $dependency = null): ?array
+    public function info(?int $duration, Dependency $dependency = null): ?array
     {
         $result = null;
 
-        if ($this->enableCache) {
-            $info = end($this->cacheInfo);
+        if ($this->enabled) {
+            $info = end($this->info);
 
             if (is_array($info)) {
                 if ($duration === null) {
@@ -84,30 +78,29 @@ final class QueryCache
         return $result;
     }
 
-    public function cacheInfoArrayPop(): void
+    public function removeLastInfo(): void
     {
-        array_pop($this->cacheInfo);
+        array_pop($this->info);
     }
 
     /**
      * Whether to enable query caching. Note that in order to enable query caching, a valid cache component as specified
-     * by {@see setQueryCache()} must be enabled and {@see enableQueryCache} must be set true. Also, only the results of
-     * the queries enclosed within {@see cache()} will be cached.
+     * must be enabled and {@see enabled} must be set true. Also, only the results of the queries enclosed within
+     * {@see cache()} will be cached.
      *
      * @param bool $value
      *
-     * {@see setQueryCache()}
      * {@see cache()}
      * {@see noCache()}
      */
-    public function setEnableCache(bool $value): void
+    public function setEnable(bool $value): void
     {
-        $this->enableCache = $value;
+        $this->enabled = $value;
     }
 
-    public function setCacheInfo($value): void
+    public function setInfo($value): void
     {
-        $this->cacheInfo[] = $value;
+        $this->info[] = $value;
     }
 
     /**
@@ -117,11 +110,10 @@ final class QueryCache
      *
      * @param int $value
      *
-     * {@see setEnableQueryCache()}
      * {@see cache()}
      */
-    public function setCacheDuration(int $value): void
+    public function setDuration(int $value): void
     {
-        $this->cacheDuration = $value;
+        $this->duration = $value;
     }
 }

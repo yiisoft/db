@@ -145,7 +145,7 @@ class Command
      */
     public function cache(?int $duration = null, Dependency $dependency = null): self
     {
-        $this->queryCacheDuration = $duration ?? $this->queryCache->getCacheDuration();
+        $this->queryCacheDuration = $duration ?? $this->queryCache->getDuration();
         $this->queryCacheDependency = $dependency;
 
         return $this;
@@ -1319,7 +1319,7 @@ class Command
         [, $rawSql] = $this->logQuery(__CLASS__ . '::query');
 
         if ($method !== '') {
-            $info = $this->queryCache->cacheInfo(
+            $info = $this->queryCache->info(
                 $this->queryCacheDuration,
                 $this->queryCacheDependency
             );

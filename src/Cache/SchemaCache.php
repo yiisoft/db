@@ -10,20 +10,20 @@ use Yiisoft\Cache\CacheKeyNormalizer;
 final class SchemaCache
 {
     private CacheInterface $cache;
-    private bool $enableCache = true;
-    private int $cacheDuration = 3600;
-    private array $cacheExclude = [];
-    private CacheKeyNormalizer $cacheKeyNormalizer;
+    private bool $enabled = true;
+    private int $duration = 3600;
+    private array $exclude = [];
+    private CacheKeyNormalizer $keyNormalizer;
 
-    public function __construct(CacheInterface $cache, CacheKeyNormalizer $cacheKeyNormalizer)
+    public function __construct(CacheInterface $cache, CacheKeyNormalizer $keyNormalizer)
     {
         $this->cache = $cache;
-        $this->cacheKeyNormalizer = $cacheKeyNormalizer;
+        $this->keyNormalizer = $keyNormalizer;
     }
 
     public function normalize($key): string
     {
-        return $this->cacheKeyNormalizer->normalize($key);
+        return $this->keyNormalizer->normalize($key);
     }
 
     public function getCache(): CacheInterface
@@ -31,34 +31,33 @@ final class SchemaCache
         return $this->cache;
     }
 
-    public function getCacheDuration(): int
+    public function getDuration(): int
     {
-        return $this->cacheDuration;
+        return $this->duration;
     }
 
-    public function getCacheExclude(): array
+    public function isExclude(string $value): bool
     {
-        return $this->cacheExclude;
+        return !in_array($value, $this->exclude, true);
     }
 
-    public function isCacheEnabled(): bool
+    public function isEnabled(): bool
     {
-        return $this->enableCache;
+        return $this->enabled;
     }
 
     /**
      * Whether to enable schema caching. Note that in order to enable truly schema caching, a valid cache component as
-     * specified by {@see setSchemaCache()} must be enabled and {@see setEnableSchemaCache()} must be set true.
+     * specified must be enabled and {@see setEnable()} must be set true.
      *
      * @param bool $value
      *
-     * {@see setSchemaCacheDuration()}
-     * {@see setSchemaCacheExclude()}
-     * {@see setSchemaCache()}
+     * {@see setduration()}
+     * {@see setExclude()}
      */
-    public function setEnableCache(bool $value): void
+    public function setEnable(bool $value): void
     {
-        $this->enableCache = $value;
+        $this->enabled = $value;
     }
 
     /**
@@ -67,11 +66,11 @@ final class SchemaCache
      *
      * @param int $value
      *
-     * {@see setEnableSchemaCache()}
+     * {@see setEnable()}
      */
-    public function setCacheDuration(int $value): void
+    public function setDuration(int $value): void
     {
-        $this->cacheDuration = $value;
+        $this->duration = $value;
     }
 
     /**
@@ -80,10 +79,10 @@ final class SchemaCache
      *
      * @param array $value
      *
-     * {@see setEnableSchemaCache()}
+     * {@see setEnable()}
      */
-    public function setCacheExclude(array $value): void
+    public function setExclude(array $value): void
     {
-        $this->cacheExclude = $value;
+        $this->exclude = $value;
     }
 }

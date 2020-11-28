@@ -307,7 +307,7 @@ abstract class Schema
         /* @var $cache CacheInterface */
         $cache = $this->schemaCache->getCache();
 
-        if ($this->schemaCache->isCacheEnabled()) {
+        if ($this->schemaCache->isEnabled()) {
             TagDependency::invalidate($cache, $this->getCacheTag());
         }
 
@@ -333,7 +333,7 @@ abstract class Schema
 
         $this->tableNames = [];
 
-        if ($this->schemaCache->isCacheEnabled()) {
+        if ($this->schemaCache->isEnabled()) {
             $this->schemaCache->getCache()->delete($this->getCacheKey($rawName));
         }
     }
@@ -351,7 +351,7 @@ abstract class Schema
      */
     public function getLastInsertID(string $sequenceName = ''): string
     {
-        if ($this->db->isActive() && $this->db->getPDO() !== null) {
+        if ($this->db->isActive()) {
             return $this->db->getPDO()->lastInsertId(
                 $sequenceName === '' ? null : $this->quoteTableName($sequenceName)
             );
@@ -817,10 +817,7 @@ abstract class Schema
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false)
     {
-        if (
-            $this->schemaCache->isCacheEnabled() &&
-            !in_array($name, $this->schemaCache->getCacheExclude(), true)
-        ) {
+        if ($this->schemaCache->isEnabled() && $this->schemaCache->isExclude($name)) {
             $schemaCache = $this->schemaCache->getCache();
         }
 
@@ -964,7 +961,7 @@ abstract class Schema
         $cache->set(
             $this->getCacheKey($name),
             $metadata,
-            $this->schemaCache->getCacheDuration()
+            $this->schemaCache->getDuration()
         );
     }
 
