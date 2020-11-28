@@ -483,19 +483,21 @@ trait TestQueryTrait
         $result = $query->column();
 
         $this->assertCount(2, $result);
-        if ($db->getDriverName() !== 'sqlsrv') {
+
+        if ($db->getDriverName() !== 'sqlsrv' && $db->getDriverName() !== 'oci') {
             $this->assertContains(2, $result);
             $this->assertContains(3, $result);
         } else {
             $this->assertContains('2', $result);
             $this->assertContains('3', $result);
         }
+
         $this->assertNotContains(1, $result);
     }
 
     public function testOne(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $result = (new Query($db))->from('customer')->where(['status' => 2])->one();
 
@@ -773,10 +775,14 @@ trait TestQueryTrait
      */
     public function testExpressionInFrom(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $query = (new Query($db))
-            ->from(new Expression('(SELECT id, name, email, address, status FROM customer) c'))
+            ->from(
+                new Expression(
+                    '(SELECT [[id]], [[name]], [[email]], [[address]], [[status]] FROM {{customer}}) c'
+                )
+            )
             ->where(['status' => 2]);
 
         $result = $query->one();

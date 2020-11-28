@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
-use Iterator;
-use PDOException;
-use Throwable;
-use Yiisoft\Db\Data\DataReader;
-use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
-
 use function current;
+use Iterator;
 use function key;
 use function next;
+use PDOException;
 use function reset;
+use Throwable;
+
+use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Data\DataReader;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
 
 /**
  * BatchQueryResult represents a batch query from which you can retrieve data in batches.

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Data;
 
+use function call_user_func_array;
 use Countable;
 use Iterator;
 use PDO;
 use PDOStatement;
 use Yiisoft\Db\Command\Command;
-use Yiisoft\Db\Exception\InvalidCallException;
 
-use function call_user_func_array;
+use Yiisoft\Db\Exception\InvalidCallException;
 
 /**
  * DataReader represents a forward-only stream of rows from a query result set.

@@ -4,28 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
-use Generator;
-use JsonException;
-use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Query\Conditions\ConditionInterface;
-use Yiisoft\Db\Constraint\Constraint;
-use Yiisoft\Db\Constraint\ConstraintFinderInterface;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\ExpressionBuilder;
-use Yiisoft\Db\Expression\ExpressionBuilderInterface;
-use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\HashCondition;
-use Yiisoft\Db\Query\Conditions\SimpleCondition;
-use Yiisoft\Db\Schema\ColumnSchemaBuilder;
-use Yiisoft\Db\Schema\Schema;
-use Yiisoft\Db\Pdo\PdoValue;
-use Yiisoft\Db\Pdo\PdoValueBuilder;
-use Yiisoft\Strings\NumericHelper;
-
 use function array_combine;
 use function array_diff;
 use function array_filter;
@@ -39,6 +17,7 @@ use function array_values;
 use function array_walk;
 use function count;
 use function ctype_digit;
+use Generator;
 use function get_class;
 use function implode;
 use function in_array;
@@ -46,8 +25,10 @@ use function is_array;
 use function is_int;
 use function is_object;
 use function is_string;
+
 use function is_subclass_of;
 use function json_encode;
+use JsonException;
 use function ltrim;
 use function preg_match;
 use function preg_replace;
@@ -57,6 +38,25 @@ use function strpos;
 use function strtoupper;
 use function strtr;
 use function trim;
+use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Constraint\ConstraintFinderInterface;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Expression\ExpressionBuilder;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Pdo\PdoValue;
+use Yiisoft\Db\Pdo\PdoValueBuilder;
+use Yiisoft\Db\Query\Conditions\ConditionInterface;
+use Yiisoft\Db\Query\Conditions\HashCondition;
+use Yiisoft\Db\Query\Conditions\SimpleCondition;
+use Yiisoft\Db\Schema\ColumnSchemaBuilder;
+use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Strings\NumericHelper;
 
 /**
  * QueryBuilder builds a SELECT SQL statement based on the specification given as a {@see Query} object.

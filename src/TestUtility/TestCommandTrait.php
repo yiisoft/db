@@ -283,7 +283,7 @@ trait TestCommandTrait
             $this->markTestSkipped('Your platform does not support locales.');
         }
 
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         try {
             /* This one sets decimal mark to comma sign */
@@ -300,12 +300,17 @@ trait TestCommandTrait
             /* clear data in "type" table */
             $db->createCommand()->delete('type')->execute();
 
+            /* change, for point oracle. */
+            if ($db->getDriverName() === 'oci') {
+                $db->createCommand("ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,'")->execute();
+            }
+
             /* batch insert on "type" table */
             $db->createCommand()->batchInsert('type', $cols, $data)->execute();
 
             $data = $db->createCommand(
-                'SELECT int_col, char_col, float_col, bool_col FROM {{type}} WHERE [[int_col]] IN (1,2,3)
-                ORDER BY [[int_col]];'
+                'SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] ' .
+                'FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]'
             )->queryAll();
 
             $this->assertCount(3, $data);
@@ -1401,5 +1406,38 @@ trait TestCommandTrait
                 ],
             ],
         ];
+    }
+
+    public function testAlterTable(): void
+    {
+        $db = $this->getConnection();
+
+        if ($db->getDriverName() === 'sqlite') {
+            $this->markTestSkipped('Sqlite does not support alterTable');
+        }
+
+        if ($db->getSchema()->getTableSchema('testAlterTable') !== null) {
+            $db->createCommand()->dropTable('testAlterTable')->execute();
+        }
+
+        $db->createCommand()->createTable(
+            'testAlterTable',
+            [
+                'id' => Schema::TYPE_PK,
+                'bar' => Schema::TYPE_INTEGER,
+            ]
+        )->execute();
+
+        $db->createCommand()->insert('testAlterTable', ['bar' => 1])->execute();
+
+        $db->createCommand()->alterColumn('testAlterTable', 'bar', Schema::TYPE_STRING)->execute();
+
+        $db->createCommand()->insert('testAlterTable', ['bar' => 'hello'])->execute();
+
+        $records = $db->createCommand('SELECT [[id]], [[bar]] FROM {{testAlterTable}}')->queryAll();
+        $this->assertEquals([
+            ['id' => 1, 'bar' => 1],
+            ['id' => 2, 'bar' => 'hello'],
+        ], $records);
     }
 }

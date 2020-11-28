@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Data;
 
-use Yiisoft\Db\Exception\InvalidConfigException;
-
 use function array_merge;
+
 use function explode;
 use function implode;
 use function is_array;
@@ -14,6 +13,7 @@ use function is_iterable;
 use function is_scalar;
 use function strncmp;
 use function substr;
+use Yiisoft\Db\Exception\InvalidConfigException;
 
 /**
  * Sort represents information relevant to sorting.

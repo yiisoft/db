@@ -10,7 +10,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: "dev-master"
-      extensions: dom, json, pdo, pdo_mysql, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.9.0preview1
+      extensions: dom, json, pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.9.0preview1, oci8
       key: cache-v1
 
     runs-on: ${{ matrix.os }}
@@ -33,6 +33,11 @@ jobs:
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      oci:
+          image: wnameless/oracle-xe-11g-r2:latest
+          ports:
+              - 1521:1521
+          options: --name=oci
       postgres:
         image: postgres:13
         env:
@@ -92,16 +97,19 @@ jobs:
           coverage: pcov
           tools: composer:v2, pecl
 
-      - name: Determine composer cache directory on Linux
-        run: echo "::set-env name=COMPOSER_CACHE_DIR::$(composer config cache-dir)"
+      - name: Determine composer cache directory
+        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
 
       - name: Cache dependencies installed with composer
-        uses: actions/cache@v1
+        uses: actions/cache@v2.1.3
         with:
           path: ${{ env.COMPOSER_CACHE_DIR }}
           key: php${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
           restore-keys: |
             php${{ matrix.php }}-composer-
+
+      - name: Update composer
+        run: composer self-update
 
       - name: Install dependencies with composer php 7.4
         if: matrix.php == '7.4'

@@ -28,14 +28,14 @@
         "yiisoft/data": "^3.0@dev",
         "yiisoft/log": "^3.0@dev",
         "yiisoft/profiler": "^3.0@dev",
-        "yiisoft/strings": "^1.0"
+        "yiisoft/strings": "^1.1"
     },
     "require-dev": {
         "infection/infection": "^0.17",
-        "phpunit/phpunit": "^9.3",
-        "vimeo/psalm": "^3.15",
+        "phpunit/phpunit": "^9.4",
+        "vimeo/psalm": "^4.1",
         "yiisoft/active-record": "^3.0@dev",
-        "yiisoft/aliases": "^1.0",
+        "yiisoft/aliases": "^1.1",
         "yiisoft/db-mssql": "^1.0@dev",
         "yiisoft/db-mysql": "^3.0@dev",
         "yiisoft/db-oracle": "^1.0@dev",
@@ -57,6 +57,7 @@
             "Yiisoft\\ActiveRecord\\Tests\\": "vendor/yiisoft/active-record/tests",
             "Yiisoft\\Db\\Mssql\\Tests\\": "vendor/yiisoft/db-mssql/tests",
             "Yiisoft\\Db\\Mysql\\Tests\\": "vendor/yiisoft/db-mysql/tests",
+            "Yiisoft\\Db\\Oracle\\Tests\\": "vendor/yiisoft/db-oracle/tests",
             "Yiisoft\\Db\\Pgsql\\Tests\\": "vendor/yiisoft/db-pgsql/tests",
             "Yiisoft\\Db\\Sqlite\\Tests\\": "vendor/yiisoft/db-sqlite/tests"
         }
