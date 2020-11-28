@@ -28,8 +28,8 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      * `%`, `_` and `\` with `\`.
      */
     protected array $escapingReplacements = [
-        '%'  => '\%',
-        '_'  => '\_',
+        '%' => '\%',
+        '_' => '\_',
         '\\' => '\\\\',
     ];
     protected ?string $escapeCharacter = null;

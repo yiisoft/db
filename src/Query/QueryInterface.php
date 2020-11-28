@@ -51,7 +51,7 @@ interface QueryInterface
     /**
      * Sets the {@see indexBy} property.
      *
-     * @param string|callable $column the name of the column by which the query results should be indexed by.
+     * @param callable|string $column the name of the column by which the query results should be indexed by.
      * This can also be a callable (e.g. anonymous function) that returns the index value based on the given row data.
      * The signature of the callable should be:
      *
@@ -64,7 +64,7 @@ interface QueryInterface
      *
      * @return QueryInterface the query object itself.
      */
-    public function indexBy($column): QueryInterface;
+    public function indexBy($column): self;
 
     /**
      * Sets the WHERE part of the query.
@@ -153,7 +153,7 @@ interface QueryInterface
      * **Note that this method will override any existing WHERE condition. You might want to use {@see andWhere()}
      * or {@see orWhere()} instead.**
      *
-     * @param string|array|ExpressionInterface $condition the conditions that should be put in the WHERE part.
+     * @param array|ExpressionInterface|string $condition the conditions that should be put in the WHERE part.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
      * @return QueryInterface the query object itself.
@@ -161,7 +161,7 @@ interface QueryInterface
      * {@see andWhere()}
      * {@see orWhere()}
      */
-    public function where($condition, array $params = []): QueryInterface;
+    public function where($condition, array $params = []): self;
 
     /**
      * Adds an additional WHERE condition to the existing one.
@@ -175,7 +175,7 @@ interface QueryInterface
      * {@see where()}
      * {@see orWhere()}
      */
-    public function andWhere(array $condition): QueryInterface;
+    public function andWhere(array $condition): self;
 
     /**
      * Adds an additional WHERE condition to the existing one.
@@ -189,7 +189,7 @@ interface QueryInterface
      * {@see where()}
      * {@see andWhere()}
      */
-    public function orWhere(array $condition): QueryInterface;
+    public function orWhere(array $condition): self;
 
     /**
      * Sets the WHERE part of the query ignoring empty parameters.
@@ -202,7 +202,7 @@ interface QueryInterface
      * {@see andFilterWhere()}
      * {@see orFilterWhere()}
      */
-    public function filterWhere(array $condition): QueryInterface;
+    public function filterWhere(array $condition): self;
 
     /**
      * Adds an additional WHERE condition to the existing one ignoring empty parameters.
@@ -215,7 +215,7 @@ interface QueryInterface
      * {@see filterWhere()}
      * {@see orFilterWhere()}
      */
-    public function andFilterWhere(array $condition): QueryInterface;
+    public function andFilterWhere(array $condition): self;
 
     /**
      * Adds an additional WHERE condition to the existing one ignoring empty parameters.
@@ -228,12 +228,12 @@ interface QueryInterface
      * {@see filterWhere()}
      * {@see andFilterWhere()}
      */
-    public function orFilterWhere(array $condition): QueryInterface;
+    public function orFilterWhere(array $condition): self;
 
     /**
      * Sets the ORDER BY part of the query.
      *
-     * @param string|array $columns the columns (and the directions) to be ordered by. Columns can be specified in
+     * @param array|string $columns the columns (and the directions) to be ordered by. Columns can be specified in
      * either a string (e.g. "id ASC, name DESC") or an array (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
      * The method will automatically quote the column names unless a column contains some parenthesis (which means the
      * column contains a DB expression).
@@ -242,12 +242,12 @@ interface QueryInterface
      *
      * {@see addOrderBy()}
      */
-    public function orderBy($columns): QueryInterface;
+    public function orderBy($columns): self;
 
     /**
      * Adds additional ORDER BY columns to the query.
      *
-     * @param string|array $columns the columns (and the directions) to be ordered by. Columns can be specified in
+     * @param array|string $columns the columns (and the directions) to be ordered by. Columns can be specified in
      * either a string (e.g. "id ASC, name DESC") or an array (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
      * The method will automatically quote the column names unless a column contains some parenthesis (which means the
      * column contains a DB expression).
@@ -256,7 +256,7 @@ interface QueryInterface
      *
      * {@see orderBy()}
      */
-    public function addOrderBy($columns): QueryInterface;
+    public function addOrderBy($columns): self;
 
     /**
      * Sets the LIMIT part of the query.
@@ -265,16 +265,16 @@ interface QueryInterface
      *
      * @return QueryInterface the query object itself
      */
-    public function limit(?int $limit): QueryInterface;
+    public function limit(?int $limit): self;
 
     /**
      * Sets the OFFSET part of the query.
      *
-     * @param int|ExpressionInterface|null $offset $offset the offset. Use null or negative value to disable offset.
+     * @param ExpressionInterface|int|null $offset $offset the offset. Use null or negative value to disable offset.
      *
      * @return QueryInterface the query object itself
      */
-    public function offset($offset): QueryInterface;
+    public function offset($offset): self;
 
     /**
      * Sets whether to emulate query execution, preventing any interaction with data storage.
@@ -287,5 +287,5 @@ interface QueryInterface
      *
      * @return QueryInterface the query object itself.
      */
-    public function emulateExecution(bool $value = true): QueryInterface;
+    public function emulateExecution(bool $value = true): self;
 }

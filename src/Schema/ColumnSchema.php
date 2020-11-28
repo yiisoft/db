@@ -151,7 +151,7 @@ class ColumnSchema
             PDO::PARAM_STR,
             PDO::PARAM_LOB,
             PDO::PARAM_NULL,
-            PDO::PARAM_STMT
+            PDO::PARAM_STMT,
         ];
     }
 
@@ -282,7 +282,7 @@ class ColumnSchema
 
     public function allowNull(bool $value): void
     {
-        $this->allowNull =  $value;
+        $this->allowNull = $value;
     }
 
     public function type(string $value): void

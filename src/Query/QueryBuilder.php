@@ -74,7 +74,6 @@ use function trim;
  * ```php
  *     ['LIKE' => \Yiisoft\Db\Condition\LikeCondition::class]
  * ```
- *
  * @property string[] $expressionBuilders Array of builders that should be merged with the pre-defined ones in
  * {@see expressionBuilders} property. This property is write-only.
  */
@@ -112,7 +111,7 @@ class QueryBuilder
     protected array $conditionClasses = [];
 
     /**
-     * @var string[]|ExpressionBuilderInterface[] maps expression class to expression builder class.
+     * @var ExpressionBuilderInterface[]|string[] maps expression class to expression builder class.
      * For example:
      *
      * ```php
@@ -148,19 +147,19 @@ class QueryBuilder
     protected function defaultConditionClasses(): array
     {
         return [
-            'NOT'         => Conditions\NotCondition::class,
-            'AND'         => Conditions\AndCondition::class,
-            'OR'          => Conditions\OrCondition::class,
-            'BETWEEN'     => Conditions\BetweenCondition::class,
+            'NOT' => Conditions\NotCondition::class,
+            'AND' => Conditions\AndCondition::class,
+            'OR' => Conditions\OrCondition::class,
+            'BETWEEN' => Conditions\BetweenCondition::class,
             'NOT BETWEEN' => Conditions\BetweenCondition::class,
-            'IN'          => Conditions\InCondition::class,
-            'NOT IN'      => Conditions\InCondition::class,
-            'LIKE'        => Conditions\LikeCondition::class,
-            'NOT LIKE'    => Conditions\LikeCondition::class,
-            'OR LIKE'     => Conditions\LikeCondition::class,
+            'IN' => Conditions\InCondition::class,
+            'NOT IN' => Conditions\InCondition::class,
+            'LIKE' => Conditions\LikeCondition::class,
+            'NOT LIKE' => Conditions\LikeCondition::class,
+            'OR LIKE' => Conditions\LikeCondition::class,
             'OR NOT LIKE' => Conditions\LikeCondition::class,
-            'EXISTS'      => Conditions\ExistsCondition::class,
-            'NOT EXISTS'  => Conditions\ExistsCondition::class,
+            'EXISTS' => Conditions\ExistsCondition::class,
+            'NOT EXISTS' => Conditions\ExistsCondition::class,
         ];
     }
 
@@ -175,19 +174,19 @@ class QueryBuilder
     protected function defaultExpressionBuilders(): array
     {
         return [
-            Query::class                              => QueryExpressionBuilder::class,
-            PdoValue::class                           => PdoValueBuilder::class,
-            Expression::class                         => ExpressionBuilder::class,
-            Conditions\ConjunctionCondition::class    => Conditions\ConjunctionConditionBuilder::class,
-            Conditions\NotCondition::class            => Conditions\NotConditionBuilder::class,
-            Conditions\AndCondition::class            => Conditions\ConjunctionConditionBuilder::class,
-            Conditions\OrCondition::class             => Conditions\ConjunctionConditionBuilder::class,
-            Conditions\BetweenCondition::class        => Conditions\BetweenConditionBuilder::class,
-            Conditions\InCondition::class             => Conditions\InConditionBuilder::class,
-            Conditions\LikeCondition::class           => Conditions\LikeConditionBuilder::class,
-            Conditions\ExistsCondition::class         => Conditions\ExistsConditionBuilder::class,
-            Conditions\SimpleCondition::class         => Conditions\SimpleConditionBuilder::class,
-            Conditions\HashCondition::class           => Conditions\HashConditionBuilder::class,
+            Query::class => QueryExpressionBuilder::class,
+            PdoValue::class => PdoValueBuilder::class,
+            Expression::class => ExpressionBuilder::class,
+            Conditions\ConjunctionCondition::class => Conditions\ConjunctionConditionBuilder::class,
+            Conditions\NotCondition::class => Conditions\NotConditionBuilder::class,
+            Conditions\AndCondition::class => Conditions\ConjunctionConditionBuilder::class,
+            Conditions\OrCondition::class => Conditions\ConjunctionConditionBuilder::class,
+            Conditions\BetweenCondition::class => Conditions\BetweenConditionBuilder::class,
+            Conditions\InCondition::class => Conditions\InConditionBuilder::class,
+            Conditions\LikeCondition::class => Conditions\LikeConditionBuilder::class,
+            Conditions\ExistsCondition::class => Conditions\ExistsConditionBuilder::class,
+            Conditions\SimpleCondition::class => Conditions\SimpleConditionBuilder::class,
+            Conditions\HashCondition::class => Conditions\HashConditionBuilder::class,
             Conditions\BetweenColumnsCondition::class => Conditions\BetweenColumnsConditionBuilder::class,
         ];
     }
@@ -289,7 +288,7 @@ class QueryBuilder
      * @param array $params the parameters to be bound to the generated SQL statement. These parameters will be included
      * in the result with the additional parameters generated during the expression building process.
      *
-     * @throws Exception|InvalidConfigException|NotSupportedException|InvalidArgumentException when $expression building
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException when $expression building
      * is not supported by this QueryBuilder.
      *
      * @return string the SQL statement that will not be neither quoted nor encoded before passing to DBMS.
@@ -332,7 +331,7 @@ class QueryBuilder
 
             if (!isset($this->expressionBuilders[$className])) {
                 throw new InvalidArgumentException(
-                    'Expression of class ' . $className . ' can not be built in ' . get_class($this)
+                    'Expression of class ' . $className . ' can not be built in ' . static::class
                 );
             }
         }
@@ -855,7 +854,7 @@ class QueryBuilder
      *
      * @param string $name the name of the primary key constraint.
      * @param string $table the table that the primary key constraint will be added to.
-     * @param string|array $columns comma separated string or array of columns that the primary key will consist of.
+     * @param array|string $columns comma separated string or array of columns that the primary key will consist of.
      *
      * @return string the SQL statement for adding a primary key constraint to an existing table.
      */
@@ -978,10 +977,10 @@ class QueryBuilder
      *
      * @param string $name the name of the foreign key constraint.
      * @param string $table the table that the foreign key constraint will be added to.
-     * @param string|array $columns the name of the column to that the constraint will be added on. If there are
+     * @param array|string $columns the name of the column to that the constraint will be added on. If there are
      * multiple columns, separate them with commas or use an array to represent them.
      * @param string $refTable the table that the foreign key references to.
-     * @param string|array $refColumns the name of the column that the foreign key references to. If there are multiple
+     * @param array|string $refColumns the name of the column that the foreign key references to. If there are multiple
      * columns, separate them with commas or use an array to represent them.
      * @param string|null $delete the ON DELETE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION,
      * SET DEFAULT, SET NULL.
@@ -1039,7 +1038,7 @@ class QueryBuilder
      * @param string $name the name of the index. The name will be properly quoted by the method.
      * @param string $table the table that the new index will be created for. The table name will be properly quoted by
      * the method.
-     * @param string|array $columns the column(s) that should be included in the index. If there are multiple columns,
+     * @param array|string $columns the column(s) that should be included in the index. If there are multiple columns,
      * separate them with commas or use an array to represent them. Each column name will be properly quoted by the
      * method, unless a parenthesis is found in the name.
      * @param bool $unique whether to add UNIQUE constraint on the created index.
@@ -1075,7 +1074,7 @@ class QueryBuilder
      * @param string $name the name of the unique constraint. The name will be properly quoted by the method.
      * @param string $table the table that the unique constraint will be added to. The name will be properly quoted by
      * the method.
-     * @param string|array $columns the name of the column to that the constraint will be added on. If there are
+     * @param array|string $columns the name of the column to that the constraint will be added on. If there are
      * multiple columns, separate them with commas. The name will be properly quoted by the method.
      *
      * @return string the SQL statement for adding an unique constraint to an existing table.
@@ -1207,7 +1206,6 @@ class QueryBuilder
      *
      * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
      * @param string $table the table name. Defaults to empty string, meaning that no table will be changed.
-     *
      * @param bool $check whether to turn on or off the integrity check.
      *
      * @throws Exception|NotSupportedException if this is not supported by the underlying DBMS.
@@ -1285,7 +1283,7 @@ class QueryBuilder
      * Creates a SQL View.
      *
      * @param string $viewName the name of the view to be created.
-     * @param string|Query $subQuery the select statement which defines the view.
+     * @param Query|string $subQuery the select statement which defines the view.
      *
      * This can be either a string or a {@see Query} object.
      *
@@ -1363,7 +1361,7 @@ class QueryBuilder
      *
      * If a type cannot be found in {@see typeMap}, it will be returned without any change.
      *
-     * @param string|ColumnSchemaBuilder $type abstract column type.
+     * @param ColumnSchemaBuilder|string $type abstract column type.
      *
      * @return string physical column type.
      */
@@ -1545,7 +1543,7 @@ class QueryBuilder
     }
 
     /**
-     * @param string|array $condition
+     * @param array|string $condition
      * @param array $params the binding parameters to be populated.
      *
      * @throws InvalidArgumentException
@@ -1585,7 +1583,7 @@ class QueryBuilder
     }
 
     /**
-     * @param string|array $condition
+     * @param array|string $condition
      * @param array $params the binding parameters to be populated.
      *
      * @throws InvalidArgumentException
@@ -1738,9 +1736,9 @@ class QueryBuilder
      *
      * It will join all columns into a string with comma as separators.
      *
-     * @param string|array $columns the columns to be processed.
+     * @param array|string $columns the columns to be processed.
      *
-     * @throws InvalidArgumentException|Exception
+     * @throws Exception|InvalidArgumentException
      *
      * @return string the processing result.
      */
@@ -1772,7 +1770,7 @@ class QueryBuilder
     /**
      * Parses the condition specification and generates the corresponding SQL expression.
      *
-     * @param string|array|ExpressionInterface $condition the condition specification.
+     * @param array|ExpressionInterface|string $condition the condition specification.
      * Please refer to {@see Query::where()} on how to specify a condition.
      * @param array $params the binding parameters to be populated.
      *
@@ -1800,7 +1798,7 @@ class QueryBuilder
     /**
      * Transforms $condition defined in array format (as described in {@see Query::where()} to instance of
      *
-     * @param string|array $condition.
+     * @param array|string $condition.
      *
      * @throws InvalidArgumentException
      *
@@ -1839,7 +1837,7 @@ class QueryBuilder
     /**
      * Helper method to add $value to $params array using {@see PARAM_PREFIX}.
      *
-     * @param string|int|null $value
+     * @param int|string|null $value
      * @param array $params passed by reference.
      *
      * @return string the placeholder name in $params array.
@@ -1857,7 +1855,7 @@ class QueryBuilder
      *
      * @param $table
      *
-     * @return bool|array
+     * @return array|bool
      */
     protected function extractAlias(string $table)
     {

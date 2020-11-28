@@ -128,7 +128,7 @@ class BatchQueryResult implements Iterator
     /**
      * Fetches the next batch of data.
      *
-     * @throws Exception|Throwable|InvalidConfigException
+     * @throws Exception|InvalidConfigException|Throwable
      *
      * @return array the data fetched.
      */
@@ -172,7 +172,7 @@ class BatchQueryResult implements Iterator
      *
      * This method is required by the interface {@see Iterator}.
      *
-     * @return string|int|null the index of the current row.
+     * @return int|string|null the index of the current row.
      */
     public function key()
     {

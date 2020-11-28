@@ -37,7 +37,6 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
      *
      * @param ExpressionInterface|InCondition $expression the expression to be built.
-     *
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
@@ -116,7 +115,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * Builds $values to be used in {@see InCondition}.
      *
      * @param ConditionInterface|InCondition $condition
-     * @param object|array $values
+     * @param array|object $values
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
@@ -164,7 +163,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @param Query $values
      * @param array $params
      *
-     * @throws InvalidArgumentException|Exception|InvalidConfigException|NotSupportedException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string SQL
      */

@@ -19,7 +19,6 @@ use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Cache\Dependency\Dependency;
 
 use function array_merge;
-use function call_user_func;
 use function count;
 use function gettype;
 use function is_array;
@@ -255,7 +254,7 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return string|null|false the value of the first column in the first row of the query result. False is returned
+     * @return false|string|null the value of the first column in the first row of the query result. False is returned
      * if the query result is empty.
      */
     public function scalar()
@@ -300,7 +299,7 @@ class Query implements QueryInterface, ExpressionInterface
             $value = reset($row);
 
             if ($this->indexBy instanceof Closure) {
-                $results[call_user_func($this->indexBy, $row)] = $value;
+                $results[($this->indexBy)($row)] = $value;
             } else {
                 $results[$row[$this->indexBy]] = $value;
             }
@@ -423,7 +422,7 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * Restores the value of select to make this query reusable.
      *
-     * @param string|ExpressionInterface $selectExpression
+     * @param ExpressionInterface|string $selectExpression
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
@@ -604,7 +603,7 @@ PATTERN;
     /**
      * Sets the SELECT part of the query.
      *
-     * @param string|array|ExpressionInterface $columns the columns to be selected.
+     * @param array|ExpressionInterface|string $columns the columns to be selected.
      * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
      * Columns can be prefixed with table names (e.g. "user.id") and/or contain column aliases
      * (e.g. "user.id AS user_id").
@@ -641,7 +640,7 @@ PATTERN;
      * $query->addSelect(["*", "CONCAT(first_name, ' ', last_name) AS full_name"])->one();
      * ```
      *
-     * @param string|array|ExpressionInterface $columns the columns to add to the select. See {@see select()} for more
+     * @param array|ExpressionInterface|string $columns the columns to add to the select. See {@see select()} for more
      * details about the format of this parameter.
      *
      * @return $this the query object itself.
@@ -666,7 +665,7 @@ PATTERN;
     /**
      * Normalizes the SELECT columns passed to {@see select()} or {@see addSelect()}.
      *
-     * @param string|array|ExpressionInterface $columns
+     * @param array|ExpressionInterface|string $columns
      *
      * @return array
      */
@@ -725,7 +724,7 @@ PATTERN;
     /**
      * Sets the FROM part of the query.
      *
-     * @param string|array|ExpressionInterface $tables the table(s) to be selected from. This can be either a string
+     * @param array|ExpressionInterface|string $tables the table(s) to be selected from. This can be either a string
      * (e.g. `'user'`) or an array (e.g. `['user', 'profile']`) specifying one or several table names.
      *
      * Table names can contain schema prefixes (e.g. `'public.user'`) and/or table aliases (e.g. `'user u'`).
@@ -782,7 +781,7 @@ PATTERN;
      *
      * {@inheritdoc}
      *
-     * @param string|array|ExpressionInterface $condition the conditions that should be put in the WHERE part.
+     * @param array|ExpressionInterface|string $condition the conditions that should be put in the WHERE part.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
      * @return $this the query object itself.
@@ -804,7 +803,7 @@ PATTERN;
      *
      * The new condition and the existing one will be joined using the `AND` operator.
      *
-     * @param string|array|ExpressionInterface $condition the new WHERE condition. Please refer to {@see where()} on how
+     * @param array|ExpressionInterface|string $condition the new WHERE condition. Please refer to {@see where()} on how
      * to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
@@ -833,7 +832,7 @@ PATTERN;
      *
      * The new condition and the existing one will be joined using the `OR` operator.
      *
-     * @param string|array|ExpressionInterface $condition the new WHERE condition. Please refer to {@see where()} on how
+     * @param array|ExpressionInterface|string $condition the new WHERE condition. Please refer to {@see where()} on how
      * to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
@@ -900,7 +899,7 @@ PATTERN;
      * The first parameter specifies what type of join it is.
      *
      * @param string $type  the type of join, such as INNER JOIN, LEFT JOIN.
-     * @param string|array $table the table to be joined.
+     * @param array|string $table the table to be joined.
      * Use a string to represent the name of the table to be joined.
      * The table name can contain a schema prefix (e.g. 'public.user') and/or table alias (e.g. 'user u').
      * The method will automatically quote the table name unless it contains some parenthesis (which means the table is
@@ -908,7 +907,7 @@ PATTERN;
      * Use an array to represent joining with a sub-query. The array must contain only one element.
      * The value must be a {@see Query} object representing the sub-query while the corresponding key represents the
      * alias for the sub-query.
-     * @param string|array $on the join condition that should appear in the ON part.
+     * @param array|string $on the join condition that should appear in the ON part.
      * Please refer to {@see where()} on how to specify this parameter.
      *
      * Note that the array format of {@see where()} is designed to match columns to values instead of columns to
@@ -934,7 +933,7 @@ PATTERN;
     /**
      * Appends an INNER JOIN part to the query.
      *
-     * @param string|array $table the table to be joined.
+     * @param array|string $table the table to be joined.
      * Use a string to represent the name of the table to be joined.
      * The table name can contain a schema prefix (e.g. 'public.user') and/or table alias (e.g. 'user u').
      * The method will automatically quote the table name unless it contains some parenthesis (which means the table is
@@ -942,7 +941,7 @@ PATTERN;
      * Use an array to represent joining with a sub-query. The array must contain only one element.
      * The value must be a {@see Query} object representing the sub-query while the corresponding key represents the
      * alias for the sub-query.
-     * @param string|array $on the join condition that should appear in the ON part.
+     * @param array|string $on the join condition that should appear in the ON part.
      * Please refer to {@see join()} on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
@@ -958,7 +957,7 @@ PATTERN;
     /**
      * Appends a LEFT OUTER JOIN part to the query.
      *
-     * @param string|array $table the table to be joined.
+     * @param array|string $table the table to be joined.
      * Use a string to represent the name of the table to be joined.
      * The table name can contain a schema prefix (e.g. 'public.user') and/or table alias (e.g. 'user u').
      * The method will automatically quote the table name unless it contains some parenthesis (which means the table is
@@ -966,7 +965,7 @@ PATTERN;
      * Use an array to represent joining with a sub-query. The array must contain only one element.
      * The value must be a {@see Query} object representing the sub-query while the corresponding key represents the
      * alias for the sub-query.
-     * @param string|array $on the join condition that should appear in the ON part.
+     * @param array|string $on the join condition that should appear in the ON part.
      * Please refer to {@see join()} on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
@@ -982,7 +981,7 @@ PATTERN;
     /**
      * Appends a RIGHT OUTER JOIN part to the query.
      *
-     * @param string|array $table the table to be joined.
+     * @param array|string $table the table to be joined.
      * Use a string to represent the name of the table to be joined.
      * The table name can contain a schema prefix (e.g. 'public.user') and/or table alias (e.g. 'user u').
      * The method will automatically quote the table name unless it contains some parenthesis (which means the table is
@@ -990,7 +989,7 @@ PATTERN;
      * Use an array to represent joining with a sub-query. The array must contain only one element.
      * The value must be a {@see Query} object representing the sub-query while the corresponding key represents the
      * alias for the sub-query.
-     * @param string|array $on the join condition that should appear in the ON part.
+     * @param array|string $on the join condition that should appear in the ON part.
      * Please refer to {@see join()} on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
@@ -1006,7 +1005,7 @@ PATTERN;
     /**
      * Sets the GROUP BY part of the query.
      *
-     * @param string|array|ExpressionInterface $columns the columns to be grouped by.
+     * @param array|ExpressionInterface|string $columns the columns to be grouped by.
      * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
      * The method will automatically quote the column names unless a column contains some parenthesis (which means the
      * column contains a DB expression).
@@ -1036,7 +1035,7 @@ PATTERN;
     /**
      * Adds additional group-by columns to the existing ones.
      *
-     * @param string|array $columns additional columns to be grouped by.
+     * @param array|string $columns additional columns to be grouped by.
      * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
      * The method will automatically quote the column names unless a column contains some parenthesis (which means the
      * column contains a DB expression).
@@ -1070,7 +1069,7 @@ PATTERN;
     /**
      * Sets the HAVING part of the query.
      *
-     * @param string|array|ExpressionInterface $condition the conditions to be put after HAVING.
+     * @param array|ExpressionInterface|string $condition the conditions to be put after HAVING.
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
@@ -1091,7 +1090,7 @@ PATTERN;
      * Adds an additional HAVING condition to the existing one.
      * The new condition and the existing one will be joined using the `AND` operator.
      *
-     * @param string|array|ExpressionInterface $condition the new HAVING condition. Please refer to {@see where()}
+     * @param array|ExpressionInterface|string $condition the new HAVING condition. Please refer to {@see where()}
      * on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
@@ -1118,7 +1117,7 @@ PATTERN;
      *
      * The new condition and the existing one will be joined using the `OR` operator.
      *
-     * @param string|array|ExpressionInterface $condition the new HAVING condition. Please refer to {@see where()}
+     * @param array|ExpressionInterface|string $condition the new HAVING condition. Please refer to {@see where()}
      * on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
@@ -1245,7 +1244,7 @@ PATTERN;
     /**
      * Appends a SQL statement using UNION operator.
      *
-     * @param string|Query $sql the SQL statement to be appended using UNION.
+     * @param Query|string $sql the SQL statement to be appended using UNION.
      * @param bool $all TRUE if using UNION ALL and FALSE if using UNION.
      *
      * @return $this the query object itself.
@@ -1362,7 +1361,7 @@ PATTERN;
      *
      * @return $this the new Query object.
      */
-    public static function create(ConnectionInterface $db, Query $from): self
+    public static function create(ConnectionInterface $db, self $from): self
     {
         return (new self($db))
             ->where($from->where)
@@ -1445,7 +1444,7 @@ PATTERN;
     /**
      * Prepends a SQL statement using WITH syntax.
      *
-     * @param string|Query $query the SQL statement to be appended using UNION.
+     * @param Query|string $query the SQL statement to be appended using UNION.
      * @param string $alias query alias in WITH construction.
      * @param bool $recursive TRUE if using WITH RECURSIVE and FALSE if using WITH.
      *

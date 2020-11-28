@@ -47,7 +47,7 @@ abstract class TableSchema
     /**
      * Manually specifies the primary key for this table.
      *
-     * @param string|array $keys the primary key (can be composite)
+     * @param array|string $keys the primary key (can be composite)
      *
      * @throws InvalidArgumentException if the specified key cannot be found in the table.
      */

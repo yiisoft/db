@@ -23,7 +23,6 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Profiler\Profiler;
 
 use function array_map;
-use function call_user_func;
 use function call_user_func_array;
 use function explode;
 use function get_resource_type;
@@ -325,7 +324,7 @@ class Command
     /**
      * Binds a parameter to the SQL statement to be executed.
      *
-     * @param string|int $name parameter identifier. For a prepared statement using named placeholders, this will be a
+     * @param int|string $name parameter identifier. For a prepared statement using named placeholders, this will be a
      * parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
      * @param mixed $value the PHP variable to bind to the SQL statement parameter (passed by reference).
@@ -378,7 +377,7 @@ class Command
     /**
      * Binds a value to a parameter.
      *
-     * @param string|int $name Parameter identifier. For a prepared statement using named placeholders, this will be a
+     * @param int|string $name Parameter identifier. For a prepared statement using named placeholders, this will be a
      * parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
      * @param mixed $value The value to bind to the parameter.
@@ -487,7 +486,7 @@ class Command
      * Please refer to [PHP manual](http://php.net/manual/en/pdostatement.setfetchmode.php)
      * for valid fetch modes. If this parameter is null, the value set in {@see fetchMode} will be used.
      *
-     * @throws Throwable|Exception execution failed.
+     * @throws Exception|Throwable execution failed.
      *
      * @return array|false the first row (in terms of an array) of the query result. False is returned if the query
      * results in nothing.
@@ -504,7 +503,7 @@ class Command
      *
      * @throws Exception|Throwable failed.
      *
-     * @return string|null|false the value of the first column in the first row of the query result. False is returned
+     * @return false|string|null the value of the first column in the first row of the query result. False is returned
      * if there is no value.
      */
     public function queryScalar()
@@ -666,7 +665,7 @@ class Command
      *
      * @param string $table the table to be updated.
      * @param array $columns the column data (name => value) to be updated.
-     * @param string|array $condition the condition that will be put in the WHERE part.
+     * @param array|string $condition the condition that will be put in the WHERE part.
      * Please refer to {@see Query::where()} on how to specify condition.
      * @param array $params the parameters to be bound to the command.
      *
@@ -700,7 +699,7 @@ class Command
      * Note that the created command is not executed until {@see execute()} is called.
      *
      * @param string $table the table where the data will be deleted from.
-     * @param string|array $condition the condition that will be put in the WHERE part. Please refer to
+     * @param array|string $condition the condition that will be put in the WHERE part. Please refer to
      * {@see Query::where()} on how to specify condition.
      * @param array $params the parameters to be bound to the command.
      *
@@ -859,7 +858,7 @@ class Command
      *
      * @param string $name the name of the primary key constraint.
      * @param string $table the table that the primary key constraint will be added to.
-     * @param string|array $columns comma separated string or array of columns that the primary key will consist of.
+     * @param array|string $columns comma separated string or array of columns that the primary key will consist of.
      *
      * @return $this the command object itself.
      */
@@ -892,10 +891,10 @@ class Command
      *
      * @param string $name the name of the foreign key constraint.
      * @param string $table the table that the foreign key constraint will be added to.
-     * @param string|array $columns the name of the column to that the constraint will be added on. If there are
+     * @param array|string $columns the name of the column to that the constraint will be added on. If there are
      * multiple columns, separate them with commas.
      * @param string $refTable the table that the foreign key references to.
-     * @param string|array $refColumns the name of the column that the foreign key references to. If there are multiple
+     * @param array|string $refColumns the name of the column that the foreign key references to. If there are multiple
      * columns, separate them with commas.
      * @param string|null $delete the ON DELETE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION,
      * SET DEFAULT, SET NULL.
@@ -948,7 +947,7 @@ class Command
      * @param string $name the name of the index. The name will be properly quoted by the method.
      * @param string $table the table that the new index will be created for. The table name will be properly quoted by
      * the method.
-     * @param string|array $columns the column(s) that should be included in the index. If there are multiple columns,
+     * @param array|string $columns the column(s) that should be included in the index. If there are multiple columns,
      * please separate them by commas. The column names will be properly quoted by the method.
      * @param bool $unique whether to add UNIQUE constraint on the created index.
      *
@@ -982,7 +981,7 @@ class Command
      * @param string $name the name of the unique constraint. The name will be properly quoted by the method.
      * @param string $table the table that the unique constraint will be added to. The name will be properly quoted by
      * the method.
-     * @param string|array $columns the name of the column to that the constraint will be added on. If there are
+     * @param array|string $columns the name of the column to that the constraint will be added on. If there are
      * multiple columns, separate them with commas. The name will be properly quoted by the method.
      *
      * @return $this the command object itself.
@@ -1206,7 +1205,7 @@ class Command
      * Creates a SQL View.
      *
      * @param string $viewName the name of the view to be created.
-     * @param string|Query $subquery the select statement which defines the view. This can be either a string or a
+     * @param Query|string $subquery the select statement which defines the view. This can be either a string or a
      * {@see Query} object.
      *
      * @return $this the command object itself.
@@ -1311,8 +1310,7 @@ class Command
      * Please refer to [PHP manual](http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php) for valid fetch
      * modes. If this parameter is null, the value set in {@see fetchMode} will be used.
      *
-     *
-     * @throws Throwable|Exception if the query causes any problem.
+     * @throws Exception|Throwable if the query causes any problem.
      *
      * @return mixed the method execution result.
      */
@@ -1416,7 +1414,7 @@ class Command
             $fetchMode,
             $this->db->getDsn(),
             $this->db->getUsername(),
-            $rawSql
+            $rawSql,
         ];
 
         return $this->queryCache->normalize($key);
@@ -1516,7 +1514,7 @@ class Command
                 $rawSql = $rawSql ?: $this->getRawSql();
                 $e = $this->db->getSchema()->convertException($e, $rawSql);
 
-                if ($this->retryHandler === null || !call_user_func($this->retryHandler, $e, $attempt)) {
+                if ($this->retryHandler === null || !($this->retryHandler)($e, $attempt)) {
                     throw $e;
                 }
             }

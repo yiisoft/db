@@ -74,8 +74,6 @@ interface ConnectionInterface
      * is empty, read/write splitting will NOT be enabled no matter what value this property takes.
      *
      * @param bool $value
-     *
-     * @return void
      */
     public function setEnableSlaves(bool $value): void;
 }

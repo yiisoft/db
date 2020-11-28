@@ -108,7 +108,6 @@ class Transaction
      *
      * [isolation level]: http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      *
-     *
      * @throws InvalidConfigException if {@see db} is `null`
      * @throws NotSupportedException if the DBMS does not support nested transactions
      * @throws Exception if DB connection fails
