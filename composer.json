@@ -31,7 +31,6 @@
         "yiisoft/strings": "^1.1"
     },
     "require-dev": {
-        "infection/infection": "^0.17",
         "phpunit/phpunit": "^9.4",
         "roave/infection-static-analysis-plugin": "^1.5",
         "spatie/phpunit-watcher": "^1.23",
