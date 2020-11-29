@@ -33,7 +33,9 @@
     "require-dev": {
         "infection/infection": "^0.17",
         "phpunit/phpunit": "^9.4",
-        "vimeo/psalm": "^4.1",
+        "roave/infection-static-analysis-plugin": "^1.5",
+        "spatie/phpunit-watcher": "^1.23",
+        "vimeo/psalm": "^4.2",
         "yiisoft/active-record": "^3.0@dev",
         "yiisoft/aliases": "^1.1",
         "yiisoft/db-mssql": "^1.0@dev",
@@ -42,8 +44,8 @@
         "yiisoft/db-pgsql": "^3.0@dev",
         "yiisoft/db-redis": "^1.0@dev",
         "yiisoft/db-sqlite": "^3.0@dev",
-        "yiisoft/event-dispatcher": "^3.0@dev",
         "yiisoft/di": "^3.0@dev",
+        "yiisoft/event-dispatcher": "^3.0@dev",
         "yiisoft/json": "^1.0"
     },
     "autoload": {
