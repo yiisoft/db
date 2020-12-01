@@ -26,7 +26,6 @@ use function array_map;
 use function explode;
 use function gettype;
 use function implode;
-use function in_array;
 use function is_array;
 use function is_string;
 use function md5;
