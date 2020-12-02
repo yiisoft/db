@@ -45,7 +45,7 @@ final class SchemaCache
 
     public function isExclude(string $value): bool
     {
-        return !in_array($value, $this->exclude, true);
+        return in_array($value, $this->exclude, true);
     }
 
     public function invalidate(string $cacheTag): void
