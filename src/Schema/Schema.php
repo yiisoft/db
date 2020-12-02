@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Schema;
 use JsonException;
 use PDO;
 use PDOException;
-use Psr\SimpleCache\CacheInterface;
 use Throwable;
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
