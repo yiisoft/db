@@ -960,7 +960,8 @@ abstract class Schema
         $cache->set(
             $this->getCacheKey($name),
             $metadata,
-            $this->schemaCache->getDuration()
+            $this->schemaCache->getDuration(),
+            new TagDependency(['tags' => $this->getCacheTag()]),
         );
     }
 
