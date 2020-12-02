@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Cache;
 
 use Psr\SimpleCache\CacheInterface;
 use Yiisoft\Cache\CacheKeyNormalizer;
+use Yiisoft\Cache\Dependency\Dependency;
+use Yiisoft\Cache\Dependency\TagDependency;
 
 final class SchemaCache
 {
@@ -21,14 +23,19 @@ final class SchemaCache
         $this->keyNormalizer = $keyNormalizer;
     }
 
+    public function delete($key): bool
+    {
+        return $this->cache->delete($key);
+    }
+
     public function normalize($key): string
     {
         return $this->keyNormalizer->normalize($key);
     }
 
-    public function getCache(): CacheInterface
+    public function get($key, $default = null)
     {
-        return $this->cache;
+        return $this->cache->get($key, $default);
     }
 
     public function getDuration(): int
@@ -41,9 +48,19 @@ final class SchemaCache
         return !in_array($value, $this->exclude, true);
     }
 
+    public function invalidate(string $cacheTag): void
+    {
+        TagDependency::invalidate($this->cache, $cacheTag);
+    }
+
     public function isEnabled(): bool
     {
         return $this->enabled;
+    }
+
+    public function set($key, $value, $ttl = null, Dependency $dependency = null): bool
+    {
+        return $this->cache->set($key, $value, $ttl, $dependency);
     }
 
     /**
