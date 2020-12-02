@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Connection;
 
-use function end;
-use function is_array;
 use PDO;
 use PDOException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
+use Yiisoft\Db\Cache\QueryCache;
+use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -22,9 +21,12 @@ use Yiisoft\Db\Factory\DatabaseFactory;
 use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchema;
-
 use Yiisoft\Db\Transaction\Transaction;
 use Yiisoft\Profiler\Profiler;
+
+use function array_keys;
+use function str_replace;
+use function strncmp;
 
 /**
  * Connection represents a connection to a database via [PDO](http://php.net/manual/en/book.pdo.php).
@@ -167,22 +169,14 @@ use Yiisoft\Profiler\Profiler;
  */
 abstract class Connection implements ConnectionInterface
 {
-    private ?string $driverName = null;
     private string $dsn;
     private ?string $username = null;
     private ?string $password = null;
     private array $attributes = [];
     private ?PDO $pdo = null;
-    private bool $enableSchemaCache = true;
-    private int $schemaCacheDuration = 3600;
-    private array $schemaCacheExclude = [];
-    private ?CacheInterface $schemaCache;
-    private bool $enableQueryCache = true;
-    private ?CacheInterface $queryCache = null;
     private ?string $charset = null;
     private ?bool $emulatePrepare = null;
     private string $tablePrefix = '';
-    private array $queryCacheInfo = [];
     private bool $enableSavepoint = true;
     private int $serverRetryInterval = 600;
     private bool $enableSlaves = true;
@@ -190,22 +184,29 @@ abstract class Connection implements ConnectionInterface
     private array $masters = [];
     private bool $shuffleMasters = true;
     private bool $enableLogging = true;
-    private bool $enableProfiling = true;
-    private int $queryCacheDuration = 3600;
     private array $quotedTableNames = [];
     private array $quotedColumnNames = [];
     private ?Connection $master = null;
     private ?Connection $slave = null;
     private LoggerInterface $logger;
-    private Profiler $profiler;
     private ?Transaction $transaction = null;
     private ?Schema $schema = null;
+    private Profiler $profiler;
+    private bool $enableProfiling = true;
+    private QueryCache $queryCache;
+    private SchemaCache $schemaCache;
 
-    public function __construct(CacheInterface $cache, LoggerInterface $logger, Profiler $profiler, string $dsn)
-    {
-        $this->schemaCache = $cache;
+    public function __construct(
+        LoggerInterface $logger,
+        Profiler $profiler,
+        QueryCache $queryCache,
+        SchemaCache $schemaCache,
+        string $dsn
+    ) {
         $this->logger = $logger;
         $this->profiler = $profiler;
+        $this->queryCache = $queryCache;
+        $this->schemaCache = $schemaCache;
         $this->dsn = $dsn;
     }
 
@@ -346,21 +347,17 @@ abstract class Connection implements ConnectionInterface
      * {@see queryCache}
      * {@see noCache()}
      */
-    public function cache(callable $callable, ?int $duration = null, ?Dependency $dependency = null)
+    public function cache(callable $callable, int $duration = null, Dependency $dependency = null)
     {
-        $this->queryCacheInfo[] = [$duration ?? $this->queryCacheDuration, $dependency];
+        $this->queryCache->setInfo(
+            [$duration ?? $this->queryCache->getDuration(), $dependency]
+        );
 
-        try {
-            $result = $callable($this);
+        $result = $callable($this);
 
-            array_pop($this->queryCacheInfo);
+        $this->queryCache->removeLastInfo();
 
-            return $result;
-        } catch (Throwable $e) {
-            array_pop($this->queryCacheInfo);
-
-            throw $e;
-        }
+        return $result;
     }
 
     public function getAttributes(): array
@@ -383,6 +380,16 @@ abstract class Connection implements ConnectionInterface
         return $this->emulatePrepare;
     }
 
+    public function getQueryCache(): QueryCache
+    {
+        return $this->queryCache;
+    }
+
+    public function getSchemaCache(): SchemaCache
+    {
+        return $this->schemaCache;
+    }
+
     public function isLoggingEnabled(): bool
     {
         return $this->enableLogging;
@@ -393,19 +400,9 @@ abstract class Connection implements ConnectionInterface
         return $this->enableProfiling;
     }
 
-    public function isQueryCacheEnabled(): bool
-    {
-        return $this->enableQueryCache;
-    }
-
     public function isSavepointEnabled(): bool
     {
         return $this->enableSavepoint;
-    }
-
-    public function isSchemaCacheEnabled(): bool
-    {
-        return $this->enableSchemaCache;
     }
 
     public function areSlavesEnabled(): bool
@@ -500,11 +497,6 @@ abstract class Connection implements ConnectionInterface
         return $this->pdo;
     }
 
-    public function getProfiler(): profiler
-    {
-        return $this->profiler;
-    }
-
     /**
      * Returns the query builder for the current DB connection.
      *
@@ -515,62 +507,9 @@ abstract class Connection implements ConnectionInterface
         return $this->getSchema()->getQueryBuilder();
     }
 
-    public function getQueryCacheDuration(): ?int
+    public function getProfiler(): Profiler
     {
-        return $this->queryCacheDuration;
-    }
-
-    /**
-     * Returns the current query cache information.
-     *
-     * This method is used internally by {@see Command}.
-     *
-     * @param int|null $duration the preferred caching duration. If null, it will be ignored.
-     * @param Dependency|null $dependency the preferred caching dependency. If null, it will be
-     * ignored.
-     *
-     * @return array|null the current query cache information, or null if query cache is not enabled.
-     */
-    public function getQueryCacheInfo(?int $duration, ?Dependency $dependency = null): ?array
-    {
-        $result = null;
-
-        if ($this->enableQueryCache) {
-            $info = end($this->queryCacheInfo);
-
-            if (is_array($info)) {
-                if ($duration === null) {
-                    $duration = $info[0];
-                }
-
-                if ($dependency === null) {
-                    $dependency = $info[1];
-                }
-            }
-
-            if ($duration === 0 || $duration > 0) {
-                if ($this->schemaCache instanceof CacheInterface) {
-                    $result = [$this->schemaCache, $duration, $dependency];
-                }
-            }
-        }
-
-        return $result;
-    }
-
-    public function getSchemaCache(): CacheInterface
-    {
-        return $this->schemaCache;
-    }
-
-    public function getSchemaCacheDuration(): int
-    {
-        return $this->schemaCacheDuration;
-    }
-
-    public function getSchemaCacheExclude(): array
-    {
-        return $this->schemaCacheExclude;
+        return $this->profiler;
     }
 
     /**
@@ -697,18 +636,13 @@ abstract class Connection implements ConnectionInterface
      */
     public function noCache(callable $callable)
     {
-        $this->queryCacheInfo[] = false;
+        $this->queryCache->setInfo(false);
 
-        try {
-            $result = $callable($this);
-            array_pop($this->queryCacheInfo);
+        $result = $callable($this);
 
-            return $result;
-        } catch (Throwable $e) {
-            array_pop($this->queryCacheInfo);
+        $this->queryCache->removeLastInfo();
 
-            throw $e;
-        }
+        return $result;
     }
 
     /**
@@ -718,10 +652,10 @@ abstract class Connection implements ConnectionInterface
      *
      * @throws Exception|InvalidConfigException if connection fails
      */
-    public function open()
+    public function open(): void
     {
         if (!empty($this->pdo)) {
-            return null;
+            return;
         }
 
         if (!empty($this->masters)) {
@@ -730,7 +664,7 @@ abstract class Connection implements ConnectionInterface
             if ($db !== null) {
                 $this->pdo = $db->getPDO();
 
-                return null;
+                return;
             }
 
             throw new InvalidConfigException('None of the master DB servers is available.');
@@ -747,7 +681,7 @@ abstract class Connection implements ConnectionInterface
                 $this->logger->log(LogLevel::INFO, $token);
             }
 
-            if ($this->enableProfiling) {
+            if ($this->isProfilingEnabled()) {
                 $this->profiler->begin($token, [__METHOD__]);
             }
 
@@ -755,11 +689,11 @@ abstract class Connection implements ConnectionInterface
 
             $this->initConnection();
 
-            if ($this->enableProfiling) {
+            if ($this->isProfilingEnabled()) {
                 $this->profiler->end($token, [__METHOD__]);
             }
         } catch (PDOException $e) {
-            if ($this->enableProfiling) {
+            if ($this->isProfilingEnabled()) {
                 $this->profiler->end($token, [__METHOD__]);
             }
 
@@ -862,13 +796,15 @@ abstract class Connection implements ConnectionInterface
             return null;
         }
 
+        $cache = $this->schemaCache->getCache();
+
         foreach ($pool as $config) {
             /* @var $db Connection */
             $db = DatabaseFactory::createClass($config);
 
-            $key = $this->getCacheKey([__METHOD__, $db->getDsn()]);
+            $key = $this->schemaCache->normalize([__METHOD__, $db->getDsn()]);
 
-            if ($this->schemaCache instanceof CacheInterface && $this->schemaCache->get($key)) {
+            if ($this->schemaCache->isEnabled() && $cache->get($key)) {
                 /** should not try this dead server now */
                 continue;
             }
@@ -885,9 +821,9 @@ abstract class Connection implements ConnectionInterface
                     );
                 }
 
-                if ($this->schemaCache instanceof CacheInterface) {
+                if ($this->schemaCache->isEnabled()) {
                     /** mark this server as dead and only retry it after the specified interval */
-                    $this->schemaCache->set($key, 1, $this->serverRetryInterval);
+                    $cache->set($key, 1, $this->serverRetryInterval);
                 }
 
                 return null;
@@ -1003,13 +939,15 @@ abstract class Connection implements ConnectionInterface
     }
 
     /**
-     * Changes the current driver name.
+     * Whether to enable profiling of opening database connection and database queries. Defaults to true. You may want
+     * to disable this option in a production environment to gain performance if you do not need the information being
+     * logged.
      *
-     * @param string $driverName name of the DB driver
+     * @param bool $value
      */
-    public function setDriverName(string $driverName): void
+    public function setEnableProfiling(bool $value): void
     {
-        $this->driverName = strtolower($driverName);
+        $this->enableProfiling = $value;
     }
 
     /**
@@ -1037,30 +975,6 @@ abstract class Connection implements ConnectionInterface
     }
 
     /**
-     * Whether to enable profiling of opening database connection and database queries. Defaults to true. You may want
-     * to disable this option in a production environment to gain performance if you do not need the information being
-     * logged.
-     *
-     * @param bool $value
-     */
-    public function setEnableProfiling(bool $value): void
-    {
-        $this->enableProfiling = $value;
-    }
-
-    /**
-     * Whether to enable query caching. Note that in order to enable query caching, a valid cache component as specified
-     * by {@see setQueryCache()} must be enabled and {@see enableQueryCache} must be set true. Also, only the results of
-     * the queries enclosed within {@see cache()} will be cached.
-     *
-     * @param bool $value
-     */
-    public function setEnableQueryCache(bool $value): void
-    {
-        $this->enableQueryCache = $value;
-    }
-
-    /**
      * Whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint). Note that if the underlying DBMS does not
      * support savepoint, setting this property to be true will have no effect.
      *
@@ -1069,17 +983,6 @@ abstract class Connection implements ConnectionInterface
     public function setEnableSavepoint(bool $value): void
     {
         $this->enableSavepoint = $value;
-    }
-
-    /**
-     * Whether to enable schema caching. Note that in order to enable truly schema caching, a valid cache component as
-     * specified by {@see setSchemaCache()} must be enabled and {@see setEnableSchemaCache()} must be set true.
-     *
-     * @param bool $value
-     */
-    public function setEnableSchemaCache(bool $value): void
-    {
-        $this->enableSchemaCache = $value;
     }
 
     /**
@@ -1127,60 +1030,6 @@ abstract class Connection implements ConnectionInterface
         foreach ($config as $key => $value) {
             $builder->{$key} = $value;
         }
-    }
-
-    /**
-     * The cache object or the ID of the cache application component that is used for query caching.
-     *
-     * @param CacheInterface $value
-     */
-    public function setQueryCache(CacheInterface $value): void
-    {
-        $this->queryCache = $value;
-    }
-
-    /**
-     * The default number of seconds that query results can remain valid in cache. Defaults to 3600, meaning 3600
-     * seconds, or one hour. Use 0 to indicate that the cached data will never expire. The value of this property will
-     * be used when {@see cache()} is called without a cache duration.
-     *
-     * @param int $value
-     */
-    public function setQueryCacheDuration(int $value): void
-    {
-        $this->queryCacheDuration = $value;
-    }
-
-    /**
-     * The cache object or the ID of the cache application component that is used to cache the table metadata.
-     *
-     * @param CacheInterface $value
-     */
-    public function setSchemaCache(?CacheInterface $value): void
-    {
-        $this->schemaCache = $value;
-    }
-
-    /**
-     * Number of seconds that table metadata can remain valid in cache. Use 0 to indicate that the cached data will
-     * never expire.
-     *
-     * @param int $value
-     */
-    public function setSchemaCacheDuration(int $value): void
-    {
-        $this->schemaCacheDuration = $value;
-    }
-
-    /**
-     * List of tables whose metadata should NOT be cached. Defaults to empty array. The table names may contain schema
-     * prefix, if any. Do not quote the table names.
-     *
-     * @param array $value
-     */
-    public function setSchemaCacheExclude(array $value): void
-    {
-        $this->schemaCacheExclude = $value;
     }
 
     /**
@@ -1305,12 +1154,5 @@ abstract class Connection implements ConnectionInterface
         }
 
         return $result;
-    }
-
-    private function getCacheKey(array $key): string
-    {
-        $jsonKey = json_encode($key);
-
-        return md5($jsonKey);
     }
 }

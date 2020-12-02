@@ -4,6 +4,24 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
+use JsonException;
+use PDO;
+use PDOException;
+use PDOStatement;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
+use Throwable;
+use Yiisoft\Cache\CacheInterface;
+use Yiisoft\Cache\Dependency\Dependency;
+use Yiisoft\Db\Cache\QueryCache;
+use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Data\DataReader;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Pdo\PdoValue;
+use Yiisoft\Db\Query\Query;
+use Yiisoft\Profiler\Profiler;
+
 use function array_map;
 use function call_user_func_array;
 use function explode;
@@ -13,25 +31,9 @@ use function is_bool;
 use function is_object;
 use function is_resource;
 use function is_string;
-use PDO;
-use PDOException;
-use PDOStatement;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use function stream_get_contents;
-
 use function strncmp;
 use function strtr;
-use Throwable;
-use Yiisoft\Cache\CacheInterface;
-use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Data\DataReader;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Pdo\PdoValue;
-use Yiisoft\Db\Query\Query;
-use Yiisoft\Profiler\Profiler;
 
 /**
  * Command represents a SQL statement to be executed against a database.
@@ -84,19 +86,6 @@ class Command
      */
     protected array $pendingParams = [];
     protected array $params = [];
-    private ConnectionInterface $db;
-    private int $fetchMode = PDO::FETCH_ASSOC;
-    private LoggerInterface $logger;
-    private ?PDOStatement $pdoStatement = null;
-    private Profiler $profiler;
-    private ?int $queryCacheDuration = null;
-
-    /**
-     * @var Dependency|null the dependency to be associated with the cached query result for this command.
-     *
-     * {@see cache()}
-     */
-    private ?Dependency $queryCacheDependency = null;
 
     /**
      * @var string|null the SQL statement that this command represents
@@ -121,12 +110,27 @@ class Command
      */
     private $retryHandler;
 
-    public function __construct(Profiler $profiler, LoggerInterface $logger, ConnectionInterface $db, ?string $sql)
-    {
+    private Profiler $profiler;
+    private LoggerInterface $logger;
+    private ConnectionInterface $db;
+    private ?PDOStatement $pdoStatement = null;
+    private int $fetchMode = PDO::FETCH_ASSOC;
+    private ?int $queryCacheDuration = null;
+    private ?Dependency $queryCacheDependency = null;
+    private QueryCache $queryCache;
+
+    public function __construct(
+        Profiler $profiler,
+        LoggerInterface $logger,
+        ConnectionInterface $db,
+        QueryCache $queryCache,
+        ?string $sql
+    ) {
         $this->db = $db;
         $this->logger = $logger;
         $this->profiler = $profiler;
         $this->sql = $sql;
+        $this->queryCache = $queryCache;
     }
 
     /**
@@ -135,13 +139,13 @@ class Command
      * @param int|null $duration the number of seconds that query result of this command can remain valid in the cache.
      * If this is not set, the value of {@see ConnectionInterface::queryCacheDuration} will be used instead.
      * Use 0 to indicate that the cached data will never expire.
-     * @param ?Dependency $dependency the cache dependency associated with the cached query result.
+     * @param Dependency|null $dependency the cache dependency associated with the cached query result.
      *
      * @return $this the command object itself.
      */
-    public function cache(?int $duration = null, ?Dependency $dependency = null): self
+    public function cache(?int $duration = null, Dependency $dependency = null): self
     {
-        $this->queryCacheDuration = $duration ?? $this->db->getQueryCacheDuration();
+        $this->queryCacheDuration = $duration ?? $this->queryCache->getDuration();
         $this->queryCacheDependency = $dependency;
 
         return $this;
@@ -178,7 +182,7 @@ class Command
      *
      * @param string $sql the SQL statement to be set.
      *
-     * @return Command this command instance.
+     * @return $this this command instance.
      *
      * {@see reset()}
      * {@see cancel()}
@@ -202,7 +206,7 @@ class Command
      *
      * @param string $sql the SQL statement to be set.
      *
-     * @return Command this command instance.
+     * @return $this this command instance.
      *
      * {@see reset()}
      * {@see cancel()}
@@ -1312,10 +1316,13 @@ class Command
      */
     protected function queryInternal(string $method, $fetchMode = null)
     {
-        [$profile, $rawSql] = $this->logQuery('\Yiisoft\Db\Command\Command::query');
+        [, $rawSql] = $this->logQuery(__CLASS__ . '::query');
 
         if ($method !== '') {
-            $info = $this->db->getQueryCacheInfo($this->queryCacheDuration, $this->queryCacheDependency);
+            $info = $this->queryCache->info(
+                $this->queryCacheDuration,
+                $this->queryCacheDependency
+            );
 
             if (is_array($info)) {
                 /* @var $cache CacheInterface */
@@ -1331,7 +1338,7 @@ class Command
                         $this->logger->log(
                             LogLevel::DEBUG,
                             'Query result served from cache',
-                            ['\Yiisoft\Db\Command\Command::query']
+                            [__CLASS__ . '::query']
                         );
                     }
 
@@ -1344,7 +1351,7 @@ class Command
 
         try {
             if ($this->db->isProfilingEnabled()) {
-                $this->profiler->begin((string) $rawSql, ['\Yiisoft\Db\Command\Command::query']);
+                $this->profiler->begin((string) $rawSql, [__CLASS__ . '::query']);
             }
 
             $this->internalExecute($rawSql);
@@ -1362,11 +1369,11 @@ class Command
             }
 
             if ($this->db->isProfilingEnabled()) {
-                $this->profiler->end((string) $rawSql, ['\Yiisoft\Db\Command\Command::query']);
+                $this->profiler->end((string) $rawSql, [__CLASS__ . '::query']);
             }
         } catch (Exception $e) {
             if ($this->db->isProfilingEnabled()) {
-                $this->profiler->end((string) $rawSql, ['\Yiisoft\Db\Command\Command::query']);
+                $this->profiler->end((string) $rawSql, [__CLASS__ . '::query']);
             }
 
             throw $e;
@@ -1378,7 +1385,7 @@ class Command
                 $this->logger->log(
                     LogLevel::DEBUG,
                     'Saved query result in cache',
-                    ['\Yiisoft\Db\Command\Command::query']
+                    [__CLASS__ . '::query']
                 );
             }
         }
@@ -1395,6 +1402,8 @@ class Command
      * fetch modes.
      * @param string $rawSql the raw SQL with parameter values inserted into the corresponding placeholders.
      *
+     * @throws JsonException
+     *
      * @return string the cache key.
      */
     protected function getCacheKey(string $method, ?int $fetchMode, string $rawSql): string
@@ -1408,9 +1417,7 @@ class Command
             $rawSql,
         ];
 
-        $jsonKey = json_encode($key);
-
-        return md5($jsonKey);
+        return $this->queryCache->normalize($key);
     }
 
     /**
@@ -1524,11 +1531,6 @@ class Command
         $this->retryHandler = null;
     }
 
-    public function getDb(): ConnectionInterface
-    {
-        return $this->db;
-    }
-
     public function getFetchMode(): int
     {
         return $this->fetchMode;
@@ -1567,20 +1569,5 @@ class Command
     public function setParams(array $value): void
     {
         $this->params = $value;
-    }
-
-    /**
-     * The default number of seconds that query results can remain valid in cache.
-     *
-     * @param int $value If this is not set, the value will be used instead. Use 0 to indicate that the cached data will
-     * never expire. And use a negative number to indicate query cache should not be used.
-     *
-     * @return $this
-     */
-    public function setQueryCacheDuration(int $value): self
-    {
-        $this->queryCacheDuration = $value;
-
-        return $this;
     }
 }

@@ -4,14 +4,40 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Cache\CacheInterface;
+use JsonException;
+use PDO;
+use PDOException;
+use Psr\SimpleCache\CacheInterface;
+use Throwable;
 use Yiisoft\Cache\Dependency\TagDependency;
+use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidCallException;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryBuilder;
+
+use function addcslashes;
+use function array_change_key_case;
+use function array_key_exists;
+use function array_map;
+use function explode;
+use function gettype;
+use function implode;
+use function is_array;
+use function is_string;
+use function md5;
+use function preg_match;
+use function preg_replace;
+use function serialize;
+use function str_replace;
+use function strlen;
+use function strpos;
+use function substr;
+use function ucfirst;
+use function version_compare;
 
 /**
  * Schema is the base class for concrete DBMS-specific schema classes.
@@ -90,13 +116,13 @@ abstract class Schema
     private array $tableMetadata = [];
     private ?QueryBuilder $builder = null;
     private ?string $serverVersion = null;
-    private CacheInterface $cache;
     private Connection $db;
+    private SchemaCache $schemaCache;
 
-    public function __construct(Connection $db)
+    public function __construct(Connection $db, SchemaCache $schemaCache)
     {
         $this->db = $db;
-        $this->cache = $this->db->getSchemaCache();
+        $this->schemaCache = $schemaCache;
     }
 
     abstract public function createQueryBuilder(): QueryBuilder;
@@ -164,6 +190,8 @@ abstract class Schema
      * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh whether to reload the table schema even if it is found in the cache.
      *
+     * @throws JsonException
+     *
      * @return TableSchema|null table metadata. `null` if the named table does not exist.
      */
     public function getTableSchema(string $name, bool $refresh = false): ?TableSchema
@@ -174,10 +202,12 @@ abstract class Schema
     /**
      * Returns the metadata for all tables in the database.
      *
-     * @param string $schema  the schema of the tables. Defaults to empty string, meaning the current or default schema
+     * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema
      * name.
      * @param bool $refresh whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
+     *
+     * @throws NotSupportedException
      *
      * @return TableSchema[] the metadata for all tables in the database. Each array element is an instance of
      * {@see TableSchema} or its child class.
@@ -192,6 +222,8 @@ abstract class Schema
      *
      * @param bool $refresh whether to fetch the latest available schema names. If this is false, schema names fetched
      * previously (if available) will be returned.
+     *
+     * @throws NotSupportedException
      *
      * @return string[] all schema names in the database, except system schemas.
      */
@@ -212,6 +244,8 @@ abstract class Schema
      * If not empty, the returned table names will be prefixed with the schema name.
      * @param bool $refresh whether to fetch the latest available table names. If this is false, table names fetched
      * previously (if available) will be returned.
+     *
+     * @throws NotSupportedException
      *
      * @return string[] all table names in the database.
      */
@@ -249,15 +283,16 @@ abstract class Schema
     {
         static $typeMap = [
             // php type => PDO type
-            'boolean' => \PDO::PARAM_BOOL,
-            'integer' => \PDO::PARAM_INT,
-            'string' => \PDO::PARAM_STR,
-            'resource' => \PDO::PARAM_LOB,
-            'NULL' => \PDO::PARAM_NULL,
+            'boolean' => PDO::PARAM_BOOL,
+            'integer' => PDO::PARAM_INT,
+            'string' => PDO::PARAM_STR,
+            'resource' => PDO::PARAM_LOB,
+            'NULL' => PDO::PARAM_NULL,
         ];
+
         $type = gettype($data);
 
-        return $typeMap[$type] ?? \PDO::PARAM_STR;
+        return $typeMap[$type] ?? PDO::PARAM_STR;
     }
 
     /**
@@ -269,9 +304,9 @@ abstract class Schema
     public function refresh(): void
     {
         /* @var $cache CacheInterface */
-        $cache = \is_string($this->db->getSchemaCache()) ? $this->cache : $this->db->getSchemaCache();
+        $cache = $this->schemaCache->getCache();
 
-        if ($this->db->isSchemaCacheEnabled() && $cache instanceof CacheInterface) {
+        if ($this->schemaCache->isEnabled()) {
             TagDependency::invalidate($cache, $this->getCacheTag());
         }
 
@@ -286,6 +321,8 @@ abstract class Schema
      * change.
      *
      * @param string $name table name.
+     *
+     * @throws JsonException
      */
     public function refreshTableSchema(string $name): void
     {
@@ -295,8 +332,8 @@ abstract class Schema
 
         $this->tableNames = [];
 
-        if ($this->db->isSchemaCacheEnabled() && $this->cache instanceof CacheInterface) {
-            $this->cache->delete($this->getCacheKey($rawName));
+        if ($this->schemaCache->isEnabled()) {
+            $this->schemaCache->getCache()->delete($this->getCacheKey($rawName));
         }
     }
 
@@ -334,6 +371,8 @@ abstract class Schema
      * Creates a new savepoint.
      *
      * @param string $name the savepoint name
+     *
+     * @throws Exception|InvalidConfigException|Throwable
      */
     public function createSavepoint(string $name): void
     {
@@ -344,6 +383,8 @@ abstract class Schema
      * Releases an existing savepoint.
      *
      * @param string $name the savepoint name
+     *
+     * @throws Exception|InvalidConfigException|Throwable
      */
     public function releaseSavepoint(string $name): void
     {
@@ -354,6 +395,8 @@ abstract class Schema
      * Rolls back to a previously created savepoint.
      *
      * @param string $name the savepoint name
+     *
+     * @throws Exception|InvalidConfigException|Throwable
      */
     public function rollBackSavepoint(string $name): void
     {
@@ -369,6 +412,8 @@ abstract class Schema
      * {@see Transaction::REPEATABLE_READ} and {@see Transaction::SERIALIZABLE} but also a string containing DBMS
      * specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`.
      *
+     * @throws Exception|InvalidConfigException|Throwable
+     *
      * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
      */
     public function setTransactionIsolationLevel(string $level): void
@@ -381,6 +426,8 @@ abstract class Schema
      *
      * @param string $table the table that new rows will be inserted into.
      * @param array $columns the column data (name => value) to be inserted into the table.
+     *
+     * @throws Exception|InvalidCallException|InvalidConfigException|Throwable
      *
      * @return array|false primary key values or false if the command fails.
      */
@@ -413,6 +460,8 @@ abstract class Schema
      * Note that if the parameter is not a string, it will be returned without change.
      *
      * @param int|string $str string to be quoted.
+     *
+     * @throws Exception|InvalidConfigException
      *
      * @return int|string the properly quoted string.
      *
@@ -566,7 +615,7 @@ abstract class Schema
      */
     public function unquoteSimpleTableName(string $name): string
     {
-        if (\is_string($this->tableQuoteCharacter)) {
+        if (is_string($this->tableQuoteCharacter)) {
             $startingCharacter = $this->tableQuoteCharacter;
         } else {
             $startingCharacter = $this->tableQuoteCharacter[0];
@@ -587,7 +636,7 @@ abstract class Schema
      */
     public function unquoteSimpleColumnName(string $name): string
     {
-        if (\is_string($this->columnQuoteCharacter)) {
+        if (is_string($this->columnQuoteCharacter)) {
             $startingCharacter = $this->columnQuoteCharacter;
         } else {
             $startingCharacter = $this->columnQuoteCharacter[0];
@@ -609,7 +658,7 @@ abstract class Schema
     public function getRawTableName(string $name): string
     {
         if (strpos($name, '{{') !== false) {
-            $name = preg_replace('/\\{\\{(.*?)\\}\\}/', '\1', $name);
+            $name = preg_replace('/{{(.*?)}}/', '\1', $name);
 
             return str_replace('%', $this->db->getTablePrefix(), $name);
         }
@@ -677,7 +726,7 @@ abstract class Schema
         }
 
         $message = $e->getMessage() . "\nThe SQL being executed was: $rawSql";
-        $errorInfo = $e instanceof \PDOException ? $e->errorInfo : null;
+        $errorInfo = $e instanceof PDOException ? $e->errorInfo : null;
 
         return new $exceptionClass($message, $errorInfo, $e);
     }
@@ -689,7 +738,7 @@ abstract class Schema
      *
      * @return bool whether a SQL statement is for read purpose.
      */
-    public function isReadQuery($sql): bool
+    public function isReadQuery(string $sql): bool
     {
         $pattern = '/^\s*(SELECT|SHOW|DESCRIBE)\b/i';
 
@@ -697,14 +746,16 @@ abstract class Schema
     }
 
     /**
-     * Returns a server version as a string comparable by {@see \version_compare()}.
+     * Returns a server version as a string comparable by {@see version_compare()}.
+     *
+     * @throws Exception|InvalidConfigException
      *
      * @return string server version as a string.
      */
     public function getServerVersion(): string
     {
         if ($this->serverVersion === null) {
-            $this->serverVersion = $this->db->getSlavePdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);
+            $this->serverVersion = $this->db->getSlavePdo()->getAttribute(PDO::ATTR_SERVER_VERSION);
         }
 
         return $this->serverVersion;
@@ -714,6 +765,8 @@ abstract class Schema
      * Returns the cache key for the specified table name.
      *
      * @param string $name the table name.
+     *
+     * @throws JsonException
      *
      * @return mixed the cache key.
      */
@@ -726,7 +779,7 @@ abstract class Schema
             $this->getRawTableName($name),
         ];
 
-        $jsonKey = json_encode($key);
+        $jsonKey = json_encode($key, JSON_THROW_ON_ERROR);
 
         return md5($jsonKey);
     }
@@ -757,12 +810,14 @@ abstract class Schema
      * @param string $type metadata type.
      * @param bool $refresh whether to reload the table metadata even if it is found in the cache.
      *
+     * @throws JsonException
+     *
      * @return mixed metadata.
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false)
     {
-        if ($this->db->isSchemaCacheEnabled() && !\in_array($name, $this->db->getSchemaCacheExclude(), true)) {
-            $schemaCache = $this->cache;
+        if ($this->schemaCache->isEnabled() && $this->schemaCache->isExclude($name)) {
+            $schemaCache = $this->schemaCache->getCache();
         }
 
         $rawName = $this->getRawTableName($name);
@@ -790,6 +845,8 @@ abstract class Schema
      * @param string $type metadata type.
      * @param bool $refresh whether to fetch the latest available table metadata. If this is `false`, cached data may be
      * returned if available.
+     *
+     * @throws NotSupportedException
      *
      * @return array array of metadata.
      */
@@ -831,21 +888,23 @@ abstract class Schema
      * @param array $row row's array or an array of row's arrays.
      * @param bool $multiple whether multiple rows or a single row passed.
      *
+     * @throws Exception|InvalidConfigException
+     *
      * @return array normalized row or rows.
      */
     protected function normalizePdoRowKeyCase(array $row, bool $multiple): array
     {
-        if ($this->db->getSlavePdo()->getAttribute(\PDO::ATTR_CASE) !== \PDO::CASE_UPPER) {
+        if ($this->db->getSlavePdo()->getAttribute(PDO::ATTR_CASE) !== PDO::CASE_UPPER) {
             return $row;
         }
 
         if ($multiple) {
-            return \array_map(function (array $row) {
-                return \array_change_key_case($row, CASE_LOWER);
+            return array_map(static function (array $row) {
+                return array_change_key_case($row, CASE_LOWER);
             }, $row);
         }
 
-        return \array_change_key_case($row, CASE_LOWER);
+        return array_change_key_case($row, CASE_LOWER);
     }
 
     /**
@@ -853,6 +912,8 @@ abstract class Schema
      *
      * @param CacheInterface|null $cache
      * @param string $name
+     *
+     * @throws JsonException
      */
     private function loadTableMetadataFromCache(?CacheInterface $cache, string $name): void
     {
@@ -864,7 +925,11 @@ abstract class Schema
 
         $metadata = $cache->get($this->getCacheKey($name));
 
-        if (!\is_array($metadata) || !isset($metadata['cacheVersion']) || $metadata['cacheVersion'] !== static::SCHEMA_CACHE_VERSION) {
+        if (
+            !is_array($metadata) ||
+            !isset($metadata['cacheVersion']) ||
+            $metadata['cacheVersion'] !== static::SCHEMA_CACHE_VERSION
+        ) {
             $this->tableMetadata[$name] = [];
 
             return;
@@ -879,6 +944,8 @@ abstract class Schema
      *
      * @param CacheInterface|null $cache
      * @param string $name
+     *
+     * @throws JsonException
      */
     private function saveTableMetadataToCache(?CacheInterface $cache, string $name): void
     {
@@ -893,8 +960,7 @@ abstract class Schema
         $cache->set(
             $this->getCacheKey($name),
             $metadata,
-            $this->db->getSchemaCacheDuration(),
-            new TagDependency(['tags' => $this->getCacheTag()])
+            $this->schemaCache->getDuration()
         );
     }
 

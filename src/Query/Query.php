@@ -4,28 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
-use function array_merge;
 use Closure;
-use function count;
-use function gettype;
-use function is_array;
-use function is_int;
-use function is_string;
 use Iterator;
-use function key;
-use function preg_match;
-use function preg_split;
-use function reset;
-use function str_replace;
-
-use function strcasecmp;
-use function strlen;
-use function strpos;
-use function substr;
 use Throwable;
-use function trim;
-use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
@@ -34,6 +15,25 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Arrays\ArrayHelper;
+use Yiisoft\Cache\Dependency\Dependency;
+
+use function array_merge;
+use function count;
+use function gettype;
+use function is_array;
+use function is_int;
+use function is_string;
+use function key;
+use function preg_match;
+use function preg_split;
+use function reset;
+use function str_replace;
+use function strcasecmp;
+use function strlen;
+use function strpos;
+use function substr;
+use function trim;
 
 /**
  * Query represents a SELECT SQL statement in a way that is independent of DBMS.
@@ -83,7 +83,7 @@ class Query implements QueryInterface, ExpressionInterface
     protected array $params = [];
     private ?Dependency $queryCacheDependency = null;
     private ConnectionInterface $db;
-    /** @var bool|int|null */
+    /** @var $queryCacheDuration bool|int|null */
     private $queryCacheDuration;
 
     public function __construct(ConnectionInterface $db)
@@ -411,7 +411,7 @@ class Query implements QueryInterface, ExpressionInterface
 
         $command = $this->createCommand();
         $params = $command->getParams();
-        $command->setSql($command->getDb()->getQueryBuilder()->selectExists($command->getSql()));
+        $command->setSql($this->db->getQueryBuilder()->selectExists($command->getSql()));
         $command->bindValues($params);
 
         return (bool) $command->queryScalar();

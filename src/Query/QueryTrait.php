@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionInterface;
+
 use function array_key_exists;
 use function array_merge;
-
 use function array_shift;
 use function array_unshift;
 use function is_array;
@@ -16,8 +18,6 @@ use function preg_split;
 use function strcasecmp;
 use function strtoupper;
 use function trim;
-use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * The BaseQuery trait represents the minimum method set of a database Query.
@@ -26,13 +26,13 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  */
 trait QueryTrait
 {
-    /** @var ExpressionInterface|int|null */
+    /** @var ExpressionInterface|int|null $limit */
     private $limit;
-    /** @var ExpressionInterface|int|null */
+    /** @var ExpressionInterface|int|null $offset */
     private $offset;
-    /** @var callable|string */
+    /** @var callable|string $indexBy */
     private $indexBy;
-    /** @var array|string|null */
+    /** @var array|string|null $indexBy */
     private $where;
     private array $orderBy = [];
     private bool $emulateExecution = false;

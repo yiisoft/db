@@ -794,8 +794,7 @@ trait TestQueryTrait
     {
         $db = $this->getConnection();
 
-        $db->setEnableQueryCache(true);
-        $db->setQueryCache($this->cache);
+        $db->getQueryCache()->setEnable(true);
 
         $query = (new Query($db))
             ->select(['name'])
@@ -845,7 +844,7 @@ trait TestQueryTrait
             );
         }, 10);
 
-        $db->setEnableQueryCache(false);
+        $db->getQueryCache()->setEnable(false);
 
         $db->cache(function () use ($query, $update) {
             $this->assertEquals(
@@ -859,7 +858,8 @@ trait TestQueryTrait
             $this->assertEquals('user2', $query->where(['id' => 2])->scalar());
         }, 10);
 
-        $db->setEnableQueryCache(true);
+        $db->getQueryCache()->setEnable(true);
+
         $query->cache();
 
         $this->assertEquals('user11', $query->where(['id' => 1])->scalar());
