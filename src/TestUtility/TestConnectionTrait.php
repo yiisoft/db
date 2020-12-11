@@ -195,7 +195,7 @@ trait TestConnectionTrait
         $db->createCommand()->createTable('qlog1', ['id' => 'pk'])->execute();
 
         $message = $this->getInaccessibleProperty($this->logger, 'messages');
-        $this->assertCount(1, $message->all());
+        $this->assertCount(1, $message);
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
         $this->assertNotNull($db->getTableSchema('qlog1', true));
 
@@ -205,7 +205,7 @@ trait TestConnectionTrait
         $db->createCommand('SELECT * FROM {{qlog1}}')->queryAll();
 
         $message = $this->getInaccessibleProperty($this->logger, 'messages');
-        $this->assertCount(1, $message->all());
+        $this->assertCount(1, $message);
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
         /* profiling only */
@@ -218,7 +218,7 @@ trait TestConnectionTrait
         $db->createCommand()->createTable('qlog2', ['id' => 'pk'])->execute();
 
         $message = $this->getInaccessibleProperty($this->logger, 'messages');
-        $this->assertCount(0, $message->all());
+        $this->assertCount(0, $message);
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
         $this->assertNotNull($db->getTableSchema('qlog2', true));
 
@@ -228,7 +228,7 @@ trait TestConnectionTrait
         $db->createCommand('SELECT * FROM {{qlog2}}')->queryAll();
 
         $message = $this->getInaccessibleProperty($this->logger, 'messages');
-        $this->assertCount(0, $message->all());
+        $this->assertCount(0, $message);
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
         /* logging only */
@@ -241,7 +241,7 @@ trait TestConnectionTrait
         $db->createCommand()->createTable('qlog3', ['id' => 'pk'])->execute();
 
         $message = $this->getInaccessibleProperty($this->logger, 'messages');
-        $this->assertCount(1, $message->all());
+        $this->assertCount(1, $message);
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
         $this->assertNotNull($db->getTableSchema('qlog3', true));
 
@@ -251,7 +251,7 @@ trait TestConnectionTrait
         $db->createCommand('SELECT * FROM {{qlog3}}')->queryAll();
 
         $message = $this->getInaccessibleProperty($this->logger, 'messages');
-        $this->assertCount(1, $message->all());
+        $this->assertCount(1, $message);
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
         /* disabled */
@@ -265,13 +265,13 @@ trait TestConnectionTrait
 
         $message = $this->getInaccessibleProperty($this->logger, 'messages');
         $this->assertNotNull($db->getTableSchema('qlog4', true));
-        $this->assertCount(0, $message->all());
+        $this->assertCount(0, $message);
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
         $db->createCommand('SELECT * FROM {{qlog4}}')->queryAll();
 
         $message = $this->getInaccessibleProperty($this->logger, 'messages');
-        $this->assertCount(0, $message->all());
+        $this->assertCount(0, $message);
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
     }
 

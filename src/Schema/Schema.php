@@ -906,7 +906,7 @@ abstract class Schema
      */
     private function loadTableMetadataFromCache(string $rawName): void
     {
-        if ($this->schemaCache->isEnabled() === false || $this->schemaCache->isExclude($rawName) === true) {
+        if ($this->schemaCache->isEnabled() === false || $this->schemaCache->isExcluded($rawName) === true) {
             $this->tableMetadata[$rawName] = [];
 
             return;
@@ -937,7 +937,7 @@ abstract class Schema
      */
     private function saveTableMetadataToCache(string $rawName): void
     {
-        if ($this->schemaCache->isEnabled() === false || $this->schemaCache->isExclude($rawName) === true) {
+        if ($this->schemaCache->isEnabled() === false || $this->schemaCache->isExcluded($rawName) === true) {
             return;
         }
 
