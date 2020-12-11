@@ -93,9 +93,7 @@ final class QueryCache
             }
 
             if ($duration === 0 || $duration > 0) {
-                if ($this->cache instanceof CacheInterface) {
-                    $result = [$this->cache, $duration, $dependency];
-                }
+                $result = [$this->cache, $duration, $dependency];
             }
         }
 
