@@ -796,15 +796,13 @@ abstract class Connection implements ConnectionInterface
             return null;
         }
 
-        $cache = $this->schemaCache->getCache();
-
         foreach ($pool as $config) {
             /* @var $db Connection */
             $db = DatabaseFactory::createClass($config);
 
             $key = $this->schemaCache->normalize([__METHOD__, $db->getDsn()]);
 
-            if ($this->schemaCache->isEnabled() && $cache->get($key)) {
+            if ($this->schemaCache->isEnabled() && $this->schemaCache->get($key)) {
                 /** should not try this dead server now */
                 continue;
             }
@@ -823,7 +821,7 @@ abstract class Connection implements ConnectionInterface
 
                 if ($this->schemaCache->isEnabled()) {
                     /** mark this server as dead and only retry it after the specified interval */
-                    $cache->set($key, 1, $this->serverRetryInterval);
+                    $this->schemaCache->set($key, 1, $this->serverRetryInterval);
                 }
 
                 return null;

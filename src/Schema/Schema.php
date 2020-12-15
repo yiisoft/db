@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Schema;
 use JsonException;
 use PDO;
 use PDOException;
-use Psr\SimpleCache\CacheInterface;
 use Throwable;
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
@@ -303,11 +302,8 @@ abstract class Schema
      */
     public function refresh(): void
     {
-        /* @var $cache CacheInterface */
-        $cache = $this->schemaCache->getCache();
-
         if ($this->schemaCache->isEnabled()) {
-            TagDependency::invalidate($cache, $this->getCacheTag());
+            $this->schemaCache->invalidate($this->getCacheTag());
         }
 
         $this->tableNames = [];
@@ -333,7 +329,7 @@ abstract class Schema
         $this->tableNames = [];
 
         if ($this->schemaCache->isEnabled()) {
-            $this->schemaCache->getCache()->delete($this->getCacheKey($rawName));
+            $this->schemaCache->delete($this->getCacheKey($rawName));
         }
     }
 
@@ -768,9 +764,9 @@ abstract class Schema
      *
      * @throws JsonException
      *
-     * @return mixed the cache key.
+     * @return string the cache key.
      */
-    protected function getCacheKey(string $name)
+    protected function getCacheKey(string $name): string
     {
         $key = [
             __CLASS__,
@@ -779,9 +775,7 @@ abstract class Schema
             $this->getRawTableName($name),
         ];
 
-        $jsonKey = json_encode($key, JSON_THROW_ON_ERROR);
-
-        return md5($jsonKey);
+        return $this->schemaCache->normalize($key);
     }
 
     /**
@@ -816,19 +810,15 @@ abstract class Schema
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false)
     {
-        if ($this->schemaCache->isEnabled() && $this->schemaCache->isExclude($name)) {
-            $schemaCache = $this->schemaCache->getCache();
-        }
-
         $rawName = $this->getRawTableName($name);
 
         if (!isset($this->tableMetadata[$rawName])) {
-            $this->loadTableMetadataFromCache($schemaCache, $rawName);
+            $this->loadTableMetadataFromCache($rawName);
         }
 
         if ($refresh || !array_key_exists($type, $this->tableMetadata[$rawName])) {
             $this->tableMetadata[$rawName][$type] = $this->{'loadTable' . ucfirst($type)}($rawName);
-            $this->saveTableMetadataToCache($schemaCache, $rawName);
+            $this->saveTableMetadataToCache($rawName);
         }
 
         return $this->tableMetadata[$rawName][$type];
@@ -910,55 +900,53 @@ abstract class Schema
     /**
      * Tries to load and populate table metadata from cache.
      *
-     * @param CacheInterface|null $cache
-     * @param string $name
+     * @param string $rawName
      *
      * @throws JsonException
      */
-    private function loadTableMetadataFromCache(?CacheInterface $cache, string $name): void
+    private function loadTableMetadataFromCache(string $rawName): void
     {
-        if ($cache === null) {
-            $this->tableMetadata[$name] = [];
+        if ($this->schemaCache->isEnabled() === false || $this->schemaCache->isExcluded($rawName) === true) {
+            $this->tableMetadata[$rawName] = [];
 
             return;
         }
 
-        $metadata = $cache->get($this->getCacheKey($name));
+        $metadata = $this->schemaCache->get($this->getCacheKey($rawName));
 
         if (
             !is_array($metadata) ||
             !isset($metadata['cacheVersion']) ||
             $metadata['cacheVersion'] !== static::SCHEMA_CACHE_VERSION
         ) {
-            $this->tableMetadata[$name] = [];
+            $this->tableMetadata[$rawName] = [];
 
             return;
         }
 
         unset($metadata['cacheVersion']);
-        $this->tableMetadata[$name] = $metadata;
+        $this->tableMetadata[$rawName] = $metadata;
     }
 
     /**
      * Saves table metadata to cache.
      *
-     * @param CacheInterface|null $cache
-     * @param string $name
+     * @param string $rawName
      *
      * @throws JsonException
      */
-    private function saveTableMetadataToCache(?CacheInterface $cache, string $name): void
+    private function saveTableMetadataToCache(string $rawName): void
     {
-        if ($cache === null) {
+        if ($this->schemaCache->isEnabled() === false || $this->schemaCache->isExcluded($rawName) === true) {
             return;
         }
 
-        $metadata = $this->tableMetadata[$name];
+        $metadata = $this->tableMetadata[$rawName];
 
         $metadata['cacheVersion'] = static::SCHEMA_CACHE_VERSION;
 
-        $cache->set(
-            $this->getCacheKey($name),
+        $this->schemaCache->set(
+            $this->getCacheKey($rawName),
             $metadata,
             $this->schemaCache->getDuration(),
             new TagDependency(['tags' => $this->getCacheTag()]),
