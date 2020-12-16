@@ -87,7 +87,7 @@ final class SchemaCache
         return $this->enabled;
     }
 
-    public function set($key, $value, $ttl = null, Dependency $dependency = null)
+    public function set($key, $value, $ttl = null, Dependency $dependency = null): void
     {
         $this->cache->getOrSet(
             $key,
