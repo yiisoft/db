@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Cache;
 
+use Psr\SimpleCache\CacheInterface as PsrCacheInterface;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Cache\Dependency\TagDependency;
@@ -14,13 +15,15 @@ use Yiisoft\Cache\Dependency\TagDependency;
 final class SchemaCache
 {
     private CacheInterface $cache;
+    private PsrCacheInterface $psrCache;
     private bool $enabled = true;
     private int $duration = 3600;
     private array $exclude = [];
 
-    public function __construct(CacheInterface $cache)
+    public function __construct(CacheInterface $cache, PsrCacheInterface $psrCache)
     {
         $this->cache = $cache;
+        $this->psrCache = $psrCache;
     }
 
     /**
@@ -71,7 +74,7 @@ final class SchemaCache
      */
     public function invalidate(string $cacheTag): void
     {
-        TagDependency::invalidate($this->cache, $cacheTag);
+        TagDependency::invalidate($this->psrCache, $cacheTag);
     }
 
     /**
