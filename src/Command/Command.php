@@ -1329,9 +1329,10 @@ class Command
                 $cache = $info[0];
                 $rawSql = $rawSql ?: $this->getRawSql();
                 $cacheKey = $this->getCacheKey($method, $fetchMode, $rawSql);
-
-
-                $result = $cache->get($cacheKey);
+                $result = $cache->getOrSet(
+                    $cacheKey,
+                    static fn () => null,
+                );
 
                 if (is_array($result) && isset($result[0])) {
                     if ($this->db->isLoggingEnabled()) {
@@ -1380,7 +1381,13 @@ class Command
         }
 
         if (isset($cache, $cacheKey, $info)) {
-            $cache->set($cacheKey, [$result], $info[1], $info[2]);
+            $cache->getOrSet(
+                $cacheKey,
+                static fn (): array => [$result],
+                $info[1],
+                $info[2]
+            );
+
             if ($this->db->isLoggingEnabled()) {
                 $this->logger->log(
                     LogLevel::DEBUG,
@@ -1404,11 +1411,11 @@ class Command
      *
      * @throws JsonException
      *
-     * @return string the cache key.
+     * @return array the cache key.
      */
-    protected function getCacheKey(string $method, ?int $fetchMode, string $rawSql): string
+    protected function getCacheKey(string $method, ?int $fetchMode, string $rawSql): array
     {
-        $key = [
+        return [
             __CLASS__,
             $method,
             $fetchMode,
@@ -1416,8 +1423,6 @@ class Command
             $this->db->getUsername(),
             $rawSql,
         ];
-
-        return $this->queryCache->normalize($key);
     }
 
     /**
