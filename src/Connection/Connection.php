@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Connection;
 
+use JsonException;
 use PDO;
 use PDOException;
 use Psr\Log\LoggerInterface;
@@ -447,8 +448,6 @@ abstract class Connection implements ConnectionInterface
      *
      * If this method is called for the first time, it will try to open a master connection.
      *
-     * @throws InvalidConfigException
-     *
      * @return Connection the currently active master connection. `null` is returned if there is no master available.
      */
     public function getMaster(): ?self
@@ -515,6 +514,9 @@ abstract class Connection implements ConnectionInterface
     /**
      * Returns a server version as a string comparable by {@see \version_compare()}.
      *
+     * @throws Exception
+     * @throws InvalidConfigException
+     *
      * @return string server version as a string.
      */
     public function getServerVersion(): string
@@ -530,8 +532,6 @@ abstract class Connection implements ConnectionInterface
      *
      * @param bool $fallbackToMaster whether to return a master connection in case there is no slave connection
      * available.
-     *
-     * @throws InvalidConfigException
      *
      * @return Connection the currently active slave connection. `null` is returned if there is no slave available and
      * `$fallbackToMaster` is false.
@@ -557,7 +557,7 @@ abstract class Connection implements ConnectionInterface
      *
      * @param bool $fallbackToMaster whether to return a master PDO in case none of the slave connections is available.
      *
-     * @throws Exception|InvalidConfigException
+     * @throws Exception
      *
      * @return PDO the PDO instance for the currently active slave connection. `null` is returned if no slave connection
      * is available and `$fallbackToMaster` is false.
@@ -583,6 +583,8 @@ abstract class Connection implements ConnectionInterface
      *
      * @param string $name table name.
      * @param bool $refresh whether to reload the table schema even if it is found in the cache.
+     *
+     * @throws JsonException
      *
      * @return TableSchema
      */
@@ -800,7 +802,7 @@ abstract class Connection implements ConnectionInterface
             /* @var $db Connection */
             $db = DatabaseFactory::createClass($config);
 
-            $key = $this->schemaCache->normalize([__METHOD__, $db->getDsn()]);
+            $key = [__METHOD__, $db->getDsn()];
 
             if ($this->schemaCache->isEnabled() && $this->schemaCache->get($key)) {
                 /** should not try this dead server now */
@@ -897,6 +899,8 @@ abstract class Connection implements ConnectionInterface
      * Note that if the parameter is not a string, it will be returned without change.
      *
      * @param int|string $value string to be quoted
+     *
+     * @throws Exception|InvalidConfigException
      *
      * @return int|string the properly quoted string
      *

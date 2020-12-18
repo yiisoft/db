@@ -329,7 +329,7 @@ abstract class Schema
         $this->tableNames = [];
 
         if ($this->schemaCache->isEnabled()) {
-            $this->schemaCache->delete($this->getCacheKey($rawName));
+            $this->schemaCache->remove($this->getCacheKey($rawName));
         }
     }
 
@@ -764,18 +764,16 @@ abstract class Schema
      *
      * @throws JsonException
      *
-     * @return string the cache key.
+     * @return array the cache key.
      */
-    protected function getCacheKey(string $name): string
+    protected function getCacheKey(string $name): array
     {
-        $key = [
+        return [
             __CLASS__,
             $this->db->getDsn(),
             $this->db->getUsername(),
             $this->getRawTableName($name),
         ];
-
-        return $this->schemaCache->normalize($key);
     }
 
     /**
