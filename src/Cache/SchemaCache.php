@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Cache;
 
+use Yiisoft\Cache\CacheKeyNormalizer;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Cache\Dependency\TagDependency;
@@ -13,14 +14,16 @@ use Yiisoft\Cache\Dependency\TagDependency;
  */
 final class SchemaCache
 {
+    private CacheKeyNormalizer $cacheKeyNormalizer;
     private CacheInterface $cache;
     private bool $enabled = true;
     private int $duration = 3600;
     private array $exclude = [];
 
-    public function __construct(CacheInterface $cache)
+    public function __construct(CacheInterface $cache, CacheKeyNormalizer $cacheKeyNormalizer)
     {
         $this->cache = $cache;
+        $this->cacheKeyNormalizer = $cacheKeyNormalizer;
     }
 
     /**
@@ -30,7 +33,9 @@ final class SchemaCache
      */
     public function remove($key): void
     {
-        $this->cache->remove($key);
+        if ($this->cache->psr()->has($this->cacheKeyNormalizer->normalize($key))) {
+            $this->cache->remove($key);
+        }
     }
 
     public function get($key, int $default = null)
