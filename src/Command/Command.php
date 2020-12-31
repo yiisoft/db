@@ -20,7 +20,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Profiler\Profiler;
+use Yiisoft\Profiler\ProfilerInterface;
 
 use function array_map;
 use function call_user_func_array;
@@ -110,7 +110,7 @@ class Command
      */
     private $retryHandler;
 
-    private Profiler $profiler;
+    private ProfilerInterface $profiler;
     private LoggerInterface $logger;
     private ConnectionInterface $db;
     private ?PDOStatement $pdoStatement = null;
@@ -120,7 +120,7 @@ class Command
     private QueryCache $queryCache;
 
     public function __construct(
-        Profiler $profiler,
+        ProfilerInterface $profiler,
         LoggerInterface $logger,
         ConnectionInterface $db,
         QueryCache $queryCache,

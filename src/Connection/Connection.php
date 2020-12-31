@@ -23,7 +23,7 @@ use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchema;
 use Yiisoft\Db\Transaction\Transaction;
-use Yiisoft\Profiler\Profiler;
+use Yiisoft\Profiler\ProfilerInterface;
 
 use function array_keys;
 use function str_replace;
@@ -192,14 +192,14 @@ abstract class Connection implements ConnectionInterface
     private LoggerInterface $logger;
     private ?Transaction $transaction = null;
     private ?Schema $schema = null;
-    private Profiler $profiler;
+    private ProfilerInterface $profiler;
     private bool $enableProfiling = true;
     private QueryCache $queryCache;
     private SchemaCache $schemaCache;
 
     public function __construct(
         LoggerInterface $logger,
-        Profiler $profiler,
+        ProfilerInterface $profiler,
         QueryCache $queryCache,
         SchemaCache $schemaCache,
         string $dsn
@@ -506,7 +506,7 @@ abstract class Connection implements ConnectionInterface
         return $this->getSchema()->getQueryBuilder();
     }
 
-    public function getProfiler(): Profiler
+    public function getProfiler(): ProfilerInterface
     {
         return $this->profiler;
     }
