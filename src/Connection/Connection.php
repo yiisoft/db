@@ -804,7 +804,10 @@ abstract class Connection implements ConnectionInterface
 
             $key = [__METHOD__, $db->getDsn()];
 
-            if ($this->schemaCache->isEnabled() && $this->schemaCache->get($key)) {
+            if (
+                $this->schemaCache->isEnabled() &&
+                $this->schemaCache->getOrSet($key, null, $this->serverRetryInterval)
+            ) {
                 /** should not try this dead server now */
                 continue;
             }

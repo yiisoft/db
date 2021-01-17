@@ -863,7 +863,7 @@ abstract class Schema
      *
      * @param string $name table name.
      * @param string $type metadata type.
-     * @param mixed  $data metadata.
+     * @param mixed $data metadata.
      */
     protected function setTableMetadata(string $name, string $type, $data): void
     {
@@ -910,7 +910,12 @@ abstract class Schema
             return;
         }
 
-        $metadata = $this->schemaCache->get($this->getCacheKey($rawName));
+        $metadata = $this->schemaCache->getOrSet(
+            $this->getCacheKey($rawName),
+            null,
+            $this->schemaCache->getDuration(),
+            new TagDependency(['tags' => $this->getCacheTag()]),
+        );
 
         if (
             !is_array($metadata) ||

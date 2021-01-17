@@ -33,12 +33,24 @@ final class SchemaCache
         $this->cache->remove($key);
     }
 
-    public function get($key, int $default = null)
+    public function getOrSet($key, $value = null, $ttl = null, Dependency $dependency = null)
     {
         return $this->cache->getOrSet(
             $key,
-            static fn () => null,
-            $default,
+            static fn () => $value,
+            $ttl,
+            $dependency,
+        );
+    }
+
+    public function set($key, $value, $ttl = null, Dependency $dependency = null)
+    {
+        $this->cache->remove($key);
+        $this->cache->getOrSet(
+            $key,
+            static fn () => $value,
+            $ttl,
+            $dependency,
         );
     }
 
@@ -82,16 +94,6 @@ final class SchemaCache
     public function isEnabled(): bool
     {
         return $this->enabled;
-    }
-
-    public function set($key, $value, $ttl = null, Dependency $dependency = null): void
-    {
-        $this->cache->getOrSet(
-            $key,
-            static fn () => $value,
-            $ttl,
-            $dependency
-        );
     }
 
     /**
