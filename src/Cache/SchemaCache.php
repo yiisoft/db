@@ -45,13 +45,8 @@ final class SchemaCache
 
     public function set($key, $value, $ttl = null, Dependency $dependency = null)
     {
-        $this->cache->remove($key);
-        $this->cache->getOrSet(
-            $key,
-            static fn () => $value,
-            $ttl,
-            $dependency,
-        );
+        $this->remove($key);
+        $this->getOrSet($key, $value, $ttl, $dependency);
     }
 
     /**
