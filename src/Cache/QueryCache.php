@@ -26,6 +26,11 @@ final class QueryCache
         $this->cache = $cache;
     }
 
+    public function clear(): void
+    {
+        $this->cache->clear();
+    }
+
     /**
      * Return number of seconds that query results can remain valid in cache.
      *
