@@ -914,7 +914,7 @@ abstract class Schema
             $this->getCacheKey($rawName),
             null,
             $this->schemaCache->getDuration(),
-            new TagDependency(['tags' => $this->getCacheTag()]),
+            new TagDependency($this->getCacheTag()),
         );
 
         if (
