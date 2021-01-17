@@ -26,9 +26,9 @@ final class QueryCache
         $this->cache = $cache;
     }
 
-    public function clear(): void
+    public function clear(): bool
     {
-        $this->cache->clear();
+        return $this->cache->clear();
     }
 
     /**
