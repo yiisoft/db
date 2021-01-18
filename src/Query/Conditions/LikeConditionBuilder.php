@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
-use function implode;
-use function is_array;
-use function is_string;
-use function preg_match;
-
-use function strpos;
-use function strtoupper;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
+
+use function implode;
+use function is_array;
+use function is_string;
+use function preg_match;
+use function strpos;
+use function strtoupper;
 
 /**
  * Class LikeConditionBuilder builds objects of {@see LikeCondition}.

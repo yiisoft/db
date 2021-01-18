@@ -21,10 +21,10 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  */
 final class PdoValue implements ExpressionInterface
 {
-    private ?string $value = null;
-    private ?int $type = null;
+    private ?string $value;
+    private ?int $type;
 
-    public function __construct(?string $value, ?int $type)
+    public function __construct(string $value = null, int $type = null)
     {
         $this->value = $value;
         $this->type = $type;

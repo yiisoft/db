@@ -372,7 +372,7 @@ class Query implements QueryInterface, ExpressionInterface
      * @param string $q the column name or expression.
      * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
      *
-     * @throws Exception|InvalidConfigException
+     * @throws Exception|InvalidConfigException|Throwable
      *
      * @return mixed the minimum of the specified column values.
      */
@@ -387,7 +387,7 @@ class Query implements QueryInterface, ExpressionInterface
      * @param string $q the column name or expression.
      * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
      *
-     * @throws Exception|InvalidConfigException
+     * @throws Exception|InvalidConfigException|Throwable
      *
      * @return mixed the maximum of the specified column values.
      */
@@ -453,9 +453,7 @@ class Query implements QueryInterface, ExpressionInterface
 
             try {
                 $command = $this->createCommand();
-            } catch (\Exception $e) {
-                /** throw it later */
-            } catch (Throwable $e) {
+            } catch (\Exception | Throwable $e) {
                 /** throw it later */
             }
 
@@ -878,6 +876,8 @@ PATTERN;
      * @param string|null $value the column value optionally prepended with the comparison operator.
      * @param string $defaultOperator The operator to use, when no operator is given in `$value`.
      * Defaults to `=`, performing an exact match.
+     *
+     * @throws NotSupportedException
      *
      * @return $this the query object itself.
      */

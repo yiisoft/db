@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use JsonException;
 use PDO;
 use PDOException;
 use Throwable;
 use Yiisoft\Cache\Dependency\TagDependency;
-use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Factory\SchemaCacheFactory;
 use Yiisoft\Db\Query\QueryBuilder;
 
 use function addcslashes;
@@ -116,12 +115,10 @@ abstract class Schema
     private ?QueryBuilder $builder = null;
     private ?string $serverVersion = null;
     private Connection $db;
-    private SchemaCache $schemaCache;
 
-    public function __construct(Connection $db, SchemaCache $schemaCache)
+    public function __construct(Connection $db)
     {
         $this->db = $db;
-        $this->schemaCache = $schemaCache;
     }
 
     abstract public function createQueryBuilder(): QueryBuilder;
@@ -188,8 +185,6 @@ abstract class Schema
      *
      * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh whether to reload the table schema even if it is found in the cache.
-     *
-     * @throws JsonException
      *
      * @return TableSchema|null table metadata. `null` if the named table does not exist.
      */
@@ -302,8 +297,10 @@ abstract class Schema
      */
     public function refresh(): void
     {
-        if ($this->schemaCache->isEnabled()) {
-            $this->schemaCache->invalidate($this->getCacheTag());
+        $schemaCache = SchemaCacheFactory::run();
+
+        if ($schemaCache->isEnabled()) {
+            $schemaCache->invalidate($this->getCacheTag());
         }
 
         $this->tableNames = [];
@@ -317,19 +314,19 @@ abstract class Schema
      * change.
      *
      * @param string $name table name.
-     *
-     * @throws JsonException
      */
     public function refreshTableSchema(string $name): void
     {
+        $schemaCache = SchemaCacheFactory::run();
+
         $rawName = $this->getRawTableName($name);
 
         unset($this->tableMetadata[$rawName]);
 
         $this->tableNames = [];
 
-        if ($this->schemaCache->isEnabled()) {
-            $this->schemaCache->remove($this->getCacheKey($rawName));
+        if ($schemaCache->isEnabled()) {
+            $schemaCache->remove($this->getCacheKey($rawName));
         }
     }
 
@@ -457,7 +454,7 @@ abstract class Schema
      *
      * @param int|string $str string to be quoted.
      *
-     * @throws Exception|InvalidConfigException
+     * @throws Exception
      *
      * @return int|string the properly quoted string.
      *
@@ -744,7 +741,7 @@ abstract class Schema
     /**
      * Returns a server version as a string comparable by {@see version_compare()}.
      *
-     * @throws Exception|InvalidConfigException
+     * @throws Exception
      *
      * @return string server version as a string.
      */
@@ -761,8 +758,6 @@ abstract class Schema
      * Returns the cache key for the specified table name.
      *
      * @param string $name the table name.
-     *
-     * @throws JsonException
      *
      * @return array the cache key.
      */
@@ -801,8 +796,6 @@ abstract class Schema
      * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
      * @param string $type metadata type.
      * @param bool $refresh whether to reload the table metadata even if it is found in the cache.
-     *
-     * @throws JsonException
      *
      * @return mixed metadata.
      */
@@ -876,7 +869,7 @@ abstract class Schema
      * @param array $row row's array or an array of row's arrays.
      * @param bool $multiple whether multiple rows or a single row passed.
      *
-     * @throws Exception|InvalidConfigException
+     * @throws Exception
      *
      * @return array normalized row or rows.
      */
@@ -899,21 +892,21 @@ abstract class Schema
      * Tries to load and populate table metadata from cache.
      *
      * @param string $rawName
-     *
-     * @throws JsonException
      */
     private function loadTableMetadataFromCache(string $rawName): void
     {
-        if ($this->schemaCache->isEnabled() === false || $this->schemaCache->isExcluded($rawName) === true) {
+        $schemaCache = SchemaCacheFactory::run();
+
+        if ($schemaCache->isEnabled() === false || $schemaCache->isExcluded($rawName) === true) {
             $this->tableMetadata[$rawName] = [];
 
             return;
         }
 
-        $metadata = $this->schemaCache->getOrSet(
+        $metadata = $schemaCache->getOrSet(
             $this->getCacheKey($rawName),
             null,
-            $this->schemaCache->getDuration(),
+            $schemaCache->getDuration(),
             new TagDependency($this->getCacheTag()),
         );
 
@@ -935,12 +928,12 @@ abstract class Schema
      * Saves table metadata to cache.
      *
      * @param string $rawName
-     *
-     * @throws JsonException
      */
     private function saveTableMetadataToCache(string $rawName): void
     {
-        if ($this->schemaCache->isEnabled() === false || $this->schemaCache->isExcluded($rawName) === true) {
+        $schemaCache = SchemaCacheFactory::run();
+
+        if ($schemaCache->isEnabled() === false || $schemaCache->isExcluded($rawName) === true) {
             return;
         }
 
@@ -948,10 +941,10 @@ abstract class Schema
 
         $metadata['cacheVersion'] = static::SCHEMA_CACHE_VERSION;
 
-        $this->schemaCache->set(
+        $schemaCache->set(
             $this->getCacheKey($rawName),
             $metadata,
-            $this->schemaCache->getDuration(),
+            $schemaCache->getDuration(),
             new TagDependency($this->getCacheTag()),
         );
     }
