@@ -134,7 +134,7 @@ class Command
      */
     public function cache(?int $duration = null, Dependency $dependency = null): self
     {
-        $queryCache = QueryCacheFactory::run();
+        $queryCache = QueryCacheFactory::get();
         $this->queryCacheDuration = $duration ?? $queryCache->getDuration();
         $this->queryCacheDependency = $dependency;
 
@@ -1234,7 +1234,7 @@ class Command
      */
     public function execute(): int
     {
-        $profiler = ProfilerFactory::run();
+        $profiler = ProfilerFactory::get();
         $sql = $this->getSql();
 
         [$profile, $rawSql] = $this->logQuery(__METHOD__);
@@ -1280,7 +1280,7 @@ class Command
      */
     protected function logQuery(string $category): array
     {
-        $logger = LoggerFactory::run();
+        $logger = LoggerFactory::get();
 
         if ($this->db->isLoggingEnabled()) {
             $rawSql = $this->getRawSql();
@@ -1309,9 +1309,9 @@ class Command
      */
     protected function queryInternal(string $method, $fetchMode = null)
     {
-        $logger = LoggerFactory::run();
-        $profiler = ProfilerFactory::run();
-        $queryCache = QueryCacheFactory::run();
+        $logger = LoggerFactory::get();
+        $profiler = ProfilerFactory::get();
+        $queryCache = QueryCacheFactory::get();
 
         [, $rawSql] = $this->logQuery(__CLASS__ . '::query');
 

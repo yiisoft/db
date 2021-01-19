@@ -113,7 +113,7 @@ class Transaction
      */
     public function begin(?string $isolationLevel = null): void
     {
-        $logger = LoggerFactory::run();
+        $logger = LoggerFactory::get();
 
         if ($this->db === null) {
             throw new InvalidConfigException('Transaction::db must be set.');
@@ -166,7 +166,7 @@ class Transaction
      */
     public function commit(): void
     {
-        $logger = LoggerFactory::run();
+        $logger = LoggerFactory::get();
 
         if (!$this->isActive()) {
             throw new Exception('Failed to commit transaction: transaction was inactive.');
@@ -204,7 +204,7 @@ class Transaction
      */
     public function rollBack(): void
     {
-        $logger = LoggerFactory::run();
+        $logger = LoggerFactory::get();
 
         if (!$this->isActive()) {
             /**
@@ -259,7 +259,7 @@ class Transaction
      */
     public function setIsolationLevel(string $level): void
     {
-        $logger = LoggerFactory::run();
+        $logger = LoggerFactory::get();
 
         if (!$this->isActive()) {
             throw new Exception('Failed to set isolation level: transaction was inactive.');

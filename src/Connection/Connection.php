@@ -338,7 +338,7 @@ abstract class Connection implements ConnectionInterface
      */
     public function cache(callable $callable, int $duration = null, Dependency $dependency = null)
     {
-        $queryCache = QueryCacheFactory::run();
+        $queryCache = QueryCacheFactory::get();
 
         $queryCache->setInfo(
             [$duration ?? $queryCache->getDuration(), $dependency]
@@ -608,7 +608,7 @@ abstract class Connection implements ConnectionInterface
      */
     public function noCache(callable $callable)
     {
-        $queryCache = QueryCacheFactory::run();
+        $queryCache = QueryCacheFactory::get();
 
         $queryCache->setInfo(false);
 
@@ -628,8 +628,8 @@ abstract class Connection implements ConnectionInterface
      */
     public function open(): void
     {
-        $logger = LoggerFactory::run();
-        $profiler = ProfilerFactory::run();
+        $logger = LoggerFactory::get();
+        $profiler = ProfilerFactory::get();
 
         if (!empty($this->pdo)) {
             return;
@@ -689,7 +689,7 @@ abstract class Connection implements ConnectionInterface
      */
     public function close(): void
     {
-        $logger = LoggerFactory::run();
+        $logger = LoggerFactory::get();
 
         if ($this->master) {
             if ($this->pdo === $this->master->getPDO()) {
@@ -727,7 +727,7 @@ abstract class Connection implements ConnectionInterface
      */
     private function rollbackTransactionOnLevel(Transaction $transaction, int $level): void
     {
-        $logger = LoggerFactory::run();
+        $logger = LoggerFactory::get();
 
         if ($transaction->isActive() && $transaction->getLevel() === $level) {
             /**
@@ -773,8 +773,8 @@ abstract class Connection implements ConnectionInterface
      */
     protected function openFromPoolSequentially(array $pool): ?self
     {
-        $logger = LoggerFactory::run();
-        $schemaCache = SchemaCacheFactory::run();
+        $logger = LoggerFactory::get();
+        $schemaCache = SchemaCacheFactory::get();
 
         if (!$pool) {
             return null;
