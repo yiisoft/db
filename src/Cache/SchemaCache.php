@@ -23,11 +23,6 @@ final class SchemaCache
         $this->cache = $cache;
     }
 
-    public function clear(): bool
-    {
-        return $this->cache->psr()->clear();
-    }
-
     /**
      * Remove a value with the specified key from cache.
      *
@@ -94,11 +89,6 @@ final class SchemaCache
     public function isEnabled(): bool
     {
         return $this->enabled;
-    }
-
-    public function has($key): bool
-    {
-        return $this->cache->psr()->has($key);
     }
 
     /**
