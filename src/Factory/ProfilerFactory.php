@@ -6,21 +6,16 @@ namespace Yiisoft\Db\Factory;
 
 use Psr\Container\ContainerInterface;
 use RuntimeException;
-use Yiisoft\Factory\Definitions\DefinitionInterface;
-use Yiisoft\Factory\Definitions\Normalizer;
-use Yiisoft\Factory\Factory;
 use Yiisoft\Profiler\ProfilerInterface;
 
-final class ProfilerFactory extends Factory
+final class ProfilerFactory
 {
     private static ?ContainerInterface $container = null;
-    private static ?DefinitionInterface $definition = null;
-    private static Factory $profilerFactory;
+    private static self $profilerFactory;
 
     private function __construct(ContainerInterface $container = null)
     {
         self::$container = $container;
-        self::$definition = Normalizer::normalize(ProfilerInterface::class);
     }
 
     public static function initialize(ContainerInterface $container = null): void
@@ -29,18 +24,18 @@ final class ProfilerFactory extends Factory
     }
 
     /**
-     * Creates a `ProfilerInterface` instance.
+     * Get `ProfilerInterface` instance.
      *
-     * @throws RuntimeException If the created object is not an instance of the `ProfilerInterface`.
+     * @throws RuntimeException If the get object is not an instance of the `ProfilerInterface`.
      *
      * @return ProfilerInterface The `ProfilerInterface` instance.
      *
      * @psalm-suppress RedundantConditionGivenDocblockType
      * @psalm-suppress DocblockTypeContradiction
      */
-    public static function run(): ProfilerInterface
+    public static function get(): ProfilerInterface
     {
-        $profiler = self::$definition->resolve(self::$container);
+        $profiler = self::$container->get(ProfilerInterface::class);
 
         if (!($profiler instanceof ProfilerInterface)) {
             throw new RuntimeException(sprintf(
