@@ -21,7 +21,7 @@ trait TestColumnSchemaBuilderTrait
      */
     public function getColumnSchemaBuilder(string $type, ?int $length = null): ColumnSchemaBuilder
     {
-        return new ColumnSchemaBuilder($type, $length, $this->getConnection());
+        return new ColumnSchemaBuilder($type, $length);
     }
 
     /**
