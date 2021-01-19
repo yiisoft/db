@@ -16,9 +16,6 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Factory\LoggerFactory;
-use Yiisoft\Db\Factory\ProfilerFactory;
-use Yiisoft\Db\Factory\QueryCacheFactory;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Query;
 
@@ -134,7 +131,8 @@ class Command
      */
     public function cache(?int $duration = null, Dependency $dependency = null): self
     {
-        $queryCache = QueryCacheFactory::get();
+        $queryCache = $this->db->getQueryCache();
+
         $this->queryCacheDuration = $duration ?? $queryCache->getDuration();
         $this->queryCacheDependency = $dependency;
 
@@ -1234,7 +1232,7 @@ class Command
      */
     public function execute(): int
     {
-        $profiler = ProfilerFactory::get();
+        $profiler = $this->db->getProfiler();
         $sql = $this->getSql();
 
         [$profile, $rawSql] = $this->logQuery(__METHOD__);
@@ -1280,7 +1278,7 @@ class Command
      */
     protected function logQuery(string $category): array
     {
-        $logger = LoggerFactory::get();
+        $logger = $this->db->getLogger();
 
         if ($this->db->isLoggingEnabled()) {
             $rawSql = $this->getRawSql();
@@ -1309,9 +1307,9 @@ class Command
      */
     protected function queryInternal(string $method, $fetchMode = null)
     {
-        $logger = LoggerFactory::get();
-        $profiler = ProfilerFactory::get();
-        $queryCache = QueryCacheFactory::get();
+        $logger = $this->db->getLogger();
+        $profiler = $this->db->getProfiler();
+        $queryCache = $this->db->getqueryCache();
 
         [, $rawSql] = $this->logQuery(__CLASS__ . '::query');
 

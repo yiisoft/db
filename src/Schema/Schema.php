@@ -297,7 +297,7 @@ abstract class Schema
      */
     public function refresh(): void
     {
-        $schemaCache = SchemaCacheFactory::get();
+        $schemaCache = $this->db->getSchemaCache();
 
         if ($schemaCache->isEnabled()) {
             $schemaCache->invalidate($this->getCacheTag());
@@ -317,7 +317,7 @@ abstract class Schema
      */
     public function refreshTableSchema(string $name): void
     {
-        $schemaCache = SchemaCacheFactory::get();
+        $schemaCache = $this->db->getSchemaCache();
 
         $rawName = $this->getRawTableName($name);
 
@@ -895,7 +895,7 @@ abstract class Schema
      */
     private function loadTableMetadataFromCache(string $rawName): void
     {
-        $schemaCache = SchemaCacheFactory::get();
+        $schemaCache = $this->db->getSchemaCache();
 
         if ($schemaCache->isEnabled() === false || $schemaCache->isExcluded($rawName) === true) {
             $this->tableMetadata[$rawName] = [];
@@ -931,7 +931,7 @@ abstract class Schema
      */
     private function saveTableMetadataToCache(string $rawName): void
     {
-        $schemaCache = SchemaCacheFactory::get();
+        $schemaCache = $this->db->getSchemaCache();
 
         if ($schemaCache->isEnabled() === false || $schemaCache->isExcluded($rawName) === true) {
             return;
