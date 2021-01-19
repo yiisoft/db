@@ -10,7 +10,6 @@ use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Factory\LoggerFactory;
 
 /**
  * Transaction represents a DB transaction.

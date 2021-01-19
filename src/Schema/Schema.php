@@ -14,7 +14,6 @@ use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Factory\SchemaCacheFactory;
 use Yiisoft\Db\Query\QueryBuilder;
 
 use function addcslashes;
