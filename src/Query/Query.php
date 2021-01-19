@@ -453,7 +453,7 @@ class Query implements QueryInterface, ExpressionInterface
 
             try {
                 $command = $this->createCommand();
-            } catch (\Exception | Throwable $e) {
+            } catch (Throwable $e) {
                 /** throw it later */
             }
 
