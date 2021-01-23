@@ -26,6 +26,7 @@
         "yiisoft/arrays": "^3.0@dev",
         "yiisoft/cache": "^3.0@dev",
         "yiisoft/data": "^3.0@dev",
+        "yiisoft/factory": "^3.0@dev",
         "yiisoft/log": "^3.0@dev",
         "yiisoft/profiler": "^3.0@dev",
         "yiisoft/strings": "^1.1"

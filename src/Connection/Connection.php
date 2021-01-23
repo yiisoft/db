@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Connection;
 
-use JsonException;
 use PDO;
 use PDOException;
-use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Psr\Log\LoggerInterface;
 use Throwable;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Cache\QueryCache;
@@ -189,26 +188,15 @@ abstract class Connection implements ConnectionInterface
     private array $quotedColumnNames = [];
     private ?Connection $master = null;
     private ?Connection $slave = null;
-    private LoggerInterface $logger;
     private ?Transaction $transaction = null;
     private ?Schema $schema = null;
-    private ProfilerInterface $profiler;
     private bool $enableProfiling = true;
-    private QueryCache $queryCache;
-    private SchemaCache $schemaCache;
+    private LazyConnectionDependencies $dependencies;
 
-    public function __construct(
-        LoggerInterface $logger,
-        ProfilerInterface $profiler,
-        QueryCache $queryCache,
-        SchemaCache $schemaCache,
-        string $dsn
-    ) {
-        $this->logger = $logger;
-        $this->profiler = $profiler;
-        $this->queryCache = $queryCache;
-        $this->schemaCache = $schemaCache;
+    public function __construct(string $dsn, LazyConnectionDependencies $dependencies)
+    {
         $this->dsn = $dsn;
+        $this->dependencies = $dependencies;
     }
 
     /**
@@ -296,7 +284,7 @@ abstract class Connection implements ConnectionInterface
      *
      * {@see Transaction::begin()} for details.
      *
-     * @throws Exception|InvalidConfigException|NotSupportedException
+     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
      *
      * @return Transaction the transaction initiated
      */
@@ -305,7 +293,7 @@ abstract class Connection implements ConnectionInterface
         $this->open();
 
         if (($transaction = $this->getTransaction()) === null) {
-            $transaction = $this->transaction = new Transaction($this, $this->logger);
+            $transaction = $this->transaction = new Transaction($this);
         }
 
         $transaction->begin($isolationLevel);
@@ -350,13 +338,13 @@ abstract class Connection implements ConnectionInterface
      */
     public function cache(callable $callable, int $duration = null, Dependency $dependency = null)
     {
-        $this->queryCache->setInfo(
-            [$duration ?? $this->queryCache->getDuration(), $dependency]
+        $this->getQueryCache()->setInfo(
+            [$duration ?? $this->getQueryCache()->getDuration(), $dependency]
         );
 
         $result = $callable($this);
 
-        $this->queryCache->removeLastInfo();
+        $this->getQueryCache()->removeLastInfo();
 
         return $result;
     }
@@ -379,16 +367,6 @@ abstract class Connection implements ConnectionInterface
     public function getEmulatePrepare(): ?bool
     {
         return $this->emulatePrepare;
-    }
-
-    public function getQueryCache(): QueryCache
-    {
-        return $this->queryCache;
-    }
-
-    public function getSchemaCache(): SchemaCache
-    {
-        return $this->schemaCache;
     }
 
     public function isLoggingEnabled(): bool
@@ -436,11 +414,6 @@ abstract class Connection implements ConnectionInterface
     public function getLastInsertID($sequenceName = ''): string
     {
         return $this->getSchema()->getLastInsertID($sequenceName);
-    }
-
-    public function getLogger(): LoggerInterface
-    {
-        return $this->logger;
     }
 
     /**
@@ -506,16 +479,10 @@ abstract class Connection implements ConnectionInterface
         return $this->getSchema()->getQueryBuilder();
     }
 
-    public function getProfiler(): ProfilerInterface
-    {
-        return $this->profiler;
-    }
-
     /**
      * Returns a server version as a string comparable by {@see \version_compare()}.
      *
      * @throws Exception
-     * @throws InvalidConfigException
      *
      * @return string server version as a string.
      */
@@ -584,8 +551,6 @@ abstract class Connection implements ConnectionInterface
      * @param string $name table name.
      * @param bool $refresh whether to reload the table schema even if it is found in the cache.
      *
-     * @throws JsonException
-     *
      * @return TableSchema
      */
     public function getTableSchema(string $name, $refresh = false): ?TableSchema
@@ -638,11 +603,13 @@ abstract class Connection implements ConnectionInterface
      */
     public function noCache(callable $callable)
     {
-        $this->queryCache->setInfo(false);
+        $queryCache = $this->dependencies->queryCache();
+
+        $queryCache->setInfo(false);
 
         $result = $callable($this);
 
-        $this->queryCache->removeLastInfo();
+        $queryCache->removeLastInfo();
 
         return $result;
     }
@@ -680,11 +647,11 @@ abstract class Connection implements ConnectionInterface
 
         try {
             if ($this->enableLogging) {
-                $this->logger->log(LogLevel::INFO, $token);
+                $this->getLogger()->log(LogLevel::INFO, $token);
             }
 
             if ($this->isProfilingEnabled()) {
-                $this->profiler->begin($token, [__METHOD__]);
+                $this->getProfiler()->begin($token, [__METHOD__]);
             }
 
             $this->pdo = $this->createPdoInstance();
@@ -692,15 +659,15 @@ abstract class Connection implements ConnectionInterface
             $this->initConnection();
 
             if ($this->isProfilingEnabled()) {
-                $this->profiler->end($token, [__METHOD__]);
+                $this->getProfiler()->end($token, [__METHOD__]);
             }
         } catch (PDOException $e) {
             if ($this->isProfilingEnabled()) {
-                $this->profiler->end($token, [__METHOD__]);
+                $this->getProfiler()->end($token, [__METHOD__]);
             }
 
             if ($this->enableLogging) {
-                $this->logger->log(LogLevel::ERROR, $token);
+                $this->getLogger()->log(LogLevel::ERROR, $token);
             }
 
             throw new Exception($e->getMessage(), $e->errorInfo, $e);
@@ -726,7 +693,7 @@ abstract class Connection implements ConnectionInterface
 
         if ($this->pdo !== null) {
             if ($this->enableLogging) {
-                $this->logger->log(LogLevel::DEBUG, 'Closing DB connection: ' . $this->dsn . ' ' . __METHOD__);
+                $this->getLogger()->log(LogLevel::DEBUG, 'Closing DB connection: ' . $this->dsn . ' ' . __METHOD__);
             }
 
             $this->pdo = null;
@@ -757,7 +724,7 @@ abstract class Connection implements ConnectionInterface
             try {
                 $transaction->rollBack();
             } catch (Exception $e) {
-                $this->logger->log(LogLevel::ERROR, $e, [__METHOD__]);
+                $this->getLogger()->log(LogLevel::ERROR, $e, [__METHOD__]);
                 /** hide this exception to be able to continue throwing original exception outside */
             }
         }
@@ -805,8 +772,8 @@ abstract class Connection implements ConnectionInterface
             $key = [__METHOD__, $db->getDsn()];
 
             if (
-                $this->schemaCache->isEnabled() &&
-                $this->schemaCache->getOrSet($key, null, $this->serverRetryInterval)
+                $this->getSchemaCache()->isEnabled() &&
+                $this->getSchemaCache()->getOrSet($key, null, $this->serverRetryInterval)
             ) {
                 /** should not try this dead server now */
                 continue;
@@ -818,15 +785,15 @@ abstract class Connection implements ConnectionInterface
                 return $db;
             } catch (Exception $e) {
                 if ($this->enableLogging) {
-                    $this->logger->log(
+                    $this->getLogger()->log(
                         LogLevel::WARNING,
                         "Connection ({$db->getDsn()}) failed: " . $e->getMessage() . ' ' . __METHOD__
                     );
                 }
 
-                if ($this->schemaCache->isEnabled()) {
+                if ($this->getSchemaCache()->isEnabled()) {
                     /** mark this server as dead and only retry it after the specified interval */
-                    $this->schemaCache->set($key, 1, $this->serverRetryInterval);
+                    $this->getSchemaCache()->set($key, 1, $this->serverRetryInterval);
                 }
 
                 return null;
@@ -903,7 +870,7 @@ abstract class Connection implements ConnectionInterface
      *
      * @param int|string $value string to be quoted
      *
-     * @throws Exception|InvalidConfigException
+     * @throws Exception
      *
      * @return int|string the properly quoted string
      *
@@ -1159,5 +1126,25 @@ abstract class Connection implements ConnectionInterface
         }
 
         return $result;
+    }
+
+    public function getLogger(): LoggerInterface
+    {
+        return $this->dependencies->logger();
+    }
+
+    public function getProfiler(): ProfilerInterface
+    {
+        return $this->dependencies->profiler();
+    }
+
+    public function getQueryCache(): QueryCache
+    {
+        return $this->dependencies->queryCache();
+    }
+
+    public function getSchemaCache(): SchemaCache
+    {
+        return $this->dependencies->schemaCache();
     }
 }

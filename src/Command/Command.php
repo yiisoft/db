@@ -8,19 +8,16 @@ use JsonException;
 use PDO;
 use PDOException;
 use PDOStatement;
-use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Profiler\ProfilerInterface;
 
 use function array_map;
 use function call_user_func_array;
@@ -110,27 +107,16 @@ class Command
      */
     private $retryHandler;
 
-    private ProfilerInterface $profiler;
-    private LoggerInterface $logger;
     private ConnectionInterface $db;
     private ?PDOStatement $pdoStatement = null;
     private int $fetchMode = PDO::FETCH_ASSOC;
     private ?int $queryCacheDuration = null;
     private ?Dependency $queryCacheDependency = null;
-    private QueryCache $queryCache;
 
-    public function __construct(
-        ProfilerInterface $profiler,
-        LoggerInterface $logger,
-        ConnectionInterface $db,
-        QueryCache $queryCache,
-        ?string $sql
-    ) {
+    public function __construct(ConnectionInterface $db, ?string $sql)
+    {
         $this->db = $db;
-        $this->logger = $logger;
-        $this->profiler = $profiler;
         $this->sql = $sql;
-        $this->queryCache = $queryCache;
     }
 
     /**
@@ -145,7 +131,9 @@ class Command
      */
     public function cache(?int $duration = null, Dependency $dependency = null): self
     {
-        $this->queryCacheDuration = $duration ?? $this->queryCache->getDuration();
+        $queryCache = $this->db->getQueryCache();
+
+        $this->queryCacheDuration = $duration ?? $queryCache->getDuration();
         $this->queryCacheDependency = $dependency;
 
         return $this;
@@ -1244,6 +1232,7 @@ class Command
      */
     public function execute(): int
     {
+        $profiler = $this->db->getProfiler();
         $sql = $this->getSql();
 
         [$profile, $rawSql] = $this->logQuery(__METHOD__);
@@ -1256,14 +1245,14 @@ class Command
 
         try {
             if ($this->db->isProfilingEnabled()) {
-                $this->profiler->begin((string) $rawSql, [__METHOD__]);
+                $profiler->begin((string) $rawSql, [__METHOD__]);
             }
 
             $this->internalExecute($rawSql);
             $n = $this->pdoStatement->rowCount();
 
             if ($this->db->isProfilingEnabled()) {
-                $this->profiler->end((string) $rawSql, [__METHOD__]);
+                $profiler->end((string) $rawSql, [__METHOD__]);
             }
 
             $this->refreshTableSchema();
@@ -1271,7 +1260,7 @@ class Command
             return $n;
         } catch (Exception $e) {
             if ($this->db->isProfilingEnabled()) {
-                $this->profiler->end((string) $rawSql, [__METHOD__]);
+                $profiler->end((string) $rawSql, [__METHOD__]);
             }
 
             throw $e;
@@ -1289,9 +1278,11 @@ class Command
      */
     protected function logQuery(string $category): array
     {
+        $logger = $this->db->getLogger();
+
         if ($this->db->isLoggingEnabled()) {
             $rawSql = $this->getRawSql();
-            $this->logger->log(LogLevel::INFO, $rawSql, [$category]);
+            $logger->log(LogLevel::INFO, $rawSql, [$category]);
         }
 
         if (!$this->db->isProfilingEnabled()) {
@@ -1316,10 +1307,14 @@ class Command
      */
     protected function queryInternal(string $method, $fetchMode = null)
     {
+        $logger = $this->db->getLogger();
+        $profiler = $this->db->getProfiler();
+        $queryCache = $this->db->getqueryCache();
+
         [, $rawSql] = $this->logQuery(__CLASS__ . '::query');
 
         if ($method !== '') {
-            $info = $this->queryCache->info(
+            $info = $queryCache->info(
                 $this->queryCacheDuration,
                 $this->queryCacheDependency
             );
@@ -1336,7 +1331,7 @@ class Command
 
                 if (is_array($result) && isset($result[0])) {
                     if ($this->db->isLoggingEnabled()) {
-                        $this->logger->log(
+                        $logger->log(
                             LogLevel::DEBUG,
                             'Query result served from cache',
                             [__CLASS__ . '::query']
@@ -1352,7 +1347,7 @@ class Command
 
         try {
             if ($this->db->isProfilingEnabled()) {
-                $this->profiler->begin((string) $rawSql, [__CLASS__ . '::query']);
+                $profiler->begin((string) $rawSql, [__CLASS__ . '::query']);
             }
 
             $this->internalExecute($rawSql);
@@ -1370,11 +1365,11 @@ class Command
             }
 
             if ($this->db->isProfilingEnabled()) {
-                $this->profiler->end((string) $rawSql, [__CLASS__ . '::query']);
+                $profiler->end((string) $rawSql, [__CLASS__ . '::query']);
             }
         } catch (Exception $e) {
             if ($this->db->isProfilingEnabled()) {
-                $this->profiler->end((string) $rawSql, [__CLASS__ . '::query']);
+                $profiler->end((string) $rawSql, [__CLASS__ . '::query']);
             }
 
             throw $e;
@@ -1389,7 +1384,7 @@ class Command
             );
 
             if ($this->db->isLoggingEnabled()) {
-                $this->logger->log(
+                $logger->log(
                     LogLevel::DEBUG,
                     'Saved query result in cache',
                     [__CLASS__ . '::query']

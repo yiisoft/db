@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestUtility;
 
-use function array_shift;
-use function call_user_func_array;
 use Yiisoft\Db\Expression\Expression;
-
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 use Yiisoft\Db\Schema\Schema;
+
+use function array_shift;
+use function call_user_func_array;
 
 trait TestColumnSchemaBuilderTrait
 {
@@ -21,7 +21,7 @@ trait TestColumnSchemaBuilderTrait
      */
     public function getColumnSchemaBuilder(string $type, ?int $length = null): ColumnSchemaBuilder
     {
-        return new ColumnSchemaBuilder($type, $length, $this->getConnection());
+        return new ColumnSchemaBuilder($type, $length);
     }
 
     /**

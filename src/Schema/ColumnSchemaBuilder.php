@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Strings\NumericHelper;
 
@@ -26,7 +25,7 @@ class ColumnSchemaBuilder
     public const CATEGORY_TIME = 'time';
     public const CATEGORY_OTHER = 'other';
 
-    private ?string $type = null;
+    private ?string $type;
     private $length;
     private ?bool $isNotNull = null;
     private bool $isUnique = false;
@@ -59,14 +58,12 @@ class ColumnSchemaBuilder
         Schema::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
         Schema::TYPE_MONEY => self::CATEGORY_NUMERIC,
     ];
-    private ?ConnectionInterface $db;
     private ?string $comment = null;
 
-    public function __construct(string $type, $length = null, ?ConnectionInterface $db = null)
+    public function __construct(string $type, $length = null)
     {
         $this->type = $type;
         $this->length = $length;
-        $this->db = $db;
     }
 
     /**
@@ -114,7 +111,7 @@ class ColumnSchemaBuilder
     /**
      * Sets a `CHECK` constraint for the column.
      *
-     * @param string $check the SQL of the `CHECK` constraint to be added.
+     * @param string|null $check the SQL of the `CHECK` constraint to be added.
      *
      * @return $this
      */
@@ -146,7 +143,7 @@ class ColumnSchemaBuilder
     /**
      * Specifies the comment for column.
      *
-     * @param string $comment the comment
+     * @param string|null $comment the comment
      *
      * @return $this
      */
@@ -314,7 +311,7 @@ class ColumnSchemaBuilder
         switch (gettype($this->default)) {
             case 'object':
             case 'integer':
-                $string .= (string) $this->default;
+                $string .= $this->default;
                 break;
             case 'double':
                 /* ensure type cast always has . as decimal separator in all locales */
@@ -515,15 +512,6 @@ class ColumnSchemaBuilder
     public function getCategoryMap(): array
     {
         return $this->categoryMap;
-    }
-
-    /**
-     * @return ConnectionInterface|null the current database connection. It is used mainly to escape strings safely
-     * when building the final column schema string.
-     */
-    public function getDb(): ?ConnectionInterface
-    {
-        return $this->db;
     }
 
     /**

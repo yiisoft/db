@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Transaction;
 
-use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Throwable;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -69,13 +69,11 @@ class Transaction
     public const SERIALIZABLE = 'SERIALIZABLE';
 
     private int $level = 0;
-    private ?Connection $db = null;
-    private ?LoggerInterface $logger = null;
+    private Connection $db;
 
-    public function __construct(?Connection $db, ?LoggerInterface $logger)
+    public function __construct(Connection $db)
     {
         $this->db = $db;
-        $this->logger = $logger;
     }
 
     /**
@@ -110,10 +108,12 @@ class Transaction
      *
      * @throws InvalidConfigException if {@see db} is `null`
      * @throws NotSupportedException if the DBMS does not support nested transactions
-     * @throws Exception if DB connection fails
+     * @throws Exception|Throwable if DB connection fails
      */
     public function begin(?string $isolationLevel = null): void
     {
+        $logger = $this->db->getLogger();
+
         if ($this->db === null) {
             throw new InvalidConfigException('Transaction::db must be set.');
         }
@@ -125,7 +125,7 @@ class Transaction
                 $this->db->getSchema()->setTransactionIsolationLevel($isolationLevel);
             }
 
-            $this->logger->log(
+            $logger->log(
                 LogLevel::DEBUG,
                 'Begin transaction' . ($isolationLevel ? ' with isolation level ' . $isolationLevel : '')
                 . ' ' . __METHOD__
@@ -140,14 +140,14 @@ class Transaction
         $schema = $this->db->getSchema();
 
         if ($schema->supportsSavepoint()) {
-            $this->logger->log(
+            $logger->log(
                 LogLevel::DEBUG,
                 'Set savepoint ' . $this->level . ' ' . __METHOD__
             );
 
             $schema->createSavepoint('LEVEL' . $this->level);
         } else {
-            $this->logger->log(
+            $logger->log(
                 LogLevel::DEBUG,
                 'Transaction not started: nested transaction not supported ' . __METHOD__
             );
@@ -161,17 +161,19 @@ class Transaction
     /**
      * Commits a transaction.
      *
-     * @throws Exception if the transaction is not active
+     * @throws Exception|Throwable if the transaction is not active
      */
     public function commit(): void
     {
+        $logger = $this->db->getLogger();
+
         if (!$this->isActive()) {
             throw new Exception('Failed to commit transaction: transaction was inactive.');
         }
 
         $this->level--;
         if ($this->level === 0) {
-            $this->logger->log(
+            $logger->log(
                 LogLevel::DEBUG,
                 'Commit transaction ' . __METHOD__
             );
@@ -183,13 +185,13 @@ class Transaction
 
         $schema = $this->db->getSchema();
         if ($schema->supportsSavepoint()) {
-            $this->logger->log(
+            $logger->log(
                 LogLevel::DEBUG,
                 'Release savepoint ' . $this->level . ' ' . __METHOD__
             );
             $schema->releaseSavepoint('LEVEL' . $this->level);
         } else {
-            $this->logger->log(
+            $logger->log(
                 LogLevel::INFO,
                 'Transaction not committed: nested transaction not supported ' . __METHOD__
             );
@@ -201,6 +203,8 @@ class Transaction
      */
     public function rollBack(): void
     {
+        $logger = $this->db->getLogger();
+
         if (!$this->isActive()) {
             /**
              * do nothing if transaction is not active: this could be the transaction is committed but the event handler
@@ -211,7 +215,7 @@ class Transaction
 
         $this->level--;
         if ($this->level === 0) {
-            $this->logger->log(
+            $logger->log(
                 LogLevel::INFO,
                 'Roll back transaction ' . __METHOD__
             );
@@ -223,14 +227,14 @@ class Transaction
 
         $schema = $this->db->getSchema();
         if ($schema->supportsSavepoint()) {
-            $this->logger->log(
+            $logger->log(
                 LogLevel::DEBUG,
                 'Roll back to savepoint ' . $this->level . ' ' . __METHOD__
             );
 
             $schema->rollBackSavepoint('LEVEL' . $this->level);
         } else {
-            $this->logger->log(
+            $logger->log(
                 LogLevel::INFO,
                 'Transaction not rolled back: nested transaction not supported ' . __METHOD__
             );
@@ -248,17 +252,19 @@ class Transaction
      * This can be one of {@see READ_UNCOMMITTED}, {@see READ_COMMITTED}, {@see REPEATABLE_READ} and {@see SERIALIZABLE}
      * but also a string containing DBMS specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`.
      *
-     * @throws Exception if the transaction is not active.
+     * @throws Exception|Throwable if the transaction is not active.
      *
      * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
      */
     public function setIsolationLevel(string $level): void
     {
+        $logger = $this->db->getLogger();
+
         if (!$this->isActive()) {
             throw new Exception('Failed to set isolation level: transaction was inactive.');
         }
 
-        $this->logger->log(
+        $logger->log(
             LogLevel::DEBUG,
             'Setting transaction isolation level to ' . $this->level . ' ' . __METHOD__
         );
@@ -272,13 +278,5 @@ class Transaction
     public function getLevel(): int
     {
         return $this->level;
-    }
-
-    /**
-     * @return Connection|null the database connection that this transaction is associated with.
-     */
-    public function getDb(): ?Connection
-    {
-        return $this->db;
     }
 }
