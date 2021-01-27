@@ -36,7 +36,6 @@ use function array_reverse;
 use function array_shift;
 use function array_unique;
 use function array_values;
-use function array_walk;
 use function count;
 use function ctype_digit;
 use function get_class;
@@ -1564,6 +1563,7 @@ class QueryBuilder
     /**
      * @param array $columns
      * @psalm-param array<string, Expression|string> $columns
+     *
      * @param array $params the binding parameters to be populated
      *
      * @throws Exception|InvalidArgumentException
@@ -1610,6 +1610,7 @@ class QueryBuilder
      * @param array $orderBy the order by columns. See {@see Query::orderBy} for more details on how to specify this
      * parameter.
      * @psalm-param array<string, Expression|int|string> $orderBy
+     *
      * @param Expression|int|null $limit the limit number. See {@see Query::limit} for more details.
      * @param Expression|int|null $offset the offset number. See {@see Query::offset} for more details.
      * @param array $params the binding parameters to be populated.
@@ -1640,6 +1641,7 @@ class QueryBuilder
     /**
      * @param array $columns
      * @psalm-param array<string, Expression|int|string> $columns
+     *
      * @param array $params the binding parameters to be populated
      *
      * @throws Exception|InvalidArgumentException
@@ -1714,6 +1716,7 @@ class QueryBuilder
     /**
      * @param array $unions
      * @psalm-param array<array{query:Query|string,all:bool}> $unions
+     *
      * @param array $params the binding parameters to be populated
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
