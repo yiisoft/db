@@ -1300,12 +1300,10 @@ class QueryBuilder
     {
         if ($subQuery instanceof Query) {
             [$rawQuery, $params] = $this->build($subQuery);
-            array_walk(
-                $params,
-                function (&$param) {
-                    $param = $this->db->quoteValue($param);
-                }
-            );
+
+            foreach ($params as $key => $value) {
+                $params[$key] = $this->db->quoteValue($value);
+            }
             $subQuery = strtr($rawQuery, $params);
         }
 
