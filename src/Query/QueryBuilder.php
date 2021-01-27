@@ -230,6 +230,7 @@ class QueryBuilder
      *
      * @return array the generated SQL statement (the first array element) and the corresponding parameters to be bound
      * to the SQL statement (the second array element). The parameters returned include those provided in `$params`.
+     * @psalm-return array{string,array<array-key, mixed>}
      */
     public function build(Query $query, array $params = []): array
     {
@@ -1563,6 +1564,7 @@ class QueryBuilder
 
     /**
      * @param array $columns
+     * @psalm-param array<string, Expression|string> $columns
      * @param array $params the binding parameters to be populated
      *
      * @throws Exception|InvalidArgumentException
@@ -1574,8 +1576,9 @@ class QueryBuilder
         if (empty($columns)) {
             return '';
         }
+
         foreach ($columns as $i => $column) {
-            if ($column instanceof ExpressionInterface) {
+            if ($column instanceof Expression) {
                 $columns[$i] = $this->buildExpression($column);
                 $params = array_merge($params, $column->getParams());
             } elseif (strpos($column, '(') === false) {
@@ -1607,8 +1610,9 @@ class QueryBuilder
      * @param string $sql the existing SQL (without ORDER BY/LIMIT/OFFSET).
      * @param array $orderBy the order by columns. See {@see Query::orderBy} for more details on how to specify this
      * parameter.
-     * @param int|object|null $limit the limit number. See {@see Query::limit} for more details.
-     * @param int|object|null $offset the offset number. See {@see Query::offset} for more details.
+     * @psalm-param array<string, Expression|int|string> $orderBy
+     * @param Expression|int|null $limit the limit number. See {@see Query::limit} for more details.
+     * @param Expression|int|null $offset the offset number. See {@see Query::offset} for more details.
      * @param array $params the binding parameters to be populated.
      *
      * @throws Exception|InvalidArgumentException
@@ -1636,6 +1640,7 @@ class QueryBuilder
 
     /**
      * @param array $columns
+     * @psalm-param array<string, Expression|int|string> $columns
      * @param array $params the binding parameters to be populated
      *
      * @throws Exception|InvalidArgumentException
@@ -1651,7 +1656,7 @@ class QueryBuilder
         $orders = [];
 
         foreach ($columns as $name => $direction) {
-            if ($direction instanceof ExpressionInterface) {
+            if ($direction instanceof Expression) {
                 $orders[] = $this->buildExpression($direction);
                 $params = array_merge($params, $direction->getParams());
             } else {
@@ -1663,8 +1668,8 @@ class QueryBuilder
     }
 
     /**
-     * @param int|object|null $limit
-     * @param int|object|null $offset
+     * @param Expression|int|null $limit
+     * @param Expression|int|null $offset
      *
      * @return string the LIMIT and OFFSET clauses.
      */
@@ -1673,11 +1678,11 @@ class QueryBuilder
         $sql = '';
 
         if ($this->hasLimit($limit)) {
-            $sql = 'LIMIT ' . $limit;
+            $sql = 'LIMIT ' . (string) $limit;
         }
 
         if ($this->hasOffset($offset)) {
-            $sql .= ' OFFSET ' . $offset;
+            $sql .= ' OFFSET ' . (string) $offset;
         }
 
         return ltrim($sql);
@@ -1709,6 +1714,7 @@ class QueryBuilder
 
     /**
      * @param array $unions
+     * @psalm-param array<array{query:Query|string,all:bool}> $unions
      * @param array $params the binding parameters to be populated
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
@@ -1741,6 +1747,7 @@ class QueryBuilder
      * It will join all columns into a string with comma as separators.
      *
      * @param array|string $columns the columns to be processed.
+     * @psalm-param array<array-key, ExpressionInterface|string>|string $columns
      *
      * @throws Exception|InvalidArgumentException
      *
@@ -1774,15 +1781,15 @@ class QueryBuilder
     /**
      * Parses the condition specification and generates the corresponding SQL expression.
      *
-     * @param array|ExpressionInterface|string $condition the condition specification.
+     * @param array|ExpressionInterface|string|null $condition the condition specification.
      * Please refer to {@see Query::where()} on how to specify a condition.
      * @param array $params the binding parameters to be populated.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
-     * @return array|string the generated SQL expression.
+     * @return string the generated SQL expression.
      */
-    public function buildCondition($condition, array &$params = [])
+    public function buildCondition($condition, array &$params = []): string
     {
         if (is_array($condition)) {
             if (empty($condition)) {
@@ -1796,7 +1803,7 @@ class QueryBuilder
             return $this->buildExpression($condition, $params);
         }
 
-        return (string) $condition;
+        return $condition ?? '';
     }
 
     /**
@@ -1814,7 +1821,7 @@ class QueryBuilder
     {
         /** operator format: operator, operand 1, operand 2, ... */
         if (isset($condition[0])) {
-            $operator = strtoupper(array_shift($condition));
+            $operator = strtoupper((string) array_shift($condition));
 
             $className = $this->conditionClasses[$operator] ?? SimpleCondition::class;
 
@@ -1860,6 +1867,7 @@ class QueryBuilder
      * @param $table
      *
      * @return array|bool
+     * @psalm-return array<array-key, string>|bool
      */
     protected function extractAlias(string $table)
     {
@@ -1870,6 +1878,9 @@ class QueryBuilder
         return false;
     }
 
+    /**
+     * @psalm-param array<array-key,array{query:string|Query,alias:string,recursive:bool}> $withs
+     */
     public function buildWithQueries(array $withs, array &$params): string
     {
         if (empty($withs)) {
