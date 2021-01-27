@@ -1870,32 +1870,6 @@ class QueryBuilder
         return false;
     }
 
-    public function buildWith($withs, &$params): string
-    {
-        if (empty($withs)) {
-            return '';
-        }
-
-        $recursive = false;
-        $result = [];
-
-        foreach ($withs as $i => $with) {
-            if ($with['recursive']) {
-                $recursive = true;
-            }
-
-            $query = $with['query'];
-
-            if ($query instanceof Query) {
-                [$with['query'], $params] = $this->build($query, $params);
-            }
-
-            $result[] = $with['alias'] . ' AS (' . $with['query'] . ')';
-        }
-
-        return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);
-    }
-
     public function buildWithQueries(array $withs, array &$params): string
     {
         if (empty($withs)) {
