@@ -87,6 +87,8 @@ class QueryBuilder
      * @var array the abstract column types mapped to physical column types.
      * This is mainly used to support creating/modifying tables using DB-independent data type specifications.
      * Child classes should override this property to declare supported type mappings.
+     *
+     * @psalm-var array<array-key, string>
      */
     protected array $typeMap = [];
 
@@ -104,8 +106,8 @@ class QueryBuilder
      *
      * In case you want to add custom conditions support, use the {@see setConditionClasses()} method.
      *
-     * @see setConditonClasses()
-     * @see defaultConditionClasses()
+     * {@see setConditonClasses()}
+     * {@see defaultConditionClasses()}
      */
     protected array $conditionClasses = [];
 
@@ -229,7 +231,8 @@ class QueryBuilder
      *
      * @return array the generated SQL statement (the first array element) and the corresponding parameters to be bound
      * to the SQL statement (the second array element). The parameters returned include those provided in `$params`.
-     * @psalm-return array{string,array<array-key, mixed>}
+     *
+     * @psalm-return array{0: string, 1: array}
      */
     public function build(Query $query, array $params = []): array
     {
@@ -703,12 +706,18 @@ class QueryBuilder
      * @param array $params the binding parameters that will be modified by this method so that they can be bound to the
      * DB command later.
      *
+     * @psalm-param array<string, ExpressionInterface|string> $columns
+     *
      * @throws Exception|InvalidArgumentException|JsonException
      *
      * @return string the UPDATE SQL.
      */
     public function update(string $table, array $columns, $condition, array &$params = []): string
     {
+        /**
+         * @psalm-var array<array-key, mixed> $lines
+         * @psalm-var array<array-key, mixed> $params
+         */
         [$lines, $params] = $this->prepareUpdateSets($table, $columns, $params);
         $sql = 'UPDATE ' . $this->db->quoteTableName($table) . ' SET ' . implode(', ', $lines);
         $where = $this->buildWhere($condition, $params);
@@ -724,10 +733,12 @@ class QueryBuilder
      * @param array $params the binding parameters that will be modified by this method so that they can be bound to the
      * DB command later.
      *
+     * @psalm-param array<string, ExpressionInterface|string> $columns
+     *
      * @throws Exception|InvalidArgumentException|JsonException
      *
-     * @return array an array `SET` parts for an `UPDATE` SQL statement (the first array element) and params (the second
-     * array element).
+     * @return array `SET` parts for an `UPDATE` SQL statement (the first array element) and params (the second array
+     * element).
      */
     protected function prepareUpdateSets(string $table, array $columns, array $params = []): array
     {
@@ -738,6 +749,7 @@ class QueryBuilder
         $sets = [];
 
         foreach ($columns as $name => $value) {
+            /** @psalm-var mixed $value */
             $value = isset($columnSchemas[$name]) ? $columnSchemas[$name]->dbTypecast($value) : $value;
             if ($value instanceof ExpressionInterface) {
                 $placeholder = $this->buildExpression($value, $params);
@@ -806,11 +818,14 @@ class QueryBuilder
      * @param array $columns the columns (name => definition) in the new table.
      * @param string|null $options additional SQL fragment that will be appended to the generated SQL.
      *
+     * @psalm-param array<array-key,ColumnSchemaBuilder|string> $columns
+     *
      * @return string the SQL statement for creating a new DB table.
      */
     public function createTable(string $table, array $columns, ?string $options = null): string
     {
         $cols = [];
+
         foreach ($columns as $name => $type) {
             if (is_string($name)) {
                 $cols[] = "\t" . $this->db->quoteColumnName($name) . ' ' . $this->getColumnType($type);
@@ -855,6 +870,8 @@ class QueryBuilder
      * @param string $name the name of the primary key constraint.
      * @param string $table the table that the primary key constraint will be added to.
      * @param array|string $columns comma separated string or array of columns that the primary key will consist of.
+     *
+     * @psalm-param array<array-key,string>|string $columns
      *
      * @return string the SQL statement for adding a primary key constraint to an existing table.
      */
@@ -987,6 +1004,9 @@ class QueryBuilder
      * @param string|null $update the ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION,
      * SET DEFAULT, SET NULL.
      *
+     * @psalm-param array<array-key,string>|string $columns
+     * @psalm-param array<array-key,string>|string $refColumns
+     *
      * @throws Exception|InvalidArgumentException
      *
      * @return string the SQL statement for adding a foreign key constraint to an existing table.
@@ -1079,6 +1099,8 @@ class QueryBuilder
      * @param array|string $columns the name of the column to that the constraint will be added on. If there are
      * multiple columns, separate them with commas. The name will be properly quoted by the method.
      *
+     * @psalm-param array<array-key, string>|string $columns
+     *
      * @return string the SQL statement for adding an unique constraint to an existing table.
      */
     public function addUnique(string $name, string $table, $columns): string
@@ -1086,6 +1108,7 @@ class QueryBuilder
         if (is_string($columns)) {
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
+
         foreach ($columns as $i => $col) {
             $columns[$i] = $this->db->quoteColumnName($col);
         }
@@ -1300,11 +1323,13 @@ class QueryBuilder
     public function createView(string $viewName, $subQuery): string
     {
         if ($subQuery instanceof Query) {
+            /** @psalm-var array<array-key, int|string> $params */
             [$rawQuery, $params] = $this->build($subQuery);
 
             foreach ($params as $key => $value) {
                 $params[$key] = $this->db->quoteValue($value);
             }
+
             $subQuery = strtr($rawQuery, $params);
         }
 
@@ -1402,6 +1427,8 @@ class QueryBuilder
      * @param bool|null $distinct
      * @param string|null $selectOption
      *
+     * @psalm-param array<array-key,ExpressionInterface|Query|string> $columns
+     *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string the SELECT clause built from {@see Query::$select}.
@@ -1431,7 +1458,7 @@ class QueryBuilder
                 }
             } elseif ($column instanceof Query) {
                 [$sql, $params] = $this->build($column, $params);
-                $columns[$i] = "($sql) AS " . $this->db->quoteColumnName($i);
+                $columns[$i] = "($sql) AS " . $this->db->quoteColumnName((string) $i);
             } elseif (is_string($i) && $i !== $column) {
                 if (strpos($column, '(') === false) {
                     $column = $this->db->quoteColumnName($column);
@@ -1455,6 +1482,8 @@ class QueryBuilder
      * @param array|null $tables
      * @param array $params the binding parameters to be populated.
      *
+     * @psalm-param array<array-key,array|Query|string> $tables
+     *
      * @throws Exception|InvalidConfigException|NotSupportedException
      *
      * @return string the FROM clause built from {@see Query::$from}.
@@ -1473,6 +1502,15 @@ class QueryBuilder
     /**
      * @param array $joins
      * @param array $params the binding parameters to be populated.
+     *
+     * @psalm-param array<
+     *   array-key,
+     *   array{
+     *     0?:string,
+     *     1?:array<array-key,Query|string>|string,
+     *     2?:array|ExpressionInterface|string|null
+     *   }|null
+     * > $joins
      *
      * @throws Exception if the $joins parameter is not in proper format.
      *
@@ -1496,6 +1534,8 @@ class QueryBuilder
             [$joinType, $table] = $join;
 
             $tables = $this->quoteTableNames((array) $table, $params);
+
+            /** @var string $table */
             $table = reset($tables);
             $joins[$i] = "$joinType $table";
 
@@ -1516,6 +1556,8 @@ class QueryBuilder
      * @param array $tables
      * @param array $params
      *
+     * @psalm-param array<array-key,array|Query|string> $tables
+     *
      * @throws Exception|InvalidConfigException|NotSupportedException
      *
      * @return array
@@ -1526,19 +1568,18 @@ class QueryBuilder
             if ($table instanceof Query) {
                 [$sql, $params] = $this->build($table, $params);
                 $tables[$i] = "($sql) " . $this->db->quoteTableName((string) $i);
-            } elseif (is_string($i)) {
+            } elseif (is_string($table) && is_string($i)) {
                 if (strpos($table, '(') === false) {
                     $table = $this->db->quoteTableName($table);
                 }
                 $tables[$i] = "$table " . $this->db->quoteTableName($i);
-            } elseif (is_string($table)) {
-                if (strpos($table, '(') === false) {
-                    if ($tableWithAlias = $this->extractAlias($table)) { // with alias
-                        $tables[$i] = $this->db->quoteTableName($tableWithAlias[1]) . ' '
-                            . $this->db->quoteTableName($tableWithAlias[2]);
-                    } else {
-                        $tables[$i] = $this->db->quoteTableName($table);
-                    }
+            } elseif (is_string($table) && strpos($table, '(') === false) {
+                $tableWithAlias = $this->extractAlias($table);
+                if (is_array($tableWithAlias)) { // with alias
+                    $tables[$i] = $this->db->quoteTableName($tableWithAlias[1]) . ' '
+                        . $this->db->quoteTableName($tableWithAlias[2]);
+                } else {
+                    $tables[$i] = $this->db->quoteTableName($table);
                 }
             }
         }
@@ -1641,9 +1682,9 @@ class QueryBuilder
 
     /**
      * @param array $columns
-     * @psalm-param array<string, Expression|int|string> $columns
-     *
      * @param array $params the binding parameters to be populated
+     *
+     * @psalm-param array<string, Expression|int|string> $columns
      *
      * @throws Exception|InvalidArgumentException
      *
@@ -1716,9 +1757,9 @@ class QueryBuilder
 
     /**
      * @param array $unions
-     * @psalm-param array<array{query:Query|string,all:bool}> $unions
-     *
      * @param array $params the binding parameters to be populated
+     *
+     * @psalm-param array<array{query:Query|string, all:bool}> $unions
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
@@ -1750,6 +1791,7 @@ class QueryBuilder
      * It will join all columns into a string with comma as separators.
      *
      * @param array|string $columns the columns to be processed.
+     *
      * @psalm-param array<array-key, ExpressionInterface|string>|string $columns
      *
      * @throws Exception|InvalidArgumentException
@@ -1851,7 +1893,7 @@ class QueryBuilder
     /**
      * Helper method to add $value to $params array using {@see PARAM_PREFIX}.
      *
-     * @param int|string|null $value
+     * @param mixed $value
      * @param array $params passed by reference.
      *
      * @return string the placeholder name in $params array.
@@ -1859,6 +1901,8 @@ class QueryBuilder
     public function bindParam($value, array &$params = []): string
     {
         $phName = self::PARAM_PREFIX . count($params);
+
+        /** @psalm-var mixed */
         $params[$phName] = $value;
 
         return $phName;
@@ -1870,6 +1914,7 @@ class QueryBuilder
      * @param $table
      *
      * @return array|bool
+     *
      * @psalm-return array<array-key, string>|bool
      */
     protected function extractAlias(string $table)
@@ -1882,7 +1927,7 @@ class QueryBuilder
     }
 
     /**
-     * @psalm-param array<array-key,array{query:string|Query,alias:string,recursive:bool}> $withs
+     * @psalm-param array<array-key, array{query:string|Query, alias:string, recursive:bool}> $withs
      */
     public function buildWithQueries(array $withs, array &$params): string
     {
