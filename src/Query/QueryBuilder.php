@@ -88,7 +88,7 @@ class QueryBuilder
      * This is mainly used to support creating/modifying tables using DB-independent data type specifications.
      * Child classes should override this property to declare supported type mappings.
      *
-     * @psalm-var array<array-key, string>
+     * @psalm-var array<string, string>
      */
     protected array $typeMap = [];
 
@@ -106,8 +106,8 @@ class QueryBuilder
      *
      * In case you want to add custom conditions support, use the {@see setConditionClasses()} method.
      *
-     * {@see setConditonClasses()}
-     * {@see defaultConditionClasses()}
+     * @see setConditonClasses()
+     * @see defaultConditionClasses()
      */
     protected array $conditionClasses = [];
 
@@ -123,8 +123,8 @@ class QueryBuilder
      * This property is mainly used by {@see buildExpression()} to build SQL expressions form expression objects.
      * See default values in {@see defaultExpressionBuilders()} method.
      *
-     * {@see setExpressionBuilders()}
-     * {@see defaultExpressionBuilders()}
+     * @see setExpressionBuilders()
+     * @see defaultExpressionBuilders()
      */
     protected array $expressionBuilders = [];
     protected string $separator = ' ';
@@ -296,9 +296,9 @@ class QueryBuilder
      *
      * @return string the SQL statement that will not be neither quoted nor encoded before passing to DBMS.
      *
-     * {@see ExpressionInterface}
-     * {@see ExpressionBuilderInterface}
-     * {@see expressionBuilders}
+     * @see ExpressionInterface
+     * @see ExpressionBuilderInterface
+     * @see expressionBuilders
      */
     public function buildExpression(ExpressionInterface $expression, array &$params = []): string
     {
@@ -318,7 +318,7 @@ class QueryBuilder
      *
      * @return ExpressionBuilderInterface|QueryBuilder|string
      *
-     * {@see expressionBuilders}
+     * @see expressionBuilders
      */
     public function getExpressionBuilder(ExpressionInterface $expression)
     {
