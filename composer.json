@@ -23,7 +23,7 @@
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "psr/log": "^1.1",
-        "yiisoft/arrays": "^3.0@dev",
+        "yiisoft/arrays": "^1.0",
         "yiisoft/cache": "^3.0@dev",
         "yiisoft/data": "^3.0@dev",
         "yiisoft/factory": "^3.0@dev",
