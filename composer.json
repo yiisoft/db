@@ -29,7 +29,7 @@
         "yiisoft/factory": "^3.0@dev",
         "yiisoft/log": "^3.0@dev",
         "yiisoft/profiler": "^3.0@dev",
-        "yiisoft/strings": "^1.1"
+        "yiisoft/strings": "^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.4",
