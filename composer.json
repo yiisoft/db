@@ -27,7 +27,7 @@
         "yiisoft/cache": "^1.0",
         "yiisoft/data": "^3.0@dev",
         "yiisoft/factory": "^3.0@dev",
-        "yiisoft/log": "^3.0@dev",
+        "yiisoft/log": "^1.0",
         "yiisoft/profiler": "^3.0@dev",
         "yiisoft/strings": "^2.0"
     },
