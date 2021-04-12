@@ -9,8 +9,8 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Factory\Definitions\Normalizer;
-use Yiisoft\Factory\Exceptions\InvalidConfigException;
+use Yiisoft\Factory\Definition\Normalizer;
+use Yiisoft\Factory\Exception\InvalidConfigException;
 use Yiisoft\Profiler\ProfilerInterface;
 
 final class LazyConnectionDependencies
