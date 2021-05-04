@@ -28,7 +28,7 @@
         "yiisoft/data": "^3.0@dev",
         "yiisoft/factory": "^3.0@dev",
         "yiisoft/log": "^1.0",
-        "yiisoft/profiler": "^3.0@dev",
+        "yiisoft/profiler": "^1.0",
         "yiisoft/strings": "^2.0"
     },
     "require-dev": {
