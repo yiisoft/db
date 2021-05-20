@@ -86,5 +86,8 @@ jobs:
         if: matrix.php == '8.0'
         run: composer update --ignore-platform-reqs --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
+      - name: Install db-mysql
+        run: composer require yiisoft/db-mysql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+
       - name: Run tests with phpunit
         run: vendor/bin/phpunit --testsuite Mysql --colors=always
