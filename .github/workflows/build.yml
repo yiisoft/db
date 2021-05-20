@@ -10,7 +10,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: "dev-master"
-      extensions: dom, json, pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.9.0preview1, oci8
+      extensions: dom, json, pdo, pdo_mysql, oci8, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.9.0preview1
       key: cache-v1
 
     runs-on: ${{ matrix.os }}
@@ -118,6 +118,27 @@ jobs:
       - name: Install dependencies with composer php 8.0
         if: matrix.php == '8.0'
         run: composer update --ignore-platform-reqs --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install active-record
+        run: composer require yiisoft/active-record --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install db-mssql
+        run: composer require yiisoft/db-mssql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install db-mysql
+        run: composer require yiisoft/db-mysql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install db-pgsql
+        run: composer require yiisoft/db-pgsql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install db-oracle
+        run: composer require yiisoft/db-oracle --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install db-redis
+        run: composer require yiisoft/db-redis --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install db-sqlite
+        run: composer require yiisoft/db-sqlite --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run tests with phpunit and coverage on Linux php 7.4
         if: matrix.php == '7.4'
