@@ -4,26 +4,25 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Connection;
 
-use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Factory\Definition\Normalizer;
+use Yiisoft\Factory\DependencyResolver;
 use Yiisoft\Factory\Exception\InvalidConfigException;
 use Yiisoft\Profiler\ProfilerInterface;
 
 final class LazyConnectionDependencies
 {
-    private ContainerInterface $container;
+    private DependencyResolver $dependencyResolver;
     private ?LoggerInterface $logger = null;
     private ?ProfilerInterface $profiler = null;
     private ?QueryCache $queryCache = null;
     private ?SchemaCache $schemaCache = null;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(DependencyResolver $dependencyResolver)
     {
-        $this->container = $container;
+        $this->dependencyResolver = $dependencyResolver;
     }
 
     /**
@@ -116,14 +115,10 @@ final class LazyConnectionDependencies
      * @throws RuntimeException If the created object is not an instance of the `LoggerInterface`.
      *
      * @return LoggerInterface|ProfilerInterface|QueryCache|SchemaCache The created instance.
-     *
-     * @psalm-suppress RedundantConditionGivenDocblockType
-     * @psalm-suppress DocblockTypeContradiction
      */
     private function create(string $class): object
     {
-        $definition = Normalizer::normalize($class);
-        $instance = $definition->resolve($this->container);
+        $instance = $this->dependencyResolver->get($class);
 
         if (!($instance instanceof $class)) {
             throw new RuntimeException(sprintf(
