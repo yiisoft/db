@@ -118,16 +118,16 @@ final class SqlDataProvider extends DataProvider
     /**
      * Prepares the keys associated with the currently available data models.
      *
-     * @param array $models the available data models.
+     * @param array $value the available data models.
      *
      * @return array the keys.
      */
-    protected function prepareKeys(array $models = []): array
+    protected function prepareKeys(array $value = []): array
     {
         $keys = [];
 
         if ($this->key !== null) {
-            foreach ($models as $model) {
+            foreach ($value as $model) {
                 if (is_string($this->key)) {
                     $keys[] = $model[$this->key];
                 } else {
@@ -138,7 +138,7 @@ final class SqlDataProvider extends DataProvider
             return $keys;
         }
 
-        return array_keys($models);
+        return array_keys($value);
     }
 
     /**
