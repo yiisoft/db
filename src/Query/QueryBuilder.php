@@ -1547,6 +1547,7 @@ class QueryBuilder
             }
         }
 
+        /** @psalm-var array<string> $joins */
         return implode($this->separator, $joins);
     }
 
