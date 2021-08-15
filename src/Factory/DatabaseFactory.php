@@ -6,20 +6,19 @@ namespace Yiisoft\Db\Factory;
 
 use Psr\Container\ContainerInterface;
 use Yiisoft\Factory\Factory;
-use Yiisoft\Factory\FactoryInterface;
 
-final class DatabaseFactory extends Factory
+final class DatabaseFactory
 {
-    private static ?FactoryInterface $factory = null;
+    private static ?Factory $factory = null;
 
-    private function __construct(ContainerInterface $container = null, array $definitions = [])
+    public function __construct(Factory $factory)
     {
-        parent::__construct($container, $definitions);
+        $this->factory = $factory;
     }
 
     public static function initialize(ContainerInterface $container = null, array $definitions = []): void
     {
-        self::$factory = new self($container, $definitions);
+        self::$factory = new Factory($container, $definitions);
     }
 
     /**
