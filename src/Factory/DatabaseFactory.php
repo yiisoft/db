@@ -11,9 +11,8 @@ final class DatabaseFactory
 {
     private static ?Factory $factory = null;
 
-    public function __construct(Factory $factory)
+    private function __construct()
     {
-        $this->factory = $factory;
     }
 
     public static function initialize(ContainerInterface $container = null, array $definitions = []): void
