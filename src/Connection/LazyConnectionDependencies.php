@@ -9,7 +9,7 @@ use RuntimeException;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Factory\DependencyResolver;
-use Yiisoft\Factory\Exception\InvalidConfigException;
+use Yiisoft\Definitions\Exception\InvalidConfigException;
 use Yiisoft\Profiler\ProfilerInterface;
 
 final class LazyConnectionDependencies
