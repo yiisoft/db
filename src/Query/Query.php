@@ -316,8 +316,8 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return mixed number of records. The result may be a string depending on the underlying database engine and to
-     * support integer values higher than a 32bit PHP integer can handle.
+     * @return int|string The number of records. The result may be a string depending on to support integer values
+     * higher than a 32bit PHP integer can handle.
      */
     public function count(string $q = '*')
     {
@@ -325,7 +325,9 @@ class Query implements QueryInterface, ExpressionInterface
             return 0;
         }
 
-        return $this->queryScalar("COUNT($q)");
+        return $this->typecastToIntegerOrString(
+            $this->queryScalar("COUNT($q)")
+        );
     }
 
     /**
@@ -1495,5 +1497,21 @@ PATTERN;
         $this->withQueries = $value;
 
         return $this;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return int|string
+     */
+    private function typecastToIntegerOrString($value)
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+
+        $string = (string)$value;
+        $integer = (int)$string;
+        return (string)$integer === $string ? $integer : $string;
     }
 }

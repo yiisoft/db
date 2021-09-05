@@ -37,7 +37,7 @@ interface QueryInterface
      *
      * @param string $q the COUNT expression. Defaults to '*'.
      *
-     * @return bool|int|string number of records.
+     * @return int|string The number of records.
      */
     public function count(string $q = '*');
 
