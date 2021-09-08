@@ -12,7 +12,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: "dev-master"
-      extensions: dom, json, pdo, pdo_sqlsrv-5.9.0preview1
+      extensions: dom, json, pdo, pdo_sqlsrv-5.9.0
       key: cache
 
     runs-on: ${{ matrix.os }}
@@ -23,8 +23,8 @@ jobs:
           - ubuntu-latest
 
         php:
-          - "7.4"
-          - "8.0"
+          - 7.4
+          - 8.0
 
         mssql:
           - "server:2017-latest"

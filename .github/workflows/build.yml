@@ -12,7 +12,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: "dev-master"
-      extensions: dom, json, pdo, pdo_mysql, oci8, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.9.0preview1
+      extensions: dom, json, pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.9.0
       key: cache-v1
 
     runs-on: ${{ matrix.os }}
@@ -23,8 +23,8 @@ jobs:
           - ubuntu-latest
 
         php:
-          - "7.4"
-          - "8.0"
+          - 7.4
+          - 8.0
 
     services:
       mysql:

@@ -118,7 +118,7 @@ final class LazyConnectionDependencies
      */
     private function create(string $class): object
     {
-        $instance = $this->dependencyResolver->get($class);
+        $instance = $this->dependencyResolver->resolve($class);
 
         if (!($instance instanceof $class)) {
             throw new RuntimeException(sprintf(
