@@ -670,7 +670,7 @@ abstract class Connection implements ConnectionInterface
                 $this->getLogger()->log(LogLevel::ERROR, $token);
             }
 
-            throw new Exception($e->getMessage(), $e->errorInfo, $e);
+            throw new Exception($e->getMessage() . '. DSN is ' . $this->dsn, $e->errorInfo, $e);
         }
     }
 
