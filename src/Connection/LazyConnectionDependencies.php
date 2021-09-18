@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Connection;
 
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Factory\DependencyResolver;
 use Yiisoft\Definitions\Exception\InvalidConfigException;
 use Yiisoft\Profiler\ProfilerInterface;
 
 final class LazyConnectionDependencies
 {
-    private DependencyResolver $dependencyResolver;
+    private ContainerInterface $container;
     private ?LoggerInterface $logger = null;
     private ?ProfilerInterface $profiler = null;
     private ?QueryCache $queryCache = null;
     private ?SchemaCache $schemaCache = null;
 
-    public function __construct(DependencyResolver $dependencyResolver)
+    public function __construct(ContainerInterface $container)
     {
-        $this->dependencyResolver = $dependencyResolver;
+        $this->container = $container;
     }
 
     /**
@@ -118,7 +118,7 @@ final class LazyConnectionDependencies
      */
     private function create(string $class): object
     {
-        $instance = $this->dependencyResolver->resolve($class);
+        $instance = $this->container->get($class);
 
         if (!($instance instanceof $class)) {
             throw new RuntimeException(sprintf(
