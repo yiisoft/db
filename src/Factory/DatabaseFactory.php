@@ -16,6 +16,10 @@ final class DatabaseFactory
 {
     private static ?Factory $factory = null;
 
+    private function __construct()
+    {
+    }
+
     /**
      * @throws InvalidConfigException
      */
@@ -41,11 +45,11 @@ final class DatabaseFactory
     /**
      * Creates a Class defined by config passed.
      *
-     * @param array|string $config parameters for creating a class.
+     * @param array $config parameters for creating a class.
      *
      * @throws CircularReferenceException|InvalidConfigException|NotFoundException|NotInstantiableException
      */
-    private static function createClass($config): object
+    private static function createClass(array $config): object
     {
         if (self::$factory === null) {
             throw new RuntimeException(
@@ -53,6 +57,16 @@ final class DatabaseFactory
             );
         }
 
-        return self::$factory->create($config);
+        $instance = self::$factory->create($config);
+
+        if (!($instance instanceof $config['class'])) {
+            throw new RuntimeException(sprintf(
+                'The "%s" is not an instance of the "%s".',
+                (is_object($instance) ? get_class($instance) : gettype($instance)),
+                $config['class'],
+            ));
+        }
+
+        return $instance;
     }
 }
