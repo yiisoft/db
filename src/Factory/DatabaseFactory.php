@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Factory;
 
 use Psr\Container\ContainerInterface;
 use RuntimeException;
-use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Definitions\Exception\CircularReferenceException;
 use Yiisoft\Definitions\Exception\InvalidConfigException;
 use Yiisoft\Definitions\Exception\NotFoundException;
@@ -26,7 +25,7 @@ final class DatabaseFactory
     }
 
     /**
-     * Get `SchemaCache` instance.
+     * Get `Connection` instance.
      *
      * @param array $config
      *
@@ -37,18 +36,6 @@ final class DatabaseFactory
     public static function connection(array $config): object
     {
         return self::createClass($config);
-    }
-
-    /**
-     * Get `SchemaCache` instance.
-     *
-     * @throws CircularReferenceException|InvalidConfigException|NotFoundException|NotInstantiableException
-     *
-     * @return object
-     */
-    public static function schemaCache(): object
-    {
-        return self::createClass(SchemaCache::class);
     }
 
     /**

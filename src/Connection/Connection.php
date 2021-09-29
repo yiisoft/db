@@ -189,7 +189,6 @@ abstract class Connection implements ConnectionInterface
     private ?PDO $pdo = null;
     private ?ProfilerInterface $profiler = null;
     private QueryCache $queryCache;
-    protected ?Schema $schema = null;
     private ?Transaction $transaction = null;
 
     public function __construct(string $dsn, QueryCache $queryCache)
@@ -247,7 +246,6 @@ abstract class Connection implements ConnectionInterface
     {
         $this->master = null;
         $this->slave = null;
-        $this->schema = null;
         $this->transaction = null;
 
         if (strncmp($this->dsn, 'sqlite::memory:', 15) !== 0) {
@@ -287,7 +285,7 @@ abstract class Connection implements ConnectionInterface
      *
      * @return Transaction the transaction initiated
      */
-    public function beginTransaction($isolationLevel = null): Transaction
+    public function beginTransaction(string $isolationLevel = null): Transaction
     {
         $this->open();
 
@@ -400,7 +398,7 @@ abstract class Connection implements ConnectionInterface
      *
      * {@see http://php.net/manual/en/pdo.lastinsertid.php'>http://php.net/manual/en/pdo.lastinsertid.php}
      */
-    public function getLastInsertID($sequenceName = ''): string
+    public function getLastInsertID(string $sequenceName = ''): string
     {
         return $this->getSchema()->getLastInsertID($sequenceName);
     }
@@ -686,7 +684,6 @@ abstract class Connection implements ConnectionInterface
             }
 
             $this->pdo = null;
-            $this->schema = null;
             $this->transaction = null;
         }
 
@@ -1030,11 +1027,11 @@ abstract class Connection implements ConnectionInterface
      * @param string|null $isolationLevel The isolation level to use for this transaction. {@see Transaction::begin()}
      * for details.
      *
-     * @throws Throwable if there is any exception during query. In this case the transaction will be rolled back.
-     *
      * @return mixed result of callback function
+     *@throws Throwable if there is any exception during query. In this case the transaction will be rolled back.
+     *
      */
-    public function transaction(callable $callback, $isolationLevel = null)
+    public function transaction(callable $callback, string $isolationLevel = null)
     {
         $transaction = $this->beginTransaction($isolationLevel);
 
@@ -1102,11 +1099,6 @@ abstract class Connection implements ConnectionInterface
     public function setProfiler(ProfilerInterface $profiler = null): void
     {
         $this->profiler = $profiler;
-    }
-
-    public function setSchema(Schema $schema): ?LoggerInterface
-    {
-        $this->schema = $schema;
     }
 
     public function getLogger(): ?LoggerInterface
