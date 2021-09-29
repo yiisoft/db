@@ -9,7 +9,6 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Definitions\Exception\InvalidConfigException;
 use Yiisoft\Profiler\ProfilerInterface;
 
 final class LazyConnectionDependencies
@@ -18,7 +17,6 @@ final class LazyConnectionDependencies
     private ?LoggerInterface $logger = null;
     private ?ProfilerInterface $profiler = null;
     private ?QueryCache $queryCache = null;
-    private ?SchemaCache $schemaCache = null;
 
     public function __construct(ContainerInterface $container)
     {
@@ -27,8 +25,6 @@ final class LazyConnectionDependencies
 
     /**
      * Get `LoggerInterface` instance.
-     *
-     * @throws InvalidConfigException
      *
      * @psalm-suppress InvalidReturnStatement
      * @psalm-suppress InvalidReturnType
@@ -49,8 +45,6 @@ final class LazyConnectionDependencies
     /**
      * Get `ProfilerInterface` instance.
      *
-     * @throws InvalidConfigException
-     *
      * @psalm-suppress InvalidReturnStatement
      * @psalm-suppress InvalidReturnType
      *
@@ -69,8 +63,6 @@ final class LazyConnectionDependencies
     /**
      * Get `QueryCache` instance.
      *
-     * @throws InvalidConfigException
-     *
      * @psalm-suppress InvalidReturnStatement
      * @psalm-suppress InvalidReturnType
      *
@@ -87,31 +79,10 @@ final class LazyConnectionDependencies
     }
 
     /**
-     * Get `SchemaCache` instance.
-     *
-     * @throws InvalidConfigException
-     *
-     * @psalm-suppress InvalidReturnStatement
-     * @psalm-suppress InvalidReturnType
-     *
-     * @return SchemaCache
-     */
-    public function schemaCache(): SchemaCache
-    {
-        if ($this->schemaCache !== null) {
-            return $this->schemaCache;
-        }
-
-        $this->schemaCache = $this->create(SchemaCache::class);
-        return $this->schemaCache;
-    }
-
-    /**
      * Creates an instance of the specified class.
      *
      * @param string $class
      *
-     * @throws InvalidConfigException
      * @throws RuntimeException If the created object is not an instance of the `LoggerInterface`.
      *
      * @return LoggerInterface|ProfilerInterface|QueryCache|SchemaCache The created instance.

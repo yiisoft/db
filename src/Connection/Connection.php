@@ -11,7 +11,6 @@ use Psr\Log\LoggerInterface;
 use Throwable;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Cache\QueryCache;
-use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -767,13 +766,13 @@ abstract class Connection implements ConnectionInterface
 
         foreach ($pool as $config) {
             /* @var $db Connection */
-            $db = DatabaseFactory::createClass($config);
+            $db = DatabaseFactory::connection($config);
 
             $key = [__METHOD__, $db->getDsn()];
 
             if (
-                $this->getSchemaCache()->isEnabled() &&
-                $this->getSchemaCache()->getOrSet($key, null, $this->serverRetryInterval)
+                $this->getSchema()->getSchemaCache()->isEnabled() &&
+                $this->getSchema()->getSchemaCache()->getOrSet($key, null, $this->serverRetryInterval)
             ) {
                 /** should not try this dead server now */
                 continue;
@@ -791,9 +790,9 @@ abstract class Connection implements ConnectionInterface
                     );
                 }
 
-                if ($this->getSchemaCache()->isEnabled()) {
+                if ($this->getSchema()->getSchemaCache()->isEnabled()) {
                     /** mark this server as dead and only retry it after the specified interval */
-                    $this->getSchemaCache()->set($key, 1, $this->serverRetryInterval);
+                    $this->getSchema()->getSchemaCache()->set($key, 1, $this->serverRetryInterval);
                 }
 
                 return null;
@@ -1141,10 +1140,5 @@ abstract class Connection implements ConnectionInterface
     public function getQueryCache(): QueryCache
     {
         return $this->dependencies->queryCache();
-    }
-
-    public function getSchemaCache(): SchemaCache
-    {
-        return $this->dependencies->schemaCache();
     }
 }
