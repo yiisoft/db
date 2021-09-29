@@ -10,6 +10,8 @@ use Psr\Log\LogLevel;
 use Psr\Log\LoggerInterface;
 use Throwable;
 use Yiisoft\Cache\Dependency\Dependency;
+use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
+use Yiisoft\Db\AwareTrait\ProfilerAwareTrait;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Exception\Exception;
@@ -168,6 +170,9 @@ use function strncmp;
  */
 abstract class Connection implements ConnectionInterface
 {
+    use LoggerAwareTrait;
+    use ProfilerAwareTrait;
+
     private string $dsn;
     private ?string $username = null;
     private ?string $password = null;
@@ -291,6 +296,9 @@ abstract class Connection implements ConnectionInterface
 
         if (($transaction = $this->getTransaction()) === null) {
             $transaction = $this->transaction = new Transaction($this);
+            if ($this->logger !== null) {
+                $transaction->setLogger($this->logger);
+            }
         }
 
         $transaction->begin($isolationLevel);
@@ -1089,26 +1097,6 @@ abstract class Connection implements ConnectionInterface
         }
 
         return $result;
-    }
-
-    public function setLogger(LoggerInterface $logger = null): void
-    {
-        $this->logger = $logger;
-    }
-
-    public function setProfiler(ProfilerInterface $profiler = null): void
-    {
-        $this->profiler = $profiler;
-    }
-
-    public function getLogger(): ?LoggerInterface
-    {
-        return $this->logger;
-    }
-
-    public function getProfiler(): ?ProfilerInterface
-    {
-        return $this->profiler;
     }
 
     public function getQueryCache(): QueryCache

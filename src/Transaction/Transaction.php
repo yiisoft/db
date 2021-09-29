@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Transaction;
 
 use Psr\Log\LogLevel;
 use Throwable;
+use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -40,6 +41,8 @@ use Yiisoft\Db\Exception\NotSupportedException;
  */
 class Transaction
 {
+    use LoggerAwareTrait;
+
     /**
      * A constant representing the transaction isolation level `READ UNCOMMITTED`.
      *
@@ -123,8 +126,8 @@ class Transaction
                 $this->db->getSchema()->setTransactionIsolationLevel($isolationLevel);
             }
 
-            if ($this->db->getLogger() !== null) {
-                $this->db->getLogger()->log(
+            if ($this->logger !== null) {
+                $this->logger->log(
                     LogLevel::DEBUG,
                     'Begin transaction' . ($isolationLevel ? ' with isolation level ' . $isolationLevel : '')
                     . ' ' . __METHOD__
@@ -140,17 +143,14 @@ class Transaction
         $schema = $this->db->getSchema();
 
         if ($schema->supportsSavepoint()) {
-            if ($this->db->getLogger() !== null) {
-                $this->db->getLogger()->log(
-                    LogLevel::DEBUG,
-                    'Set savepoint ' . $this->level . ' ' . __METHOD__
-                );
+            if ($this->logger !== null) {
+                $this->logger->log(LogLevel::DEBUG, 'Set savepoint ' . $this->level . ' ' . __METHOD__);
             }
 
             $schema->createSavepoint('LEVEL' . $this->level);
         } else {
-            if ($this->db->getLogger() !== null) {
-                $this->db->getLogger()->log(
+            if ($this->logger !== null) {
+                $this->logger->log(
                     LogLevel::DEBUG,
                     'Transaction not started: nested transaction not supported ' . __METHOD__
                 );
@@ -175,11 +175,8 @@ class Transaction
 
         $this->level--;
         if ($this->level === 0) {
-            if ($this->db->getLogger() !== null) {
-                $this->db->getLogger()->log(
-                    LogLevel::DEBUG,
-                    'Commit transaction ' . __METHOD__
-                );
+            if ($this->logger !== null) {
+                $this->logger->log(LogLevel::DEBUG, 'Commit transaction ' . __METHOD__);
             }
 
             $this->db->getPDO()->commit();
@@ -188,17 +185,16 @@ class Transaction
         }
 
         $schema = $this->db->getSchema();
+
         if ($schema->supportsSavepoint()) {
-            if ($this->db->getLogger() !== null) {
-                $this->db->getLogger()->log(
-                    LogLevel::DEBUG,
-                    'Release savepoint ' . $this->level . ' ' . __METHOD__
-                );
+            if ($this->logger !== null) {
+                $this->logger->log(LogLevel::DEBUG, 'Release savepoint ' . $this->level . ' ' . __METHOD__);
             }
+
             $schema->releaseSavepoint('LEVEL' . $this->level);
         } else {
-            if ($this->db->getLogger() !== null) {
-                $this->db->getLogger()->log(
+            if ($this->logger !== null) {
+                $this->logger->log(
                     LogLevel::INFO,
                     'Transaction not committed: nested transaction not supported ' . __METHOD__
                 );
@@ -221,11 +217,8 @@ class Transaction
 
         $this->level--;
         if ($this->level === 0) {
-            if ($this->db->getLogger() !== null) {
-                $this->db->getLogger()->log(
-                    LogLevel::INFO,
-                    'Roll back transaction ' . __METHOD__
-                );
+            if ($this->logger !== null) {
+                $this->logger->log(LogLevel::INFO, 'Roll back transaction ' . __METHOD__);
             }
 
             $this->db->getPDO()->rollBack();
@@ -235,17 +228,14 @@ class Transaction
 
         $schema = $this->db->getSchema();
         if ($schema->supportsSavepoint()) {
-            if ($this->db->getLogger() !== null) {
-                $this->db->getLogger()->log(
-                    LogLevel::DEBUG,
-                    'Roll back to savepoint ' . $this->level . ' ' . __METHOD__
-                );
+            if ($this->logger !== null) {
+                $this->logger->log(LogLevel::DEBUG, 'Roll back to savepoint ' . $this->level . ' ' . __METHOD__);
             }
 
             $schema->rollBackSavepoint('LEVEL' . $this->level);
         } else {
-            if ($this->db->getLogger() !== null) {
-                $this->db->getLogger()->log(
+            if ($this->logger !== null) {
+                $this->logger->log(
                     LogLevel::INFO,
                     'Transaction not rolled back: nested transaction not supported ' . __METHOD__
                 );
@@ -274,8 +264,8 @@ class Transaction
             throw new Exception('Failed to set isolation level: transaction was inactive.');
         }
 
-        if ($this->db->getLogger() !== null) {
-            $this->db->getLogger()->log(
+        if ($this->logger !== null) {
+            $this->logger->log(
                 LogLevel::DEBUG,
                 'Setting transaction isolation level to ' . $this->level . ' ' . __METHOD__
             );
