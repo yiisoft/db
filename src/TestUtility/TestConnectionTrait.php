@@ -186,8 +186,8 @@ trait TestConnectionTrait
         }
 
         /* profiling and logging */
-        $db->setEnableLogging(true);
-        $db->setEnableProfiling(true);
+        $db->setLogger($this->logger);
+        $db->setProfiler($this->profiler);
 
         $this->logger->flush();
         $this->profiler->flush();
@@ -207,8 +207,8 @@ trait TestConnectionTrait
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
         /* profiling only */
-        $db->setEnableLogging(false);
-        $db->setEnableProfiling(true);
+        $db->setLogger();
+        $db->setProfiler($this->profiler);
 
         $this->logger->flush();
         $this->profiler->flush();
@@ -228,8 +228,8 @@ trait TestConnectionTrait
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
         /* logging only */
-        $db->setEnableLogging(true);
-        $db->setEnableProfiling(false);
+        $db->setLogger($this->logger);
+        $db->setProfiler();
 
         $this->logger->flush();
         $this->profiler->flush();
@@ -249,8 +249,8 @@ trait TestConnectionTrait
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
         /* disabled */
-        $db->setEnableLogging(false);
-        $db->setEnableProfiling(false);
+        $db->setLogger();
+        $db->setProfiler();
 
         $this->logger->flush();
         $this->profiler->flush();
@@ -278,26 +278,26 @@ trait TestConnectionTrait
         $db->setEmulatePrepare(true);
 
         /* profiling and logging */
-        $db->setEnableLogging(true);
-        $db->setEnableProfiling(true);
+        $db->setLogger($this->logger);
+        $db->setProfiler($this->profiler);
 
         $this->runExceptionTest($db);
 
         /* profiling only */
-        $db->setEnableLogging(false);
-        $db->setEnableProfiling(true);
+        $db->setLogger();
+        $db->setProfiler($this->profiler);
 
         $this->runExceptionTest($db);
 
         /* logging only */
-        $db->setEnableLogging(true);
-        $db->setEnableProfiling(false);
+        $db->setLogger($this->logger);
+        $db->setProfiler();
 
         $this->runExceptionTest($db);
 
         /* disabled */
-        $db->setEnableLogging(false);
-        $db->setEnableProfiling(false);
+        $db->setLogger();
+        $db->setProfiler();
 
         $this->runExceptionTest($db);
     }

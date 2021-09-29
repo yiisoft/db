@@ -112,8 +112,6 @@ class Transaction
      */
     public function begin(?string $isolationLevel = null): void
     {
-        $logger = $this->db->getLogger();
-
         if ($this->db === null) {
             throw new InvalidConfigException('Transaction::db must be set.');
         }
@@ -125,11 +123,13 @@ class Transaction
                 $this->db->getSchema()->setTransactionIsolationLevel($isolationLevel);
             }
 
-            $logger->log(
-                LogLevel::DEBUG,
-                'Begin transaction' . ($isolationLevel ? ' with isolation level ' . $isolationLevel : '')
-                . ' ' . __METHOD__
-            );
+            if ($this->db->getLogger() !== null) {
+                $this->db->getLogger()->log(
+                    LogLevel::DEBUG,
+                    'Begin transaction' . ($isolationLevel ? ' with isolation level ' . $isolationLevel : '')
+                    . ' ' . __METHOD__
+                );
+            }
 
             $this->db->getPDO()->beginTransaction();
             $this->level = 1;
@@ -140,17 +140,21 @@ class Transaction
         $schema = $this->db->getSchema();
 
         if ($schema->supportsSavepoint()) {
-            $logger->log(
-                LogLevel::DEBUG,
-                'Set savepoint ' . $this->level . ' ' . __METHOD__
-            );
+            if ($this->db->getLogger() !== null) {
+                $this->db->getLogger()->log(
+                    LogLevel::DEBUG,
+                    'Set savepoint ' . $this->level . ' ' . __METHOD__
+                );
+            }
 
             $schema->createSavepoint('LEVEL' . $this->level);
         } else {
-            $logger->log(
-                LogLevel::DEBUG,
-                'Transaction not started: nested transaction not supported ' . __METHOD__
-            );
+            if ($this->db->getLogger() !== null) {
+                $this->db->getLogger()->log(
+                    LogLevel::DEBUG,
+                    'Transaction not started: nested transaction not supported ' . __METHOD__
+                );
+            }
 
             throw new NotSupportedException('Transaction not started: nested transaction not supported.');
         }
@@ -165,18 +169,18 @@ class Transaction
      */
     public function commit(): void
     {
-        $logger = $this->db->getLogger();
-
         if (!$this->isActive()) {
             throw new Exception('Failed to commit transaction: transaction was inactive.');
         }
 
         $this->level--;
         if ($this->level === 0) {
-            $logger->log(
-                LogLevel::DEBUG,
-                'Commit transaction ' . __METHOD__
-            );
+            if ($this->db->getLogger() !== null) {
+                $this->db->getLogger()->log(
+                    LogLevel::DEBUG,
+                    'Commit transaction ' . __METHOD__
+                );
+            }
 
             $this->db->getPDO()->commit();
 
@@ -185,16 +189,20 @@ class Transaction
 
         $schema = $this->db->getSchema();
         if ($schema->supportsSavepoint()) {
-            $logger->log(
-                LogLevel::DEBUG,
-                'Release savepoint ' . $this->level . ' ' . __METHOD__
-            );
+            if ($this->db->getLogger() !== null) {
+                $this->db->getLogger()->log(
+                    LogLevel::DEBUG,
+                    'Release savepoint ' . $this->level . ' ' . __METHOD__
+                );
+            }
             $schema->releaseSavepoint('LEVEL' . $this->level);
         } else {
-            $logger->log(
-                LogLevel::INFO,
-                'Transaction not committed: nested transaction not supported ' . __METHOD__
-            );
+            if ($this->db->getLogger() !== null) {
+                $this->db->getLogger()->log(
+                    LogLevel::INFO,
+                    'Transaction not committed: nested transaction not supported ' . __METHOD__
+                );
+            }
         }
     }
 
@@ -203,8 +211,6 @@ class Transaction
      */
     public function rollBack(): void
     {
-        $logger = $this->db->getLogger();
-
         if (!$this->isActive()) {
             /**
              * do nothing if transaction is not active: this could be the transaction is committed but the event handler
@@ -215,10 +221,12 @@ class Transaction
 
         $this->level--;
         if ($this->level === 0) {
-            $logger->log(
-                LogLevel::INFO,
-                'Roll back transaction ' . __METHOD__
-            );
+            if ($this->db->getLogger() !== null) {
+                $this->db->getLogger()->log(
+                    LogLevel::INFO,
+                    'Roll back transaction ' . __METHOD__
+                );
+            }
 
             $this->db->getPDO()->rollBack();
 
@@ -227,17 +235,21 @@ class Transaction
 
         $schema = $this->db->getSchema();
         if ($schema->supportsSavepoint()) {
-            $logger->log(
-                LogLevel::DEBUG,
-                'Roll back to savepoint ' . $this->level . ' ' . __METHOD__
-            );
+            if ($this->db->getLogger() !== null) {
+                $this->db->getLogger()->log(
+                    LogLevel::DEBUG,
+                    'Roll back to savepoint ' . $this->level . ' ' . __METHOD__
+                );
+            }
 
             $schema->rollBackSavepoint('LEVEL' . $this->level);
         } else {
-            $logger->log(
-                LogLevel::INFO,
-                'Transaction not rolled back: nested transaction not supported ' . __METHOD__
-            );
+            if ($this->db->getLogger() !== null) {
+                $this->db->getLogger()->log(
+                    LogLevel::INFO,
+                    'Transaction not rolled back: nested transaction not supported ' . __METHOD__
+                );
+            }
         }
     }
 
@@ -258,16 +270,16 @@ class Transaction
      */
     public function setIsolationLevel(string $level): void
     {
-        $logger = $this->db->getLogger();
-
         if (!$this->isActive()) {
             throw new Exception('Failed to set isolation level: transaction was inactive.');
         }
 
-        $logger->log(
-            LogLevel::DEBUG,
-            'Setting transaction isolation level to ' . $this->level . ' ' . __METHOD__
-        );
+        if ($this->db->getLogger() !== null) {
+            $this->db->getLogger()->log(
+                LogLevel::DEBUG,
+                'Setting transaction isolation level to ' . $this->level . ' ' . __METHOD__
+            );
+        }
 
         $this->db->getSchema()->setTransactionIsolationLevel($level);
     }

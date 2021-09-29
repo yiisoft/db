@@ -1232,7 +1232,6 @@ class Command
      */
     public function execute(): int
     {
-        $profiler = $this->db->getProfiler();
         $sql = $this->getSql();
 
         [$profile, $rawSql] = $this->logQuery(__METHOD__);
@@ -1244,23 +1243,23 @@ class Command
         $this->prepare(false);
 
         try {
-            if ($this->db->isProfilingEnabled()) {
-                $profiler->begin((string) $rawSql, [__METHOD__]);
+            if ($this->db->getProfiler() !== null) {
+                $this->db->getProfiler()->begin((string) $rawSql, [__METHOD__]);
             }
 
             $this->internalExecute($rawSql);
             $n = $this->pdoStatement->rowCount();
 
-            if ($this->db->isProfilingEnabled()) {
-                $profiler->end((string) $rawSql, [__METHOD__]);
+            if ($this->db->getProfiler() !== null) {
+                $this->db->getProfiler()->end((string) $rawSql, [__METHOD__]);
             }
 
             $this->refreshTableSchema();
 
             return $n;
         } catch (Exception $e) {
-            if ($this->db->isProfilingEnabled()) {
-                $profiler->end((string) $rawSql, [__METHOD__]);
+            if ($this->db->getProfiler()) {
+                $this->db->getProfiler()->end((string) $rawSql, [__METHOD__]);
             }
 
             throw $e;
@@ -1278,14 +1277,12 @@ class Command
      */
     protected function logQuery(string $category): array
     {
-        $logger = $this->db->getLogger();
-
-        if ($this->db->isLoggingEnabled()) {
+        if ($this->db->getLogger() !== null) {
             $rawSql = $this->getRawSql();
-            $logger->log(LogLevel::INFO, $rawSql, [$category]);
+            $this->db->getLogger()->log(LogLevel::INFO, $rawSql, [$category]);
         }
 
-        if (!$this->db->isProfilingEnabled()) {
+        if ($this->db->getProfiler() === null) {
             return [false, $rawSql ?? null];
         }
 
@@ -1307,7 +1304,6 @@ class Command
      */
     protected function queryInternal(string $method, $fetchMode = null)
     {
-        $logger = $this->db->getLogger();
         $profiler = $this->db->getProfiler();
         $queryCache = $this->db->getqueryCache();
 
@@ -1330,8 +1326,8 @@ class Command
                 );
 
                 if (is_array($result) && isset($result[0])) {
-                    if ($this->db->isLoggingEnabled()) {
-                        $logger->log(
+                    if ($this->db->getLogger() !== null) {
+                        $this->db->getLogger()->log(
                             LogLevel::DEBUG,
                             'Query result served from cache',
                             [__CLASS__ . '::query']
@@ -1346,7 +1342,7 @@ class Command
         $this->prepare(true);
 
         try {
-            if ($this->db->isProfilingEnabled()) {
+            if ($this->db->getProfiler() !== null) {
                 $profiler->begin((string) $rawSql, [__CLASS__ . '::query']);
             }
 
@@ -1364,11 +1360,11 @@ class Command
                 $this->pdoStatement->closeCursor();
             }
 
-            if ($this->db->isProfilingEnabled()) {
+            if ($this->db->getProfiler() !== null) {
                 $profiler->end((string) $rawSql, [__CLASS__ . '::query']);
             }
         } catch (Exception $e) {
-            if ($this->db->isProfilingEnabled()) {
+            if ($this->db->getProfiler() !== null) {
                 $profiler->end((string) $rawSql, [__CLASS__ . '::query']);
             }
 
@@ -1383,8 +1379,8 @@ class Command
                 $info[2]
             );
 
-            if ($this->db->isLoggingEnabled()) {
-                $logger->log(
+            if ($this->db->getLogger() !== null) {
+                $this->db->getLogger()->log(
                     LogLevel::DEBUG,
                     'Saved query result in cache',
                     [__CLASS__ . '::query']

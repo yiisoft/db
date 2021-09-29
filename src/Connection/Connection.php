@@ -172,7 +172,6 @@ abstract class Connection implements ConnectionInterface
     private ?string $username = null;
     private ?string $password = null;
     private array $attributes = [];
-    private ?PDO $pdo = null;
     private ?string $charset = null;
     private ?bool $emulatePrepare = null;
     private string $tablePrefix = '';
@@ -182,20 +181,21 @@ abstract class Connection implements ConnectionInterface
     private array $slaves = [];
     private array $masters = [];
     private bool $shuffleMasters = true;
-    private bool $enableLogging = true;
     private array $quotedTableNames = [];
     private array $quotedColumnNames = [];
     private ?Connection $master = null;
     private ?Connection $slave = null;
+    private ?LoggerInterface $logger = null;
+    private ?PDO $pdo = null;
+    private ?ProfilerInterface $profiler = null;
+    private QueryCache $queryCache;
+    protected ?Schema $schema = null;
     private ?Transaction $transaction = null;
-    private ?Schema $schema = null;
-    private bool $enableProfiling = true;
-    private LazyConnectionDependencies $dependencies;
 
-    public function __construct(string $dsn, LazyConnectionDependencies $dependencies)
+    public function __construct(string $dsn, QueryCache $queryCache)
     {
         $this->dsn = $dsn;
-        $this->dependencies = $dependencies;
+        $this->queryCache = $queryCache;
     }
 
     /**
@@ -337,13 +337,13 @@ abstract class Connection implements ConnectionInterface
      */
     public function cache(callable $callable, int $duration = null, Dependency $dependency = null)
     {
-        $this->getQueryCache()->setInfo(
-            [$duration ?? $this->getQueryCache()->getDuration(), $dependency]
+        $this->queryCache->setInfo(
+            [$duration ?? $this->queryCache->getDuration(), $dependency]
         );
 
         $result = $callable($this);
 
-        $this->getQueryCache()->removeLastInfo();
+        $this->queryCache->removeLastInfo();
 
         return $result;
     }
@@ -366,16 +366,6 @@ abstract class Connection implements ConnectionInterface
     public function getEmulatePrepare(): ?bool
     {
         return $this->emulatePrepare;
-    }
-
-    public function isLoggingEnabled(): bool
-    {
-        return $this->enableLogging;
-    }
-
-    public function isProfilingEnabled(): bool
-    {
-        return $this->enableProfiling;
     }
 
     public function isSavepointEnabled(): bool
@@ -602,7 +592,7 @@ abstract class Connection implements ConnectionInterface
      */
     public function noCache(callable $callable)
     {
-        $queryCache = $this->dependencies->queryCache();
+        $queryCache = $this->queryCache;
 
         $queryCache->setInfo(false);
 
@@ -645,28 +635,28 @@ abstract class Connection implements ConnectionInterface
         $token = 'Opening DB connection: ' . $this->dsn;
 
         try {
-            if ($this->enableLogging) {
-                $this->getLogger()->log(LogLevel::INFO, $token);
+            if ($this->logger !== null) {
+                $this->logger->log(LogLevel::INFO, $token);
             }
 
-            if ($this->isProfilingEnabled()) {
-                $this->getProfiler()->begin($token, [__METHOD__]);
+            if ($this->profiler !== null) {
+                $this->profiler->begin($token, [__METHOD__]);
             }
 
             $this->pdo = $this->createPdoInstance();
 
             $this->initConnection();
 
-            if ($this->isProfilingEnabled()) {
-                $this->getProfiler()->end($token, [__METHOD__]);
+            if ($this->profiler !== null) {
+                $this->profiler->end($token, [__METHOD__]);
             }
         } catch (PDOException $e) {
-            if ($this->isProfilingEnabled()) {
-                $this->getProfiler()->end($token, [__METHOD__]);
+            if ($this->profiler !== null) {
+                $this->profiler->end($token, [__METHOD__]);
             }
 
-            if ($this->enableLogging) {
-                $this->getLogger()->log(LogLevel::ERROR, $token);
+            if ($this->logger !== null) {
+                $this->logger->log(LogLevel::ERROR, $token);
             }
 
             throw new Exception($e->getMessage(), $e->errorInfo, $e);
@@ -691,8 +681,8 @@ abstract class Connection implements ConnectionInterface
         }
 
         if ($this->pdo !== null) {
-            if ($this->enableLogging) {
-                $this->getLogger()->log(LogLevel::DEBUG, 'Closing DB connection: ' . $this->dsn . ' ' . __METHOD__);
+            if ($this->logger !== null) {
+                $this->logger->log(LogLevel::DEBUG, 'Closing DB connection: ' . $this->dsn . ' ' . __METHOD__);
             }
 
             $this->pdo = null;
@@ -723,7 +713,7 @@ abstract class Connection implements ConnectionInterface
             try {
                 $transaction->rollBack();
             } catch (Exception $e) {
-                $this->getLogger()->log(LogLevel::ERROR, $e, [__METHOD__]);
+                $this->logger->log(LogLevel::ERROR, $e, [__METHOD__]);
                 /** hide this exception to be able to continue throwing original exception outside */
             }
         }
@@ -783,8 +773,8 @@ abstract class Connection implements ConnectionInterface
 
                 return $db;
             } catch (Exception $e) {
-                if ($this->enableLogging) {
-                    $this->getLogger()->log(
+                if ($this->logger !== null) {
+                    $this->logger->log(
                         LogLevel::WARNING,
                         "Connection ({$db->getDsn()}) failed: " . $e->getMessage() . ' ' . __METHOD__
                     );
@@ -910,18 +900,6 @@ abstract class Connection implements ConnectionInterface
     }
 
     /**
-     * Whether to enable profiling of opening database connection and database queries. Defaults to true. You may want
-     * to disable this option in a production environment to gain performance if you do not need the information being
-     * logged.
-     *
-     * @param bool $value
-     */
-    public function setEnableProfiling(bool $value): void
-    {
-        $this->enableProfiling = $value;
-    }
-
-    /**
      * Whether to turn on prepare emulation. Defaults to false, meaning PDO will use the native prepare support if
      * available. For some databases (such as MySQL), this may need to be set true so that PDO can emulate the prepare
      * support to bypass the buggy native prepare support. The default value is null, which means the PDO
@@ -932,17 +910,6 @@ abstract class Connection implements ConnectionInterface
     public function setEmulatePrepare(bool $value): void
     {
         $this->emulatePrepare = $value;
-    }
-
-    /**
-     * Whether to enable logging of database queries. Defaults to true. You may want to disable this option in a
-     * production environment to gain performance if you do not need the information being logged.
-     *
-     * @param bool $value
-     */
-    public function setEnableLogging(bool $value): void
-    {
-        $this->enableLogging = $value;
     }
 
     /**
@@ -1127,18 +1094,33 @@ abstract class Connection implements ConnectionInterface
         return $result;
     }
 
-    public function getLogger(): LoggerInterface
+    public function setLogger(LoggerInterface $logger = null): void
     {
-        return $this->dependencies->logger();
+        $this->logger = $logger;
     }
 
-    public function getProfiler(): ProfilerInterface
+    public function setProfiler(ProfilerInterface $profiler = null): void
     {
-        return $this->dependencies->profiler();
+        $this->profiler = $profiler;
+    }
+
+    public function setSchema(Schema $schema): ?LoggerInterface
+    {
+        $this->schema = $schema;
+    }
+
+    public function getLogger(): ?LoggerInterface
+    {
+        return $this->logger;
+    }
+
+    public function getProfiler(): ?ProfilerInterface
+    {
+        return $this->profiler;
     }
 
     public function getQueryCache(): QueryCache
     {
-        return $this->dependencies->queryCache();
+        return $this->queryCache;
     }
 }
