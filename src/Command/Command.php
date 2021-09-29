@@ -14,6 +14,7 @@ use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
 use Yiisoft\Db\AwareTrait\ProfilerAwareTrait;
+use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Exception\Exception;
@@ -115,11 +116,13 @@ class Command
     private ?int $queryCacheDuration = null;
     private ConnectionInterface $db;
     private ?Dependency $queryCacheDependency = null;
+    private QueryCache $queryCache;
     private ?PDOStatement $pdoStatement = null;
 
-    public function __construct(ConnectionInterface $db, ?string $sql)
+    public function __construct(ConnectionInterface $db, QueryCache $queryCache, ?string $sql)
     {
         $this->db = $db;
+        $this->queryCache = $queryCache;
         $this->sql = $sql;
     }
 
@@ -135,11 +138,8 @@ class Command
      */
     public function cache(?int $duration = null, Dependency $dependency = null): self
     {
-        $queryCache = $this->db->getQueryCache();
-
-        $this->queryCacheDuration = $duration ?? $queryCache->getDuration();
+        $this->queryCacheDuration = $duration ?? $this->queryCache->getDuration();
         $this->queryCacheDependency = $dependency;
-
         return $this;
     }
 
@@ -1276,16 +1276,10 @@ class Command
      */
     protected function queryInternal(string $method, $fetchMode = null)
     {
-        $profiler = $this->profiler;
-        $queryCache = $this->db->getqueryCache();
-
         [, $rawSql] = $this->logQuery(__CLASS__ . '::query');
 
         if ($method !== '') {
-            $info = $queryCache->info(
-                $this->queryCacheDuration,
-                $this->queryCacheDependency
-            );
+            $info = $this->queryCache->info($this->queryCacheDuration, $this->queryCacheDependency);
 
             if (is_array($info)) {
                 /* @var $cache CacheInterface */
@@ -1315,7 +1309,7 @@ class Command
 
         try {
             if ($this->profiler !== null) {
-                $profiler->begin((string) $rawSql, [__CLASS__ . '::query']);
+                $this->profiler->begin((string) $rawSql, [__CLASS__ . '::query']);
             }
 
             $this->internalExecute($rawSql);
@@ -1333,11 +1327,11 @@ class Command
             }
 
             if ($this->profiler !== null) {
-                $profiler->end((string) $rawSql, [__CLASS__ . '::query']);
+                $this->profiler->end((string) $rawSql, [__CLASS__ . '::query']);
             }
         } catch (Exception $e) {
             if ($this->profiler !== null) {
-                $profiler->end((string) $rawSql, [__CLASS__ . '::query']);
+                $this->profiler->end((string) $rawSql, [__CLASS__ . '::query']);
             }
 
             throw $e;

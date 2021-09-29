@@ -48,12 +48,7 @@ use function strncmp;
  * The following example shows how to create a Connection instance and establish the DB connection:
  *
  * ```php
- * $connection = new \Yiisoft\Db\Mysql\Connection(
- *     $cache,
- *     $logger,
- *     $profiler,
- *     $dsn
- * );
+ * $connection = new \Yiisoft\Db\Mysql\Connection($dsn, $queryCache);
  * $connection->open();
  * ```
  *
@@ -190,9 +185,7 @@ abstract class Connection implements ConnectionInterface
     private array $quotedColumnNames = [];
     private ?Connection $master = null;
     private ?Connection $slave = null;
-    private ?LoggerInterface $logger = null;
     private ?PDO $pdo = null;
-    private ?ProfilerInterface $profiler = null;
     private QueryCache $queryCache;
     private ?Transaction $transaction = null;
 
@@ -346,11 +339,8 @@ abstract class Connection implements ConnectionInterface
         $this->queryCache->setInfo(
             [$duration ?? $this->queryCache->getDuration(), $dependency]
         );
-
         $result = $callable($this);
-
         $this->queryCache->removeLastInfo();
-
         return $result;
     }
 
@@ -441,7 +431,6 @@ abstract class Connection implements ConnectionInterface
     public function getMasterPdo(): PDO
     {
         $this->open();
-
         return $this->pdo;
     }
 
@@ -599,13 +588,9 @@ abstract class Connection implements ConnectionInterface
     public function noCache(callable $callable)
     {
         $queryCache = $this->queryCache;
-
         $queryCache->setInfo(false);
-
         $result = $callable($this);
-
         $queryCache->removeLastInfo();
-
         return $result;
     }
 
@@ -738,7 +723,6 @@ abstract class Connection implements ConnectionInterface
     protected function openFromPool(array $pool): ?self
     {
         shuffle($pool);
-
         return $this->openFromPoolSequentially($pool);
     }
 
@@ -1097,10 +1081,5 @@ abstract class Connection implements ConnectionInterface
         }
 
         return $result;
-    }
-
-    public function getQueryCache(): QueryCache
-    {
-        return $this->queryCache;
     }
 }
