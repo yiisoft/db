@@ -743,11 +743,8 @@ abstract class Connection implements ConnectionInterface
             return null;
         }
 
-        foreach ($pool as $config) {
-            /* @var $db Connection */
-            $db = DatabaseFactory::connection($config);
-
-            $key = [__METHOD__, $db->getDsn()];
+        foreach ($pool as $poolConnetion) {
+            $key = [__METHOD__, $poolConnetion->getDsn()];
 
             if (
                 $this->getSchema()->getSchemaCache()->isEnabled() &&
@@ -758,14 +755,14 @@ abstract class Connection implements ConnectionInterface
             }
 
             try {
-                $db->open();
+                $poolConnetion->open();
 
-                return $db;
+                return $poolConnetion;
             } catch (Exception $e) {
                 if ($this->logger !== null) {
                     $this->logger->log(
                         LogLevel::WARNING,
-                        "Connection ({$db->getDsn()}) failed: " . $e->getMessage() . ' ' . __METHOD__
+                        "Connection ({$poolConnetion->getDsn()}) failed: " . $e->getMessage() . ' ' . __METHOD__
                     );
                 }
 
@@ -928,11 +925,11 @@ abstract class Connection implements ConnectionInterface
      * of these configurations will be chosen and used to create a DB connection which will be used by this object.
      *
      * @param string $key index master connection.
-     * @param array $config The configuration that should be merged with every master configuration
+     * @param ConnectionInterface $db The connection every master.
      */
-    public function setMasters(string $key, array $config = []): void
+    public function setMasters(string $key, ConnectionInterface $master): void
     {
-        $this->masters[$key] = $config;
+        $this->masters[$key] = $master;
     }
 
     /**
@@ -984,11 +981,11 @@ abstract class Connection implements ConnectionInterface
      * one of these configurations will be chosen and used to create a DB connection for performing read queries only.
      *
      * @param string $key index slave connection.
-     * @param array $config The configuration that should be merged with every slave configuration
+     * @param ConnectionInterface $slave The connection every slave.
      */
-    public function setSlaves(string $key, array $config = []): void
+    public function setSlaves(string $key, ConnectionInterface $slave): void
     {
-        $this->slaves[$key] = $config;
+        $this->slaves[$key] = $slave;
     }
 
     /**

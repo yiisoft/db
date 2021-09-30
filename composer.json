@@ -26,7 +26,6 @@
         "yiisoft/arrays": "^1.0",
         "yiisoft/cache": "^1.0",
         "yiisoft/data": "^3.0@dev",
-        "yiisoft/factory": "^3.0@dev",
         "yiisoft/log": "^1.0",
         "yiisoft/profiler": "^1.0",
         "yiisoft/strings": "^2.0"
