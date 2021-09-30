@@ -10,7 +10,7 @@ trait ProfilerAwareTrait
 {
     protected ?ProfilerInterface $profiler = null;
 
-    public function setProfiler(ProfilerInterface $profiler = null): void
+    public function setProfiler(?ProfilerInterface $profiler): void
     {
         $this->profiler = $profiler;
     }
