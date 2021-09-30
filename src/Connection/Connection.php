@@ -18,12 +18,10 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Factory\DatabaseFactory;
 use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchema;
 use Yiisoft\Db\Transaction\Transaction;
-use Yiisoft\Profiler\ProfilerInterface;
 
 use function array_keys;
 use function str_replace;
@@ -1016,9 +1014,9 @@ abstract class Connection implements ConnectionInterface
      * @param string|null $isolationLevel The isolation level to use for this transaction. {@see Transaction::begin()}
      * for details.
      *
-     * @return mixed result of callback function
      *@throws Throwable if there is any exception during query. In this case the transaction will be rolled back.
      *
+     * @return mixed result of callback function
      */
     public function transaction(callable $callback, string $isolationLevel = null)
     {
