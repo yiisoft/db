@@ -10,7 +10,7 @@ trait LoggerAwareTrait
 {
     protected ?LoggerInterface $logger = null;
 
-    public function setLogger(LoggerInterface $logger): void
+    public function setLogger(?LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
