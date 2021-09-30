@@ -35,7 +35,7 @@ use function strncmp;
  * [PDO PHP extension](http://php.net/manual/en/book.pdo.php).
  *
  * Connection supports database replication and read-write splitting. In particular, a Connection component can be
- * configured with multiple {@see setMasters()} and {@see setSlaves()}. It will do load balancing and failover by
+ * configured with multiple {@see setMaster()} and {@see setSlave()}. It will do load balancing and failover by
  * choosing appropriate servers. It will also automatically direct read operations to the slaves and write operations
  * to the masters.
  *
@@ -910,7 +910,7 @@ abstract class Connection implements ConnectionInterface
     }
 
     /**
-     * Whether to enable read/write splitting by using {@see setSlaves()} to read data. Note that if {@see setSlaves()}
+     * Whether to enable read/write splitting by using {@see setSlave()} to read data. Note that if {@see setSlave()}
      * is empty, read/write splitting will NOT be enabled no matter what value this property takes.
      *
      * @param bool $value
@@ -921,13 +921,12 @@ abstract class Connection implements ConnectionInterface
     }
 
     /**
-     * List of master connection. Each DSN is used to create a master DB connection. When {@see open()} is called, one
-     * of these configurations will be chosen and used to create a DB connection which will be used by this object.
+     * Set connection for master server, you can specify multiple connections, adding the id for each one.
      *
      * @param string $key index master connection.
      * @param ConnectionInterface $db The connection every master.
      */
-    public function setMasters(string $key, ConnectionInterface $master): void
+    public function setMaster(string $key, ConnectionInterface $master): void
     {
         $this->masters[$key] = $master;
     }
@@ -957,7 +956,7 @@ abstract class Connection implements ConnectionInterface
     }
 
     /**
-     * The retry interval in seconds for dead servers listed in {@see setMasters()} and {@see setSlaves()}.
+     * The retry interval in seconds for dead servers listed in {@see setMaster()} and {@see setSlave()}.
      *
      * @param int $value
      */
@@ -967,7 +966,7 @@ abstract class Connection implements ConnectionInterface
     }
 
     /**
-     * Whether to shuffle {@see setMasters()} before getting one.
+     * Whether to shuffle {@see setMaster()} before getting one.
      *
      * @param bool $value
      */
@@ -977,13 +976,12 @@ abstract class Connection implements ConnectionInterface
     }
 
     /**
-     * List of slave connection. Each DSN is used to create a slave DB connection. When {@see enableSlaves} is true,
-     * one of these configurations will be chosen and used to create a DB connection for performing read queries only.
+     * Set connection for master slave, you can specify multiple connections, adding the id for each one.
      *
      * @param string $key index slave connection.
      * @param ConnectionInterface $slave The connection every slave.
      */
-    public function setSlaves(string $key, ConnectionInterface $slave): void
+    public function setSlave(string $key, ConnectionInterface $slave): void
     {
         $this->slaves[$key] = $slave;
     }
