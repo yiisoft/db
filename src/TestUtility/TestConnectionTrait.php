@@ -207,7 +207,7 @@ trait TestConnectionTrait
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
         /* profiling only */
-        $db->setLogger();
+        $db->setLogger(null);
         $db->setProfiler($this->profiler);
 
         $this->logger->flush();
@@ -229,7 +229,7 @@ trait TestConnectionTrait
 
         /* logging only */
         $db->setLogger($this->logger);
-        $db->setProfiler();
+        $db->setProfiler(null);
 
         $this->logger->flush();
         $this->profiler->flush();
@@ -249,8 +249,8 @@ trait TestConnectionTrait
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
         /* disabled */
-        $db->setLogger();
-        $db->setProfiler();
+        $db->setLogger(null);
+        $db->setProfiler(null);
 
         $this->logger->flush();
         $this->profiler->flush();
@@ -284,20 +284,20 @@ trait TestConnectionTrait
         $this->runExceptionTest($db);
 
         /* profiling only */
-        $db->setLogger();
+        $db->setLogger(null);
         $db->setProfiler($this->profiler);
 
         $this->runExceptionTest($db);
 
         /* logging only */
         $db->setLogger($this->logger);
-        $db->setProfiler();
+        $db->setProfiler(null);
 
         $this->runExceptionTest($db);
 
         /* disabled */
-        $db->setLogger();
-        $db->setProfiler();
+        $db->setLogger(null);
+        $db->setProfiler(null);
 
         $this->runExceptionTest($db);
     }
