@@ -172,16 +172,18 @@ trait TestTrait
         return $result;
     }
 
-    protected function prepareDatabase(string $dsn = null): void
+    protected function prepareDatabase(string $dsn = null, $fixture = null): void
     {
+        $fixture = $fixture ?? self::DB_FIXTURES_PATH;
+
         if ($dsn !== null) {
             $this->connection = $this->createConnection($dsn);
         }
 
         $this->connection->open();
 
-        if (self::DB_FIXTURES_PATH !== null) {
-            $lines = explode(';', file_get_contents(self::DB_FIXTURES_PATH));
+        if ($fixture !== null) {
+            $lines = explode(';', file_get_contents($fixture));
 
             foreach ($lines as $line) {
                 if (trim($line) !== '') {
@@ -189,18 +191,6 @@ trait TestTrait
                 }
             }
         }
-    }
-
-    /**
-     * Adjust dbms specific escaping.
-     *
-     * @param array|string $sql
-     *
-     * @return string
-     */
-    protected function replaceQuotes($sql): string
-    {
-        return str_replace(['[[', ']]'], '`', $sql);
     }
 
     /**
