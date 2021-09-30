@@ -8,15 +8,10 @@ use Yiisoft\Profiler\ProfilerInterface;
 
 trait ProfilerAwareTrait
 {
-    private ?ProfilerInterface $profiler = null;
+    protected ?ProfilerInterface $profiler = null;
 
     public function setProfiler(ProfilerInterface $profiler = null): void
     {
         $this->profiler = $profiler;
-    }
-
-    protected function getProfiler(): ?ProfilerInterface
-    {
-        return $this->profiler;
     }
 }
