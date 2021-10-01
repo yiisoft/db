@@ -60,6 +60,23 @@ trait TestTrait
         return $this->cache;
     }
 
+    protected function createConnection(string $dsn = null): ?ConnectionInterface
+    {
+        $db = null;
+
+        if ($dsn !== null) {
+            $class = self::DB_CONNECTION_CLASS;
+            $db = new $class($dsn, $this->createQueryCache(), $this->createSchemaCache());
+            $db->setLogger($this->createLogger());
+            $db->setProfiler($this->createProfiler());
+            $db->setUsername(self::DB_USERNAME);
+            $db->setPassword(self::DB_PASSWORD);
+            $db->setCharset(self::DB_CHARSET);
+        }
+
+        return $db;
+    }
+
     protected function createLogger(): Logger
     {
         if ($this->logger === null) {
@@ -182,14 +199,48 @@ trait TestTrait
 
         $this->connection->open();
 
-        if ($fixture !== null) {
+        if (self::DB_DRIVERNAME === 'oci') {
+            [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($fixture), 2);
+            [$statements, $triggers, $data] = explode('/* TRIGGERS */', $creates, 3);
+            $lines = array_merge(
+                explode('--', $drops),
+                explode(';', $statements),
+                explode('/', $triggers),
+                explode(';', $data)
+            );
+        } else {
             $lines = explode(';', file_get_contents($fixture));
+        }
 
-            foreach ($lines as $line) {
-                if (trim($line) !== '') {
-                    $this->connection->getPDO()->exec($line);
-                }
+        foreach ($lines as $line) {
+            if (trim($line) !== '') {
+                $this->connection->getPDO()->exec($line);
             }
+        }
+    }
+
+    /**
+     * Adjust dbms specific escaping.
+     *
+     * @param $sql
+     *
+     * @return mixed
+     */
+    protected function replaceQuotes($sql)
+    {
+        switch (self::DB_DRIVERNAME) {
+            case 'mysql':
+            case 'sqlite':
+                return str_replace(['[[', ']]'], '`', $sql);
+            case 'oci':
+                return str_replace(['[[', ']]'], '"', $sql);
+            case 'pgsql':
+                // more complex replacement needed to not conflict with postgres array syntax
+                return str_replace(['\\[', '\\]'], ['[', ']'], preg_replace('/(\[\[)|((?<!(\[))]])/', '"', $sql));
+            case 'mssql':
+                return str_replace(['[[', ']]'], ['[', ']'], $sql);
+            default:
+                return $sql;
         }
     }
 
