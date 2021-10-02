@@ -735,9 +735,9 @@ abstract class Connection implements ConnectionInterface
      *
      * @param array $pool
      *
-     * @return Connection|null the opened DB connection, or `null` if no server is available
+     * @return ConnectionInterface|null the opened DB connection, or `null` if no server is available
      */
-    protected function openFromPoolSequentially(array $pool): ?self
+    protected function openFromPoolSequentially(array $pool): ?ConnectionInterface
     {
         if (!$pool) {
             return null;
