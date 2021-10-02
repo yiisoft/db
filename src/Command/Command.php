@@ -12,6 +12,9 @@ use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
+use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
+use Yiisoft\Db\AwareTrait\ProfilerAwareTrait;
+use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Data\DataReader;
 use Yiisoft\Db\Exception\Exception;
@@ -78,6 +81,9 @@ use function strtr;
  */
 class Command
 {
+    use LoggerAwareTrait;
+    use ProfilerAwareTrait;
+
     /**
      * @var array pending parameters to be bound to the current PDO statement.
      */
@@ -106,16 +112,17 @@ class Command
      * the command.
      */
     private $retryHandler;
-
-    private ConnectionInterface $db;
-    private ?PDOStatement $pdoStatement = null;
     private int $fetchMode = PDO::FETCH_ASSOC;
     private ?int $queryCacheDuration = null;
+    private ConnectionInterface $db;
     private ?Dependency $queryCacheDependency = null;
+    private QueryCache $queryCache;
+    private ?PDOStatement $pdoStatement = null;
 
-    public function __construct(ConnectionInterface $db, ?string $sql)
+    public function __construct(ConnectionInterface $db, QueryCache $queryCache, ?string $sql)
     {
         $this->db = $db;
+        $this->queryCache = $queryCache;
         $this->sql = $sql;
     }
 
@@ -131,11 +138,8 @@ class Command
      */
     public function cache(?int $duration = null, Dependency $dependency = null): self
     {
-        $queryCache = $this->db->getQueryCache();
-
-        $this->queryCacheDuration = $duration ?? $queryCache->getDuration();
+        $this->queryCacheDuration = $duration ?? $this->queryCache->getDuration();
         $this->queryCacheDependency = $dependency;
-
         return $this;
     }
 
@@ -147,7 +151,6 @@ class Command
     public function noCache(): self
     {
         $this->queryCacheDuration = -1;
-
         return $this;
     }
 
@@ -546,7 +549,6 @@ class Command
     {
         $params = [];
         $sql = $this->db->getQueryBuilder()->insert($table, $columns, $params);
-
         return $this->setSql($sql)->bindValues($params);
     }
 
@@ -622,7 +624,6 @@ class Command
     public function upsert(string $table, $insertColumns, $updateColumns = true, array $params = []): self
     {
         $sql = $this->db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
-
         return $this->setSql($sql)->bindValues($params);
     }
 
@@ -662,7 +663,6 @@ class Command
     public function update(string $table, array $columns, $condition = '', array $params = []): self
     {
         $sql = $this->db->getQueryBuilder()->update($table, $columns, $condition, $params);
-
         return $this->setSql($sql)->bindValues($params);
     }
 
@@ -696,7 +696,6 @@ class Command
     public function delete(string $table, $condition = '', array $params = []): self
     {
         $sql = $this->db->getQueryBuilder()->delete($table, $condition, $params);
-
         return $this->setSql($sql)->bindValues($params);
     }
 
@@ -723,7 +722,6 @@ class Command
     public function createTable(string $table, array $columns, ?string $options = null): self
     {
         $sql = $this->db->getQueryBuilder()->createTable($table, $columns, $options);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -738,7 +736,6 @@ class Command
     public function renameTable(string $table, string $newName): self
     {
         $sql = $this->db->getQueryBuilder()->renameTable($table, $newName);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -752,7 +749,6 @@ class Command
     public function dropTable(string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropTable($table);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -766,7 +762,6 @@ class Command
     public function truncateTable(string $table): self
     {
         $sql = $this->db->getQueryBuilder()->truncateTable($table);
-
         return $this->setSql($sql);
     }
 
@@ -785,7 +780,6 @@ class Command
     public function addColumn(string $table, string $column, string $type): self
     {
         $sql = $this->db->getQueryBuilder()->addColumn($table, $column, $type);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -800,7 +794,6 @@ class Command
     public function dropColumn(string $table, string $column): self
     {
         $sql = $this->db->getQueryBuilder()->dropColumn($table, $column);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -816,7 +809,6 @@ class Command
     public function renameColumn(string $table, string $oldName, string $newName): self
     {
         $sql = $this->db->getQueryBuilder()->renameColumn($table, $oldName, $newName);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -835,7 +827,6 @@ class Command
     public function alterColumn(string $table, string $column, string $type): self
     {
         $sql = $this->db->getQueryBuilder()->alterColumn($table, $column, $type);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -853,7 +844,6 @@ class Command
     public function addPrimaryKey(string $name, string $table, $columns): self
     {
         $sql = $this->db->getQueryBuilder()->addPrimaryKey($name, $table, $columns);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -868,7 +858,6 @@ class Command
     public function dropPrimaryKey(string $name, string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropPrimaryKey($name, $table);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -925,7 +914,6 @@ class Command
     public function dropForeignKey(string $name, string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropForeignKey($name, $table);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -944,7 +932,6 @@ class Command
     public function createIndex(string $name, string $table, $columns, bool $unique = false): self
     {
         $sql = $this->db->getQueryBuilder()->createIndex($name, $table, $columns, $unique);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -959,7 +946,6 @@ class Command
     public function dropIndex(string $name, string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropIndex($name, $table);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -977,7 +963,6 @@ class Command
     public function addUnique(string $name, string $table, $columns): self
     {
         $sql = $this->db->getQueryBuilder()->addUnique($name, $table, $columns);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -994,7 +979,6 @@ class Command
     public function dropUnique(string $name, string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropUnique($name, $table);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -1011,7 +995,6 @@ class Command
     public function addCheck(string $name, string $table, string $expression): self
     {
         $sql = $this->db->getQueryBuilder()->addCheck($name, $table, $expression);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -1028,7 +1011,6 @@ class Command
     public function dropCheck(string $name, string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropCheck($name, $table);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -1047,7 +1029,6 @@ class Command
     public function addDefaultValue(string $name, string $table, string $column, $value): self
     {
         $sql = $this->db->getQueryBuilder()->addDefaultValue($name, $table, $column, $value);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -1064,7 +1045,6 @@ class Command
     public function dropDefaultValue(string $name, string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropDefaultValue($name, $table);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -1083,7 +1063,6 @@ class Command
     public function resetSequence(string $table, $value = null): self
     {
         $sql = $this->db->getQueryBuilder()->resetSequence($table, $value);
-
         return $this->setSql($sql);
     }
 
@@ -1119,7 +1098,6 @@ class Command
     public function checkIntegrity(string $schema, string $table, bool $check = true): self
     {
         $sql = $this->db->getQueryBuilder()->checkIntegrity($schema, $table, $check);
-
         return $this->setSql($sql);
     }
 
@@ -1137,7 +1115,6 @@ class Command
     public function addCommentOnColumn(string $table, string $column, string $comment): self
     {
         $sql = $this->db->getQueryBuilder()->addCommentOnColumn($table, $column, $comment);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -1153,7 +1130,6 @@ class Command
     public function addCommentOnTable(string $table, string $comment): self
     {
         $sql = $this->db->getQueryBuilder()->addCommentOnTable($table, $comment);
-
         return $this->setSql($sql);
     }
 
@@ -1170,7 +1146,6 @@ class Command
     public function dropCommentFromColumn(string $table, string $column): self
     {
         $sql = $this->db->getQueryBuilder()->dropCommentFromColumn($table, $column);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -1185,7 +1160,6 @@ class Command
     public function dropCommentFromTable(string $table): self
     {
         $sql = $this->db->getQueryBuilder()->dropCommentFromTable($table);
-
         return $this->setSql($sql);
     }
 
@@ -1201,7 +1175,6 @@ class Command
     public function createView(string $viewName, $subquery): self
     {
         $sql = $this->db->getQueryBuilder()->createView($viewName, $subquery);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
     }
 
@@ -1215,7 +1188,6 @@ class Command
     public function dropView(string $viewName): self
     {
         $sql = $this->db->getQueryBuilder()->dropView($viewName);
-
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
     }
 
@@ -1232,7 +1204,6 @@ class Command
      */
     public function execute(): int
     {
-        $profiler = $this->db->getProfiler();
         $sql = $this->getSql();
 
         [$profile, $rawSql] = $this->logQuery(__METHOD__);
@@ -1244,23 +1215,23 @@ class Command
         $this->prepare(false);
 
         try {
-            if ($this->db->isProfilingEnabled()) {
-                $profiler->begin((string) $rawSql, [__METHOD__]);
+            if ($this->profiler !== null) {
+                $this->profiler->begin((string) $rawSql, [__METHOD__]);
             }
 
             $this->internalExecute($rawSql);
             $n = $this->pdoStatement->rowCount();
 
-            if ($this->db->isProfilingEnabled()) {
-                $profiler->end((string) $rawSql, [__METHOD__]);
+            if ($this->profiler !== null) {
+                $this->profiler->end((string) $rawSql, [__METHOD__]);
             }
 
             $this->refreshTableSchema();
 
             return $n;
         } catch (Exception $e) {
-            if ($this->db->isProfilingEnabled()) {
-                $profiler->end((string) $rawSql, [__METHOD__]);
+            if ($this->profiler) {
+                $this->profiler->end((string) $rawSql, [__METHOD__]);
             }
 
             throw $e;
@@ -1278,14 +1249,12 @@ class Command
      */
     protected function logQuery(string $category): array
     {
-        $logger = $this->db->getLogger();
-
-        if ($this->db->isLoggingEnabled()) {
+        if ($this->logger !== null) {
             $rawSql = $this->getRawSql();
-            $logger->log(LogLevel::INFO, $rawSql, [$category]);
+            $this->logger->log(LogLevel::INFO, $rawSql, [$category]);
         }
 
-        if (!$this->db->isProfilingEnabled()) {
+        if ($this->profiler === null) {
             return [false, $rawSql ?? null];
         }
 
@@ -1307,17 +1276,10 @@ class Command
      */
     protected function queryInternal(string $method, $fetchMode = null)
     {
-        $logger = $this->db->getLogger();
-        $profiler = $this->db->getProfiler();
-        $queryCache = $this->db->getqueryCache();
-
         [, $rawSql] = $this->logQuery(__CLASS__ . '::query');
 
         if ($method !== '') {
-            $info = $queryCache->info(
-                $this->queryCacheDuration,
-                $this->queryCacheDependency
-            );
+            $info = $this->queryCache->info($this->queryCacheDuration, $this->queryCacheDependency);
 
             if (is_array($info)) {
                 /* @var $cache CacheInterface */
@@ -1330,8 +1292,8 @@ class Command
                 );
 
                 if (is_array($result) && isset($result[0])) {
-                    if ($this->db->isLoggingEnabled()) {
-                        $logger->log(
+                    if ($this->logger !== null) {
+                        $this->logger->log(
                             LogLevel::DEBUG,
                             'Query result served from cache',
                             [__CLASS__ . '::query']
@@ -1346,8 +1308,8 @@ class Command
         $this->prepare(true);
 
         try {
-            if ($this->db->isProfilingEnabled()) {
-                $profiler->begin((string) $rawSql, [__CLASS__ . '::query']);
+            if ($this->profiler !== null) {
+                $this->profiler->begin((string) $rawSql, [__CLASS__ . '::query']);
             }
 
             $this->internalExecute($rawSql);
@@ -1364,12 +1326,12 @@ class Command
                 $this->pdoStatement->closeCursor();
             }
 
-            if ($this->db->isProfilingEnabled()) {
-                $profiler->end((string) $rawSql, [__CLASS__ . '::query']);
+            if ($this->profiler !== null) {
+                $this->profiler->end((string) $rawSql, [__CLASS__ . '::query']);
             }
         } catch (Exception $e) {
-            if ($this->db->isProfilingEnabled()) {
-                $profiler->end((string) $rawSql, [__CLASS__ . '::query']);
+            if ($this->profiler !== null) {
+                $this->profiler->end((string) $rawSql, [__CLASS__ . '::query']);
             }
 
             throw $e;
@@ -1383,8 +1345,8 @@ class Command
                 $info[2]
             );
 
-            if ($this->db->isLoggingEnabled()) {
-                $logger->log(
+            if ($this->logger !== null) {
+                $this->logger->log(
                     LogLevel::DEBUG,
                     'Saved query result in cache',
                     [__CLASS__ . '::query']
@@ -1430,7 +1392,6 @@ class Command
     protected function requireTableSchemaRefresh(string $name): self
     {
         $this->refreshTableName = $name;
-
         return $this;
     }
 
@@ -1456,7 +1417,6 @@ class Command
     protected function requireTransaction(?string $isolationLevel = null): self
     {
         $this->isolationLevel = $isolationLevel;
-
         return $this;
     }
 
@@ -1481,7 +1441,6 @@ class Command
     protected function setRetryHandler(callable $handler): self
     {
         $this->retryHandler = $handler;
-
         return $this;
     }
 

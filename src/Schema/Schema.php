@@ -8,6 +8,7 @@ use PDO;
 use PDOException;
 use Throwable;
 use Yiisoft\Cache\Dependency\TagDependency;
+use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
@@ -111,13 +112,15 @@ abstract class Schema
     private array $schemaNames = [];
     private array $tableNames = [];
     private array $tableMetadata = [];
-    private ?QueryBuilder $builder = null;
     private ?string $serverVersion = null;
     private Connection $db;
+    private ?QueryBuilder $builder = null;
+    private SchemaCache $schemaCache;
 
-    public function __construct(Connection $db)
+    public function __construct(Connection $db, SchemaCache $schemaCache)
     {
         $this->db = $db;
+        $this->schemaCache = $schemaCache;
     }
 
     abstract public function createQueryBuilder(): QueryBuilder;
@@ -296,10 +299,8 @@ abstract class Schema
      */
     public function refresh(): void
     {
-        $schemaCache = $this->db->getSchemaCache();
-
-        if ($schemaCache->isEnabled()) {
-            $schemaCache->invalidate($this->getCacheTag());
+        if ($this->schemaCache->isEnabled()) {
+            $this->schemaCache->invalidate($this->getCacheTag());
         }
 
         $this->tableNames = [];
@@ -316,16 +317,14 @@ abstract class Schema
      */
     public function refreshTableSchema(string $name): void
     {
-        $schemaCache = $this->db->getSchemaCache();
-
         $rawName = $this->getRawTableName($name);
 
         unset($this->tableMetadata[$rawName]);
 
         $this->tableNames = [];
 
-        if ($schemaCache->isEnabled()) {
-            $schemaCache->remove($this->getCacheKey($rawName));
+        if ($this->schemaCache->isEnabled()) {
+            $this->schemaCache->remove($this->getCacheKey($rawName));
         }
     }
 
@@ -894,18 +893,15 @@ abstract class Schema
      */
     private function loadTableMetadataFromCache(string $rawName): void
     {
-        $schemaCache = $this->db->getSchemaCache();
-
-        if ($schemaCache->isEnabled() === false || $schemaCache->isExcluded($rawName) === true) {
+        if (!$this->schemaCache->isEnabled() || $this->schemaCache->isExcluded($rawName)) {
             $this->tableMetadata[$rawName] = [];
-
             return;
         }
 
-        $metadata = $schemaCache->getOrSet(
+        $metadata = $this->schemaCache->getOrSet(
             $this->getCacheKey($rawName),
             null,
-            $schemaCache->getDuration(),
+            $this->schemaCache->getDuration(),
             new TagDependency($this->getCacheTag()),
         );
 
@@ -930,9 +926,7 @@ abstract class Schema
      */
     private function saveTableMetadataToCache(string $rawName): void
     {
-        $schemaCache = $this->db->getSchemaCache();
-
-        if ($schemaCache->isEnabled() === false || $schemaCache->isExcluded($rawName) === true) {
+        if ($this->schemaCache->isEnabled() === false || $this->schemaCache->isExcluded($rawName) === true) {
             return;
         }
 
@@ -940,10 +934,10 @@ abstract class Schema
 
         $metadata['cacheVersion'] = static::SCHEMA_CACHE_VERSION;
 
-        $schemaCache->set(
+        $this->schemaCache->set(
             $this->getCacheKey($rawName),
             $metadata,
-            $schemaCache->getDuration(),
+            $this->schemaCache->getDuration(),
             new TagDependency($this->getCacheTag()),
         );
     }
@@ -956,5 +950,10 @@ abstract class Schema
     public function getDefaultSchema(): ?string
     {
         return $this->defaultSchema;
+    }
+
+    public function getSchemaCache(): SchemaCache
+    {
+        return $this->schemaCache;
     }
 }
