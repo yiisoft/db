@@ -36,9 +36,9 @@ jobs:
       postgres:
         image: postgres:${{ matrix.pgsql }}
         env:
-          POSTGRES_USER: root
-          POSTGRES_PASSWORD: root
-          POSTGRES_DB: yiitest
+          POSTGRES_USER: scrutinizer
+          POSTGRES_PASSWORD: scrutinizer
+          POSTGRES_DB: scrutinizer
         ports:
           - 5432:5432
         options: --name=postgres --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
