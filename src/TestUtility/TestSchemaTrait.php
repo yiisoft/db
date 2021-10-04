@@ -242,6 +242,14 @@ trait TestSchemaTrait
         }
     }
 
+    public function testGetColumnNoExist(): void
+    {
+        $schema = $this->getConnection()->getSchema();
+        $table = $schema->getTableSchema('negative_default_values');
+
+        $this->assertNull($table->getColumn('no_exist'));
+    }
+
     private function assertMetadataEquals($expected, $actual): void
     {
         switch (strtolower(gettype($expected))) {
