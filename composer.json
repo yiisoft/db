@@ -23,6 +23,7 @@
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "psr/log": "^1.1",
+        "yiisoft/active-record": "^3.0@dev",
         "yiisoft/arrays": "^1.0",
         "yiisoft/cache": "^1.0",
         "yiisoft/data": "^3.0@dev",
@@ -36,7 +37,7 @@
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^4.2",
         "yiisoft/aliases": "^1.1|^2.0",
-        "yiisoft/di": "^3.0",
+        "yiisoft/di": "^3.0@dev",
         "yiisoft/event-dispatcher": "^1.0",
         "yiisoft/json": "^1.0"
     },
