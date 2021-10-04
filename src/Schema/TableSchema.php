@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use function array_keys;
 
 /**
  * TableSchema represents the metadata of a database table.
@@ -27,9 +28,9 @@ abstract class TableSchema
      *
      * @param string $name column name
      *
-     * @return ColumnSchema metadata of the named column. Null if the named column does not exist.
+     * @return ColumnSchema|null metadata of the named column. Null if the named column does not exist.
      */
-    public function getColumn(?string $name): ColumnSchema
+    public function getColumn(string $name): ?ColumnSchema
     {
         return $this->columns[$name] ?? null;
     }
@@ -39,9 +40,9 @@ abstract class TableSchema
      *
      * @return array list of column names
      */
-    public function getColumnNames()
+    public function getColumnNames(): array
     {
-        return \array_keys($this->columns);
+        return array_keys($this->columns);
     }
 
     /**
@@ -64,7 +65,7 @@ abstract class TableSchema
             if (isset($this->columns[$key])) {
                 $this->columns[$key]->primaryKey(true);
             } else {
-                throw new InvalidArgumentException("Primary key '$key' cannot be found in table '{$this->name}'.");
+                throw new InvalidArgumentException("Primary key '$key' cannot be found in table '$this->name'.");
             }
         }
     }
