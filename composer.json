@@ -23,7 +23,6 @@
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "psr/log": "^1.1",
-        "yiisoft/active-record": "^3.0@dev",
         "yiisoft/arrays": "^1.0",
         "yiisoft/cache": "^1.0",
         "yiisoft/data": "^3.0@dev",
