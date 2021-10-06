@@ -268,7 +268,7 @@ class ColumnSchema
     }
 
     /**
-     * @return string comment of this column. Not all DBMS support this.
+     * @return string|null comment of this column. Not all DBMS support this.
      */
     public function getComment(): ?string
     {
@@ -340,7 +340,7 @@ class ColumnSchema
         $this->unsigned = $value;
     }
 
-    public function comment(?string $value): void
+    public function comment(string $value): void
     {
         $this->comment = $value;
     }
