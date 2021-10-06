@@ -47,9 +47,10 @@ final class Table
      * @param ExpressionInterface|string $name
      * @param string|null $alias
      * @param ExpressionInterface|string|null $schema
-     * @return Table
+     *
+     * @return $this
      */
-    public static function create($name, ?string $alias = null, $schema = null): Table
+    public static function create($name, ?string $alias = null, $schema = null): self
     {
         assert(is_string($name) || $name instanceof ExpressionInterface);
         assert(is_string($schema) || $schema instanceof ExpressionInterface || $schema === null);
