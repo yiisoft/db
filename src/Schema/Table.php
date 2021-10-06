@@ -13,12 +13,11 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * Note: We must use prefix (from connection) with tables with scema equal defaultSchema or without schema and don't use with other schemas
  * Note: With ExpressionInterface as tablename - we cannot add prefixes and quoting of table names.
  * For example with Oracle: (new Query)->select('*')->from(new Expression('dblink1.dbo.table')) for build `select * from dblink1.dbo.table1`
- *
  */
 final class Table
 {
     /**
-     * @var string|ExpressionInterface
+     * @var ExpressionInterface|string
      */
     private $name;
 
@@ -28,22 +27,28 @@ final class Table
     private ?string $alias;
 
     /**
-     * @var string|ExpressionInterface|null
+     * @var ExpressionInterface|string|null
      */
     private $schema;
 
     /**
-     * @param string|ExpressionInterface $name
-     * @param string|ExpressionInterface|null $alias
-     * @param string|ExpressionInterface|null $schema
+     * @param ExpressionInterface|string $name
+     * @param string|null $alias
+     * @param ExpressionInterface|string|null $schema
      */
-    private function __construct($name, $alias, $schema = null)
+    private function __construct($name, ?string $alias, $schema = null)
     {
         $this->name = $name;
         $this->alias = $alias;
         $this->schema = $schema;
     }
 
+    /**
+     * @param ExpressionInterface|string $name
+     * @param string|null $alias
+     * @param ExpressionInterface|string|null $schema
+     * @return void|Table
+     */
     public static function create($name, ?string $alias = null, $schema = null)
     {
         assert(is_string($name) || $name instanceof ExpressionInterface);
@@ -53,7 +58,7 @@ final class Table
     }
 
     /**
-     * @return string|ExpressionInterface
+     * @return ExpressionInterface|string
      */
     public function getName()
     {
@@ -66,7 +71,7 @@ final class Table
     }
 
     /**
-     * @return string|ExpressionInterface|null
+     * @return ExpressionInterface|string|null
      */
     public function getSchema()
     {
