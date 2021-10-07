@@ -340,7 +340,7 @@ class ColumnSchema
         $this->unsigned = $value;
     }
 
-    public function comment(string $value): void
+    public function comment(?string $value): void
     {
         $this->comment = $value;
     }
