@@ -8,13 +8,13 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * @example
- * (new Query)->select('col1')->from(Table::create('table1', 't', 'dbo'))
+ * (new Query)->select('col1')->from(TableName::create('table1', 't', 'dbo'))
  *
  * Note: We must use prefix (from connection) with tables with scema equal defaultSchema or without schema and don't use with other schemas
  * Note: With ExpressionInterface as tablename - we cannot add prefixes and quoting of table names.
  * For example with Oracle: (new Query)->select('*')->from(new Expression('dblink1.dbo.table')) for build `select * from dblink1.dbo.table1`
  */
-final class Table
+final class TableName
 {
     /**
      * @var ExpressionInterface|string
