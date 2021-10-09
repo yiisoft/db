@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
+
 use function array_keys;
 
 /**
@@ -15,7 +16,7 @@ use function array_keys;
 abstract class TableSchema
 {
     private ?string $schemaName = null;
-    private ?string $name = null;
+    private string $name = '';
     private ?string $fullName = null;
     private ?string $sequenceName = null;
     private array $primaryKey = [];
@@ -79,10 +80,10 @@ abstract class TableSchema
     }
 
     /**
-     * @return string|null the name of this table. The schema name is not included. Use {@see fullName} to get the name
-     * with schema name prefix.
+     * @return string the name of this table. The schema name is not included. Use {@see fullName} to get the name with
+     * schema name prefix.
      */
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -127,7 +128,7 @@ abstract class TableSchema
         $this->schemaName = $value;
     }
 
-    public function name(?string $value): void
+    public function name(string $value): void
     {
         $this->name = $value;
     }
