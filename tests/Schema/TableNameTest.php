@@ -13,12 +13,14 @@ final class TableNameTest extends TestCase
 {
     private string $incorrectTableTypeMessage = 'Name of table should be string or instanceof ExpressionInterface';
     private string $incorrectSchemaTypeMessage = 'Schema should be null, string or instanceof ExpressionInterface';
+
     /**
      * @param $name
      * @param $alias
      * @param $schema
      * @param $hasAlias
      * @param $hasSchema
+     *
      * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @dataProvider correctTableNames
@@ -55,6 +57,7 @@ final class TableNameTest extends TestCase
      * @param $schema
      * @param $hasAlias
      * @param $hasSchema
+     *
      * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @dataProvider incorrectTableNames
