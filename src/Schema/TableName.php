@@ -53,8 +53,8 @@ final class TableName
         }
 
         $this->name = $name;
-        $this->alias = $alias;
-        $this->schema = $schema;
+        $this->alias = empty($alias) ? null : $alias;
+        $this->schema = empty($schema) ? null : $schema;
     }
 
     /**
@@ -80,11 +80,11 @@ final class TableName
 
     public function hasAlias(): bool
     {
-        return !($this->alias === null || $this->alias === '');
+        return $this->alias !== null;
     }
 
     public function hasSchema(): bool
     {
-        return !($this->schema === null || $this->schema === '');
+        return $this->schema !== null;
     }
 }

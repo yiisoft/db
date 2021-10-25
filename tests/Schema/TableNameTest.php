@@ -38,8 +38,11 @@ final class TableNameTest extends TestCase
         return [
             ['table1', 't1', 'schema1', true, true,],
             ['table1', null, 'schema1', false, true,],
+            ['table1', '', 'schema1', false, true,],
             ['table1', 't1', null, true, false,],
+            ['table1', 't1', '', true, false,],
             ['table1', null , null, false, false,],
+            ['table1', '' , '', false, false,],
 
             [new Expression('table1'), 't1', 'schema1', true, true,],
             [new Expression('table1'), 't1', new Expression('schema1'), true, true,],
