@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * @example
- * (new Query)->select('col1')->from(TableName::create('table1', 't', 'dbo'))
+ * (new Query)->select('col1')->from(new TableName('table1', 't', 'dbo'))
  *
  * Note: We must use prefix (from connection) with tables with schema equal defaultSchema or without schema and don't use with other schemas
  * Note: With ExpressionInterface as tablename - we cannot add prefixes and quoting of table names.
@@ -36,26 +38,23 @@ final class TableName
      * @param string|null $alias
      * @param ExpressionInterface|string|null $schema
      */
-    private function __construct($name, ?string $alias, $schema = null)
+    public function __construct($name, ?string $alias = null, $schema = null)
     {
+        if (!is_string($name) && !$name instanceof ExpressionInterface) {
+            throw new InvalidArgumentException(
+                'Name of table should be string or instanceof ExpressionInterface'
+            );
+        }
+
+        if ($schema !== null && !is_string($schema) && !$schema instanceof ExpressionInterface) {
+            throw new InvalidArgumentException(
+                'Schema should be null, string or instanceof ExpressionInterface'
+            );
+        }
+
         $this->name = $name;
         $this->alias = $alias;
         $this->schema = $schema;
-    }
-
-    /**
-     * @param ExpressionInterface|string $name
-     * @param string|null $alias
-     * @param ExpressionInterface|string|null $schema
-     *
-     * @return $this
-     */
-    public static function create($name, ?string $alias = null, $schema = null): self
-    {
-        assert(is_string($name) || $name instanceof ExpressionInterface);
-        assert(is_string($schema) || $schema instanceof ExpressionInterface || $schema === null);
-
-        return new self($name, $alias, $schema);
     }
 
     /**

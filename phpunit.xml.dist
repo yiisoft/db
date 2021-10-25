@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" colors="true" verbose="true" bootstrap="vendor/autoload.php" executionOrder="default" failOnRisky="true" failOnWarning="true" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    backupGlobals="false"
+    colors="true"
+    verbose="true"
+    bootstrap="vendor/autoload.php"
+    executionOrder="default"
+    failOnRisky="true"
+    failOnWarning="true"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+>
   <coverage>
     <include>
       <directory>./</directory>
@@ -13,6 +23,9 @@
     <ini name="error_reporting" value="-1"/>
   </php>
   <testsuites>
+    <testsuite name="SimpleTests">
+      <directory>./tests</directory>
+    </testsuite>
     <testsuite name="ActiveRecord">
       <directory>./vendor/yiisoft/active-record/tests</directory>
     </testsuite>
