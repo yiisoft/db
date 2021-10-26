@@ -47,7 +47,7 @@ final class TableName
 
         if ($schema !== null && !is_string($schema) && !$schema instanceof ExpressionInterface) {
             throw new InvalidArgumentException(
-                'Schema should be null, string or instanceof ExpressionInterface'
+                'Schema should be null, string, or and instance of ExpressionInterface.'
             );
         }
 
