@@ -8,12 +8,14 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
- * @example
+ * Holds name of a table including schema and alias.
+ * Usage is the following:
+ *
  * (new Query)->select('col1')->from(new TableName('table1', 't', 'dbo'))
  *
- * Note: We must use prefix (from connection) with tables with schema equal defaultSchema or without schema and don't use with other schemas
- * Note: With ExpressionInterface as tablename - we cannot add prefixes and quoting of table names.
- * For example with Oracle: (new Query)->select('*')->from(new Expression('dblink1.dbo.table')) for build `select * from dblink1.dbo.table1`
+ * Note: We use prefix from connection with tables which schema equals default schema or which has no schema.
+ * Note: With `ExpressionInterface` as tablename we cannot add prefixes and quote table names.
+ * For example, with Oracle: `(new Query)->select('*')->from(new Expression('dblink1.dbo.table'))` to build `select * from dblink1.dbo.table1`
  */
 final class TableName
 {
