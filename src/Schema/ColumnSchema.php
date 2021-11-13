@@ -268,7 +268,7 @@ class ColumnSchema
     }
 
     /**
-     * @return string comment of this column. Not all DBMS support this.
+     * @return string|null comment of this column. Not all DBMS support this.
      */
     public function getComment(): ?string
     {
