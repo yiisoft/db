@@ -43,11 +43,11 @@ final class TableName
     {
         if (!is_string($name) && !$name instanceof ExpressionInterface) {
             throw new InvalidArgumentException(
-                'Name of the table should be a string or an instanceof ExpressionInterface.'
+                'Name of the table should be a string or an instance of ExpressionInterface.'
             );
         }
 
-        if ($schema !== null && !is_string($schema) && !$schema instanceof ExpressionInterface) {
+        if ($schema !== null && !is_string($schema) && !($schema instanceof ExpressionInterface)) {
             throw new InvalidArgumentException(
                 'Schema should be null, string, or an instance of ExpressionInterface.'
             );
