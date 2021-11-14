@@ -11,7 +11,7 @@ use Yiisoft\Db\Schema\TableName;
 
 final class TableNameTest extends TestCase
 {
-    private string $incorrectTableTypeMessage = 'Name of the table should be a string or an instance of ExpressionInterface.';
+    private string $incorrectTableTypeMessage = 'Name of the table should be a string or an instanceof ExpressionInterface.';
     private string $incorrectSchemaTypeMessage = 'Schema should be null, string, or an instance of ExpressionInterface.';
 
     /**
