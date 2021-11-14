@@ -43,7 +43,7 @@ final class TableName
     {
         if (!is_string($name) && !$name instanceof ExpressionInterface) {
             throw new InvalidArgumentException(
-                'Name of the table should be a string or an instanceof ExpressionInterface.'
+                'Name of the table should be a string or an instance of ExpressionInterface.'
             );
         }
 
