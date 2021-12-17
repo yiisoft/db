@@ -698,7 +698,7 @@ trait TestQueryTrait
      * @return int
      */
     protected function countLikeQuery(
-        Connection $db,
+        ConnectionInterface $db,
         string $tableName,
         string $columnName,
         array $condition,
