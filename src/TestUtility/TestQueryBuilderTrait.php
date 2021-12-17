@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestUtility;
 
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Conditions\InCondition;
 use Yiisoft\Db\Query\Conditions\LikeCondition;
@@ -27,7 +27,7 @@ trait TestQueryBuilderTrait
 {
     use SchemaBuilderTrait;
 
-    public function getDb(): Connection
+    public function getDb(): ConnectionInterface
     {
         return $this->getConnection();
     }

@@ -9,7 +9,7 @@ use PDOException;
 use Throwable;
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -113,11 +113,11 @@ abstract class Schema
     private array $tableNames = [];
     private array $tableMetadata = [];
     private ?string $serverVersion = null;
-    private Connection $db;
+    private ConnectionInterface $db;
     private ?QueryBuilder $builder = null;
     private SchemaCache $schemaCache;
 
-    public function __construct(Connection $db, SchemaCache $schemaCache)
+    public function __construct(ConnectionInterface $db, SchemaCache $schemaCache)
     {
         $this->db = $db;
         $this->schemaCache = $schemaCache;
@@ -942,7 +942,7 @@ abstract class Schema
         );
     }
 
-    public function getDb(): Connection
+    public function getDb(): ConnectionInterface
     {
         return $this->db;
     }
