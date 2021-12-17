@@ -461,13 +461,6 @@ abstract class Connection implements ConnectionInterface
         return $this->getSchema()->getQueryBuilder();
     }
 
-    /**
-     * Returns a server version as a string comparable by {@see \version_compare()}.
-     *
-     * @throws Exception
-     *
-     * @return string server version as a string.
-     */
     public function getServerVersion(): string
     {
         return $this->getSchema()->getServerVersion();
@@ -527,14 +520,6 @@ abstract class Connection implements ConnectionInterface
         return $this->tablePrefix;
     }
 
-    /**
-     * Obtains the schema information for the named table.
-     *
-     * @param string $name table name.
-     * @param bool $refresh whether to reload the table schema even if it is found in the cache.
-     *
-     * @return TableSchema
-     */
     public function getTableSchema(string $name, $refresh = false): ?TableSchema
     {
         return $this->getSchema()->getTableSchema($name, $refresh);
@@ -778,17 +763,6 @@ abstract class Connection implements ConnectionInterface
         return null;
     }
 
-    /**
-     * Quotes a column name for use in a query.
-     *
-     * If the column name contains prefix, the prefix will also be properly quoted.
-     * If the column name is already quoted or contains special characters including '(', '[[' and '{{', then this
-     * method will do nothing.
-     *
-     * @param string $name column name
-     *
-     * @return string the properly quoted column name
-     */
     public function quoteColumnName(string $name): string
     {
         return $this->quotedColumnNames[$name]
@@ -909,12 +883,6 @@ abstract class Connection implements ConnectionInterface
         $this->enableSavepoint = $value;
     }
 
-    /**
-     * Whether to enable read/write splitting by using {@see setSlave()} to read data. Note that if {@see setSlave()}
-     * is empty, read/write splitting will NOT be enabled no matter what value this property takes.
-     *
-     * @param bool $value
-     */
     public function setEnableSlaves(bool $value): void
     {
         $this->enableSlaves = $value;

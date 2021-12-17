@@ -76,4 +76,17 @@ interface ConnectionInterface
      * @param bool $value
      */
     public function setEnableSlaves(bool $value): void;
+
+    /**
+     * Quotes a column name for use in a query.
+     *
+     * If the column name contains prefix, the prefix will also be properly quoted.
+     * If the column name is already quoted or contains special characters including '(', '[[' and '{{', then this
+     * method will do nothing.
+     *
+     * @param string $name column name
+     *
+     * @return string the properly quoted column name
+     */
+    public function quoteColumnName(string $name): string;
 }
