@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestUtility;
 
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -814,7 +814,7 @@ trait TestQueryTrait
         );
 
         /* Connection cache */
-        $db->cache(function (Connection $db) use ($query, $update) {
+        $db->cache(function (ConnectionInterface $db) use ($query, $update) {
             $this->assertEquals(
                 'user2',
                 $query->where(['id' => 2])->scalar(),

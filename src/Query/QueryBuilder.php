@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Query;
 
 use Generator;
 use JsonException;
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ConstraintFinderInterface;
 use Yiisoft\Db\Exception\Exception;
@@ -128,9 +128,9 @@ class QueryBuilder
      */
     protected array $expressionBuilders = [];
     protected string $separator = ' ';
-    private Connection $db;
+    private ConnectionInterface $db;
 
-    public function __construct(Connection $db)
+    public function __construct(ConnectionInterface $db)
     {
         $this->db = $db;
         $this->expressionBuilders = $this->defaultExpressionBuilders();
@@ -1962,7 +1962,7 @@ class QueryBuilder
         return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);
     }
 
-    public function getDb(): Connection
+    public function getDb(): ConnectionInterface
     {
         return $this->db;
     }

@@ -98,7 +98,7 @@ use function strncmp;
  * If needed you can pass transaction isolation level as a second parameter:
  *
  * ```php
- * $connection->transaction(function (Connection $db) {
+ * $connection->transaction(function (ConnectionInterface $db) {
  *     //return $db->...
  * }, Transaction::READ_UNCOMMITTED);
  * ```
@@ -308,7 +308,7 @@ abstract class Connection implements ConnectionInterface
      * ```php
      * // The customer will be fetched from cache if available.
      * // If not, the query will be made against DB and cached for use next time.
-     * $customer = $db->cache(function (Connection $db) {
+     * $customer = $db->cache(function (ConnectionInterface $db) {
      *     return $db->createCommand('SELECT * FROM customer WHERE id=1')->queryOne();
      * });
      * ```
@@ -317,7 +317,7 @@ abstract class Connection implements ConnectionInterface
      * {@see Command::execute()}, query cache will not be used.
      *
      * @param callable $callable a PHP callable that contains DB queries which will make use of query cache.
-     * The signature of the callable is `function (Connection $db)`.
+     * The signature of the callable is `function (ConnectionInterface $db)`.
      * @param int|null $duration the number of seconds that query results can remain valid in the cache. If this is not
      * set, the value of {@see queryCacheDuration} will be used instead. Use 0 to indicate that the cached data will
      * never expire.
@@ -561,11 +561,11 @@ abstract class Connection implements ConnectionInterface
      * Queries performed within the callable will not use query cache at all. For example,
      *
      * ```php
-     * $db->cache(function (Connection $db) {
+     * $db->cache(function (ConnectionInterface $db) {
      *
      *     // ... queries that use query cache ...
      *
-     *     return $db->noCache(function (Connection $db) {
+     *     return $db->noCache(function (ConnectionInterface $db) {
      *         // this query will not use query cache
      *         return $db->createCommand('SELECT * FROM customer WHERE id=1')->queryOne();
      *     });
@@ -573,7 +573,7 @@ abstract class Connection implements ConnectionInterface
      * ```
      *
      * @param callable $callable a PHP callable that contains DB queries which should not use query cache. The signature
-     * of the callable is `function (Connection $db)`.
+     * of the callable is `function (ConnectionInterface $db)`.
      *
      * @throws Throwable if there is any exception during query
      *
@@ -1046,13 +1046,13 @@ abstract class Connection implements ConnectionInterface
      * even if they are read queries. For example,
      *
      * ```php
-     * $result = $db->useMaster(function ($db) {
+     * $result = $db->useMaster(function (ConnectionInterface $db) {
      *     return $db->createCommand('SELECT * FROM user LIMIT 1')->queryOne();
      * });
      * ```
      *
      * @param callable $callback a PHP callable to be executed by this method. Its signature is
-     * `function (Connection $db)`. Its return value will be returned by this method.
+     * `function (ConnectionInterface $db)`. Its return value will be returned by this method.
      *
      * @throws Throwable if there is any exception thrown from the callback
      *
