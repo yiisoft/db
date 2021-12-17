@@ -596,13 +596,11 @@ class QueryBuilder
         if ($insertColumns instanceof Query) {
             [$insertNames] = $this->prepareInsertSelectSubQuery($insertColumns, $this->db->getSchema());
         } else {
-            /** @psalm-suppress UndefinedMethod */
             $insertNames = array_map([$this->db, 'quoteColumnName'], array_keys($insertColumns));
         }
 
         $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
 
-        /** @psalm-suppress UndefinedMethod */
         $uniqueNames = array_map([$this->db, 'quoteColumnName'], $uniqueNames);
 
         if ($updateColumns !== true) {
