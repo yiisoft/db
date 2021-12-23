@@ -93,6 +93,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      *
      * @return mixed Can return all value types.
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->value[$offset];
