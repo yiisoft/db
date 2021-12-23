@@ -181,8 +181,8 @@ abstract class Connection implements ConnectionInterface
     private bool $shuffleMasters = true;
     private array $quotedTableNames = [];
     private array $quotedColumnNames = [];
-    private ?Connection $master = null;
-    private ?Connection $slave = null;
+    private ?ConnectionInterface $master = null;
+    private ?ConnectionInterface $slave = null;
     private ?PDO $pdo = null;
     private QueryCache $queryCache;
     private ?Transaction $transaction = null;
@@ -213,17 +213,7 @@ abstract class Connection implements ConnectionInterface
     abstract public function getSchema(): Schema;
 
     /**
-     * Creates the PDO instance.
-     *
-     * This method is called by {@see open} to establish a DB connection. The default implementation will create a PHP
-     * PDO instance. You may override this method if the default PDO needs to be adapted for certain DBMS.
-     *
-     * @return PDO the pdo instance
-     */
-    abstract protected function createPdoInstance(): PDO;
-
-    /**
-     * Initializes the DB connection.
+     * Creates the PDO instance and initializes the DB connection.
      *
      * This method is invoked right after the DB connection is established.
      *
@@ -404,9 +394,10 @@ abstract class Connection implements ConnectionInterface
      *
      * If this method is called for the first time, it will try to open a master connection.
      *
-     * @return Connection the currently active master connection. `null` is returned if there is no master available.
+     * @return ConnectionInterface the currently active master connection. `null` is returned if there is no master
+     * available.
      */
-    public function getMaster(): ?self
+    public function getMaster(): ?ConnectionInterface
     {
         if ($this->master === null) {
             $this->master = $this->shuffleMasters
@@ -424,9 +415,9 @@ abstract class Connection implements ConnectionInterface
      *
      * @throws Exception
      *
-     * @return PDO the PDO instance for the currently active master connection.
+     * @return PDO|null the PDO instance for the currently active master connection.
      */
-    public function getMasterPdo(): PDO
+    public function getMasterPdo(): ?PDO
     {
         $this->open();
         return $this->pdo;
@@ -475,10 +466,10 @@ abstract class Connection implements ConnectionInterface
      * @param bool $fallbackToMaster whether to return a master connection in case there is no slave connection
      * available.
      *
-     * @return Connection the currently active slave connection. `null` is returned if there is no slave available and
-     * `$fallbackToMaster` is false.
+     * @return ConnectionInterface the currently active slave connection. `null` is returned if there is no slave
+     * available and `$fallbackToMaster` is false.
      */
-    public function getSlave(bool $fallbackToMaster = true): ?self
+    public function getSlave(bool $fallbackToMaster = true): ?ConnectionInterface
     {
         if (!$this->enableSlaves) {
             return $fallbackToMaster ? $this : null;
@@ -617,8 +608,6 @@ abstract class Connection implements ConnectionInterface
                 $this->profiler->begin($token, [__METHOD__]);
             }
 
-            $this->pdo = $this->createPdoInstance();
-
             $this->initConnection();
 
             if ($this->profiler !== null) {
@@ -644,7 +633,7 @@ abstract class Connection implements ConnectionInterface
      */
     public function close(): void
     {
-        if ($this->master) {
+        if (!empty($this->master)) {
             if ($this->pdo === $this->master->getPDO()) {
                 $this->pdo = null;
             }
@@ -663,10 +652,15 @@ abstract class Connection implements ConnectionInterface
             $this->transaction = null;
         }
 
-        if ($this->slave) {
+        if (!empty($this->slave)) {
             $this->slave->close();
             $this->slave = null;
         }
+    }
+
+    public function PDO(PDO $value): void
+    {
+        $this->pdo = $value;
     }
 
     /**
@@ -703,9 +697,9 @@ abstract class Connection implements ConnectionInterface
      *
      * @param array $pool the list of connection configurations in the server pool
      *
-     * @return Connection|null the opened DB connection, or `null` if no server is available
+     * @return ConnectionInterface|null the opened DB connection, or `null` if no server is available
      */
-    protected function openFromPool(array $pool): ?self
+    protected function openFromPool(array $pool): ?ConnectionInterface
     {
         shuffle($pool);
         return $this->openFromPoolSequentially($pool);
@@ -784,7 +778,7 @@ abstract class Connection implements ConnectionInterface
     {
         return preg_replace_callback(
             '/({{(%?[\w\-. ]+%?)}}|\\[\\[([\w\-. ]+)]])/',
-            function ($matches) {
+            function (array $matches) {
                 if (isset($matches[3])) {
                     return $this->quoteColumnName($matches[3]);
                 }
