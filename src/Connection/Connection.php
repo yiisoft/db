@@ -213,16 +213,6 @@ abstract class Connection implements ConnectionInterface
     abstract public function getSchema(): Schema;
 
     /**
-     * Creates the PDO instance.
-     *
-     * This method is called by {@see open} to establish a DB connection. The default implementation will create a PHP
-     * PDO instance. You may override this method if the default PDO needs to be adapted for certain DBMS.
-     *
-     * @return PDO the pdo instance
-     */
-    abstract protected function createPdoInstance(): PDO;
-
-    /**
      * Initializes the DB connection.
      *
      * This method is invoked right after the DB connection is established.
@@ -617,8 +607,6 @@ abstract class Connection implements ConnectionInterface
                 $this->profiler->begin($token, [__METHOD__]);
             }
 
-            $this->pdo = $this->createPdoInstance();
-
             $this->initConnection();
 
             if ($this->profiler !== null) {
@@ -907,6 +895,18 @@ abstract class Connection implements ConnectionInterface
     public function setPassword(?string $value): void
     {
         $this->password = $value;
+    }
+
+    /**
+     * Set PDO instance.
+     *
+     * @param PDO $value PDO instance.
+     *
+     * @throws Exception
+     */
+    public function setPDO(PDO $value): void
+    {
+        $this->pdo = $value;
     }
 
     /**
