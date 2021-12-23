@@ -174,6 +174,7 @@ class BatchQueryResult implements Iterator
      *
      * @return int|string|null the index of the current row.
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->key;
@@ -186,6 +187,7 @@ class BatchQueryResult implements Iterator
      *
      * @return mixed the current dataset.
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->value;
