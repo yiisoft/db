@@ -15,7 +15,7 @@ final class SchemaCache
 {
     private CacheInterface $cache;
     private bool $enabled = true;
-    private int $duration = 3600;
+    private ?int $duration = 3600;
     private array $exclude = [];
 
     public function __construct(CacheInterface $cache)
@@ -52,9 +52,9 @@ final class SchemaCache
     /**
      * Return number of seconds that table metadata can remain valid in cache.
      *
-     * @return int
+     * @return int|null
      */
-    public function getDuration(): int
+    public function getDuration(): ?int
     {
         return $this->duration;
     }
@@ -72,7 +72,7 @@ final class SchemaCache
     }
 
     /**
-     * Invalidates all of the cached values that are associated with any of the specified {@see tags}.
+     * Invalidates all the cached values that are associated with any of the specified {@see tags}.
      *
      * @param string $cacheTag
      */
@@ -106,14 +106,14 @@ final class SchemaCache
     }
 
     /**
-     * Number of seconds that table metadata can remain valid in cache. Use 0 to indicate that the cached data will
+     * Number of seconds that table metadata can remain valid in cache. Use 'null' to indicate that the cached data will
      * never expire.
      *
-     * @param int $value
+     * @param int|null $value
      *
      * {@see setEnable()}
      */
-    public function setDuration(int $value): void
+    public function setDuration(?int $value): void
     {
         $this->duration = $value;
     }
