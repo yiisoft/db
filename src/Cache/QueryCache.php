@@ -19,7 +19,7 @@ final class QueryCache
     private CacheInterface $cache;
     private bool $enabled = true;
     public array $info = [];
-    private int $duration = 3600;
+    private ?int $duration = 3600;
 
     public function __construct(CacheInterface $cache)
     {
@@ -29,7 +29,7 @@ final class QueryCache
     /**
      * Return number of seconds that query results can remain valid in cache.
      *
-     * @return int
+     * @return int|null
      */
     public function getDuration(): ?int
     {
@@ -116,14 +116,14 @@ final class QueryCache
 
     /**
      * The default number of seconds that query results can remain valid in cache. Defaults to 3600, meaning 3600
-     * seconds, or one hour. Use 0 to indicate that the cached data will never expire. The value of this property will
-     * be used when {@see cache()} is called without a cache duration.
+     * seconds, or one hour. Use `null` to indicate that the cached data will never expire. The value of this property
+     * will be used when {@see cache()} is called without a cache duration.
      *
-     * @param int $value
+     * @param int|null $value
      *
      * {@see cache()}
      */
-    public function setDuration(int $value): void
+    public function setDuration(?int $value): void
     {
         $this->duration = $value;
     }
