@@ -15,6 +15,7 @@ use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Query\QueryBuilder;
 
 use function addcslashes;
@@ -55,7 +56,7 @@ use function version_compare;
  * {@see Transaction::REPEATABLE_READ} and {@see Transaction::SERIALIZABLE} but also a string containing DBMS specific
  * syntax to be used after `SET TRANSACTION ISOLATION LEVEL`. This property is write-only.
  */
-abstract class Schema
+abstract class Schema implements SchemaInterface
 {
     public const TYPE_PK = 'pk';
     public const TYPE_UPK = 'upk';
@@ -192,7 +193,7 @@ abstract class Schema
      */
     public function getTableSchema(string $name, bool $refresh = false): ?TableSchema
     {
-        return $this->getTableMetadata($name, 'schema', $refresh);
+        return $this->getTableMetadata($name, self::SCHEMA, $refresh);
     }
 
     /**
@@ -210,7 +211,7 @@ abstract class Schema
      */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, 'schema', $refresh);
+        return $this->getSchemaMetadata($schema, self::SCHEMA, $refresh);
     }
 
     /**
@@ -806,7 +807,7 @@ abstract class Schema
         }
 
         if ($refresh || !array_key_exists($type, $this->tableMetadata[$rawName])) {
-            $this->tableMetadata[$rawName][$type] = $this->{'loadTable' . ucfirst($type)}($rawName);
+            $this->tableMetadata[$rawName][$type] = $this->loadTableType($type, $rawName);
             $this->saveTableMetadataToCache($rawName);
         }
 
@@ -832,14 +833,13 @@ abstract class Schema
     protected function getSchemaMetadata(string $schema, string $type, bool $refresh): array
     {
         $metadata = [];
-        $methodName = 'getTable' . ucfirst($type);
 
         foreach ($this->getTableNames($schema, $refresh) as $name) {
             if ($schema !== '') {
                 $name = $schema . '.' . $name;
             }
 
-            $tableMetadata = $this->$methodName($name, $refresh);
+            $tableMetadata = $this->getTableType($type, $name, $refresh);
 
             if ($tableMetadata !== null) {
                 $metadata[] = $tableMetadata;
@@ -955,5 +955,65 @@ abstract class Schema
     public function getSchemaCache(): SchemaCache
     {
         return $this->schemaCache;
+    }
+
+    /**
+     * This method will call a `'loadTable' . ucfirst($type)` named method with the table name to obtain the metadata.
+     *
+     * @param string $type
+     * @param string $name
+     * @return mixed
+     */
+    protected function loadTableType(string $type, string $name)
+    {
+        switch ($type) {
+            case SchemaInterface::SCHEMA:
+                return $this->loadTableSchema($name);
+            case SchemaInterface::PRIMARY_KEY:
+                return $this->loadTablePrimaryKey($name);
+            case SchemaInterface::UNIQUES:
+                return $this->loadTableUniques($name);
+            case SchemaInterface::FOREIGN_KEYS:
+                return $this->loadTableForeignKeys($name);
+            case SchemaInterface::INDEXES:
+                return $this->loadTableIndexes($name);
+            case SchemaInterface::DEFAULT_VALUES:
+                return $this->loadTableDefaultValues($name);
+            case SchemaInterface::CHECKS:
+                return $this->loadTableChecks($name);
+        }
+
+        return null;
+    }
+
+    /**
+     * This method will call a `'getTable' . ucfirst($type)` named method with the table name and the refresh flag to
+     * obtain the metadata.
+     *
+     * @param string $type
+     * @param string $name
+     * @param bool $refresh
+     * @return mixed
+     */
+    protected function getTableType(string $type, string $name, bool $refresh = false)
+    {
+        switch ($type) {
+            case SchemaInterface::SCHEMA:
+                return $this->getTableSchema($name, $refresh);
+            case SchemaInterface::PRIMARY_KEY:
+                return $this->getTablePrimaryKey($name, $refresh);
+            case SchemaInterface::UNIQUES:
+                return $this->getTableUniques($name, $refresh);
+            case SchemaInterface::FOREIGN_KEYS:
+                return $this->getTableForeignKeys($name, $refresh);
+            case SchemaInterface::INDEXES:
+                return $this->getTableIndexes($name, $refresh);
+            case SchemaInterface::DEFAULT_VALUES:
+                return $this->getTableDefaultValues($name, $refresh);
+            case SchemaInterface::CHECKS:
+                return $this->getTableChecks($name, $refresh);
+        }
+
+        return null;
     }
 }

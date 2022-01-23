@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Constraint;
 
+use Yiisoft\Db\Schema\SchemaInterface;
+
 /**
  * ConstraintFinderTrait provides methods for getting a table constraint information.
  *
@@ -110,7 +112,7 @@ trait ConstraintFinderTrait
      */
     public function getTablePrimaryKey(string $name, bool $refresh = false): ?Constraint
     {
-        return $this->getTableMetadata($name, 'primaryKey', $refresh);
+        return $this->getTableMetadata($name, SchemaInterface::PRIMARY_KEY, $refresh);
     }
 
     /**
@@ -126,7 +128,7 @@ trait ConstraintFinderTrait
      */
     public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, 'primaryKey', $refresh);
+        return $this->getSchemaMetadata($schema, SchemaInterface::PRIMARY_KEY, $refresh);
     }
 
     /**
@@ -139,7 +141,7 @@ trait ConstraintFinderTrait
      */
     public function getTableForeignKeys(string $name, bool $refresh = false): array
     {
-        return $this->getTableMetadata($name, 'foreignKeys', $refresh);
+        return $this->getTableMetadata($name, SchemaInterface::FOREIGN_KEYS, $refresh);
     }
 
     /**
@@ -155,7 +157,7 @@ trait ConstraintFinderTrait
      */
     public function getSchemaForeignKeys(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, 'foreignKeys', $refresh);
+        return $this->getSchemaMetadata($schema, SchemaInterface::FOREIGN_KEYS, $refresh);
     }
 
     /**
@@ -168,7 +170,7 @@ trait ConstraintFinderTrait
      */
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
-        return $this->getTableMetadata($name, 'indexes', $refresh);
+        return $this->getTableMetadata($name, SchemaInterface::INDEXES, $refresh);
     }
 
     /**
@@ -184,7 +186,7 @@ trait ConstraintFinderTrait
      */
     public function getSchemaIndexes(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, 'indexes', $refresh);
+        return $this->getSchemaMetadata($schema, SchemaInterface::INDEXES, $refresh);
     }
 
     /**
@@ -197,7 +199,7 @@ trait ConstraintFinderTrait
      */
     public function getTableUniques(string $name, bool $refresh = false): array
     {
-        return $this->getTableMetadata($name, 'uniques', $refresh);
+        return $this->getTableMetadata($name, SchemaInterface::UNIQUES, $refresh);
     }
 
     /**
@@ -213,7 +215,7 @@ trait ConstraintFinderTrait
      */
     public function getSchemaUniques(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, 'uniques', $refresh);
+        return $this->getSchemaMetadata($schema, SchemaInterface::UNIQUES, $refresh);
     }
 
     /**
@@ -226,7 +228,7 @@ trait ConstraintFinderTrait
      */
     public function getTableChecks(string $name, bool $refresh = false): array
     {
-        return $this->getTableMetadata($name, 'checks', $refresh);
+        return $this->getTableMetadata($name, SchemaInterface::CHECKS, $refresh);
     }
 
     /**
@@ -242,7 +244,7 @@ trait ConstraintFinderTrait
      */
     public function getSchemaChecks(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, 'checks', $refresh);
+        return $this->getSchemaMetadata($schema, SchemaInterface::CHECKS, $refresh);
     }
 
     /**
@@ -255,7 +257,7 @@ trait ConstraintFinderTrait
      */
     public function getTableDefaultValues(string $name, bool $refresh = false): array
     {
-        return $this->getTableMetadata($name, 'defaultValues', $refresh);
+        return $this->getTableMetadata($name, SchemaInterface::DEFAULT_VALUES, $refresh);
     }
 
     /**
@@ -271,6 +273,6 @@ trait ConstraintFinderTrait
      */
     public function getSchemaDefaultValues(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, 'defaultValues', $refresh);
+        return $this->getSchemaMetadata($schema, SchemaInterface::DEFAULT_VALUES, $refresh);
     }
 }
