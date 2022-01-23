@@ -15,7 +15,6 @@ use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Query\QueryBuilder;
 
 use function addcslashes;
@@ -962,6 +961,7 @@ abstract class Schema implements SchemaInterface
      *
      * @param string $type
      * @param string $name
+     *
      * @return mixed
      */
     protected function loadTableType(string $type, string $name)
@@ -993,6 +993,7 @@ abstract class Schema implements SchemaInterface
      * @param string $type
      * @param string $name
      * @param bool $refresh
+     *
      * @return mixed
      */
     protected function getTableType(string $type, string $name, bool $refresh = false)
