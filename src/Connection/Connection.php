@@ -491,19 +491,6 @@ abstract class Connection implements ConnectionInterface
         return $this->slave === null && $fallbackToMaster ? $this : $this->slave;
     }
 
-    /**
-     * Returns the PDO instance for the currently active slave connection.
-     *
-     * When {@see enableSlaves} is true, one of the slaves will be used for read queries, and its PDO instance will be
-     * returned by this method.
-     *
-     * @param bool $fallbackToMaster whether to return a master PDO in case none of the slave connections is available.
-     *
-     * @throws Exception
-     *
-     * @return PDO the PDO instance for the currently active slave connection. `null` is returned if no slave connection
-     * is available and `$fallbackToMaster` is false.
-     */
     public function getSlavePdo(bool $fallbackToMaster = true): ?PDO
     {
         $db = $this->getSlave(false);
@@ -795,36 +782,12 @@ abstract class Connection implements ConnectionInterface
         );
     }
 
-    /**
-     * Quotes a table name for use in a query.
-     *
-     * If the table name contains schema prefix, the prefix will also be properly quoted.
-     * If the table name is already quoted or contains special characters including '(', '[[' and '{{', then this method
-     * will do nothing.
-     *
-     * @param string $name table name
-     *
-     * @return string the properly quoted table name
-     */
     public function quoteTableName(string $name): string
     {
         return $this->quotedTableNames[$name]
             ?? ($this->quotedTableNames[$name] = $this->getSchema()->quoteTableName($name));
     }
 
-    /**
-     * Quotes a string value for use in a query.
-     *
-     * Note that if the parameter is not a string, it will be returned without change.
-     *
-     * @param int|string $value string to be quoted
-     *
-     * @throws Exception
-     *
-     * @return int|string the properly quoted string
-     *
-     * {@see http://php.net/manual/en/pdo.quote.php}
-     */
     public function quoteValue($value)
     {
         return $this->getSchema()->quoteValue($value);
