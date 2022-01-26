@@ -38,14 +38,15 @@ jobs:
           - ubuntu-latest
 
         php:
-          - "7.4"
-          - "8.0"
+          - 7.4
+          - 8.0
+          - 8.1
 
         pgsql:
-          - "9"
-          - "10"
-          - "11"
-          - "12"
+          - 9
+          - 10
+          - 11
+          - 12
 
     services:
       postgres:
@@ -99,13 +100,8 @@ jobs:
       - name: Update composer
         run: composer self-update
 
-      - name: Install dependencies with composer php 7.4
-        if: matrix.php == '7.4'
+      - name: Install dependencies with composer
         run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
-
-      - name: Install dependencies with composer php 8.0
-        if: matrix.php == '8.0'
-        run: composer update --ignore-platform-reqs --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-pgsql
         run: composer require yiisoft/db-pgsql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
