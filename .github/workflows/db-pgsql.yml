@@ -60,7 +60,16 @@ jobs:
 
     steps:
       - name: Set env.BRANCH
-        run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
+        run: echo "BRANCH1=process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF && process.env.GITHUB_REF.split('/')[2]" >> $GITHUB_ENV
+
+      - name: Set env.BRANCH2
+        run: echo "BRANCH2=github.event.pull_request.head.ref" >> $GITHUB_ENV
+
+      - name: Set env.BRANCH3
+        run: echo "BRANCH3=process.env.GITHUB_HEAD_REF" >> $GITHUB_ENV
+
+      - name: Set env.BRANCH4
+        run: echo "BRANCH4=process.env.GITHUB_REF" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v2
