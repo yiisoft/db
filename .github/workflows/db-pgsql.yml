@@ -63,10 +63,8 @@ jobs:
         run: echo "${{ github.base_ref }}"
 
       - name: 2
-        run: echo "${{ process.env.GITHUB_HEAD_REF }}"
+        run: echo "${{ github.head_ref }}"
 
-      - name: 3
-        run: echo "${{ process.env.GITHUB_REF }}"
 
 #        run: echo "BRANCH1=process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF && process.env.GITHUB_REF.split('/')[2]" >> $GITHUB_ENV
 
