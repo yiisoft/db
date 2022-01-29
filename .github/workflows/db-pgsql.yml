@@ -59,24 +59,6 @@ jobs:
         options: --name=postgres --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - name: 1
-        run: echo "${{ github.base_ref }}"
-
-      - name: 2
-        run: echo "${{ github.head_ref }}"
-
-
-#        run: echo "BRANCH1=process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF && process.env.GITHUB_REF.split('/')[2]" >> $GITHUB_ENV
-
-#      - name: Set env.BRANCH2
-#        run: echo "BRANCH2=github.event.pull_request.head.ref" >> $GITHUB_ENV
-#
-#      - name: Set env.BRANCH3
-#        run: echo "BRANCH3=process.env.GITHUB_HEAD_REF" >> $GITHUB_ENV
-#
-#      - name: Set env.BRANCH4
-#        run: echo "BRANCH4=process.env.GITHUB_REF" >> $GITHUB_ENV
-
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -126,7 +108,7 @@ jobs:
         run: composer update --ignore-platform-reqs --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-pgsql
-        run: echo "composer require yiisoft/db-pgsql:${{env.BRACH}} --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi"
+        run: echo "composer require yiisoft/db-pgsql:${{ github.head_ref }} --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi"
 
       - name: Run pgsql tests with phpunit
         run: vendor/bin/phpunit --testsuite Pgsql --colors=always
