@@ -109,7 +109,7 @@ jobs:
 
       - name: Install db-pgsql
         env:
-          echo BRANCH: ${{ github.head_ref }}
+          BRANCH: ${{ github.head_ref }}
         run: composer require yiisoft/db-pgsql:$BRACH --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run pgsql tests with phpunit
