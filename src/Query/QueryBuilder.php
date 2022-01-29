@@ -8,7 +8,6 @@ use Generator;
 use JsonException;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
-use Yiisoft\Db\Constraint\ConstraintFinderInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -628,10 +627,6 @@ class QueryBuilder
     private function getTableUniqueColumnNames(string $name, array $columns, array &$constraints = []): array
     {
         $schema = $this->db->getSchema();
-
-        if (!$schema instanceof ConstraintFinderInterface) {
-            return [];
-        }
 
         $constraints = [];
         $primaryKey = $schema->getTablePrimaryKey($name);
