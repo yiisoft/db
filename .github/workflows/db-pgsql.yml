@@ -59,9 +59,6 @@ jobs:
         options: --name=postgres --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - name: Set env.BRANCH
-        run: echo "BRANCH=${{ github.head_ref }}" >> $GITHUB_ENV
-
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -111,6 +108,8 @@ jobs:
         run: composer update --ignore-platform-reqs --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-pgsql
+        env:
+          echo BRANCH: ${{ github.head_ref }}
         run: composer require yiisoft/db-pgsql:$BRACH --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run pgsql tests with phpunit
