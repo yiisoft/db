@@ -27,7 +27,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: "dev-master"
-      extensions: dom, json, pdo, pdo_sqlsrv-5.9.0
+      extensions: dom, json, pdo, pdo_sqlsrv-5.10.0-beta1
       key: cache
 
     runs-on: ${{ matrix.os }}
