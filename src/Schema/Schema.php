@@ -188,7 +188,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo Need refactoring and remove this method
      */
     public function getPdoType($data): int
     {
@@ -237,7 +236,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo Need refactoring and remove this method, because not all dbms supported this
      */
     public function getLastInsertID(string $sequenceName = ''): string
     {
@@ -260,7 +258,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo move to class Transation?
      */
     public function createSavepoint(string $name): void
     {
@@ -269,7 +266,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo move to class Transation?
      */
     public function releaseSavepoint(string $name): void
     {
@@ -278,7 +274,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo move to class Transation?
      */
     public function rollBackSavepoint(string $name): void
     {
@@ -287,7 +282,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo move to class Transation?
      */
     public function setTransactionIsolationLevel(string $level): void
     {
@@ -296,12 +290,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo - need refactoring:
-     * - $this->getTableSchema($table) - maybe null
-     * - $tableSchema->getColumn($name) - maybe null
-     * - $tableSchema->getColumn($name) - maybe null
-     * - not all dbms support lastInsertId - method getLastInsertID must be renamed, refactoring or removed.
-     * In mssql SCOPE_IDENTITY() - @see https://docs.microsoft.com/ru-ru/dotnet/framework/data/adonet/retrieving-identity-or-autonumber-values
      */
     public function insert(string $table, array $columns)
     {
@@ -328,7 +316,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo - need remove and create QuoterHelper for this functional (also remove from Connection)
      */
     public function quoteValue($str)
     {
@@ -346,7 +333,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo - need remove and create QuoterHelper for this functional (also remove from Connection)
      */
     public function quoteTableName(string $name): string
     {
@@ -373,7 +359,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo - need remove and create QuoterHelper for this functional (also remove from Connection)
      */
     public function quoteColumnName(string $name): string
     {
@@ -397,7 +382,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo - need remove and create QuoterHelper for this functional (also remove from Connection)
      */
     public function quoteSimpleTableName(string $name): string
     {
@@ -412,7 +396,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo - need remove and create QuoterHelper for this functional (also remove from Connection)
      */
     public function quoteSimpleColumnName(string $name): string
     {
@@ -428,7 +411,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo - need remove and create QuoterHelper for this functional (also remove from Connection)
      */
     public function unquoteSimpleTableName(string $name): string
     {
@@ -443,7 +425,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo - need remove and create QuoterHelper for this functional (also remove from Connection)
      */
     public function unquoteSimpleColumnName(string $name): string
     {
@@ -458,7 +439,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo - move to QuoterHelper?
      */
     public function getRawTableName(string $name): string
     {
@@ -473,7 +453,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo - move it to a separate class
      */
     public function convertException(\Exception $e, string $rawSql): Exception
     {
@@ -497,7 +476,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @inheritDoc
-     * @todo - move it to a separate class
      */
     public function isReadQuery(string $sql): bool
     {
