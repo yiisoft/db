@@ -365,10 +365,11 @@ interface SchemaInterface
      * @param bool $refresh whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
+     * @throws NotSupportedException
+     *
      * @return Constraint[] primary keys for all tables in the database.
      *
      * Each array element is an instance of {@see Constraint} or its child class.
-     * @throws NotSupportedException
      */
     public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array;
 

@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Schema;
 
 use PDO;
 use PDOException;
-use Throwable;
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -18,7 +17,6 @@ use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidCallException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryBuilder;
 
@@ -39,7 +37,6 @@ use function str_replace;
 use function strlen;
 use function strpos;
 use function substr;
-use function version_compare;
 
 /**
  * Schema is the base class for concrete DBMS-specific schema classes.
@@ -58,7 +55,6 @@ use function version_compare;
  * one of {@see Transaction::READ_UNCOMMITTED}, {@see Transaction::READ_COMMITTED},
  * {@see Transaction::REPEATABLE_READ} and {@see Transaction::SERIALIZABLE} but also a string containing DBMS specific
  * syntax to be used after `SET TRANSACTION ISOLATION LEVEL`. This property is write-only.
- *
  * @property CheckConstraint[] $schemaChecks Check constraints for all tables in the database. Each array element is an
  * array of {@see CheckConstraint} or its child classes. This property is read-only.
  * @property DefaultValueConstraint[] $schemaDefaultValues Default value constraints for all tables in the database.
@@ -912,7 +908,6 @@ abstract class Schema implements SchemaInterface
     }
 
     /**
-     *
      * This method returns the desired metadata type for table name (with refresh if needed)
      *
      * @param string $type
