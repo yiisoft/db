@@ -4,34 +4,26 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
-use function is_string;
-use function strpos;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
-
-use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\QueryBuilderInterface;
+
+use function is_string;
+use function strpos;
 
 /**
  * Class NotConditionBuilder builds objects of {@see SimpleCondition}.
  */
 class SimpleConditionBuilder implements ExpressionBuilderInterface
 {
-    use ExpressionBuilderTrait;
+    public function __construct(private QueryBuilderInterface $queryBuilder)
+    {
+    }
 
-    /**
-     * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
-     *
-     * @param ExpressionInterface|SimpleCondition $expression the expression to be built.
-     * @param array $params the binding parameters.
-     *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
-     *
-     * @return string the raw SQL that will not be additionally escaped or quoted.
-     */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();
@@ -41,7 +33,7 @@ class SimpleConditionBuilder implements ExpressionBuilderInterface
         if ($column instanceof ExpressionInterface) {
             $column = $this->queryBuilder->buildExpression($column, $params);
         } elseif (is_string($column) && strpos($column, '(') === false) {
-            $column = $this->queryBuilder->getDb()->quoteColumnName($column);
+            $column = $this->queryBuilder->quoter()->quoteColumnName($column);
         }
 
         if ($value === null) {

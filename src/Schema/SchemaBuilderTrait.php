@@ -31,11 +31,6 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 trait SchemaBuilderTrait
 {
     /**
-     * @return ConnectionInterface|null the database connection to be used for schema building.
-     */
-    abstract protected function getDb(): ?ConnectionInterface;
-
-    /**
      * Creates a primary key column.
      *
      * @param int|null $length column size or precision definition.
@@ -46,7 +41,7 @@ trait SchemaBuilderTrait
      */
     public function primaryKey(int $length = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_PK, $length);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_PK, $length);
     }
 
     /**
@@ -60,7 +55,7 @@ trait SchemaBuilderTrait
      */
     public function bigPrimaryKey(int $length = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_BIGPK, $length);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_BIGPK, $length);
     }
 
     /**
@@ -74,7 +69,7 @@ trait SchemaBuilderTrait
      */
     public function char(int $length = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_CHAR, $length);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_CHAR, $length);
     }
 
     /**
@@ -88,7 +83,7 @@ trait SchemaBuilderTrait
      */
     public function string(int $length = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_STRING, $length);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_STRING, $length);
     }
 
     /**
@@ -98,7 +93,7 @@ trait SchemaBuilderTrait
      */
     public function text(): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TEXT);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TEXT);
     }
 
     /**
@@ -112,7 +107,7 @@ trait SchemaBuilderTrait
      */
     public function tinyInteger(int $length = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TINYINT, $length);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TINYINT, $length);
     }
 
     /**
@@ -126,7 +121,7 @@ trait SchemaBuilderTrait
      */
     public function smallInteger(int $length = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_SMALLINT, $length);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_SMALLINT, $length);
     }
 
     /**
@@ -140,7 +135,7 @@ trait SchemaBuilderTrait
      */
     public function integer(int $length = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_INTEGER, $length);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_INTEGER, $length);
     }
 
     /**
@@ -154,7 +149,7 @@ trait SchemaBuilderTrait
      */
     public function bigInteger(int $length = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_BIGINT, $length);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_BIGINT, $length);
     }
 
     /**
@@ -168,7 +163,7 @@ trait SchemaBuilderTrait
      */
     public function float(int $precision = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_FLOAT, $precision);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_FLOAT, $precision);
     }
 
     /**
@@ -182,7 +177,7 @@ trait SchemaBuilderTrait
      */
     public function double(int $precision = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_DOUBLE, $precision);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_DOUBLE, $precision);
     }
 
     /**
@@ -209,7 +204,7 @@ trait SchemaBuilderTrait
             $length[] = $scale;
         }
 
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_DECIMAL, $length);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_DECIMAL, $length);
     }
 
     /**
@@ -222,7 +217,7 @@ trait SchemaBuilderTrait
      */
     public function dateTime(int $precision = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_DATETIME, $precision);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_DATETIME, $precision);
     }
 
     /**
@@ -235,7 +230,7 @@ trait SchemaBuilderTrait
      */
     public function timestamp(?int $precision = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TIMESTAMP, $precision);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TIMESTAMP, $precision);
     }
 
     /**
@@ -248,7 +243,7 @@ trait SchemaBuilderTrait
      */
     public function time(int $precision = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TIME, $precision);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TIME, $precision);
     }
 
     /**
@@ -258,7 +253,7 @@ trait SchemaBuilderTrait
      */
     public function date(): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_DATE);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_DATE);
     }
 
     /**
@@ -271,7 +266,7 @@ trait SchemaBuilderTrait
      */
     public function binary(int $length = null): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_BINARY, $length);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_BINARY, $length);
     }
 
     /**
@@ -281,7 +276,7 @@ trait SchemaBuilderTrait
      */
     public function boolean(): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_BOOLEAN);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_BOOLEAN);
     }
 
     /**
@@ -308,7 +303,7 @@ trait SchemaBuilderTrait
             $length[] = $scale;
         }
 
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_MONEY, $length);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_MONEY, $length);
     }
 
     /**
@@ -320,6 +315,6 @@ trait SchemaBuilderTrait
      */
     public function json(): ColumnSchemaBuilder
     {
-        return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_JSON);
+        return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_JSON);
     }
 }

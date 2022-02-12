@@ -27,8 +27,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: "dev-master"
-      extensions: dom, json, pdo, pdo_sqlsrv-5.10.0-beta1
-      key: cache
+      extensions: pdo, pdo_sqlsrv-5.10.0-beta1
 
     runs-on: ${{ matrix.os }}
 
@@ -38,12 +37,12 @@ jobs:
           - ubuntu-latest
 
         php:
-          - 7.4
           - 8.0
           - 8.1
 
         mssql:
-          - "server:2017-latest"
+          - server:2017-latest
+          - server:2019-latest
 
     services:
       mssql:
@@ -63,21 +62,6 @@ jobs:
       - name: Create MS SQL Database
         run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
 
-      - name: Setup cache environment
-        id: cache
-        uses: shivammathur/cache-extensions@v1
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: ${{ env.extensions }}
-          key: ${{ env.key }}
-
-      - name: Cache extensions
-        uses: actions/cache@v2.1.4
-        with:
-          path: ${{ steps.cache.outputs.dir }}
-          key: ${{ steps.cache.outputs.key }}
-          restore-keys: ${{ steps.cache.outputs.key }}
-
       - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
         with:
@@ -86,12 +70,14 @@ jobs:
           ini-values: date.timezone='UTC'
           coverage: pcov
           tools: composer:v2, pecl
+        env:
+          update: true
 
       - name: Determine composer cache directory
         run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
 
       - name: Cache dependencies installed with composer
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2
         with:
           path: ${{ env.COMPOSER_CACHE_DIR }}
           key: php${{ matrix.php }}-composer-${{ matrix.dependencies }}-${{ hashFiles('**/composer.json') }}
@@ -101,11 +87,14 @@ jobs:
       - name: Update composer
         run: composer self-update
 
-      - name: Install dependencies with composer
-        run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
-
       - name: Install db-mssql
         run: composer require yiisoft/db-mssql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run mssql tests with phpunit
-        run: vendor/bin/phpunit --testsuite Mssql --colors=always
+        run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
