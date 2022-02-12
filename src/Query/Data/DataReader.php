@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Data;
+namespace Yiisoft\Db\Query\Data;
 
 use Countable;
 use Iterator;

@@ -20,7 +20,7 @@ class ForeignKeyConstraint extends Constraint
         return $this->foreignSchemaName;
     }
 
-    public function getForeignTableName()
+    public function getForeignTableName(): ?string
     {
         return $this->foreignTableName;
     }

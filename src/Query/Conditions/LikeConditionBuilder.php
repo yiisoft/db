@@ -6,8 +6,8 @@ namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
-use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\QueryBuilderInterface;
 
 use function implode;
 use function is_array;
@@ -21,7 +21,9 @@ use function strtoupper;
  */
 class LikeConditionBuilder implements ExpressionBuilderInterface
 {
-    use ExpressionBuilderTrait;
+    public function __construct(private QueryBuilderInterface $queryBuilder)
+    {
+    }
 
     /**
      * @var array map of chars to their replacements in LIKE conditions. By default it's configured to escape
@@ -34,14 +36,6 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     ];
     protected ?string $escapeCharacter = null;
 
-    /**
-     * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
-     *
-     * @param ExpressionInterface|LikeCondition $expression the expression to be built.
-     * @param array $params the binding parameters.
-     *
-     * @return string the raw SQL that will not be additionally escaped or quoted.
-     */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $operator = strtoupper($expression->getOperator());
@@ -66,7 +60,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         if ($column instanceof ExpressionInterface) {
             $column = $this->queryBuilder->buildExpression($column, $params);
         } elseif (is_string($column) && strpos($column, '(') === false) {
-            $column = $this->queryBuilder->getDb()->quoteColumnName($column);
+            $column = $this->queryBuilder->quoter()->quoteColumnName($column);
         }
 
         $escapeSql = $this->getEscapeSql();

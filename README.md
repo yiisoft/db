@@ -14,8 +14,7 @@ It is used in [Yii Framework] but is supposed to be usable separately.
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db/v/stable.png)](https://packagist.org/packages/yiisoft/db)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db/downloads.png)](https://packagist.org/packages/yiisoft/db)
 [![Build status](https://github.com/yiisoft/db/workflows/build/badge.svg)](https://github.com/yiisoft/db/actions?query=workflow%3Abuild)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yiisoft/db/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/db/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/yiisoft/db/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/yiisoft/db/?branch=master)
+[![codecov](https://codecov.io/gh/yiisoft/db/branch/master/graph/badge.svg?token=pRr4gci2qj)](https://codecov.io/gh/yiisoft/db)
 [![static analysis](https://github.com/yiisoft/db/workflows/static%20analysis/badge.svg)](https://github.com/yiisoft/db/actions?query=workflow%3A%22static+analysis%22)
 [![type-coverage](https://shepherd.dev/github/yiisoft/db/coverage.svg)](https://shepherd.dev/github/yiisoft/db)
 
