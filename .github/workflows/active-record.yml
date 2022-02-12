@@ -89,16 +89,6 @@ jobs:
           coverage: pcov
           tools: composer:v2, pecl
 
-      - name: Determine composer cache directory
-        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
-
-      - name: Cache dependencies installed with composer
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.COMPOSER_CACHE_DIR }}
-          key: php${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: |
-            php${{ matrix.php }}-composer-
       - name: Update composer
         run: composer self-update
 
