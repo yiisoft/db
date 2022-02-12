@@ -630,7 +630,7 @@ abstract class Command implements CommandInterface
     }
 
     /**
-     * @throws Exception|JsonException|InvalidConfigException|NotSupportedException
+     * @throws Exception|InvalidConfigException|JsonException|NotSupportedException
      */
     public function upsert(
         string $table,

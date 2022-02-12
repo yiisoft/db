@@ -254,7 +254,7 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return false|int|null|string the value of the first column in the first row of the query result. False is
+     * @return false|int|string|null the value of the first column in the first row of the query result. False is
      * returned if the query result is empty.
      */
     public function scalar(): false|int|null|string
@@ -316,7 +316,7 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return false|int|null|string number of records. The result may be a string depending on the underlying database
+     * @return false|int|string|null number of records. The result may be a string depending on the underlying database
      * engine and to support integer values higher than a 32bit PHP integer can handle.
      */
     public function count(string $q = '*'): false|int|null|string
@@ -426,7 +426,7 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return false|int|null|string
+     * @return false|int|string|null
      */
     protected function queryScalar($selectExpression): false|int|null|string
     {

@@ -93,7 +93,6 @@ trait TestTrait
         return $this->schemaCache;
     }
 
-
     /**
      * Gets an inaccessible object property.
      *
@@ -181,7 +180,7 @@ trait TestTrait
      *
      * @param $sql
      *
-     * @return string|array|null
+     * @return array|string|null
      */
     protected function replaceQuotes($sql): string|array|null
     {

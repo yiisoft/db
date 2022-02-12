@@ -187,9 +187,9 @@ interface CommandInterface
      * @param int|null $length Length of the data type.
      * @param mixed|null $driverOptions The driver-specific options.
      *
-     * @return static The current command being executed.
-     *
      * @throws Exception
+     *
+     * @return static The current command being executed.
      *
      * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
@@ -311,7 +311,7 @@ interface CommandInterface
      * Creates a SQL View.
      *
      * @param string $viewName The name of the view to be created.
-     * @param string|Query $subquery The select statement which defines the view. This can be either a string or a
+     * @param Query|string $subquery The select statement which defines the view. This can be either a string or a
      * {@see Query} object.
      *
      * @return static
@@ -470,7 +470,7 @@ interface CommandInterface
      * This method should only be used for executing non-query SQL statement, such as `INSERT`, `DELETE`, `UPDATE` SQLs.
      * No result set will be returned.
      *
-     * @throws Throwable|Exception execution failed.
+     * @throws Exception|Throwable execution failed.
      *
      * @return int Number of rows affected by the execution.
      */
@@ -574,7 +574,7 @@ interface CommandInterface
      *
      * This method is for executing a SQL query that returns result set, such as `SELECT`.
      *
-     * @throws Throwable|Exception execution failed.
+     * @throws Exception|Throwable execution failed.
      *
      * @return DataReader The reader object for fetching the query result.
      */
@@ -587,7 +587,7 @@ interface CommandInterface
      * Please refer to [PHP manual](http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php) for valid fetch
      * modes. If this parameter is null, the value set in {@see fetchMode} will be used.
      *
-     * @throws Throwable|Exception Execution failed.
+     * @throws Exception|Throwable Execution failed.
      *
      * @return array All rows of the query result. Each array element is an array representing a row of data. An empty
      * array is returned if the query results in nothing.
@@ -630,7 +630,7 @@ interface CommandInterface
      *
      * @throws Exception|Throwable Execution failed.
      *
-     * @return false|string|int|null The value of the first column in the first row of the query result. False is
+     * @return false|int|string|null The value of the first column in the first row of the query result. False is
      * returned if there is no value.
      */
     public function queryScalar(): bool|string|null|int;
@@ -786,7 +786,7 @@ interface CommandInterface
      * @param string $table The table that new rows will be inserted into/updated in.
      * @param array|Query $insertColumns The column data (name => value) to be inserted into the table or instance of
      * {@see Query} to perform `INSERT INTO ... SELECT` SQL statement.
-     * @param bool|array $updateColumns The column data (name => value) to be updated if they already exist.
+     * @param array|bool $updateColumns The column data (name => value) to be updated if they already exist.
      * If `true` is passed, the column data will be updated to match the insert column data.
      * If `false` is passed, no update will be performed if the column data already exists.
      * @param array $params The parameters to be bound to the command.

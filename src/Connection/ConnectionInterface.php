@@ -279,7 +279,7 @@ interface ConnectionInterface
      * @param string $key Index master connection.
      * @param ConnectionInterface $master The connection every master.
      */
-    public function setMaster(string $key, ConnectionInterface $master): void;
+    public function setMaster(string $key, self $master): void;
 
     /**
      * The retry interval in seconds for dead servers listed in {@see setMaster()} and {@see setSlave()}.
@@ -301,7 +301,7 @@ interface ConnectionInterface
      * @param string $key Index slave connection.
      * @param ConnectionInterface $slave The connection every slave.
      */
-    public function setSlave(string $key, ConnectionInterface $slave): void;
+    public function setSlave(string $key, self $slave): void;
 
     /**
      * The common prefix or suffix for table names. If a table name is given as `{{%TableName}}`, then the percentage

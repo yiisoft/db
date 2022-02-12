@@ -474,7 +474,7 @@ class ColumnSchemaBuilder
     }
 
     /**
-     * @return null|string SQL string to be appended to column schema definition.
+     * @return string|null SQL string to be appended to column schema definition.
      */
     public function getAppend(): string|null
     {

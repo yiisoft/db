@@ -41,7 +41,6 @@ abstract class DDLQueryBuilder
             . $this->queryBuilder->quoter()->quoteValue($comment);
     }
 
-
     public function addCommentOnTable(string $table, string $comment): string
     {
         return 'COMMENT ON TABLE '

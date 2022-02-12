@@ -101,7 +101,7 @@ interface QuoterInterface
      */
     public function unquoteSimpleColumnName(string $name): string;
 
-        /**
+    /**
      * Unquotes a simple table name.
      *
      * A simple table name should contain the table name only without any schema prefix. If the table name is not

@@ -113,7 +113,6 @@ final class PDODriver implements DriverInterface
         $this->password = $password;
     }
 
-
     /**
      * The username for establishing DB connection. Defaults to `null` meaning no username to use.
      *
