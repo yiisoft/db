@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
+use ArrayAccess;
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
 use Traversable;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\QueryInterface;
+
+use function count;
 
 /**
  * Class ArrayExpression represents an array SQL expression.
@@ -17,13 +23,13 @@ use Yiisoft\Db\Query\QueryInterface;
  * $query->andWhere(['@>', 'items', new ArrayExpression([1, 2, 3], 'integer')])
  * ```
  *
- * which, depending on DBMS, will result in a well-prepared condition. For example, in PostgreSQL it will be compiled to
- * `WHERE "items" @> ARRAY[1, 2, 3]::integer[]`.
+ * which, depending on DBMS, will result in a well-prepared condition. For example, in PostgresSQL it will be compiled
+ * to `WHERE "items" @> ARRAY[1, 2, 3]::integer[]`.
  */
-class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, \IteratorAggregate
+class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
 {
     private ?string $type = null;
-    private $value;
+    private mixed $value;
     private int $dimension;
 
     public function __construct($value = [], $type = null, $dimension = 1)
@@ -53,9 +59,9 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
     /**
      * The array's content. In can be represented as an array of values or a {@see Query} that returns these values.
      *
-     * @return array|QueryInterface
+     * @return mixed
      */
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->value;
     }
@@ -69,7 +75,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
     }
 
     /**
-     * Whether a offset exists.
+     * Whether an offset exists.
      *
      * @link http://php.net/manual/en/arrayaccess.offsetexists.php
      *
@@ -77,9 +83,9 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      *
      * @return bool true on success or false on failure.
      *
-     * The return value will be casted to boolean if non-boolean was returned.
+     * The return value will be cast to boolean if non-boolean was returned.
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->value[$offset]);
     }
@@ -94,7 +100,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * @return mixed Can return all value types.
      */
     #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->value[$offset];
     }
@@ -107,7 +113,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * @param mixed $offset The offset to assign the value to.
      * @param mixed $value  The value to set.
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->value[$offset] = $value;
     }
@@ -119,7 +125,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      *
      * @param mixed $offset
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->value[$offset]);
     }
@@ -135,7 +141,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      */
     public function count(): int
     {
-        return \count($this->value);
+        return count($this->value);
     }
 
     /**
@@ -155,10 +161,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
                 'The ArrayExpression class can not be iterated when the value is a QueryInterface object'
             );
         }
-        if ($value === null) {
-            $value = [];
-        }
 
-        return new \ArrayIterator($value);
+        return new ArrayIterator($value);
     }
 }

@@ -9,9 +9,9 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
-use Yiisoft\Db\Expression\ExpressionBuilderTrait;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryBuilderInterface;
 
 use function strpos;
 
@@ -20,18 +20,10 @@ use function strpos;
  */
 class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
 {
-    use ExpressionBuilderTrait;
+    public function __construct(private QueryBuilderInterface $queryBuilder)
+    {
+    }
 
-    /**
-     * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
-     *
-     * @param BetweenColumnsCondition|ExpressionInterface $expression the expression to be built.
-     * @param array $params the binding parameters.
-     *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
-     *
-     * @return string the raw SQL that will not be additionally escaped or quoted.
-     */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();
@@ -66,7 +58,7 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
         }
 
         if (strpos($columnName, '(') === false) {
-            return $this->queryBuilder->getDb()->quoteColumnName($columnName);
+            return $this->queryBuilder->quoter()->quoteColumnName($columnName);
         }
 
         return $columnName;
