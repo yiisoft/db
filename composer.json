@@ -74,6 +74,10 @@
         {
             "type": "github",
             "url": "https://github.com/terabytesoftw/db-mysql"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/terabytesoftw/db-oracle"
         }
     ]
 }
