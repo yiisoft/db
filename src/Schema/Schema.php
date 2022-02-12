@@ -17,7 +17,6 @@ use function array_key_exists;
 use function gettype;
 use function is_array;
 use function preg_match;
-use function ucfirst;
 
 abstract class Schema implements SchemaInterface
 {
@@ -458,9 +457,6 @@ abstract class Schema implements SchemaInterface
     /**
      * Returns the metadata of the given type for the given table.
      *
-     * If there's no metadata in the cache, this method will call a `'loadTable' . ucfirst($type)` named method with the
-     * table name to obtain the metadata.
-     *
      * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
      * @param string $type metadata type.
      * @param bool $refresh whether to reload the table metadata even if it is found in the cache.
@@ -476,11 +472,33 @@ abstract class Schema implements SchemaInterface
         }
 
         if ($refresh || !array_key_exists($type, $this->tableMetadata[$rawName])) {
-            $this->tableMetadata[$rawName][$type] = $this->{'loadTable' . ucfirst($type)}($rawName);
+            $this->tableMetadata[$rawName][$type] = $this->loadTableTypeMetadata($type, $rawName);
             $this->saveTableMetadataToCache($rawName);
         }
 
         return $this->tableMetadata[$rawName][$type];
+    }
+
+    /**
+     * This method returns the desired metadata type for the table name.
+     *
+     * @param string $type
+     * @param string $name
+     *
+     * @return array|Constraint|TableSchema|null
+     */
+    protected function loadTableTypeMetadata(string $type, string $name): Constraint|array|TableSchema|null
+    {
+        return match ($type) {
+            self::SCHEMA => $this->loadTableSchema($name),
+            self::PRIMARY_KEY => $this->loadTablePrimaryKey($name),
+            self::UNIQUES => $this->loadTableUniques($name),
+            self::FOREIGN_KEYS => $this->loadTableForeignKeys($name),
+            self::INDEXES => $this->loadTableIndexes($name),
+            self::DEFAULT_VALUES => $this->loadTableDefaultValues($name),
+            self::CHECKS => $this->loadTableChecks($name),
+            default => null,
+        };
     }
 
     /**
