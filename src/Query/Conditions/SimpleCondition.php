@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
-use function count;
-
 use Yiisoft\Db\Exception\InvalidArgumentException;
+
+use function count;
 
 /**
  * Class SimpleCondition represents a simple condition like `"column" operator value`.
