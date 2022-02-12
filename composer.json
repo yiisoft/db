@@ -70,6 +70,10 @@
         {
             "type": "github",
             "url": "https://github.com/terabytesoftw/db-mssql"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/terabytesoftw/db-mysql"
         }
     ]
 }
