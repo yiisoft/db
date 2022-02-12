@@ -65,37 +65,5 @@
         "allow-plugins": {
             "infection/extension-installer": true
         }
-    },
-    "repositories": [
-        {
-            "type": "github",
-            "url": "https://github.com/terabytesoftw/active-record",
-            "no-api": true
-        },
-        {
-            "type": "github",
-            "url": "https://github.com/terabytesoftw/db-mssql",
-            "no-api": true
-        },
-        {
-            "type": "github",
-            "url": "https://github.com/terabytesoftw/db-mysql",
-            "no-api": true
-        },
-        {
-            "type": "github",
-            "url": "https://github.com/terabytesoftw/db-oracle",
-            "no-api": true
-        },
-        {
-            "type": "github",
-            "url": "https://github.com/terabytesoftw/db-pgsql",
-            "no-api": true
-        },
-        {
-            "type": "github",
-            "url": "https://github.com/terabytesoftw/db-sqlite",
-            "no-api": true
-        }
-    ]
+    }
 }
