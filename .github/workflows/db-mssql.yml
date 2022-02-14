@@ -83,6 +83,7 @@ jobs:
         run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always
 
       - name: Upload coverage to Codecov
+        if: matrix.php == '8.0'
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
