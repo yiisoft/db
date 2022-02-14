@@ -13,10 +13,7 @@ class LikeCondition extends SimpleCondition
 {
     protected $escapingReplacements = null;
 
-    /**
-     * @return array|bool|null
-     */
-    public function getEscapingReplacements()
+    public function getEscapingReplacements(): array|bool|null
     {
         return $this->escapingReplacements;
     }
@@ -29,7 +26,7 @@ class LikeCondition extends SimpleCondition
      * Note that when using an escape mapping (or the third operand is not provided), the values will be automatically
      * enclosed within a pair of percentage characters.
      */
-    public function setEscapingReplacements($escapingReplacements): void
+    public function setEscapingReplacements(array|bool|null $escapingReplacements): void
     {
         $this->escapingReplacements = $escapingReplacements;
     }

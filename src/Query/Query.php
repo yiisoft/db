@@ -7,7 +7,10 @@ namespace Yiisoft\Db\Query;
 use Closure;
 use Iterator;
 use Throwable;
+use Yiisoft\Arrays\ArrayHelper;
+use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Command\Command;
+use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -15,8 +18,6 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Cache\Dependency\Dependency;
 
 use function array_merge;
 use function count;
@@ -98,9 +99,9 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @throws Exception|InvalidConfigException
      *
-     * @return Command the created DB command instance.
+     * @return CommandInterface the created DB command instance.
      */
-    public function createCommand(): Command
+    public function createCommand(): CommandInterface
     {
         [$sql, $params] = $this->db->getQueryBuilder()->build($this);
 
@@ -1337,11 +1338,11 @@ PATTERN;
     /**
      * Sets $command cache, if this query has enabled caching.
      *
-     * @param Command $command
+     * @param CommandInterface $command The command instance.
      *
-     * @return Command
+     * @return CommandInterface
      */
-    protected function setCommandCache(Command $command): Command
+    protected function setCommandCache(CommandInterface $command): CommandInterface
     {
         if ($this->queryCacheDuration !== null || $this->queryCacheDependency !== null) {
             $duration = $this->queryCacheDuration === true ? null : $this->queryCacheDuration;

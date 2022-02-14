@@ -4,25 +4,24 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use Iterator;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\QueryInterface;
 
 /**
  * Class InCondition represents `IN` condition.
  */
 class InCondition implements ConditionInterface
 {
-    private string $operator;
-    private $column;
-
-    /** @var ExpressionInterface[]|int|string[] @values */
-    private $values;
-
-    public function __construct($column, string $operator, $values)
-    {
-        $this->column = $column;
-        $this->operator = $operator;
-        $this->values = $values;
+    /**
+     * @psalm-param QueryInterface|iterable<mixed, mixed>|int|Iterator $values
+     */
+    public function __construct(
+        private mixed $column,
+        private string $operator,
+        private array|int|Iterator|QueryInterface $values
+    ) {
     }
 
     /**
@@ -42,22 +41,20 @@ class InCondition implements ConditionInterface
     }
 
     /**
-     * @return ExpressionInterface[]|int|string[] (ExpressionInterface|string)[]|int an array of values that
-     * {@see columns} value should be among.
+     * @return array|int|Iterator (ExpressionInterface|string)[]|int an array of values that {@see columns} value should
+     * be among.
      *
      * If it is an empty array the generated expression will be a `false` value if {@see operator} is `IN` and empty if
      * operator is `NOT IN`.
      *
-     * @psalm-return array<array-key, ExpressionInterface|string>|int
+     * @psalm-return QueryInterface|iterable<mixed, mixed>|int|object
      */
-    public function getValues()
+    public function getValues(): array|int|Iterator|QueryInterface
     {
         return $this->values;
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws InvalidArgumentException if wrong number of operands have been given.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self

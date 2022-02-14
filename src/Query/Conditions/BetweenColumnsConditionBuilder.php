@@ -10,7 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 use function strpos;
@@ -38,16 +38,18 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
     /**
      * Prepares column name to be used in SQL statement.
      *
-     * @param ExpressionInterface|Query|string $columnName
+     * @param ExpressionInterface|QueryInterface|string $columnName
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string
      */
-    protected function escapeColumnName($columnName, array &$params = []): string
-    {
-        if ($columnName instanceof Query) {
+    protected function escapeColumnName(
+        ExpressionInterface|QueryInterface|string $columnName,
+        array &$params = []
+    ): string {
+        if ($columnName instanceof QueryInterface) {
             [$sql, $params] = $this->queryBuilder->build($columnName, $params);
 
             return "($sql)";

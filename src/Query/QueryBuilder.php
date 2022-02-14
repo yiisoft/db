@@ -447,7 +447,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
                     $columns[$i] = $this->buildExpression($column, $params) . ' AS '
                         . $this->quoter->quoteColumnName($i);
                 }
-            } elseif ($column instanceof Query) {
+            } elseif ($column instanceof QueryInterface) {
                 [$sql, $params] = $this->build($column, $params);
                 $columns[$i] = "($sql) AS " . $this->quoter->quoteColumnName((string) $i);
             } elseif (is_string($i) && $i !== $column) {
@@ -479,7 +479,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
         foreach ($unions as $i => $union) {
             $query = $union['query'];
-            if ($query instanceof Query) {
+            if ($query instanceof QueryInterface) {
                 [$unions[$i]['query'], $params] = $this->build($query, $params);
             }
 
@@ -512,7 +512,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
             }
 
             $query = $with['query'];
-            if ($query instanceof Query) {
+            if ($query instanceof QueryInterface) {
                 [$with['query'], $params] = $this->build($query, $params);
             }
 
@@ -904,7 +904,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         $placeholders = [];
         $values = ' DEFAULT VALUES';
 
-        if ($columns instanceof Query) {
+        if ($columns instanceof QueryInterface) {
             [$names, $values, $params] = $this->prepareInsertSelectSubQuery($columns, $params);
         } else {
             foreach ($columns as $name => $value) {
@@ -913,7 +913,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
                 if ($value instanceof ExpressionInterface) {
                     $placeholders[] = $this->buildExpression($value, $params);
-                } elseif ($value instanceof Query) {
+                } elseif ($value instanceof QueryInterface) {
                     [$sql, $params] = $this->build($value, $params);
                     $placeholders[] = "($sql)";
                 } else {
@@ -954,7 +954,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         Query|bool|array $updateColumns,
         array &$constraints = []
     ): array {
-        if ($insertColumns instanceof Query) {
+        if ($insertColumns instanceof QueryInterface) {
             [$insertNames] = $this->prepareInsertSelectSubQuery($insertColumns);
         } else {
             $insertNames = array_map([$this->quoter, 'quoteColumnName'], array_keys($insertColumns));
@@ -976,7 +976,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
      * @param array $tables
      * @param array $params
      *
-     * @psalm-param array<array-key, array|Query|string> $tables
+     * @psalm-param array<array-key, array|QueryInterface|string> $tables
      *
      * @throws Exception|InvalidConfigException|NotSupportedException
      *
@@ -985,7 +985,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
     private function quoteTableNames(array $tables, array &$params): array
     {
         foreach ($tables as $i => $table) {
-            if ($table instanceof Query) {
+            if ($table instanceof QueryInterface) {
                 [$sql, $params] = $this->build($table, $params);
                 $tables[$i] = "($sql) " . $this->quoter->quoteTableName((string) $i);
             } elseif (is_string($table) && is_string($i)) {

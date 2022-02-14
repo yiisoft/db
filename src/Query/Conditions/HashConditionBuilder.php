@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 use function count;
@@ -29,7 +29,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
         $parts = [];
 
         foreach ($hash as $column => $value) {
-            if (is_iterable($value) || $value instanceof Query) {
+            if (is_iterable($value) || $value instanceof QueryInterface) {
                 /** IN condition */
                 $parts[] = $this->queryBuilder->buildCondition(new InCondition($column, 'IN', $value), $params);
             } else {
