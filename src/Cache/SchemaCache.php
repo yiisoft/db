@@ -14,14 +14,12 @@ use Yiisoft\Cache\Dependency\TagDependency;
  */
 final class SchemaCache
 {
-    private CacheInterface $cache;
     private bool $enabled = true;
     private ?int $duration = 3600;
     private array $exclude = [];
 
-    public function __construct(CacheInterface $cache)
+    public function __construct(private CacheInterface $cache)
     {
-        $this->cache = $cache;
     }
 
     /**

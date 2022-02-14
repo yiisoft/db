@@ -16,14 +16,12 @@ use function is_array;
  */
 final class QueryCache
 {
-    private CacheInterface $cache;
     private bool $enabled = true;
     public array $info = [];
     private ?int $duration = 3600;
 
-    public function __construct(CacheInterface $cache)
+    public function __construct(private CacheInterface $cache)
     {
-        $this->cache = $cache;
     }
 
     /**

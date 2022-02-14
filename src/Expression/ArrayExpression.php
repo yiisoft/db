@@ -28,19 +28,11 @@ use function count;
  */
 class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
 {
-    private ?string $type = null;
-    private mixed $value;
-    private int $dimension;
-
-    public function __construct($value = [], $type = null, $dimension = 1)
+    public function __construct(private $value = [], private ?string $type = null, private int $dimension = 1)
     {
         if ($value instanceof self) {
-            $value = $value->getValue();
+            $this->value = $value->getValue();
         }
-
-        $this->value = $value;
-        $this->type = $type;
-        $this->dimension = $dimension;
     }
 
     /**

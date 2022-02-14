@@ -20,17 +20,12 @@ class JsonExpression implements ExpressionInterface, \JsonSerializable
 {
     public const TYPE_JSON = 'json';
     public const TYPE_JSONB = 'jsonb';
-    protected $value;
-    protected ?string $type;
 
-    public function __construct($value, ?string $type = null)
+    public function __construct(protected mixed $value, private ?string $type = null)
     {
         if ($value instanceof self) {
-            $value = $value->getValue();
+            $this->value = $value->getValue();
         }
-
-        $this->value = $value;
-        $this->type = $type;
     }
 
     /**

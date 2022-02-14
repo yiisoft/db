@@ -35,17 +35,12 @@ use Yiisoft\Db\Query\Query;
  */
 class BetweenColumnsCondition implements ConditionInterface
 {
-    private string $operator = '';
-    private $value;
-    private $intervalStartColumn;
-    private $intervalEndColumn;
-
-    public function __construct($value, string $operator, $intervalStartColumn, $intervalEndColumn)
-    {
-        $this->value = $value;
-        $this->operator = $operator;
-        $this->intervalStartColumn = $intervalStartColumn;
-        $this->intervalEndColumn = $intervalEndColumn;
+    public function __construct(
+        private mixed $value,
+        private string $operator,
+        private mixed $intervalStartColumn,
+        private mixed $intervalEndColumn
+    ) {
     }
 
     /**

@@ -21,13 +21,8 @@ namespace Yiisoft\Db\Expression;
  */
 class Expression implements ExpressionInterface
 {
-    private string $expression;
-    private array $params = [];
-
-    public function __construct(string $expression, array $params = [])
+    public function __construct(private string $expression, private array $params = [])
     {
-        $this->expression = $expression;
-        $this->params = $params;
     }
 
     /**
