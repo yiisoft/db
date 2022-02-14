@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 
 /**
  * Class BetweenColumnCondition represents a `BETWEEN` condition where values is between two columns.
@@ -60,24 +60,23 @@ class BetweenColumnsCondition implements ConditionInterface
     }
 
     /**
-     * @return ExpressionInterface|Query|string the column name or expression that is a beginning of the interval.
+     * @return ExpressionInterface|QueryInterface|string the column name or expression that is a beginning of the
+     * interval.
      */
-    public function getIntervalStartColumn()
+    public function getIntervalStartColumn(): ExpressionInterface|QueryInterface|string
     {
         return $this->intervalStartColumn;
     }
 
     /**
-     * @return ExpressionInterface|Query|string the column name or expression that is an end of the interval.
+     * @return ExpressionInterface|QueryInterface|string the column name or expression that is an end of the interval.
      */
-    public function getIntervalEndColumn()
+    public function getIntervalEndColumn(): ExpressionInterface|QueryInterface|string
     {
         return $this->intervalEndColumn;
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws InvalidArgumentException if wrong number of operands have been given.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self

@@ -36,7 +36,7 @@ class ExistsCondition implements ConditionInterface
     }
 
     /**
-     * @return QueryInterface the {@see Query} object representing the sub-query.
+     * @return QueryInterface the {@see QueryInterface} object representing the sub-query.
      */
     public function getQuery(): QueryInterface
     {

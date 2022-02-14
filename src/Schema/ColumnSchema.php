@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Schema;
 use PDO;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Pdo\PdoValue;
-use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Strings\NumericHelper;
 
 /**
@@ -94,7 +94,7 @@ class ColumnSchema
             $value === null
             || gettype($value) === $this->phpType
             || $value instanceof ExpressionInterface
-            || $value instanceof Query
+            || $value instanceof QueryInterface
         ) {
             return $value;
         }

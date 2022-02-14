@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
+use JsonSerializable;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -16,7 +17,7 @@ use Yiisoft\Db\Query\QueryInterface;
  * new JsonExpression(['a' => 1, 'b' => 2]); // will be encoded to '{"a": 1, "b": 2}'
  * ```
  */
-class JsonExpression implements ExpressionInterface, \JsonSerializable
+class JsonExpression implements ExpressionInterface, JsonSerializable
 {
     public const TYPE_JSON = 'json';
     public const TYPE_JSONB = 'jsonb';

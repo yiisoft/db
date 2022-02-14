@@ -49,7 +49,8 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     }
 
     /**
-     * The array's content. In can be represented as an array of values or a {@see Query} that returns these values.
+     * The array's content. In can be represented as an array of values or a {@see QueryInterface} that returns these
+     * values.
      *
      * @return mixed
      */

@@ -910,8 +910,8 @@ interface QueryBuilderInterface
      * The method will properly escape the table and column names.
      *
      * @param string $table the table that new rows will be inserted into/updated in.
-     * @param array|Query $insertColumns the column data (name => value) to be inserted into the table or instance of
-     * {@see Query} to perform `INSERT INTO ... SELECT` SQL statement.
+     * @param array|Query $insertColumns the column data (name => value) to be inserted into the table or
+     * instance of {@see Query} to perform `INSERT INTO ... SELECT` SQL statement.
      * @param array|bool $updateColumns the column data (name => value) to be updated if they already exist. If `true`
      * is passed, the column data will be updated to match the insert column data. If `false` is passed, no update will
      * be performed if the column data already exists.

@@ -14,6 +14,7 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilderInterface;
+use Yiisoft\Db\Query\QueryInterface;
 
 use function array_merge;
 use function array_values;
@@ -46,7 +47,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             return $operator === 'IN' ? '0=1' : '';
         }
 
-        if ($values instanceof Query) {
+        if ($values instanceof QueryInterface) {
             return $this->buildSubqueryInCondition($operator, $column, $values, $params);
         }
 
@@ -159,8 +160,12 @@ class InConditionBuilder implements ExpressionBuilderInterface
      *
      * @return string SQL
      */
-    protected function buildSubqueryInCondition(string $operator, $columns, Query $values, array &$params = []): string
-    {
+    protected function buildSubqueryInCondition(
+        string $operator,
+        array|string $columns,
+        Query $values,
+        array &$params = []
+    ): string {
         $sql = $this->queryBuilder->buildExpression($values, $params);
 
         if (is_array($columns)) {
