@@ -86,7 +86,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
      * This is mainly used to support creating/modifying tables using DB-independent data type specifications.
      * Child classes should override this property to declare supported type mappings.
      *
-     * @psalm-var array<string, string>
+     * @psalm-var string[]
      */
     protected array $typeMap = [];
 
@@ -896,7 +896,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return [$names, $values, $params];
     }
 
-    public function prepareInsertValues(string $table, Query|array $columns, array $params = []): array
+    public function prepareInsertValues(string $table, QueryInterface|array $columns, array $params = []): array
     {
         $tableSchema = $this->schema->getTableSchema($table);
         $columnSchemas = $tableSchema !== null ? $tableSchema->getColumns() : [];
@@ -950,8 +950,8 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
     public function prepareUpsertColumns(
         string $table,
-        Query|array $insertColumns,
-        Query|bool|array $updateColumns,
+        QueryInterface|array $insertColumns,
+        QueryInterface|bool|array $updateColumns,
         array &$constraints = []
     ): array {
         if ($insertColumns instanceof QueryInterface) {
