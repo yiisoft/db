@@ -14,7 +14,6 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilderInterface;
-use Yiisoft\Db\Query\QueryInterface;
 
 use function array_merge;
 use function array_values;
@@ -47,7 +46,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             return $operator === 'IN' ? '0=1' : '';
         }
 
-        if ($values instanceof QueryInterface) {
+        if ($values instanceof Query) {
             return $this->buildSubqueryInCondition($operator, $column, $values, $params);
         }
 
@@ -108,14 +107,14 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * Builds $values to be used in {@see InCondition}.
      *
      * @param ConditionInterface|InCondition $condition
-     * @param array|object $values
+     * @param array|Traversable $values
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return array of prepared for SQL placeholders.
      */
-    protected function buildValues(ConditionInterface $condition, $values, array &$params = []): array
+    protected function buildValues(ConditionInterface $condition, array|Traversable $values, array &$params = []): array
     {
         $sqlValues = [];
         $column = $condition->getColumn();
@@ -153,7 +152,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      *
      * @param string $operator
      * @param array|string $columns
-     * @param Query $values
+     * @param ExpressionInterface $values
      * @param array $params
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
@@ -163,7 +162,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
     protected function buildSubqueryInCondition(
         string $operator,
         array|string $columns,
-        Query $values,
+        ExpressionInterface $values,
         array &$params = []
     ): string {
         $sql = $this->queryBuilder->buildExpression($values, $params);
@@ -188,15 +187,19 @@ class InConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds SQL for IN condition.
      *
-     * @param string $operator
+     * @param string|null $operator
      * @param array|Traversable $columns
-     * @param array|iterable $values
+     * @param array $values
      * @param array $params
      *
      * @return string SQL
      */
-    protected function buildCompositeInCondition(string $operator, $columns, $values, array &$params = []): string
-    {
+    protected function buildCompositeInCondition(
+        ?string $operator,
+        array|Traversable $columns,
+        array|Traversable $values,
+        array &$params = []
+    ): string {
         $vss = [];
         foreach ($values as $value) {
             $vs = [];
