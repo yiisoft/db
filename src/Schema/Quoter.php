@@ -107,7 +107,7 @@ class Quoter implements QuoterInterface
         return implode('.', $parts);
     }
 
-    public function quoteValue(int|string $value): int|string
+    public function quoteValue(mixed $value): mixed
     {
         if (!is_string($value)) {
             return $value;

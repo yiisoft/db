@@ -205,7 +205,7 @@ class ColumnSchema
     /**
      * @return mixed default value of this column
      */
-    public function getDefaultValue()
+    public function getDefaultValue(): mixed
     {
         return $this->defaultValue;
     }

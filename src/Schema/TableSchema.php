@@ -108,6 +108,8 @@ abstract class TableSchema
 
     /**
      * @return array primary keys of this table.
+     *
+     * @psalm-return string[]
      */
     public function getPrimaryKey(): array
     {

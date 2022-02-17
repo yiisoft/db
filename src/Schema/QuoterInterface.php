@@ -78,16 +78,16 @@ interface QuoterInterface
      *
      * Note that if the parameter is not a string, it will be returned without change.
      *
-     * @param int|string $str string to be quoted.
+     * @param mixed $str string to be quoted.
      * @param PDO $pdo the PDO instance.
      *
      * @throws Exception
      *
-     * @return int|string the properly quoted string.
+     * @return mixed The properly quoted string.
      *
      * {@see http://www.php.net/manual/en/function.PDO-quote.php}
      */
-    public function quoteValue(int|string $value): int|string;
+    public function quoteValue(mixed $value): mixed;
 
     /**
      * Unquotes a simple column name.
