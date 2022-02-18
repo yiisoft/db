@@ -21,7 +21,7 @@ interface SimpleConditionInterface extends ConditionInterface, ExpressionInterfa
     public function getOperator(): string;
 
     /**
-     * @return array|int|string|Iterator|ExpressionInterface The value to the right of the {@see operator}.
+     * @return array|ExpressionInterface|int|Iterator|string The value to the right of the {@see operator}.
      */
     public function getValue(): array|int|string|Iterator|ExpressionInterface;
 }

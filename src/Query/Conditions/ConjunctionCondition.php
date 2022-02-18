@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
-use Yiisoft\Db\Query\Conditions\Interface\ConditionInterface;
 use Yiisoft\Db\Query\Conditions\Interface\ConjunctionConditionInterface;
 
 /**

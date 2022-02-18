@@ -10,12 +10,12 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 interface BetweenColumnsConditionInterface extends ConditionInterface, ExpressionInterface
 {
     /**
-     * @return string|ExpressionInterface The column name or expression that is an end of the interval.
+     * @return ExpressionInterface|string The column name or expression that is an end of the interval.
      */
     public function getIntervalEndColumn(): string|ExpressionInterface;
 
     /**
-     * @return string|ExpressionInterface The column name or expression that is a beginning of the interval.
+     * @return ExpressionInterface|string The column name or expression that is a beginning of the interval.
      */
     public function getIntervalStartColumn(): string|ExpressionInterface;
 
@@ -25,7 +25,7 @@ interface BetweenColumnsConditionInterface extends ConditionInterface, Expressio
     public function getOperator(): string;
 
     /**
-     * @return array|int|string|Iterator|ExpressionInterface The value to compare against.
+     * @return array|ExpressionInterface|int|Iterator|string The value to compare against.
      */
     public function getValue(): array|int|string|Iterator|ExpressionInterface;
 }

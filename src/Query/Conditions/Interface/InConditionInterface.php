@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions\Interface;
 
 use Iterator;
-use Traversable;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 

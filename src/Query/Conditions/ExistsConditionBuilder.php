@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
-use Yiisoft\Db\Expression\ExpressionBuilderInterface;
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\Interface\ExistConditionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\ExistConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;

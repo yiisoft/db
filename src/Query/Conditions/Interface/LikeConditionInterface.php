@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions\Interface;
 
-use Iterator;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 interface LikeConditionInterface extends ConditionInterface, ExpressionInterface, SimpleConditionInterface
