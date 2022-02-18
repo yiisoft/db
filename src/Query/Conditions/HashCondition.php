@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use Yiisoft\Db\Query\Conditions\Interface\HashConditionInterface;
+
 /**
  * Condition based on column-value pairs.
  */
-class HashCondition implements ConditionInterface
+class HashCondition implements HashConditionInterface
 {
     public function __construct(private ?array $hash = [])
     {
     }
 
-    /**
-     * @return array|null the condition specification.
-     */
     public function getHash(): ?array
     {
         return $this->hash;

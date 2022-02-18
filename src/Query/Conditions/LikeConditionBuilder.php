@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\Interface\LikeConditionBuilderInterface;
+use Yiisoft\Db\Query\Conditions\Interface\LikeConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 use function implode;
@@ -19,7 +20,7 @@ use function strtoupper;
 /**
  * Class LikeConditionBuilder builds objects of {@see LikeCondition}.
  */
-class LikeConditionBuilder implements ExpressionBuilderInterface
+class LikeConditionBuilder implements LikeConditionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
@@ -36,7 +37,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     ];
     protected ?string $escapeCharacter = null;
 
-    public function build(ExpressionInterface $expression, array &$params = []): string
+    public function build(LikeConditionInterface $expression, array &$params = []): string
     {
         $operator = strtoupper($expression->getOperator());
         $column = $expression->getColumn();
@@ -82,20 +83,6 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @return string|null character used to escape special characters in LIKE conditions.
-     *
-     * By default it's assumed to be `\`.
-     */
-    private function getEscapeSql(): ?string
-    {
-        if ($this->escapeCharacter !== null) {
-            return " ESCAPE '{$this->escapeCharacter}'";
-        }
-
-        return '';
-    }
-
-    /**
      * @param string $operator
      *
      * @throws InvalidArgumentException
@@ -113,5 +100,19 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         $operator = $matches[2];
 
         return [$andor, $not, $operator];
+    }
+
+    /**
+     * @return string|null character used to escape special characters in LIKE conditions.
+     *
+     * By default it's assumed to be `\`.
+     */
+    private function getEscapeSql(): ?string
+    {
+        if ($this->escapeCharacter !== null) {
+            return " ESCAPE '{$this->escapeCharacter}'";
+        }
+
+        return '';
     }
 }

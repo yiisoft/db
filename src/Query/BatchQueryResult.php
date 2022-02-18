@@ -41,7 +41,7 @@ class BatchQueryResult implements Iterator
     private ?ConnectionInterface $db = null;
     private bool $each = false;
     private $key;
-    private ?QueryInterface $query = null;
+    private ?Query $query = null;
 
     /**
      * @var DataReader|null the data reader associated with this batch query.

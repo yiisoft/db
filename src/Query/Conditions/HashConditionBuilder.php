@@ -6,8 +6,10 @@ namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Query\Conditions\Interface\HashConditionBuilderInterface;
+use Yiisoft\Db\Query\Conditions\Interface\HashConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
+use Yiisoft\Db\Query\QueryInterface;
 
 use function count;
 use function implode;
@@ -17,13 +19,13 @@ use function strpos;
 /**
  * Class HashConditionBuilder builds objects of {@see HashCondition}.
  */
-class HashConditionBuilder implements ExpressionBuilderInterface
+class HashConditionBuilder implements HashConditionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
     }
 
-    public function build(ExpressionInterface $expression, array &$params = []): string
+    public function build(HashConditionInterface $expression, array &$params = []): string
     {
         $hash = $expression->getHash();
         $parts = [];

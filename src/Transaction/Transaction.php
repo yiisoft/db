@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Transaction;
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
-use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -72,11 +72,9 @@ class Transaction
     public const SERIALIZABLE = 'SERIALIZABLE';
 
     private int $level = 0;
-    private ConnectionInterface $db;
 
-    public function __construct(ConnectionInterface $db)
+    public function __construct(private ConnectionPDOInterface $db)
     {
-        $this->db = $db;
     }
 
     /**

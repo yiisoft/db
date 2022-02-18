@@ -10,6 +10,8 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\Interface\ConjunctionConditionBuilderInterface;
+use Yiisoft\Db\Query\Conditions\Interface\ConjunctionConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 use function count;
@@ -20,13 +22,13 @@ use function reset;
 /**
  * Class ConjunctionConditionBuilder builds objects of abstract class {@see ConjunctionCondition}.
  */
-class ConjunctionConditionBuilder implements ExpressionBuilderInterface
+class ConjunctionConditionBuilder implements ConjunctionConditionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
     }
 
-    public function build(ExpressionInterface $expression, array &$params = []): string
+    public function build(ConjunctionConditionInterface $expression, array &$params = []): string
     {
         $parts = $this->buildExpressionsFrom($expression, $params);
 
@@ -44,8 +46,8 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds expressions, that are stored in $condition.
      *
-     * @param ConjunctionCondition|ExpressionInterface $condition the expression to be built.
-     * @param array $params the binding parameters.
+     * @param ConjunctionCondition|ExpressionInterface $condition The expression to be built.
+     * @param array $params The binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
@@ -59,9 +61,11 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
             if (is_array($conditionValue)) {
                 $conditionValue = $this->queryBuilder->buildCondition($conditionValue, $params);
             }
+
             if ($conditionValue instanceof ExpressionInterface) {
                 $conditionValue = $this->queryBuilder->buildExpression($conditionValue, $params);
             }
+
             if ($conditionValue !== '') {
                 $parts[] = $conditionValue;
             }

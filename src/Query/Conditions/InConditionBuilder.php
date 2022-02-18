@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions;
 
 use ArrayAccess;
+use Iterator;
 use Traversable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -12,6 +13,9 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\Interface\ConditionInterface;
+use Yiisoft\Db\Query\Conditions\Interface\InConditionBuilderInterface;
+use Yiisoft\Db\Query\Conditions\Interface\InConditionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
@@ -29,13 +33,13 @@ use function strtoupper;
 /**
  * Class InConditionBuilder builds objects of {@see InCondition}.
  */
-class InConditionBuilder implements ExpressionBuilderInterface
+class InConditionBuilder implements InConditionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
     }
 
-    public function build(ExpressionInterface $expression, array &$params = []): string
+    public function build(InConditionInterface $expression, array &$params = []): string
     {
         $operator = strtoupper($expression->getOperator());
         $column = $expression->getColumn();
@@ -123,7 +127,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             $column = reset($column);
         }
 
-        if ($column instanceof Traversable) {
+        if ($column instanceof Iterator) {
             $column->rewind();
             $column = $column->current();
         }
