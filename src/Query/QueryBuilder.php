@@ -822,7 +822,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
      *
      * @param string $table
      *
-     * @return array|bool
+     * @psalm-return string[]|bool
      */
     protected function extractAlias(string $table): array|bool
     {
