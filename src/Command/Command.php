@@ -431,12 +431,7 @@ abstract class Command implements CommandInterface
 
     public function getParams(): array
     {
-        return array_map(
-            static function ($value) {
-                return $value->getValue();
-            },
-            $this->params
-        );
+        return array_map(static fn (mixed $value): mixed => $value->getValue(), $this->params);
     }
 
     /**

@@ -9,7 +9,7 @@ use PDOStatement;
 trait CommandPdoTrait
 {
     /**
-     * @var ParamInterface[]
+     * @psalm-var ParamInterface[]
      */
     protected array $params = [];
 
