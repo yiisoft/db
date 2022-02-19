@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Command;
 
 use JsonException;
 use PDO;
-use PDOStatement;
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Cache\CacheInterface;
@@ -86,11 +85,10 @@ abstract class Command implements CommandInterface
 {
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
+    use CommandPdoTrait;
 
     protected ?string $isolationLevel = null;
-    protected array $params = [];
-    protected ?PDOStatement $pdoStatement = null;
-    protected array $pendingParams = [];
+
     protected ?string $refreshTableName = null;
     /** @var callable|null */
     protected $retryHandler = null;
@@ -227,36 +225,13 @@ abstract class Command implements CommandInterface
         return $this;
     }
 
-    public function bindParam(int|string $name, mixed &$value, ?int $dataType = null, ?int $length = null, mixed $driverOptions = null): self
-    {
-        $this->prepare();
-
-        if ($dataType === null) {
-            $dataType = $this->queryBuilder()->schema()->getPdoType($value);
-        }
-
-        if ($length === null) {
-            $this->pdoStatement->bindParam($name, $value, $dataType);
-        } elseif ($driverOptions === null) {
-            $this->pdoStatement->bindParam($name, $value, $dataType, $length);
-        } else {
-            $this->pdoStatement->bindParam($name, $value, $dataType, $length, $driverOptions);
-        }
-
-        $this->params[$name] = &$value;
-
-        return $this;
-    }
-
     public function bindValue(int|string $name, mixed $value, ?int $dataType = null): self
     {
         if ($dataType === null) {
             $dataType = $this->queryBuilder()->schema()->getPdoType($value);
         }
 
-        $this->pendingParams[$name] = [$value, $dataType];
-
-        $this->params[$name] = $value;
+        $this->params[$name] = new Param($name, $value, $dataType);
 
         return $this;
     }
@@ -269,16 +244,12 @@ abstract class Command implements CommandInterface
 
         foreach ($values as $name => $value) {
             if (is_array($value)) { // TODO: Drop in Yii 2.1
-                $this->pendingParams[$name] = $value;
-                $this->params[$name] = $value[0];
+                $this->params[$name] = new Param($name, ...$value);
             } elseif ($value instanceof PdoValue) {
-                $this->pendingParams[$name] = [$value->getValue(), $value->getType()];
-                $this->params[$name] = $value->getValue();
+                $this->params[$name] = new Param($name, $value->getValue(), $value->getType());
             } else {
                 $type = $this->queryBuilder()->schema()->getPdoType($value);
-
-                $this->pendingParams[$name] = [$value, $type];
-                $this->params[$name] = $value;
+                $this->params[$name] = new Param($name, $value, $type);
             }
         }
 
@@ -290,11 +261,6 @@ abstract class Command implements CommandInterface
         $this->queryCacheDuration = $duration ?? $this->queryCache->getDuration();
         $this->queryCacheDependency = $dependency;
         return $this;
-    }
-
-    public function cancel(): void
-    {
-        $this->pdoStatement = null;
     }
 
     /**
@@ -463,12 +429,12 @@ abstract class Command implements CommandInterface
 
     public function getParams(): array
     {
-        return $this->params;
-    }
-
-    public function getPdoStatement(): ?PDOStatement
-    {
-        return $this->pdoStatement;
+        return array_map(
+            function($value) {
+                return $value->getValue();
+            },
+            $this->params
+        );
     }
 
     /**
@@ -485,6 +451,10 @@ abstract class Command implements CommandInterface
         foreach ($this->params as $name => $value) {
             if (is_string($name) && strncmp(':', $name, 1)) {
                 $name = ':' . $name;
+            }
+
+            if ($value instanceof ParamInterface) {
+                $value = $value->getValue();
             }
 
             if (is_string($value)) {
@@ -643,20 +613,6 @@ abstract class Command implements CommandInterface
     }
 
     /**
-     * Binds pending parameters that were registered via {@see bindValue()} and {@see bindValues()}.
-     *
-     * Note that this method requires an active {@see pdoStatement}.
-     */
-    protected function bindPendingParams(): void
-    {
-        foreach ($this->pendingParams as $name => $value) {
-            $this->pdoStatement->bindValue($name, $value[0], $value[1]);
-        }
-
-        $this->pendingParams = [];
-    }
-
-    /**
      * Logs the current database query if query logging is enabled and returns the profiling token if profiling is
      * enabled.
      *
@@ -799,7 +755,6 @@ abstract class Command implements CommandInterface
     protected function reset(): void
     {
         $this->sql = null;
-        $this->pendingParams = [];
         $this->params = [];
         $this->refreshTableName = null;
         $this->isolationLevel = null;
