@@ -6,11 +6,11 @@ namespace Yiisoft\Db\Command;
 
 final class Param implements ParamInterface
 {
-    public function __construct(private string|int $name, private mixed $value, private ?int $type)
+    public function __construct(private int|string $name, private mixed $value, private ?int $type)
     {
     }
 
-    public function getName(): string|int
+    public function getName(): int|string
     {
         return $this->name;
     }

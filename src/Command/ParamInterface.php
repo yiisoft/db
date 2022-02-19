@@ -14,12 +14,12 @@ interface ParamInterface
      * @param int|null $type SQL data type of the parameter. If null, the type is determined by the PHP type of the
      * value.
      */
-    public function __construct(string|int $name, mixed $value, ?int $type);
+    public function __construct(int|string $name, mixed $value, ?int $type);
 
     /**
-     * @return string|int
+     * @return int|string
      */
-    public function getName(): string|int;
+    public function getName(): int|string;
 
     /**
      * @return mixed
