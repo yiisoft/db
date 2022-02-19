@@ -243,7 +243,9 @@ abstract class Command implements CommandInterface
         }
 
         foreach ($values as $name => $value) {
-            if (is_array($value)) { // TODO: Drop in Yii 2.1
+            if ($value instanceof ParamInterface) {
+                $this->params[$value->getName()] = $value;
+            } elseif (is_array($value)) { // TODO: Drop in Yii 2.1
                 $this->params[$name] = new Param($name, ...$value);
             } elseif ($value instanceof PdoValue) {
                 $this->params[$name] = new Param($name, $value->getValue(), $value->getType());
