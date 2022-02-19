@@ -17,9 +17,9 @@ interface ParamInterface
     public function __construct(string|int $name, mixed $value, ?int $type);
 
     /**
-     * @return string
+     * @return string|int
      */
-    public function getName(): string;
+    public function getName(): string|int;
 
     /**
      * @return mixed

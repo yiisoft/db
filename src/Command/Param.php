@@ -10,7 +10,7 @@ final class Param implements ParamInterface
     {
     }
 
-    public function getName(): string
+    public function getName(): string|int
     {
         return $this->name;
     }
