@@ -83,9 +83,9 @@ use function strtr;
  */
 abstract class Command implements CommandInterface
 {
+    use CommandPdoTrait;
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
-    use CommandPdoTrait;
 
     protected ?string $isolationLevel = null;
 
@@ -430,7 +430,7 @@ abstract class Command implements CommandInterface
     public function getParams(): array
     {
         return array_map(
-            function($value) {
+            static function ($value) {
                 return $value->getValue();
             },
             $this->params

@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Command;
 
 use PDOStatement;
-use Yiisoft\Db\Command\ParamInterface;
 
-trait CommandPdoTrait {
-
+trait CommandPdoTrait
+{
     /**
      * @var ParamInterface[]
      */
