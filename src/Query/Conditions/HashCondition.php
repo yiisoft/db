@@ -9,11 +9,8 @@ namespace Yiisoft\Db\Query\Conditions;
  */
 class HashCondition implements ConditionInterface
 {
-    private ?array $hash = [];
-
-    public function __construct(?array $hash = [])
+    public function __construct(private ?array $hash = [])
     {
-        $this->hash = $hash;
     }
 
     /**

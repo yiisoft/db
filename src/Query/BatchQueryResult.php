@@ -41,7 +41,7 @@ class BatchQueryResult implements Iterator
     private ?ConnectionInterface $db = null;
     private bool $each = false;
     private $key;
-    private ?Query $query = null;
+    private ?QueryInterface $query = null;
 
     /**
      * @var DataReader|null the data reader associated with this batch query.
@@ -215,10 +215,7 @@ class BatchQueryResult implements Iterator
         return $this->db->getDriverName();
     }
 
-    /**
-     * {@see Query}
-     */
-    public function getQuery(): Query|null
+    public function getQuery(): QueryInterface|null
     {
         return $this->query;
     }
@@ -234,12 +231,12 @@ class BatchQueryResult implements Iterator
     }
 
     /**
-     * @param Query $value the query object associated with this batch query. Do not modify this property directly
-     * unless after {@see reset()} is called explicitly.
+     * @param QueryInterface $value the query object associated with this batch query. Do not modify this property
+     * directly unless after {@see reset()} is called explicitly.
      *
      * @return $this
      */
-    public function query(Query $value): self
+    public function query(QueryInterface $value): self
     {
         $this->query = $value;
 

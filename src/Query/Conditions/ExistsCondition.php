@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 
 /**
  * Condition that represents `EXISTS` operator.
  */
 class ExistsCondition implements ConditionInterface
 {
-    private string $operator;
-    private Query $query;
-
-    public function __construct(string $operator, Query $query)
+    public function __construct(private string $operator, private QueryInterface $query)
     {
         $this->operator = $operator;
         $this->query = $query;
@@ -23,7 +20,7 @@ class ExistsCondition implements ConditionInterface
 
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
-        if (!isset($operands[0]) || !$operands[0] instanceof Query) {
+        if (!isset($operands[0]) || !$operands[0] instanceof QueryInterface) {
             throw new InvalidArgumentException('Subquery for EXISTS operator must be a Query object.');
         }
 
@@ -39,9 +36,9 @@ class ExistsCondition implements ConditionInterface
     }
 
     /**
-     * @return Query the {@see Query} object representing the sub-query.
+     * @return QueryInterface the {@see QueryInterface} object representing the sub-query.
      */
-    public function getQuery(): Query
+    public function getQuery(): QueryInterface
     {
         return $this->query;
     }

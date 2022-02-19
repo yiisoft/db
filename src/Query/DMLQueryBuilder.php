@@ -106,8 +106,12 @@ abstract class DMLQueryBuilder
         return $where === '' ? $sql : $sql . ' ' . $where;
     }
 
-    public function upsert(string $table, Query|array $insertColumns, bool|array $updateColumns, array &$params): string
-    {
+    public function upsert(
+        string $table,
+        Query|array $insertColumns,
+        bool|array $updateColumns,
+        array &$params
+    ): string {
         throw new NotSupportedException(static::class . ' does not support upsert.');
     }
 }

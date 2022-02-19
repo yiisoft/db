@@ -10,7 +10,7 @@ use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Query\Data\DataReader;
-use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 interface CommandInterface
@@ -311,12 +311,12 @@ interface CommandInterface
      * Creates a SQL View.
      *
      * @param string $viewName The name of the view to be created.
-     * @param Query|string $subquery The select statement which defines the view. This can be either a string or a
-     * {@see Query} object.
+     * @param QueryInterface|string $subquery The select statement which defines the view. This can be either a string
+     * or a {@see QueryInterface}.
      *
      * @return static
      */
-    public function createView(string $viewName, Query|string $subquery): self;
+    public function createView(string $viewName, QueryInterface|string $subquery): self;
 
     /**
      * Creates a DELETE command.
@@ -340,7 +340,7 @@ interface CommandInterface
      *
      * @param string $table The table where the data will be deleted from.
      * @param array|string $condition The condition that will be put in the WHERE part. Please refer to
-     * {@see Query::where()} on how to specify condition.
+     * {@see QueryInterface::where()} on how to specify condition.
      * @param array $params The parameters to be bound to the command.
      *
      * @return static
@@ -542,12 +542,12 @@ interface CommandInterface
      * Note that the created command is not executed until {@see execute()} is called.
      *
      * @param string $table The table that new rows will be inserted into.
-     * @param array|Query $columns The column data (name => value) to be inserted into the table or instance of
-     * {@see Query} to perform INSERT INTO ... SELECT SQL statement. Passing of {@see Query}.
+     * @param array|QueryInterface $columns The column data (name => value) to be inserted into the table or instance of
+     * {@see QueryInterface} to perform INSERT INTO ... SELECT SQL statement.
      *
      * @return static
      */
-    public function insert(string $table, Query|array $columns): self;
+    public function insert(string $table, QueryInterface|array $columns): self;
 
     /**
      * Disables query cache for this command.
@@ -758,7 +758,7 @@ interface CommandInterface
      * @param string $table The table to be updated.
      * @param array $columns The column data (name => value) to be updated.
      * @param array|string $condition The condition that will be put in the WHERE part. Please refer to
-     * {@see Query::where()} on how to specify condition.
+     * {@see QueryInterface::where()} on how to specify condition.
      * @param array $params The parameters to be bound to the command.
      *
      * @return static
@@ -784,8 +784,8 @@ interface CommandInterface
      * The method will properly escape the table and column names.
      *
      * @param string $table The table that new rows will be inserted into/updated in.
-     * @param array|Query $insertColumns The column data (name => value) to be inserted into the table or instance of
-     * {@see Query} to perform `INSERT INTO ... SELECT` SQL statement.
+     * @param array|QueryInterface $insertColumns The column data (name => value) to be inserted into the table or
+     * instance of {@see QueryInterface} to perform `INSERT INTO ... SELECT` SQL statement.
      * @param array|bool $updateColumns The column data (name => value) to be updated if they already exist.
      * If `true` is passed, the column data will be updated to match the insert column data.
      * If `false` is passed, no update will be performed if the column data already exists.
@@ -795,7 +795,7 @@ interface CommandInterface
      */
     public function upsert(
         string $table,
-        Query|array $insertColumns,
+        QueryInterface|array $insertColumns,
         bool|array $updateColumns = true,
         array $params = []
     ): self;

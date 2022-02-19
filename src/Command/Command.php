@@ -21,7 +21,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Data\DataReader;
-use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function array_map;
@@ -73,7 +73,7 @@ use function strtr;
  * ])->execute();
  * ```
  *
- * To build SELECT SQL statements, please use {@see Query} instead.
+ * To build SELECT SQL statements, please use {@see QueryInterface} instead.
  *
  * For more details and usage information on Command, see the [guide article on Database Access Objects](guide:db-dao).
  *
@@ -290,7 +290,7 @@ abstract class Command implements CommandInterface
     /**
      * @throws Exception|InvalidConfigException|NotSupportedException
      */
-    public function createView(string $viewName, Query|string $subquery): self
+    public function createView(string $viewName, QueryInterface|string $subquery): self
     {
         $sql = $this->queryBuilder()->createView($viewName, $subquery);
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
@@ -489,7 +489,7 @@ abstract class Command implements CommandInterface
     /**
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      */
-    public function insert(string $table, Query|array $columns): self
+    public function insert(string $table, QueryInterface|array $columns): self
     {
         $params = [];
         $sql = $this->queryBuilder()->insert($table, $columns, $params);
@@ -604,7 +604,7 @@ abstract class Command implements CommandInterface
      */
     public function upsert(
         string $table,
-        Query|array $insertColumns,
+        QueryInterface|array $insertColumns,
         bool|array $updateColumns = true,
         array $params = []
     ): self {

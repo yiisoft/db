@@ -8,7 +8,7 @@ use Countable;
 use Iterator;
 use PDO;
 use PDOStatement;
-use Yiisoft\Db\Command\Command;
+use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\InvalidCallException;
 
 use function call_user_func_array;
@@ -56,7 +56,7 @@ final class DataReader implements Iterator, Countable
     private bool $closed = false;
     private int $index = -1;
 
-    public function __construct(Command $command)
+    public function __construct(CommandInterface $command)
     {
         $this->statement = $command->getPDOStatement();
         $this->statement->setFetchMode(PDO::FETCH_ASSOC);

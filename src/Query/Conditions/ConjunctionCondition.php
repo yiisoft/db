@@ -9,11 +9,8 @@ namespace Yiisoft\Db\Query\Conditions;
  */
 abstract class ConjunctionCondition implements ConditionInterface
 {
-    protected $expressions;
-
-    public function __construct($expressions)
+    public function __construct(protected mixed $expressions)
     {
-        $this->expressions = $expressions;
     }
 
     public function getExpressions(): array

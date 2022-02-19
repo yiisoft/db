@@ -11,17 +11,12 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
  */
 class BetweenCondition implements ConditionInterface
 {
-    private string $operator;
-    private $column;
-    private $intervalStart;
-    private $intervalEnd;
-
-    public function __construct($column, string $operator, $intervalStart, $intervalEnd)
-    {
-        $this->column = $column;
-        $this->operator = $operator;
-        $this->intervalStart = $intervalStart;
-        $this->intervalEnd = $intervalEnd;
+    public function __construct(
+        private mixed $column,
+        private string $operator,
+        private mixed $intervalStart,
+        private mixed $intervalEnd
+    ) {
     }
 
     /**

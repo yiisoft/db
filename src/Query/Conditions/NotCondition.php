@@ -14,11 +14,8 @@ use function count;
  */
 class NotCondition implements ConditionInterface
 {
-    private $condition;
-
-    public function __construct($condition)
+    public function __construct(private mixed $condition)
     {
-        $this->condition = $condition;
     }
 
     /**

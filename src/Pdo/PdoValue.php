@@ -17,17 +17,12 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  *
  * To see possible types, check [PDO::PARAM_* constants](http://php.net/manual/en/pdo.constants.php).
  *
- * {@see http://php.net/manual/en/pdostatement.bindparam.php}
+ * @link http://php.net/manual/en/pdostatement.bindparam.php
  */
 final class PdoValue implements ExpressionInterface
 {
-    private ?string $value;
-    private ?int $type;
-
-    public function __construct(string $value = null, int $type = null)
+    public function __construct(private ?string $value = null, private ?int $type = null)
     {
-        $this->value = $value;
-        $this->type = $type;
     }
 
     public function getValue(): ?string

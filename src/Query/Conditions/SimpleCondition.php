@@ -13,15 +13,8 @@ use function count;
  */
 class SimpleCondition implements ConditionInterface
 {
-    private string $operator;
-    private $column;
-    private $value;
-
-    public function __construct($column, string $operator, $value)
+    public function __construct(private mixed $column, private string $operator, private mixed $value)
     {
-        $this->column = $column;
-        $this->operator = $operator;
-        $this->value = $value;
     }
 
     /**

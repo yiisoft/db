@@ -107,14 +107,14 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * Builds $values to be used in {@see InCondition}.
      *
      * @param ConditionInterface|InCondition $condition
-     * @param array|object $values
+     * @param array|Traversable $values
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return array of prepared for SQL placeholders.
      */
-    protected function buildValues(ConditionInterface $condition, $values, array &$params = []): array
+    protected function buildValues(ConditionInterface $condition, array|Traversable $values, array &$params = []): array
     {
         $sqlValues = [];
         $column = $condition->getColumn();
@@ -152,15 +152,19 @@ class InConditionBuilder implements ExpressionBuilderInterface
      *
      * @param string $operator
      * @param array|string $columns
-     * @param Query $values
+     * @param ExpressionInterface $values
      * @param array $params
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string SQL
      */
-    protected function buildSubqueryInCondition(string $operator, $columns, Query $values, array &$params = []): string
-    {
+    protected function buildSubqueryInCondition(
+        string $operator,
+        array|string $columns,
+        ExpressionInterface $values,
+        array &$params = []
+    ): string {
         $sql = $this->queryBuilder->buildExpression($values, $params);
 
         if (is_array($columns)) {
@@ -183,15 +187,19 @@ class InConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds SQL for IN condition.
      *
-     * @param string $operator
+     * @param string|null $operator
      * @param array|Traversable $columns
-     * @param array|iterable $values
+     * @param array $values
      * @param array $params
      *
      * @return string SQL
      */
-    protected function buildCompositeInCondition(string $operator, $columns, $values, array &$params = []): string
-    {
+    protected function buildCompositeInCondition(
+        ?string $operator,
+        array|Traversable $columns,
+        array|Traversable $values,
+        array &$params = []
+    ): string {
         $vss = [];
         foreach ($values as $value) {
             $vs = [];
