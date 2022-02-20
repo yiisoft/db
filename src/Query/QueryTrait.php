@@ -26,14 +26,11 @@ use function trim;
  */
 trait QueryTrait
 {
-    /** @var ExpressionInterface|int|null $limit */
-    private $limit;
-    /** @var ExpressionInterface|int|null $offset */
-    private $offset;
-    /** @var callable|string $indexBy */
+    private ExpressionInterface|int|null $limit;
+    private ExpressionInterface|int|null $offset;
+    /** @var callable|string  */
     private $indexBy;
-    /** @var array|string|null $indexBy */
-    private $where;
+    private array|string|null $where;
     private array $orderBy = [];
     private bool $emulateExecution = false;
 
@@ -476,7 +473,7 @@ trait QueryTrait
         return $this->orderBy;
     }
 
-    public function getIndexBy()
+    public function getIndexBy(): callable|string
     {
         return $this->indexBy;
     }
