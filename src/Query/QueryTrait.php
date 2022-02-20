@@ -64,7 +64,7 @@ trait QueryTrait
      *
      * See {@see QueryInterface::where()} for detailed documentation.
      *
-     * @param array|string|ExpressionInterface|null $condition the conditions that should be put in the WHERE part.
+     * @param array|ExpressionInterface|string|null $condition the conditions that should be put in the WHERE part.
      *
      * @return $this the query object itself
      *
