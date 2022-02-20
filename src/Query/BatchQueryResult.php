@@ -105,7 +105,7 @@ class BatchQueryResult implements Iterator
      */
     public function next(): void
     {
-        if ($this->batch === null || !$this->each || ($this->each && next($this->batch) === false)) {
+        if ($this->batch === null || !$this->each || (next($this->batch) === false)) {
             $this->batch = $this->fetchData();
             reset($this->batch);
         }

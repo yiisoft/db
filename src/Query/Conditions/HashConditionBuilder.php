@@ -48,6 +48,6 @@ class HashConditionBuilder implements HashConditionBuilderInterface
             }
         }
 
-        return (count($parts) === 1) ? (string) $parts[0] : ('(' . implode(') AND (', $parts) . ')');
+        return (count($parts) === 1) ? $parts[0] : ('(' . implode(') AND (', $parts) . ')');
     }
 }

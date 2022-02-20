@@ -297,7 +297,7 @@ abstract class Connection implements ConnectionInterface
                 $transaction->rollBack();
             } catch (\Exception $e) {
                 if ($this->logger !== null) {
-                    $this->logger->log(LogLevel::ERROR, $e, [__METHOD__]);
+                    $this->logger->log(LogLevel::ERROR, (string) $e, [__METHOD__]);
                     /** hide this exception to be able to continue throwing original exception outside */
                 }
             }

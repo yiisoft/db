@@ -19,7 +19,7 @@ class SimpleCondition implements SimpleConditionInterface
     public function __construct(
         private string|array|ExpressionInterface $column,
         private string $operator,
-        private array|int|string|Iterator|ExpressionInterface $value
+        private array|int|string|Iterator|ExpressionInterface|null $value
     ) {
     }
 

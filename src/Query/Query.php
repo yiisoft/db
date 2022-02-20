@@ -84,8 +84,7 @@ class Query implements QueryInterface, ExpressionInterface
     protected array $params = [];
     private ?Dependency $queryCacheDependency = null;
     private ConnectionInterface $db;
-    /** @var $queryCacheDuration bool|int|null */
-    private $queryCacheDuration;
+    private ?int $queryCacheDuration = null;
 
     public function __construct(ConnectionInterface $db)
     {
@@ -267,7 +266,7 @@ class Query implements QueryInterface, ExpressionInterface
             return $this->createCommand()->queryColumn();
         }
 
-        if (is_string($this->indexBy) && is_array($this->select) && count($this->select) === 1) {
+        if (is_string($this->indexBy) && count($this->select) === 1) {
             if (strpos($this->indexBy, '.') === false && count($tables = $this->getTablesUsedInFrom()) > 0) {
                 $this->select[] = key($tables) . '.' . $this->indexBy;
             } else {
@@ -499,11 +498,12 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @throws InvalidArgumentException
      *
-     * @return string[] table names indexed by aliases
+     * @psalm-return array<array-key, ExpressionInterface|string> table names indexed by aliases
      */
     protected function cleanUpTableNames(array $tableNames): array
     {
         $cleanedUpTableNames = [];
+
         foreach ($tableNames as $alias => $tableName) {
             if (is_string($tableName) && !is_string($alias)) {
                 $pattern = <<<PATTERN
@@ -629,12 +629,8 @@ PATTERN;
      */
     public function addSelect($columns): self
     {
-        if ($this->select === null) {
+        if ($this->select === []) {
             return $this->select($columns);
-        }
-
-        if (!is_array($this->select)) {
-            $this->select = $this->normalizeSelect($this->select);
         }
 
         $this->select = array_merge($this->select, $this->normalizeSelect($columns));
@@ -1039,7 +1035,8 @@ PATTERN;
         } elseif (!is_array($columns)) {
             $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
         }
-        if ($this->groupBy === null) {
+
+        if ($this->groupBy === []) {
             $this->groupBy = $columns;
         } else {
             $this->groupBy = array_merge($this->groupBy, $columns);
@@ -1287,16 +1284,16 @@ PATTERN;
     /**
      * Enables query cache for this Query.
      *
-     * @param int|true $duration the number of seconds that query results can remain valid in cache.
+     * @param int|null $duration the number of seconds that query results can remain valid in cache.
      * Use 0 to indicate that the cached data will never expire.
      * Use a negative number to indicate that query cache should not be used.
-     * Use boolean `true` to indicate that {@see ConnectionInterface::queryCacheDuration} should be used.
-     * Defaults to `true`.
      * @param Dependency|null $dependency the cache dependency associated with the cached result.
      *
      * @return $this the Query object itself.
+     *
+     * @todo Check if this method @darkdef
      */
-    public function cache($duration = true, ?Dependency $dependency = null): self
+    public function cache($duration = 3600, ?Dependency $dependency = null): self
     {
         $this->queryCacheDuration = $duration;
         $this->queryCacheDependency = $dependency;
@@ -1312,7 +1309,6 @@ PATTERN;
     public function noCache(): self
     {
         $this->queryCacheDuration = -1;
-
         return $this;
     }
 
@@ -1326,8 +1322,7 @@ PATTERN;
     protected function setCommandCache(CommandInterface $command): CommandInterface
     {
         if ($this->queryCacheDuration !== null || $this->queryCacheDependency !== null) {
-            $duration = $this->queryCacheDuration === true ? null : $this->queryCacheDuration;
-            $command->cache($duration, $this->queryCacheDependency);
+            $command->cache($this->queryCacheDuration, $this->queryCacheDependency);
         }
 
         return $command;

@@ -870,11 +870,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
      */
     protected function prepareInsertSelectSubQuery(Query $columns, array $params = []): array
     {
-        if (
-            !is_array($columns->getSelect())
-            || empty($columns->getSelect())
-            || in_array('*', $columns->getSelect(), true)
-        ) {
+        if (empty($columns->getSelect()) || in_array('*', $columns->getSelect(), true)) {
             throw new InvalidArgumentException('Expected select query object with enumerated (named) parameters');
         }
 
@@ -1024,10 +1020,6 @@ abstract class QueryBuilder implements QueryBuilderInterface
      */
     private function getTableUniqueColumnNames(string $name, array $columns, array &$constraints = []): array
     {
-        if (!$this->schema instanceof ConstraintSchemaInterface) {
-            return [];
-        }
-
         $constraints = [];
         $primaryKey = $this->schema->getTablePrimaryKey($name);
 

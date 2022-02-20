@@ -365,7 +365,8 @@ trait QueryTrait
     public function addOrderBy($columns): self
     {
         $columns = $this->normalizeOrderBy($columns);
-        if ($this->orderBy === null) {
+
+        if ($this->orderBy === []) {
             $this->orderBy = $columns;
         } else {
             $this->orderBy = array_merge($this->orderBy, $columns);
