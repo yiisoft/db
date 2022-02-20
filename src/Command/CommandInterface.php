@@ -193,13 +193,13 @@ interface CommandInterface
      *
      * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
-    public function bindParam(
-        int|string $name,
-        mixed &$value,
-        ?int $dataType = null,
-        ?int $length = null,
-        mixed $driverOptions = null
-    ): self;
+//    public function bindParam(
+//        int|string $name,
+//        mixed &$value,
+//        ?int $dataType = null,
+//        ?int $length = null,
+//        mixed $driverOptions = null
+//    ): self;
 
     /**
      * Binds a value to a parameter.
@@ -693,7 +693,7 @@ interface CommandInterface
     /**
      * Specifies the SQL statement to be executed. The SQL statement will not be modified in any way.
      *
-     * The previous SQL (if any) will be discarded, and {@see params} will be cleared as well. See {@see reset()}
+     * The previous SQL (if any) will be discarded, and {@see Param} will be cleared as well. See {@see reset()}
      * for details.
      *
      * @param string $sql The SQL statement to be set.
@@ -709,7 +709,7 @@ interface CommandInterface
      * Specifies the SQL statement to be executed. The SQL statement will be quoted using
      * {@see ConnectionInterface::quoteSql()}.
      *
-     * The previous SQL (if any) will be discarded, and {@see params} will be cleared as well. See {@see reset()} for
+     * The previous SQL (if any) will be discarded, and {@see Param} will be cleared as well. See {@see reset()} for
      * details.
      *
      * @param string $sql The SQL statement to be set.
