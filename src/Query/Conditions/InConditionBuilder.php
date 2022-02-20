@@ -77,11 +77,11 @@ class InConditionBuilder implements InConditionBuilderInterface
 
         if (is_array($values)) {
             $rawValues = $values;
-        } elseif ($values instanceof Traversable) {
+        } else {
             $rawValues = $this->getRawValuesFromTraversableObject($values);
         }
 
-        if (isset($rawValues) && in_array(null, $rawValues, true)) {
+        if (in_array(null, $rawValues, true)) {
             $nullCondition = $this->getNullCondition($operator, $column);
             $nullConditionOperator = $operator === 'IN' ? 'OR' : 'AND';
         }

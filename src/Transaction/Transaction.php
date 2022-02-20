@@ -85,7 +85,7 @@ class Transaction
      */
     public function isActive(): bool
     {
-        return $this->level > 0 && $this->db && $this->db->isActive();
+        return $this->level > 0 && $this->db->isActive();
     }
 
     /**
@@ -113,10 +113,6 @@ class Transaction
      */
     public function begin(?string $isolationLevel = null): void
     {
-        if ($this->db === null) {
-            throw new InvalidConfigException('Transaction::db must be set.');
-        }
-
         $this->db->open();
 
         if ($this->level === 0) {
