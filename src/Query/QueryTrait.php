@@ -26,11 +26,11 @@ use function trim;
  */
 trait QueryTrait
 {
-    private ExpressionInterface|int|null $limit;
-    private ExpressionInterface|int|null $offset;
+    private ExpressionInterface|int|null $limit = null;
+    private ExpressionInterface|int|null $offset = null;
     /** @var callable|string  */
     private $indexBy;
-    private array|string|null $where;
+    private array|string|null $where = null;
     private array $orderBy = [];
     private bool $emulateExecution = false;
 
