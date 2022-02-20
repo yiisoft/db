@@ -28,16 +28,16 @@ trait QueryTrait
 {
     private ExpressionInterface|int|null $limit = null;
     private ExpressionInterface|int|null $offset = null;
-    /** @var callable|string  */
+    /** @var callable|string|null  */
     private $indexBy;
-    private array|string|null $where = null;
+    private array|string|ExpressionInterface|null $where = null;
     private array $orderBy = [];
     private bool $emulateExecution = false;
 
     /**
      * Sets the {@see indexBy} property.
      *
-     * @param callable|string $column the name of the column by which the query results should be indexed by.
+     * @param callable|string|null $column the name of the column by which the query results should be indexed by.
      *
      * This can also be a callable (e.g. anonymous function) that returns the index value based on the given row data.
      *
@@ -52,7 +52,7 @@ trait QueryTrait
      *
      * @return $this the query object itself
      */
-    public function indexBy($column): self
+    public function indexBy(callable|string|null $column): self
     {
         $this->indexBy = $column;
 
@@ -64,14 +64,14 @@ trait QueryTrait
      *
      * See {@see QueryInterface::where()} for detailed documentation.
      *
-     * @param array|string|null $condition the conditions that should be put in the WHERE part.
+     * @param array|string|ExpressionInterface|null $condition the conditions that should be put in the WHERE part.
      *
      * @return $this the query object itself
      *
      * {@see andWhere()}
      * {@see orWhere()}
      */
-    public function where($condition): self
+    public function where(array|string|ExpressionInterface|null $condition): self
     {
         $this->where = $condition;
 
@@ -453,7 +453,7 @@ trait QueryTrait
         return $this;
     }
 
-    public function getWhere()
+    public function getWhere(): array|string|ExpressionInterface|null
     {
         return $this->where;
     }
@@ -473,7 +473,7 @@ trait QueryTrait
         return $this->orderBy;
     }
 
-    public function getIndexBy(): callable|string
+    public function getIndexBy(): callable|string|null
     {
         return $this->indexBy;
     }
