@@ -4,48 +4,40 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use Iterator;
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\Interface\SimpleConditionInterface;
 
 use function count;
 
 /**
  * Class SimpleCondition represents a simple condition like `"column" operator value`.
  */
-class SimpleCondition implements ConditionInterface
+class SimpleCondition implements SimpleConditionInterface
 {
-    public function __construct(private mixed $column, private string $operator, private mixed $value)
-    {
+    public function __construct(
+        private string|array|ExpressionInterface $column,
+        private string $operator,
+        private array|int|string|Iterator|ExpressionInterface $value
+    ) {
     }
 
-    /**
-     * @return string the operator to use. Anything could be used e.g. `>`, `<=`, etc.
-     */
+    public function getColumn(): string|array|ExpressionInterface
+    {
+        return $this->column;
+    }
+
     public function getOperator(): string
     {
         return $this->operator;
     }
 
-    /**
-     * @return mixed the column name to the left of {@see operator}.
-     */
-    public function getColumn()
-    {
-        return $this->column;
-    }
-
-    /**
-     * @return mixed the value to the right of the {@see operator}.
-     */
-    public function getValue()
+    public function getValue(): array|int|string|Iterator|ExpressionInterface
     {
         return $this->value;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @throws InvalidArgumentException if wrong number of operands have been given.
-     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (count($operands) !== 2) {

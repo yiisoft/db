@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use Yiisoft\Db\Query\Conditions\Interface\ConjunctionConditionInterface;
+
 /**
  * Class ConjunctionCondition.
  */
-abstract class ConjunctionCondition implements ConditionInterface
+abstract class ConjunctionCondition implements ConjunctionConditionInterface
 {
-    public function __construct(protected mixed $expressions)
+    public function __construct(protected array $expressions)
     {
     }
 
@@ -17,13 +19,6 @@ abstract class ConjunctionCondition implements ConditionInterface
     {
         return $this->expressions;
     }
-
-    /**
-     * Returns the operator that is represented by this condition class, e.g. `AND`, `OR`.
-     *
-     * @return string
-     */
-    abstract public function getOperator(): string;
 
     public static function fromArrayDefinition(string $operator, array $operands): self
     {

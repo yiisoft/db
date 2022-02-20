@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use Iterator;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Query\Conditions\Interface\BetweenColumnsConditionInterface;
 
 /**
- * Class BetweenColumnCondition represents a `BETWEEN` condition where values is between two columns.
+ * Class BetweenColumnCondition represents a `BETWEEN` condition where values are between two columns.
  *
  * For example:.
  *
@@ -33,52 +34,36 @@ use Yiisoft\Db\Query\QueryInterface;
  * // NOW() NOT BETWEEN (SELECT time FROM log ORDER BY id ASC LIMIT 1) AND update_time
  * ```
  */
-class BetweenColumnsCondition implements ConditionInterface
+class BetweenColumnsCondition implements BetweenColumnsConditionInterface
 {
     public function __construct(
-        private mixed $value,
+        private array|int|string|Iterator|ExpressionInterface $value,
         private string $operator,
         private mixed $intervalStartColumn,
         private mixed $intervalEndColumn
     ) {
     }
 
-    /**
-     * @return string the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`).
-     */
+    public function getIntervalEndColumn(): string|ExpressionInterface
+    {
+        return $this->intervalEndColumn;
+    }
+
+    public function getIntervalStartColumn(): string|ExpressionInterface
+    {
+        return $this->intervalStartColumn;
+    }
+
     public function getOperator(): string
     {
         return $this->operator;
     }
 
-    /**
-     * @return mixed the value to compare against.
-     */
-    public function getValue()
+    public function getValue(): array|int|string|Iterator|ExpressionInterface
     {
         return $this->value;
     }
 
-    /**
-     * @return ExpressionInterface|QueryInterface|string the column name or expression that is a beginning of the
-     * interval.
-     */
-    public function getIntervalStartColumn(): ExpressionInterface|QueryInterface|string
-    {
-        return $this->intervalStartColumn;
-    }
-
-    /**
-     * @return ExpressionInterface|QueryInterface|string the column name or expression that is an end of the interval.
-     */
-    public function getIntervalEndColumn(): ExpressionInterface|QueryInterface|string
-    {
-        return $this->intervalEndColumn;
-    }
-
-    /**
-     * @throws InvalidArgumentException if wrong number of operands have been given.
-     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (!isset($operands[0], $operands[1], $operands[2])) {

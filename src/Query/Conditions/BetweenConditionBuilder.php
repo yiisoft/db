@@ -8,8 +8,9 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\Interface\BetweenConditionBuilderInterface;
+use Yiisoft\Db\Query\Conditions\Interface\BetweenConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 use function strpos;
@@ -17,13 +18,13 @@ use function strpos;
 /**
  * Class BetweenConditionBuilder builds objects of {@see BetweenCondition}.
  */
-class BetweenConditionBuilder implements ExpressionBuilderInterface
+class BetweenConditionBuilder implements BetweenConditionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
     }
 
-    public function build(ExpressionInterface $expression, array &$params = []): string
+    public function build(BetweenConditionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();
         $column = $expression->getColumn();
@@ -42,7 +43,7 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      * Attaches $value to $params array and returns placeholder.
      *
      * @param mixed $value
-     * @param array $params passed by reference
+     * @param array $params Passed by reference.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *

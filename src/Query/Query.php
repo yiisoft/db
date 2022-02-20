@@ -92,15 +92,6 @@ class Query implements QueryInterface, ExpressionInterface
         $this->db = $db;
     }
 
-    /**
-     * Creates a DB command that can be used to execute this query.
-     *
-     * If this parameter is not given, the `db` application component will be used.
-     *
-     * @throws Exception|InvalidConfigException
-     *
-     * @return CommandInterface the created DB command instance.
-     */
     public function createCommand(): CommandInterface
     {
         [$sql, $params] = $this->db->getQueryBuilder()->build($this);
@@ -204,16 +195,6 @@ class Query implements QueryInterface, ExpressionInterface
         return $this->populate($rows);
     }
 
-    /**
-     * Converts the raw query results into the format as specified by this query.
-     *
-     * This method is internally used to convert the data fetched from database into the format as required by this
-     * query.
-     *
-     * @param array $rows the raw query result from database.
-     *
-     * @return array the converted query result.
-     */
     public function populate(array $rows): array
     {
         if ($this->indexBy === null) {

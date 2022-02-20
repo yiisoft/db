@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Query\Conditions\Interface\NotConditionInterface;
 
 use function array_shift;
 use function count;
@@ -12,25 +13,17 @@ use function count;
 /**
  * Condition that inverts passed {@see condition}.
  */
-class NotCondition implements ConditionInterface
+class NotCondition implements NotConditionInterface
 {
     public function __construct(private mixed $condition)
     {
     }
 
-    /**
-     * @return mixed the condition to be negated.
-     */
-    public function getCondition()
+    public function getCondition(): mixed
     {
         return $this->condition;
     }
 
-    /**
-     * {@inheritdoc}
-     *
-     * @throws InvalidArgumentException if wrong number of operands have been given.
-     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (count($operands) !== 1) {

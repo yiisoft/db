@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
@@ -51,7 +54,7 @@ interface QueryInterface
     /**
      * Sets the {@see indexBy} property.
      *
-     * @param callable|string $column the name of the column by which the query results should be indexed by.
+     * @param callable|string|null $column the name of the column by which the query results should be indexed by.
      * This can also be a callable (e.g. anonymous function) that returns the index value based on the given row data.
      * The signature of the callable should be:
      *
@@ -312,4 +315,32 @@ interface QueryInterface
      * @return $this the query object itself.
      */
     public function select($columns, ?string $option = null): self;
+
+    /**
+     * Return index by key.
+     */
+    public function getIndexBy(): callable|string|null;
+
+    /**
+     * Creates a DB command that can be used to execute this query.
+     *
+     * If this parameter is not given, the `db` application component will be used.
+     *
+     * @throws Exception|InvalidConfigException
+     *
+     * @return CommandInterface the created DB command instance.
+     */
+    public function createCommand(): CommandInterface;
+
+    /**
+     * Converts the raw query results into the format as specified by this query.
+     *
+     * This method is internally used to convert the data fetched from database into the format as required by this
+     * query.
+     *
+     * @param array $rows the raw query result from database.
+     *
+     * @return array the converted query result.
+     */
+    public function populate(array $rows): array;
 }

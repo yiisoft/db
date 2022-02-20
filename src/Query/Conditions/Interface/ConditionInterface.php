@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Query\Conditions;
+namespace Yiisoft\Db\Query\Conditions\Interface;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -16,12 +16,12 @@ interface ConditionInterface extends ExpressionInterface
      * Creates object by array-definition as described in
      * [Query Builder – Operator format](guide:db-query-builder#operator-format) guide article.
      *
-     * @param string $operator operator in uppercase.
-     * @param array  $operands array of corresponding operands
+     * @param string $operator Operator in uppercase.
+     * @param array  $operands Array of corresponding operands
      *
-     * @throws InvalidArgumentException if input parameters are not suitable for this condition
+     * @throws InvalidArgumentException If input parameters are not suitable for this condition
      *
-     * @return $this
+     * @return static
      */
     public static function fromArrayDefinition(string $operator, array $operands): self;
 }

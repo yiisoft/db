@@ -5,57 +5,42 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\Interface\BetweenConditionInterface;
 
 /**
  * Class BetweenCondition represents a `BETWEEN` condition.
  */
-class BetweenCondition implements ConditionInterface
+class BetweenCondition implements BetweenConditionInterface
 {
     public function __construct(
-        private mixed $column,
+        private string|array|ExpressionInterface $column,
         private string $operator,
         private mixed $intervalStart,
         private mixed $intervalEnd
     ) {
     }
 
-    /**
-     * @return string the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`).
-     */
+    public function getColumn(): string|array|ExpressionInterface
+    {
+        return $this->column;
+    }
+
+    public function getIntervalEnd(): mixed
+    {
+        return $this->intervalEnd;
+    }
+
+    public function getIntervalStart(): mixed
+    {
+        return $this->intervalStart;
+    }
+
     public function getOperator(): string
     {
         return $this->operator;
     }
 
-    /**
-     * @return mixed the column name to the left of {@see operator}.
-     */
-    public function getColumn()
-    {
-        return $this->column;
-    }
-
-    /**
-     * @return mixed beginning of the interval.
-     */
-    public function getIntervalStart()
-    {
-        return $this->intervalStart;
-    }
-
-    /**
-     * @return mixed end of the interval.
-     */
-    public function getIntervalEnd()
-    {
-        return $this->intervalEnd;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws InvalidArgumentException if wrong number of operands have been given.
-     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (!isset($operands[0], $operands[1], $operands[2])) {
