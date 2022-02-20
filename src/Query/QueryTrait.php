@@ -52,7 +52,7 @@ trait QueryTrait
      *
      * @return $this the query object itself
      */
-    public function indexBy(callable|string|null $column): self
+    public function indexBy($column): self
     {
         $this->indexBy = $column;
 

@@ -67,7 +67,7 @@ interface QueryInterface
      *
      * @return QueryInterface the query object itself.
      */
-    public function indexBy(callable|string|null $column): self;
+    public function indexBy($column): self;
 
     /**
      * Sets the WHERE part of the query.
