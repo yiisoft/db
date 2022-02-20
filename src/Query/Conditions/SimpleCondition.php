@@ -33,7 +33,7 @@ class SimpleCondition implements SimpleConditionInterface
         return $this->operator;
     }
 
-    public function getValue(): array|int|string|Iterator|ExpressionInterface
+    public function getValue(): array|int|string|Iterator|ExpressionInterface|null
     {
         return $this->value;
     }
