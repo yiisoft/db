@@ -68,7 +68,7 @@ use function trim;
  *
  * @property string[] $tablesUsedInFrom Table names indexed by aliases. This property is read-only.
  */
-class Query implements QueryInterface, ExpressionInterface
+class Query implements ExpressionInterface, QueryInterface
 {
     use QueryTrait;
 

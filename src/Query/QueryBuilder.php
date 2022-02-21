@@ -31,7 +31,6 @@ use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_merge;
-use function array_reverse;
 use function array_shift;
 use function array_unique;
 use function array_values;
@@ -42,9 +41,7 @@ use function implode;
 use function in_array;
 use function is_array;
 use function is_int;
-use function is_object;
 use function is_string;
-use function is_subclass_of;
 use function json_encode;
 use function ltrim;
 use function preg_match;
@@ -109,7 +106,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
     protected array $conditionClasses = [];
 
     /**
-     * @var ExpressionBuilderInterface[]|string[] maps expression class to expression builder class.
+     * @var string[] maps expression class to expression builder class.
      * For example:
      *
      * ```php
@@ -120,8 +117,8 @@ abstract class QueryBuilder implements QueryBuilderInterface
      * This property is mainly used by {@see buildExpression()} to build SQL expressions form expression objects.
      * See default values in {@see defaultExpressionBuilders()} method.
      *
-     * @see setExpressionBuilders()
-     * @see defaultExpressionBuilders()
+     * {@see setExpressionBuilders()}
+     * {@see defaultExpressionBuilders()}
      */
     protected array $expressionBuilders = [];
     protected string $separator = ' ';
@@ -644,34 +641,17 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $type;
     }
 
-    public function getExpressionBuilder(ExpressionInterface $expression): string|ExpressionBuilderInterface|static
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface|static
     {
         $className = get_class($expression);
 
         if (!isset($this->expressionBuilders[$className])) {
-            foreach (array_reverse($this->expressionBuilders) as $expressionClass => $builderClass) {
-                if (is_subclass_of($expression, $expressionClass)) {
-                    $this->expressionBuilders[$className] = $builderClass;
-                    break;
-                }
-            }
-
-            if (!isset($this->expressionBuilders[$className])) {
-                throw new InvalidArgumentException(
-                    'Expression of class ' . $className . ' can not be built in ' . static::class
-                );
-            }
+            throw new InvalidArgumentException(
+                'Expression of class ' . $className . ' can not be built in ' . static::class
+            );
         }
 
-        if ($this->expressionBuilders[$className] === __CLASS__) {
-            return $this;
-        }
-
-        if (!is_object($this->expressionBuilders[$className])) {
-            $this->expressionBuilders[$className] = new $this->expressionBuilders[$className]($this);
-        }
-
-        return $this->expressionBuilders[$className];
+        return new $this->expressionBuilders[$className]($this);
     }
 
     public function getQuoter(): QuoterInterface

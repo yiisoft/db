@@ -717,13 +717,11 @@ interface QueryBuilderInterface
      *
      * @throws InvalidArgumentException when $expression building is not supported by this QueryBuilder.
      *
-     * @return ExpressionBuilderInterface|QueryBuilderInterface|string
+     * @return ExpressionBuilderInterface|static
      *
      * @see expressionBuilders
      */
-    public function getExpressionBuilder(
-        ExpressionInterface $expression
-    ): ExpressionBuilderInterface|QueryBuilderInterface|string;
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface|static;
 
     /**
      * Creates an INSERT SQL statement.
