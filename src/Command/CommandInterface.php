@@ -193,13 +193,13 @@ interface CommandInterface
      *
      * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
-//    public function bindParam(
-//        int|string $name,
-//        mixed &$value,
-//        ?int $dataType = null,
-//        ?int $length = null,
-//        mixed $driverOptions = null
-//    ): self;
+    public function bindParam(
+        int|string $name,
+        mixed &$value,
+        ?int $dataType = null,
+        ?int $length = null,
+        mixed $driverOptions = null
+    ): self;
 
     /**
      * Binds a value to a parameter.
