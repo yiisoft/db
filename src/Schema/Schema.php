@@ -60,15 +60,6 @@ abstract class Schema implements SchemaInterface
      * @var string|null the default schema name used for the current session.
      */
     protected ?string $defaultSchema = null;
-
-    /**
-     * @var array map of DB errors and corresponding exceptions. If left part is found in DB error message exception
-     * class from the right part is used.
-     */
-    protected array $exceptionMap = [
-        'SQLSTATE[23' => IntegrityException::class,
-    ];
-
     private array $schemaNames = [];
     private array $tableNames = [];
     private array $tableMetadata = [];
@@ -164,18 +155,15 @@ abstract class Schema implements SchemaInterface
             return $e;
         }
 
-        $exceptionClass = Exception::class;
+        $message = $e->getMessage() . PHP_EOL . 'The SQL being executed was: ' . $rawSql;
+        $errorInfo = $e instanceof PDOException ? $e->errorInfo : null;
+        $exception = new Exception($message, $errorInfo, $e);
 
-        foreach ($this->exceptionMap as $error => $class) {
-            if (str_contains($e->getMessage(), $error)) {
-                $exceptionClass = $class;
-            }
+        if (str_contains($message, 'SQLSTATE[23') || str_contains($message, 'ORA-00001: unique constraint')) {
+            $exception = new IntegrityException($message, $errorInfo, $e);
         }
 
-        $message = $e->getMessage() . "\nThe SQL being executed was: $rawSql";
-        $errorInfo = $e instanceof PDOException ? $e->errorInfo : null;
-
-        return new $exceptionClass($message, $errorInfo, $e);
+        return $exception;
     }
 
     public function getDefaultSchema(): ?string
