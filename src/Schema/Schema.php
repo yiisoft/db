@@ -149,23 +149,6 @@ abstract class Schema implements SchemaInterface
      */
     abstract protected function loadTableSchema(string $name): ?TableSchema;
 
-    public function convertException(\Exception $e, string $rawSql): Exception
-    {
-        if ($e instanceof Exception) {
-            return $e;
-        }
-
-        $message = $e->getMessage() . PHP_EOL . 'The SQL being executed was: ' . $rawSql;
-        $errorInfo = $e instanceof PDOException ? $e->errorInfo : null;
-        $exception = new Exception($message, $errorInfo, $e);
-
-        if (str_contains($message, 'SQLSTATE[23') || str_contains($message, 'ORA-00001: unique constraint')) {
-            $exception = new IntegrityException($message, $errorInfo, $e);
-        }
-
-        return $exception;
-    }
-
     public function getDefaultSchema(): ?string
     {
         return $this->defaultSchema;
