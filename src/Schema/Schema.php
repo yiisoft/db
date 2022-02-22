@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use PDO;
-use PDOException;
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 use function array_key_exists;
