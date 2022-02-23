@@ -15,16 +15,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 interface SchemaInterface extends ConstraintSchemaInterface
 {
     /**
-     * Converts a DB exception to a more concrete one if possible.
-     *
-     * @param \Exception $e
-     * @param string $rawSql SQL that produced exception.
-     *
-     * @return Exception
-     */
-    public function convertException(\Exception $e, string $rawSql): Exception;
-
-    /**
      * Creates a new savepoint.
      *
      * @param string $name the savepoint name

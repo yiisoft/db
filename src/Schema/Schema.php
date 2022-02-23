@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use PDO;
-use PDOException;
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 use function array_key_exists;
@@ -60,15 +58,6 @@ abstract class Schema implements SchemaInterface
      * @var string|null the default schema name used for the current session.
      */
     protected ?string $defaultSchema = null;
-
-    /**
-     * @var array map of DB errors and corresponding exceptions. If left part is found in DB error message exception
-     * class from the right part is used.
-     */
-    protected array $exceptionMap = [
-        'SQLSTATE[23' => IntegrityException::class,
-    ];
-
     private array $schemaNames = [];
     private array $tableNames = [];
     private array $tableMetadata = [];
@@ -157,26 +146,6 @@ abstract class Schema implements SchemaInterface
      * @return TableSchema|null DBMS-dependent table metadata, `null` if the table does not exist.
      */
     abstract protected function loadTableSchema(string $name): ?TableSchema;
-
-    public function convertException(\Exception $e, string $rawSql): Exception
-    {
-        if ($e instanceof Exception) {
-            return $e;
-        }
-
-        $exceptionClass = Exception::class;
-
-        foreach ($this->exceptionMap as $error => $class) {
-            if (str_contains($e->getMessage(), $error)) {
-                $exceptionClass = $class;
-            }
-        }
-
-        $message = $e->getMessage() . "\nThe SQL being executed was: $rawSql";
-        $errorInfo = $e instanceof PDOException ? $e->errorInfo : null;
-
-        return new $exceptionClass($message, $errorInfo, $e);
-    }
 
     public function getDefaultSchema(): ?string
     {
