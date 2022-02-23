@@ -337,6 +337,23 @@ trait TestCommandTrait
         ], $record);
     }
 
+    public function testInsertEx(): void
+    {
+        $db = $this->getConnection();
+
+        $result = $db->createCommand()->insertEx(
+            'customer',
+            [
+                'name' => 'testParams',
+                'email' => 'testParams@example.com',
+                'address' => '1',
+            ]
+        );
+
+        $this->assertIsArray($result);
+        $this->assertNotNull($result['id']);
+    }
+
     /**
      * Verify that {{}} are not going to be replaced in parameters.
      */

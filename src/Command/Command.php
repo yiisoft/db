@@ -493,6 +493,8 @@ abstract class Command implements CommandInterface
         return $this->setSql($sql)->bindValues($params);
     }
 
+    abstract public function insertEx(string $table, array $columns): bool|array;
+
     public function noCache(): self
     {
         $this->queryCacheDuration = -1;

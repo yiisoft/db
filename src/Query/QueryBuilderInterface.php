@@ -749,6 +749,8 @@ interface QueryBuilderInterface
      */
     public function insert(string $table, Query|array $columns, array &$params = []): string;
 
+    public function insertEx(string $table, Query|array $columns, array &$params = []): string;
+
     /**
      * Prepares a `VALUES` part for an `INSERT` SQL statement.
      *
