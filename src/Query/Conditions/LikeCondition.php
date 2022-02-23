@@ -33,7 +33,6 @@ class LikeCondition implements LikeConditionInterface
         return $this->escapingReplacements;
     }
 
-
     public function getOperator(): string
     {
         return $this->operator;

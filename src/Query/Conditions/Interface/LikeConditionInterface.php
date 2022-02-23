@@ -39,5 +39,4 @@ interface LikeConditionInterface extends ConditionInterface
      * @return array|ExpressionInterface|int|Iterator|string|null The value to the right of the {@see operator}.
      */
     public function getValue(): array|int|string|Iterator|ExpressionInterface|null;
-
 }

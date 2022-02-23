@@ -17,7 +17,8 @@ class QueryExpressionBuilder implements ExpressionBuilderInterface
     {
     }
 
-    public function build(ExpressionInterface $expression, array &$params = []): string {
+    public function build(ExpressionInterface $expression, array &$params = []): string
+    {
         [$sql, $params] = $this->queryBuilder->build($expression, $params);
         return "($sql)";
     }
