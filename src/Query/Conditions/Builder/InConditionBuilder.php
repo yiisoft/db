@@ -14,7 +14,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\InCondition;
-use Yiisoft\Db\Query\Conditions\Interface\ConditionInterface;
 use Yiisoft\Db\Query\Conditions\Interface\InConditionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilderInterface;

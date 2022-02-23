@@ -22,7 +22,6 @@ use Yiisoft\Db\Query\QueryBuilderInterface;
  */
 final class PdoValue implements ExpressionInterface
 {
-
     public function __construct(private ?string $value = null, private ?int $type = null)
     {
     }

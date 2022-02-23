@@ -6,9 +6,7 @@ namespace Yiisoft\Db\Query\Conditions;
 
 use Iterator;
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Query\Conditions\Builder\InConditionBuilder;
 use Yiisoft\Db\Query\Conditions\Interface\InConditionInterface;
-use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**

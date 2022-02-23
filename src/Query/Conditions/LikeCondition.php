@@ -7,9 +7,7 @@ namespace Yiisoft\Db\Query\Conditions;
 use Iterator;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\Builder\LikeConditionBuilder;
 use Yiisoft\Db\Query\Conditions\Interface\LikeConditionInterface;
-use Yiisoft\Db\Query\QueryBuilderInterface;
 
 /**
  * Class LikeCondition represents a `LIKE` condition.
@@ -34,7 +32,6 @@ class LikeCondition implements LikeConditionInterface
     {
         return $this->escapingReplacements;
     }
-
 
     public function getOperator(): string
     {

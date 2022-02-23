@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Query\Conditions\Builder;
 
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\Interface\SimpleConditionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\SimpleConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
