@@ -14,7 +14,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\InCondition;
-use Yiisoft\Db\Query\Conditions\Interface\ConditionInterface;
 use Yiisoft\Db\Query\Conditions\Interface\InConditionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilderInterface;
@@ -23,11 +22,12 @@ use function array_merge;
 use function array_values;
 use function count;
 use function implode;
+use function in_array;
 use function is_array;
 use function iterator_count;
 use function reset;
 use function sprintf;
-use function strpos;
+use function str_contains;
 use function strtoupper;
 
 /**
@@ -39,10 +39,14 @@ class InConditionBuilder implements ExpressionBuilderInterface
     {
     }
 
+    /**
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     */
     public function build(InConditionInterface $expression, array &$params = []): string
     {
-        $operator = strtoupper($expression->getOperator());
         $column = $expression->getColumn();
+        $nullConditionOperator = '';
+        $operator = strtoupper($expression->getOperator());
         $values = $expression->getValues();
 
         if ($column === []) {
@@ -93,7 +97,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             return $nullCondition ?? ($operator === 'IN' ? '0=1' : '');
         }
 
-        if (strpos($column, '(') === false) {
+        if (!str_contains($column, '(')) {
             $column = $this->queryBuilder->quoter()->quoteColumnName($column);
         }
 
@@ -110,17 +114,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds $values to be used in {@see InCondition}.
      *
-     * @param InCondition $condition
-     * @param array|Traversable $values
-     * @param array $params the binding parameters.
-     *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
-     *
-     * @return array of prepared for SQL placeholders.
      *
      * @psalm-return string[]
      */
-    protected function buildValues(InCondition $condition, array|Traversable $values, array &$params = []): array
+    protected function buildValues(InConditionInterface $condition, array|Traversable $values, array &$params = []): array
     {
         $sqlValues = [];
         $column = $condition->getColumn();
@@ -156,14 +154,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds SQL for IN condition.
      *
-     * @param string $operator
-     * @param array|string $columns
-     * @param ExpressionInterface $values
-     * @param array $params
-     *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
-     *
-     * @return string SQL
      */
     protected function buildSubqueryInCondition(
         string $operator,
@@ -175,7 +166,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
 
         if (is_array($columns)) {
             foreach ($columns as $i => $col) {
-                if (strpos($col, '(') === false) {
+                if (!str_contains($col, '(')) {
                     $columns[$i] = $this->queryBuilder->quoter()->quoteColumnName($col);
                 }
             }
@@ -183,7 +174,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             return '(' . implode(', ', $columns) . ") $operator $sql";
         }
 
-        if (strpos($columns, '(') === false) {
+        if (!str_contains($columns, '(')) {
             $columns = $this->queryBuilder->quoter()->quoteColumnName($columns);
         }
 
@@ -192,13 +183,6 @@ class InConditionBuilder implements ExpressionBuilderInterface
 
     /**
      * Builds SQL for IN condition.
-     *
-     * @param string|null $operator
-     * @param array|Traversable $columns
-     * @param array $values
-     * @param array $params
-     *
-     * @return string SQL
      */
     protected function buildCompositeInCondition(
         ?string $operator,
@@ -225,8 +209,8 @@ class InConditionBuilder implements ExpressionBuilderInterface
         }
 
         $sqlColumns = [];
-        foreach ($columns as $i => $column) {
-            $sqlColumns[] = strpos($column, '(') === false
+        foreach ($columns as $column) {
+            $sqlColumns[] = !str_contains($column, '(')
                 ? $this->queryBuilder->quoter()->quoteColumnName($column) : $column;
         }
 
@@ -235,11 +219,6 @@ class InConditionBuilder implements ExpressionBuilderInterface
 
     /**
      * Builds is null/is not null condition for column based on operator.
-     *
-     * @param string $operator
-     * @param string $column
-     *
-     * @return string is null or is not null condition
      */
     protected function getNullCondition(string $operator, string $column): string
     {
@@ -252,13 +231,6 @@ class InConditionBuilder implements ExpressionBuilderInterface
         return sprintf('%s IS NOT NULL', $column);
     }
 
-    /**
-     * @param Traversable $traversableObject
-     *
-     * @return array raw values
-     *
-     * @psalm-return list<mixed>
-     */
     protected function getRawValuesFromTraversableObject(Traversable $traversableObject): array
     {
         $rawValues = [];

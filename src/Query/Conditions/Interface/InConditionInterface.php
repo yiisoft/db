@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions\Interface;
 
 use Iterator;
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
-interface InConditionInterface extends ConditionInterface, ExpressionInterface
+interface InConditionInterface extends ConditionInterface
 {
     /**
      * @psalm-return string|string[]|Iterator The column name. If it is an array, a composite `IN` condition will be

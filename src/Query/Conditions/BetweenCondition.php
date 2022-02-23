@@ -6,9 +6,7 @@ namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\Builder\BetweenConditionBuilder;
 use Yiisoft\Db\Query\Conditions\Interface\BetweenConditionInterface;
-use Yiisoft\Db\Query\QueryBuilderInterface;
 
 /**
  * Class BetweenCondition represents a `BETWEEN` condition.

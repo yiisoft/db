@@ -28,6 +28,9 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     {
     }
 
+    /**
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     */
     public function build(ConjunctionConditionInterface $expression, array &$params = []): string
     {
         $parts = $this->buildExpressionsFrom($expression, $params);
@@ -46,14 +49,9 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds expressions, that are stored in $condition.
      *
-     * @param ConjunctionCondition|ExpressionInterface $condition The expression to be built.
-     * @param array $params The binding parameters.
-     *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
-     *
-     * @psalm-return list<mixed|string>
      */
-    private function buildExpressionsFrom(ExpressionInterface $condition, array &$params = []): array
+    private function buildExpressionsFrom(ConjunctionConditionInterface $condition, array &$params = []): array
     {
         $parts = [];
 

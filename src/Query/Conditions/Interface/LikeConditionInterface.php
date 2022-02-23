@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Query\Conditions\Interface;
 use Iterator;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
-interface LikeConditionInterface extends ConditionInterface, ExpressionInterface
+interface LikeConditionInterface extends ConditionInterface
 {
     /**
      * @psalm-return string|string[]|ExpressionInterface The column name. If it is an array, a composite `IN` condition
@@ -21,7 +21,7 @@ interface LikeConditionInterface extends ConditionInterface, ExpressionInterface
     public function getEscapingReplacements(): array|bool|null;
 
     /**
-     * This method allows to specify how to escape special characters in the value(s).
+     * This method allows specifying how to escape special characters in the value(s).
      *
      * @param array|bool|null An array of mappings from the special characters to their escaped counterparts.
      * You may use `false` or an empty array to indicate the values are already escaped and no escape should be applied.

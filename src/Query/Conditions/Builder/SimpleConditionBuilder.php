@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions\Builder;
 
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\Interface\SimpleConditionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\SimpleConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 use function is_string;
-use function strpos;
+use function str_contains;
 
 /**
  * Class NotConditionBuilder builds objects of {@see SimpleCondition}.
@@ -22,6 +25,9 @@ class SimpleConditionBuilder implements ExpressionBuilderInterface
     {
     }
 
+    /**
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     */
     public function build(SimpleConditionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();
@@ -30,7 +36,7 @@ class SimpleConditionBuilder implements ExpressionBuilderInterface
 
         if ($column instanceof ExpressionInterface) {
             $column = $this->queryBuilder->buildExpression($column, $params);
-        } elseif (is_string($column) && strpos($column, '(') === false) {
+        } elseif (is_string($column) && !str_contains($column, '(')) {
             $column = $this->queryBuilder->quoter()->quoteColumnName($column);
         }
 

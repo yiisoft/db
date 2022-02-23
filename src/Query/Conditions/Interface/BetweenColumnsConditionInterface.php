@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Query\Conditions\Interface;
 use Iterator;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
-interface BetweenColumnsConditionInterface extends ConditionInterface, ExpressionInterface
+interface BetweenColumnsConditionInterface extends ConditionInterface
 {
     /**
      * @return ExpressionInterface|string The column name or expression that is an end of the interval.

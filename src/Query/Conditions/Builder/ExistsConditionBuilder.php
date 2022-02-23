@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions\Builder;
 
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\ExistConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
@@ -17,6 +21,9 @@ class ExistsConditionBuilder implements ExpressionBuilderInterface
     {
     }
 
+    /**
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     */
     public function build(ExistConditionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();

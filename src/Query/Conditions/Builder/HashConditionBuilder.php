@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions\Builder;
 
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\InCondition;
@@ -14,7 +18,7 @@ use Yiisoft\Db\Query\QueryInterface;
 use function count;
 use function implode;
 use function is_iterable;
-use function strpos;
+use function str_contains;
 
 /**
  * Class HashConditionBuilder builds objects of {@see HashCondition}.
@@ -25,6 +29,9 @@ class HashConditionBuilder implements ExpressionBuilderInterface
     {
     }
 
+    /**
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     */
     public function build(HashConditionInterface $expression, array &$params = []): string
     {
         $hash = $expression->getHash();
@@ -35,7 +42,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
                 /** IN condition */
                 $parts[] = $this->queryBuilder->buildCondition(new InCondition($column, 'IN', $value), $params);
             } else {
-                if (strpos($column, '(') === false) {
+                if (!str_contains($column, '(')) {
                     $column = $this->queryBuilder->quoter()->quoteColumnName($column);
                 }
                 if ($value === null) {

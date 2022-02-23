@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions\Interface;
 
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
-interface ExistConditionInterface extends ConditionInterface, ExpressionInterface
+interface ExistConditionInterface extends ConditionInterface
 {
     /**
      * @return string The operator to use (e.g. `EXISTS` or `NOT EXISTS`).

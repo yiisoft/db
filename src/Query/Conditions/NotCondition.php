@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Query\Conditions\Builder\NotConditionBuilder;
 use Yiisoft\Db\Query\Conditions\Interface\NotConditionInterface;
-use Yiisoft\Db\Query\QueryBuilderInterface;
 
 use function array_shift;
 use function count;

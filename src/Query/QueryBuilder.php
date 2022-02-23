@@ -199,7 +199,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $phName;
     }
 
-    public function build(Query $query, array $params = []): array
+    public function build(QueryInterface $query, array $params = []): array
     {
         $query = $query->prepare($this);
         $params = empty($params) ? $query->getParams() : array_merge($params, $query->getParams());

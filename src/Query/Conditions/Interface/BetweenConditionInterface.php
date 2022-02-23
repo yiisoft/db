@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Query\Conditions\Interface;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
 
-interface BetweenConditionInterface extends ConditionInterface, ExpressionInterface
+interface BetweenConditionInterface extends ConditionInterface
 {
     /**
      * @psalm-return string|string[]|ExpressionInterface The column name. If it is an array, a composite `IN` condition
