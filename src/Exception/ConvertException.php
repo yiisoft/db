@@ -8,6 +8,9 @@ use PDOException;
 
 final class ConvertException
 {
+    private const MSG_INTEGRITY_EXCEPTION_1 = 'SQLSTATE[23';
+    private const MGS_INTEGRITY_EXCEPTION_2 = 'ORA-00001: unique constraint';
+
     public function __construct(private \Exception $e, private string $rawSql)
     {
     }
@@ -22,7 +25,10 @@ final class ConvertException
         $errorInfo = $this->e instanceof PDOException ? $this->e->errorInfo : null;
         $exception = new Exception($message, $errorInfo, $this->e);
 
-        if (str_contains($message, 'SQLSTATE[23') || str_contains($message, 'ORA-00001: unique constraint')) {
+        if (
+            str_contains($message, self::MSG_INTEGRITY_EXCEPTION_1)
+            || str_contains($message, self::MGS_INTEGRITY_EXCEPTION_2)
+        ) {
             $exception = new IntegrityException($message, $errorInfo, $this->e);
         }
 
