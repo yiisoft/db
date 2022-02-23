@@ -18,7 +18,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * Allows pagination via {@see limit} and {@see offset}.
  * Sorting is supported via {@see orderBy} and items can be limited to match some conditions using {@see where}.
  */
-interface QueryInterface
+interface QueryInterface extends ExpressionInterface
 {
     /**
      * Executes the query and returns all results as an array.

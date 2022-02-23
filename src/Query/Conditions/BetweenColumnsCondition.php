@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions;
 
 use Iterator;
+use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\Builder\BetweenColumnsConditionBuilder;
 use Yiisoft\Db\Query\Conditions\Interface\BetweenColumnsConditionInterface;
+use Yiisoft\Db\Query\QueryBuilderInterface;
 
 /**
  * Class BetweenColumnCondition represents a `BETWEEN` condition where values are between two columns.

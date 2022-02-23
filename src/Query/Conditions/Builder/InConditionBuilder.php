@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Query\Conditions;
+namespace Yiisoft\Db\Query\Conditions\Builder;
 
 use ArrayAccess;
 use Iterator;
@@ -11,9 +11,10 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\InCondition;
 use Yiisoft\Db\Query\Conditions\Interface\ConditionInterface;
-use Yiisoft\Db\Query\Conditions\Interface\InConditionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\InConditionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilderInterface;
@@ -32,7 +33,7 @@ use function strtoupper;
 /**
  * Class InConditionBuilder builds objects of {@see InCondition}.
  */
-class InConditionBuilder implements InConditionBuilderInterface
+class InConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
@@ -109,15 +110,17 @@ class InConditionBuilder implements InConditionBuilderInterface
     /**
      * Builds $values to be used in {@see InCondition}.
      *
-     * @param ConditionInterface|InCondition $condition
+     * @param InCondition $condition
      * @param array|Traversable $values
      * @param array $params the binding parameters.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return array of prepared for SQL placeholders.
+     *
+     * @psalm-return string[]
      */
-    protected function buildValues(ConditionInterface $condition, array|Traversable $values, array &$params = []): array
+    protected function buildValues(InCondition $condition, array|Traversable $values, array &$params = []): array
     {
         $sqlValues = [];
         $column = $condition->getColumn();
@@ -253,6 +256,8 @@ class InConditionBuilder implements InConditionBuilderInterface
      * @param Traversable $traversableObject
      *
      * @return array raw values
+     *
+     * @psalm-return list<mixed>
      */
     protected function getRawValuesFromTraversableObject(Traversable $traversableObject): array
     {

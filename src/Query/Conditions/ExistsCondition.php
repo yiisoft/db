@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Query\Conditions\Builder\ExistsConditionBuilder;
 use Yiisoft\Db\Query\Conditions\Interface\ExistConditionInterface;
-use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**
@@ -14,7 +15,7 @@ use Yiisoft\Db\Query\QueryInterface;
  */
 class ExistsCondition implements ExistConditionInterface
 {
-    public function __construct(private string $operator, private Query $query)
+    public function __construct(private string $operator, private QueryInterface $query)
     {
     }
 
@@ -23,7 +24,7 @@ class ExistsCondition implements ExistConditionInterface
         return $this->operator;
     }
 
-    public function getQuery(): Query
+    public function getQuery(): QueryInterface
     {
         return $this->query;
     }

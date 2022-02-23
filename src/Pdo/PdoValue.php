@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Pdo;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\QueryBuilderInterface;
 
 /**
  * Class PdoValue represents a $value that should be bound to PDO with exact $type.
@@ -21,8 +22,17 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  */
 final class PdoValue implements ExpressionInterface
 {
+
     public function __construct(private ?string $value = null, private ?int $type = null)
     {
+    }
+
+    public function build(
+        QueryBuilderInterface $queryBuilder,
+        ExpressionInterface $expression,
+        array &$params = []
+    ): string {
+        return (new PdoValueBuilder())->build($expression, $params);
     }
 
     public function getValue(): ?string

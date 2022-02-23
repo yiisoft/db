@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Expression;
 
 use Stringable;
+use Yiisoft\Db\Query\QueryBuilderInterface;
 
 /**
  * Expression represents a DB expression that does not need escaping or quoting.

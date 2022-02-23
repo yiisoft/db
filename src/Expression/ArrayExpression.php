@@ -144,7 +144,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @throws InvalidConfigException when ArrayExpression contains QueryInterface object
      *
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>
+     * @return ArrayIterator An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>
      */
     public function getIterator(): Traversable
     {

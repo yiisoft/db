@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Query\Conditions;
+namespace Yiisoft\Db\Query\Conditions\Builder;
 
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\Interface\ConjunctionConditionBuilderInterface;
+use Yiisoft\Db\Query\Conditions\ConjunctionCondition;
 use Yiisoft\Db\Query\Conditions\Interface\ConjunctionConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
@@ -21,7 +22,7 @@ use function reset;
 /**
  * Class ConjunctionConditionBuilder builds objects of abstract class {@see ConjunctionCondition}.
  */
-class ConjunctionConditionBuilder implements ConjunctionConditionBuilderInterface
+class ConjunctionConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
@@ -50,7 +51,7 @@ class ConjunctionConditionBuilder implements ConjunctionConditionBuilderInterfac
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
-     * @return array
+     * @psalm-return list<mixed|string>
      */
     private function buildExpressionsFrom(ExpressionInterface $condition, array &$params = []): array
     {

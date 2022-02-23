@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Query\Conditions;
+namespace Yiisoft\Db\Query\Conditions\Builder;
 
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\Interface\BetweenConditionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\BetweenConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
@@ -18,7 +18,7 @@ use function strpos;
 /**
  * Class BetweenConditionBuilder builds objects of {@see BetweenCondition}.
  */
-class BetweenConditionBuilder implements BetweenConditionBuilderInterface
+class BetweenConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {

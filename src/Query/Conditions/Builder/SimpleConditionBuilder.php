@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Query\Conditions;
+namespace Yiisoft\Db\Query\Conditions\Builder;
 
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\Interface\SimpleConditionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\SimpleConditionInterface;
@@ -15,7 +16,7 @@ use function strpos;
 /**
  * Class NotConditionBuilder builds objects of {@see SimpleCondition}.
  */
-class SimpleConditionBuilder implements SimpleConditionBuilderInterface
+class SimpleConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use Yiisoft\Db\Query\Conditions\Builder\HashConditionBuilder;
 use Yiisoft\Db\Query\Conditions\Interface\HashConditionInterface;
+use Yiisoft\Db\Query\QueryBuilderInterface;
 
 /**
  * Condition based on column-value pairs.

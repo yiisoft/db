@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Query\Conditions;
+namespace Yiisoft\Db\Query\Conditions\Builder;
 
-use Yiisoft\Db\Query\Conditions\Interface\NotConditionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\NotConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 /**
  * Class NotConditionBuilder builds objects of {@see NotCondition}.
  */
-class NotConditionBuilder implements NotConditionBuilderInterface
+class NotConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {

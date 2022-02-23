@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Query\Conditions;
+namespace Yiisoft\Db\Query\Conditions\Builder;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\Interface\LikeConditionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\LikeConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
@@ -20,7 +20,7 @@ use function strtoupper;
 /**
  * Class LikeConditionBuilder builds objects of {@see LikeCondition}.
  */
-class LikeConditionBuilder implements LikeConditionBuilderInterface
+class LikeConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
@@ -87,7 +87,7 @@ class LikeConditionBuilder implements LikeConditionBuilderInterface
      *
      * @throws InvalidArgumentException
      *
-     * @return array
+     * @psalm-return array{0: string, 1: bool, 2: string}
      */
     protected function parseOperator(string $operator): array
     {
@@ -103,11 +103,9 @@ class LikeConditionBuilder implements LikeConditionBuilderInterface
     }
 
     /**
-     * @return string|null character used to escape special characters in LIKE conditions.
-     *
-     * By default it's assumed to be `\`.
+     * @return string character used to escape special characters in LIKE conditions. By default it's assumed to be `\`.
      */
-    private function getEscapeSql(): ?string
+    private function getEscapeSql(): string
     {
         if ($this->escapeCharacter !== null) {
             return " ESCAPE '{$this->escapeCharacter}'";

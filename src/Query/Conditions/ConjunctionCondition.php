@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions;
 
+use Yiisoft\Db\Query\Conditions\Builder\ConjunctionConditionBuilder;
 use Yiisoft\Db\Query\Conditions\Interface\ConjunctionConditionInterface;
+use Yiisoft\Db\Query\QueryBuilderInterface;
 
 /**
  * Class ConjunctionCondition.

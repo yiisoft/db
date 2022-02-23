@@ -10,7 +10,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 /**
  * Class PdoValueBuilder builds object of the {@see PdoValue} expression class.
  */
-class PdoValueBuilder implements ExpressionBuilderInterface
+class PdoValueBuilder implements ExpressionbuilderInterface
 {
     public const PARAM_PREFIX = ':pv';
 
@@ -18,7 +18,6 @@ class PdoValueBuilder implements ExpressionBuilderInterface
     {
         $placeholder = static::PARAM_PREFIX . count($params);
         $params[$placeholder] = $expression;
-
         return $placeholder;
     }
 }

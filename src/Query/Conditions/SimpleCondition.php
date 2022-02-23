@@ -7,7 +7,9 @@ namespace Yiisoft\Db\Query\Conditions;
 use Iterator;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Conditions\Builder\SimpleConditionBuilder;
 use Yiisoft\Db\Query\Conditions\Interface\SimpleConditionInterface;
+use Yiisoft\Db\Query\QueryBuilderInterface;
 
 use function count;
 
