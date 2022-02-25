@@ -23,12 +23,12 @@ use function count;
  * $query->andWhere(['@>', 'items', new ArrayExpression([1, 2, 3], 'integer')])
  * ```
  *
- * which, depending on DBMS, will result in a well-prepared condition. For example, in PostgresSQL it will be compiled
+ * Which, depending on DBMS, will result in a well-prepared condition. For example, in PostgresSQL it will be compiled
  * to `WHERE "items" @> ARRAY[1, 2, 3]::integer[]`.
  */
 class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
 {
-    public function __construct(private $value = [], private ?string $type = null, private int $dimension = 1)
+    public function __construct(private mixed $value = [], private ?string $type = null, private int $dimension = 1)
     {
         if ($value instanceof self) {
             $this->value = $value->getValue();
@@ -60,7 +60,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     }
 
     /**
-     * @return int the number of indices needed to select an element
+     * @return int The number of indices needed to select an element
      */
     public function getDimension(): int
     {
@@ -74,7 +74,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @param mixed $offset An offset to check for.
      *
-     * @return bool true on success or false on failure.
+     * @return bool true On success or false on failure.
      *
      * The return value will be cast to boolean if non-boolean was returned.
      */
@@ -142,13 +142,14 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
      *
-     * @throws InvalidConfigException when ArrayExpression contains QueryInterface object
+     * @throws InvalidConfigException When ArrayExpression contains QueryInterface object.
      *
-     * @return ArrayIterator An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>
+     * @return ArrayIterator An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>.
      */
     public function getIterator(): Traversable
     {
         $value = $this->getValue();
+
         if ($value instanceof QueryInterface) {
             throw new InvalidConfigException(
                 'The ArrayExpression class can not be iterated when the value is a QueryInterface object'

@@ -40,7 +40,7 @@ final class PdoValue implements ExpressionInterface
     }
 
     /**
-     * @return int One of PDO_PARAM_* constants
+     * @return int|null One of PDO_PARAM_* constants
      *
      * {@see http://php.net/manual/en/pdo.constants.php}
      */
