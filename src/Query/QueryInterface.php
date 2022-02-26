@@ -18,7 +18,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * Allows pagination via {@see limit} and {@see offset}.
  * Sorting is supported via {@see orderBy} and items can be limited to match some conditions using {@see where}.
  */
-interface QueryInterface
+interface QueryInterface extends ExpressionInterface
 {
     /**
      * Executes the query and returns all results as an array.
@@ -343,4 +343,16 @@ interface QueryInterface
      * @return array the converted query result.
      */
     public function populate(array $rows): array;
+
+    /**
+     * Prepares for building SQL.
+     *
+     * This method is called by {@see QueryBuilderInterface} when it starts to build SQL from a query object.
+     * You may override this method to do some final preparation work when converting a query into a SQL statement.
+     *
+     * @param QueryBuilder $builder
+     *
+     * @return Query A prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
+     */
+    public function prepare(QueryBuilder $builder): Query;
 }

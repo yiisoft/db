@@ -212,7 +212,7 @@ interface QueryBuilderInterface
     /**
      * Generates a SELECT SQL statement from a {@see Query} object.
      *
-     * @param Query $query the {@see Query} object from which the SQL statement will be generated.
+     * @param QueryInterface $query the {@see Query} object from which the SQL statement will be generated.
      * @param array $params the parameters to be bound to the generated SQL statement. These parameters will be included
      * in the result with the additional parameters generated during the query building process.
      *
@@ -223,7 +223,7 @@ interface QueryBuilderInterface
      *
      * @psalm-return array{0: string, 1: array}
      */
-    public function build(Query $query, array $params = []): array;
+    public function build(QueryInterface $query, array $params = []): array;
 
     /**
      * Processes columns and properly quotes them if necessary.
@@ -717,11 +717,11 @@ interface QueryBuilderInterface
      *
      * @throws InvalidArgumentException when $expression building is not supported by this QueryBuilder.
      *
-     * @return ExpressionBuilderInterface|static
+     * @psalm-return ExpressionBuilderInterface
      *
-     * @see expressionBuilders
+     * {@see expressionBuilders}
      */
-    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface|static;
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface;
 
     /**
      * Creates an INSERT SQL statement.

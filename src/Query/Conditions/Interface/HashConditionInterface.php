@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions\Interface;
 
-use Yiisoft\Db\Expression\ExpressionInterface;
-
-interface HashConditionInterface extends ConditionInterface, ExpressionInterface
+interface HashConditionInterface extends ConditionInterface
 {
     /**
      * @return array|null The condition specification.

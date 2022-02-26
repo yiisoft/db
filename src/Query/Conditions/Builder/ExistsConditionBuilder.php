@@ -2,21 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Query\Conditions;
+namespace Yiisoft\Db\Query\Conditions\Builder;
 
-use Yiisoft\Db\Query\Conditions\Interface\ExistConditionBuilderInterface;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\ExistConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 /**
  * Class ExistsConditionBuilder builds objects of {@see ExistsCondition}.
  */
-class ExistsConditionBuilder implements ExistConditionBuilderInterface
+class ExistsConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
     }
 
+    /**
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     */
     public function build(ExistConditionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();

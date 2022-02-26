@@ -2,21 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Query\Conditions;
+namespace Yiisoft\Db\Query\Conditions\Builder;
 
-use Yiisoft\Db\Query\Conditions\Interface\NotConditionBuilderInterface;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\NotConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 /**
  * Class NotConditionBuilder builds objects of {@see NotCondition}.
  */
-class NotConditionBuilder implements NotConditionBuilderInterface
+class NotConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
     }
 
+    /**
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     */
     public function build(NotConditionInterface $expression, array &$params = []): string
     {
         $operand = $expression->getCondition();
@@ -25,9 +32,9 @@ class NotConditionBuilder implements NotConditionBuilderInterface
             return '';
         }
 
-        $expession = $this->queryBuilder->buildCondition($operand, $params);
+        $expression = $this->queryBuilder->buildCondition($operand, $params);
 
-        return "{$this->getNegationOperator()} ($expession)";
+        return "{$this->getNegationOperator()} ($expression)";
     }
 
     protected function getNegationOperator(): string

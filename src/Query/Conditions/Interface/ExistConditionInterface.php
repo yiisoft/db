@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions\Interface;
 
-use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 
-interface ExistConditionInterface extends ConditionInterface, ExpressionInterface
+interface ExistConditionInterface extends ConditionInterface
 {
     /**
      * @return string The operator to use (e.g. `EXISTS` or `NOT EXISTS`).
@@ -15,7 +14,7 @@ interface ExistConditionInterface extends ConditionInterface, ExpressionInterfac
     public function getOperator(): string;
 
     /**
-     * @return Query The {@see Query} object representing the sub-query.
+     * @return QueryInterface The {@see Query} object representing the sub-query.
      */
-    public function getQuery(): Query;
+    public function getQuery(): QueryInterface;
 }

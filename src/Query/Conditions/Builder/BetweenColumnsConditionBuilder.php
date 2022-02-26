@@ -2,22 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Query\Conditions;
+namespace Yiisoft\Db\Query\Conditions\Builder;
 
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\Interface\BetweenColumnsConditionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\BetweenColumnsConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
+use function str_contains;
+
 /**
  * Class BetweenColumnsConditionBuilder builds objects of {@see BetweenColumnsCondition}.
  */
-class BetweenColumnsConditionBuilder implements BetweenColumnsConditionBuilderInterface
+class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
@@ -32,19 +34,13 @@ class BetweenColumnsConditionBuilder implements BetweenColumnsConditionBuilderIn
         $startColumn = $this->escapeColumnName($expression->getIntervalStartColumn(), $params);
         $endColumn = $this->escapeColumnName($expression->getIntervalEndColumn(), $params);
         $value = $this->createPlaceholder($expression->getValue(), $params);
-
         return "$value $operator $startColumn AND $endColumn";
     }
 
     /**
      * Attaches $value to $params array and returns placeholder.
      *
-     * @param mixed $value
-     * @param array $params Passed by reference
-     *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
-     *
-     * @return string
      */
     protected function createPlaceholder(mixed $value, array &$params): string
     {
@@ -58,12 +54,7 @@ class BetweenColumnsConditionBuilder implements BetweenColumnsConditionBuilderIn
     /**
      * Prepares column name to be used in SQL statement.
      *
-     * @param ExpressionInterface|QueryInterface|string $columnName
-     * @param array $params The binding parameters.
-     *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
-     *
-     * @return string
      */
     protected function escapeColumnName(
         ExpressionInterface|QueryInterface|string $columnName,
@@ -71,7 +62,6 @@ class BetweenColumnsConditionBuilder implements BetweenColumnsConditionBuilderIn
     ): string {
         if ($columnName instanceof QueryInterface) {
             [$sql, $params] = $this->queryBuilder->build($columnName, $params);
-
             return "($sql)";
         }
 

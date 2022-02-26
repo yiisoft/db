@@ -34,17 +34,17 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
      *
      * @return mixed
      */
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->value;
     }
 
     /**
-     * Type of JSON, expression should be casted to. Defaults to `null`, meaning no explicit casting will be performed.
+     * Type of JSON, expression should be cast to. Defaults to `null`, meaning no explicit casting will be performed.
      *
      * This property will be encountered only for DBMSs that support different types of JSON.
      *
-     * For example, PostgreSQL has `json` and `jsonb` types.
+     * For example, PostgresSQL has `json` and `jsonb` types.
      *
      * @return string|null
      */
@@ -60,13 +60,14 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
      *
      * @throws InvalidConfigException when JsonExpression contains QueryInterface object
      *
-     * @return mixed data which can be serialized by <b>json_encode</b>, which is a value of any type other than a
+     * @return mixed Data which can be serialized by <b>json_encode</b>, which is a value of any type other than a
      * resource.
      */
     #[\ReturnTypeWillChange]
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $value = $this->getValue();
+
         if ($value instanceof QueryInterface) {
             throw new InvalidConfigException(
                 'The JsonExpression class can not be serialized to JSON when the value is a QueryInterface object'

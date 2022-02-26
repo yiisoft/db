@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Expression;
 use function array_merge;
 
 /**
- * Class ExpressionBuilder builds objects of {@see \Yiisoft\Db\Expression\Expression} class.
+ * Class ExpressionBuilder builds objects of {@see Expression} class.
  */
 class ExpressionBuilder implements ExpressionBuilderInterface
 {

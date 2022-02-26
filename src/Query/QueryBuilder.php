@@ -106,7 +106,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
     protected array $conditionClasses = [];
 
     /**
-     * @var string[] maps expression class to expression builder class.
+     * @psalm-var string[] maps expression class to expression builder class.
      * For example:
      *
      * ```php
@@ -199,7 +199,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $phName;
     }
 
-    public function build(Query $query, array $params = []): array
+    public function build(QueryInterface $query, array $params = []): array
     {
         $query = $query->prepare($this);
         $params = empty($params) ? $query->getParams() : array_merge($params, $query->getParams());
@@ -288,6 +288,9 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $condition ?? '';
     }
 
+    /**
+     * @psalm-suppress UndefinedInterfaceMethod
+     */
     public function buildExpression(ExpressionInterface $expression, array &$params = []): string
     {
         $builder = $this->getExpressionBuilder($expression);
@@ -641,7 +644,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $type;
     }
 
-    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface|static
+    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface
     {
         $className = get_class($expression);
 
@@ -782,17 +785,17 @@ abstract class QueryBuilder implements QueryBuilderInterface
             Query::class => QueryExpressionBuilder::class,
             PdoValue::class => PdoValueBuilder::class,
             Expression::class => ExpressionBuilder::class,
-            Conditions\ConjunctionCondition::class => Conditions\ConjunctionConditionBuilder::class,
-            Conditions\NotCondition::class => Conditions\NotConditionBuilder::class,
-            Conditions\AndCondition::class => Conditions\ConjunctionConditionBuilder::class,
-            Conditions\OrCondition::class => Conditions\ConjunctionConditionBuilder::class,
-            Conditions\BetweenCondition::class => Conditions\BetweenConditionBuilder::class,
-            Conditions\InCondition::class => Conditions\InConditionBuilder::class,
-            Conditions\LikeCondition::class => Conditions\LikeConditionBuilder::class,
-            Conditions\ExistsCondition::class => Conditions\ExistsConditionBuilder::class,
-            Conditions\SimpleCondition::class => Conditions\SimpleConditionBuilder::class,
-            Conditions\HashCondition::class => Conditions\HashConditionBuilder::class,
-            Conditions\BetweenColumnsCondition::class => Conditions\BetweenColumnsConditionBuilder::class,
+            Conditions\ConjunctionCondition::class => Conditions\Builder\ConjunctionConditionBuilder::class,
+            Conditions\NotCondition::class => Conditions\Builder\NotConditionBuilder::class,
+            Conditions\AndCondition::class => Conditions\Builder\ConjunctionConditionBuilder::class,
+            Conditions\OrCondition::class => Conditions\Builder\ConjunctionConditionBuilder::class,
+            Conditions\BetweenCondition::class => Conditions\Builder\BetweenConditionBuilder::class,
+            Conditions\InCondition::class => Conditions\Builder\InConditionBuilder::class,
+            Conditions\LikeCondition::class => Conditions\Builder\LikeConditionBuilder::class,
+            Conditions\ExistsCondition::class => Conditions\Builder\ExistsConditionBuilder::class,
+            Conditions\SimpleCondition::class => Conditions\Builder\SimpleConditionBuilder::class,
+            Conditions\HashCondition::class => Conditions\Builder\HashConditionBuilder::class,
+            Conditions\BetweenColumnsCondition::class => Conditions\Builder\BetweenColumnsConditionBuilder::class,
         ];
     }
 

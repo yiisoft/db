@@ -18,7 +18,6 @@ class PdoValueBuilder implements ExpressionBuilderInterface
     {
         $placeholder = static::PARAM_PREFIX . count($params);
         $params[$placeholder] = $expression;
-
         return $placeholder;
     }
 }

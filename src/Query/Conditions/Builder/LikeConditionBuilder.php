@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Query\Conditions;
+namespace Yiisoft\Db\Query\Conditions\Builder;
 
+use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\Interface\LikeConditionBuilderInterface;
 use Yiisoft\Db\Query\Conditions\Interface\LikeConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
@@ -14,20 +17,19 @@ use function implode;
 use function is_array;
 use function is_string;
 use function preg_match;
-use function strpos;
 use function strtoupper;
 
 /**
  * Class LikeConditionBuilder builds objects of {@see LikeCondition}.
  */
-class LikeConditionBuilder implements LikeConditionBuilderInterface
+class LikeConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * @var array map of chars to their replacements in LIKE conditions. By default it's configured to escape
+     * @var array map of chars to their replacements in LIKE conditions. By default, it's configured to escape
      * `%`, `_` and `\` with `\`.
      */
     protected array $escapingReplacements = [
@@ -37,6 +39,9 @@ class LikeConditionBuilder implements LikeConditionBuilderInterface
     ];
     protected ?string $escapeCharacter = null;
 
+    /**
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     */
     public function build(LikeConditionInterface $expression, array &$params = []): string
     {
         $operator = strtoupper($expression->getOperator());
@@ -60,13 +65,13 @@ class LikeConditionBuilder implements LikeConditionBuilderInterface
 
         if ($column instanceof ExpressionInterface) {
             $column = $this->queryBuilder->buildExpression($column, $params);
-        } elseif (is_string($column) && strpos($column, '(') === false) {
+        } elseif (is_string($column) && !str_contains($column, '(')) {
             $column = $this->queryBuilder->quoter()->quoteColumnName($column);
         }
 
         $escapeSql = $this->getEscapeSql();
-
         $parts = [];
+
         foreach ($values as $value) {
             if ($value instanceof ExpressionInterface) {
                 $phName = $this->queryBuilder->buildExpression($value, $params);
@@ -88,10 +93,12 @@ class LikeConditionBuilder implements LikeConditionBuilderInterface
      * @throws InvalidArgumentException
      *
      * @return array
+     *
+     * @psalm-return array{0: string, 1: bool, 2: string}
      */
     protected function parseOperator(string $operator): array
     {
-        if (!preg_match('/^(AND |OR |)(((NOT |))I?LIKE)/', $operator, $matches)) {
+        if (!preg_match('/^(AND |OR |)((NOT |)I?LIKE)/', $operator, $matches)) {
             throw new InvalidArgumentException("Invalid operator '$operator'.");
         }
 
@@ -103,11 +110,9 @@ class LikeConditionBuilder implements LikeConditionBuilderInterface
     }
 
     /**
-     * @return string|null character used to escape special characters in LIKE conditions.
-     *
-     * By default it's assumed to be `\`.
+     * @return string character used to escape special characters in LIKE conditions. By default, it's assumed to be `\`.
      */
-    private function getEscapeSql(): ?string
+    private function getEscapeSql(): string
     {
         if ($this->escapeCharacter !== null) {
             return " ESCAPE '{$this->escapeCharacter}'";

@@ -68,7 +68,7 @@ use function trim;
  *
  * @property string[] $tablesUsedInFrom Table names indexed by aliases. This property is read-only.
  */
-class Query implements ExpressionInterface, QueryInterface
+class Query implements QueryInterface
 {
     use QueryTrait;
 
@@ -102,16 +102,6 @@ class Query implements ExpressionInterface, QueryInterface
         return $command;
     }
 
-    /**
-     * Prepares for building SQL.
-     *
-     * This method is called by {@see QueryBuilder} when it starts to build SQL from a query object. You may override
-     * this method to do some final preparation work when converting a query into a SQL statement.
-     *
-     * @param QueryBuilder $builder
-     *
-     * @return $this a prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
-     */
     public function prepare(QueryBuilder $builder): self
     {
         return $this;
