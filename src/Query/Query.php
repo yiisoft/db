@@ -440,11 +440,9 @@ class Query implements QueryInterface
             return $command->queryScalar();
         }
 
-        $command = static::createInstance($this->db)
-            ->select([$selectExpression])
-            ->from(['c' => $this])
-            ->createCommand();
-
+        $query = (new self($this->db))->select($selectExpression)->from(['c' => $query]);
+        [$sql, $params] = $this->db->getQueryBuilder()->build($query);
+        $command = $this->db->createCommand($sql, $params);
         $this->setCommandCache($command);
 
         return $command->queryScalar();
@@ -1422,18 +1420,6 @@ PATTERN;
         $this->withQueries[] = ['query' => $query, 'alias' => $alias, 'recursive' => $recursive];
 
         return $this;
-    }
-
-    /**
-     * This function can be overridden to customize the returned class.
-     *
-     * @param ConnectionInterface $value
-     *
-     * @return $this
-     */
-    protected static function createInstance(ConnectionInterface $value): self
-    {
-        return new self($value);
     }
 
     public function selectOption(?string $value): self
