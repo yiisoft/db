@@ -667,6 +667,11 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->insert($table, $columns, $params);
     }
 
+    public function insertEx(string $table, Query|array $columns, array &$params = []): string
+    {
+        return $this->dmlBuilder->insertEx($table, $columns, $params);
+    }
+
     public function renameColumn(string $table, string $oldName, string $newName): string
     {
         return $this->ddlBuilder->renameColumn($table, $oldName, $newName);

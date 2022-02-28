@@ -83,6 +83,11 @@ abstract class DMLQueryBuilder
             . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : $values);
     }
 
+    public function insertEx(string $table, Query|array $columns, array &$params = []): string
+    {
+        return $this->insert($table, $columns, $params);
+    }
+
     public function resetSequence(string $tableName, array|int|string|null $value = null): string
     {
         throw new NotSupportedException(static::class . ' does not support resetting sequence.');

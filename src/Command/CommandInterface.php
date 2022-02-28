@@ -9,6 +9,8 @@ use Throwable;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidCallException;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
@@ -193,13 +195,13 @@ interface CommandInterface
      *
      * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
-//    public function bindParam(
-//        int|string $name,
-//        mixed &$value,
-//        ?int $dataType = null,
-//        ?int $length = null,
-//        mixed $driverOptions = null
-//    ): self;
+    public function bindParam(
+        int|string $name,
+        mixed &$value,
+        ?int $dataType = null,
+        ?int $length = null,
+        mixed $driverOptions = null
+    ): self;
 
     /**
      * Binds a value to a parameter.
@@ -548,6 +550,18 @@ interface CommandInterface
      * @return static
      */
     public function insert(string $table, QueryInterface|array $columns): self;
+
+    /**
+     * Executes the INSERT command, returning primary key inserted values.
+     *
+     * @param string $table the table that new rows will be inserted into.
+     * @param array $columns the column data (name => value) to be inserted into the table.
+     *
+     * @throws Exception|InvalidCallException|InvalidConfigException|Throwable
+     *
+     * @return array|false primary key values or false if the command fails.
+     */
+    public function insertEx(string $table, array $columns): bool|array;
 
     /**
      * Disables query cache for this command.
