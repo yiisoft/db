@@ -37,7 +37,7 @@ trait CommandPdoTrait
         }
     }
 
-    public function bindParam(int|string $name, mixed &$value, ?int $dataType = null, ?int $length = null, mixed $driverOptions = null): self
+    public function bindParam(int|string $name, mixed &$value, ?int $dataType = null, ?int $length = null, mixed $driverOptions = null): static
     {
         $this->prepare();
 
