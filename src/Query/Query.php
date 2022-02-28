@@ -440,7 +440,7 @@ class Query implements QueryInterface
             return $command->queryScalar();
         }
 
-        $query = (new self($this->db))->select($selectExpression)->from(['c' => $this]);
+        $query = (new static($this->db))->select($selectExpression)->from(['c' => $this]);
         [$sql, $params] = $this->db->getQueryBuilder()->build($query);
         $command = $this->db->createCommand($sql, $params);
         $this->setCommandCache($command);
