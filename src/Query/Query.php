@@ -1317,36 +1317,6 @@ PATTERN;
     }
 
     /**
-     * Creates a new Query object and copies its property values from an existing one.
-     *
-     * The properties being copies are the ones to be used by query builders.
-     *
-     * @param ConnectionInterface $db the source query object.
-     * @param Query $from the source query object.
-     *
-     * @return $this the new Query object.
-     */
-    public static function create(ConnectionInterface $db, self $from): self
-    {
-        return (new self($db))
-            ->where($from->where)
-            ->limit($from->limit)
-            ->offset($from->offset)
-            ->orderBy($from->orderBy)
-            ->indexBy($from->indexBy)
-            ->select($from->select)
-            ->selectOption($from->selectOption)
-            ->distinct($from->distinct)
-            ->from($from->from)
-            ->groupBy($from->groupBy)
-            ->setJoin($from->join)
-            ->having($from->having)
-            ->setUnion($from->union)
-            ->params($from->params)
-            ->withQueries($from->withQueries);
-    }
-
-    /**
      * Returns the SQL representation of Query.
      *
      * @return string
