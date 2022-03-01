@@ -11,10 +11,10 @@ interface ParamInterface
      * parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
      * @param mixed $value The value to bind to the parameter.
-     * @param int|null $type SQL data type of the parameter. If null, the type is determined by the PHP type of the
+     * @param int $type SQL data type of the parameter. If null, the type is determined by the PHP type of the
      * value.
      */
-    public function __construct(int|string $name, mixed $value, ?int $type);
+    public function __construct(int|string $name, mixed $value, int $type);
 
     /**
      * @return int|string
@@ -27,7 +27,7 @@ interface ParamInterface
     public function getValue(): mixed;
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getType(): ?int;
+    public function getType(): int;
 }

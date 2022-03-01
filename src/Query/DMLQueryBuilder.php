@@ -83,7 +83,7 @@ abstract class DMLQueryBuilder
             . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : $values);
     }
 
-    public function insertEx(string $table, Query|array $columns, array &$params = []): string
+    public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         return $this->insert($table, $columns, $params);
     }
@@ -113,7 +113,7 @@ abstract class DMLQueryBuilder
 
     public function upsert(
         string $table,
-        Query|array $insertColumns,
+        QueryInterface|array $insertColumns,
         bool|array $updateColumns,
         array &$params
     ): string {

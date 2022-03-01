@@ -552,7 +552,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->createTable($table, $columns, $options);
     }
 
-    public function createView(string $viewName, Query|string $subQuery): string
+    public function createView(string $viewName, QueryInterface|string $subQuery): string
     {
         return $this->ddlBuilder->createView($viewName, $subQuery);
     }
@@ -662,12 +662,12 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->quoter;
     }
 
-    public function insert(string $table, Query|array $columns, array &$params = []): string
+    public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         return $this->dmlBuilder->insert($table, $columns, $params);
     }
 
-    public function insertEx(string $table, Query|array $columns, array &$params = []): string
+    public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         return $this->dmlBuilder->insertEx($table, $columns, $params);
     }
@@ -742,7 +742,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
     public function upsert(
         string $table,
-        Query|array $insertColumns,
+        QueryInterface|array $insertColumns,
         bool|array $updateColumns,
         array &$params = []
     ): string {
@@ -847,7 +847,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
     /**
      * Prepare select-subquery and field names for INSERT INTO ... SELECT SQL statement.
      *
-     * @param Query $columns Object, which represents select query.
+     * @param QueryInterface $columns Object, which represents select query.
      * @param array $params the parameters to be bound to the generated SQL statement. These parameters will be included
      * in the result with the additional parameters generated during the query building process.
      *
@@ -855,7 +855,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
      *
      * @return array array of column names, values and params.
      */
-    protected function prepareInsertSelectSubQuery(Query $columns, array $params = []): array
+    protected function prepareInsertSelectSubQuery(QueryInterface $columns, array $params = []): array
     {
         if (empty($columns->getSelect()) || in_array('*', $columns->getSelect(), true)) {
             throw new InvalidArgumentException('Expected select query object with enumerated (named) parameters');
@@ -1025,10 +1025,10 @@ abstract class QueryBuilder implements QueryBuilderInterface
         /** Remove duplicates */
         $constraints = array_combine(
             array_map(
-                static function ($constraint) {
-                    $columns = $constraint->getColumnNames();
+                static function (Constraint $constraint) {
+                    $columns = $constraint->getColumnNames() ?? [];
+                    $columns = is_array($columns) ? $columns : [$columns];
                     sort($columns, SORT_STRING);
-
                     return json_encode($columns, JSON_THROW_ON_ERROR);
                 },
                 $constraints
@@ -1043,9 +1043,12 @@ abstract class QueryBuilder implements QueryBuilderInterface
         $constraints = array_values(
             array_filter(
                 $constraints,
-                static function ($constraint) use ($quoter, $columns, &$columnNames) {
-                    /** @psalm-suppress UndefinedClass, UndefinedMethod */
-                    $constraintColumnNames = array_map([$quoter, 'quoteColumnName'], $constraint->getColumnNames());
+                static function (Constraint $constraint) use ($quoter, $columns, &$columnNames) {
+                    $getColumnNames = $constraint->getColumnNames() ?? [];
+                    $constraintColumnNames = array_map(
+                        [$quoter, 'quoteColumnName'],
+                        is_array($getColumnNames) ? $getColumnNames : [$getColumnNames]
+                    );
                     $result = !array_diff($constraintColumnNames, $columns);
 
                     if ($result) {

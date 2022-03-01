@@ -105,7 +105,7 @@ abstract class Command implements CommandInterface
      * Returns the cache key for the query.
      *
      * @param string $method method of PDOStatement to be called.
-     * @param int|null $fetchMode the result fetch mode.
+     * @param array|int|null $fetchMode the result fetch mode.
      * Please refer to [PHP manual](https://secure.php.net/manual/en/function.PDOStatement-setFetchMode.php) for valid
      * fetch modes.
      * @param string $rawSql the raw SQL with parameter values inserted into the corresponding placeholders.
@@ -114,7 +114,7 @@ abstract class Command implements CommandInterface
      *
      * @return array the cache key.
      */
-    abstract protected function getCacheKey(string $method, ?int $fetchMode, string $rawSql): array;
+    abstract protected function getCacheKey(string $method, array|int|null $fetchMode, string $rawSql): array;
 
     /**
      * Executes a prepared statement.
@@ -247,7 +247,7 @@ abstract class Command implements CommandInterface
                 $this->params[$value->getName()] = $value;
             } elseif (is_array($value)) { // TODO: Drop in Yii 2.1
                 $this->params[$name] = new Param($name, ...$value);
-            } elseif ($value instanceof PdoValue) {
+            } elseif ($value instanceof PdoValue && is_int($value->getType())) {
                 $this->params[$name] = new Param($name, $value->getValue(), $value->getType());
             } else {
                 $type = $this->queryBuilder()->schema()->getPdoType($value);
@@ -403,13 +403,13 @@ abstract class Command implements CommandInterface
             $this->profiler?->begin((string)$rawSql, [__METHOD__]);
 
             $this->internalExecute($rawSql);
-            $n = $this->pdoStatement->rowCount();
+            $n = $this->pdoStatement?->rowCount();
 
             $this->profiler?->end((string)$rawSql, [__METHOD__]);
 
             $this->refreshTableSchema();
 
-            return $n;
+            return $n ?? 0;
         } catch (Exception $e) {
             $this->profiler?->end((string)$rawSql, [__METHOD__]);
             throw $e;
@@ -690,7 +690,7 @@ abstract class Command implements CommandInterface
 
                 $result = call_user_func_array([$this->pdoStatement, $method], (array) $fetchMode);
 
-                $this->pdoStatement->closeCursor();
+                $this->pdoStatement?->closeCursor();
             }
 
             $this->profiler?->end((string)$rawSql, [__CLASS__ . '::query']);

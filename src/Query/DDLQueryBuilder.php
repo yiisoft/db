@@ -158,7 +158,7 @@ abstract class DDLQueryBuilder
         return $options === null ? $sql : $sql . ' ' . $options;
     }
 
-    public function createView(string $viewName, Query|string $subQuery): string
+    public function createView(string $viewName, QueryInterface|string $subQuery): string
     {
         if ($subQuery instanceof QueryInterface) {
             /** @psalm-var array<array-key, int|string> $params */

@@ -440,7 +440,7 @@ abstract class Schema implements SchemaInterface
             $this->loadTableMetadataFromCache($rawName);
         }
 
-        if ($refresh || !array_key_exists($type, $this->tableMetadata[$rawName])) {
+        if ($refresh || !isset($this->tableMetadata[$rawName][$type])) {
             $this->tableMetadata[$rawName][$type] = $this->loadTableTypeMetadata($type, $rawName);
             $this->saveTableMetadataToCache($rawName);
         }
