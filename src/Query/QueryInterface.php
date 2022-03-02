@@ -355,4 +355,9 @@ interface QueryInterface extends ExpressionInterface
      * @return Query A prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
      */
     public function prepare(QueryBuilder $builder): Query;
+
+    /**
+     * Return select query string.
+     */
+    public function getSelect(): array;
 }

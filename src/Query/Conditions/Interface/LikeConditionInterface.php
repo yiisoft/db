@@ -5,30 +5,30 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions\Interface;
 
 use Iterator;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 interface LikeConditionInterface extends ConditionInterface
 {
     /**
-     * @psalm-return string|string[]|ExpressionInterface The column name. If it is an array, a composite `IN` condition
-     * will be generated.
+     * @psalm-return string|Expression The column name.
      */
-    public function getColumn(): string|array|ExpressionInterface;
+    public function getColumn(): string|Expression;
 
     /**
-     * {see LikeConditionInterface::setEscapingReplacements}
+     * {see setEscapingReplacements}
      */
-    public function getEscapingReplacements(): array|bool|null;
+    public function getEscapingReplacements(): ?array;
 
     /**
      * This method allows specifying how to escape special characters in the value(s).
      *
-     * @param array|bool|null An array of mappings from the special characters to their escaped counterparts.
-     * You may use `false` or an empty array to indicate the values are already escaped and no escape should be applied.
+     * @param array|null An array of mappings from the special characters to their escaped counterparts.
+     * You may use an empty array to indicate the values are already escaped and no escape should be applied.
      * Note that when using an escape mapping (or the third operand is not provided), the values will be automatically
      * enclosed within a pair of percentage characters.
      */
-    public function setEscapingReplacements(array|bool|null $escapingReplacements): void;
+    public function setEscapingReplacements(array|null $escapingReplacements): void;
 
     /**
      * @return string The operator to use. Anything could be used e.g. `>`, `<=`, etc.

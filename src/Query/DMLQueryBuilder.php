@@ -73,7 +73,7 @@ abstract class DMLQueryBuilder
         return $where === '' ? $sql : $sql . ' ' . $where;
     }
 
-    public function insert(string $table, Query|array $columns, array &$params = []): string
+    public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         [$names, $placeholders, $values, $params] = $this->queryBuilder->prepareInsertValues($table, $columns, $params);
 

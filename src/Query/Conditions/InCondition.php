@@ -15,9 +15,9 @@ use Yiisoft\Db\Query\QueryInterface;
 class InCondition implements InConditionInterface
 {
     public function __construct(
-        private mixed $column,
+        private array|string|Iterator $column,
         private string $operator,
-        private array|int|Iterator|QueryInterface $values
+        private int|iterable|Iterator|QueryInterface $values
     ) {
     }
 
@@ -31,7 +31,7 @@ class InCondition implements InConditionInterface
         return $this->operator;
     }
 
-    public function getValues(): array|int|Iterator|QueryInterface
+    public function getValues(): int|iterable|Iterator|QueryInterface
     {
         return $this->values;
     }

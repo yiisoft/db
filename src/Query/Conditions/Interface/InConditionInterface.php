@@ -21,10 +21,10 @@ interface InConditionInterface extends ConditionInterface
     public function getOperator(): string;
 
     /**
-     * @return array|int|Iterator|QueryInterface An array of values that {@see columns} value should be among.
+     * @return iterable|int|QueryInterface An array of values that {@see columns} value should be among.
      *
      * If it is an empty array the generated expression will be a `false` value if {@see operator} is `IN` and empty if
      * operator is `NOT IN`.
      */
-    public function getValues(): array|int|Iterator|QueryInterface;
+    public function getValues(): int|iterable|Iterator|QueryInterface;
 }

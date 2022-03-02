@@ -38,10 +38,7 @@ use function reset;
 class BatchQueryResult implements Iterator
 {
     private int $batchSize = 100;
-    private ?ConnectionInterface $db = null;
-    private bool $each = false;
     private $key;
-    private ?QueryInterface $query = null;
 
     /**
      * @var DataReader|null the data reader associated with this batch query.
@@ -64,6 +61,13 @@ class BatchQueryResult implements Iterator
      * {@see https://github.com/yiisoft/yii2/issues/10023}
      */
     private int $mssqlNoMoreRowsErrorCode = -13;
+
+    public function __construct(
+        private ConnectionInterface $db,
+        private QueryInterface $query,
+        private bool $each = false
+    ) {
+    }
 
     public function __destruct()
     {
@@ -112,6 +116,7 @@ class BatchQueryResult implements Iterator
 
         if ($this->each) {
             $this->value = current($this->batch);
+
             if ($this->query->getIndexBy() !== null) {
                 $this->key = key($this->batch);
             } elseif (key($this->batch) !== null) {
@@ -154,11 +159,12 @@ class BatchQueryResult implements Iterator
         $count = 0;
 
         try {
-            while ($count++ < $this->batchSize && ($row = $this->dataReader->read())) {
+            while ($count++ < $this->batchSize && ($row = $this->dataReader?->read())) {
                 $rows[] = $row;
             }
         } catch (PDOException $e) {
             $errorCode = $e->errorInfo[1] ?? null;
+
             if ($this->getDbDriverName() !== 'sqlsrv' || $errorCode !== $this->mssqlNoMoreRowsErrorCode) {
                 throw $e;
             }
@@ -231,19 +237,6 @@ class BatchQueryResult implements Iterator
     }
 
     /**
-     * @param QueryInterface $value the query object associated with this batch query. Do not modify this property
-     * directly unless after {@see reset()} is called explicitly.
-     *
-     * @return $this
-     */
-    public function query(QueryInterface $value): self
-    {
-        $this->query = $value;
-
-        return $this;
-    }
-
-    /**
      * @param int $value the number of rows to be returned in each batch.
      *
      * @return $this
@@ -251,32 +244,6 @@ class BatchQueryResult implements Iterator
     public function batchSize(int $value): self
     {
         $this->batchSize = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param ConnectionInterface $value the DB connection to be used when performing batch query.
-     *
-     * @return $this
-     */
-    public function db(ConnectionInterface $value): self
-    {
-        $this->db = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param bool $value whether to return a single row during each iteration.
-     *
-     * If false, a whole batch of rows will be returned in each iteration.
-     *
-     * @return $this
-     */
-    public function each(bool $value): self
-    {
-        $this->each = $value;
 
         return $this;
     }

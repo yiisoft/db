@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions\Interface;
 
-use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\Expression;
 
 interface BetweenConditionInterface extends ConditionInterface
 {
     /**
-     * @psalm-return string|string[]|ExpressionInterface The column name. If it is an array, a composite `IN` condition
-     * will be generated.
+     * @psalm-return string|Expression The column name.
      */
-    public function getColumn(): string|array|ExpressionInterface;
+    public function getColumn(): string|Expression;
 
     /**
      * @return mixed End of the interval.
