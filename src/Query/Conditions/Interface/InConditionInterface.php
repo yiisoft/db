@@ -21,7 +21,7 @@ interface InConditionInterface extends ConditionInterface
     public function getOperator(): string;
 
     /**
-     * @return iterable|int|QueryInterface An array of values that {@see columns} value should be among.
+     * @return int|iterable|QueryInterface An array of values that {@see columns} value should be among.
      *
      * If it is an empty array the generated expression will be a `false` value if {@see operator} is `IN` and empty if
      * operator is `NOT IN`.

@@ -13,7 +13,6 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\Interface\SimpleConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
-use function is_string;
 use function str_contains;
 
 /**
