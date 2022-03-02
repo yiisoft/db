@@ -9,6 +9,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\Interface\SimpleConditionInterface;
+use Yiisoft\Db\Query\QueryInterface;
 
 use function count;
 
@@ -18,13 +19,13 @@ use function count;
 class SimpleCondition implements SimpleConditionInterface
 {
     public function __construct(
-        private string|Expression $column,
+        private string|Expression|QueryInterface $column,
         private string $operator,
         private array|int|string|Iterator|ExpressionInterface|null $value
     ) {
     }
 
-    public function getColumn(): string|Expression
+    public function getColumn(): string|Expression|QueryInterface
     {
         return $this->column;
     }
