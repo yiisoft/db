@@ -34,7 +34,7 @@ trait TestCommandTrait
 
         /* null */
         $command = $db->createCommand();
-        $this->assertNull($command->getSql());
+        $this->assertEmpty($command->getSql());
 
         /* string */
         $sql = 'SELECT * FROM customer';

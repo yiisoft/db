@@ -88,13 +88,12 @@ abstract class Command implements CommandInterface
     use ProfilerAwareTrait;
 
     protected ?string $isolationLevel = null;
-
     protected ?string $refreshTableName = null;
     /** @var callable|null */
     protected $retryHandler = null;
     private int $fetchMode = PDO::FETCH_ASSOC;
     private ?int $queryCacheDuration = null;
-    private ?string $sql = null;
+    private string $sql = '';
     private ?Dependency $queryCacheDependency = null;
 
     public function __construct(private QueryCache $queryCache)
@@ -478,7 +477,7 @@ abstract class Command implements CommandInterface
         return $sql;
     }
 
-    public function getSql(): ?string
+    public function getSql(): string
     {
         return $this->sql;
     }
@@ -753,7 +752,7 @@ abstract class Command implements CommandInterface
 
     protected function reset(): void
     {
-        $this->sql = null;
+        $this->sql = '';
         $this->params = [];
         $this->refreshTableName = null;
         $this->isolationLevel = null;

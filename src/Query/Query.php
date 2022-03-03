@@ -390,6 +390,8 @@ class Query implements QueryInterface
      * @throws Exception|InvalidConfigException|Throwable
      *
      * @return false|int|string|null
+     *
+     * @psalm-suppress PossiblyUndefinedVariable
      */
     protected function queryScalar($selectExpression): false|int|null|string
     {
@@ -843,7 +845,7 @@ PATTERN;
     {
         if (preg_match('/^(<>|>=|>|<=|<|=)/', (string) $value, $matches)) {
             $operator = $matches[1];
-            $value = substr($value, strlen($operator));
+            $value = substr((string) $value, strlen($operator));
         } else {
             $operator = $defaultOperator;
         }

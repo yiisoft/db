@@ -50,16 +50,15 @@ use function call_user_func_array;
  */
 final class DataReader implements Iterator, Countable
 {
-    /** @var mixed @row */
-    private $row;
-    private PDOStatement $statement;
     private bool $closed = false;
     private int $index = -1;
+    private mixed $row;
+    private ?PDOStatement $statement = null;
 
     public function __construct(CommandInterface $command)
     {
         $this->statement = $command->getPDOStatement();
-        $this->statement->setFetchMode(PDO::FETCH_ASSOC);
+        $this->getPDOStatement()->setFetchMode(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -78,9 +77,9 @@ final class DataReader implements Iterator, Countable
     public function bindColumn($column, &$value, ?int $dataType = null): void
     {
         if ($dataType === null) {
-            $this->statement->bindColumn($column, $value);
+            $this->getPDOStatement()->bindColumn($column, $value);
         } else {
-            $this->statement->bindColumn($column, $value, $dataType);
+            $this->getPDOStatement()->bindColumn($column, $value, $dataType);
         }
     }
 
@@ -94,7 +93,7 @@ final class DataReader implements Iterator, Countable
     public function setFetchMode(int $mode): void
     {
         $params = func_get_args();
-        call_user_func_array([$this->statement, 'setFetchMode'], $params);
+        call_user_func_array([$this->getPDOStatement(), 'setFetchMode'], $params);
     }
 
     /**
@@ -102,9 +101,9 @@ final class DataReader implements Iterator, Countable
      *
      * @return array|bool the current row, false if no more row available.
      */
-    public function read()
+    public function read(): array|bool
     {
-        return $this->statement->fetch();
+        return $this->getPDOStatement()->fetch();
     }
 
     /**
@@ -114,9 +113,9 @@ final class DataReader implements Iterator, Countable
      *
      * @return mixed the column of the current row, false if no more rows available.
      */
-    public function readColumn(int $columnIndex)
+    public function readColumn(int $columnIndex): mixed
     {
-        return $this->statement->fetchColumn($columnIndex);
+        return $this->getPDOStatement()->fetchColumn($columnIndex);
     }
 
     /**
@@ -126,10 +125,12 @@ final class DataReader implements Iterator, Countable
      * @param array $fields Elements of this array are passed to the constructor.
      *
      * @return mixed the populated object, false if no more row of data available.
+     *
+     * @psalm-param class-string $className
      */
-    public function readObject(string $className, array $fields)
+    public function readObject(string $className, array $fields): mixed
     {
-        return $this->statement->fetchObject($className, $fields);
+        return $this->getPDOStatement()->fetchObject($className, $fields);
     }
 
     /**
@@ -140,7 +141,7 @@ final class DataReader implements Iterator, Countable
      */
     public function readAll(): array
     {
-        return $this->statement->fetchAll();
+        return $this->getPDOStatement()->fetchAll();
     }
 
     /**
@@ -151,7 +152,7 @@ final class DataReader implements Iterator, Countable
      */
     public function nextResult(): bool
     {
-        if (($result = $this->statement->nextRowset()) !== false) {
+        if (($result = $this->getPDOStatement()->nextRowset()) !== false) {
             $this->index = -1;
         }
 
@@ -166,7 +167,7 @@ final class DataReader implements Iterator, Countable
      */
     public function close(): void
     {
-        $this->statement->closeCursor();
+        $this->getPDOStatement()->closeCursor();
         $this->closed = true;
     }
 
@@ -190,7 +191,7 @@ final class DataReader implements Iterator, Countable
      */
     public function getRowCount(): int
     {
-        return $this->statement->rowCount();
+        return $this->getPDOStatement()->rowCount();
     }
 
     /**
@@ -217,7 +218,7 @@ final class DataReader implements Iterator, Countable
      */
     public function getColumnCount(): int
     {
-        return $this->statement->columnCount();
+        return $this->getPDOStatement()->columnCount();
     }
 
     /**
@@ -230,7 +231,7 @@ final class DataReader implements Iterator, Countable
     public function rewind(): void
     {
         if ($this->index < 0) {
-            $this->row = $this->statement->fetch();
+            $this->row = $this->getPDOStatement()->fetch();
             $this->index = 0;
         } else {
             throw new InvalidCallException('DataReader cannot rewind. It is a forward-only reader.');
@@ -257,7 +258,7 @@ final class DataReader implements Iterator, Countable
      * @return mixed the current row.
      */
     #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return $this->row;
     }
@@ -269,7 +270,7 @@ final class DataReader implements Iterator, Countable
      */
     public function next(): void
     {
-        $this->row = $this->statement->fetch();
+        $this->row = $this->getPDOStatement()->fetch();
         $this->index++;
     }
 
@@ -283,5 +284,14 @@ final class DataReader implements Iterator, Countable
     public function valid(): bool
     {
         return $this->row !== false;
+    }
+
+    public function getPDOStatement(): PDOStatement
+    {
+        if ($this->statement === null) {
+            throw new InvalidCallException('The PDOStatement cannot be null.');
+        }
+
+        return $this->statement;
     }
 }

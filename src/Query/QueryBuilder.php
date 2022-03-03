@@ -199,7 +199,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $phName;
     }
 
-    public function build(QueryInterface $query, array $params = []): array
+    public function build(ExpressionInterface $query, array $params = []): array
     {
         $query = $query->prepare($this);
         $params = empty($params) ? $query->getParams() : array_merge($params, $query->getParams());
@@ -644,7 +644,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $type;
     }
 
-    public function getExpressionBuilder(ExpressionInterface $expression): ExpressionBuilderInterface
+    public function getExpressionBuilder(ExpressionInterface $expression): object
     {
         $className = get_class($expression);
 

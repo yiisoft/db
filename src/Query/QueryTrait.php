@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Closure;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
@@ -28,8 +29,7 @@ trait QueryTrait
 {
     private ExpressionInterface|int|null $limit = null;
     private ExpressionInterface|int|null $offset = null;
-    /** @var callable|string|null  */
-    private $indexBy;
+    private Closure|string|null $indexBy = null;
     private array|string|ExpressionInterface|null $where = null;
     private array $orderBy = [];
     private bool $emulateExecution = false;
@@ -37,11 +37,11 @@ trait QueryTrait
     /**
      * Sets the {@see indexBy} property.
      *
-     * @param callable|string|null $column the name of the column by which the query results should be indexed by.
+     * @param Closure|string|null $column the name of the column by which the query results should be indexed by.
      *
-     * This can also be a callable (e.g. anonymous function) that returns the index value based on the given row data.
+     * This can also be a closure (e.g. anonymous function) that returns the index value based on the given row data.
      *
-     * The signature of the callable should be:
+     * The signature of the closure should be:
      *
      * ```php
      * function ($row)

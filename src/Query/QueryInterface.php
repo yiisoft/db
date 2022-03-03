@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Closure;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -54,7 +55,7 @@ interface QueryInterface extends ExpressionInterface
     /**
      * Sets the {@see indexBy} property.
      *
-     * @param callable|string|null $column the name of the column by which the query results should be indexed by.
+     * @param Closure|string|null $column the name of the column by which the query results should be indexed by.
      * This can also be a callable (e.g. anonymous function) that returns the index value based on the given row data.
      * The signature of the callable should be:
      *
