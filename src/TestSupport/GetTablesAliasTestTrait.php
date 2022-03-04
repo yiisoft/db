@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestSupport;
 
-use stdClass;
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 
