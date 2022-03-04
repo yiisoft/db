@@ -10,8 +10,8 @@ namespace Yiisoft\Db\Constraint;
 class ForeignKeyConstraint extends Constraint
 {
     private ?string $foreignSchemaName = null;
-    private ?string $foreignTableName;
-    private array $foreignColumnNames;
+    private ?string $foreignTableName = null;
+    private array $foreignColumnNames = [];
     private ?string $onUpdate = null;
     private ?string $onDelete = null;
 

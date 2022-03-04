@@ -13,7 +13,7 @@ use Yiisoft\Db\Expression\Expression;
  */
 class BetweenCondition implements BetweenConditionInterface
 {
-    public function __construct(
+    final public function __construct(
         private string|Expression $column,
         private string $operator,
         private mixed $intervalStart,

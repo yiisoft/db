@@ -9,7 +9,7 @@ namespace Yiisoft\Db\Constraint;
  */
 class CheckConstraint extends Constraint
 {
-    private string $expression;
+    private string $expression = '';
 
     public function getExpression(): string
     {

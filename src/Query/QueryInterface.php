@@ -8,6 +8,7 @@ use Closure;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
@@ -265,20 +266,20 @@ interface QueryInterface extends ExpressionInterface
     /**
      * Sets the LIMIT part of the query.
      *
-     * @param int|null $limit the limit. Use null or negative value to disable limit.
+     * @param Expression|int|null $limit the limit. Use null or negative value to disable limit.
      *
      * @return QueryInterface the query object itself
      */
-    public function limit(?int $limit): self;
+    public function limit(Expression|int|null $limit): self;
 
     /**
      * Sets the OFFSET part of the query.
      *
-     * @param ExpressionInterface|int|null $offset $offset the offset. Use null or negative value to disable offset.
+     * @param Expression|int|null $offset $offset the offset. Use null or negative value to disable offset.
      *
      * @return QueryInterface the query object itself
      */
-    public function offset($offset): self;
+    public function offset(Expression|int|null $offset): self;
 
     /**
      * Sets whether to emulate query execution, preventing any interaction with data storage.

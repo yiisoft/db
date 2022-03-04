@@ -17,7 +17,7 @@ class LikeCondition implements LikeConditionInterface
 {
     protected ?array $escapingReplacements = [];
 
-    public function __construct(
+    final public function __construct(
         private string|Expression $column,
         private string $operator,
         private array|int|string|Iterator|ExpressionInterface|null $value

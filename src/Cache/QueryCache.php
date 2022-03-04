@@ -105,9 +105,9 @@ final class QueryCache
     /**
      * Add an element to the array that QueryCache information.
      *
-     * @param $value
+     * @param mixed $value
      */
-    public function setInfo($value): void
+    public function setInfo(mixed $value): void
     {
         $this->info[] = $value;
     }

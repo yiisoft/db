@@ -14,6 +14,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilder;
+use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Pdo\PdoValueBuilder;
@@ -105,7 +106,9 @@ abstract class QueryBuilder implements QueryBuilderInterface
     protected array $conditionClasses = [];
 
     /**
-     * @psalm-var string[] maps expression class to expression builder class.
+     * @psalm-var array<string, class-string<ExpressionBuilderInterface>> maps expression class to expression builder
+     * class.
+     *
      * For example:
      *
      * ```php
@@ -121,12 +124,12 @@ abstract class QueryBuilder implements QueryBuilderInterface
      */
     protected array $expressionBuilders = [];
     protected string $separator = ' ';
-    protected DDLQueryBuilder $ddlBuilder;
-    protected DMLQueryBuilder $dmlBuilder;
 
     public function __construct(
         private QuoterInterface $quoter,
-        private SchemaInterface $schema
+        private SchemaInterface $schema,
+        private DDLQueryBuilder $ddlBuilder,
+        private DMLQueryBuilder $dmlBuilder
     ) {
         $this->expressionBuilders = $this->defaultExpressionBuilders();
         $this->conditionClasses = $this->defaultConditionClasses();
@@ -325,7 +328,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return 'GROUP BY ' . implode(', ', $columns);
     }
 
-    public function buildHaving(array|string|null $condition, array &$params = []): string
+    public function buildHaving(array|ExpressionInterface|string|null $condition, array &$params = []): string
     {
         $having = $this->buildCondition($condition, $params);
 
@@ -643,6 +646,9 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $type;
     }
 
+    /**
+     * @psalm-suppress InvalidStringClass
+     */
     public function getExpressionBuilder(ExpressionInterface $expression): object
     {
         $className = get_class($expression);
@@ -713,9 +719,12 @@ abstract class QueryBuilder implements QueryBuilderInterface
      * @param string[] $builders array of builders that should be merged with the pre-defined ones in property.
      *
      * See {@see expressionBuilders} docs for details.
+     *
+     * @psalm-param array<string, class-string<ExpressionBuilderInterface>> $builders
      */
     public function setExpressionBuilders(array $builders): void
     {
+        /** @psalm-var array<string, class-string<ExpressionBuilderInterface>> */
         $this->expressionBuilders = array_merge($this->expressionBuilders, $builders);
     }
 

@@ -14,7 +14,7 @@ use Yiisoft\Db\Query\QueryInterface;
  */
 class InCondition implements InConditionInterface
 {
-    public function __construct(
+    final public function __construct(
         private array|string|Iterator $column,
         private string $operator,
         private int|iterable|Iterator|QueryInterface $values

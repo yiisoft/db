@@ -72,17 +72,6 @@ trait GetTablesAliasTestTrait
         );
     }
 
-    public function testGetTableNamesIsFromObjectgenerateException(): void
-    {
-        $query = $this->createQuery();
-
-        $query->from(new stdClass());
-
-        $this->expectException(InvalidConfigException::class);
-
-        $query->getTablesUsedInFrom();
-    }
-
     public function testGetTablesAliasesFromString(): void
     {
         $query = $this->createQuery();

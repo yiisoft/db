@@ -38,7 +38,7 @@ use function reset;
 class BatchQueryResult implements Iterator
 {
     private int $batchSize = 100;
-    private $key;
+    private int|string|null $key = null;
 
     /**
      * @var DataReader|null the data reader associated with this batch query.
@@ -120,13 +120,13 @@ class BatchQueryResult implements Iterator
             if ($this->query->getIndexBy() !== null) {
                 $this->key = key($this->batch);
             } elseif (key($this->batch) !== null) {
-                $this->key = $this->key === null ? 0 : $this->key + 1;
+                $this->key = $this->key === null ? 0 : (int) $this->key + 1;
             } else {
                 $this->key = null;
             }
         } else {
             $this->value = $this->batch;
-            $this->key = $this->key === null ? 0 : $this->key + 1;
+            $this->key = $this->key === null ? 0 : (int) $this->key + 1;
         }
     }
 
@@ -181,7 +181,7 @@ class BatchQueryResult implements Iterator
      * @return int|string|null the index of the current row.
      */
     #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): int|string|null
     {
         return $this->key;
     }
@@ -194,7 +194,7 @@ class BatchQueryResult implements Iterator
      * @return mixed the current dataset.
      */
     #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): mixed
     {
         return $this->value;
     }

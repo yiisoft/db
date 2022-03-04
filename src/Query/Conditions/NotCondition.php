@@ -15,7 +15,7 @@ use function count;
  */
 class NotCondition implements NotConditionInterface
 {
-    public function __construct(private mixed $condition)
+    final public function __construct(private mixed $condition)
     {
     }
 

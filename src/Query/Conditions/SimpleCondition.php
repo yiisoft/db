@@ -18,7 +18,7 @@ use function count;
  */
 class SimpleCondition implements SimpleConditionInterface
 {
-    public function __construct(
+    final public function __construct(
         private string|Expression|QueryInterface $column,
         private string $operator,
         private array|int|string|Iterator|ExpressionInterface|null $value

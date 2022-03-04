@@ -36,7 +36,7 @@ use Yiisoft\Db\Query\Conditions\Interface\BetweenColumnsConditionInterface;
  */
 class BetweenColumnsCondition implements BetweenColumnsConditionInterface
 {
-    public function __construct(
+    final public function __construct(
         private array|int|string|Iterator|ExpressionInterface $value,
         private string $operator,
         private mixed $intervalStartColumn,

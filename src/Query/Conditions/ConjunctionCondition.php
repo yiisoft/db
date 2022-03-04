@@ -11,7 +11,7 @@ use Yiisoft\Db\Query\Conditions\Interface\ConjunctionConditionInterface;
  */
 abstract class ConjunctionCondition implements ConjunctionConditionInterface
 {
-    public function __construct(protected array $expressions)
+    final public function __construct(protected array $expressions)
     {
     }
 

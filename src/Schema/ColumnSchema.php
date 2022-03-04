@@ -15,12 +15,12 @@ use Yiisoft\Strings\NumericHelper;
  */
 class ColumnSchema
 {
-    private string $name;
-    private bool $allowNull;
-    private string $type;
+    private string $name = '';
+    private bool $allowNull = false;
+    private string $type = '';
     private ?string $phpType = null;
-    private string $dbType;
-    private $defaultValue;
+    private string $dbType = '';
+    private mixed $defaultValue = null;
     private ?array $enumValues = null;
     private ?int $size = null;
     private ?int $precision = null;
@@ -300,7 +300,7 @@ class ColumnSchema
         $this->dbType = $value;
     }
 
-    public function defaultValue($value): void
+    public function defaultValue(mixed $value): void
     {
         $this->defaultValue = $value;
     }

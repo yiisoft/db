@@ -25,12 +25,10 @@ class ColumnSchemaBuilder
     public const CATEGORY_TIME = 'time';
     public const CATEGORY_OTHER = 'other';
 
-    private ?string $type;
-    private $length;
     private ?bool $isNotNull = null;
     private bool $isUnique = false;
     private ?string $check = null;
-    private $default;
+    private mixed $default = null;
     private ?string $append = null;
     private bool $isUnsigned = false;
     private ?string $after = null;
@@ -60,10 +58,8 @@ class ColumnSchemaBuilder
     ];
     private ?string $comment = null;
 
-    public function __construct(string $type, $length = null)
+    public function __construct(private string $type, private int|string|array|null $length = null)
     {
-        $this->type = $type;
-        $this->length = $length;
     }
 
     /**
@@ -136,7 +132,6 @@ class ColumnSchemaBuilder
         }
 
         $this->default = $default;
-
         return $this;
     }
 
@@ -257,9 +252,10 @@ class ColumnSchemaBuilder
      */
     protected function buildLengthString(): string
     {
-        if ($this->length === null || $this->length === []) {
+        if (empty($this->length)) {
             return '';
         }
+
         if (is_array($this->length)) {
             $this->length = implode(',', $this->length);
         }
@@ -431,11 +427,11 @@ class ColumnSchemaBuilder
     }
 
     /**
-     * @return array|int|string column size or precision definition. This is what goes into the parenthesis after the
-     * column type. This can be either a string, an integer or an array. If it is an array, the array values will be
+     * @return array|int|string|null column size or precision definition. This is what goes into the parenthesis after
+     * the column type. This can be either a string, an integer or an array. If it is an array, the array values will be
      * joined into a string separated by comma.
      */
-    public function getLength()
+    public function getLength(): array|int|string|null
     {
         return $this->length;
     }
@@ -468,7 +464,7 @@ class ColumnSchemaBuilder
     /**
      * @return mixed default value of the column.
      */
-    public function getDefault()
+    public function getDefault(): mixed
     {
         return $this->default;
     }

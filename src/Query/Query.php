@@ -75,10 +75,10 @@ class Query implements QueryInterface
     protected array $select = [];
     protected ?string $selectOption = null;
     protected ?bool $distinct = null;
-    protected $from;
+    protected array|ExpressionInterface|string|null $from = null;
     protected array $groupBy = [];
     protected array $join = [];
-    protected $having;
+    protected array|ExpressionInterface|string|null $having = null;
     protected array $union = [];
     protected array $withQueries = [];
     protected array $params = [];
@@ -462,7 +462,7 @@ class Query implements QueryInterface
             $tableNames = $this->from;
         } elseif (is_string($this->from)) {
             $tableNames = preg_split('/\s*,\s*/', trim($this->from), -1, PREG_SPLIT_NO_EMPTY);
-        } elseif ($this->from instanceof Expression) {
+        } elseif ($this->from instanceof ExpressionInterface) {
             $tableNames = [$this->from];
         } else {
             throw new InvalidConfigException(gettype($this->from) . ' in $from is not supported.');
@@ -716,7 +716,7 @@ PATTERN;
      *
      * @return $this the query object itself
      */
-    public function from($tables): self
+    public function from(array|ExpressionInterface|string $tables): self
     {
         if ($tables instanceof ExpressionInterface) {
             $tables = [$tables];
@@ -1030,7 +1030,7 @@ PATTERN;
     /**
      * Sets the HAVING part of the query.
      *
-     * @param array|ExpressionInterface|string $condition the conditions to be put after HAVING.
+     * @param array|ExpressionInterface|string|null $condition the conditions to be put after HAVING.
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
@@ -1039,7 +1039,7 @@ PATTERN;
      * {@see andHaving()}
      * {@see orHaving()}
      */
-    public function having($condition, array $params = []): self
+    public function having(array|ExpressionInterface|string|null $condition, array $params = []): self
     {
         $this->having = $condition;
         $this->addParams($params);
@@ -1325,7 +1325,7 @@ PATTERN;
         return $this->distinct;
     }
 
-    public function getFrom()
+    public function getFrom(): array|ExpressionInterface|string|null
     {
         return $this->from;
     }
@@ -1335,7 +1335,7 @@ PATTERN;
         return $this->groupBy;
     }
 
-    public function getHaving()
+    public function getHaving(): string|array|ExpressionInterface|null
     {
         return $this->having;
     }

@@ -13,7 +13,7 @@ use Yiisoft\Db\Query\QueryInterface;
  */
 class ExistsCondition implements ExistConditionInterface
 {
-    public function __construct(private string $operator, private QueryInterface $query)
+    final public function __construct(private string $operator, private QueryInterface $query)
     {
     }
 

@@ -11,7 +11,7 @@ use Yiisoft\Db\Query\Conditions\Interface\HashConditionInterface;
  */
 class HashCondition implements HashConditionInterface
 {
-    public function __construct(private ?array $hash = [])
+    final public function __construct(private ?array $hash = [])
     {
     }
 

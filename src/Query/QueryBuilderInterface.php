@@ -294,14 +294,14 @@ interface QueryBuilderInterface
     public function buildGroupBy(array $columns, array &$params = []): string;
 
     /**
-     * @param array|string|null $condition
+     * @param array|ExpressionInterface|string|null $condition the condition specification.
      * @param array $params the binding parameters to be populated.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string the HAVING clause built from {@see Query::$having}.
      */
-    public function buildHaving(array|string|null $condition, array &$params = []): string;
+    public function buildHaving(array|ExpressionInterface|string|null $condition, array &$params = []): string;
 
     /**
      * @param array $joins
