@@ -13,11 +13,11 @@ use Yiisoft\Db\Query\Conditions\Interface\LikeConditionInterface;
 /**
  * Class LikeCondition represents a `LIKE` condition.
  */
-class LikeCondition implements LikeConditionInterface
+final class LikeCondition implements LikeConditionInterface
 {
     protected ?array $escapingReplacements = [];
 
-    final public function __construct(
+    public function __construct(
         private string|Expression $column,
         private string $operator,
         private array|int|string|Iterator|ExpressionInterface|null $value
@@ -55,7 +55,7 @@ class LikeCondition implements LikeConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
-        $condition = new static($operands[0], $operator, $operands[1]);
+        $condition = new self($operands[0], $operator, $operands[1]);
 
         if (array_key_exists(2, $operands)) {
             $condition->setEscapingReplacements($operands[2]);

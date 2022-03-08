@@ -13,9 +13,9 @@ use function count;
 /**
  * Condition that inverts passed {@see condition}.
  */
-class NotCondition implements NotConditionInterface
+final class NotCondition implements NotConditionInterface
 {
-    final public function __construct(private mixed $condition)
+    public function __construct(private mixed $condition)
     {
     }
 
@@ -30,6 +30,6 @@ class NotCondition implements NotConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires exactly one operand.");
         }
 
-        return new static(array_shift($operands));
+        return new self(array_shift($operands));
     }
 }

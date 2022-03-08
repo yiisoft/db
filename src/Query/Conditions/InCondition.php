@@ -12,9 +12,9 @@ use Yiisoft\Db\Query\QueryInterface;
 /**
  * Class InCondition represents `IN` condition.
  */
-class InCondition implements InConditionInterface
+final class InCondition implements InConditionInterface
 {
-    final public function __construct(
+    public function __construct(
         private array|string|Iterator $column,
         private string $operator,
         private int|iterable|Iterator|QueryInterface $values

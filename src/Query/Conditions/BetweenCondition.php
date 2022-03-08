@@ -11,9 +11,9 @@ use Yiisoft\Db\Expression\Expression;
 /**
  * Class BetweenCondition represents a `BETWEEN` condition.
  */
-class BetweenCondition implements BetweenConditionInterface
+final class BetweenCondition implements BetweenConditionInterface
 {
-    final public function __construct(
+    public function __construct(
         private string|Expression $column,
         private string $operator,
         private mixed $intervalStart,

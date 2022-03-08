@@ -16,9 +16,9 @@ use function count;
 /**
  * Class SimpleCondition represents a simple condition like `"column" operator value`.
  */
-class SimpleCondition implements SimpleConditionInterface
+final class SimpleCondition implements SimpleConditionInterface
 {
-    final public function __construct(
+    public function __construct(
         private string|Expression|QueryInterface $column,
         private string $operator,
         private array|int|string|Iterator|ExpressionInterface|null $value
@@ -46,6 +46,6 @@ class SimpleCondition implements SimpleConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
-        return new static($operands[0], $operator, $operands[1]);
+        return new self($operands[0], $operator, $operands[1]);
     }
 }

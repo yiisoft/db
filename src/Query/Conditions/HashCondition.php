@@ -9,9 +9,9 @@ use Yiisoft\Db\Query\Conditions\Interface\HashConditionInterface;
 /**
  * Condition based on column-value pairs.
  */
-class HashCondition implements HashConditionInterface
+final class HashCondition implements HashConditionInterface
 {
-    final public function __construct(private ?array $hash = [])
+    public function __construct(private ?array $hash = [])
     {
     }
 

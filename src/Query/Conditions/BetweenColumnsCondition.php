@@ -34,9 +34,9 @@ use Yiisoft\Db\Query\Conditions\Interface\BetweenColumnsConditionInterface;
  * // NOW() NOT BETWEEN (SELECT time FROM log ORDER BY id ASC LIMIT 1) AND update_time
  * ```
  */
-class BetweenColumnsCondition implements BetweenColumnsConditionInterface
+final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
 {
-    final public function __construct(
+    public function __construct(
         private array|int|string|Iterator|ExpressionInterface $value,
         private string $operator,
         private mixed $intervalStartColumn,
