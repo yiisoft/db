@@ -47,6 +47,6 @@ final class BetweenCondition implements BetweenConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires three operands.");
         }
 
-        return new static($operands[0], $operator, $operands[1], $operands[2]);
+        return new self($operands[0], $operator, $operands[1], $operands[2]);
     }
 }

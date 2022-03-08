@@ -22,6 +22,6 @@ final class HashCondition implements HashConditionInterface
 
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
-        return new static($operands);
+        return new self($operands);
     }
 }
