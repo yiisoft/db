@@ -13,7 +13,6 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\Interface\SimpleConditionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
-use function is_string;
 use function str_contains;
 
 /**
@@ -36,7 +35,7 @@ class SimpleConditionBuilder implements ExpressionBuilderInterface
 
         if ($column instanceof ExpressionInterface) {
             $column = $this->queryBuilder->buildExpression($column, $params);
-        } elseif (is_string($column) && !str_contains($column, '(')) {
+        } elseif (!str_contains($column, '(')) {
             $column = $this->queryBuilder->quoter()->quoteColumnName($column);
         }
 

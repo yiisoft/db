@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
-use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * Class QueryExpressionBuilder is used internally to build {@see Query} object using unified {@see QueryBuilder}
@@ -17,7 +16,7 @@ class QueryExpressionBuilder implements ExpressionBuilderInterface
     {
     }
 
-    public function build(ExpressionInterface $expression, array &$params = []): string
+    public function build(QueryInterface $expression, array &$params = []): string
     {
         [$sql, $params] = $this->queryBuilder->build($expression, $params);
         return "($sql)";

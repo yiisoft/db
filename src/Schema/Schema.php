@@ -11,7 +11,6 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 
-use function array_key_exists;
 use function gettype;
 use function is_array;
 use function preg_match;
@@ -440,7 +439,7 @@ abstract class Schema implements SchemaInterface
             $this->loadTableMetadataFromCache($rawName);
         }
 
-        if ($refresh || !array_key_exists($type, $this->tableMetadata[$rawName])) {
+        if ($refresh || !isset($this->tableMetadata[$rawName][$type])) {
             $this->tableMetadata[$rawName][$type] = $this->loadTableTypeMetadata($type, $rawName);
             $this->saveTableMetadataToCache($rawName);
         }

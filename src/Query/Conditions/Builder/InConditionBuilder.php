@@ -158,7 +158,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      */
     protected function buildSubqueryInCondition(
         string $operator,
-        array|string $columns,
+        iterable|string|Iterator $columns,
         ExpressionInterface $values,
         array &$params = []
     ): string {
@@ -171,14 +171,15 @@ class InConditionBuilder implements ExpressionBuilderInterface
                 }
             }
 
-            return '(' . implode(', ', $columns) . ") $operator $sql";
+            $query = '(' . implode(', ', $columns) . ") $operator $sql";
         }
 
-        if (!str_contains($columns, '(')) {
+        if (is_string($columns) && !str_contains($columns, '(')) {
             $columns = $this->queryBuilder->quoter()->quoteColumnName($columns);
+            $query = "$columns $operator $sql";
         }
 
-        return "$columns $operator $sql";
+        return $query ?? '';
     }
 
     /**

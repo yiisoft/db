@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions\Interface;
 
 use Iterator;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\QueryInterface;
 
 interface SimpleConditionInterface extends ConditionInterface
 {
     /**
-     * @psalm-return string|string[]|ExpressionInterface The column name. If it is an array, a composite `IN` condition
+     * @psalm-return string|Expression|QueryInterface The column name. If it is an array, a composite `IN` condition
      * will be generated.
      */
-    public function getColumn(): string|array|ExpressionInterface;
+    public function getColumn(): string|Expression|QueryInterface;
 
     /**
      * @return string The operator to use. Anything could be used e.g. `>`, `<=`, etc.

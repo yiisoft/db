@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\Interface\BetweenConditionInterface;
+use Yiisoft\Db\Expression\Expression;
 
 /**
  * Class BetweenCondition represents a `BETWEEN` condition.
  */
-class BetweenCondition implements BetweenConditionInterface
+final class BetweenCondition implements BetweenConditionInterface
 {
     public function __construct(
-        private string|array|ExpressionInterface $column,
+        private string|Expression $column,
         private string $operator,
         private mixed $intervalStart,
         private mixed $intervalEnd
     ) {
     }
 
-    public function getColumn(): string|array|ExpressionInterface
+    public function getColumn(): string|Expression
     {
         return $this->column;
     }
@@ -47,6 +47,6 @@ class BetweenCondition implements BetweenConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires three operands.");
         }
 
-        return new static($operands[0], $operator, $operands[1], $operands[2]);
+        return new self($operands[0], $operator, $operands[1], $operands[2]);
     }
 }

@@ -11,7 +11,7 @@ use Yiisoft\Db\Query\QueryInterface;
 /**
  * Condition that represents `EXISTS` operator.
  */
-class ExistsCondition implements ExistConditionInterface
+final class ExistsCondition implements ExistConditionInterface
 {
     public function __construct(private string $operator, private QueryInterface $query)
     {
@@ -33,6 +33,6 @@ class ExistsCondition implements ExistConditionInterface
             throw new InvalidArgumentException('Sub query for EXISTS operator must be a Query object.');
         }
 
-        return new static($operator, $operands[0]);
+        return new self($operator, $operands[0]);
     }
 }

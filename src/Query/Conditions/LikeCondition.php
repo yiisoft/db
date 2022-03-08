@@ -6,29 +6,30 @@ namespace Yiisoft\Db\Query\Conditions;
 
 use Iterator;
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\Interface\LikeConditionInterface;
 
 /**
  * Class LikeCondition represents a `LIKE` condition.
  */
-class LikeCondition implements LikeConditionInterface
+final class LikeCondition implements LikeConditionInterface
 {
-    protected array|bool|null $escapingReplacements = null;
+    protected ?array $escapingReplacements = [];
 
     public function __construct(
-        private string|array|ExpressionInterface $column,
+        private string|Expression $column,
         private string $operator,
         private array|int|string|Iterator|ExpressionInterface|null $value
     ) {
     }
 
-    public function getColumn(): string|array|ExpressionInterface
+    public function getColumn(): string|Expression
     {
         return $this->column;
     }
 
-    public function getEscapingReplacements(): array|bool|null
+    public function getEscapingReplacements(): ?array
     {
         return $this->escapingReplacements;
     }
@@ -43,7 +44,7 @@ class LikeCondition implements LikeConditionInterface
         return $this->value;
     }
 
-    public function setEscapingReplacements(array|bool|null $escapingReplacements): void
+    public function setEscapingReplacements(array|null $escapingReplacements): void
     {
         $this->escapingReplacements = $escapingReplacements;
     }
@@ -54,10 +55,10 @@ class LikeCondition implements LikeConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
-        $condition = new static($operands[0], $operator, $operands[1]);
+        $condition = new self($operands[0], $operator, $operands[1]);
 
-        if (isset($operands[2])) {
-            $condition->escapingReplacements = $operands[2];
+        if (array_key_exists(2, $operands)) {
+            $condition->setEscapingReplacements($operands[2]);
         }
 
         return $condition;

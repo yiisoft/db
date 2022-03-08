@@ -132,7 +132,7 @@ interface ConnectionInterface
      *
      * If this method is called for the first time, it will try to open a master connection.
      *
-     * @return static|null The currently active master connection. `null` is returned if there is no master
+     * @return self|null The currently active master connection. `null` is returned if there is no master
      * available.
      */
     public function getMaster(): ?self;
@@ -172,7 +172,7 @@ interface ConnectionInterface
      * @param bool $fallbackToMaster Whether to return a master connection in case there is no slave connection
      * available.
      *
-     * @return static|null The currently active slave connection. `null` is returned if there is no slave available
+     * @return self|null The currently active slave connection. `null` is returned if there is no slave available
      * and `$fallbackToMaster` is false.
      */
     public function getSlave(bool $fallbackToMaster = true): ?self;

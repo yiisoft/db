@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Closure;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 use function array_key_exists;
@@ -26,10 +28,9 @@ use function trim;
  */
 trait QueryTrait
 {
-    private ExpressionInterface|int|null $limit = null;
-    private ExpressionInterface|int|null $offset = null;
-    /** @var callable|string|null  */
-    private $indexBy;
+    private Expression|int|null $limit = null;
+    private Expression|int|null $offset = null;
+    private Closure|string|null $indexBy = null;
     private array|string|ExpressionInterface|null $where = null;
     private array $orderBy = [];
     private bool $emulateExecution = false;
@@ -37,11 +38,11 @@ trait QueryTrait
     /**
      * Sets the {@see indexBy} property.
      *
-     * @param callable|string|null $column the name of the column by which the query results should be indexed by.
+     * @param Closure|string|null $column the name of the column by which the query results should be indexed by.
      *
-     * This can also be a callable (e.g. anonymous function) that returns the index value based on the given row data.
+     * This can also be a closure (e.g. anonymous function) that returns the index value based on the given row data.
      *
-     * The signature of the callable should be:
+     * The signature of the closure should be:
      *
      * ```php
      * function ($row)
@@ -410,11 +411,11 @@ trait QueryTrait
     /**
      * Sets the LIMIT part of the query.
      *
-     * @param ExpressionInterface|int|null $limit the limit. Use null or negative value to disable limit.
+     * @param Expression|int|null $limit the limit. Use null or negative value to disable limit.
      *
      * @return $this the query object itself
      */
-    public function limit($limit): self
+    public function limit(Expression|int|null $limit): self
     {
         $this->limit = $limit;
 
@@ -424,11 +425,11 @@ trait QueryTrait
     /**
      * Sets the OFFSET part of the query.
      *
-     * @param ExpressionInterface|int|null $offset $offset the offset. Use null or negative value to disable offset.
+     * @param Expression|int|null $offset $offset the offset. Use null or negative value to disable offset.
      *
      * @return $this the query object itself
      */
-    public function offset($offset): self
+    public function offset(Expression|int|null $offset): self
     {
         $this->offset = $offset;
 
@@ -459,12 +460,12 @@ trait QueryTrait
         return $this->where;
     }
 
-    public function getLimit()
+    public function getLimit(): Expression|int|null
     {
         return $this->limit;
     }
 
-    public function getOffset()
+    public function getOffset(): Expression|int|null
     {
         return $this->offset;
     }

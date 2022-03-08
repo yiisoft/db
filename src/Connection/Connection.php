@@ -78,7 +78,7 @@ abstract class Connection implements ConnectionInterface
         return $this->getSchema()->getLastInsertID($sequenceName);
     }
 
-    public function getMaster(): ?self
+    public function getMaster(): ?ConnectionInterface
     {
         if ($this->master === null) {
             $this->master = $this->shuffleMasters
@@ -89,7 +89,7 @@ abstract class Connection implements ConnectionInterface
         return $this->master;
     }
 
-    public function getSlave(bool $fallbackToMaster = true): ?self
+    public function getSlave(bool $fallbackToMaster = true): ?ConnectionInterface
     {
         if (!$this->enableSlaves) {
             return $fallbackToMaster ? $this : null;

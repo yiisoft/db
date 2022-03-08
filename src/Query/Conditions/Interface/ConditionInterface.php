@@ -21,7 +21,7 @@ interface ConditionInterface extends ExpressionInterface
      *
      * @throws InvalidArgumentException If input parameters are not suitable for this condition
      *
-     * @return static
+     * @return self
      */
     public static function fromArrayDefinition(string $operator, array $operands): self;
 }

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Closure;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
@@ -54,7 +56,7 @@ interface QueryInterface extends ExpressionInterface
     /**
      * Sets the {@see indexBy} property.
      *
-     * @param callable|string|null $column the name of the column by which the query results should be indexed by.
+     * @param Closure|string|null $column the name of the column by which the query results should be indexed by.
      * This can also be a callable (e.g. anonymous function) that returns the index value based on the given row data.
      * The signature of the callable should be:
      *
@@ -264,20 +266,20 @@ interface QueryInterface extends ExpressionInterface
     /**
      * Sets the LIMIT part of the query.
      *
-     * @param int|null $limit the limit. Use null or negative value to disable limit.
+     * @param Expression|int|null $limit the limit. Use null or negative value to disable limit.
      *
      * @return QueryInterface the query object itself
      */
-    public function limit(?int $limit): self;
+    public function limit(Expression|int|null $limit): self;
 
     /**
      * Sets the OFFSET part of the query.
      *
-     * @param ExpressionInterface|int|null $offset $offset the offset. Use null or negative value to disable offset.
+     * @param Expression|int|null $offset $offset the offset. Use null or negative value to disable offset.
      *
      * @return QueryInterface the query object itself
      */
-    public function offset($offset): self;
+    public function offset(Expression|int|null $offset): self;
 
     /**
      * Sets whether to emulate query execution, preventing any interaction with data storage.
@@ -355,4 +357,9 @@ interface QueryInterface extends ExpressionInterface
      * @return Query A prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
      */
     public function prepare(QueryBuilder $builder): Query;
+
+    /**
+     * Return select query string.
+     */
+    public function getSelect(): array;
 }

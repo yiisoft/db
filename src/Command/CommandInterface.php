@@ -523,9 +523,9 @@ interface CommandInterface
     /**
      * Returns the SQL statement for this command.
      *
-     * @return string|null the SQL statement to be executed.
+     * @return string the SQL statement to be executed.
      */
-    public function getSql(): ?string;
+    public function getSql(): string;
 
     /**
      * Creates an INSERT command.

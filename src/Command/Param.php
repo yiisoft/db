@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Command;
 
 final class Param implements ParamInterface
 {
-    public function __construct(private int|string $name, private mixed $value, private ?int $type)
+    public function __construct(private int|string $name, private mixed $value, private int $type)
     {
     }
 
@@ -20,7 +20,7 @@ final class Param implements ParamInterface
         return $this->value;
     }
 
-    public function getType(): ?int
+    public function getType(): int
     {
         return $this->type;
     }

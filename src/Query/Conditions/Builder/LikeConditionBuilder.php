@@ -15,7 +15,6 @@ use Yiisoft\Db\Query\QueryBuilderInterface;
 
 use function implode;
 use function is_array;
-use function is_string;
 use function preg_match;
 use function strtoupper;
 
@@ -49,7 +48,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         $values = $expression->getValue();
         $escape = $expression->getEscapingReplacements();
 
-        if ($escape === null || $escape === []) {
+        if ($escape === []) {
             $escape = $this->escapingReplacements;
         }
 
@@ -65,7 +64,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
 
         if ($column instanceof ExpressionInterface) {
             $column = $this->queryBuilder->buildExpression($column, $params);
-        } elseif (is_string($column) && !str_contains($column, '(')) {
+        } elseif (!str_contains($column, '(')) {
             $column = $this->queryBuilder->quoter()->quoteColumnName($column);
         }
 
@@ -77,7 +76,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
                 $phName = $this->queryBuilder->buildExpression($value, $params);
             } else {
                 $phName = $this->queryBuilder->bindParam(
-                    empty($escape) ? $value : ('%' . strtr($value, $escape) . '%'),
+                    $escape === null ? $value : ('%' . strtr($value, $escape) . '%'),
                     $params
                 );
             }
@@ -110,7 +109,8 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @return string character used to escape special characters in LIKE conditions. By default, it's assumed to be `\`.
+     * @return string character used to escape special characters in LIKE conditions. By default,
+     * it's assumed to be `\`.
      */
     private function getEscapeSql(): string
     {

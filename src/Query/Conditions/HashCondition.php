@@ -9,7 +9,7 @@ use Yiisoft\Db\Query\Conditions\Interface\HashConditionInterface;
 /**
  * Condition based on column-value pairs.
  */
-class HashCondition implements HashConditionInterface
+final class HashCondition implements HashConditionInterface
 {
     public function __construct(private ?array $hash = [])
     {
@@ -22,6 +22,6 @@ class HashCondition implements HashConditionInterface
 
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
-        return new static($operands);
+        return new self($operands);
     }
 }

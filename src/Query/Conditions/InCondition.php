@@ -12,12 +12,12 @@ use Yiisoft\Db\Query\QueryInterface;
 /**
  * Class InCondition represents `IN` condition.
  */
-class InCondition implements InConditionInterface
+final class InCondition implements InConditionInterface
 {
     public function __construct(
-        private mixed $column,
+        private array|string|Iterator $column,
         private string $operator,
-        private array|int|Iterator|QueryInterface $values
+        private int|iterable|Iterator|QueryInterface $values
     ) {
     }
 
@@ -31,7 +31,7 @@ class InCondition implements InConditionInterface
         return $this->operator;
     }
 
-    public function getValues(): array|int|Iterator|QueryInterface
+    public function getValues(): int|iterable|Iterator|QueryInterface
     {
         return $this->values;
     }
@@ -42,6 +42,6 @@ class InCondition implements InConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
-        return new static($operands[0], $operator, $operands[1]);
+        return new self($operands[0], $operator, $operands[1]);
     }
 }

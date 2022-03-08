@@ -17,7 +17,6 @@ use Yiisoft\Db\Query\QueryInterface;
 
 use function count;
 use function implode;
-use function is_iterable;
 use function str_contains;
 
 /**
@@ -34,7 +33,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(HashConditionInterface $expression, array &$params = []): string
     {
-        $hash = $expression->getHash();
+        $hash = $expression->getHash() ?? [];
         $parts = [];
 
         foreach ($hash as $column => $value) {
