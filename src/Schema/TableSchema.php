@@ -19,7 +19,9 @@ abstract class TableSchema
     private string $name = '';
     private ?string $fullName = null;
     private ?string $sequenceName = null;
+    /** @psalm-var string[] */
     private array $primaryKey = [];
+    /** @psalm-var ColumnSchema[] */
     private array $columns = [];
 
     /**
@@ -44,31 +46,6 @@ abstract class TableSchema
     public function getColumnNames(): array
     {
         return array_keys($this->columns);
-    }
-
-    /**
-     * Manually specifies the primary key for this table.
-     *
-     * @param array|string $keys the primary key (can be composite)
-     *
-     * @throws InvalidArgumentException if the specified key cannot be found in the table.
-     */
-    public function fixPrimaryKey($keys): void
-    {
-        $keys = (array) $keys;
-        $this->primaryKey = $keys;
-
-        foreach ($this->columns as $column) {
-            $column->primaryKey(false);
-        }
-
-        foreach ($keys as $key) {
-            if (isset($this->columns[$key])) {
-                $this->columns[$key]->primaryKey(true);
-            } else {
-                throw new InvalidArgumentException("Primary key '$key' cannot be found in table '$this->name'.");
-            }
-        }
     }
 
     /**
@@ -117,8 +94,10 @@ abstract class TableSchema
     }
 
     /**
-     * @return ColumnSchema[] column metadata of this table. Each array element is a {@see ColumnSchema} object, indexed
-     * by column names.
+     * @return array column metadata of this table. Each array element is a {@see ColumnSchema} object, indexed by
+     * column names.
+     *
+     * @psalm-return ColumnSchema[]
      */
     public function getColumns(): array
     {
