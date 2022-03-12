@@ -33,6 +33,7 @@ class ColumnSchemaBuilder
     private bool $isUnsigned = false;
     private ?string $after = null;
     private bool $isFirst = false;
+    /** @psalm-var string[] */
     private array $categoryMap = [
         Schema::TYPE_PK => self::CATEGORY_PK,
         Schema::TYPE_UPK => self::CATEGORY_PK,
@@ -58,8 +59,11 @@ class ColumnSchemaBuilder
     ];
     private ?string $comment = null;
 
-    public function __construct(private string $type, private int|string|array|null $length = null)
-    {
+    public function __construct(
+        private string $type,
+        /** @psalm-var int|string|string[]|null */
+        private int|string|array|null $length = null
+    ) {
     }
 
     /**
@@ -304,10 +308,11 @@ class ColumnSchemaBuilder
         }
 
         $string = ' DEFAULT ';
+
         switch (gettype($this->default)) {
             case 'object':
             case 'integer':
-                $string .= $this->default;
+                $string .= (string) $this->default;
                 break;
             case 'double':
                 /* ensure type cast always has . as decimal separator in all locales */
@@ -378,7 +383,7 @@ class ColumnSchemaBuilder
      *
      * @return string|null a string containing the column type category name.
      */
-    protected function getTypeCategory(): ?string
+    protected function getTypeCategory(): string|null
     {
         return $this->categoryMap[$this->type] ?? null;
     }

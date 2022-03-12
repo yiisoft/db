@@ -105,7 +105,7 @@ class ColumnSchema
             && isset($value[1])
             && in_array($value[1], $this->getPdoParamTypes(), true)
         ) {
-            return new PdoValue($value[0], $value[1]);
+            return new PdoValue((string) $value[0], $value[1]);
         }
 
         switch ($this->phpType) {

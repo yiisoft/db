@@ -20,7 +20,9 @@ use function substr;
 class Quoter implements QuoterInterface
 {
     public function __construct(
+        /** @psalm-var string[]|string */
         private array|string $columnQuoteCharacter,
+        /** @psalm-var string[]|string */
         private array|string $tableQuoteCharacter,
         private string $tablePrefix = ''
     ) {
@@ -98,6 +100,7 @@ class Quoter implements QuoterInterface
             return $this->quoteSimpleTableName($name);
         }
 
+        /** @var string[] */
         $parts = $this->getTableNameParts($name);
 
         foreach ($parts as $i => $part) {
