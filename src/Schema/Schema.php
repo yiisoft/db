@@ -7,11 +7,7 @@ namespace Yiisoft\Db\Schema;
 use PDO;
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
-use Yiisoft\Db\Constraint\DefaultValueConstraint;
-use Yiisoft\Db\Constraint\ForeignKeyConstraint;
-use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 
