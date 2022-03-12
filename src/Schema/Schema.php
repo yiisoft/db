@@ -61,9 +61,7 @@ abstract class Schema implements SchemaInterface
      * @var string|null the default schema name used for the current session.
      */
     protected ?string $defaultSchema = null;
-    /** @psalm-var string[] */
     private array $schemaNames = [];
-    /** @psalm-var string[][] */
     private array $tableNames = [];
     private array $tableMetadata = [];
 
@@ -184,7 +182,6 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaChecks(string $schema = '', bool $refresh = false): array
     {
-        /** @psalm-var array<array-key, array<array-key, CheckConstraint>> */
         return $this->getSchemaMetadata($schema, 'checks', $refresh);
     }
 
@@ -193,7 +190,6 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaDefaultValues(string $schema = '', bool $refresh = false): array
     {
-        /** @psalm-var array<array-key, DefaultValueConstraint> */
         return $this->getSchemaMetadata($schema, 'defaultValues', $refresh);
     }
 
@@ -202,7 +198,6 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaForeignKeys(string $schema = '', bool $refresh = false): array
     {
-        /** @psalm-var array<array-key, array<array-key, ForeignKeyConstraint>> */
         return $this->getSchemaMetadata($schema, 'foreignKeys', $refresh);
     }
 
@@ -211,7 +206,6 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaIndexes(string $schema = '', bool $refresh = false): array
     {
-        /** @psalm-var array<array-key, array<array-key, IndexConstraint>> */
         return $this->getSchemaMetadata($schema, 'indexes', $refresh);
     }
 
@@ -229,7 +223,6 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array
     {
-        /** @psalm-var array<array-key, Constraint> */
         return $this->getSchemaMetadata($schema, 'primaryKeys', $refresh);
     }
 
@@ -238,65 +231,73 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaUniques(string $schema = '', bool $refresh = false): array
     {
-        /** @psalm-var array<array-key, array<array-key, Constraint>> */
         return $this->getSchemaMetadata($schema, 'uniques', $refresh);
     }
 
     public function getTableChecks(string $name, bool $refresh = false): array
     {
-        /** @psalm-var array<array-key, CheckConstraint> */
-        return $this->getTableMetadata($name, 'checks', $refresh);
+        /** @var mixed */
+        $tableChecks = $this->getTableMetadata($name, 'checks', $refresh);
+        return is_array($tableChecks) ? $tableChecks : [];
     }
 
     public function getTableDefaultValues(string $name, bool $refresh = false): array
     {
-        /** @psalm-var array<array-key, DefaultValueConstraint> */
-        return $this->getTableMetadata($name, 'defaultValues', $refresh);
+        /** @var mixed */
+        $tableDefaultValues = $this->getTableMetadata($name, 'defaultValues', $refresh);
+        return is_array($tableDefaultValues) ? $tableDefaultValues : [];
     }
 
     public function getTableForeignKeys(string $name, bool $refresh = false): array
     {
-        /** @psalm-var array<array-key, ForeignKeyConstraint> */
-        return $this->getTableMetadata($name, 'foreignKeys', $refresh);
+        /** @var mixed */
+        $tableForeignKeys = $this->getTableMetadata($name, 'foreignKeys', $refresh);
+        return is_array($tableForeignKeys) ? $tableForeignKeys : [];
     }
 
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
-        /** @psalm-var array<array-key, IndexConstraint> */
-        return $this->getTableMetadata($name, 'indexes', $refresh);
+        /** @var mixed */
+        $tableIndexes = $this->getTableMetadata($name, 'indexes', $refresh);
+        return is_array($tableIndexes) ? $tableIndexes : [];
     }
 
     public function getTableNames(string $schema = '', bool $refresh = false): array
     {
         if (!isset($this->tableNames[$schema]) || $refresh) {
+            /** @psalm-var string[] */
             $this->tableNames[$schema] = $this->findTableNames($schema);
         }
 
-        return $this->tableNames[$schema];
+        return is_array($this->tableNames[$schema]) ? $this->tableNames[$schema] : [];
     }
 
     public function getTablePrimaryKey(string $name, bool $refresh = false): ?Constraint
     {
-        /** @var Constraint|null */
-        return $this->getTableMetadata($name, 'primaryKey', $refresh);
+        /** @var mixed */
+        $tablePrimaryKey = $this->getTableMetadata($name, 'primaryKey', $refresh);
+        return $tablePrimaryKey instanceof Constraint ? $tablePrimaryKey : null;
     }
 
     public function getTableSchema(string $name, bool $refresh = false): ?TableSchema
     {
-        /** @var TableSchema|null */
-        return $this->getTableMetadata($name, 'schema', $refresh);
+        /** @var mixed */
+        $tableSchema = $this->getTableMetadata($name, 'schema', $refresh);
+        return $tableSchema instanceof TableSchema ? $tableSchema : null;
     }
 
     public function getTableSchemas(string $schema = '', bool $refresh = false): array
     {
-        /** @psalm-var array<array-key, TableSchema> */
-        return $this->getSchemaMetadata($schema, 'schema', $refresh);
+        /** @var mixed */
+        $tableSchemas = $this->getSchemaMetadata($schema, 'schema', $refresh);
+        return is_array($tableSchemas) ? $tableSchemas : [];
     }
 
     public function getTableUniques(string $name, bool $refresh = false): array
     {
-        /** @psalm-var array<array-key, Constraint> */
-        return $this->getTableMetadata($name, 'uniques', $refresh);
+        /** @var mixed */
+        $tableUniques = $this->getTableMetadata($name, 'uniques', $refresh);
+        return is_array($tableUniques) ? $tableUniques : [];
     }
 
     /**
@@ -351,8 +352,6 @@ abstract class Schema implements SchemaInterface
      * @throws NotSupportedException if this method is not supported by the DBMS.
      *
      * @return array all schema names in the database, except system schemas.
-     *
-     * @psalm-return string[]
      */
     protected function findSchemaNames(): array
     {
@@ -370,8 +369,6 @@ abstract class Schema implements SchemaInterface
      * @throws NotSupportedException if this method is not supported by the DBMS.
      *
      * @return array all table names in the database. The names have NO schema name prefix.
-     *
-     * @psalm-return string[]
      */
     protected function findTableNames(string $schema): array
     {
@@ -427,13 +424,17 @@ abstract class Schema implements SchemaInterface
      *
      * @throws NotSupportedException
      *
-     * @return array array of metadata.
+     * @return array of metadata.
+     *
+     * @psalm-return list<Constraint|TableSchema|array>
      */
     protected function getSchemaMetadata(string $schema, string $type, bool $refresh): array
     {
         $metadata = [];
+        /** @psalm-var string[] */
+        $tableNames = $this->getTableNames($schema, $refresh);
 
-        foreach ($this->getTableNames($schema, $refresh) as $name) {
+        foreach ($tableNames as $name) {
             if ($schema !== '') {
                 $name = $schema . '.' . $name;
             }
