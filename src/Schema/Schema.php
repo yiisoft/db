@@ -185,8 +185,7 @@ abstract class Schema implements SchemaInterface
     public function getSchemaChecks(string $schema = '', bool $refresh = false): array
     {
         /** @psalm-var array<array-key, array<array-key, CheckConstraint>> */
-        $schemaChecks = $this->getSchemaMetadata($schema, 'checks', $refresh);
-        return $schemaChecks;
+        return $this->getSchemaMetadata($schema, 'checks', $refresh);
     }
 
     /**
@@ -195,8 +194,7 @@ abstract class Schema implements SchemaInterface
     public function getSchemaDefaultValues(string $schema = '', bool $refresh = false): array
     {
         /** @psalm-var array<array-key, DefaultValueConstraint> */
-        $schemaDefaultValues = $this->getSchemaMetadata($schema, 'defaultValues', $refresh);
-        return $schemaDefaultValues;
+        return $this->getSchemaMetadata($schema, 'defaultValues', $refresh);
     }
 
     /**
@@ -205,8 +203,7 @@ abstract class Schema implements SchemaInterface
     public function getSchemaForeignKeys(string $schema = '', bool $refresh = false): array
     {
         /** @psalm-var array<array-key, array<array-key, ForeignKeyConstraint>> */
-        $schemaForeignKeys = $this->getSchemaMetadata($schema, 'foreignKeys', $refresh);
-        return $schemaForeignKeys;
+        return $this->getSchemaMetadata($schema, 'foreignKeys', $refresh);
     }
 
     /**
@@ -215,8 +212,7 @@ abstract class Schema implements SchemaInterface
     public function getSchemaIndexes(string $schema = '', bool $refresh = false): array
     {
         /** @psalm-var array<array-key, array<array-key, IndexConstraint>> */
-        $schemaIndexes = $this->getSchemaMetadata($schema, 'indexes', $refresh);
-        return $schemaIndexes;
+        return $this->getSchemaMetadata($schema, 'indexes', $refresh);
     }
 
     public function getSchemaNames(bool $refresh = false): array
@@ -234,8 +230,7 @@ abstract class Schema implements SchemaInterface
     public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array
     {
         /** @psalm-var array<array-key, Constraint> */
-        $schemaPrimaryKeys = $this->getSchemaMetadata($schema, 'primaryKeys', $refresh);
-        return $schemaPrimaryKeys;
+        return $this->getSchemaMetadata($schema, 'primaryKeys', $refresh);
     }
 
     /**
@@ -244,36 +239,31 @@ abstract class Schema implements SchemaInterface
     public function getSchemaUniques(string $schema = '', bool $refresh = false): array
     {
         /** @psalm-var array<array-key, array<array-key, Constraint>> */
-        $schemaMetadataUniques = $this->getSchemaMetadata($schema, 'uniques', $refresh);
-        return $schemaMetadataUniques;
+        return $this->getSchemaMetadata($schema, 'uniques', $refresh);
     }
 
     public function getTableChecks(string $name, bool $refresh = false): array
     {
         /** @psalm-var array<array-key, CheckConstraint> */
-        $tableMetadataChecks = $this->getTableMetadata($name, 'checks', $refresh);
-        return $tableMetadataChecks;
+        return $this->getTableMetadata($name, 'checks', $refresh);
     }
 
     public function getTableDefaultValues(string $name, bool $refresh = false): array
     {
         /** @psalm-var array<array-key, DefaultValueConstraint> */
-        $tableMetadataDefaultValues = $this->getTableMetadata($name, 'defaultValues', $refresh);
-        return $tableMetadataDefaultValues;
+        return $this->getTableMetadata($name, 'defaultValues', $refresh);
     }
 
     public function getTableForeignKeys(string $name, bool $refresh = false): array
     {
         /** @psalm-var array<array-key, ForeignKeyConstraint> */
-        $tableMetadataForeignKeys = $this->getTableMetadata($name, 'foreignKeys', $refresh);
-        return $tableMetadataForeignKeys;
+        return $this->getTableMetadata($name, 'foreignKeys', $refresh);
     }
 
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
         /** @psalm-var array<array-key, IndexConstraint> */
-        $tableMetadataIndexes = $this->getTableMetadata($name, 'indexes', $refresh);
-        return $tableMetadataIndexes;
+        return $this->getTableMetadata($name, 'indexes', $refresh);
     }
 
     public function getTableNames(string $schema = '', bool $refresh = false): array
@@ -288,29 +278,25 @@ abstract class Schema implements SchemaInterface
     public function getTablePrimaryKey(string $name, bool $refresh = false): ?Constraint
     {
         /** @var Constraint|null */
-        $tableMetadataPrimaryKey = $this->getTableMetadata($name, 'primaryKey', $refresh);
-        return $tableMetadataPrimaryKey;
+        return $this->getTableMetadata($name, 'primaryKey', $refresh);
     }
 
     public function getTableSchema(string $name, bool $refresh = false): ?TableSchema
     {
         /** @var TableSchema|null */
-        $tableMetadataSchema = $this->getTableMetadata($name, 'schema', $refresh);
-        return $tableMetadataSchema;
+        return $this->getTableMetadata($name, 'schema', $refresh);
     }
 
     public function getTableSchemas(string $schema = '', bool $refresh = false): array
     {
         /** @psalm-var array<array-key, TableSchema> */
-        $tableMetadataSchemas = $this->getSchemaMetadata($schema, 'schema', $refresh);
-        return $tableMetadataSchemas;
+        return $this->getSchemaMetadata($schema, 'schema', $refresh);
     }
 
     public function getTableUniques(string $name, bool $refresh = false): array
     {
         /** @psalm-var array<array-key, Constraint> */
-        $tableMetadataUniques = $this->getTableMetadata($name, 'uniques', $refresh);
-        return $tableMetadataUniques;
+        return $this->getTableMetadata($name, 'uniques', $refresh);
     }
 
     /**
