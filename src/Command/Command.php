@@ -508,7 +508,7 @@ abstract class Command implements CommandInterface
         $columnName = array_keys($results[0] ?? [])[0] ?? null;
 
         if ($columnName) {
-            return ArrayHelper::getColumn($results,  $columnName);
+            return ArrayHelper::getColumn($results, $columnName);
         }
 
         return [];
