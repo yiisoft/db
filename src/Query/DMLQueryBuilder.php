@@ -102,7 +102,6 @@ abstract class DMLQueryBuilder
     {
         /**
          * @var array $lines
-         * @var array $params
          */
         [$lines, $params] = $this->queryBuilder->prepareUpdateSets($table, $columns, $params);
         $sql = 'UPDATE ' . $this->queryBuilder->quoter()->quoteTableName($table) . ' SET ' . implode(', ', $lines);

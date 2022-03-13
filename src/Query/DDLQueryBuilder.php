@@ -161,7 +161,6 @@ abstract class DDLQueryBuilder
     public function createView(string $viewName, QueryInterface|string $subQuery): string
     {
         if ($subQuery instanceof QueryInterface) {
-            /** @psalm-var array<array-key, int|string> $params */
             [$rawQuery, $params] = $this->queryBuilder->build($subQuery);
 
             foreach ($params as $key => $value) {

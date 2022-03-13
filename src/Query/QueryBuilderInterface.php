@@ -273,8 +273,6 @@ interface QueryBuilderInterface
      * @param array|null $tables
      * @param array $params the binding parameters to be populated.
      *
-     * @psalm-param array<array-key, array|Query|string> $tables
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException
      *
      * @return string the FROM clause built from {@see Query::$from}.
@@ -283,7 +281,6 @@ interface QueryBuilderInterface
 
     /**
      * @param array $columns
-     * @psalm-param array<string, Expression|string> $columns
      *
      * @param array $params the binding parameters to be populated
      *
@@ -307,15 +304,6 @@ interface QueryBuilderInterface
      * @param array $joins
      * @param array $params the binding parameters to be populated.
      *
-     * @psalm-param array<
-     *   array-key,
-     *   array{
-     *     0?:string,
-     *     1?:array<array-key, Query|string>|string,
-     *     2?:array|ExpressionInterface|string|null
-     *   }|null
-     * > $joins
-     *
      * @throws Exception if the $joins parameter is not in proper format.
      *
      * @return string the JOIN clause built from {@see Query::$join}.
@@ -334,8 +322,6 @@ interface QueryBuilderInterface
      * @param array $columns
      * @param array $params the binding parameters to be populated
      *
-     * @psalm-param array<string, Expression|int|string> $columns
-     *
      * @throws Exception|InvalidArgumentException
      *
      * @return string the ORDER BY clause built from {@see Query::$orderBy}.
@@ -351,8 +337,6 @@ interface QueryBuilderInterface
      * @param Expression|int|null $limit the limit number. See {@see Query::limit} for more details.
      * @param Expression|int|null $offset the offset number. See {@see Query::offset} for more details.
      * @param array $params the binding parameters to be populated.
-     *
-     * @psalm-param array<string, Expression|int|string> $orderBy
      *
      * @throws Exception|InvalidArgumentException
      *
@@ -372,8 +356,6 @@ interface QueryBuilderInterface
      * @param bool|null $distinct
      * @param string|null $selectOption
      *
-     * @psalm-param array<array-key, ExpressionInterface|Query|string> $columns
-     *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string the SELECT clause built from {@see Query::$select}.
@@ -388,8 +370,6 @@ interface QueryBuilderInterface
     /**
      * @param array $unions
      * @param array $params the binding parameters to be populated
-     *
-     * @psalm-param array<array{query:Query|string, all:bool}> $unions
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
@@ -413,8 +393,6 @@ interface QueryBuilderInterface
     /**
      * @param array $withs
      * @param array $params
-     *
-     * @psalm-param array<array-key, array{query:string|Query, alias:string, recursive:bool}> $withs
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *

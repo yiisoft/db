@@ -721,9 +721,11 @@ PATTERN;
         if ($tables instanceof ExpressionInterface) {
             $tables = [$tables];
         }
+
         if (is_string($tables)) {
             $tables = preg_split('/\s*,\s*/', trim($tables), -1, PREG_SPLIT_NO_EMPTY);
         }
+
         $this->from = $tables;
 
         return $this;
@@ -1325,7 +1327,7 @@ PATTERN;
         return $this->distinct;
     }
 
-    public function getFrom(): array|ExpressionInterface|string|null
+    public function getFrom(): array|null
     {
         return $this->from;
     }

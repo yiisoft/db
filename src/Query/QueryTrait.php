@@ -237,14 +237,15 @@ trait QueryTrait
      *
      * @return array|string the condition with {@see isEmpty()|empty operands} removed.
      */
-    protected function filterCondition($condition)
+    protected function filterCondition(array|string $condition): array|string
     {
         if (!is_array($condition)) {
             return $condition;
         }
 
         if (!isset($condition[0])) {
-            /** hash format: 'column1' => 'value1', 'column2' => 'value2', ... */
+            // hash format: 'column1' => 'value1', 'column2' => 'value2', ...
+            /** @psalm-var array<array-key, array<array-key, mixed>|string> $condition */
             foreach ($condition as $name => $value) {
                 if ($this->isEmpty($value)) {
                     unset($condition[$name]);
@@ -254,16 +255,17 @@ trait QueryTrait
             return $condition;
         }
 
-        /** operator format: operator, operand 1, operand 2, ... */
-
-        $operator = array_shift($condition);
+        // operator format: operator, operand 1, operand 2, ...
+        $operator = (string) array_shift($condition);
 
         switch (strtoupper($operator)) {
             case 'NOT':
             case 'AND':
             case 'OR':
+                /** @psalm-var array<array-key, array<array-key, mixed>|string> $condition */
                 foreach ($condition as $i => $operand) {
                     $subCondition = $this->filterCondition($operand);
+
                     if ($this->isEmpty($subCondition)) {
                         unset($condition[$i]);
                     } else {
@@ -291,6 +293,7 @@ trait QueryTrait
                 }
         }
 
+        /** @var array $condition */
         array_unshift($condition, $operator);
 
         return $condition;
