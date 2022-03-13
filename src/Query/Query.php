@@ -21,7 +21,6 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 
 use function array_merge;
 use function count;
-use function gettype;
 use function is_array;
 use function is_int;
 use function is_string;
