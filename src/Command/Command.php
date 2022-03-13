@@ -505,8 +505,10 @@ abstract class Command implements CommandInterface
     {
         $results = $this->queryInternal();
 
-        if ($results && count($results)) {
-            return ArrayHelper::getColumn($results, array_keys($results[0] ?? [])[0] ?? null);
+        $columnName = array_keys($results[0] ?? [])[0] ?? null;
+
+        if ($columnName) {
+            return ArrayHelper::getColumn($results,  $columnName);
         }
 
         return [];
