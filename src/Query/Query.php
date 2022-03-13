@@ -75,7 +75,7 @@ class Query implements QueryInterface
     protected array $select = [];
     protected ?string $selectOption = null;
     protected ?bool $distinct = null;
-    protected array|ExpressionInterface|string|null $from = null;
+    protected array|null $from = null;
     protected array $groupBy = [];
     protected array $join = [];
     protected array|ExpressionInterface|string|null $having = null;
@@ -176,6 +176,9 @@ class Query implements QueryInterface
         return $this->populate($rows);
     }
 
+    /**
+     * @psalm-suppress MixedArrayOffset
+     */
     public function populate(array $rows): array
     {
         if ($this->indexBy === null) {
@@ -184,6 +187,7 @@ class Query implements QueryInterface
 
         $result = [];
 
+        /** @psalm-var array[][] */
         foreach ($rows as $row) {
             $result[ArrayHelper::getValueByPath($row, $this->indexBy)] = $row;
         }
@@ -201,7 +205,7 @@ class Query implements QueryInterface
      * @return array|bool the first row (in terms of an array) of the query result. False is returned if the query
      * results in nothing.
      */
-    public function one()
+    public function one(): array|bool
     {
         if ($this->emulateExecution) {
             return false;
@@ -237,6 +241,8 @@ class Query implements QueryInterface
      * @throws Exception|InvalidConfigException|Throwable
      *
      * @return array the first column of the query result. An empty array is returned if the query results in nothing.
+     *
+     * @psalm-suppress MixedArrayOffset
      */
     public function column(): array
     {
@@ -258,12 +264,14 @@ class Query implements QueryInterface
 
         $rows = $this->createCommand()->queryAll();
         $results = [];
+
+        /** @psalm-var array<array-key, array<string, string>> $rows */
         foreach ($rows as $row) {
             $value = reset($row);
 
             if ($this->indexBy instanceof Closure) {
                 $results[($this->indexBy)($row)] = $value;
-            } else {
+            } elseif ($this->indexBy !== null) {
                 $results[$row[$this->indexBy]] = $value;
             }
         }
@@ -454,21 +462,7 @@ class Query implements QueryInterface
      */
     public function getTablesUsedInFrom(): array
     {
-        if (empty($this->from)) {
-            return [];
-        }
-
-        if (is_array($this->from)) {
-            $tableNames = $this->from;
-        } elseif (is_string($this->from)) {
-            $tableNames = preg_split('/\s*,\s*/', trim($this->from), -1, PREG_SPLIT_NO_EMPTY);
-        } elseif ($this->from instanceof ExpressionInterface) {
-            $tableNames = [$this->from];
-        } else {
-            throw new InvalidConfigException(gettype($this->from) . ' in $from is not supported.');
-        }
-
-        return $this->cleanUpTableNames($tableNames);
+        return empty($this->from) ? [] : $this->cleanUpTableNames($this->from);
     }
 
     /**
@@ -485,40 +479,13 @@ class Query implements QueryInterface
     protected function cleanUpTableNames(array $tableNames): array
     {
         $cleanedUpTableNames = [];
+        $pattern = <<<PATTERN
+        ~^\s*((?:['"`\[]|{{).*?(?:['"`\]]|}})|\(.*?\)|.*?)(?:(?:\s+(?:as)?\s*)((?:['"`\[]|{{).*?(?:['"`\]]|}})|.*?))?\s*$~iux
+        PATTERN;
 
+        /** @psalm-var array<array-key, Expression|string> $tableNames */
         foreach ($tableNames as $alias => $tableName) {
             if (is_string($tableName) && !is_string($alias)) {
-                $pattern = <<<PATTERN
-~
-^
-\s*
-(
-(?:['"`\[]|{{)
-.*?
-(?:['"`\]]|}})
-|
-\(.*?\)
-|
-.*?
-)
-(?:
-(?:
-    \s+
-    (?:as)?
-    \s*
-)
-(
-   (?:['"`\[]|{{)
-    .*?
-    (?:['"`\]]|}})
-    |
-    .*?
-)
-)?
-\s*
-$
-~iux
-PATTERN;
                 if (preg_match($pattern, $tableName, $matches)) {
                     if (isset($matches[2])) {
                         [, $tableName, $alias] = $matches;
@@ -528,17 +495,18 @@ PATTERN;
                 }
             }
 
+            if (!is_string($alias)) {
+                throw new InvalidArgumentException(
+                    'To use Expression in from() method, pass it in array format with alias.'
+                );
+            }
+
             if ($tableName instanceof Expression) {
-                if (!is_string($alias)) {
-                    throw new InvalidArgumentException(
-                        'To use Expression in from() method, pass it in array format with alias.'
-                    );
-                }
                 $cleanedUpTableNames[$this->ensureNameQuoted($alias)] = $tableName;
             } elseif ($tableName instanceof self) {
                 $cleanedUpTableNames[$this->ensureNameQuoted($alias)] = $tableName;
             } else {
-                $cleanedUpTableNames[$this->ensureNameQuoted($alias)] = $this->ensureNameQuoted($tableName);
+                $cleanedUpTableNames[$this->ensureNameQuoted($alias)] = $this->ensureNameQuoted((string) $tableName);
             }
         }
 
@@ -555,6 +523,7 @@ PATTERN;
     private function ensureNameQuoted(string $name): string
     {
         $name = str_replace(["'", '"', '`', '[', ']'], '', $name);
+
         if ($name && !preg_match('/^{{.*}}$/', $name)) {
             return '{{' . $name . '}}';
         }
@@ -627,7 +596,7 @@ PATTERN;
      *
      * @return array
      */
-    protected function normalizeSelect($columns): array
+    protected function normalizeSelect(array|ExpressionInterface|string $columns): array
     {
         if ($columns instanceof ExpressionInterface) {
             $columns = [$columns];
@@ -636,12 +605,15 @@ PATTERN;
         }
 
         $select = [];
+
+        /** @psalm-var array<array-key, ExpressionInterface|string> $columns */
         foreach ($columns as $columnAlias => $columnDefinition) {
             if (is_string($columnAlias)) {
-                /** Already in the normalized format, good for them */
+                // Already in the normalized format, good for them.
                 $select[$columnAlias] = $columnDefinition;
                 continue;
             }
+
             if (is_string($columnDefinition)) {
                 if (
                     preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $columnDefinition, $matches) &&
@@ -658,7 +630,9 @@ PATTERN;
                     continue;
                 }
             }
-            /** Either a string calling a function, DB expression, or sub-query */
+
+            // Either a string calling a function, DB expression, or sub-query
+            /** @var string */
             $select[] = $columnDefinition;
         }
 
@@ -776,7 +750,7 @@ PATTERN;
     {
         if ($this->where === null) {
             $this->where = $condition;
-        } elseif (is_array($this->where) && isset($this->where[0]) && strcasecmp($this->where[0], 'and') === 0) {
+        } elseif (is_array($this->where) && isset($this->where[0]) && strcasecmp((string) $this->where[0], 'and') === 0) {
             $this->where[] = $condition;
         } else {
             $this->where = ['and', $this->where, $condition];
@@ -1252,6 +1226,10 @@ PATTERN;
             if (empty($this->params)) {
                 $this->params = $params;
             } else {
+                /**
+                 * @psalm-var array $params
+                 * @psalm-var mixed $value
+                 */
                 foreach ($params as $name => $value) {
                     if (is_int($name)) {
                         $this->params[] = $value;

@@ -515,7 +515,7 @@ abstract class Command implements CommandInterface
         return $this->queryInternal('fetchAll', PDO::FETCH_COLUMN);
     }
 
-    public function queryOne(array|int $fetchMode = null): mixed
+    public function queryOne(array|int $fetchMode = null): array|bool
     {
         return $this->queryInternal('fetch', $fetchMode);
     }

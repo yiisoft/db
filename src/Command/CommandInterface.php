@@ -632,10 +632,10 @@ interface CommandInterface
      *
      * @throws Exception|Throwable Execution failed.
      *
-     * @return mixed The first row (in terms of an array) of the query result. False is returned if the query results
-     * in nothing.
+     * @return array|bool The first row (in terms of an array) of the query result. False is returned if the query
+     * results in nothing.
      */
-    public function queryOne(array|int $fetchMode = null): mixed;
+    public function queryOne(array|int $fetchMode = null): array|bool;
 
     /**
      * Executes the SQL statement and returns the value of the first column in the first row of data.
