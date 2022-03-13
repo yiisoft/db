@@ -163,7 +163,7 @@ trait TestCommandTrait
         $command->Query();
     }
 
-    public function testFetchMode(): void
+    public function testQueryOne(): void
     {
         $db = $this->getConnection();
 
@@ -175,26 +175,6 @@ trait TestCommandTrait
         $result = $command->queryOne();
 
         $this->assertTrue(is_array($result) && isset($result['id']));
-
-        /* FETCH_OBJ, customized via fetchMode property */
-        $sql = 'SELECT * FROM {{customer}}';
-
-        $command = $db->createCommand($sql);
-
-        $command->setFetchMode(PDO::FETCH_OBJ);
-
-        $result = $command->queryOne();
-
-        $this->assertIsObject($result);
-
-        /* FETCH_NUM, customized in query method */
-        $sql = 'SELECT * FROM {{customer}}';
-
-        $command = $db->createCommand($sql);
-
-        $result = $command->queryOne(PDO::FETCH_NUM);
-
-        $this->assertTrue(is_array($result) && isset($result[0]));
     }
 
     /**
