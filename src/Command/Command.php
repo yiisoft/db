@@ -630,11 +630,11 @@ abstract class Command implements CommandInterface
     /**
      * Performs the actual DB query of a SQL statement.
      *
-     * @param boolean $returnDataReader - return results as DataReader
+     * @param bool $returnDataReader - return results as DataReader
+     *
+     * @throws Exception|Throwable If the query causes any problem.
      *
      * @return mixed The method execution result.
-     *@throws Exception|Throwable If the query causes any problem.
-     *
      */
     protected function queryInternal(bool $returnDataReader = false): mixed
     {
