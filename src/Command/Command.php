@@ -504,7 +504,14 @@ abstract class Command implements CommandInterface
     public function queryColumn(): array
     {
         $results = $this->queryInternal();
-        return ArrayHelper::getColumn($results, array_keys($results[0] ?? [])[0] ?? null);
+
+        $columnName = array_keys($results[0] ?? [])[0] ?? null;
+
+        if ($columnName) {
+            return ArrayHelper::getColumn($results, $columnName);
+        }
+
+        return [];
     }
 
     public function queryOne(): mixed
