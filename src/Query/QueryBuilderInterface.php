@@ -281,7 +281,6 @@ interface QueryBuilderInterface
 
     /**
      * @param array $columns
-     *
      * @param array $params the binding parameters to be populated
      *
      * @throws Exception|InvalidArgumentException
