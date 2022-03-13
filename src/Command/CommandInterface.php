@@ -495,11 +495,6 @@ interface CommandInterface
     public function executeResetSequence(string $table, mixed $value = null): self;
 
     /**
-     * Return fetch mode.
-     */
-    public function getFetchMode(): int;
-
-    /**
      * Return the params used in the last query.
      */
     public function getParams(): array;
@@ -597,16 +592,12 @@ interface CommandInterface
     /**
      * Executes the SQL statement and returns ALL rows at once.
      *
-     * @param int|null $fetchMode The result fetch mode.
-     * Please refer to [PHP manual](http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php) for valid fetch
-     * modes. If this parameter is null, the value set in {@see fetchMode} will be used.
-     *
      * @throws Exception|Throwable Execution failed.
      *
      * @return array All rows of the query result. Each array element is an array representing a row of data. An empty
      * array is returned if the query results in nothing.
      */
-    public function queryAll(?int $fetchMode = null): array;
+    public function queryAll(): array;
 
     /**
      * Executes the SQL statement and returns the first column of the result.
@@ -625,17 +616,12 @@ interface CommandInterface
      *
      * This method is best used when only the first row of result is needed for a query.
      *
-     * @param array|int|null $fetchMode The result fetch mode.
-     *
-     * Please refer to [PHP manual](http://php.net/manual/en/pdostatement.setfetchmode.php) for valid fetch modes.
-     * If this parameter is null, the value set in {@see fetchMode} will be used.
-     *
      * @throws Exception|Throwable Execution failed.
      *
      * @return mixed The first row (in terms of an array) of the query result. False is returned if the query results
      * in nothing.
      */
-    public function queryOne(array|int $fetchMode = null): mixed;
+    public function queryOne(): mixed;
 
     /**
      * Executes the SQL statement and returns the value of the first column in the first row of data.
@@ -683,16 +669,6 @@ interface CommandInterface
      * @return static
      */
     public function resetSequence(string $table, mixed $value = null): self;
-
-    /**
-     * The default fetch mode for this command.
-     *
-     * @param int $value The fetch mode. Please refer to
-     * [PHP manual](http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php)
-     *
-     * @link http://www.php.net/manual/en/pdostatement.setfetchmode.php
-     */
-    public function setFetchMode(int $value): void;
 
     /**
      * The parameters (name => value) that are bound to the current PDO statement.
