@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Conditions;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\Interface\NotConditionInterface;
 
 use function array_shift;
@@ -15,15 +16,18 @@ use function count;
  */
 final class NotCondition implements NotConditionInterface
 {
-    public function __construct(private mixed $condition)
+    public function __construct(private ExpressionInterface|array|null|string $condition)
     {
     }
 
-    public function getCondition(): mixed
+    public function getCondition(): ExpressionInterface|array|null|string
     {
         return $this->condition;
     }
 
+    /**
+     * @psalm-suppress MixedArgument
+     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (count($operands) !== 1) {

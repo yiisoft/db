@@ -30,12 +30,17 @@ class HashConditionBuilder implements ExpressionBuilderInterface
 
     /**
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     *
+     * @psalm-suppress MixedAssignment
      */
     public function build(HashConditionInterface $expression, array &$params = []): string
     {
         $hash = $expression->getHash() ?? [];
         $parts = [];
 
+        /**
+         * @psalm-var array<string, array<array-key, mixed>|mixed> $hash
+         */
         foreach ($hash as $column => $value) {
             if (is_iterable($value) || $value instanceof QueryInterface) {
                 /** IN condition */
@@ -44,6 +49,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
                 if (!str_contains($column, '(')) {
                     $column = $this->queryBuilder->quoter()->quoteColumnName($column);
                 }
+
                 if ($value === null) {
                     $parts[] = "$column IS NULL";
                 } elseif ($value instanceof ExpressionInterface) {

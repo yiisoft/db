@@ -41,6 +41,9 @@ final class BetweenCondition implements BetweenConditionInterface
         return $this->operator;
     }
 
+    /**
+     * @psalm-suppress MixedArgument
+     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (!isset($operands[0], $operands[1], $operands[2])) {

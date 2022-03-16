@@ -152,6 +152,8 @@ class BatchQueryResult implements Iterator
      * Reads and collects rows for batch.
      *
      * @return array
+     *
+     * @psalm-suppress MixedArrayAccess
      */
     protected function getRows(): array
     {
@@ -163,6 +165,7 @@ class BatchQueryResult implements Iterator
                 $rows[] = $row;
             }
         } catch (PDOException $e) {
+            /** @var int|null */
             $errorCode = $e->errorInfo[1] ?? null;
 
             if ($this->getDbDriverName() !== 'sqlsrv' || $errorCode !== $this->mssqlNoMoreRowsErrorCode) {
@@ -214,9 +217,9 @@ class BatchQueryResult implements Iterator
     /**
      * Gets db driver name from the db connection that is passed to the `batch()` or `each()`.
      *
-     * @return string|null
+     * @return string
      */
-    private function getDbDriverName(): ?string
+    private function getDbDriverName(): string
     {
         return $this->db->getDriverName();
     }

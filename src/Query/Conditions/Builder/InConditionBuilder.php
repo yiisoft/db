@@ -68,15 +68,17 @@ class InConditionBuilder implements ExpressionBuilderInterface
                 return $this->buildCompositeInCondition($operator, $column, $values, $params);
             }
 
+            /** @var mixed */
             $column = reset($column);
         }
 
-        if ($column instanceof Traversable) {
+        if ($column instanceof Iterator) {
             if (iterator_count($column) > 1) {
                 return $this->buildCompositeInCondition($operator, $column, $values, $params);
             }
 
             $column->rewind();
+            /** @var mixed */
             $column = $column->current();
         }
 
@@ -86,7 +88,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             $rawValues = $this->getRawValuesFromTraversableObject($values);
         }
 
-        if (in_array(null, $rawValues, true)) {
+        if (is_string($column) && in_array(null, $rawValues, true)) {
             $nullCondition = $this->getNullCondition($operator, $column);
             $nullConditionOperator = $operator === 'IN' ? 'OR' : 'AND';
         }
@@ -94,10 +96,10 @@ class InConditionBuilder implements ExpressionBuilderInterface
         $sqlValues = $this->buildValues($expression, $values, $params);
 
         if (empty($sqlValues)) {
-            return $nullCondition ?? ($operator === 'IN' ? '0=1' : '');
+            return empty($nullCondition) ? ($operator === 'IN' ? '0=1' : '') : (string) $nullCondition;
         }
 
-        if (!str_contains($column, '(')) {
+        if (is_string($column) && !str_contains($column, '(')) {
             $column = $this->queryBuilder->quoter()->quoteColumnName($column);
         }
 
@@ -105,9 +107,10 @@ class InConditionBuilder implements ExpressionBuilderInterface
             $sql = "$column $operator (" . implode(', ', $sqlValues) . ')';
         } else {
             $operator = $operator === 'IN' ? '=' : '<>';
-            $sql = $column . $operator . reset($sqlValues);
+            $sql = (string) $column . $operator . reset($sqlValues);
         }
 
+        /** @var string|int|string|null $nullCondition */
         return isset($nullCondition) ? sprintf('%s %s %s', $sql, $nullConditionOperator, $nullCondition) : $sql;
     }
 
@@ -117,6 +120,9 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @psalm-return string[]
+     *
+     * @psalm-suppress MixedArrayTypeCoercion
+     * @psalm-suppress MixedArrayOffset
      */
     protected function buildValues(InConditionInterface $condition, array|Traversable $values, array &$params = []): array
     {
@@ -124,16 +130,20 @@ class InConditionBuilder implements ExpressionBuilderInterface
         $column = $condition->getColumn();
 
         if (is_array($column)) {
+            /** @var mixed */
             $column = reset($column);
         }
 
         if ($column instanceof Iterator) {
             $column->rewind();
+            /** @var mixed */
             $column = $column->current();
         }
 
+        /** @var mixed $value */
         foreach ($values as $i => $value) {
             if (is_array($value) || $value instanceof ArrayAccess) {
+                /** @var mixed */
                 $value = $value[$column] ?? null;
             }
 
@@ -162,9 +172,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
         ExpressionInterface $values,
         array &$params = []
     ): string {
+        $query = '';
         $sql = $this->queryBuilder->buildExpression($values, $params);
 
         if (is_array($columns)) {
+            /** @psalm-var string[] $columns */
             foreach ($columns as $i => $col) {
                 if (!str_contains($col, '(')) {
                     $columns[$i] = $this->queryBuilder->quoter()->quoteColumnName($col);
@@ -179,7 +191,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             $query = "$columns $operator $sql";
         }
 
-        return $query ?? '';
+        return $query;
     }
 
     /**
@@ -192,9 +204,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
         array &$params = []
     ): string {
         $vss = [];
+
+        /** @psalm-var string[][] $values */
         foreach ($values as $value) {
             $vs = [];
-
+            /** @psalm-var string[] $columns */
             foreach ($columns as $column) {
                 if (isset($value[$column])) {
                     $vs[] = $this->queryBuilder->bindParam($value[$column], $params);
@@ -210,6 +224,8 @@ class InConditionBuilder implements ExpressionBuilderInterface
         }
 
         $sqlColumns = [];
+
+        /** @psalm-var string[] $columns */
         foreach ($columns as $column) {
             $sqlColumns[] = !str_contains($column, '(')
                 ? $this->queryBuilder->quoter()->quoteColumnName($column) : $column;
@@ -235,11 +251,14 @@ class InConditionBuilder implements ExpressionBuilderInterface
     protected function getRawValuesFromTraversableObject(Traversable $traversableObject): array
     {
         $rawValues = [];
+
+        /** @var mixed $value */
         foreach ($traversableObject as $value) {
             if (is_array($value)) {
                 $values = array_values($value);
                 $rawValues = array_merge($rawValues, $values);
             } else {
+                /** @var mixed */
                 $rawValues[] = $value;
             }
         }
