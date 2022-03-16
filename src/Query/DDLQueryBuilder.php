@@ -38,7 +38,7 @@ abstract class DDLQueryBuilder
             . '.'
             . $this->queryBuilder->quoter()->quoteColumnName($column)
             . ' IS '
-            . $this->queryBuilder->quoter()->quoteValue($comment);
+            . (string) $this->queryBuilder->quoter()->quoteValue($comment);
     }
 
     public function addCommentOnTable(string $table, string $comment): string
@@ -46,7 +46,7 @@ abstract class DDLQueryBuilder
         return 'COMMENT ON TABLE '
             . $this->queryBuilder->quoter()->quoteTableName($table)
             . ' IS '
-            . $this->queryBuilder->quoter()->quoteValue($comment);
+            . (string) $this->queryBuilder->quoter()->quoteValue($comment);
     }
 
     public function addDefaultValue(string $name, string $table, string $column, mixed $value): string
@@ -87,6 +87,7 @@ abstract class DDLQueryBuilder
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
 
+        /** @var string[] $columns */
         foreach ($columns as $i => $col) {
             $columns[$i] = $this->queryBuilder->quoter()->quoteColumnName($col);
         }
@@ -103,6 +104,7 @@ abstract class DDLQueryBuilder
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
 
+        /** @var string[] $columns */
         foreach ($columns as $i => $col) {
             $columns[$i] = $this->queryBuilder->quoter()->quoteColumnName($col);
         }
@@ -141,6 +143,7 @@ abstract class DDLQueryBuilder
     {
         $cols = [];
 
+        /** @psalm-var string[] $columns */
         foreach ($columns as $name => $type) {
             if (is_string($name)) {
                 $cols[] = "\t"
@@ -163,7 +166,9 @@ abstract class DDLQueryBuilder
         if ($subQuery instanceof QueryInterface) {
             [$rawQuery, $params] = $this->queryBuilder->build($subQuery);
 
+            /** @var mixed $value */
             foreach ($params as $key => $value) {
+                /** @var mixed */
                 $params[$key] = $this->queryBuilder->quoter()->quoteValue($value);
             }
 

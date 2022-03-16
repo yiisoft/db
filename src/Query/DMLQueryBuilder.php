@@ -15,6 +15,9 @@ abstract class DMLQueryBuilder
     {
     }
 
+    /**
+     * @psalm-suppress MixedArrayOffset
+     */
     public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
     {
         if (empty($rows)) {
@@ -29,13 +32,17 @@ abstract class DMLQueryBuilder
 
         $values = [];
 
+        /** @psalm-var array<array-key, array<array-key, string>> $rows */
         foreach ($rows as $row) {
             $vs = [];
+
             foreach ($row as $i => $value) {
                 if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
+                    /** @var mixed */
                     $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
                 }
                 if (is_string($value)) {
+                    /** @var string */
                     $value = $this->queryBuilder->quoter()->quoteValue($value);
                 } elseif (is_float($value)) {
                     /* ensure type cast always has . as decimal separator in all locales */
@@ -47,6 +54,7 @@ abstract class DMLQueryBuilder
                 } elseif ($value instanceof ExpressionInterface) {
                     $value = $this->queryBuilder->buildExpression($value, $params);
                 }
+                /** @var string */
                 $vs[] = $value;
             }
             $values[] = '(' . implode(', ', $vs) . ')';
@@ -56,6 +64,7 @@ abstract class DMLQueryBuilder
             return '';
         }
 
+        /** @psalm-var string[] $columns */
         foreach ($columns as $i => $name) {
             $columns[$i] = $this->queryBuilder->quoter()->quoteColumnName($name);
         }
@@ -75,6 +84,11 @@ abstract class DMLQueryBuilder
 
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
     {
+        /**
+         * @psalm-var string[] $names
+         * @psalm-var string[] $placeholders
+         * @psalm-var string $values
+         */
         [$names, $placeholders, $values, $params] = $this->queryBuilder->prepareInsertValues($table, $columns, $params);
 
         return 'INSERT INTO '
@@ -98,11 +112,12 @@ abstract class DMLQueryBuilder
         return 'SELECT EXISTS(' . $rawSql . ')';
     }
 
+    /**
+     * @psalm-suppress MixedArgument
+     */
     public function update(string $table, array $columns, array|string $condition, array &$params = []): string
     {
-        /**
-         * @var array $lines
-         */
+        /** @psalm-var string[] $lines */
         [$lines, $params] = $this->queryBuilder->prepareUpdateSets($table, $columns, $params);
         $sql = 'UPDATE ' . $this->queryBuilder->quoter()->quoteTableName($table) . ' SET ' . implode(', ', $lines);
         $where = $this->queryBuilder->buildWhere($condition, $params);

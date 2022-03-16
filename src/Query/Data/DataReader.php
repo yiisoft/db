@@ -58,7 +58,6 @@ final class DataReader implements Iterator, Countable
     public function __construct(CommandInterface $command)
     {
         $this->statement = $command->getPDOStatement();
-        $this->getPDOStatement()->setFetchMode(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -103,7 +102,7 @@ final class DataReader implements Iterator, Countable
      */
     public function read(): array|bool
     {
-        return $this->getPDOStatement()->fetch();
+        return $this->getPDOStatement()->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -231,7 +230,7 @@ final class DataReader implements Iterator, Countable
     public function rewind(): void
     {
         if ($this->index < 0) {
-            $this->row = $this->getPDOStatement()->fetch();
+            $this->row = $this->getPDOStatement()->fetch(PDO::FETCH_ASSOC);
             $this->index = 0;
         } else {
             throw new InvalidCallException('DataReader cannot rewind. It is a forward-only reader.');
@@ -270,7 +269,7 @@ final class DataReader implements Iterator, Countable
      */
     public function next(): void
     {
-        $this->row = $this->getPDOStatement()->fetch();
+        $this->row = $this->getPDOStatement()->fetch(PDO::FETCH_ASSOC);
         $this->index++;
     }
 

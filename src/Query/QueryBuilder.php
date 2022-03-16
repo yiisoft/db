@@ -955,8 +955,12 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
         $sets = [];
 
+        /**
+         * @psalm-var array<string, mixed> $columns
+         * @psalm-var mixed $value
+         */
         foreach ($columns as $name => $value) {
-            /** @psalm-var mixed $value */
+            /** @var mixed */
             $value = isset($columnSchemas[$name]) ? $columnSchemas[$name]->dbTypecast($value) : $value;
             if ($value instanceof ExpressionInterface) {
                 $placeholder = $this->buildExpression($value, $params);

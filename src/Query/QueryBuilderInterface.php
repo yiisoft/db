@@ -749,8 +749,6 @@ interface QueryBuilderInterface
      * @param array $params the binding parameters that will be modified by this method so that they can be bound to the
      * DB command later.
      *
-     * @psalm-param array<string, ExpressionInterface|string> $columns
-     *
      * @throws Exception|InvalidArgumentException
      *
      * @return array `SET` parts for an `UPDATE` SQL statement (the first array element) and params (the second array
