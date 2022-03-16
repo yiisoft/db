@@ -32,10 +32,10 @@ interface QueryInterface extends ExpressionInterface
     /**
      * Executes the query and returns a single row of result.
      *
-     * @return array|bool the first row (in terms of an array) of the query result. False is returned if the query
+     * @return mixed the first row (in terms of an array) of the query result. False is returned if the query
      * results in nothing.
      */
-    public function one();
+    public function one(): mixed;
 
     /**
      * Returns the number of records.

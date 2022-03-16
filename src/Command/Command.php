@@ -8,6 +8,7 @@ use JsonException;
 use PDO;
 use Psr\Log\LogLevel;
 use Throwable;
+use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
@@ -25,7 +26,6 @@ use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function array_map;
-use function call_user_func_array;
 use function explode;
 use function get_resource_type;
 use function is_array;
@@ -103,17 +103,13 @@ abstract class Command implements CommandInterface
     /**
      * Returns the cache key for the query.
      *
-     * @param string $method method of PDOStatement to be called.
-     * @param array|int|null $fetchMode the result fetch mode.
-     * Please refer to [PHP manual](https://secure.php.net/manual/en/function.PDOStatement-setFetchMode.php) for valid
-     * fetch modes.
      * @param string $rawSql the raw SQL with parameter values inserted into the corresponding placeholders.
      *
      * @throws JsonException
      *
      * @return array the cache key.
      */
-    abstract protected function getCacheKey(string $method, array|int|null $fetchMode, string $rawSql): array;
+    abstract protected function getCacheKey(string $rawSql): array;
 
     /**
      * Executes a prepared statement.
@@ -423,11 +419,6 @@ abstract class Command implements CommandInterface
         return $this->resetSequence($table, $value);
     }
 
-    public function getFetchMode(): int
-    {
-        return $this->fetchMode;
-    }
-
     public function getParams(): array
     {
         return array_map(static fn (mixed $value): mixed => $value->getValue(), $this->params);
@@ -502,27 +493,40 @@ abstract class Command implements CommandInterface
 
     public function query(): DataReader
     {
-        return $this->queryInternal('');
+        return $this->queryInternal(true);
     }
 
-    public function queryAll(?int $fetchMode = null): array
+    public function queryAll(): array
     {
-        return $this->queryInternal('fetchAll', $fetchMode);
+        return $this->queryInternal();
     }
 
     public function queryColumn(): array
     {
-        return $this->queryInternal('fetchAll', PDO::FETCH_COLUMN);
+        $results = $this->queryInternal();
+
+        $columnName = array_keys($results[0] ?? [])[0] ?? null;
+
+        if ($columnName) {
+            return ArrayHelper::getColumn($results, $columnName);
+        }
+
+        return [];
     }
 
-    public function queryOne(array|int $fetchMode = null): array|bool
+    public function queryOne(): mixed
     {
-        return $this->queryInternal('fetch', $fetchMode);
+        return current($this->queryInternal());
     }
 
     public function queryScalar(): bool|string|null|int
     {
-        $result = $this->queryInternal('fetchColumn', 0);
+        $firstRow = current($this->queryInternal());
+        if (!is_array($firstRow)) {
+            return false;
+        }
+
+        $result = current($firstRow);
 
         if (is_resource($result) && get_resource_type($result) === 'stream') {
             return stream_get_contents($result);
@@ -550,11 +554,6 @@ abstract class Command implements CommandInterface
     {
         $sql = $this->queryBuilder()->resetSequence($table, $value);
         return $this->setSql($sql);
-    }
-
-    public function setFetchMode(int $value): void
-    {
-        $this->fetchMode = $value;
     }
 
     public function setParams(array $value): void
@@ -638,28 +637,24 @@ abstract class Command implements CommandInterface
     /**
      * Performs the actual DB query of a SQL statement.
      *
-     * @param string $method Method of PDOStatement to be called.
-     * @param array|int|null $fetchMode The result fetch mode.
-     *
-     * Please refer to [PHP manual](http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php) for valid fetch
-     * modes. If this parameter is null, the value set in {@see fetchMode} will be used.
+     * @param bool $returnDataReader - return results as DataReader
      *
      * @throws Exception|Throwable If the query causes any problem.
      *
      * @return mixed The method execution result.
      */
-    protected function queryInternal(string $method, array|int $fetchMode = null): mixed
+    protected function queryInternal(bool $returnDataReader = false): mixed
     {
         [, $rawSql] = $this->logQuery(__CLASS__ . '::query');
 
-        if ($method !== '') {
+        if (!$returnDataReader) {
             $info = $this->queryCache->info($this->queryCacheDuration, $this->queryCacheDependency);
 
             if (is_array($info)) {
                 /* @var $cache CacheInterface */
                 $cache = $info[0];
                 $rawSql = $rawSql ?: $this->getRawSql();
-                $cacheKey = $this->getCacheKey($method, $fetchMode, $rawSql);
+                $cacheKey = $this->getCacheKey($rawSql);
                 $result = $cache->getOrSet(
                     $cacheKey,
                     static fn () => null,
@@ -680,15 +675,10 @@ abstract class Command implements CommandInterface
 
             $this->internalExecute($rawSql);
 
-            if ($method === '') {
+            if ($returnDataReader) {
                 $result = new DataReader($this);
             } else {
-                if ($fetchMode === null) {
-                    $fetchMode = $this->fetchMode;
-                }
-
-                $result = call_user_func_array([$this->pdoStatement, $method], (array) $fetchMode);
-
+                $result = $this->pdoStatement?->fetchAll($this->fetchMode);
                 $this->pdoStatement?->closeCursor();
             }
 

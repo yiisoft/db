@@ -201,10 +201,10 @@ class Query implements QueryInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return array|bool the first row (in terms of an array) of the query result. False is returned if the query
+     * @return mixed the first row (in terms of an array) of the query result. False is returned if the query
      * results in nothing.
      */
-    public function one(): array|bool
+    public function one(): mixed
     {
         if ($this->emulateExecution) {
             return false;
