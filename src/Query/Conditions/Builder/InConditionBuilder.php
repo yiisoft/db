@@ -110,7 +110,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             $sql = (string) $column . $operator . reset($sqlValues);
         }
 
-        /** @var string|int|string|null $nullCondition */
+        /** @var int|string|string|null $nullCondition */
         return isset($nullCondition) ? sprintf('%s %s %s', $sql, $nullConditionOperator, $nullCondition) : $sql;
     }
 
