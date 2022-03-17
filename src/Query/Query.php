@@ -220,10 +220,10 @@ class Query implements QueryInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return false|int|string|null the value of the first column in the first row of the query result. False is
+     * @return bool|int|string|null the value of the first column in the first row of the query result. False is
      * returned if the query result is empty.
      */
-    public function scalar(): false|int|null|string
+    public function scalar(): bool|int|null|string
     {
         if ($this->emulateExecution) {
             return null;
@@ -286,10 +286,10 @@ class Query implements QueryInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return false|int|string|null number of records. The result may be a string depending on the underlying database
+     * @return bool|int|string|null number of records. The result may be a string depending on the underlying database
      * engine and to support integer values higher than a 32bit PHP integer can handle.
      */
-    public function count(string $q = '*'): false|int|null|string
+    public function count(string $q = '*'): bool|int|null|string
     {
         if ($this->emulateExecution) {
             return 0;
@@ -396,11 +396,11 @@ class Query implements QueryInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return false|int|string|null
+     * @return bool|int|string|null
      *
      * @psalm-suppress PossiblyUndefinedVariable
      */
-    protected function queryScalar($selectExpression): false|int|null|string
+    protected function queryScalar($selectExpression): bool|int|null|string
     {
         if ($this->emulateExecution) {
             return null;

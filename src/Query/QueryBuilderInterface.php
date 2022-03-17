@@ -111,9 +111,6 @@ interface QueryBuilderInterface
      * @param string|null $update the ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION,
      * SET DEFAULT, SET NULL.
      *
-     * @psalm-param array<array-key, string>|string $columns
-     * @psalm-param array<array-key, string>|string $refColumns
-     *
      * @throws Exception|InvalidArgumentException
      *
      * @return string the SQL statement for adding a foreign key constraint to an existing table.
@@ -135,8 +132,6 @@ interface QueryBuilderInterface
      * @param string $table the table that the primary key constraint will be added to.
      * @param array|string $columns comma separated string or array of columns that the primary key will consist of.
      *
-     * @psalm-param array<array-key, string>|string $columns
-     *
      * @return string the SQL statement for adding a primary key constraint to an existing table.
      */
     public function addPrimaryKey(string $name, string $table, array|string $columns): string;
@@ -149,8 +144,6 @@ interface QueryBuilderInterface
      * the method.
      * @param array|string $columns the name of the column to that the constraint will be added on. If there are
      * multiple columns, separate them with commas. The name will be properly quoted by the method.
-     *
-     * @psalm-param array<array-key, string>|string $columns
      *
      * @return string the SQL statement for adding a unique constraint to an existing table.
      */
@@ -436,8 +429,6 @@ interface QueryBuilderInterface
      * method, unless a parenthesis is found in the name.
      * @param bool $unique whether to add UNIQUE constraint on the created index.
      *
-     * @psalm-param array<array-key, ExpressionInterface|string>|string $columns
-     *
      * @throws Exception|InvalidArgumentException
      *
      * @return string the SQL statement for creating a new index.
@@ -469,8 +460,6 @@ interface QueryBuilderInterface
      * @param string $table the name of the table to be created. The name will be properly quoted by the method.
      * @param array $columns the columns (name => definition) in the new table.
      * @param string|null $options additional SQL fragments that will be appended to the generated SQL.
-     *
-     * @psalm-param array<array-key, ColumnSchemaBuilder|string> $columns
      *
      * @return string the SQL statement for creating a new DB table.
      */
@@ -857,8 +846,6 @@ interface QueryBuilderInterface
      * {@see Query::where()} on how to specify condition.
      * @param array $params the binding parameters that will be modified by this method so that they can be bound to the
      * DB command later.
-     *
-     * @psalm-param array<string, ExpressionInterface|string> $columns
      *
      * @throws Exception|InvalidArgumentException
      *

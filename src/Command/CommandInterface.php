@@ -487,12 +487,12 @@ interface CommandInterface
      * maximum existing value +1.
      *
      * @param string $table The name of the table whose primary key sequence is reset.
-     * @param mixed|null $value The value for the primary key of the next new row inserted. If this is not set, the next
-     * new row's primary key will have the maximum existing value +1.
+     * @param array|int|string|null $value The value for the primary key of the next new row inserted. If this is not
+     * set, the next new row's primary key will have the maximum existing value +1.
      *
      * @return static
      */
-    public function executeResetSequence(string $table, mixed $value = null): self;
+    public function executeResetSequence(string $table, array|int|string|null $value = null): self;
 
     /**
      * Return the params used in the last query.
@@ -585,9 +585,9 @@ interface CommandInterface
      *
      * @throws Exception|Throwable execution failed.
      *
-     * @return DataReader The reader object for fetching the query result.
+     * @return DataReader|null The reader object for fetching the query result.
      */
-    public function query(): DataReader;
+    public function query(): DataReader|null;
 
     /**
      * Executes the SQL statement and returns ALL rows at once.
@@ -630,10 +630,10 @@ interface CommandInterface
      *
      * @throws Exception|Throwable Execution failed.
      *
-     * @return false|int|string|null The value of the first column in the first row of the query result. False is
+     * @return bool|string|int|null The value of the first column in the first row of the query result. False is
      * returned if there is no value.
      */
-    public function queryScalar(): bool|string|null|int;
+    public function queryScalar(): bool|string|int|null;
 
     /**
      * Creates a SQL command for renaming a column.
@@ -663,12 +663,12 @@ interface CommandInterface
      * or 1.
      *
      * @param string $table The name of the table whose primary key sequence will be reset.
-     * @param mixed|null $value The value for the primary key of the next new row inserted. If this is not set, the next
-     * new row's primary key will have a value 1.
+     * @param array|int|string|null $value The value for the primary key of the next new row inserted. If this is not
+     * set, the next new row's primary key will have a value 1.
      *
      * @return static
      */
-    public function resetSequence(string $table, mixed $value = null): self;
+    public function resetSequence(string $table, array|int|string|null $value = null): self;
 
     /**
      * The parameters (name => value) that are bound to the current PDO statement.

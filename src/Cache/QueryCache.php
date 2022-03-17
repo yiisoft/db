@@ -59,14 +59,17 @@ final class QueryCache
         $result = null;
 
         if ($this->enabled) {
+            /** @var mixed */
             $info = end($this->info);
 
             if (is_array($info)) {
                 if ($duration === null) {
+                    /** @var int */
                     $duration = $info[0];
                 }
 
                 if ($dependency === null) {
+                    /** @var Dependency */
                     $dependency = $info[1];
                 }
             }

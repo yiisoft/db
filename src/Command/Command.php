@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
+use Closure;
 use JsonException;
 use PDO;
 use Psr\Log\LogLevel;
@@ -210,7 +211,7 @@ abstract class Command implements CommandInterface
     public function batchInsert(string $table, array $columns, iterable $rows): self
     {
         $table = $this->queryBuilder()->quoter()->quoteSql($table);
-        $columns = array_map(fn ($column) => $this->queryBuilder()->quoter()->quoteSql($column), $columns);
+        $columns = array_map(fn (string $column) => $this->queryBuilder()->quoter()->quoteSql($column), $columns);
         $params = [];
         $sql = $this->queryBuilder()->batchInsert($table, $columns, $rows, $params);
 
@@ -237,6 +238,9 @@ abstract class Command implements CommandInterface
             return $this;
         }
 
+        /**
+         * @psalm-var array<string, int>|ParamInterface|PdoValue|int $value
+         */
         foreach ($values as $name => $value) {
             if ($value instanceof ParamInterface) {
                 $this->params[$value->getName()] = $value;
@@ -386,6 +390,7 @@ abstract class Command implements CommandInterface
     {
         $sql = $this->getSql();
 
+        /** @var string|null $rawSql */
         [, $rawSql] = $this->logQuery(__METHOD__);
 
         if ($sql === '') {
@@ -414,11 +419,14 @@ abstract class Command implements CommandInterface
     /**
      * @throws Exception|NotSupportedException
      */
-    public function executeResetSequence(string $table, mixed $value = null): self
+    public function executeResetSequence(string $table, array|int|string|null $value = null): self
     {
         return $this->resetSequence($table, $value);
     }
 
+    /**
+     * @psalm-suppress MixedMethodCall
+     */
     public function getParams(): array
     {
         return array_map(static fn (mixed $value): mixed => $value->getValue(), $this->params);
@@ -435,22 +443,27 @@ abstract class Command implements CommandInterface
 
         $params = [];
 
+        /** @var mixed $value */
         foreach ($this->params as $name => $value) {
             if (is_string($name) && strncmp(':', $name, 1)) {
                 $name = ':' . $name;
             }
 
             if ($value instanceof ParamInterface) {
+                /** @var mixed */
                 $value = $value->getValue();
             }
 
             if (is_string($value)) {
+                /** @var mixed */
                 $params[$name] = $this->queryBuilder()->quoter()->quoteValue($value);
             } elseif (is_bool($value)) {
-                $params[$name] = ($value ? 'TRUE' : 'FALSE');
+                /** @var string */
+                $params[$name] = $value ? 'TRUE' : 'FALSE';
             } elseif ($value === null) {
                 $params[$name] = 'NULL';
             } elseif ((!is_object($value) && !is_resource($value)) || $value instanceof Expression) {
+                /** @var mixed */
                 $params[$name] = $value;
             }
         }
@@ -462,7 +475,7 @@ abstract class Command implements CommandInterface
         $sql = '';
 
         foreach (explode('?', $this->sql) as $i => $part) {
-            $sql .= ($params[$i] ?? '') . $part;
+            $sql .= (string) $params[$i] . $part;
         }
 
         return $sql;
@@ -491,23 +504,36 @@ abstract class Command implements CommandInterface
         return $this;
     }
 
-    public function query(): DataReader
+    public function query(): ?DataReader
     {
-        return $this->queryInternal(true);
+        /** @var mixed */
+        $result = $this->queryInternal(true);
+        return $result instanceof DataReader ? $result : null;
     }
 
     public function queryAll(): array
     {
-        return $this->queryInternal();
+        /** @var mixed */
+        $result = $this->queryInternal();
+        return is_array($result) ? $result : [];
     }
 
     public function queryColumn(): array
     {
+        $columnName = null;
+
+        /** @var mixed */
         $results = $this->queryInternal();
 
-        $columnName = array_keys($results[0] ?? [])[0] ?? null;
+        if (isset($results[0])) {
+            $columnName = array_keys((array) $results[0])[0] ?? null;
+        }
 
-        if ($columnName) {
+        if ($columnName !== null && is_iterable($results)) {
+            /**
+             * @psalm-var iterable<array-key, array<array-key, mixed>|object> $results
+             * @psalm-var Closure|string $columnName
+             */
             return ArrayHelper::getColumn($results, $columnName);
         }
 
@@ -516,16 +542,23 @@ abstract class Command implements CommandInterface
 
     public function queryOne(): mixed
     {
-        return current($this->queryInternal());
+        return current((array) $this->queryInternal());
     }
 
-    public function queryScalar(): bool|string|null|int
+    /**
+     * @psalm-suppress MixedInferredReturnType
+     * @psalm-suppress MixedReturnStatement
+     */
+    public function queryScalar(): bool|string|int|null
     {
-        $firstRow = current($this->queryInternal());
+        /** @var mixed */
+        $firstRow = current((array) $this->queryInternal());
+
         if (!is_array($firstRow)) {
             return false;
         }
 
+        /** @var mixed */
         $result = current($firstRow);
 
         if (is_resource($result) && get_resource_type($result) === 'stream') {
@@ -550,7 +583,7 @@ abstract class Command implements CommandInterface
     /**
      * @throws Exception|NotSupportedException
      */
-    public function resetSequence(string $table, mixed $value = null): self
+    public function resetSequence(string $table, array|int|string|null $value = null): self
     {
         $sql = $this->queryBuilder()->resetSequence($table, $value);
         return $this->setSql($sql);
@@ -642,19 +675,23 @@ abstract class Command implements CommandInterface
      * @throws Exception|Throwable If the query causes any problem.
      *
      * @return mixed The method execution result.
+     *
+     * @psalm-suppress MixedArgument
      */
     protected function queryInternal(bool $returnDataReader = false): mixed
     {
+        /** @var string|null $rawSql */
         [, $rawSql] = $this->logQuery(__CLASS__ . '::query');
 
         if (!$returnDataReader) {
             $info = $this->queryCache->info($this->queryCacheDuration, $this->queryCacheDependency);
 
             if (is_array($info)) {
-                /* @var $cache CacheInterface */
+                /** @var CacheInterface */
                 $cache = $info[0];
                 $rawSql = $rawSql ?: $this->getRawSql();
                 $cacheKey = $this->getCacheKey($rawSql);
+                /** @var mixed */
                 $result = $cache->getOrSet(
                     $cacheKey,
                     static fn () => null,
@@ -688,7 +725,7 @@ abstract class Command implements CommandInterface
             throw $e;
         }
 
-        if (isset($cache, $cacheKey, $info)) {
+        if (isset($cache, $cacheKey, $info) && $cache instanceof CacheInterface && is_array($info)) {
             $cache->getOrSet(
                 $cacheKey,
                 static fn (): array => [$result],

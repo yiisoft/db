@@ -8,11 +8,7 @@ use PDOStatement;
 
 trait CommandPdoTrait
 {
-    /**
-     * @psalm-var ParamInterface[]
-     */
     protected array $params = [];
-
     protected ?PDOStatement $pdoStatement = null;
 
     public function getPdoStatement(): ?PDOStatement
@@ -32,7 +28,10 @@ trait CommandPdoTrait
      */
     protected function bindPendingParams(): void
     {
-        foreach ($this->params as $name => $value) {
+        /** @psalm-var ParamInterface[] */
+        $params = $this->params;
+
+        foreach ($params as $name => $value) {
             $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
         }
     }
