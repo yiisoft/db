@@ -630,7 +630,7 @@ interface CommandInterface
      *
      * @throws Exception|Throwable Execution failed.
      *
-     * @return bool|string|int|null The value of the first column in the first row of the query result. False is
+     * @return bool|int|string|null The value of the first column in the first row of the query result. False is
      * returned if there is no value.
      */
     public function queryScalar(): bool|string|int|null;
