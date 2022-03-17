@@ -708,7 +708,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * @throws InvalidConfigException|InvalidArgumentException|NotSupportedException|Exception
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      */
     public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string
     {

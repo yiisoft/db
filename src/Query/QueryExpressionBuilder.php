@@ -21,7 +21,7 @@ class QueryExpressionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @throws InvalidConfigException|InvalidArgumentException|NotSupportedException|Exception
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      */
     public function build(QueryInterface $expression, array &$params = []): string
     {

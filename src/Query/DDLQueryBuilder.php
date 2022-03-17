@@ -183,7 +183,7 @@ abstract class DDLQueryBuilder
     }
 
     /**
-     * @throws InvalidConfigException|InvalidArgumentException|NotSupportedException|\Yiisoft\Db\Exception\Exception
+     * @throws InvalidArgumentException|InvalidConfigException|NotSupportedException|\Yiisoft\Db\Exception\Exception
      * @throws Exception
      */
     public function createView(string $viewName, QueryInterface|string $subQuery): string

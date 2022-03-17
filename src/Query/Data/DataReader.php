@@ -131,9 +131,9 @@ final class DataReader implements Iterator, Countable
      * @param string $className class name of the object to be created and populated.
      * @param array $fields Elements of this array are passed to the constructor.
      *
-     * @return mixed the populated object, false if no more row of data available.
-     *
      * @throws InvalidCallException
+     *
+     * @return mixed the populated object, false if no more row of data available.
      *
      * @psalm-param class-string $className
      */

@@ -56,7 +56,7 @@ interface QueryInterface extends ExpressionInterface
     /**
      * Sets the {@see indexBy} property.
      *
-     * @param string|Closure|null $column the name of the column by which the query results should be indexed by.
+     * @param Closure|string|null $column the name of the column by which the query results should be indexed by.
      * This can also be a callable (e.g. anonymous function) that returns the index value based on the given row data.
      * The signature of the callable should be:
      *
@@ -158,7 +158,7 @@ interface QueryInterface extends ExpressionInterface
      * **Note that this method will override any existing WHERE condition. You might want to use {@see andWhere()}
      * or {@see orWhere()} instead.**
      *
-     * @param array|string|ExpressionInterface|null $condition the conditions that should be put in the WHERE part.
+     * @param array|ExpressionInterface|string|null $condition the conditions that should be put in the WHERE part.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
      * @return QueryInterface the query object itself.
@@ -297,7 +297,7 @@ interface QueryInterface extends ExpressionInterface
     /**
      * Sets the SELECT part of the query.
      *
-     * @param array|string|ExpressionInterface $columns the columns to be selected.
+     * @param array|ExpressionInterface|string $columns the columns to be selected.
      * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
      * Columns can be prefixed with table names (e.g. "user.id") and/or contain column aliases
      * (e.g. "user.id AS user_id").

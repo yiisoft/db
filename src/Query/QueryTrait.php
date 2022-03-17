@@ -38,7 +38,7 @@ trait QueryTrait
     /**
      * Sets the {@see indexBy} property.
      *
-     * @param string|Closure|null $column the name of the column by which the query results should be indexed by.
+     * @param Closure|string|null $column the name of the column by which the query results should be indexed by.
      *
      * This can also be a closure (e.g. anonymous function) that returns the index value based on the given row data.
      *
@@ -65,7 +65,7 @@ trait QueryTrait
      *
      * See {@see QueryInterface::where()} for detailed documentation.
      *
-     * @param array|string|ExpressionInterface $condition the conditions that should be put in the WHERE part.
+     * @param array|ExpressionInterface|string $condition the conditions that should be put in the WHERE part.
      *
      * @return static the query object itself
      *
@@ -151,12 +151,13 @@ trait QueryTrait
      *
      * See {@see where()} on how to specify this parameter.
      *
+     * @throws NotSupportedException
+     *
      * @return static the query object itself
      *
      * {@see where()}
      * {@see andFilterWhere()}
      * {@see orFilterWhere()}
-     * @throws NotSupportedException
      */
     public function filterWhere(array $condition): self
     {
@@ -180,11 +181,12 @@ trait QueryTrait
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
+     * @throws NotSupportedException
+     *
      * @return static the query object itself
      *
      * {@see filterWhere()}
      * {@see orFilterWhere()}
-     * @throws NotSupportedException
      */
     public function andFilterWhere(array $condition): self
     {
@@ -208,11 +210,12 @@ trait QueryTrait
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
+     * @throws NotSupportedException
+     *
      * @return static the query object itself
      *
      * {@see filterWhere()}
      * {@see andFilterWhere()}
-     * @throws NotSupportedException
      */
     public function orFilterWhere(array $condition): self
     {
@@ -318,7 +321,7 @@ trait QueryTrait
     /**
      * Sets the ORDER BY part of the query.
      *
-     * @param array|string|ExpressionInterface $columns the columns (and the directions) to be ordered by.
+     * @param array|ExpressionInterface|string $columns the columns (and the directions) to be ordered by.
      *
      * Columns can be specified in either a string (e.g. `"id ASC, name DESC"`) or an array
      * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
@@ -346,7 +349,7 @@ trait QueryTrait
     /**
      * Adds additional ORDER BY columns to the query.
      *
-     * @param array|string|ExpressionInterface $columns the columns (and the directions) to be ordered by.
+     * @param array|ExpressionInterface|string $columns the columns (and the directions) to be ordered by.
      * Columns can be specified in either a string (e.g. "id ASC, name DESC") or an array
      * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
      *
@@ -379,7 +382,7 @@ trait QueryTrait
     /**
      * Normalizes format of ORDER BY data.
      *
-     * @param array|string|ExpressionInterface $columns the columns value to normalize.
+     * @param array|ExpressionInterface|string $columns the columns value to normalize.
      *
      * See {@see orderBy} and {@see addOrderBy}.
      *

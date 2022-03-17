@@ -80,7 +80,7 @@ abstract class DMLQueryBuilder
     }
 
     /**
-     * @throws InvalidConfigException|InvalidArgumentException|NotSupportedException|\Yiisoft\Db\Exception\Exception
+     * @throws InvalidArgumentException|InvalidConfigException|NotSupportedException|\Yiisoft\Db\Exception\Exception
      */
     public function delete(string $table, array|string $condition, array &$params): string
     {
@@ -91,7 +91,7 @@ abstract class DMLQueryBuilder
     }
 
     /**
-     * @throws InvalidConfigException|InvalidArgumentException|NotSupportedException|\Yiisoft\Db\Exception\Exception
+     * @throws InvalidArgumentException|InvalidConfigException|NotSupportedException|\Yiisoft\Db\Exception\Exception
      */
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
     {
@@ -109,7 +109,7 @@ abstract class DMLQueryBuilder
     }
 
     /**
-     * @throws InvalidConfigException|InvalidArgumentException|NotSupportedException|\Yiisoft\Db\Exception\Exception
+     * @throws InvalidArgumentException|InvalidConfigException|NotSupportedException|\Yiisoft\Db\Exception\Exception
      */
     public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string
     {

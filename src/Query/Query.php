@@ -391,13 +391,13 @@ class Query implements QueryInterface
      *
      * Restores the value of select to make this query reusable.
      *
-     * @param string|ExpressionInterface $selectExpression
+     * @param ExpressionInterface|string $selectExpression
+     *
+     *@throws Exception|InvalidConfigException|Throwable
      *
      * @return bool|int|string|null
      *
      * @psalm-suppress PossiblyUndefinedVariable
-     *@throws Exception|InvalidConfigException|Throwable
-     *
      */
     protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|null|string
     {
@@ -531,7 +531,7 @@ class Query implements QueryInterface
     /**
      * Sets the SELECT part of the query.
      *
-     * @param array|string|ExpressionInterface $columns the columns to be selected.
+     * @param array|ExpressionInterface|string $columns the columns to be selected.
      * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
      * Columns can be prefixed with table names (e.g. "user.id") and/or contain column aliases
      * (e.g. "user.id AS user_id").
@@ -568,7 +568,7 @@ class Query implements QueryInterface
      * $query->addSelect(["*", "CONCAT(first_name, ' ', last_name) AS full_name"])->one();
      * ```
      *
-     * @param array|string|ExpressionInterface $columns the columns to add to the select. See {@see select()} for more
+     * @param array|ExpressionInterface|string $columns the columns to add to the select. See {@see select()} for more
      * details about the format of this parameter.
      *
      * @return $this the query object itself.
@@ -712,7 +712,7 @@ class Query implements QueryInterface
      *
      * {@inheritdoc}
      *
-     * @param array|string|ExpressionInterface|null $condition the conditions that should be put in the WHERE part.
+     * @param array|ExpressionInterface|string|null $condition the conditions that should be put in the WHERE part.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
      * @return $this the query object itself.
@@ -938,7 +938,7 @@ class Query implements QueryInterface
     /**
      * Sets the GROUP BY part of the query.
      *
-     * @param array|string|ExpressionInterface $columns the columns to be grouped by.
+     * @param array|ExpressionInterface|string $columns the columns to be grouped by.
      * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
      * The method will automatically quote the column names unless a column contains some parenthesis (which means the
      * column contains a DB expression).
@@ -968,7 +968,7 @@ class Query implements QueryInterface
     /**
      * Adds additional group-by columns to the existing ones.
      *
-     * @param array|string|ExpressionInterface $columns additional columns to be grouped by.
+     * @param array|ExpressionInterface|string $columns additional columns to be grouped by.
      * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
      * The method will automatically quote the column names unless a column contains some parenthesis (which means the
      * column contains a DB expression).
@@ -1024,7 +1024,7 @@ class Query implements QueryInterface
      * Adds HAVING condition to the existing one.
      * The new condition and the existing one will be joined using the `AND` operator.
      *
-     * @param array|string|ExpressionInterface $condition the new HAVING condition. Please refer to {@see where()}
+     * @param array|ExpressionInterface|string $condition the new HAVING condition. Please refer to {@see where()}
      * on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
@@ -1051,7 +1051,7 @@ class Query implements QueryInterface
      *
      * The new condition and the existing one will be joined using the `OR` operator.
      *
-     * @param array|string|ExpressionInterface $condition the new HAVING condition. Please refer to {@see where()}
+     * @param array|ExpressionInterface|string $condition the new HAVING condition. Please refer to {@see where()}
      * on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
@@ -1178,12 +1178,12 @@ class Query implements QueryInterface
     /**
      * Appends a SQL statement using UNION operator.
      *
-     * @param string|Query $sql the SQL statement to be appended using UNION.
+     * @param Query|string $sql the SQL statement to be appended using UNION.
      * @param bool $all TRUE if using UNION ALL and FALSE if using UNION.
      *
      * @return $this the query object itself.
      */
-    public function union(Query|string $sql, bool $all = false): self
+    public function union(self|string $sql, bool $all = false): self
     {
         $this->union[] = ['query' => $sql, 'all' => $all];
 
@@ -1350,13 +1350,13 @@ class Query implements QueryInterface
     /**
      * Prepends a SQL statement using WITH syntax.
      *
-     * @param string|Query $query the SQL statement to be appended using UNION.
+     * @param Query|string $query the SQL statement to be appended using UNION.
      * @param string $alias query alias in WITH construction.
      * @param bool $recursive TRUE if using WITH RECURSIVE and FALSE if using WITH.
      *
      * @return $this the query object itself.
      */
-    public function withQuery(Query|string $query, string $alias, bool $recursive = false): self
+    public function withQuery(self|string $query, string $alias, bool $recursive = false): self
     {
         $this->withQueries[] = ['query' => $query, 'alias' => $alias, 'recursive' => $recursive];
 
