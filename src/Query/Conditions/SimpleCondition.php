@@ -41,6 +41,8 @@ final class SimpleCondition implements SimpleConditionInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     *
      * @psalm-suppress MixedArgument
      */
     public static function fromArrayDefinition(string $operator, array $operands): self

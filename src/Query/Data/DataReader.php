@@ -53,7 +53,7 @@ final class DataReader implements Iterator, Countable
     private bool $closed = false;
     private int $index = -1;
     private mixed $row;
-    private ?PDOStatement $statement = null;
+    private ?PDOStatement $statement;
 
     public function __construct(CommandInterface $command)
     {
@@ -71,9 +71,11 @@ final class DataReader implements Iterator, Countable
      * @param mixed $value Name of the PHP variable to which the column will be bound.
      * @param int|null $dataType Data type of the parameter.
      *
+     * @throws InvalidCallException
+     *
      * {@see http://www.php.net/manual/en/function.PDOStatement-bindColumn.php}
      */
-    public function bindColumn($column, &$value, ?int $dataType = null): void
+    public function bindColumn(int|string $column, mixed &$value, ?int $dataType = null): void
     {
         if ($dataType === null) {
             $this->getPDOStatement()->bindColumn($column, $value);
@@ -87,6 +89,8 @@ final class DataReader implements Iterator, Countable
      *
      * @param int $mode fetch mode.
      *
+     * @throws InvalidCallException
+     *
      * {@see http://www.php.net/manual/en/function.PDOStatement-setFetchMode.php}
      */
     public function setFetchMode(int $mode): void
@@ -97,6 +101,8 @@ final class DataReader implements Iterator, Countable
 
     /**
      * Advances the reader to the next row in a result set.
+     *
+     * @throws InvalidCallException
      *
      * @return array|bool the current row, false if no more row available.
      */
@@ -109,6 +115,8 @@ final class DataReader implements Iterator, Countable
      * Returns a single column from the next row of a result set.
      *
      * @param int $columnIndex zero-based column index.
+     *
+     * @throws InvalidCallException
      *
      * @return mixed the column of the current row, false if no more rows available.
      */
@@ -125,6 +133,8 @@ final class DataReader implements Iterator, Countable
      *
      * @return mixed the populated object, false if no more row of data available.
      *
+     * @throws InvalidCallException
+     *
      * @psalm-param class-string $className
      */
     public function readObject(string $className, array $fields): mixed
@@ -134,6 +144,8 @@ final class DataReader implements Iterator, Countable
 
     /**
      * Reads the whole result set into an array.
+     *
+     * @throws InvalidCallException
      *
      * @return array the result set (each array element represents a row of data). An empty array will be returned if
      * the result contains no row.
@@ -146,6 +158,8 @@ final class DataReader implements Iterator, Countable
     /**
      * Advances the reader to the next result when reading the results of a batch of statements. This method is only
      * useful when there are multiple result sets returned by the query. Not all DBMS support this feature.
+     *
+     * @throws InvalidCallException
      *
      * @return bool Returns true on success or false on failure.
      */
@@ -163,6 +177,8 @@ final class DataReader implements Iterator, Countable
      *
      * This frees up the resources allocated for executing this SQL statement. Read attempts after this method call are
      * unpredictable.
+     *
+     * @throws InvalidCallException
      */
     public function close(): void
     {
@@ -186,6 +202,8 @@ final class DataReader implements Iterator, Countable
      * Note, most DBMS may not give a meaningful count. In this case, use "SELECT COUNT(*) FROM tableName" to obtain the
      * number of rows.
      *
+     * @throws InvalidCallException
+     *
      * @return int number of rows contained in the result.
      */
     public function getRowCount(): int
@@ -201,6 +219,8 @@ final class DataReader implements Iterator, Countable
      * Note, most DBMS may not give a meaningful count. In this case, use "SELECT COUNT(*) FROM tableName" to obtain the
      * number of rows.
      *
+     * @throws InvalidCallException
+     *
      * @return int number of rows contained in the result.
      */
     public function count(): int
@@ -212,6 +232,8 @@ final class DataReader implements Iterator, Countable
      * Returns the number of columns in the result set.
      *
      * Note, even there's no row in the reader, this still gives correct column number.
+     *
+     * @throws InvalidCallException
      *
      * @return int the number of columns in the result set.
      */
@@ -256,7 +278,6 @@ final class DataReader implements Iterator, Countable
      *
      * @return mixed the current row.
      */
-    #[\ReturnTypeWillChange]
     public function current(): mixed
     {
         return $this->row;
@@ -266,6 +287,8 @@ final class DataReader implements Iterator, Countable
      * Moves the internal pointer to the next row.
      *
      * This method is required by the interface {@see Iterator}.
+     *
+     * @throws InvalidCallException
      */
     public function next(): void
     {
@@ -285,6 +308,9 @@ final class DataReader implements Iterator, Countable
         return $this->row !== false;
     }
 
+    /**
+     * @throws InvalidCallException
+     */
     public function getPDOStatement(): PDOStatement
     {
         if ($this->statement === null) {

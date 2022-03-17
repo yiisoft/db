@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 
 /**
@@ -16,6 +20,9 @@ class QueryExpressionBuilder implements ExpressionBuilderInterface
     {
     }
 
+    /**
+     * @throws InvalidConfigException|InvalidArgumentException|NotSupportedException|Exception
+     */
     public function build(QueryInterface $expression, array &$params = []): string
     {
         [$sql, $params] = $this->queryBuilder->build($expression, $params);

@@ -78,8 +78,7 @@ interface QuoterInterface
      *
      * Note that if the parameter is not a string, it will be returned without change.
      *
-     * @param mixed $str string to be quoted.
-     * @param PDO $pdo the PDO instance.
+     * @param mixed $value
      *
      * @throws Exception
      *

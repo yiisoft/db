@@ -38,7 +38,7 @@ trait QueryTrait
     /**
      * Sets the {@see indexBy} property.
      *
-     * @param Closure|string|null $column the name of the column by which the query results should be indexed by.
+     * @param string|Closure|null $column the name of the column by which the query results should be indexed by.
      *
      * This can also be a closure (e.g. anonymous function) that returns the index value based on the given row data.
      *
@@ -51,9 +51,9 @@ trait QueryTrait
      * }
      * ```
      *
-     * @return $this the query object itself
+     * @return static the query object itself
      */
-    public function indexBy($column): self
+    public function indexBy(string|Closure|null $column): self
     {
         $this->indexBy = $column;
 
@@ -65,14 +65,14 @@ trait QueryTrait
      *
      * See {@see QueryInterface::where()} for detailed documentation.
      *
-     * @param array|ExpressionInterface|string|null $condition the conditions that should be put in the WHERE part.
+     * @param array|string|ExpressionInterface $condition the conditions that should be put in the WHERE part.
      *
-     * @return $this the query object itself
+     * @return static the query object itself
      *
      * {@see andWhere()}
      * {@see orWhere()}
      */
-    public function where(array|string|ExpressionInterface|null $condition): self
+    public function where(array|string|ExpressionInterface $condition): self
     {
         $this->where = $condition;
 
@@ -80,14 +80,14 @@ trait QueryTrait
     }
 
     /**
-     * Adds an additional WHERE condition to the existing one.
+     * Adds WHERE condition to the existing one.
      *
      * The new condition and the existing one will be joined using the 'AND' operator.
      *
      * @param array|string|null $condition the new WHERE condition. Please refer to {@see where()} on how to specify
      * this parameter.
      *
-     * @return $this the query object itself
+     * @return static the query object itself
      *
      * {@see where()}
      * {@see orWhere()}
@@ -104,14 +104,14 @@ trait QueryTrait
     }
 
     /**
-     * Adds an additional WHERE condition to the existing one.
+     * Adds WHERE condition to the existing one.
      *
      * The new condition and the existing one will be joined using the 'OR' operator.
      *
      * @param array|string|null $condition the new WHERE condition. Please refer to {@see where()} on how to specify
      * this parameter.
      *
-     * @return $this the query object itself
+     * @return static the query object itself
      *
      * {@see where()}
      * {@see andWhere()}
@@ -151,13 +151,12 @@ trait QueryTrait
      *
      * See {@see where()} on how to specify this parameter.
      *
-     * @throws NotSupportedException
-     *
-     * @return $this the query object itself
+     * @return static the query object itself
      *
      * {@see where()}
      * {@see andFilterWhere()}
      * {@see orFilterWhere()}
+     * @throws NotSupportedException
      */
     public function filterWhere(array $condition): self
     {
@@ -171,7 +170,7 @@ trait QueryTrait
     }
 
     /**
-     * Adds an additional WHERE condition to the existing one but ignores {@see isEmpty()|empty operands}.
+     * Adds WHERE condition to the existing one but ignores {@see isEmpty()|empty operands}.
      *
      * The new condition and the existing one will be joined using the 'AND' operator.
      *
@@ -181,12 +180,11 @@ trait QueryTrait
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
-     * @throws NotSupportedException
-     *
-     * @return $this the query object itself
+     * @return static the query object itself
      *
      * {@see filterWhere()}
      * {@see orFilterWhere()}
+     * @throws NotSupportedException
      */
     public function andFilterWhere(array $condition): self
     {
@@ -200,7 +198,7 @@ trait QueryTrait
     }
 
     /**
-     * Adds an additional WHERE condition to the existing one but ignores {@see isEmpty()|empty operands}.
+     * Adds WHERE condition to the existing one but ignores {@see isEmpty()|empty operands}.
      *
      * The new condition and the existing one will be joined using the 'OR' operator.
      *
@@ -210,12 +208,11 @@ trait QueryTrait
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
      *
-     * @throws NotSupportedException
-     *
-     * @return $this the query object itself
+     * @return static the query object itself
      *
      * {@see filterWhere()}
      * {@see andFilterWhere()}
+     * @throws NotSupportedException
      */
     public function orFilterWhere(array $condition): self
     {
@@ -245,7 +242,7 @@ trait QueryTrait
 
         if (!isset($condition[0])) {
             // hash format: 'column1' => 'value1', 'column2' => 'value2', ...
-            /** @psalm-var array<array-key, array<array-key, mixed>|string> $condition */
+            /** @psalm-var array<array-key, array|string> $condition */
             foreach ($condition as $name => $value) {
                 if ($this->isEmpty($value)) {
                     unset($condition[$name]);
@@ -262,7 +259,7 @@ trait QueryTrait
             case 'NOT':
             case 'AND':
             case 'OR':
-                /** @psalm-var array<array-key, array<array-key, mixed>|string> $condition */
+                /** @psalm-var array<array-key, array|string> $condition */
                 foreach ($condition as $i => $operand) {
                     $subCondition = $this->filterCondition($operand);
 
@@ -313,7 +310,7 @@ trait QueryTrait
      *
      * @return bool if the value is empty
      */
-    protected function isEmpty($value): bool
+    protected function isEmpty(mixed $value): bool
     {
         return $value === '' || $value === [] || $value === null || (is_string($value) && trim($value) === '');
     }
@@ -321,7 +318,7 @@ trait QueryTrait
     /**
      * Sets the ORDER BY part of the query.
      *
-     * @param array|ExpressionInterface|string $columns the columns (and the directions) to be ordered by.
+     * @param array|string|ExpressionInterface $columns the columns (and the directions) to be ordered by.
      *
      * Columns can be specified in either a string (e.g. `"id ASC, name DESC"`) or an array
      * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
@@ -335,11 +332,11 @@ trait QueryTrait
      *
      * Since {@see ExpressionInterface} object can be passed to specify the ORDER BY part explicitly in plain SQL.
      *
-     * @return $this the query object itself
+     * @return static the query object itself
      *
      * {@see addOrderBy()}
      */
-    public function orderBy($columns): self
+    public function orderBy(array|string|ExpressionInterface $columns): self
     {
         $this->orderBy = $this->normalizeOrderBy($columns);
 
@@ -349,7 +346,7 @@ trait QueryTrait
     /**
      * Adds additional ORDER BY columns to the query.
      *
-     * @param array|ExpressionInterface|string $columns the columns (and the directions) to be ordered by.
+     * @param array|string|ExpressionInterface $columns the columns (and the directions) to be ordered by.
      * Columns can be specified in either a string (e.g. "id ASC, name DESC") or an array
      * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
      *
@@ -362,11 +359,11 @@ trait QueryTrait
      *
      * Since {@see ExpressionInterface} object can be passed to specify the ORDER BY part explicitly in plain SQL.
      *
-     * @return $this the query object itself
+     * @return static the query object itself
      *
      * {@see orderBy()}
      */
-    public function addOrderBy($columns): self
+    public function addOrderBy(array|string|ExpressionInterface $columns): self
     {
         $columns = $this->normalizeOrderBy($columns);
 
@@ -382,13 +379,13 @@ trait QueryTrait
     /**
      * Normalizes format of ORDER BY data.
      *
-     * @param array|ExpressionInterface|string $columns the columns value to normalize.
+     * @param array|string|ExpressionInterface $columns the columns value to normalize.
      *
      * See {@see orderBy} and {@see addOrderBy}.
      *
      * @return array
      */
-    protected function normalizeOrderBy($columns): array
+    protected function normalizeOrderBy(array|string|ExpressionInterface $columns): array
     {
         if ($columns instanceof ExpressionInterface) {
             return [$columns];
@@ -416,7 +413,7 @@ trait QueryTrait
      *
      * @param Expression|int|null $limit the limit. Use null or negative value to disable limit.
      *
-     * @return $this the query object itself
+     * @return static the query object itself
      */
     public function limit(Expression|int|null $limit): self
     {
@@ -430,7 +427,7 @@ trait QueryTrait
      *
      * @param Expression|int|null $offset $offset the offset. Use null or negative value to disable offset.
      *
-     * @return $this the query object itself
+     * @return static the query object itself
      */
     public function offset(Expression|int|null $offset): self
     {
@@ -449,7 +446,7 @@ trait QueryTrait
      *
      * @param bool $value whether to prevent query execution.
      *
-     * @return $this the query object itself.
+     * @return static the query object itself.
      */
     public function emulateExecution(bool $value = true): self
     {

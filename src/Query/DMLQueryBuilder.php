@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Exception;
 use Generator;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Strings\NumericHelper;
@@ -16,6 +19,8 @@ abstract class DMLQueryBuilder
     }
 
     /**
+     * @throws Exception
+     *
      * @psalm-suppress MixedArrayOffset
      */
     public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
@@ -74,6 +79,9 @@ abstract class DMLQueryBuilder
             . ' (' . implode(', ', $columns) . ') VALUES ' . implode(', ', $values);
     }
 
+    /**
+     * @throws InvalidConfigException|InvalidArgumentException|NotSupportedException|\Yiisoft\Db\Exception\Exception
+     */
     public function delete(string $table, array|string $condition, array &$params): string
     {
         $sql = 'DELETE FROM ' . $this->queryBuilder->quoter()->quoteTableName($table);
@@ -82,6 +90,9 @@ abstract class DMLQueryBuilder
         return $where === '' ? $sql : $sql . ' ' . $where;
     }
 
+    /**
+     * @throws InvalidConfigException|InvalidArgumentException|NotSupportedException|\Yiisoft\Db\Exception\Exception
+     */
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         /**
@@ -97,11 +108,17 @@ abstract class DMLQueryBuilder
             . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : $values);
     }
 
+    /**
+     * @throws InvalidConfigException|InvalidArgumentException|NotSupportedException|\Yiisoft\Db\Exception\Exception
+     */
     public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         return $this->insert($table, $columns, $params);
     }
 
+    /**
+     * @throws NotSupportedException
+     */
     public function resetSequence(string $tableName, array|int|string|null $value = null): string
     {
         throw new NotSupportedException(static::class . ' does not support resetting sequence.');
@@ -125,6 +142,9 @@ abstract class DMLQueryBuilder
         return $where === '' ? $sql : $sql . ' ' . $where;
     }
 
+    /**
+     * @throws NotSupportedException
+     */
     public function upsert(
         string $table,
         QueryInterface|array $insertColumns,

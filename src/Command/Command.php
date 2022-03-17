@@ -531,7 +531,7 @@ abstract class Command implements CommandInterface
 
         if ($columnName !== null && is_iterable($results)) {
             /**
-             * @psalm-var iterable<array-key, array<array-key, mixed>|object> $results
+             * @psalm-var iterable<array-key, array|object> $results
              * @psalm-var Closure|string $columnName
              */
             return ArrayHelper::getColumn($results, $columnName);

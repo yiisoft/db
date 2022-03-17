@@ -26,6 +26,8 @@ final class NotCondition implements NotConditionInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     *
      * @psalm-suppress MixedArgument
      */
     public static function fromArrayDefinition(string $operator, array $operands): self

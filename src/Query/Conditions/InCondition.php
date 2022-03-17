@@ -37,6 +37,8 @@ final class InCondition implements InConditionInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     * 
      * @psalm-suppress MixedArgument
      */
     public static function fromArrayDefinition(string $operator, array $operands): self

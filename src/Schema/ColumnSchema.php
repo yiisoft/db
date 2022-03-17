@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Schema;
 use PDO;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Pdo\PdoValue;
-use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Strings\NumericHelper;
 
 /**
@@ -39,7 +38,7 @@ class ColumnSchema
      *
      * @return mixed converted value
      */
-    public function phpTypecast($value)
+    public function phpTypecast(mixed $value): mixed
     {
         return $this->typecast($value);
     }
@@ -54,7 +53,7 @@ class ColumnSchema
      * @return mixed converted value. This may also be an array containing the value as the first element
      * and the PDO type as the second element.
      */
-    public function dbTypecast($value)
+    public function dbTypecast(mixed $value): mixed
     {
         /**
          * the default implementation does the same as casting for PHP, but it should be possible to override this with
@@ -72,7 +71,7 @@ class ColumnSchema
      *
      * @return mixed converted value
      */
-    protected function typecast($value)
+    protected function typecast(mixed $value): mixed
     {
         if (
             $value === ''
@@ -87,14 +86,13 @@ class ColumnSchema
                 true
             )
         ) {
-            return;
+            return null;
         }
 
         if (
             $value === null
             || gettype($value) === $this->phpType
             || $value instanceof ExpressionInterface
-            || $value instanceof QueryInterface
         ) {
             return $value;
         }
@@ -186,7 +184,7 @@ class ColumnSchema
     }
 
     /**
-     * @return string the PHP type of this column. Possible PHP types include: `string`, `boolean`, `integer`,
+     * @return string|null the PHP type of this column. Possible PHP types include: `string`, `boolean`, `integer`,
      * `double`, `array`.
      */
     public function getPhpType(): ?string
@@ -211,7 +209,7 @@ class ColumnSchema
     }
 
     /**
-     * @return array enumerable values. This is set only if the column is declared to be an enumerable type.
+     * @return array|null enumerable values. This is set only if the column is declared to be an enumerable type.
      */
     public function getEnumValues(): ?array
     {
@@ -219,7 +217,7 @@ class ColumnSchema
     }
 
     /**
-     * @return int display size of the column.
+     * @return int|null display size of the column.
      */
     public function getSize(): ?int
     {
@@ -227,7 +225,7 @@ class ColumnSchema
     }
 
     /**
-     * @return int precision of the column data, if it is numeric.
+     * @return int|null precision of the column data, if it is numeric.
      */
     public function getPrecision(): ?int
     {
@@ -235,7 +233,7 @@ class ColumnSchema
     }
 
     /**
-     * @return int scale of the column data, if it is numeric.
+     * @return int|null scale of the column data, if it is numeric.
      */
     public function getScale(): ?int
     {

@@ -9,6 +9,7 @@ use PDOException;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\Data\DataReader;
 
@@ -53,7 +54,7 @@ class BatchQueryResult implements Iterator
     /**
      * @var mixed the value for the current iteration
      */
-    private $value;
+    private mixed $value;
 
     /**
      * @var int MSSQL error code for exception that is thrown when last batch is size less than specified batch size
@@ -69,6 +70,9 @@ class BatchQueryResult implements Iterator
     ) {
     }
 
+    /**
+     * @throws InvalidCallException
+     */
     public function __destruct()
     {
         $this->reset();
@@ -78,13 +82,12 @@ class BatchQueryResult implements Iterator
      * Resets the batch query.
      *
      * This method will clean up the existing batch query so that a new batch query can be performed.
+     *
+     * @throws InvalidCallException
      */
     public function reset(): void
     {
-        if ($this->dataReader !== null) {
-            $this->dataReader->close();
-        }
-
+        $this->dataReader?->close();
         $this->dataReader = null;
         $this->batch = null;
         $this->value = null;
@@ -95,6 +98,8 @@ class BatchQueryResult implements Iterator
      * Resets the iterator to the initial state.
      *
      * This method is required by the interface {@see Iterator}.
+     *
+     * @throws InvalidCallException
      */
     public function rewind(): void
     {
@@ -151,6 +156,8 @@ class BatchQueryResult implements Iterator
     /**
      * Reads and collects rows for batch.
      *
+     * @throws InvalidCallException
+     *
      * @return array
      *
      * @psalm-suppress MixedArrayAccess
@@ -183,7 +190,6 @@ class BatchQueryResult implements Iterator
      *
      * @return int|string|null the index of the current row.
      */
-    #[\ReturnTypeWillChange]
     public function key(): int|string|null
     {
         return $this->key;
@@ -196,7 +202,6 @@ class BatchQueryResult implements Iterator
      *
      * @return mixed the current dataset.
      */
-    #[\ReturnTypeWillChange]
     public function current(): mixed
     {
         return $this->value;

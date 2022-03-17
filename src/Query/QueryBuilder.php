@@ -146,11 +146,17 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addColumn($table, $column, $type);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function addCommentOnColumn(string $table, string $column, string $comment): string
     {
         return $this->ddlBuilder->addCommentOnColumn($table, $column, $comment);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function addCommentOnTable(string $table, string $comment): string
     {
         return $this->ddlBuilder->addCommentOnTable($table, $comment);
@@ -188,6 +194,9 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
     {
         return $this->dmlBuilder->batchInsert($table, $columns, $rows, $params);
@@ -296,6 +305,8 @@ abstract class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     *
      * @psalm-suppress UndefinedInterfaceMethod
      * @psalm-suppress MixedMethodCall
      */
@@ -669,6 +680,8 @@ abstract class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     *
      * @psalm-suppress InvalidStringClass
      */
     public function getExpressionBuilder(ExpressionInterface $expression): object
@@ -694,6 +707,9 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->insert($table, $columns, $params);
     }
 
+    /**
+     * @throws InvalidConfigException|InvalidArgumentException|NotSupportedException|Exception
+     */
     public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         return $this->dmlBuilder->insertEx($table, $columns, $params);
@@ -841,6 +857,8 @@ abstract class QueryBuilder implements QueryBuilderInterface
      *
      * @param string $table
      *
+     * @return array|bool
+     *
      * @psalm-return string[]|bool
      */
     protected function extractAlias(string $table): array|bool
@@ -975,6 +993,8 @@ abstract class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * @throws JsonException
+     *
      * @psalm-suppress MixedArgumentTypeCoercion
      */
     public function prepareUpsertColumns(

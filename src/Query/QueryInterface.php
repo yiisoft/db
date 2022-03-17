@@ -56,7 +56,7 @@ interface QueryInterface extends ExpressionInterface
     /**
      * Sets the {@see indexBy} property.
      *
-     * @param Closure|string|null $column the name of the column by which the query results should be indexed by.
+     * @param string|Closure|null $column the name of the column by which the query results should be indexed by.
      * This can also be a callable (e.g. anonymous function) that returns the index value based on the given row data.
      * The signature of the callable should be:
      *
@@ -69,7 +69,7 @@ interface QueryInterface extends ExpressionInterface
      *
      * @return QueryInterface the query object itself.
      */
-    public function indexBy($column): self;
+    public function indexBy(string|Closure|null $column): self;
 
     /**
      * Sets the WHERE part of the query.
@@ -158,7 +158,7 @@ interface QueryInterface extends ExpressionInterface
      * **Note that this method will override any existing WHERE condition. You might want to use {@see andWhere()}
      * or {@see orWhere()} instead.**
      *
-     * @param array|ExpressionInterface|string $condition the conditions that should be put in the WHERE part.
+     * @param array|string|ExpressionInterface|null $condition the conditions that should be put in the WHERE part.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
      * @return QueryInterface the query object itself.
@@ -166,10 +166,10 @@ interface QueryInterface extends ExpressionInterface
      * {@see andWhere()}
      * {@see orWhere()}
      */
-    public function where($condition, array $params = []): self;
+    public function where(array|string|ExpressionInterface|null $condition, array $params = []): self;
 
     /**
-     * Adds an additional WHERE condition to the existing one.
+     * Adds WHERE condition to the existing one.
      *
      * The new condition and the existing one will be joined using the 'AND' operator.
      *
@@ -183,7 +183,7 @@ interface QueryInterface extends ExpressionInterface
     public function andWhere(array $condition): self;
 
     /**
-     * Adds an additional WHERE condition to the existing one.
+     * Adds WHERE condition to the existing one.
      *
      * The new condition and the existing one will be joined using the 'OR' operator.
      *
@@ -210,7 +210,7 @@ interface QueryInterface extends ExpressionInterface
     public function filterWhere(array $condition): self;
 
     /**
-     * Adds an additional WHERE condition to the existing one ignoring empty parameters.
+     * Adds WHERE condition to the existing one ignoring empty parameters.
      * The new condition and the existing one will be joined using the 'AND' operator.
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
@@ -223,7 +223,7 @@ interface QueryInterface extends ExpressionInterface
     public function andFilterWhere(array $condition): self;
 
     /**
-     * Adds an additional WHERE condition to the existing one ignoring empty parameters.
+     * Adds WHERE condition to the existing one ignoring empty parameters.
      * The new condition and the existing one will be joined using the 'OR' operator.
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
@@ -247,7 +247,7 @@ interface QueryInterface extends ExpressionInterface
      *
      * {@see addOrderBy()}
      */
-    public function orderBy($columns): self;
+    public function orderBy(array|string $columns): self;
 
     /**
      * Adds additional ORDER BY columns to the query.
@@ -261,7 +261,7 @@ interface QueryInterface extends ExpressionInterface
      *
      * {@see orderBy()}
      */
-    public function addOrderBy($columns): self;
+    public function addOrderBy(array|string $columns): self;
 
     /**
      * Sets the LIMIT part of the query.
@@ -297,7 +297,7 @@ interface QueryInterface extends ExpressionInterface
     /**
      * Sets the SELECT part of the query.
      *
-     * @param array|ExpressionInterface|string $columns the columns to be selected.
+     * @param array|string|ExpressionInterface $columns the columns to be selected.
      * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
      * Columns can be prefixed with table names (e.g. "user.id") and/or contain column aliases
      * (e.g. "user.id AS user_id").
@@ -316,7 +316,7 @@ interface QueryInterface extends ExpressionInterface
      *
      * @return $this the query object itself.
      */
-    public function select($columns, ?string $option = null): self;
+    public function select(array|string|ExpressionInterface $columns, ?string $option = null): self;
 
     /**
      * Return index by key.

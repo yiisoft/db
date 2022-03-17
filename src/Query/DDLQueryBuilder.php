@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 abstract class DDLQueryBuilder
@@ -31,6 +34,9 @@ abstract class DDLQueryBuilder
             . $this->queryBuilder->getColumnType($type);
     }
 
+    /**
+     * @throws Exception
+     */
     public function addCommentOnColumn(string $table, string $column, string $comment): string
     {
         return 'COMMENT ON COLUMN '
@@ -41,6 +47,9 @@ abstract class DDLQueryBuilder
             . (string) $this->queryBuilder->quoter()->quoteValue($comment);
     }
 
+    /**
+     * @throws Exception
+     */
     public function addCommentOnTable(string $table, string $comment): string
     {
         return 'COMMENT ON TABLE '
@@ -49,11 +58,17 @@ abstract class DDLQueryBuilder
             . (string) $this->queryBuilder->quoter()->quoteValue($comment);
     }
 
+    /**
+     * @throws NotSupportedException
+     */
     public function addDefaultValue(string $name, string $table, string $column, mixed $value): string
     {
         throw new NotSupportedException(static::class . ' does not support adding default value constraints.');
     }
 
+    /**
+     * @throws InvalidArgumentException|\Yiisoft\Db\Exception\Exception
+     */
     public function addForeignKey(
         string $name,
         string $table,
@@ -126,11 +141,17 @@ abstract class DDLQueryBuilder
             . $this->queryBuilder->getColumnType($type);
     }
 
+    /**
+     * @throws NotSupportedException
+     */
     public function checkIntegrity(string $schema = '', string $table = '', bool $check = true): string
     {
         throw new NotSupportedException(static::class . ' does not support enabling/disabling integrity check.');
     }
 
+    /**
+     * @throws InvalidArgumentException|\Yiisoft\Db\Exception\Exception
+     */
     public function createIndex(string $name, string $table, array|string $columns, bool $unique = false): string
     {
         return ($unique ? 'CREATE UNIQUE INDEX ' : 'CREATE INDEX ')
@@ -161,6 +182,10 @@ abstract class DDLQueryBuilder
         return $options === null ? $sql : $sql . ' ' . $options;
     }
 
+    /**
+     * @throws InvalidConfigException|InvalidArgumentException|NotSupportedException|\Yiisoft\Db\Exception\Exception
+     * @throws Exception
+     */
     public function createView(string $viewName, QueryInterface|string $subQuery): string
     {
         if ($subQuery instanceof QueryInterface) {
@@ -210,6 +235,9 @@ abstract class DDLQueryBuilder
              . ' IS NULL';
     }
 
+    /**
+     * @throws NotSupportedException
+     */
     public function dropDefaultValue(string $name, string $table): string
     {
         throw new NotSupportedException(static::class . ' does not support dropping default value constraints.');

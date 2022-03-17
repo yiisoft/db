@@ -129,7 +129,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function defaultValue($default): self
+    public function defaultValue(mixed $default): self
     {
         if ($default === null) {
             $this->null();
@@ -309,21 +309,12 @@ class ColumnSchemaBuilder
 
         $string = ' DEFAULT ';
 
-        switch (gettype($this->default)) {
-            case 'object':
-            case 'integer':
-                $string .= (string) $this->default;
-                break;
-            case 'double':
-                /* ensure type cast always has . as decimal separator in all locales */
-                $string .= NumericHelper::normalize((string) $this->default);
-                break;
-            case 'boolean':
-                $string .= $this->default ? 'TRUE' : 'FALSE';
-                break;
-            default:
-                $string .= "'{$this->default}'";
-        }
+        $string .= match (gettype($this->default)) {
+            'object', 'integer' => (string)$this->default,
+            'double' => NumericHelper::normalize((string)$this->default),
+            'boolean' => $this->default ? 'TRUE' : 'FALSE',
+            default => "'{$this->default}'",
+        };
 
         return $string;
     }
@@ -516,7 +507,7 @@ class ColumnSchemaBuilder
     }
 
     /**
-     * @return string comment value of the column.
+     * @return string|null comment value of the column.
      */
     public function getComment(): ?string
     {

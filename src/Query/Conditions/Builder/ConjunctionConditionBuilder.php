@@ -56,7 +56,7 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     {
         $parts = [];
 
-        /** @psalm-var array<array-key, array<array-key, mixed>|ExpressionInterface|string> $expressions */
+        /** @psalm-var array<array-key, array|ExpressionInterface|string> $expressions */
         $expressions = $condition->getExpressions();
 
         foreach ($expressions as $conditionValue) {
