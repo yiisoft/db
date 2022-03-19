@@ -499,7 +499,7 @@ class Query implements QueryInterface
 
             if ($tableName instanceof Expression) {
                 $cleanedUpTableNames[$this->ensureNameQuoted($alias)] = $tableName;
-            } elseif ($tableName instanceof self) {
+            } elseif ($tableName instanceof static) {
                 $cleanedUpTableNames[$this->ensureNameQuoted($alias)] = $tableName;
             } else {
                 $cleanedUpTableNames[$this->ensureNameQuoted($alias)] = $this->ensureNameQuoted((string) $tableName);
