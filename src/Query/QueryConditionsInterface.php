@@ -272,7 +272,7 @@ interface QueryConditionsInterface
      *
      * The new condition and the existing one will be joined using the `OR` operator.
      *
-     * @param array|string|ExpressionInterface $condition the new WHERE condition. Please refer to {@see where()} on how
+     * @param array|ExpressionInterface|string $condition the new WHERE condition. Please refer to {@see where()} on how
      * to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *

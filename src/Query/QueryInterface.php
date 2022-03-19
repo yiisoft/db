@@ -48,7 +48,7 @@ interface QueryInterface extends ExpressionInterface, QueryConditionsInterface, 
     /**
      * Adds additional ORDER BY columns to the query.
      *
-     * @param array|string|ExpressionInterface $columns the columns (and the directions) to be ordered by.
+     * @param array|ExpressionInterface|string $columns the columns (and the directions) to be ordered by.
      * Columns can be specified in either a string (e.g. "id ASC, name DESC") or an array
      * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
      *
@@ -328,7 +328,7 @@ interface QueryInterface extends ExpressionInterface, QueryConditionsInterface, 
     /**
      * Sets the ORDER BY part of the query.
      *
-     * @param array|string|ExpressionInterface $columns the columns (and the directions) to be ordered by.
+     * @param array|ExpressionInterface|string $columns the columns (and the directions) to be ordered by.
      *
      * Columns can be specified in either a string (e.g. `"id ASC, name DESC"`) or an array
      * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
