@@ -28,6 +28,7 @@ use function key;
 use function preg_match;
 use function preg_split;
 use function reset;
+use function str_contains;
 use function str_replace;
 use function strcasecmp;
 use function strlen;
