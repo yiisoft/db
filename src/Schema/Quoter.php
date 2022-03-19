@@ -26,6 +26,17 @@ class Quoter implements QuoterInterface
     ) {
     }
 
+    public function ensureNameQuoted(string $name): string
+    {
+        $name = str_replace(["'", '"', '`', '[', ']'], '', $name);
+
+        if ($name && !preg_match('/^{{.*}}$/', $name)) {
+            return '{{' . $name . '}}';
+        }
+
+        return $name;
+    }
+
     public function quoteColumnName(string $name): string
     {
         if (str_contains($name, '(') || str_contains($name, '[[')) {

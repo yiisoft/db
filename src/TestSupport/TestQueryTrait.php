@@ -643,43 +643,33 @@ trait TestQueryTrait
         $this->assertGreaterThan(0, (new Query($db))->from('customer')->count('*'));
 
         $rows = (new Query($db))->from('customer')->emulateExecution()->all();
-
         $this->assertSame([], $rows);
 
         $row = (new Query($db))->from('customer')->emulateExecution()->one();
-
         $this->assertFalse($row);
 
         $exists = (new Query($db))->from('customer')->emulateExecution()->exists($db);
-
         $this->assertFalse($exists);
 
         $count = (new Query($db))->from('customer')->emulateExecution()->count('*');
-
         $this->assertSame(0, $count);
 
         $sum = (new Query($db))->from('customer')->emulateExecution()->sum('id');
-
-        $this->assertSame(0, $sum);
+        $this->assertNull($sum);
 
         $sum = (new Query($db))->from('customer')->emulateExecution()->average('id');
-
-        $this->assertSame(0, $sum);
+        $this->assertNull($sum);
 
         $max = (new Query($db))->from('customer')->emulateExecution()->max('id');
-
         $this->assertNull($max);
 
         $min = (new Query($db))->from('customer')->emulateExecution()->min('id');
-
         $this->assertNull($min);
 
         $scalar = (new Query($db))->select(['id'])->from('customer')->emulateExecution()->scalar();
-
         $this->assertNull($scalar);
 
         $column = (new Query($db))->select(['id'])->from('customer')->emulateExecution()->column();
-
         $this->assertSame([], $column);
     }
 

@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
+use Stringable;
+use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
@@ -20,32 +23,175 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * Allows pagination via {@see limit} and {@see offset}.
  * Sorting is supported via {@see orderBy} and items can be limited to match some conditions using {@see where}.
  */
-interface QueryInterface extends ExpressionInterface
+interface QueryInterface extends ExpressionInterface, QueryConditionsInterface, QueryFunctionsInterface, Stringable
 {
     /**
+     * Adds additional group-by columns to the existing ones.
+     *
+     * @param array|ExpressionInterface|string $columns additional columns to be grouped by.
+     * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
+     * The method will automatically quote the column names unless a column contains some parenthesis (which means the
+     * column contains a DB expression).
+     *
+     * Note that if your group-by is an expression containing commas, you should always use an array to represent the
+     * group-by information. Otherwise, the method will not be able to correctly determine the group-by columns.
+     *
+     * {@see Expression} object can be passed to specify the GROUP BY part explicitly in plain SQL.
+     * {@see ExpressionInterface} object can be passed as well.
+     *
+     * @return $this the query object itself
+     *
+     * {@see groupBy()}
+     */
+    public function addGroupBy(array|string|ExpressionInterface $columns): self;
+
+    /**
+     * Adds additional ORDER BY columns to the query.
+     *
+     * @param array|string|ExpressionInterface $columns the columns (and the directions) to be ordered by.
+     * Columns can be specified in either a string (e.g. "id ASC, name DESC") or an array
+     * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
+     *
+     * The method will automatically quote the column names unless a column contains some parenthesis
+     * (which means the column contains a DB expression).
+     *
+     * Note that if your order-by is an expression containing commas, you should always use an array
+     * to represent the order-by information. Otherwise, the method will not be able to correctly determine
+     * the order-by columns.
+     *
+     * Since {@see ExpressionInterface} object can be passed to specify the ORDER BY part explicitly in plain SQL.
+     *
+     * @return $this the query object itself
+     *
+     * {@see orderBy()}
+     */
+    public function addOrderBy(array|string|ExpressionInterface $columns): self;
+
+    /**
+     * Adds HAVING condition to the existing one but ignores {@see isEmpty()|empty operands}.
+     *
+     * The new condition and the existing one will be joined using the `AND` operator.
+     *
+     * This method is similar to {@see andHaving()}. The main difference is that this method will remove
+     * {@see isEmpty()|empty query operands}. As a result, this method is best suited for building query conditions
+     * based on filter values entered by users.
+     *
+     * @param array $condition the new HAVING condition. Please refer to {@see having()} on how to specify this
+     * parameter.
+     *
+     * @throws NotSupportedException
+     *
+     * @return $this the query object itself.
+     *
+     * {@see filterHaving()}
+     * {@see orFilterHaving()}
+     */
+    public function andFilterHaving(array $condition): self;
+
+    /**
+     * Adds HAVING condition to the existing one.
+     * The new condition and the existing one will be joined using the `AND` operator.
+     *
+     * @param array|ExpressionInterface|string $condition the new HAVING condition. Please refer to {@see where()}
+     * on how to specify this parameter.
+     * @param array $params the parameters (name => value) to be bound to the query.
+     *
+     * @return $this the query object itself.
+     *
+     * {@see having()}
+     * {@see orHaving()}
+     */
+    public function andHaving(array|string|ExpressionInterface $condition, array $params = []): self;
+
+    /**
+     * Adds additional parameters to be bound to the query.
+     *
+     * @param array $params list of query parameter values indexed by parameter placeholders.
+     * For example, `[':name' => 'Dan', ':age' => 31]`.
+     *
+     * @return $this the query object itself.
+     *
+     * {@see params()}
+     */
+    public function addParams(array $params): self;
+
+    /**
      * Executes the query and returns all results as an array.
+     *
+     * If this parameter is not given, the `db` application component will be used.
+     *
+     * @throws Exception|InvalidConfigException|Throwable
      *
      * @return array the query results. If the query results in nothing, an empty array will be returned.
      */
     public function all(): array;
 
     /**
-     * Executes the query and returns a single row of result.
+     * Starts a batch query.
      *
-     * @return mixed the first row (in terms of an array) of the query result. False is returned if the query
-     * results in nothing.
+     * A batch query supports fetching data in batches, which can keep the memory usage under a limit.
+     *
+     * This method will return a {@see BatchQueryResult} object which implements the {@see Iterator} interface and can
+     * be traversed to retrieve the data in batches.
+     *
+     * For example,
+     *
+     * ```php
+     * $query = (new Query)->from('user');
+     * foreach ($query->batch() as $rows) {
+     *     // $rows is an array of 100 or fewer rows from user table
+     * }
+     * ```
+     *
+     * @param int $batchSize the number of records to be fetched in each batch.
+     *
+     * @return BatchQueryResult the batch query result. It implements the {@see Iterator} interface and can be
+     * traversed to retrieve the data in batches.
      */
-    public function one(): mixed;
+    public function batch(int $batchSize = 100): BatchQueryResult;
 
     /**
-     * Returns the number of records.
+     * Creates a DB command that can be used to execute this query.
      *
-     * @param string $q the COUNT expression. Defaults to '*'.
+     * If this parameter is not given, the `db` application component will be used.
      *
-     * @return int|string number of records. The result may be a string depending on the underlying database
-     * engine and to support integer values higher than a 32bit PHP integer can handle.
+     * @throws Exception|InvalidConfigException
+     *
+     * @return CommandInterface the created DB command instance.
      */
-    public function count(string $q = '*'): int|string;
+    public function createCommand(): CommandInterface;
+
+    /**
+     * Starts a batch query and retrieves data row by row.
+     *
+     * This method is similar to {@see batch()} except that in each iteration of the result, only one row of data is
+     * returned. For example,
+     *
+     * ```php
+     * $query = (new Query)->from('user');
+     * foreach ($query->each() as $row) {
+     * }
+     * ```
+     *
+     * @param int $batchSize the number of records to be fetched in each batch.
+     *
+     * @return BatchQueryResult the batch query result. It implements the {@see Iterator} interface and can be
+     * traversed to retrieve the data in batches.
+     */
+    public function each(int $batchSize = 100): BatchQueryResult;
+
+    /**
+     * Sets whether to emulate query execution, preventing any interaction with data storage.
+     * After this mode is enabled, methods, returning query results like {@see one()}, {@see all()}, {@see exists()}
+     * and so on, will return empty or false values.
+     * You should use this method in case your program logic indicates query should not return any results, like in case
+     * you set false where condition like `0=1`.
+     *
+     * @param bool $value whether to prevent query execution.
+     *
+     * @return QueryInterface the query object itself.
+     */
+    public function emulateExecution(bool $value = true): self;
 
     /**
      * Returns a value indicating whether the query result contains any row of data.
@@ -53,6 +199,69 @@ interface QueryInterface extends ExpressionInterface
      * @return bool whether the query result contains any row of data.
      */
     public function exists(): bool;
+
+    /**
+     * Sets the HAVING part of the query but ignores {@see isEmpty()|empty operands}.
+     *
+     * This method is similar to {@see having()}. The main difference is that this method will remove
+     * {@see isEmpty()|empty query operands}. As a result, this method is best suited for building query conditions
+     * based on filter values entered by users.
+     *
+     * The following code shows the difference between this method and {@see having()}:
+     *
+     * ```php
+     * // HAVING `age`=:age
+     * $query->filterHaving(['name' => null, 'age' => 20]);
+     * // HAVING `age`=:age
+     * $query->having(['age' => 20]);
+     * // HAVING `name` IS NULL AND `age`=:age
+     * $query->having(['name' => null, 'age' => 20]);
+     * ```
+     *
+     * Note that unlike {@see having()}, you cannot pass binding parameters to this method.
+     *
+     * @param array $condition the conditions that should be put in the HAVING part.
+     * See {@see having()} on how to specify this parameter.
+     *
+     * @throws NotSupportedException
+     *
+     * @return $this the query object itself.
+     *
+     * {@see having()}
+     * {@see andFilterHaving()}
+     * {@see orFilterHaving()}
+     */
+    public function filterHaving(array $condition): self;
+
+    /**
+     * Return index by key.
+     */
+    public function getIndexBy(): Closure|string|null;
+
+    /**
+     * Return select query string.
+     */
+    public function getSelect(): array;
+
+    /**
+     * Sets the GROUP BY part of the query.
+     *
+     * @param array|ExpressionInterface|string $columns the columns to be grouped by.
+     * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
+     * The method will automatically quote the column names unless a column contains some parenthesis (which means the
+     * column contains a DB expression).
+     *
+     * Note that if your group-by is an expression containing commas, you should always use an array to represent the
+     * group-by information. Otherwise, the method will not be able to correctly determine the group-by columns.
+     *
+     * {@see ExpressionInterface} object can be passed to specify the GROUP BY part explicitly in plain SQL.
+     * {@see ExpressionInterface} object can be passed as well.
+     *
+     * @return $this the query object itself.
+     *
+     * {@see addGroupBy()}
+     */
+    public function groupBy(array|string|ExpressionInterface $columns): self;
 
     /**
      * Sets the {@see indexBy} property.
@@ -73,203 +282,25 @@ interface QueryInterface extends ExpressionInterface
     public function indexBy(string|Closure|null $column): self;
 
     /**
-     * Sets the WHERE part of the query.
+     * Sets the HAVING part of the query.
      *
-     * The `$condition` specified as an array can be in one of the following two formats:
-     *
-     * - hash format: `['column1' => value1, 'column2' => value2, ...]`
-     * - operator format: `[operator, operand1, operand2, ...]`
-     *
-     * A condition in hash format represents the following SQL expression in general:
-     * `column1=value1 AND column2=value2 AND ...`. In case when a value is an array,
-     * an `IN` expression will be generated. And if a value is `null`, `IS NULL` will be used in the generated
-     * expression. Below are some examples:
-     *
-     * - `['type' => 1, 'status' => 2]` generates `(type = 1) AND (status = 2)`.
-     * - `['id' => [1, 2, 3], 'status' => 2]` generates `(id IN (1, 2, 3)) AND (status = 2)`.
-     * - `['status' => null]` generates `status IS NULL`.
-     *
-     * A condition in operator format generates the SQL expression according to the specified operator, which can be one
-     * of the following:
-     *
-     * - **and**: the operands should be concatenated together using `AND`. For example,
-     *   `['and', 'id=1', 'id=2']` will generate `id=1 AND id=2`. If an operand is an array,
-     *   it will be converted into a string using the rules described here. For example,
-     *   `['and', 'type=1', ['or', 'id=1', 'id=2']]` will generate `type=1 AND (id=1 OR id=2)`.
-     *   The method will *not* do any quoting or escaping.
-     *
-     * - **or**: similar to the `and` operator except that the operands are concatenated using `OR`. For example,
-     *   `['or', ['type' => [7, 8, 9]], ['id' => [1, 2, 3]]]` will generate `(type IN (7, 8, 9) OR (id IN (1, 2, 3)))`.
-     *
-     * - **not**: this will take only one operand and build the negation of it by prefixing the query string with `NOT`.
-     *   For example `['not', ['attribute' => null]]` will result in the condition `NOT (attribute IS NULL)`.
-     *
-     * - **between**: operand 1 should be the column name, and operand 2 and 3 should be the
-     *   starting and ending values of the range that the column is in.
-     *   For example, `['between', 'id', 1, 10]` will generate `id BETWEEN 1 AND 10`.
-     *
-     * - **not between**: similar to `between` except the `BETWEEN` is replaced with `NOT BETWEEN`
-     *   in the generated condition.
-     *
-     * - **in**: operand 1 should be a column or DB expression, and operand 2 be an array representing
-     *   the range of the values that the column or DB expression should be in. For example,
-     *   `['in', 'id', [1, 2, 3]]` will generate `id IN (1, 2, 3)`.
-     *   The method will properly quote the column name and escape values in the range.
-     *
-     *   To create a composite `IN` condition you can use and array for the column name and value, where the values are
-     *   indexed by the column name:
-     *   `['in', ['id', 'name'], [['id' => 1, 'name' => 'foo'], ['id' => 2, 'name' => 'bar']] ]`.
-     *
-     *   You may also specify a sub-query that is used to get the values for the `IN`-condition:
-     *   `['in', 'user_id', (new Query())->select('id')->from('users')->where(['active' => 1])]`
-     *
-     * - **not in**: similar to the `in` operator except that `IN` is replaced with `NOT IN` in the generated condition.
-     *
-     * - **like**: operand 1 should be a column or DB expression, and operand 2 be a string or an array representing
-     *   the values that the column or DB expression should be like.
-     *   For example, `['like', 'name', 'tester']` will generate `name LIKE '%tester%'`.
-     *   When the value range is given as an array, multiple `LIKE` predicates will be generated and concatenated
-     *   using `AND`. For example, `['like', 'name', ['test', 'sample']]` will generate
-     *   `name LIKE '%test%' AND name LIKE '%sample%'`.
-     *   The method will properly quote the column name and escape special characters in the values.
-     *   Sometimes, you may want to add the percentage characters to the matching value by yourself, you may supply
-     *   a third operand `false` to do so. For example, `['like', 'name', '%tester', false]` will generate
-     *   `name LIKE '%tester'`.
-     *
-     * - **or like**: similar to the `like` operator except that `OR` is used to concatenate the `LIKE` predicates when
-     *   operand 2 is an array.
-     *
-     * - **not like**: similar to the `like` operator except that `LIKE` is replaced with `NOT LIKE` in the generated
-     *   condition.
-     *
-     * - **or not like**: similar to the `not like` operator except that `OR` is used to concatenate the `NOT LIKE`
-     *   predicates.
-     *
-     * - **exists**: operand 1 is a query object that used to build an `EXISTS` condition. For example
-     *   `['exists', (new Query())->select('id')->from('users')->where(['active' => 1])]` will result in the following
-     *   SQL expression:
-     *   `EXISTS (SELECT "id" FROM "users" WHERE "active"=1)`.
-     *
-     * - **not exists**: similar to the `exists` operator except that `EXISTS` is replaced with `NOT EXISTS` in the
-     *   generated condition.
-     *
-     * - Additionally you can specify arbitrary operators as follows: A condition of `['>=', 'id', 10]` will result
-     *   in the following SQL expression: `id >= 10`.
-     *
-     * **Note that this method will override any existing WHERE condition. You might want to use {@see andWhere()}
-     * or {@see orWhere()} instead.**
-     *
-     * @param array|ExpressionInterface|string|null $condition the conditions that should be put in the WHERE part.
+     * @param array|ExpressionInterface|string|null $condition the conditions to be put after HAVING.
+     * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
-     * @return QueryInterface the query object itself.
+     * @return $this the query object itself.
      *
-     * {@see andWhere()}
-     * {@see orWhere()}
+     * {@see andHaving()}
+     * {@see orHaving()}
      */
-    public function where(array|string|ExpressionInterface|null $condition, array $params = []): self;
-
-    /**
-     * Adds WHERE condition to the existing one.
-     *
-     * The new condition and the existing one will be joined using the 'AND' operator.
-     *
-     * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
-     *
-     * @return QueryInterface the query object itself.
-     *
-     * {@see where()}
-     * {@see orWhere()}
-     */
-    public function andWhere(array $condition): self;
-
-    /**
-     * Adds WHERE condition to the existing one.
-     *
-     * The new condition and the existing one will be joined using the 'OR' operator.
-     *
-     * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
-     *
-     * @return QueryInterface the query object itself.
-     *
-     * {@see where()}
-     * {@see andWhere()}
-     */
-    public function orWhere(array $condition): self;
-
-    /**
-     * Sets the WHERE part of the query ignoring empty parameters.
-     *
-     * @param array $condition the conditions that should be put in the WHERE part. Please refer to {@see where()} on
-     * how to specify this parameter.
-     *
-     * @return QueryInterface the query object itself.
-     *
-     * {@see andFilterWhere()}
-     * {@see orFilterWhere()}
-     */
-    public function filterWhere(array $condition): self;
-
-    /**
-     * Adds WHERE condition to the existing one ignoring empty parameters.
-     * The new condition and the existing one will be joined using the 'AND' operator.
-     *
-     * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
-     *
-     * @return QueryInterface the query object itself.
-     *
-     * {@see filterWhere()}
-     * {@see orFilterWhere()}
-     */
-    public function andFilterWhere(array $condition): self;
-
-    /**
-     * Adds WHERE condition to the existing one ignoring empty parameters.
-     * The new condition and the existing one will be joined using the 'OR' operator.
-     *
-     * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
-     *
-     * @return QueryInterface the query object itself.
-     *
-     * {@see filterWhere()}
-     * {@see andFilterWhere()}
-     */
-    public function orFilterWhere(array $condition): self;
-
-    /**
-     * Sets the ORDER BY part of the query.
-     *
-     * @param array|string $columns the columns (and the directions) to be ordered by. Columns can be specified in
-     * either a string (e.g. "id ASC, name DESC") or an array (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
-     * The method will automatically quote the column names unless a column contains some parenthesis (which means the
-     * column contains a DB expression).
-     *
-     * @return QueryInterface the query object itself.
-     *
-     * {@see addOrderBy()}
-     */
-    public function orderBy(array|string $columns): self;
-
-    /**
-     * Adds additional ORDER BY columns to the query.
-     *
-     * @param array|string $columns the columns (and the directions) to be ordered by. Columns can be specified in
-     * either a string (e.g. "id ASC, name DESC") or an array (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
-     * The method will automatically quote the column names unless a column contains some parenthesis (which means the
-     * column contains a DB expression).
-     *
-     * @return QueryInterface the query object itself.
-     *
-     * {@see orderBy()}
-     */
-    public function addOrderBy(array|string $columns): self;
+    public function having(array|ExpressionInterface|string|null $condition, array $params = []): self;
 
     /**
      * Sets the LIMIT part of the query.
      *
      * @param Expression|int|null $limit the limit. Use null or negative value to disable limit.
      *
-     * @return QueryInterface the query object itself
+     * @return $this the query object itself
      */
     public function limit(Expression|int|null $limit): self;
 
@@ -283,57 +314,88 @@ interface QueryInterface extends ExpressionInterface
     public function offset(Expression|int|null $offset): self;
 
     /**
-     * Sets whether to emulate query execution, preventing any interaction with data storage.
-     * After this mode is enabled, methods, returning query results like {@see one()}, {@see all()}, {@see exists()}
-     * and so on, will return empty or false values.
-     * You should use this method in case your program logic indicates query should not return any results, like in case
-     * you set false where condition like `0=1`.
-     *
-     * @param bool $value whether to prevent query execution.
-     *
-     * @return QueryInterface the query object itself.
-     */
-    public function emulateExecution(bool $value = true): self;
-
-    /**
-     * Sets the SELECT part of the query.
-     *
-     * @param array|ExpressionInterface|string $columns the columns to be selected.
-     * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
-     * Columns can be prefixed with table names (e.g. "user.id") and/or contain column aliases
-     * (e.g. "user.id AS user_id").
-     *
-     * The method will automatically quote the column names unless a column contains some parenthesis (which means the
-     * column contains a DB expression). A DB expression may also be passed in form of an {@see ExpressionInterface}
-     * object.
-     *
-     * Note that if you are selecting an expression like `CONCAT(first_name, ' ', last_name)`, you should use an array
-     * to specify the columns. Otherwise, the expression may be incorrectly split into several parts.
-     *
-     * When the columns are specified as an array, you may also use array keys as the column aliases (if a column does
-     * not need alias, do not use a string key).
-     * @param string|null $option additional option that should be appended to the 'SELECT' keyword. For example,
-     * in MySQL, the option 'SQL_CALC_FOUND_ROWS' can be used.
-     *
-     * @return $this the query object itself.
-     */
-    public function select(array|string|ExpressionInterface $columns, ?string $option = null): self;
-
-    /**
-     * Return index by key.
-     */
-    public function getIndexBy(): callable|string|null;
-
-    /**
-     * Creates a DB command that can be used to execute this query.
+     * Executes the query and returns a single row of result.
      *
      * If this parameter is not given, the `db` application component will be used.
      *
-     * @throws Exception|InvalidConfigException
+     * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return CommandInterface the created DB command instance.
+     * @return mixed the first row (in terms of an array) of the query result. False is returned if the query
+     * results in nothing.
      */
-    public function createCommand(): CommandInterface;
+    public function one(): mixed;
+
+    /**
+     * Sets the ORDER BY part of the query.
+     *
+     * @param array|string|ExpressionInterface $columns the columns (and the directions) to be ordered by.
+     *
+     * Columns can be specified in either a string (e.g. `"id ASC, name DESC"`) or an array
+     * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
+     *
+     * The method will automatically quote the column names unless a column contains some parenthesis
+     * (which means the column contains a DB expression).
+     *
+     * Note that if your order-by is an expression containing commas, you should always use an array
+     * to represent the order-by information. Otherwise, the method will not be able to correctly determine
+     * the order-by columns.
+     *
+     * Since {@see ExpressionInterface} object can be passed to specify the ORDER BY part explicitly in plain SQL.
+     *
+     * @return $this the query object itself
+     *
+     * {@see addOrderBy()}
+     */
+    public function orderBy(array|string|ExpressionInterface $columns): self;
+
+    /**
+     * Adds HAVING condition to the existing one but ignores {@see isEmpty()|empty operands}.
+     *
+     * The new condition and the existing one will be joined using the `OR` operator.
+     *
+     * This method is similar to {@see orHaving()}. The main difference is that this method will remove
+     * {@see isEmpty()|empty query operands}. As a result, this method is best suited for building query conditions
+     * based on filter values entered by users.
+     *
+     * @param array $condition the new HAVING condition. Please refer to {@see having()} on how to specify this
+     * parameter.
+     *
+     * @throws NotSupportedException
+     *
+     * @return $this the query object itself.
+     *
+     * {@see filterHaving()}
+     * {@see andFilterHaving()}
+     */
+    public function orFilterHaving(array $condition): self;
+
+    /**
+     * Adds HAVING condition to the existing one.
+     *
+     * The new condition and the existing one will be joined using the `OR` operator.
+     *
+     * @param array|ExpressionInterface|string $condition the new HAVING condition. Please refer to {@see where()}
+     * on how to specify this parameter.
+     * @param array $params the parameters (name => value) to be bound to the query.
+     *
+     * @return $this the query object itself.
+     *
+     * {@see having()}
+     * {@see andHaving()}
+     */
+    public function orHaving(array|string|ExpressionInterface $condition, array $params = []): self;
+
+    /**
+     * Sets the parameters to be bound to the query.
+     *
+     * @param array $params list of query parameter values indexed by parameter placeholders.
+     * For example, `[':name' => 'Dan', ':age' => 31]`.
+     *
+     * @return $this the query object itself.
+     *
+     * {@see addParams()}
+     */
+    public function params(array $params): self;
 
     /**
      * Converts the raw query results into the format as specified by this query.
@@ -360,7 +422,14 @@ interface QueryInterface extends ExpressionInterface
     public function prepare(QueryBuilder $builder): Query;
 
     /**
-     * Return select query string.
+     * Returns the query result as a scalar value.
+     *
+     * The value returned will be the first column in the first row of the query results.
+     *
+     * @throws Exception|InvalidConfigException|Throwable
+     *
+     * @return bool|int|string|null the value of the first column in the first row of the query result. False is
+     * returned if the query result is empty.
      */
-    public function getSelect(): array;
+    public function scalar(): bool|int|null|string;
 }
