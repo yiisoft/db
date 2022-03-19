@@ -282,16 +282,18 @@ class Query implements QueryInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return bool|int|string|null number of records. The result may be a string depending on the underlying database
+     * @return int|string number of records. The result may be a string depending on the underlying database
      * engine and to support integer values higher than a 32bit PHP integer can handle.
      */
-    public function count(string $q = '*'): bool|int|null|string
+    public function count(string $q = '*'): int|string
     {
         if ($this->emulateExecution) {
             return 0;
         }
 
-        return $this->queryScalar("COUNT($q)");
+        $count = $this->queryScalar("COUNT($q)");
+
+        return is_numeric($count) ? $count : '';
     }
 
     /**

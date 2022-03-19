@@ -42,9 +42,9 @@ interface QueryInterface extends ExpressionInterface
      *
      * @param string $q the COUNT expression. Defaults to '*'.
      *
-     * @return bool|int|string|null number of records.
+     * @return int|string number of records.
      */
-    public function count(string $q = '*'): bool|int|null|string;
+    public function count(string $q = '*'): int|string;
 
     /**
      * Returns a value indicating whether the query result contains any row of data.
