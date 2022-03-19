@@ -32,19 +32,20 @@ interface QueryInterface extends ExpressionInterface
     /**
      * Executes the query and returns a single row of result.
      *
-     * @return array|bool the first row (in terms of an array) of the query result. False is returned if the query
+     * @return mixed the first row (in terms of an array) of the query result. False is returned if the query
      * results in nothing.
      */
-    public function one();
+    public function one(): mixed;
 
     /**
      * Returns the number of records.
      *
      * @param string $q the COUNT expression. Defaults to '*'.
      *
-     * @return false|int|string|null number of records.
+     * @return int|string number of records. The result may be a string depending on the underlying database
+     * engine and to support integer values higher than a 32bit PHP integer can handle.
      */
-    public function count(string $q = '*'): false|int|null|string;
+    public function count(string $q = '*'): int|string;
 
     /**
      * Returns a value indicating whether the query result contains any row of data.
@@ -69,7 +70,7 @@ interface QueryInterface extends ExpressionInterface
      *
      * @return QueryInterface the query object itself.
      */
-    public function indexBy($column): self;
+    public function indexBy(string|Closure|null $column): self;
 
     /**
      * Sets the WHERE part of the query.
@@ -158,7 +159,7 @@ interface QueryInterface extends ExpressionInterface
      * **Note that this method will override any existing WHERE condition. You might want to use {@see andWhere()}
      * or {@see orWhere()} instead.**
      *
-     * @param array|ExpressionInterface|string $condition the conditions that should be put in the WHERE part.
+     * @param array|ExpressionInterface|string|null $condition the conditions that should be put in the WHERE part.
      * @param array $params the parameters (name => value) to be bound to the query.
      *
      * @return QueryInterface the query object itself.
@@ -166,10 +167,10 @@ interface QueryInterface extends ExpressionInterface
      * {@see andWhere()}
      * {@see orWhere()}
      */
-    public function where($condition, array $params = []): self;
+    public function where(array|string|ExpressionInterface|null $condition, array $params = []): self;
 
     /**
-     * Adds an additional WHERE condition to the existing one.
+     * Adds WHERE condition to the existing one.
      *
      * The new condition and the existing one will be joined using the 'AND' operator.
      *
@@ -183,7 +184,7 @@ interface QueryInterface extends ExpressionInterface
     public function andWhere(array $condition): self;
 
     /**
-     * Adds an additional WHERE condition to the existing one.
+     * Adds WHERE condition to the existing one.
      *
      * The new condition and the existing one will be joined using the 'OR' operator.
      *
@@ -210,7 +211,7 @@ interface QueryInterface extends ExpressionInterface
     public function filterWhere(array $condition): self;
 
     /**
-     * Adds an additional WHERE condition to the existing one ignoring empty parameters.
+     * Adds WHERE condition to the existing one ignoring empty parameters.
      * The new condition and the existing one will be joined using the 'AND' operator.
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
@@ -223,7 +224,7 @@ interface QueryInterface extends ExpressionInterface
     public function andFilterWhere(array $condition): self;
 
     /**
-     * Adds an additional WHERE condition to the existing one ignoring empty parameters.
+     * Adds WHERE condition to the existing one ignoring empty parameters.
      * The new condition and the existing one will be joined using the 'OR' operator.
      *
      * @param array $condition the new WHERE condition. Please refer to {@see where()} on how to specify this parameter.
@@ -247,7 +248,7 @@ interface QueryInterface extends ExpressionInterface
      *
      * {@see addOrderBy()}
      */
-    public function orderBy($columns): self;
+    public function orderBy(array|string $columns): self;
 
     /**
      * Adds additional ORDER BY columns to the query.
@@ -261,7 +262,7 @@ interface QueryInterface extends ExpressionInterface
      *
      * {@see orderBy()}
      */
-    public function addOrderBy($columns): self;
+    public function addOrderBy(array|string $columns): self;
 
     /**
      * Sets the LIMIT part of the query.
@@ -316,7 +317,7 @@ interface QueryInterface extends ExpressionInterface
      *
      * @return $this the query object itself.
      */
-    public function select($columns, ?string $option = null): self;
+    public function select(array|string|ExpressionInterface $columns, ?string $option = null): self;
 
     /**
      * Return index by key.
