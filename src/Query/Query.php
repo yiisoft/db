@@ -293,7 +293,7 @@ class Query implements QueryInterface
 
         $count = $this->queryScalar("COUNT($q)");
 
-        return is_numeric($count) ? $count : '';
+        return is_numeric($count) ? $count : 0;
     }
 
     /**

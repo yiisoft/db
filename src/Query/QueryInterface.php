@@ -42,7 +42,8 @@ interface QueryInterface extends ExpressionInterface
      *
      * @param string $q the COUNT expression. Defaults to '*'.
      *
-     * @return int|string number of records.
+     * @return int|string number of records. The result may be a string depending on the underlying database
+     * engine and to support integer values higher than a 32bit PHP integer can handle.
      */
     public function count(string $q = '*'): int|string;
 
