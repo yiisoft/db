@@ -234,17 +234,17 @@ class Query implements QueryInterface
         };
     }
 
-    public function batch(int $batchSize = 100): BatchQueryResult
-    {
-        return (new BatchQueryResult($this->db, $this))->batchSize($batchSize);
-    }
-
     public function average(string $q): int|float|null|string
     {
         return match ($this->emulateExecution) {
             true => null,
             false => is_numeric($avg = $this->queryScalar("AVG($q)")) ? $avg : null,
         };
+    }
+
+    public function batch(int $batchSize = 100): BatchQueryResult
+    {
+        return (new BatchQueryResult($this->db, $this))->batchSize($batchSize);
     }
 
     /**
@@ -576,6 +576,7 @@ class Query implements QueryInterface
     public function noCache(): self
     {
         $this->queryCacheDuration = -1;
+
         return $this;
     }
 

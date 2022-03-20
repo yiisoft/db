@@ -23,7 +23,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * Allows pagination via {@see limit} and {@see offset}.
  * Sorting is supported via {@see orderBy} and items can be limited to match some conditions using {@see where}.
  */
-interface QueryInterface extends ExpressionInterface, QueryConditionsInterface, QueryFunctionsInterface, Stringable
+interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface, Stringable
 {
     /**
      * Adds additional group-by columns to the existing ones.

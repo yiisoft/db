@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Query;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
-interface QueryConditionsInterface
+interface QueryPartsInterface
 {
     /**
      * Add more columns to the SELECT part of the query.
