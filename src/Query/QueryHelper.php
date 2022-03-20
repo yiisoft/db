@@ -29,6 +29,7 @@ final class QueryHelper
      *
      * @param array $tableNames non-empty array
      * @param QuoterInterface $quoter The quoter used to quote table names and column names.
+     *
      * @throws InvalidArgumentException
      *
      * @psalm-return array<array-key, ExpressionInterface|string> table names indexed by aliases
@@ -160,7 +161,7 @@ final class QueryHelper
     /**
      * Normalizes format of ORDER BY data.
      *
-     * @param array|string|ExpressionInterface $columns the columns value to normalize.
+     * @param array|ExpressionInterface|string $columns the columns value to normalize.
      *
      * See {@see orderBy} and {@see addOrderBy}.
      *

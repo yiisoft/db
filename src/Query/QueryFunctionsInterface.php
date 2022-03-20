@@ -18,7 +18,7 @@ interface QueryFunctionsInterface
      *
      * @throws Throwable
      *
-     * @return int|float|null|string the average of the specified column values.
+     * @return float|int|string|null the average of the specified column values.
      */
     public function average(string $q): int|float|null|string;
 
@@ -43,7 +43,7 @@ interface QueryFunctionsInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return int|float|null|string the maximum of the specified column values.
+     * @return float|int|string|null the maximum of the specified column values.
      */
     public function max(string $q): int|float|null|string;
 
@@ -55,7 +55,7 @@ interface QueryFunctionsInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return int|float|null|string the minimum of the specified column values.
+     * @return float|int|string|null the minimum of the specified column values.
      */
     public function min(string $q): int|float|null|string;
 
@@ -67,7 +67,7 @@ interface QueryFunctionsInterface
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return int|float|null|string the sum of the specified column values.
+     * @return float|int|string|null the sum of the specified column values.
      */
     public function sum(string $q): int|float|null|string;
 }
