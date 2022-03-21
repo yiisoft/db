@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Tests;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryHelper;
 use Yiisoft\Db\Schema\Quoter;
 
@@ -21,7 +20,7 @@ final class QueryHelperTest extends TestCase
             [
                 ['x' => new Expression('(SELECT id FROM user)')],
                 '',
-                ["{{x}}" => new Expression('(SELECT id FROM user)')]
+                ['{{x}}' => new Expression('(SELECT id FROM user)')],
             ],
         ];
     }
