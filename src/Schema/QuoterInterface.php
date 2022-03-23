@@ -9,6 +9,15 @@ use Exception;
 interface QuoterInterface
 {
     /**
+     * Ensures name is wrapped with {{ and }}.
+     *
+     * @param string $name
+     *
+     * @return string
+     */
+    public function ensureNameQuoted(string $name): string;
+
+    /**
      * Quotes a column name for use in a query.
      *
      * If the column name contains prefix, the prefix will also be properly quoted. If the column name is already quoted
