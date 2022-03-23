@@ -87,11 +87,7 @@ interface QuoterInterface
      *
      * @param mixed $value
      *
-     * @throws Exception
-     *
      * @return mixed The properly quoted string.
-     *
-     * {@see http://www.php.net/manual/en/function.PDO-quote.php}
      */
     public function quoteValue(mixed $value): mixed;
 

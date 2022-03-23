@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
-use Exception;
 use Generator;
+use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -19,8 +19,6 @@ abstract class DMLQueryBuilder
     }
 
     /**
-     * @throws Exception
-     *
      * @psalm-suppress MixedArrayOffset
      */
     public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
@@ -80,7 +78,7 @@ abstract class DMLQueryBuilder
     }
 
     /**
-     * @throws InvalidArgumentException|InvalidConfigException|NotSupportedException|\Yiisoft\Db\Exception\Exception
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      */
     public function delete(string $table, array|string $condition, array &$params): string
     {
@@ -91,7 +89,7 @@ abstract class DMLQueryBuilder
     }
 
     /**
-     * @throws InvalidArgumentException|InvalidConfigException|NotSupportedException|\Yiisoft\Db\Exception\Exception
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      */
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
     {
@@ -109,7 +107,7 @@ abstract class DMLQueryBuilder
     }
 
     /**
-     * @throws InvalidArgumentException|InvalidConfigException|NotSupportedException|\Yiisoft\Db\Exception\Exception
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      */
     public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string
     {

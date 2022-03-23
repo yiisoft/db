@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
-use Exception;
+use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -34,9 +34,6 @@ abstract class DDLQueryBuilder
             . $this->queryBuilder->getColumnType($type);
     }
 
-    /**
-     * @throws Exception
-     */
     public function addCommentOnColumn(string $table, string $column, string $comment): string
     {
         return 'COMMENT ON COLUMN '
@@ -47,9 +44,6 @@ abstract class DDLQueryBuilder
             . (string) $this->queryBuilder->quoter()->quoteValue($comment);
     }
 
-    /**
-     * @throws Exception
-     */
     public function addCommentOnTable(string $table, string $comment): string
     {
         return 'COMMENT ON TABLE '
@@ -67,7 +61,7 @@ abstract class DDLQueryBuilder
     }
 
     /**
-     * @throws InvalidArgumentException|\Yiisoft\Db\Exception\Exception
+     * @throws Exception|InvalidArgumentException
      */
     public function addForeignKey(
         string $name,
@@ -150,7 +144,7 @@ abstract class DDLQueryBuilder
     }
 
     /**
-     * @throws InvalidArgumentException|\Yiisoft\Db\Exception\Exception
+     * @throws Exception|InvalidArgumentException|
      */
     public function createIndex(string $name, string $table, array|string $columns, bool $unique = false): string
     {
@@ -183,8 +177,7 @@ abstract class DDLQueryBuilder
     }
 
     /**
-     * @throws InvalidArgumentException|InvalidConfigException|NotSupportedException|\Yiisoft\Db\Exception\Exception
-     * @throws Exception
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      */
     public function createView(string $viewName, QueryInterface|string $subQuery): string
     {

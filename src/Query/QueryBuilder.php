@@ -8,7 +8,6 @@ use Generator;
 use JsonException;
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Constraint\Constraint;
-use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -993,7 +992,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * @throws JsonException
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|JsonException|NotSupportedException
      *
      * @psalm-suppress MixedArgumentTypeCoercion
      */
@@ -1084,7 +1083,6 @@ abstract class QueryBuilder implements QueryBuilderInterface
             $constraints[] = $primaryKey;
         }
 
-        /** @psalm-var IndexConstraint[] */
         $tableIndexes = $this->schema->getTableIndexes($name);
 
         foreach ($tableIndexes as $constraint) {
