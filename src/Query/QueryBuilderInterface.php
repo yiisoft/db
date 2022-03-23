@@ -111,9 +111,6 @@ interface QueryBuilderInterface
      * @param string|null $update the ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION,
      * SET DEFAULT, SET NULL.
      *
-     * @psalm-param array<array-key, string>|string $columns
-     * @psalm-param array<array-key, string>|string $refColumns
-     *
      * @throws Exception|InvalidArgumentException
      *
      * @return string the SQL statement for adding a foreign key constraint to an existing table.
@@ -135,8 +132,6 @@ interface QueryBuilderInterface
      * @param string $table the table that the primary key constraint will be added to.
      * @param array|string $columns comma separated string or array of columns that the primary key will consist of.
      *
-     * @psalm-param array<array-key, string>|string $columns
-     *
      * @return string the SQL statement for adding a primary key constraint to an existing table.
      */
     public function addPrimaryKey(string $name, string $table, array|string $columns): string;
@@ -149,8 +144,6 @@ interface QueryBuilderInterface
      * the method.
      * @param array|string $columns the name of the column to that the constraint will be added on. If there are
      * multiple columns, separate them with commas. The name will be properly quoted by the method.
-     *
-     * @psalm-param array<array-key, string>|string $columns
      *
      * @return string the SQL statement for adding a unique constraint to an existing table.
      */
@@ -273,8 +266,6 @@ interface QueryBuilderInterface
      * @param array|null $tables
      * @param array $params the binding parameters to be populated.
      *
-     * @psalm-param array<array-key, array|Query|string> $tables
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException
      *
      * @return string the FROM clause built from {@see Query::$from}.
@@ -283,8 +274,6 @@ interface QueryBuilderInterface
 
     /**
      * @param array $columns
-     * @psalm-param array<string, Expression|string> $columns
-     *
      * @param array $params the binding parameters to be populated
      *
      * @throws Exception|InvalidArgumentException
@@ -307,15 +296,6 @@ interface QueryBuilderInterface
      * @param array $joins
      * @param array $params the binding parameters to be populated.
      *
-     * @psalm-param array<
-     *   array-key,
-     *   array{
-     *     0?:string,
-     *     1?:array<array-key, Query|string>|string,
-     *     2?:array|ExpressionInterface|string|null
-     *   }|null
-     * > $joins
-     *
      * @throws Exception if the $joins parameter is not in proper format.
      *
      * @return string the JOIN clause built from {@see Query::$join}.
@@ -334,8 +314,6 @@ interface QueryBuilderInterface
      * @param array $columns
      * @param array $params the binding parameters to be populated
      *
-     * @psalm-param array<string, Expression|int|string> $columns
-     *
      * @throws Exception|InvalidArgumentException
      *
      * @return string the ORDER BY clause built from {@see Query::$orderBy}.
@@ -351,8 +329,6 @@ interface QueryBuilderInterface
      * @param Expression|int|null $limit the limit number. See {@see Query::limit} for more details.
      * @param Expression|int|null $offset the offset number. See {@see Query::offset} for more details.
      * @param array $params the binding parameters to be populated.
-     *
-     * @psalm-param array<string, Expression|int|string> $orderBy
      *
      * @throws Exception|InvalidArgumentException
      *
@@ -372,8 +348,6 @@ interface QueryBuilderInterface
      * @param bool|null $distinct
      * @param string|null $selectOption
      *
-     * @psalm-param array<array-key, ExpressionInterface|Query|string> $columns
-     *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
      * @return string the SELECT clause built from {@see Query::$select}.
@@ -388,8 +362,6 @@ interface QueryBuilderInterface
     /**
      * @param array $unions
      * @param array $params the binding parameters to be populated
-     *
-     * @psalm-param array<array{query:Query|string, all:bool}> $unions
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
@@ -413,8 +385,6 @@ interface QueryBuilderInterface
     /**
      * @param array $withs
      * @param array $params
-     *
-     * @psalm-param array<array-key, array{query:string|Query, alias:string, recursive:bool}> $withs
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
@@ -459,8 +429,6 @@ interface QueryBuilderInterface
      * method, unless a parenthesis is found in the name.
      * @param bool $unique whether to add UNIQUE constraint on the created index.
      *
-     * @psalm-param array<array-key, ExpressionInterface|string>|string $columns
-     *
      * @throws Exception|InvalidArgumentException
      *
      * @return string the SQL statement for creating a new index.
@@ -492,8 +460,6 @@ interface QueryBuilderInterface
      * @param string $table the name of the table to be created. The name will be properly quoted by the method.
      * @param array $columns the columns (name => definition) in the new table.
      * @param string|null $options additional SQL fragments that will be appended to the generated SQL.
-     *
-     * @psalm-param array<array-key, ColumnSchemaBuilder|string> $columns
      *
      * @return string the SQL statement for creating a new DB table.
      */
@@ -772,8 +738,6 @@ interface QueryBuilderInterface
      * @param array $params the binding parameters that will be modified by this method so that they can be bound to the
      * DB command later.
      *
-     * @psalm-param array<string, ExpressionInterface|string> $columns
-     *
      * @throws Exception|InvalidArgumentException
      *
      * @return array `SET` parts for an `UPDATE` SQL statement (the first array element) and params (the second array
@@ -882,8 +846,6 @@ interface QueryBuilderInterface
      * {@see Query::where()} on how to specify condition.
      * @param array $params the binding parameters that will be modified by this method so that they can be bound to the
      * DB command later.
-     *
-     * @psalm-param array<string, ExpressionInterface|string> $columns
      *
      * @throws Exception|InvalidArgumentException
      *

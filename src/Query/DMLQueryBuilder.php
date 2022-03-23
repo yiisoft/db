@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Generator;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Strings\NumericHelper;
@@ -15,6 +18,9 @@ abstract class DMLQueryBuilder
     {
     }
 
+    /**
+     * @psalm-suppress MixedArrayOffset
+     */
     public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
     {
         if (empty($rows)) {
@@ -29,13 +35,17 @@ abstract class DMLQueryBuilder
 
         $values = [];
 
+        /** @psalm-var array<array-key, array<array-key, string>> $rows */
         foreach ($rows as $row) {
             $vs = [];
+
             foreach ($row as $i => $value) {
                 if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
+                    /** @var mixed */
                     $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
                 }
                 if (is_string($value)) {
+                    /** @var string */
                     $value = $this->queryBuilder->quoter()->quoteValue($value);
                 } elseif (is_float($value)) {
                     /* ensure type cast always has . as decimal separator in all locales */
@@ -47,6 +57,7 @@ abstract class DMLQueryBuilder
                 } elseif ($value instanceof ExpressionInterface) {
                     $value = $this->queryBuilder->buildExpression($value, $params);
                 }
+                /** @var string */
                 $vs[] = $value;
             }
             $values[] = '(' . implode(', ', $vs) . ')';
@@ -56,6 +67,7 @@ abstract class DMLQueryBuilder
             return '';
         }
 
+        /** @psalm-var string[] $columns */
         foreach ($columns as $i => $name) {
             $columns[$i] = $this->queryBuilder->quoter()->quoteColumnName($name);
         }
@@ -65,6 +77,9 @@ abstract class DMLQueryBuilder
             . ' (' . implode(', ', $columns) . ') VALUES ' . implode(', ', $values);
     }
 
+    /**
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     */
     public function delete(string $table, array|string $condition, array &$params): string
     {
         $sql = 'DELETE FROM ' . $this->queryBuilder->quoter()->quoteTableName($table);
@@ -73,8 +88,16 @@ abstract class DMLQueryBuilder
         return $where === '' ? $sql : $sql . ' ' . $where;
     }
 
+    /**
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     */
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
     {
+        /**
+         * @psalm-var string[] $names
+         * @psalm-var string[] $placeholders
+         * @psalm-var string $values
+         */
         [$names, $placeholders, $values, $params] = $this->queryBuilder->prepareInsertValues($table, $columns, $params);
 
         return 'INSERT INTO '
@@ -83,11 +106,17 @@ abstract class DMLQueryBuilder
             . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : $values);
     }
 
+    /**
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     */
     public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         return $this->insert($table, $columns, $params);
     }
 
+    /**
+     * @throws NotSupportedException
+     */
     public function resetSequence(string $tableName, array|int|string|null $value = null): string
     {
         throw new NotSupportedException(static::class . ' does not support resetting sequence.');
@@ -98,12 +127,12 @@ abstract class DMLQueryBuilder
         return 'SELECT EXISTS(' . $rawSql . ')';
     }
 
+    /**
+     * @psalm-suppress MixedArgument
+     */
     public function update(string $table, array $columns, array|string $condition, array &$params = []): string
     {
-        /**
-         * @var array $lines
-         * @var array $params
-         */
+        /** @psalm-var string[] $lines */
         [$lines, $params] = $this->queryBuilder->prepareUpdateSets($table, $columns, $params);
         $sql = 'UPDATE ' . $this->queryBuilder->quoter()->quoteTableName($table) . ' SET ' . implode(', ', $lines);
         $where = $this->queryBuilder->buildWhere($condition, $params);
@@ -111,6 +140,9 @@ abstract class DMLQueryBuilder
         return $where === '' ? $sql : $sql . ' ' . $where;
     }
 
+    /**
+     * @throws NotSupportedException
+     */
     public function upsert(
         string $table,
         QueryInterface|array $insertColumns,

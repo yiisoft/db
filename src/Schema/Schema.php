@@ -8,7 +8,6 @@ use PDO;
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Constraint\Constraint;
-use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 use function gettype;
@@ -153,7 +152,8 @@ abstract class Schema implements SchemaInterface
 
     public function getPdoType(mixed $data): int
     {
-        static $typeMap = [
+        /** @psalm-var array<string, int> */
+        $typeMap = [
             // php type => PDO type
             'boolean' => PDO::PARAM_BOOL,
             'integer' => PDO::PARAM_INT,
@@ -218,7 +218,7 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, 'primaryKey', $refresh);
+        return $this->getSchemaMetadata($schema, 'primaryKeys', $refresh);
     }
 
     /**
@@ -231,51 +231,68 @@ abstract class Schema implements SchemaInterface
 
     public function getTableChecks(string $name, bool $refresh = false): array
     {
-        return $this->getTableMetadata($name, 'checks', $refresh);
+        /** @var mixed */
+        $tableChecks = $this->getTableMetadata($name, 'checks', $refresh);
+        return is_array($tableChecks) ? $tableChecks : [];
     }
 
     public function getTableDefaultValues(string $name, bool $refresh = false): array
     {
-        return $this->getTableMetadata($name, 'defaultValues', $refresh);
+        /** @var mixed */
+        $tableDefaultValues = $this->getTableMetadata($name, 'defaultValues', $refresh);
+        return is_array($tableDefaultValues) ? $tableDefaultValues : [];
     }
 
     public function getTableForeignKeys(string $name, bool $refresh = false): array
     {
-        return $this->getTableMetadata($name, 'foreignKeys', $refresh);
+        /** @var mixed */
+        $tableForeignKeys = $this->getTableMetadata($name, 'foreignKeys', $refresh);
+        return is_array($tableForeignKeys) ? $tableForeignKeys : [];
     }
 
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
-        return $this->getTableMetadata($name, 'indexes', $refresh);
+        /** @var mixed */
+        $tableIndexes = $this->getTableMetadata($name, 'indexes', $refresh);
+        return is_array($tableIndexes) ? $tableIndexes : [];
     }
 
     public function getTableNames(string $schema = '', bool $refresh = false): array
     {
         if (!isset($this->tableNames[$schema]) || $refresh) {
+            /** @psalm-var string[] */
             $this->tableNames[$schema] = $this->findTableNames($schema);
         }
 
-        return $this->tableNames[$schema];
+        return is_array($this->tableNames[$schema]) ? $this->tableNames[$schema] : [];
     }
 
     public function getTablePrimaryKey(string $name, bool $refresh = false): ?Constraint
     {
-        return $this->getTableMetadata($name, 'primaryKey', $refresh);
+        /** @var mixed */
+        $tablePrimaryKey = $this->getTableMetadata($name, 'primaryKey', $refresh);
+        return $tablePrimaryKey instanceof Constraint ? $tablePrimaryKey : null;
     }
 
     public function getTableSchema(string $name, bool $refresh = false): ?TableSchema
     {
-        return $this->getTableMetadata($name, 'schema', $refresh);
+        /** @var mixed */
+        $tableSchema = $this->getTableMetadata($name, 'schema', $refresh);
+        return $tableSchema instanceof TableSchema ? $tableSchema : null;
     }
 
     public function getTableSchemas(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, 'schema', $refresh);
+        /** @var mixed */
+        $tableSchemas = $this->getSchemaMetadata($schema, 'schema', $refresh);
+        return is_array($tableSchemas) ? $tableSchemas : [];
     }
 
     public function getTableUniques(string $name, bool $refresh = false): array
     {
-        return $this->getTableMetadata($name, 'uniques', $refresh);
+        /** @var mixed */
+        $tableUniques = $this->getTableMetadata($name, 'uniques', $refresh);
+        return is_array($tableUniques) ? $tableUniques : [];
     }
 
     /**
@@ -348,7 +365,7 @@ abstract class Schema implements SchemaInterface
      *
      * @return array all table names in the database. The names have NO schema name prefix.
      */
-    protected function findTableNames(string $schema = ''): array
+    protected function findTableNames(string $schema): array
     {
         throw new NotSupportedException(static::class . ' does not support fetching all table names.');
     }
@@ -362,7 +379,8 @@ abstract class Schema implements SchemaInterface
      */
     protected function getColumnPhpType(ColumnSchema $column): string
     {
-        static $typeMap = [
+        /** @psalm-var string[] */
+        $typeMap = [
             // abstract type => php type
             self::TYPE_TINYINT => 'integer',
             self::TYPE_SMALLINT => 'integer',
@@ -401,13 +419,17 @@ abstract class Schema implements SchemaInterface
      *
      * @throws NotSupportedException
      *
-     * @return array array of metadata.
+     * @return array of metadata.
+     *
+     * @psalm-return list<Constraint|TableSchema|array>
      */
     protected function getSchemaMetadata(string $schema, string $type, bool $refresh): array
     {
         $metadata = [];
+        /** @psalm-var string[] */
+        $tableNames = $this->getTableNames($schema, $refresh);
 
-        foreach ($this->getTableNames($schema, $refresh) as $name) {
+        foreach ($tableNames as $name) {
             if ($schema !== '') {
                 $name = $schema . '.' . $name;
             }
@@ -430,6 +452,9 @@ abstract class Schema implements SchemaInterface
      * @param bool $refresh whether to reload the table metadata even if it is found in the cache.
      *
      * @return mixed metadata.
+     *
+     * @psalm-suppress MixedArrayAccess
+     * @psalm-suppress MixedArrayAssignment
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false): mixed
     {
@@ -517,6 +542,8 @@ abstract class Schema implements SchemaInterface
      * @param string $name table name.
      * @param string $type metadata type.
      * @param mixed $data metadata.
+     *
+     * @psalm-suppress MixedArrayAssignment
      */
     protected function setTableMetadata(string $name, string $type, mixed $data): void
     {
@@ -548,7 +575,6 @@ abstract class Schema implements SchemaInterface
             $metadata['cacheVersion'] !== static::SCHEMA_CACHE_VERSION
         ) {
             $this->tableMetadata[$rawName] = [];
-
             return;
         }
 
@@ -567,8 +593,9 @@ abstract class Schema implements SchemaInterface
             return;
         }
 
+        /** @psalm-var array<string, array<TableSchema|int>> */
         $metadata = $this->tableMetadata[$rawName];
-
+        /** @var int */
         $metadata['cacheVersion'] = static::SCHEMA_CACHE_VERSION;
 
         $this->schemaCache->set(
