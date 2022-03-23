@@ -10,7 +10,7 @@ use Yiisoft\Db\Query\QueryInterface;
 interface InConditionInterface extends ConditionInterface
 {
     /**
-     * @psalm-return string|string[]|Iterator The column name. If it is an array, a composite `IN` condition will be
+     * @return array|Iterator|string The column name. If it is an array, a composite `IN` condition will be
      * generated.
      */
     public function getColumn(): array|string|Iterator;
@@ -21,7 +21,7 @@ interface InConditionInterface extends ConditionInterface
     public function getOperator(): string;
 
     /**
-     * @return int|iterable|QueryInterface An array of values that {@see columns} value should be among.
+     * @return int|iterable|Iterator|QueryInterface An array of values that {@see columns} value should be among.
      *
      * If it is an empty array the generated expression will be a `false` value if {@see operator} is `IN` and empty if
      * operator is `NOT IN`.

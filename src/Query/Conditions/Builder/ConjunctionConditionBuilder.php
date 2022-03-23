@@ -33,6 +33,7 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ConjunctionConditionInterface $expression, array &$params = []): string
     {
+        /** @psalm-var string[] */
         $parts = $this->buildExpressionsFrom($expression, $params);
 
         if (empty($parts)) {
@@ -55,7 +56,10 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     {
         $parts = [];
 
-        foreach ($condition->getExpressions() as $conditionValue) {
+        /** @psalm-var array<array-key, array|ExpressionInterface|string> $expressions */
+        $expressions = $condition->getExpressions();
+
+        foreach ($expressions as $conditionValue) {
             if (is_array($conditionValue)) {
                 $conditionValue = $this->queryBuilder->buildCondition($conditionValue, $params);
             }

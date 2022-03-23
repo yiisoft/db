@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Conditions\Interface;
 
+use Yiisoft\Db\Expression\ExpressionInterface;
+
 interface NotConditionInterface extends ConditionInterface
 {
     /**
-     * @return mixed the condition to be negated.
+     * @return array|ExpressionInterface|string|null the condition to be negated.
      */
-    public function getCondition(): mixed;
+    public function getCondition(): ExpressionInterface|array|null|string;
 }

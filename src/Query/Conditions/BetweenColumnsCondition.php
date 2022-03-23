@@ -39,8 +39,8 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
     public function __construct(
         private array|int|string|Iterator|ExpressionInterface $value,
         private string $operator,
-        private mixed $intervalStartColumn,
-        private mixed $intervalEndColumn
+        private string|ExpressionInterface $intervalStartColumn,
+        private string|ExpressionInterface $intervalEndColumn
     ) {
     }
 
@@ -64,6 +64,11 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
         return $this->value;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     *
+     * @psalm-suppress MixedArgument
+     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (!isset($operands[0], $operands[1], $operands[2])) {
