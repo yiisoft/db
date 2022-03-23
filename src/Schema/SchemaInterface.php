@@ -77,7 +77,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @throws NotSupportedException
      *
-     * @return string[] All schema names in the database, except system schemas.
+     * @return array All schema names in the database, except system schemas.
      */
     public function getSchemaNames(bool $refresh = false): array;
 
@@ -92,7 +92,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @throws NotSupportedException
      *
-     * @return string[] All table names in the database.
+     * @return array All table names in the database.
      */
     public function getTableNames(string $schema = '', bool $refresh = false): array;
 
@@ -116,7 +116,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @throws NotSupportedException
      *
-     * @return TableSchema[] The metadata for all tables in the database. Each array element is an instance of
+     * @return array The metadata for all tables in the database. Each array element is an instance of
      * {@see TableSchema} or its child class.
      */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array;

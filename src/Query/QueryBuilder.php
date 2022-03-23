@@ -8,6 +8,7 @@ use Generator;
 use JsonException;
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -145,11 +146,17 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addColumn($table, $column, $type);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function addCommentOnColumn(string $table, string $column, string $comment): string
     {
         return $this->ddlBuilder->addCommentOnColumn($table, $column, $comment);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function addCommentOnTable(string $table, string $comment): string
     {
         return $this->ddlBuilder->addCommentOnTable($table, $comment);
@@ -187,6 +194,9 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
     {
         return $this->dmlBuilder->batchInsert($table, $columns, $rows, $params);
@@ -217,6 +227,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         $sql = $this->buildOrderByAndLimit($sql, $query->getOrderBy(), $query->getLimit(), $query->getOffset());
 
         if (!empty($query->getOrderBy())) {
+            /** @psalm-var array<string, ExpressionInterface|string> */
             foreach ($query->getOrderBy() as $expression) {
                 if ($expression instanceof ExpressionInterface) {
                     $this->buildExpression($expression, $params);
@@ -225,6 +236,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         }
 
         if (!empty($query->getGroupBy())) {
+            /** @psalm-var array<string, ExpressionInterface|string> */
             foreach ($query->getGroupBy() as $expression) {
                 if ($expression instanceof ExpressionInterface) {
                     $this->buildExpression($expression, $params);
@@ -262,6 +274,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
             }
         }
 
+        /** @psalm-var array<array-key, ExpressionInterface|string> $columns */
         foreach ($columns as $i => $column) {
             if ($column instanceof ExpressionInterface) {
                 $columns[$i] = $this->buildExpression($column);
@@ -270,6 +283,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
             }
         }
 
+        /** @psalm-var string[] $columns */
         return implode(', ', $columns);
     }
 
@@ -291,7 +305,10 @@ abstract class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     *
      * @psalm-suppress UndefinedInterfaceMethod
+     * @psalm-suppress MixedMethodCall
      */
     public function buildExpression(ExpressionInterface $expression, array &$params = []): string
     {
@@ -305,6 +322,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
             return '';
         }
 
+        /** @psalm-var string[] */
         $tables = $this->quoteTableNames($tables, $params);
 
         return 'FROM ' . implode(', ', $tables);
@@ -316,6 +334,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
             return '';
         }
 
+        /** @psalm-var array<string, Expression|string> $columns */
         foreach ($columns as $i => $column) {
             if ($column instanceof Expression) {
                 $columns[$i] = $this->buildExpression($column);
@@ -341,6 +360,16 @@ abstract class QueryBuilder implements QueryBuilderInterface
             return '';
         }
 
+        /**
+         * @psalm-var array<
+         *   array-key,
+         *   array{
+         *     0?:string,
+         *     1?:array<array-key, Query|string>|string,
+         *     2?:array|ExpressionInterface|string|null
+         *   }|null
+         * > $joins
+         */
         foreach ($joins as $i => $join) {
             if (!is_array($join) || !isset($join[0], $join[1])) {
                 throw new Exception(
@@ -393,6 +422,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
         $orders = [];
 
+        /** @psalm-var array<string, Expression|int|string> $columns */
         foreach ($columns as $name => $direction) {
             if ($direction instanceof Expression) {
                 $orders[] = $this->buildExpression($direction);
@@ -440,6 +470,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
             return $select . ' *';
         }
 
+        /** @psalm-var array<array-key, ExpressionInterface|Query|string> $columns */
         foreach ($columns as $i => $column) {
             if ($column instanceof ExpressionInterface) {
                 if (is_int($i)) {
@@ -478,6 +509,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
         $result = '';
 
+        /** @psalm-var array<array{query:Query|string, all:bool}> $unions */
         foreach ($unions as $i => $union) {
             $query = $union['query'];
             if ($query instanceof QueryInterface) {
@@ -507,6 +539,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         $recursive = false;
         $result = [];
 
+        /** @psalm-var array<array-key, array{query:string|Query, alias:string, recursive:bool}> $withs */
         foreach ($withs as $with) {
             if ($with['recursive']) {
                 $recursive = true;
@@ -647,6 +680,8 @@ abstract class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     *
      * @psalm-suppress InvalidStringClass
      */
     public function getExpressionBuilder(ExpressionInterface $expression): object
@@ -672,6 +707,9 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->insert($table, $columns, $params);
     }
 
+    /**
+     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     */
     public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         return $this->dmlBuilder->insertEx($table, $columns, $params);
@@ -791,6 +829,8 @@ abstract class QueryBuilder implements QueryBuilderInterface
      * @return array
      *
      * See {@see expressionBuilders} docs for details.
+     *
+     * @psalm-return array<string, class-string<ExpressionBuilderInterface>>
      */
     protected function defaultExpressionBuilders(): array
     {
@@ -816,6 +856,8 @@ abstract class QueryBuilder implements QueryBuilderInterface
      * Extracts table alias if there is one or returns false.
      *
      * @param string $table
+     *
+     * @return array|bool
      *
      * @psalm-return string[]|bool
      */
@@ -873,8 +915,10 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
         $names = [];
         $values = ' ' . $values;
+        /** @psalm-var string[] */
+        $select = $columns->getSelect();
 
-        foreach ($columns->getSelect() as $title => $field) {
+        foreach ($select as $title => $field) {
             if (is_string($title)) {
                 $names[] = $this->quoter->quoteColumnName($title);
             } elseif (preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $field, $matches)) {
@@ -898,8 +942,13 @@ abstract class QueryBuilder implements QueryBuilderInterface
         if ($columns instanceof QueryInterface) {
             [$names, $values, $params] = $this->prepareInsertSelectSubQuery($columns, $params);
         } else {
+            /**
+             * @var mixed $value
+             * @psalm-var array<string, mixed> $columns
+             */
             foreach ($columns as $name => $value) {
                 $names[] = $this->quoter->quoteColumnName($name);
+                /** @var mixed $value */
                 $value = isset($columnSchemas[$name]) ? $columnSchemas[$name]->dbTypecast($value) : $value;
 
                 if ($value instanceof ExpressionInterface) {
@@ -924,8 +973,12 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
         $sets = [];
 
+        /**
+         * @psalm-var array<string, mixed> $columns
+         * @psalm-var mixed $value
+         */
         foreach ($columns as $name => $value) {
-            /** @psalm-var mixed $value */
+            /** @var mixed */
             $value = isset($columnSchemas[$name]) ? $columnSchemas[$name]->dbTypecast($value) : $value;
             if ($value instanceof ExpressionInterface) {
                 $placeholder = $this->buildExpression($value, $params);
@@ -939,6 +992,11 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return [$sets, $params];
     }
 
+    /**
+     * @throws JsonException
+     *
+     * @psalm-suppress MixedArgumentTypeCoercion
+     */
     public function prepareUpsertColumns(
         string $table,
         QueryInterface|array $insertColumns,
@@ -946,11 +1004,13 @@ abstract class QueryBuilder implements QueryBuilderInterface
         array &$constraints = []
     ): array {
         if ($insertColumns instanceof QueryInterface) {
+            /** @psalm-var list<string> $insertNames */
             [$insertNames] = $this->prepareInsertSelectSubQuery($insertColumns);
         } else {
             $insertNames = array_map([$this->quoter, 'quoteColumnName'], array_keys($insertColumns));
         }
 
+        /** @psalm-var string[] */
         $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
         $uniqueNames = array_map([$this->quoter, 'quoteColumnName'], $uniqueNames);
 
@@ -967,14 +1027,13 @@ abstract class QueryBuilder implements QueryBuilderInterface
      * @param array $tables
      * @param array $params
      *
-     * @psalm-param array<array-key, array|QueryInterface|string> $tables
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException
      *
      * @return array
      */
     private function quoteTableNames(array $tables, array &$params): array
     {
+        /** @psalm-var array<array-key, array|QueryInterface|string> $tables */
         foreach ($tables as $i => $table) {
             if ($table instanceof QueryInterface) {
                 [$sql, $params] = $this->build($table, $params);
@@ -1012,6 +1071,9 @@ abstract class QueryBuilder implements QueryBuilderInterface
      * @throws JsonException
      *
      * @return array column list.
+     *
+     * @psalm-param list<string> $columns
+     * @param-out list<Constraint|mixed> $constraints
      */
     private function getTableUniqueColumnNames(string $name, array $columns, array &$constraints = []): array
     {
@@ -1022,7 +1084,10 @@ abstract class QueryBuilder implements QueryBuilderInterface
             $constraints[] = $primaryKey;
         }
 
-        foreach ($this->schema->getTableIndexes($name) as $constraint) {
+        /** @psalm-var IndexConstraint[] */
+        $tableIndexes = $this->schema->getTableIndexes($name);
+
+        foreach ($tableIndexes as $constraint) {
             if ($constraint->isUnique()) {
                 $constraints[] = $constraint;
             }
@@ -1047,20 +1112,22 @@ abstract class QueryBuilder implements QueryBuilderInterface
         $columnNames = [];
         $quoter = $this->quoter;
 
-        /** Remove all constraints which do not cover the specified column list */
+        // Remove all constraints which do not cover the specified column list.
         $constraints = array_values(
             array_filter(
                 $constraints,
                 static function (Constraint $constraint) use ($quoter, $columns, &$columnNames) {
+                    /** @psalm-var string[]|string */
                     $getColumnNames = $constraint->getColumnNames() ?? [];
                     $constraintColumnNames = array_map(
                         [$quoter, 'quoteColumnName'],
                         is_array($getColumnNames) ? $getColumnNames : [$getColumnNames]
                     );
+
                     $result = !array_diff($constraintColumnNames, $columns);
 
                     if ($result) {
-                        $columnNames = array_merge($columnNames, $constraintColumnNames);
+                        $columnNames = array_merge((array) $columnNames, $constraintColumnNames);
                     }
 
                     return $result;
@@ -1068,6 +1135,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
             )
         );
 
+        /** @var array $columnNames */
         return array_unique($columnNames);
     }
 }
