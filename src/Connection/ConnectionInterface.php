@@ -70,7 +70,7 @@ interface ConnectionInterface
     public function getTableSchema(string $name, $refresh = false): ?TableSchema;
 
     /**
-     * Whether to enable auto recogintion of read queries and use slave (if enabled) for execute
+     * Whether to enable auto-detection of read queries and use slave (if enabled) for execute
      *
      * @return bool:
      *  true -> (default) use slave for read queries, master for other
