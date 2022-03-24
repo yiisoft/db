@@ -70,11 +70,10 @@ interface ConnectionInterface
     public function getTableSchema(string $name, $refresh = false): ?TableSchema;
 
     /**
-     * Whether to enable auto-detection of read queries and use slave (if enabled) for execute
+     * Whether to enable auto recogintion of read queries and use slave (if enabled) for execute.
      *
-     * @return bool:
-     *  true -> (default) use slave for read queries, master for other
-     *  false -> always use master connection (for reads and writes). Slave still can be used via $this->getSlave()
+     * @return bool For default `true` use slave for read queries, `false` use master connection (for reads and writes).
+     * Slave still can be used via $this->getSlave().
      */
     public function isAutoSlaveForReadQueriesEnabled(): bool;
 
