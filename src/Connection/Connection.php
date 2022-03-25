@@ -176,6 +176,7 @@ abstract class Connection implements ConnectionInterface
     private bool $enableSavepoint = true;
     private int $serverRetryInterval = 600;
     private bool $enableSlaves = true;
+    private bool $enableAutoSlaveForReadQueries = true;
     private array $slaves = [];
     private array $masters = [];
     private bool $shuffleMasters = true;
@@ -370,6 +371,11 @@ abstract class Connection implements ConnectionInterface
     public function areSlavesEnabled(): bool
     {
         return $this->enableSlaves;
+    }
+
+    public function isAutoSlaveForReadQueriesEnabled(): bool
+    {
+        return $this->enableAutoSlaveForReadQueries;
     }
 
     /**
@@ -886,6 +892,11 @@ abstract class Connection implements ConnectionInterface
     public function setEnableSlaves(bool $value): void
     {
         $this->enableSlaves = $value;
+    }
+
+    public function setEnableAutoSlaveForReadQueries(bool $value): void
+    {
+        $this->enableAutoSlaveForReadQueries = $value;
     }
 
     /**

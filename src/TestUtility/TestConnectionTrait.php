@@ -384,4 +384,13 @@ trait TestConnectionTrait
         $this->assertNull($conn3->getTransaction());
         $this->assertNull($conn3->getPDO());
     }
+
+    public function testDisableAutoSlaveForReads(): void
+    {
+        $db = $this->getConnection();
+        $this->assertTrue($db->isAutoSlaveForReadQueriesEnabled());
+
+        $db->setEnableAutoSlaveForReadQueries(false);
+        $this->assertFalse($db->isAutoSlaveForReadQueriesEnabled());
+    }
 }

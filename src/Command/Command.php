@@ -280,7 +280,7 @@ class Command
 
         $sql = $this->getSql();
 
-        if ($this->db->getTransaction()) {
+        if ($this->db->getTransaction() || !$this->db->isAutoSlaveForReadQueriesEnabled()) {
             /** master is in a transaction. use the same connection. */
             $forRead = false;
         }
