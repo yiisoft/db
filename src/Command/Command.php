@@ -517,7 +517,7 @@ abstract class Command implements CommandInterface
     /**
      * @param int $queryMode - one from modes QUERY_MODE_*
      *
-     * @throws Throwable|Exception
+     * @throws Exception|Throwable
      *
      * @return mixed
      */

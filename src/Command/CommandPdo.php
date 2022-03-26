@@ -44,8 +44,7 @@ abstract class CommandPdo extends Command
         ?int $dataType = null,
         ?int $length = null,
         mixed $driverOptions = null
-    ): static
-    {
+    ): static {
         $this->prepare();
 
         if ($dataType === null) {
