@@ -10,7 +10,7 @@ use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Query\Data\DataReader;
 
-abstract class CommandPdo extends Command
+abstract class CommandPDO extends Command
 {
     private int $fetchMode = PDO::FETCH_ASSOC;
 
