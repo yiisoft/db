@@ -40,10 +40,10 @@ abstract class CommandPdo extends Command
 
     public function bindParam(
         int|string $name,
-        mixed      &$value,
-        ?int       $dataType = null,
-        ?int       $length = null,
-        mixed      $driverOptions = null
+        mixed &$value,
+        ?int $dataType = null,
+        ?int $length = null,
+        mixed $driverOptions = null
     ): static
     {
         $this->prepare();
@@ -62,16 +62,6 @@ abstract class CommandPdo extends Command
 
         return $this;
     }
-
-    /** план такой
-     * + отделяем вариант с returnDataReader в отдльную функцию
-     * + сам queryInternal дробим на части
-     * в функции queryInternal собираем в единый вызов, используя queryInternal из нужного класса
-     * Проблемы
-     * + функция logQuery
-     * общий элемент queryCache, но его можно вынести и доносить только параметры вызова duration и depedency
-     * внутрь класса передать надо profiler, queryCache
-     */
 
     protected function internalGetQueryResult(int $queryMode): mixed
     {

@@ -85,10 +85,10 @@ abstract class Command implements CommandInterface
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
 
-    const QUERY_MODE_NONE = 0;
-    const QUERY_MODE_ROW = 1;
-    const QUERY_MODE_ALL = 2;
-    const QUERY_MODE_CURSOR = 3;
+    public const QUERY_MODE_NONE = 0;
+    public const QUERY_MODE_ROW = 1;
+    public const QUERY_MODE_ALL = 2;
+    public const QUERY_MODE_CURSOR = 3;
 
     protected ?string $isolationLevel = null;
     protected ?string $refreshTableName = null;
@@ -517,9 +517,9 @@ abstract class Command implements CommandInterface
     /**
      * @param int $queryMode - one from modes QUERY_MODE_*
      *
-     * @return mixed
-     *
      * @throws Throwable|Exception
+     *
+     * @return mixed
      */
     protected function queryInternal(int $queryMode): mixed
     {
@@ -529,14 +529,15 @@ abstract class Command implements CommandInterface
 
         return $this->queryWithCache($queryMode);
     }
+
     /**
      * Performs the actual DB query of a SQL statement.
      *
      * @param int $queryMode -  one from modes QUERY_MODE_*
      *
-     * @return mixed The method execution result.
-     *
      * @throws Exception|Throwable If the query causes any problem.
+     *
+     * @return mixed The method execution result.
      */
     protected function queryWithCache(int $queryMode): mixed
     {
