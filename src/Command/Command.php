@@ -792,16 +792,14 @@ abstract class Command implements CommandInterface
         /* @var $cache CacheInterface */
         $cache = $info[0];
 
-        if (isset($cache, $cacheKey, $info)) {
-            $cache->getOrSet(
-                $cacheKey,
-                static fn (): array => [$result],
-                $info[1],
-                $info[2]
-            );
+        $cache->getOrSet(
+            $cacheKey,
+            static fn (): array => [$result],
+            $info[1],
+            $info[2]
+        );
 
-            $this->logger?->log(LogLevel::DEBUG, 'Saved query result in cache', [__CLASS__ . '::query']);
-        }
+        $this->logger?->log(LogLevel::DEBUG, 'Saved query result in cache', [__CLASS__ . '::query']);
     }
 
     private function isReadMode(int $queryMode): bool
