@@ -40,6 +40,11 @@ final class SimpleCondition implements SimpleConditionInterface
         return $this->value;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     *
+     * @psalm-suppress MixedArgument
+     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (count($operands) !== 2) {

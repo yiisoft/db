@@ -20,6 +20,9 @@ abstract class ConjunctionCondition implements ConjunctionConditionInterface
         return $this->expressions;
     }
 
+    /**
+     * @psalm-suppress MixedArgument
+     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         return new static($operands);

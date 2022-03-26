@@ -49,6 +49,11 @@ final class LikeCondition implements LikeConditionInterface
         $this->escapingReplacements = $escapingReplacements;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     *
+     * @psalm-suppress MixedArgument
+     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (!isset($operands[0], $operands[1])) {

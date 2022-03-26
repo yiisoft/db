@@ -71,6 +71,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         $escapeSql = $this->getEscapeSql();
         $parts = [];
 
+        /** @psalm-var string[] $values */
         foreach ($values as $value) {
             if ($value instanceof ExpressionInterface) {
                 $phName = $this->queryBuilder->buildExpression($value, $params);

@@ -27,6 +27,11 @@ final class ExistsCondition implements ExistConditionInterface
         return $this->query;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     *
+     * @psalm-suppress MixedArgument
+     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (!isset($operands[0]) || !$operands[0] instanceof QueryInterface) {
