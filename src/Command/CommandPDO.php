@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
+use PDO;
 use PDOStatement;
+use Throwable;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Query\Data\DataReader;
 
-trait CommandPdoTrait
+abstract class CommandPDO extends Command
 {
-    /**
-     * @psalm-var ParamInterface[]
-     */
-    protected array $params = [];
+    private int $fetchMode = PDO::FETCH_ASSOC;
 
     protected ?PDOStatement $pdoStatement = null;
 
@@ -60,4 +61,35 @@ trait CommandPdoTrait
 
         return $this;
     }
+
+    protected function internalGetQueryResult(int $queryMode): mixed
+    {
+        if ($queryMode === static::QUERY_MODE_CURSOR) {
+            return new DataReader($this);
+        }
+
+        if ($queryMode === static::QUERY_MODE_NONE) {
+            return $this->pdoStatement?->rowCount() ?? 0;
+        }
+
+        if ($queryMode === static::QUERY_MODE_ROW) {
+            $result = $this->pdoStatement?->fetch($this->fetchMode);
+        } else {
+            $result = $this->pdoStatement?->fetchAll($this->fetchMode);
+        }
+        $this->pdoStatement?->closeCursor();
+
+        return $result;
+    }
+
+    /**
+     * Executes a prepared statement.
+     *
+     * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
+     *
+     * @param string|null $rawSql the rawSql if it has been created.
+     *
+     * @throws Exception|Throwable
+     */
+    abstract protected function internalExecute(?string $rawSql): void;
 }

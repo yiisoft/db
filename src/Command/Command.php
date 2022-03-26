@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Command;
 
 use JsonException;
-use PDO;
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Arrays\ArrayHelper;
@@ -83,20 +82,29 @@ use function strtr;
  */
 abstract class Command implements CommandInterface
 {
-    use CommandPdoTrait;
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
+
+    public const QUERY_MODE_NONE = 0;
+    public const QUERY_MODE_ROW = 1;
+    public const QUERY_MODE_ALL = 2;
+    public const QUERY_MODE_CURSOR = 3;
 
     protected ?string $isolationLevel = null;
     protected ?string $refreshTableName = null;
     /** @var callable|null */
     protected $retryHandler = null;
-    private int $fetchMode = PDO::FETCH_ASSOC;
-    private ?int $queryCacheDuration = null;
-    private string $sql = '';
-    private ?Dependency $queryCacheDependency = null;
 
-    public function __construct(private QueryCache $queryCache)
+    protected ?int $queryCacheDuration = null;
+    private string $sql = '';
+    protected ?Dependency $queryCacheDependency = null;
+
+    /**
+     * @psalm-var ParamInterface[]
+     */
+    protected array $params = [];
+
+    public function __construct(protected QueryCache $queryCache)
     {
     }
 
@@ -109,18 +117,7 @@ abstract class Command implements CommandInterface
      *
      * @return array the cache key.
      */
-    abstract protected function getCacheKey(string $rawSql): array;
-
-    /**
-     * Executes a prepared statement.
-     *
-     * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
-     *
-     * @param string|null $rawSql the rawSql if it has been created.
-     *
-     * @throws Exception|Throwable
-     */
-    abstract protected function internalExecute(?string $rawSql): void;
+    abstract protected function getCacheKey(int $queryMode, string $rawSql): array;
 
     public function addCheck(string $name, string $table, string $expression): self
     {
@@ -372,46 +369,6 @@ abstract class Command implements CommandInterface
     }
 
     /**
-     * Executes the SQL statement.
-     *
-     * This method should only be used for executing non-query SQL statement, such as `INSERT`, `DELETE`, `UPDATE` SQLs.
-     * No result set will be returned.
-     *
-     * @throws Throwable
-     * @throws Exception execution failed.
-     *
-     * @return int number of rows affected by the execution.
-     */
-    public function execute(): int
-    {
-        $sql = $this->getSql();
-
-        [, $rawSql] = $this->logQuery(__METHOD__);
-
-        if ($sql === '') {
-            return 0;
-        }
-
-        $this->prepare(false);
-
-        try {
-            $this->profiler?->begin((string)$rawSql, [__METHOD__]);
-
-            $this->internalExecute($rawSql);
-            $n = $this->pdoStatement?->rowCount();
-
-            $this->profiler?->end((string)$rawSql, [__METHOD__]);
-
-            $this->refreshTableSchema();
-
-            return $n ?? 0;
-        } catch (Exception $e) {
-            $this->profiler?->end((string)$rawSql, [__METHOD__]);
-            throw $e;
-        }
-    }
-
-    /**
      * @throws Exception|NotSupportedException
      */
     public function executeResetSequence(string $table, mixed $value = null): self
@@ -491,19 +448,41 @@ abstract class Command implements CommandInterface
         return $this;
     }
 
+    /**
+     * Executes the SQL statement.
+     *
+     * This method should only be used for executing non-query SQL statement, such as `INSERT`, `DELETE`, `UPDATE` SQLs.
+     * No result set will be returned.
+     *
+     * @throws Throwable
+     * @throws Exception execution failed.
+     *
+     * @return int number of rows affected by the execution.
+     */
+    public function execute(): int
+    {
+        $sql = $this->getSql();
+
+        if ($sql === '') {
+            return 0;
+        }
+
+        return $this->queryInternal(static::QUERY_MODE_NONE);
+    }
+
     public function query(): DataReader
     {
-        return $this->queryInternal(true);
+        return $this->queryInternal(static::QUERY_MODE_CURSOR);
     }
 
     public function queryAll(): array
     {
-        return $this->queryInternal();
+        return $this->queryInternal(static::QUERY_MODE_ALL);
     }
 
     public function queryColumn(): array
     {
-        $results = $this->queryInternal();
+        $results = $this->queryInternal(static::QUERY_MODE_ALL);
 
         $columnName = array_keys($results[0] ?? [])[0] ?? null;
 
@@ -516,12 +495,12 @@ abstract class Command implements CommandInterface
 
     public function queryOne(): mixed
     {
-        return current($this->queryInternal());
+        return $this->queryInternal(static::QUERY_MODE_ROW);
     }
 
     public function queryScalar(): bool|string|null|int
     {
-        $firstRow = current($this->queryInternal());
+        $firstRow = $this->queryInternal(static::QUERY_MODE_ROW);
         if (!is_array($firstRow)) {
             return false;
         }
@@ -534,6 +513,90 @@ abstract class Command implements CommandInterface
 
         return $result;
     }
+
+    /**
+     * @param int $queryMode - one from modes QUERY_MODE_*
+     *
+     * @throws Exception|Throwable
+     *
+     * @return mixed
+     */
+    protected function queryInternal(int $queryMode): mixed
+    {
+        if ($queryMode === static::QUERY_MODE_NONE || $queryMode === static::QUERY_MODE_CURSOR) {
+            return $this->queryWithoutCache($this->getRawSql(), $queryMode);
+        }
+
+        return $this->queryWithCache($queryMode);
+    }
+
+    /**
+     * Performs the actual DB query of a SQL statement.
+     *
+     * @param int $queryMode -  one from modes QUERY_MODE_*
+     *
+     * @throws Exception|Throwable If the query causes any problem.
+     *
+     * @return mixed The method execution result.
+     */
+    protected function queryWithCache(int $queryMode): mixed
+    {
+        $rawSql = $this->getRawSql();
+
+        $cacheKey = $this->getCacheKey($queryMode, $rawSql);
+        $info = $this->queryCache->info($this->queryCacheDuration, $this->queryCacheDependency);
+
+        $cacheResult = $this->getFromCacheInfo($info, $cacheKey);
+        if ($cacheResult) {
+            $this->logger?->log(LogLevel::DEBUG, 'Get query result from cache', [__CLASS__ . '::query']);
+            return $cacheResult;
+        }
+
+        $result = $this->queryWithoutCache($rawSql, $queryMode);
+        $this->setToCacheInfo($info, $cacheKey, $result);
+
+        return $result;
+    }
+
+    protected function queryWithoutCache(string $rawSql, int $queryMode): mixed
+    {
+        $isReadMode = $this->isReadMode($queryMode);
+        $logCategory = __CLASS__ . '::' . ($isReadMode ? 'query' : 'execute');
+
+        $this->logQuery($rawSql, $logCategory);
+
+        $this->prepare($isReadMode);
+        try {
+            $this->profiler?->begin($rawSql, [$logCategory]);
+
+            $this->internalExecute($rawSql);
+            $result = $this->internalGetQueryResult($queryMode);
+
+            $this->profiler?->end($rawSql, [$logCategory]);
+
+            if (!$isReadMode) {
+                $this->refreshTableSchema();
+            }
+        } catch (Exception $e) {
+            $this->profiler?->end($rawSql, [$logCategory]);
+            throw $e;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Executes a prepared statement.
+     *
+     * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
+     *
+     * @param string|null $rawSql the rawSql if it has been created.
+     *
+     * @throws Exception|Throwable
+     */
+    abstract protected function internalExecute(?string $rawSql): void;
+
+    abstract protected function internalGetQueryResult(int $queryMode): mixed;
 
     public function renameColumn(string $table, string $oldName, string $newName): self
     {
@@ -613,93 +676,12 @@ abstract class Command implements CommandInterface
      * Logs the current database query if query logging is enabled and returns the profiling token if profiling is
      * enabled.
      *
+     * @param string $rawSql
      * @param string $category The log category.
-     *
-     * @throws \Exception
-     *
-     * @return array Two elements, the first is boolean of whether profiling is enabled or not. The second is
-     * the rawSql if it has been created.
      */
-    protected function logQuery(string $category): array
+    protected function logQuery(string $rawSql, string $category): void
     {
-        if ($this->logger !== null) {
-            $rawSql = $this->getRawSql();
-            $this->logger->log(LogLevel::INFO, $rawSql, [$category]);
-        }
-
-        if ($this->profiler === null) {
-            return [false, $rawSql ?? null];
-        }
-
-        return [true, $rawSql ?? $this->getRawSql()];
-    }
-
-    /**
-     * Performs the actual DB query of a SQL statement.
-     *
-     * @param bool $returnDataReader - return results as DataReader
-     *
-     * @throws Exception|Throwable If the query causes any problem.
-     *
-     * @return mixed The method execution result.
-     */
-    protected function queryInternal(bool $returnDataReader = false): mixed
-    {
-        [, $rawSql] = $this->logQuery(__CLASS__ . '::query');
-
-        if (!$returnDataReader) {
-            $info = $this->queryCache->info($this->queryCacheDuration, $this->queryCacheDependency);
-
-            if (is_array($info)) {
-                /* @var $cache CacheInterface */
-                $cache = $info[0];
-                $rawSql = $rawSql ?: $this->getRawSql();
-                $cacheKey = $this->getCacheKey($rawSql);
-                $result = $cache->getOrSet(
-                    $cacheKey,
-                    static fn () => null,
-                );
-
-                if (is_array($result) && isset($result[0])) {
-                    $this->logger?->log(LogLevel::DEBUG, 'Query result served from cache', [__CLASS__ . '::query']);
-
-                    return $result[0];
-                }
-            }
-        }
-
-        $this->prepare(true);
-
-        try {
-            $this->profiler?->begin((string)$rawSql, [__CLASS__ . '::query']);
-
-            $this->internalExecute($rawSql);
-
-            if ($returnDataReader) {
-                $result = new DataReader($this);
-            } else {
-                $result = $this->pdoStatement?->fetchAll($this->fetchMode);
-                $this->pdoStatement?->closeCursor();
-            }
-
-            $this->profiler?->end((string)$rawSql, [__CLASS__ . '::query']);
-        } catch (Exception $e) {
-            $this->profiler?->end((string)$rawSql, [__CLASS__ . '::query']);
-            throw $e;
-        }
-
-        if (isset($cache, $cacheKey, $info)) {
-            $cache->getOrSet(
-                $cacheKey,
-                static fn (): array => [$result],
-                $info[1],
-                $info[2]
-            );
-
-            $this->logger?->log(LogLevel::DEBUG, 'Saved query result in cache', [__CLASS__ . '::query']);
-        }
-
-        return $result;
+        $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
     }
 
     /**
@@ -771,5 +753,59 @@ abstract class Command implements CommandInterface
     {
         $this->retryHandler = $handler;
         return $this;
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    private function getFromCacheInfo(?array $info, array $cacheKey): mixed
+    {
+        if (!is_array($info)) {
+            return null;
+        }
+
+        /* @var $cache CacheInterface */
+        $cache = $info[0];
+        $result = $cache->getOrSet(
+            $cacheKey,
+            static fn () => null,
+        );
+
+        if (is_array($result) && isset($result[0])) {
+            $this->logger?->log(LogLevel::DEBUG, 'Query result served from cache', [__CLASS__ . '::query']);
+
+            return $result[0];
+        }
+
+        return null;
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    private function setToCacheInfo(?array $info, array $cacheKey, mixed $result): void
+    {
+        if (!is_array($info)) {
+            return;
+        }
+
+        /* @var $cache CacheInterface */
+        $cache = $info[0];
+
+        if (isset($cache, $cacheKey, $info)) {
+            $cache->getOrSet(
+                $cacheKey,
+                static fn (): array => [$result],
+                $info[1],
+                $info[2]
+            );
+
+            $this->logger?->log(LogLevel::DEBUG, 'Saved query result in cache', [__CLASS__ . '::query']);
+        }
+    }
+
+    private function isReadMode(int $queryMode): bool
+    {
+        return $queryMode !== static::QUERY_MODE_NONE;
     }
 }
