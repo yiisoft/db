@@ -228,9 +228,9 @@ abstract class Connection implements ConnectionInterface
      *
      * @param array $pool The list of connection configurations in the server pool.
      *
-     * @return ConnectionPDOInterface|null The opened DB connection, or `null` if no server is available.
+     * @return ConnectionInterface|null The opened DB connection, or `null` if no server is available.
      */
-    protected function openFromPool(array $pool): ?ConnectionPDOInterface
+    protected function openFromPool(array $pool): ?ConnectionInterface
     {
         shuffle($pool);
         return $this->openFromPoolSequentially($pool);
@@ -245,9 +245,9 @@ abstract class Connection implements ConnectionInterface
      *
      * @param array $pool
      *
-     * @return ConnectionPDOInterface|null The opened DB connection, or `null` if no server is available.
+     * @return ConnectionInterface|null The opened DB connection, or `null` if no server is available.
      */
-    protected function openFromPoolSequentially(array $pool): ?ConnectionPDOInterface
+    protected function openFromPoolSequentially(array $pool): ?ConnectionInterface
     {
         if (!$pool) {
             return null;
