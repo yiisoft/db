@@ -25,35 +25,6 @@ final class DataReader implements DataReaderInterface
     }
 
     /**
-     * Advances the reader to the next row in a result set.
-     *
-     * @throws InvalidCallException
-     *
-     * @return array|bool the current row, false if no more row available.
-     */
-    public function read(): array|bool
-    {
-        return $this->statement->fetch(PDO::FETCH_ASSOC);
-    }
-
-    /**
-     * Advances the reader to the next result when reading the results of a batch of statements. This method is only
-     * useful when there are multiple result sets returned by the query. Not all DBMS support this feature.
-     *
-     * @throws InvalidCallException
-     *
-     * @return bool Returns true on success or false on failure.
-     */
-    public function nextResult(): bool
-    {
-        if (($result = $this->statement->nextRowset()) !== false) {
-            $this->index = -1;
-        }
-
-        return $result;
-    }
-
-    /**
      * Returns the number of rows in the result set.
      *
      * This method is required by the Countable interface.

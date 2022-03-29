@@ -15,6 +15,7 @@ use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Schema;
 
+use Yiisoft\Db\Sqlite\PDO\ConnectionPDOSqlite;
 use function call_user_func_array;
 use function date;
 use function is_array;
@@ -106,8 +107,14 @@ trait TestCommandTrait
 
         /* query */
         $sql = 'SELECT * FROM {{customer}}';
-        $reader = $db->createCommand($sql)->Query();
+        $reader = $db->createCommand($sql)->query();
         $this->assertInstanceOf(DataReader::class, $reader);
+        // Next line is commented by reason:: For sqlite & pgsql result may be incorrect
+        // $this->assertEquals(3, $reader->count());
+        foreach ($reader as $row) {
+            $this->assertIsArray($row);
+            $this->assertCount(6, $row);
+        }
 
         /* queryAll */
         $rows = $db->createCommand('SELECT * FROM {{customer}}')->queryAll();

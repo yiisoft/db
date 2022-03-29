@@ -87,7 +87,6 @@ final class BatchQueryResult implements Iterator
      */
     public function reset(): void
     {
-        $this->dataReader?->close();
         $this->dataReader = null;
         $this->batch = null;
         $this->value = null;
@@ -168,9 +167,10 @@ final class BatchQueryResult implements Iterator
         $count = 0;
 
         try {
-            while ($count++ < $this->batchSize && ($row = $this->dataReader?->read())) {
-                $rows[] = $row;
-            }
+            do {
+                $this->dataReader?->next();
+                $row = $this->dataReader?->current();
+            } while($row && ($rows[] = $row) && ++$count < $this->batchSize);
         } catch (PDOException $e) {
             /** @var int|null */
             $errorCode = $e->errorInfo[1] ?? null;
