@@ -10,7 +10,7 @@ use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Query\Data\DataReader;
 
-abstract class CommandPDO extends Command
+abstract class CommandPDO extends Command implements CommandPDOInterface
 {
     private int $fetchMode = PDO::FETCH_ASSOC;
 
@@ -21,6 +21,10 @@ abstract class CommandPDO extends Command
         return $this->pdoStatement;
     }
 
+    /**
+     * @inheritDoc
+     * This method mainly sets {@see pdoStatement} to be null.
+     */
     public function cancel(): void
     {
         $this->pdoStatement = null;
@@ -38,6 +42,10 @@ abstract class CommandPDO extends Command
         }
     }
 
+    /**
+     * @inheritDoc
+     * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
+     */
     public function bindParam(
         int|string $name,
         mixed &$value,

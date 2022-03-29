@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
-use PDOStatement;
 use Throwable;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Cache\QueryCache;
@@ -193,7 +192,6 @@ interface CommandInterface
      *
      * @return static The current command being executed.
      *
-     * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
     public function bindParam(
         int|string $name,
@@ -214,8 +212,6 @@ interface CommandInterface
      * value.
      *
      * @return static The current command being executed.
-     *
-     * @link http://www.php.net/manual/en/function.PDOStatement-bindValue.php
      */
     public function bindValue(int|string $name, mixed $value, ?int $dataType = null): self;
 
@@ -251,8 +247,6 @@ interface CommandInterface
 
     /**
      * Cancels the execution of the SQL statement.
-     *
-     * This method mainly sets {@see pdoStatement} to be null.
      */
     public function cancel(): void;
 
@@ -498,11 +492,6 @@ interface CommandInterface
      * Return the params used in the last query.
      */
     public function getParams(): array;
-
-    /**
-     * Return the PDO statement.
-     */
-    public function getPdoStatement(): ?PDOStatement;
 
     /**
      * Returns the raw SQL by inserting parameter values into the corresponding placeholders in {@see sql}.
