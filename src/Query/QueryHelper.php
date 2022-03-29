@@ -88,6 +88,7 @@ final class QueryHelper
 
         if (!isset($condition[0])) {
             /** hash format: 'column1' => 'value1', 'column2' => 'value2', ... */
+            /** @var mixed $value */
             foreach ($condition as $name => $value) {
                 if ($this->isEmpty($value)) {
                     unset($condition[$name]);
@@ -98,13 +99,14 @@ final class QueryHelper
         }
 
         /** operator format: operator, operand 1, operand 2, ... */
-
+        /** @var string */
         $operator = array_shift($condition);
 
         switch (strtoupper($operator)) {
             case 'NOT':
             case 'AND':
             case 'OR':
+                /** @psalm-var array<array-key, array|string> $condition */
                 foreach ($condition as $i => $operand) {
                     $subCondition = $this->filterCondition($operand);
                     if ($this->isEmpty($subCondition)) {
