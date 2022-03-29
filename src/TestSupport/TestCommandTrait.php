@@ -136,7 +136,7 @@ trait TestCommandTrait
         $this->assertInstanceOf(DataReader::class, $reader);
         // Next line is commented by reason:: For sqlite & pgsql result may be incorrect
         // $this->assertEquals(3, $reader->count());
-        $this->assertGreaterThanOrEqual(0, $reader->count());
+        $this->assertIsInt($reader->count());
         foreach ($reader as $row) {
             $this->assertIsArray($row);
             $this->assertTrue(count($row) >= 6);

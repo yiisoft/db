@@ -8,6 +8,7 @@ use PDO;
 use PDOStatement;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Data\DataReader;
 
 abstract class CommandPDO extends Command implements CommandPDOInterface
@@ -69,6 +70,42 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
             $this->pdoStatement?->bindParam($name, $value, $dataType, $length);
         } else {
             $this->pdoStatement?->bindParam($name, $value, $dataType, $length, $driverOptions);
+        }
+
+        return $this;
+    }
+
+    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): self
+    {
+        if ($dataType === null) {
+            $dataType = $this->queryBuilder()->schema()->getPdoType($value);
+        }
+
+        $this->params[$name] = new Param($name, $value, $dataType);
+
+        return $this;
+    }
+
+    public function bindValues(array $values): self
+    {
+        if (empty($values)) {
+            return $this;
+        }
+
+        /**
+         * @psalm-var array<string, int>|ParamInterface|PdoValue|int $value
+         */
+        foreach ($values as $name => $value) {
+            if ($value instanceof ParamInterface) {
+                $this->params[$value->getName()] = $value;
+            } elseif (is_array($value)) { // TODO: Drop in Yii 2.1
+                $this->params[$name] = new Param($name, ...$value);
+            } elseif ($value instanceof PdoValue && is_int($value->getType())) {
+                $this->params[$name] = new Param($name, $value->getValue(), $value->getType());
+            } else {
+                $type = $this->queryBuilder()->schema()->getPdoType($value);
+                $this->params[$name] = new Param($name, $value, $type);
+            }
         }
 
         return $this;

@@ -21,7 +21,6 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
@@ -212,42 +211,6 @@ abstract class Command implements CommandInterface
 
         $this->setRawSql($sql);
         $this->bindValues($params);
-
-        return $this;
-    }
-
-    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): self
-    {
-        if ($dataType === null) {
-            $dataType = $this->queryBuilder()->schema()->getPdoType($value);
-        }
-
-        $this->params[$name] = new Param($name, $value, $dataType);
-
-        return $this;
-    }
-
-    public function bindValues(array $values): self
-    {
-        if (empty($values)) {
-            return $this;
-        }
-
-        /**
-         * @psalm-var array<string, int>|ParamInterface|PdoValue|int $value
-         */
-        foreach ($values as $name => $value) {
-            if ($value instanceof ParamInterface) {
-                $this->params[$value->getName()] = $value;
-            } elseif (is_array($value)) { // TODO: Drop in Yii 2.1
-                $this->params[$name] = new Param($name, ...$value);
-            } elseif ($value instanceof PdoValue && is_int($value->getType())) {
-                $this->params[$name] = new Param($name, $value->getValue(), $value->getType());
-            } else {
-                $type = $this->queryBuilder()->schema()->getPdoType($value);
-                $this->params[$name] = new Param($name, $value, $type);
-            }
-        }
 
         return $this;
     }
@@ -620,8 +583,6 @@ abstract class Command implements CommandInterface
 
     /**
      * Executes a prepared statement.
-     *
-     * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
      *
      * @param string|null $rawSql the rawSql if it has been created.
      *
