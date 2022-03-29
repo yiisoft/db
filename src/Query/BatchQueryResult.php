@@ -169,6 +169,7 @@ final class BatchQueryResult implements Iterator
         try {
             do {
                 $this->dataReader?->next();
+                /** @psalm-var array|bool $row */
                 $row = $this->dataReader?->current();
             } while ($row && ($rows[] = $row) && ++$count < $this->batchSize);
         } catch (PDOException $e) {

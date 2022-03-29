@@ -17,11 +17,13 @@ final class DataReader implements DataReaderInterface
 
     public function __construct(CommandPDOInterface $command)
     {
-        $this->statement = $command->getPDOStatement();
+        $statement = $command->getPDOStatement();
 
-        if ($this->statement === null) {
+        if ($statement === null) {
             throw new InvalidCallException('The PDOStatement cannot be null.');
         }
+
+        $this->statement = $statement;
     }
 
     /**
