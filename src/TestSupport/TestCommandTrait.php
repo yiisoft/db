@@ -15,7 +15,6 @@ use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Schema;
 
-use Yiisoft\Db\Sqlite\PDO\ConnectionPDOSqlite;
 use function call_user_func_array;
 use function date;
 use function is_array;
@@ -113,7 +112,7 @@ trait TestCommandTrait
         // $this->assertEquals(3, $reader->count());
         foreach ($reader as $row) {
             $this->assertIsArray($row);
-            $this->assertCount(6, $row);
+            $this->assertTrue(count($row) >= 6);
         }
 
         /* queryAll */

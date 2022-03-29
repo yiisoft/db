@@ -191,7 +191,6 @@ interface CommandInterface
      * @throws Exception
      *
      * @return static The current command being executed.
-     *
      */
     public function bindParam(
         int|string $name,

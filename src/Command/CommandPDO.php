@@ -47,6 +47,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
 
     /**
      * @inheritDoc
+     *
      * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
     public function bindParam(
