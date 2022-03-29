@@ -39,7 +39,10 @@ final class Dsn
 
         $parts = [];
 
-        foreach ($this->options as $key => $value) {
+        /** @psalm-var string[] */
+        $options = $this->options;
+
+        foreach ($options as $key => $value) {
             $parts[] = "$key=$value";
         }
 

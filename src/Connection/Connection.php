@@ -63,8 +63,10 @@ abstract class Connection implements ConnectionInterface
         $this->queryCache->setInfo(
             [$duration ?? $this->queryCache->getDuration(), $dependency]
         );
+        /** @var mixed */
         $result = $callable($this);
         $this->queryCache->removeLastInfo();
+
         return $result;
     }
 
@@ -126,8 +128,10 @@ abstract class Connection implements ConnectionInterface
     {
         $queryCache = $this->queryCache;
         $queryCache->setInfo(false);
+        /** @var mixed */
         $result = $callable($this);
         $queryCache->removeLastInfo();
+
         return $result;
     }
 
@@ -178,6 +182,7 @@ abstract class Connection implements ConnectionInterface
         $level = $transaction->getLevel();
 
         try {
+            /** @var mixed */
             $result = $callback($this);
 
             if ($transaction->isActive() && $transaction->getLevel() === $level) {
@@ -198,6 +203,7 @@ abstract class Connection implements ConnectionInterface
             $this->enableSlaves = false;
 
             try {
+                /** @var mixed */
                 $result = $callback($this);
             } catch (Throwable $e) {
                 $this->enableSlaves = true;
@@ -206,6 +212,7 @@ abstract class Connection implements ConnectionInterface
             }
             $this->enableSlaves = true;
         } else {
+            /** @var mixed */
             $result = $callback($this);
         }
 
@@ -221,9 +228,9 @@ abstract class Connection implements ConnectionInterface
      *
      * @param array $pool The list of connection configurations in the server pool.
      *
-     * @return static|null The opened DB connection, or `null` if no server is available.
+     * @return ConnectionInterface|null The opened DB connection, or `null` if no server is available.
      */
-    protected function openFromPool(array $pool): ?self
+    protected function openFromPool(array $pool): ?ConnectionInterface
     {
         shuffle($pool);
         return $this->openFromPoolSequentially($pool);
@@ -238,14 +245,15 @@ abstract class Connection implements ConnectionInterface
      *
      * @param array $pool
      *
-     * @return static|null The opened DB connection, or `null` if no server is available.
+     * @return ConnectionInterface|null The opened DB connection, or `null` if no server is available.
      */
-    protected function openFromPoolSequentially(array $pool): ?self
+    protected function openFromPoolSequentially(array $pool): ?ConnectionInterface
     {
         if (!$pool) {
             return null;
         }
 
+        /** @psalm-var array<array-key, ConnectionPDOInterface> $pool */
         foreach ($pool as $poolConnection) {
             $key = [__METHOD__, $poolConnection->getDriver()->getDsn()];
 

@@ -30,9 +30,6 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
 {
     public function __construct(private mixed $value = [], private ?string $type = null, private int $dimension = 1)
     {
-        if ($value instanceof self) {
-            $this->value = $value->getValue();
-        }
     }
 
     /**
@@ -77,6 +74,9 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * @return bool true On success or false on failure.
      *
      * The return value will be cast to boolean if non-boolean was returned.
+     *
+     * @psalm-suppress MixedArrayOffset
+     * @psalm-suppress MixedAssignment
      */
     public function offsetExists(mixed $offset): bool
     {
@@ -91,8 +91,10 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * @param mixed $offset The offset to retrieve.
      *
      * @return mixed Can return all value types.
+     *
+     * @psalm-suppress MixedArrayAccess
+     * @psalm-suppress MixedArrayOffset
      */
-    #[\ReturnTypeWillChange]
     public function offsetGet(mixed $offset): mixed
     {
         return $this->value[$offset];
@@ -105,6 +107,9 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @param mixed $offset The offset to assign the value to.
      * @param mixed $value  The value to set.
+     *
+     * @psalm-suppress MixedArrayOffset
+     * @psalm-suppress MixedArrayAssignment
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
@@ -117,6 +122,9 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
      *
      * @param mixed $offset
+     *
+     * @psalm-suppress MixedArrayAccess
+     * @psalm-suppress MixedArrayOffset
      */
     public function offsetUnset(mixed $offset): void
     {
@@ -134,7 +142,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      */
     public function count(): int
     {
-        return count($this->value);
+        return count((array) $this->value);
     }
 
     /**
@@ -148,14 +156,10 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      */
     public function getIterator(): Traversable
     {
-        $value = $this->getValue();
-
-        if ($value instanceof QueryInterface) {
-            throw new InvalidConfigException(
-                'The ArrayExpression class can not be iterated when the value is a QueryInterface object'
-            );
+        if (!is_array($this->value)) {
+            throw new InvalidConfigException('The ArrayExpression value must be an array.');
         }
 
-        return new ArrayIterator($value);
+        return new ArrayIterator($this->value);
     }
 }

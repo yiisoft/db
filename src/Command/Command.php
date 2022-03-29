@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
+use Closure;
+use DateInterval;
 use JsonException;
 use Psr\Log\LogLevel;
 use Throwable;
@@ -99,9 +101,6 @@ abstract class Command implements CommandInterface
     private string $sql = '';
     protected ?Dependency $queryCacheDependency = null;
 
-    /**
-     * @psalm-var ParamInterface[]
-     */
     protected array $params = [];
 
     public function __construct(protected QueryCache $queryCache)
@@ -207,7 +206,7 @@ abstract class Command implements CommandInterface
     public function batchInsert(string $table, array $columns, iterable $rows): self
     {
         $table = $this->queryBuilder()->quoter()->quoteSql($table);
-        $columns = array_map(fn ($column) => $this->queryBuilder()->quoter()->quoteSql($column), $columns);
+        $columns = array_map(fn (string $column) => $this->queryBuilder()->quoter()->quoteSql($column), $columns);
         $params = [];
         $sql = $this->queryBuilder()->batchInsert($table, $columns, $rows, $params);
 
@@ -234,6 +233,9 @@ abstract class Command implements CommandInterface
             return $this;
         }
 
+        /**
+         * @psalm-var array<string, int>|ParamInterface|PdoValue|int $value
+         */
         foreach ($values as $name => $value) {
             if ($value instanceof ParamInterface) {
                 $this->params[$value->getName()] = $value;
@@ -371,11 +373,14 @@ abstract class Command implements CommandInterface
     /**
      * @throws Exception|NotSupportedException
      */
-    public function executeResetSequence(string $table, mixed $value = null): self
+    public function executeResetSequence(string $table, array|int|string|null $value = null): self
     {
         return $this->resetSequence($table, $value);
     }
 
+    /**
+     * @psalm-suppress MixedMethodCall
+     */
     public function getParams(): array
     {
         return array_map(static fn (mixed $value): mixed => $value->getValue(), $this->params);
@@ -392,22 +397,27 @@ abstract class Command implements CommandInterface
 
         $params = [];
 
+        /** @var mixed $value */
         foreach ($this->params as $name => $value) {
             if (is_string($name) && strncmp(':', $name, 1)) {
                 $name = ':' . $name;
             }
 
             if ($value instanceof ParamInterface) {
+                /** @var mixed */
                 $value = $value->getValue();
             }
 
             if (is_string($value)) {
+                /** @var mixed */
                 $params[$name] = $this->queryBuilder()->quoter()->quoteValue($value);
             } elseif (is_bool($value)) {
-                $params[$name] = ($value ? 'TRUE' : 'FALSE');
+                /** @var string */
+                $params[$name] = $value ? 'TRUE' : 'FALSE';
             } elseif ($value === null) {
                 $params[$name] = 'NULL';
             } elseif ((!is_object($value) && !is_resource($value)) || $value instanceof Expression) {
+                /** @var mixed */
                 $params[$name] = $value;
             }
         }
@@ -419,7 +429,7 @@ abstract class Command implements CommandInterface
         $sql = '';
 
         foreach (explode('?', $this->sql) as $i => $part) {
-            $sql .= ($params[$i] ?? '') . $part;
+            $sql .= (string) $params[$i] . $part;
         }
 
         return $sql;
@@ -458,6 +468,9 @@ abstract class Command implements CommandInterface
      * @throws Exception execution failed.
      *
      * @return int number of rows affected by the execution.
+     *
+     * @psalm-suppress MixedReturnStatement
+     * @psalm-suppress MixedInferredReturnType
      */
     public function execute(): int
     {
@@ -467,26 +480,35 @@ abstract class Command implements CommandInterface
             return 0;
         }
 
-        return $this->queryInternal(static::QUERY_MODE_NONE);
+        return $this->queryInternal((int) static::QUERY_MODE_NONE);
     }
 
+    /**
+     * @psalm-suppress MixedReturnStatement
+     * @psalm-suppress MixedInferredReturnType
+     */
     public function query(): DataReader
     {
-        return $this->queryInternal(static::QUERY_MODE_CURSOR);
+        return $this->queryInternal((int) static::QUERY_MODE_CURSOR);
     }
 
+    /**
+     * @psalm-suppress MixedReturnStatement
+     * @psalm-suppress MixedInferredReturnType
+     */
     public function queryAll(): array
     {
-        return $this->queryInternal(static::QUERY_MODE_ALL);
+        return $this->queryInternal((int) static::QUERY_MODE_ALL);
     }
 
     public function queryColumn(): array
     {
-        $results = $this->queryInternal(static::QUERY_MODE_ALL);
-
+        /** @psalm-var array<array-key, array<array-key, mixed>>|null */
+        $results = $this->queryInternal((int) static::QUERY_MODE_ALL);
+        /** @var Closure|string|null */
         $columnName = array_keys($results[0] ?? [])[0] ?? null;
 
-        if ($columnName) {
+        if ($columnName && $results !== null) {
             return ArrayHelper::getColumn($results, $columnName);
         }
 
@@ -495,16 +517,22 @@ abstract class Command implements CommandInterface
 
     public function queryOne(): mixed
     {
-        return $this->queryInternal(static::QUERY_MODE_ROW);
+        return $this->queryInternal((int) static::QUERY_MODE_ROW);
     }
 
+    /**
+     * @psalm-suppress MixedReturnStatement
+     * @psalm-suppress MixedInferredReturnType
+     */
     public function queryScalar(): bool|string|null|int
     {
-        $firstRow = $this->queryInternal(static::QUERY_MODE_ROW);
+        $firstRow = $this->queryInternal((int) static::QUERY_MODE_ROW);
+
         if (!is_array($firstRow)) {
             return false;
         }
 
+        /** @var mixed */
         $result = current($firstRow);
 
         if (is_resource($result) && get_resource_type($result) === 'stream') {
@@ -544,14 +572,17 @@ abstract class Command implements CommandInterface
         $rawSql = $this->getRawSql();
 
         $cacheKey = $this->getCacheKey($queryMode, $rawSql);
+        /** @psalm-var array{CacheInterface, DateInterval|int|null, Dependency|null} */
         $info = $this->queryCache->info($this->queryCacheDuration, $this->queryCacheDependency);
-
+        /** @var mixed */
         $cacheResult = $this->getFromCacheInfo($info, $cacheKey);
+
         if ($cacheResult) {
             $this->logger?->log(LogLevel::DEBUG, 'Get query result from cache', [__CLASS__ . '::query']);
             return $cacheResult;
         }
 
+        /** @var mixed */
         $result = $this->queryWithoutCache($rawSql, $queryMode);
         $this->setToCacheInfo($info, $cacheKey, $result);
 
@@ -570,6 +601,8 @@ abstract class Command implements CommandInterface
             $this->profiler?->begin($rawSql, [$logCategory]);
 
             $this->internalExecute($rawSql);
+
+            /** @var mixed */
             $result = $this->internalGetQueryResult($queryMode);
 
             $this->profiler?->end($rawSql, [$logCategory]);
@@ -613,7 +646,7 @@ abstract class Command implements CommandInterface
     /**
      * @throws Exception|NotSupportedException
      */
-    public function resetSequence(string $table, mixed $value = null): self
+    public function resetSequence(string $table, array|int|string|null $value = null): self
     {
         $sql = $this->queryBuilder()->resetSequence($table, $value);
         return $this->setSql($sql);
@@ -757,6 +790,8 @@ abstract class Command implements CommandInterface
 
     /**
      * @throws \JsonException
+     *
+     * @psalm-param array{CacheInterface, DateInterval|int|null, Dependency|null} $info
      */
     private function getFromCacheInfo(?array $info, array $cacheKey): mixed
     {
@@ -764,8 +799,9 @@ abstract class Command implements CommandInterface
             return null;
         }
 
-        /* @var $cache CacheInterface */
         $cache = $info[0];
+
+        /** @var mixed */
         $result = $cache->getOrSet(
             $cacheKey,
             static fn () => null,
@@ -782,6 +818,8 @@ abstract class Command implements CommandInterface
 
     /**
      * @throws \JsonException
+     *
+     * @psalm-param array{CacheInterface, DateInterval|int|null, Dependency|null} $info
      */
     private function setToCacheInfo(?array $info, array $cacheKey, mixed $result): void
     {
@@ -789,7 +827,6 @@ abstract class Command implements CommandInterface
             return;
         }
 
-        /* @var $cache CacheInterface */
         $cache = $info[0];
 
         $cache->getOrSet(

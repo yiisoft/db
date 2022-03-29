@@ -33,6 +33,9 @@ abstract class CommandPDO extends Command
      */
     protected function bindPendingParams(): void
     {
+        /**
+         * @psalm-var ParamInterface $value
+         */
         foreach ($this->params as $name => $value) {
             $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
         }
@@ -73,10 +76,13 @@ abstract class CommandPDO extends Command
         }
 
         if ($queryMode === static::QUERY_MODE_ROW) {
+            /** @var mixed */
             $result = $this->pdoStatement?->fetch($this->fetchMode);
         } else {
+            /** @var mixed */
             $result = $this->pdoStatement?->fetchAll($this->fetchMode);
         }
+
         $this->pdoStatement?->closeCursor();
 
         return $result;
