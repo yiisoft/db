@@ -8,6 +8,7 @@ use PDO;
 use PDOStatement;
 use Yiisoft\Db\Command\CommandPDOInterface;
 use Yiisoft\Db\Exception\InvalidCallException;
+use Yiisoft\Db\Exception\InvalidParamException;
 
 final class DataReader implements DataReaderInterface
 {
@@ -20,7 +21,7 @@ final class DataReader implements DataReaderInterface
         $statement = $command->getPDOStatement();
 
         if ($statement === null) {
-            throw new InvalidCallException('The PDOStatement cannot be null.');
+            throw new InvalidParamException('The PDOStatement cannot be null.');
         }
 
         $this->statement = $statement;
@@ -33,8 +34,6 @@ final class DataReader implements DataReaderInterface
      *
      * Note, most DBMS may not give a meaningful count. In this case, use "SELECT COUNT(*) FROM tableName" to obtain the
      * number of rows.
-     *
-     * @throws InvalidCallException
      *
      * @return int number of rows contained in the result.
      */
@@ -88,8 +87,6 @@ final class DataReader implements DataReaderInterface
      * Moves the internal pointer to the next row.
      *
      * This method is required by the interface {@see Iterator}.
-     *
-     * @throws InvalidCallException
      */
     public function next(): void
     {
