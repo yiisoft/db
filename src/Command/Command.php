@@ -86,11 +86,6 @@ abstract class Command implements CommandInterface
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
 
-    public const QUERY_MODE_NONE = 0;
-    public const QUERY_MODE_ROW = 1;
-    public const QUERY_MODE_ALL = 2;
-    public const QUERY_MODE_CURSOR = 3;
-
     protected ?string $isolationLevel = null;
     protected ?string $refreshTableName = null;
     /** @var callable|null */
@@ -466,13 +461,11 @@ abstract class Command implements CommandInterface
 
     public function queryColumn(): array
     {
-        /** @psalm-var array<array-key, array<array-key, mixed>>|null */
-        $results = $this->queryInternal((int) static::QUERY_MODE_ALL);
-        /** @var Closure|string|null */
-        $columnName = array_keys($results[0] ?? [])[0] ?? null;
+        /** @psalm-var array<array-key, array<mixed>>|null */
+        $results = $this->queryInternal((int) static::QUERY_MODE_COLUMN);
 
-        if ($columnName && $results !== null) {
-            return ArrayHelper::getColumn($results, $columnName);
+        if (is_array($results)) {
+            return $results;
         }
 
         return [];

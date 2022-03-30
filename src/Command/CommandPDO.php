@@ -124,6 +124,9 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         if ($queryMode === static::QUERY_MODE_ROW) {
             /** @var mixed */
             $result = $this->pdoStatement?->fetch($this->fetchMode);
+        } elseif ($queryMode === static::QUERY_MODE_COLUMN) {
+            /** @var mixed */
+            $result = $this->pdoStatement?->fetchAll(PDO::FETCH_COLUMN);
         } else {
             /** @var mixed */
             $result = $this->pdoStatement?->fetchAll($this->fetchMode);
