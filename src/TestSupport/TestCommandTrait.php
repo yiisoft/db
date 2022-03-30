@@ -9,7 +9,9 @@ use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
+use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Query;
@@ -97,6 +99,30 @@ trait TestCommandTrait
         $command->execute();
     }
 
+    public function testDataReaderCreationException(): void
+    {
+        $db = $this->getConnection(true);
+
+        $this->expectException(InvalidParamException::class);
+        $this->expectExceptionMessage('The PDOStatement cannot be null.');
+
+        $sql = 'SELECT * FROM {{customer}}';
+        new DataReader($db->createCommand($sql));
+    }
+
+    public function testDataReaderRewindException(): void
+    {
+        $db = $this->getConnection(true);
+
+        $this->expectException(InvalidCallException::class);
+        $this->expectExceptionMessage('DataReader cannot rewind. It is a forward-only reader.');
+
+        $sql = 'SELECT * FROM {{customer}}';
+        $reader = $db->createCommand($sql)->query();
+        $reader->next();
+        $reader->rewind();
+    }
+
     /**
      * @throws Exception|InvalidConfigException|Throwable
      */
@@ -106,8 +132,15 @@ trait TestCommandTrait
 
         /* query */
         $sql = 'SELECT * FROM {{customer}}';
-        $reader = $db->createCommand($sql)->Query();
+        $reader = $db->createCommand($sql)->query();
         $this->assertInstanceOf(DataReader::class, $reader);
+        // Next line is commented by reason:: For sqlite & pgsql result may be incorrect
+        // $this->assertEquals(3, $reader->count());
+        $this->assertIsInt($reader->count());
+        foreach ($reader as $row) {
+            $this->assertIsArray($row);
+            $this->assertTrue(count($row) >= 6);
+        }
 
         /* queryAll */
         $rows = $db->createCommand('SELECT * FROM {{customer}}')->queryAll();

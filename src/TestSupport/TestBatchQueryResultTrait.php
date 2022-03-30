@@ -34,12 +34,14 @@ trait TestBatchQueryResultTrait
         $allRows = [];
 
         $batch = $query->batch(2);
-
+        $step = 0;
         foreach ($batch as $rows) {
             $allRows = array_merge($allRows, $rows);
+            $step++;
         }
 
         $this->assertCount(3, $allRows);
+        $this->assertEquals(2, $step);
         $this->assertEquals('user1', $allRows[0]['name']);
         $this->assertEquals('user2', $allRows[1]['name']);
         $this->assertEquals('user3', $allRows[2]['name']);
@@ -47,11 +49,14 @@ trait TestBatchQueryResultTrait
         /* rewind */
         $allRows = [];
 
+        $step = 0;
         foreach ($batch as $rows) {
             $allRows = array_merge($allRows, $rows);
+            $step++;
         }
 
         $this->assertCount(3, $allRows);
+        $this->assertEquals(2, $step);
 
         /* reset */
         $batch->reset();

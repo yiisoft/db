@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
-use Closure;
 use DateInterval;
 use JsonException;
 use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
@@ -21,7 +19,6 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
@@ -84,13 +81,14 @@ use function strtr;
  */
 abstract class Command implements CommandInterface
 {
-    use LoggerAwareTrait;
-    use ProfilerAwareTrait;
-
     public const QUERY_MODE_NONE = 0;
     public const QUERY_MODE_ROW = 1;
     public const QUERY_MODE_ALL = 2;
     public const QUERY_MODE_CURSOR = 3;
+    public const QUERY_MODE_COLUMN = 7;
+
+    use LoggerAwareTrait;
+    use ProfilerAwareTrait;
 
     protected ?string $isolationLevel = null;
     protected ?string $refreshTableName = null;
@@ -212,42 +210,6 @@ abstract class Command implements CommandInterface
 
         $this->setRawSql($sql);
         $this->bindValues($params);
-
-        return $this;
-    }
-
-    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): self
-    {
-        if ($dataType === null) {
-            $dataType = $this->queryBuilder()->schema()->getPdoType($value);
-        }
-
-        $this->params[$name] = new Param($name, $value, $dataType);
-
-        return $this;
-    }
-
-    public function bindValues(array $values): self
-    {
-        if (empty($values)) {
-            return $this;
-        }
-
-        /**
-         * @psalm-var array<string, int>|ParamInterface|PdoValue|int $value
-         */
-        foreach ($values as $name => $value) {
-            if ($value instanceof ParamInterface) {
-                $this->params[$value->getName()] = $value;
-            } elseif (is_array($value)) { // TODO: Drop in Yii 2.1
-                $this->params[$name] = new Param($name, ...$value);
-            } elseif ($value instanceof PdoValue && is_int($value->getType())) {
-                $this->params[$name] = new Param($name, $value->getValue(), $value->getType());
-            } else {
-                $type = $this->queryBuilder()->schema()->getPdoType($value);
-                $this->params[$name] = new Param($name, $value, $type);
-            }
-        }
 
         return $this;
     }
@@ -503,13 +465,11 @@ abstract class Command implements CommandInterface
 
     public function queryColumn(): array
     {
-        /** @psalm-var array<array-key, array<array-key, mixed>>|null */
-        $results = $this->queryInternal((int) static::QUERY_MODE_ALL);
-        /** @var Closure|string|null */
-        $columnName = array_keys($results[0] ?? [])[0] ?? null;
+        /** @psalm-var array<array-key, array<mixed>>|null */
+        $results = $this->queryInternal((int) static::QUERY_MODE_COLUMN);
 
-        if ($columnName && $results !== null) {
-            return ArrayHelper::getColumn($results, $columnName);
+        if (is_array($results)) {
+            return $results;
         }
 
         return [];
@@ -620,8 +580,6 @@ abstract class Command implements CommandInterface
 
     /**
      * Executes a prepared statement.
-     *
-     * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
      *
      * @param string|null $rawSql the rawSql if it has been created.
      *

@@ -8,9 +8,10 @@ use PDO;
 use PDOStatement;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Data\DataReader;
 
-abstract class CommandPDO extends Command
+abstract class CommandPDO extends Command implements CommandPDOInterface
 {
     private int $fetchMode = PDO::FETCH_ASSOC;
 
@@ -21,6 +22,10 @@ abstract class CommandPDO extends Command
         return $this->pdoStatement;
     }
 
+    /**
+     * @inheritDoc
+     * This method mainly sets {@see pdoStatement} to be null.
+     */
     public function cancel(): void
     {
         $this->pdoStatement = null;
@@ -41,6 +46,11 @@ abstract class CommandPDO extends Command
         }
     }
 
+    /**
+     * @inheritDoc
+     *
+     * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
+     */
     public function bindParam(
         int|string $name,
         mixed &$value,
@@ -65,6 +75,42 @@ abstract class CommandPDO extends Command
         return $this;
     }
 
+    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): self
+    {
+        if ($dataType === null) {
+            $dataType = $this->queryBuilder()->schema()->getPdoType($value);
+        }
+
+        $this->params[$name] = new Param($name, $value, $dataType);
+
+        return $this;
+    }
+
+    public function bindValues(array $values): self
+    {
+        if (empty($values)) {
+            return $this;
+        }
+
+        /**
+         * @psalm-var array<string, int>|ParamInterface|PdoValue|int $value
+         */
+        foreach ($values as $name => $value) {
+            if ($value instanceof ParamInterface) {
+                $this->params[$value->getName()] = $value;
+            } elseif (is_array($value)) { // TODO: Drop in Yii 2.1
+                $this->params[$name] = new Param($name, ...$value);
+            } elseif ($value instanceof PdoValue && is_int($value->getType())) {
+                $this->params[$name] = new Param($name, $value->getValue(), $value->getType());
+            } else {
+                $type = $this->queryBuilder()->schema()->getPdoType($value);
+                $this->params[$name] = new Param($name, $value, $type);
+            }
+        }
+
+        return $this;
+    }
+
     protected function internalGetQueryResult(int $queryMode): mixed
     {
         if ($queryMode === static::QUERY_MODE_CURSOR) {
@@ -78,6 +124,9 @@ abstract class CommandPDO extends Command
         if ($queryMode === static::QUERY_MODE_ROW) {
             /** @var mixed */
             $result = $this->pdoStatement?->fetch($this->fetchMode);
+        } elseif ($queryMode === static::QUERY_MODE_COLUMN) {
+            /** @var mixed */
+            $result = $this->pdoStatement?->fetchAll(PDO::FETCH_COLUMN);
         } else {
             /** @var mixed */
             $result = $this->pdoStatement?->fetchAll($this->fetchMode);
