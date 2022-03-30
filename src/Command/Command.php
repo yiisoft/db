@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
-use Closure;
 use DateInterval;
 use JsonException;
 use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
