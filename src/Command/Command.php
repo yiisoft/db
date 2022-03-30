@@ -81,6 +81,12 @@ use function strtr;
  */
 abstract class Command implements CommandInterface
 {
+    public const QUERY_MODE_NONE = 0;
+    public const QUERY_MODE_ROW = 1;
+    public const QUERY_MODE_ALL = 2;
+    public const QUERY_MODE_CURSOR = 3;
+    public const QUERY_MODE_COLUMN = 7;
+
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
 
