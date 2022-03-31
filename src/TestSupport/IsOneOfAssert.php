@@ -7,7 +7,6 @@ namespace Yiisoft\Db\TestSupport;
 use PHPUnit\Framework\Constraint\Constraint;
 use Yiisoft\VarDumper\VarDumper;
 
-use function array_map;
 use function implode;
 use function in_array;
 
@@ -30,9 +29,11 @@ final class IsOneOfAssert extends Constraint
      */
     public function toString(): string
     {
-        $allowedValues = array_map(static function ($value) {
-            return VarDumper::create($value)->asString();
-        }, $this->allowedValues);
+        $allowedValues = [];
+
+        foreach ($this->allowedValues as $value) {
+            $this->allowedValues[] = VarDumper::create($value)->asString();
+        }
 
         $expectedAsString = implode(', ', $allowedValues);
 
