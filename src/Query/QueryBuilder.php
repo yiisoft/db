@@ -29,7 +29,6 @@ use Yiisoft\Db\Schema\SchemaInterface;
 use function array_combine;
 use function array_diff;
 use function array_filter;
-use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_shift;
