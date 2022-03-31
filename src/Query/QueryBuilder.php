@@ -1126,8 +1126,10 @@ abstract class QueryBuilder implements QueryBuilderInterface
                     $getColumnNames = $constraint->getColumnNames() ?? [];
                     $constraintColumnNames = [];
 
-                    foreach ((array) $getColumnNames as $columnName) {
-                        $constraintColumnNames[] = $quoter->quoteColumnName($columnName);
+                    if (is_array($getColumnNames)) {
+                        foreach ($getColumnNames as $columnName) {
+                            $constraintColumnNames[] = $quoter->quoteColumnName($columnName);
+                        }
                     }
 
                     $result = !array_diff($constraintColumnNames, $columns);

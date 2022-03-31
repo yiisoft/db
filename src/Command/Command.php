@@ -203,9 +203,10 @@ abstract class Command implements CommandInterface
         $table = $this->queryBuilder()->quoter()->quoteSql($table);
 
         /** @psalm-var string[] $columns */
-        foreach ($columns as $i => $column) {
-            $columns[$i] = $this->queryBuilder()->quoter()->quoteSql($column);
+        foreach ($columns as &$column) {
+            $column = $this->queryBuilder()->quoter()->quoteSql($column);
         }
+        unset($column);
 
         $params = [];
         $sql = $this->queryBuilder()->batchInsert($table, $columns, $rows, $params);

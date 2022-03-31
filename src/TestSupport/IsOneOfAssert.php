@@ -29,8 +29,10 @@ final class IsOneOfAssert extends Constraint
      */
     public function toString(): string
     {
-        foreach ($this->allowedValues as $key => $value) {
-            $this->allowedValues[$key] = VarDumper::dumpAsString($value);
+        $allowedValues = [];
+
+        foreach ($this->allowedValues as $value) {
+            $this->allowedValues[] = VarDumper::create($value)->asString();
         }
 
         $expectedAsString = implode(', ', $allowedValues);

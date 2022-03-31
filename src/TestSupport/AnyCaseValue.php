@@ -15,8 +15,12 @@ final class AnyCaseValue extends CompareValue
      */
     public function __construct(string|array $value)
     {
-        foreach ((array) $value as $v) {
-            $this->value[] = strtolower($v);
+        if (is_array($value)) {
+            foreach ($value as $v) {
+                $this->value = strtolower($v);
+            }
+        } else {
+            $this->value = strtolower($value);
         }
     }
 }
