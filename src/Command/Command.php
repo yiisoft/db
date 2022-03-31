@@ -81,24 +81,22 @@ use function strtr;
  */
 abstract class Command implements CommandInterface
 {
+    use LoggerAwareTrait;
+    use ProfilerAwareTrait;
+
     public const QUERY_MODE_NONE = 0;
     public const QUERY_MODE_ROW = 1;
     public const QUERY_MODE_ALL = 2;
     public const QUERY_MODE_CURSOR = 3;
     public const QUERY_MODE_COLUMN = 7;
 
-    use LoggerAwareTrait;
-    use ProfilerAwareTrait;
-
     protected ?string $isolationLevel = null;
     protected ?string $refreshTableName = null;
     /** @var callable|null */
     protected $retryHandler = null;
-
     protected ?int $queryCacheDuration = null;
     private string $sql = '';
     protected ?Dependency $queryCacheDependency = null;
-
     protected array $params = [];
 
     public function __construct(protected QueryCache $queryCache)
@@ -340,12 +338,22 @@ abstract class Command implements CommandInterface
         return $this->resetSequence($table, $value);
     }
 
-    /**
-     * @psalm-suppress MixedMethodCall
-     */
     public function getParams(): array
     {
-        return array_map(static fn (mixed $value): mixed => $value->getValue(), $this->params);
+        $buildParams = [];
+
+        /** @psalm-var ParamInterface|array $value */
+        foreach ($this->params as $name => $value) {
+            if ($value instanceof ParamInterface) {
+                /** @var mixed */
+                $buildParams[$name] = $value->getValue();
+            } else {
+                /** @var mixed */
+                $buildParams[$name] = $value;
+            }
+        }
+
+        return $buildParams;
     }
 
     /**
