@@ -994,8 +994,6 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
     /**
      * @throws Exception|InvalidArgumentException|InvalidConfigException|JsonException|NotSupportedException
-     *
-     * @psalm-suppress MixedArgumentTypeCoercion
      */
     public function prepareUpsertColumns(
         string $table,
@@ -1003,16 +1001,24 @@ abstract class QueryBuilder implements QueryBuilderInterface
         QueryInterface|bool|array $updateColumns,
         array &$constraints = []
     ): array {
+        $insertNames = [];
+
         if ($insertColumns instanceof QueryInterface) {
             /** @psalm-var list<string> $insertNames */
             [$insertNames] = $this->prepareInsertSelectSubQuery($insertColumns);
         } else {
-            $insertNames = array_map([$this->quoter, 'quoteColumnName'], array_keys($insertColumns));
+            /** @psalm-var array<string, string> $insertColumns */
+            foreach ($insertColumns as $key => $_value) {
+                $insertNames[] = $this->quoter->quoteColumnName($key);
+            }
         }
 
         /** @psalm-var string[] */
         $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
-        $uniqueNames = array_map([$this->quoter, 'quoteColumnName'], $uniqueNames);
+
+        foreach ($uniqueNames as $key => $name) {
+            $insertNames[$key] = $this->quoter->quoteColumnName($name);
+        }
 
         if ($updateColumns !== true) {
             return [$uniqueNames, $insertNames, null];
@@ -1119,10 +1125,11 @@ abstract class QueryBuilder implements QueryBuilderInterface
                 static function (Constraint $constraint) use ($quoter, $columns, &$columnNames) {
                     /** @psalm-var string[]|string */
                     $getColumnNames = $constraint->getColumnNames() ?? [];
-                    $constraintColumnNames = array_map(
-                        [$quoter, 'quoteColumnName'],
-                        is_array($getColumnNames) ? $getColumnNames : [$getColumnNames]
-                    );
+                    $constraintColumnNames = [];
+
+                    foreach ((array) $getColumnNames as $columnName) {
+                        $constraintColumnNames[] = $quoter->quoteColumnName($columnName);
+                    }
 
                     $result = !array_diff($constraintColumnNames, $columns);
 

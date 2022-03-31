@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestSupport;
 
-use function array_map;
-use function is_array;
 use function strtolower;
 
 final class AnyCaseValue extends CompareValue
@@ -13,16 +11,12 @@ final class AnyCaseValue extends CompareValue
     public $value;
 
     /**
-     * Constructor.
-     *
-     * @param string|string[] $value
+     * @psalm-param string|string[] $value
      */
-    public function __construct($value)
+    public function __construct(string|array $value)
     {
-        if (is_array($value)) {
-            $this->value = array_map('strtolower', $value);
-        } else {
-            $this->value = strtolower($value);
+        foreach ((array) $value as $v) {
+            $this->value[] = strtolower($v);
         }
     }
 }

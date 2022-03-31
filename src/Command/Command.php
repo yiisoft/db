@@ -23,7 +23,6 @@ use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
-use function array_map;
 use function explode;
 use function get_resource_type;
 use function is_array;
@@ -202,7 +201,12 @@ abstract class Command implements CommandInterface
     public function batchInsert(string $table, array $columns, iterable $rows): self
     {
         $table = $this->queryBuilder()->quoter()->quoteSql($table);
-        $columns = array_map(fn (string $column) => $this->queryBuilder()->quoter()->quoteSql($column), $columns);
+
+        /** @psalm-var string[] $columns */
+        foreach ($columns as $i => $column) {
+            $columns[$i] = $this->queryBuilder()->quoter()->quoteSql($column);
+        }
+
         $params = [];
         $sql = $this->queryBuilder()->batchInsert($table, $columns, $rows, $params);
 
