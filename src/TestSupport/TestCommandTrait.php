@@ -203,7 +203,7 @@ trait TestCommandTrait
     {
         $db = $this->getConnection();
 
-        $rows = $db->createCommand('SELECT id,name FROM {{customer}}')->queryAll();
+        $rows = $db->createCommand('SELECT [[id]],[[name]] FROM {{customer}}')->queryAll();
         $this->assertIsArray($rows);
         $this->assertCount(3, $rows);
 
