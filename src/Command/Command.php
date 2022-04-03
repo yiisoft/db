@@ -467,19 +467,10 @@ abstract class Command implements CommandInterface
         return $this->queryInternal((int) static::QUERY_MODE_CURSOR);
     }
 
-    /**
-     * @psalm-suppress MixedReturnStatement
-     * @psalm-suppress MixedInferredReturnType
-     */
     public function queryAll(): array
     {
-        return $this->queryInternal((int) static::QUERY_MODE_ALL);
-    }
-
-    public function queryColumn(): array
-    {
         /** @psalm-var array<array-key, array<mixed>>|null */
-        $results = $this->queryInternal((int) static::QUERY_MODE_COLUMN);
+        $results = $this->queryInternal((int) static::QUERY_MODE_ALL);
 
         if (is_array($results)) {
             return $results;
@@ -488,9 +479,28 @@ abstract class Command implements CommandInterface
         return [];
     }
 
-    public function queryOne(): mixed
+    public function queryColumn(): array|false
     {
-        return $this->queryInternal((int) static::QUERY_MODE_ROW);
+        /** @psalm-var array<array-key, array<mixed>>|null */
+        $results = $this->queryInternal((int) static::QUERY_MODE_COLUMN);
+
+        if (is_array($results) && count($results)) {
+            return $results;
+        }
+
+        return false;
+    }
+
+    public function queryOne(): array|false
+    {
+        /** @psalm-var array<array-key, array<mixed>>|null */
+        $results = $this->queryInternal((int) static::QUERY_MODE_ROW);
+
+        if (is_array($results) && count($results)) {
+            return $results;
+        }
+
+        return false;
     }
 
     /**
