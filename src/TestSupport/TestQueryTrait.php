@@ -561,9 +561,17 @@ trait TestQueryTrait
             ->select(['name'])
             ->indexBy('name')
             ->orderBy(['id' => SORT_DESC])
-            ->column($db);
+            ->column();
 
         $this->assertEquals(['user3' => 'user3', 'user2' => 'user2', 'user1' => 'user1'], $result);
+
+        $result = (new Query($db))->from('customer')
+            ->select(['name'])
+            ->where(['id' => 10])
+            ->orderBy(['id' => SORT_DESC])
+            ->column();
+
+        $this->assertEquals([], $result);
     }
 
     public function testCount(): void

@@ -285,7 +285,11 @@ class Query implements QueryInterface
         }
 
         if ($this->indexBy === null) {
-            return $this->createCommand()->queryColumn();
+            $result = $this->createCommand()->queryColumn();
+            if (is_array($result)) {
+                return $result;
+            }
+            return [];
         }
 
         if (is_string($this->indexBy) && count($this->select) === 1) {

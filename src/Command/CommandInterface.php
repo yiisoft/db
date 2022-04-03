@@ -582,8 +582,8 @@ interface CommandInterface
      *
      * @throws Exception|Throwable Execution failed.
      *
-     * @return array All rows of the query result. Each array element is an array representing a row of data. An empty
-     * array is returned if the query results in nothing.
+     * @return array All rows of the query result. Each array element is an array representing a row of data.
+     * Empty array is returned if the query results in nothing.
      */
     public function queryAll(): array;
 
@@ -595,9 +595,10 @@ interface CommandInterface
      *
      * @throws Exception|Throwable Execution failed.
      *
-     * @return array The first column of the query result. Empty array is returned if the query results in nothing.
+     * @return array|false The first column of the query result.
+     * False is returned if the query results in nothing.
      */
-    public function queryColumn(): array;
+    public function queryColumn(): array|false;
 
     /**
      * Executes the SQL statement and returns the first row of the result.
@@ -606,10 +607,10 @@ interface CommandInterface
      *
      * @throws Exception|Throwable Execution failed.
      *
-     * @return mixed The first row (in terms of an array) of the query result. False is returned if the query results
-     * in nothing.
+     * @return array|false The first row (in terms of an array) of the query result.
+     * False is returned if the query results in nothing.
      */
-    public function queryOne(): mixed;
+    public function queryOne(): array|false;
 
     /**
      * Executes the SQL statement and returns the value of the first column in the first row of data.
@@ -618,8 +619,8 @@ interface CommandInterface
      *
      * @throws Exception|Throwable Execution failed.
      *
-     * @return false|int|string|null The value of the first column in the first row of the query result. False is
-     * returned if there is no value.
+     * @return false|int|string|null The value of the first column in the first row of the query result.
+     * False is returned if there is no value.
      */
     public function queryScalar(): bool|string|null|int;
 
