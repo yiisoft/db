@@ -203,14 +203,14 @@ trait TestCommandTrait
     {
         $db = $this->getConnection();
 
-        $rows = $db->createCommand('SELECT id,name,email FROM {{customer}}')->queryAll();
+        $rows = $db->createCommand('SELECT id,name FROM {{customer}}')->queryAll();
         $this->assertIsArray($rows);
         $this->assertCount(3, $rows);
 
         $row = $rows[2];
         $this->assertEquals(3, $row['id']);
         $this->assertEquals('user3', $row['name']);
-        $this->assertTrue(is_array($rows) && count($rows)>1 && count($rows[0]) === 3);
+        $this->assertTrue(is_array($rows) && count($rows)>1 && count($rows[0]) === 2);
 
         $rows = $db->createCommand('SELECT * FROM {{customer}} WHERE [[id]] = 10')->queryAll();
         $this->assertEquals([], $rows);
