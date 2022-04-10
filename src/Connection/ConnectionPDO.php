@@ -112,9 +112,11 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
      *
      * @param string|null $sql
      * @param bool|null $forRead
-     * @return PDO|null
+     *
      * @throws Exception
      * @throws InvalidConfigException
+     *
+     * @return PDO|null
      */
     public function getOpenPDO(?string $sql = '', ?bool $forRead = null): ?PDO
     {
