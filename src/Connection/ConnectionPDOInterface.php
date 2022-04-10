@@ -25,31 +25,16 @@ interface ConnectionPDOInterface extends ConnectionInterface
      *
      * {@see pdoClass}
      */
-    public function getPdo(): ?PDO;
+    public function getPDO(): ?PDO;
 
     /**
-     * Returns the PDO instance for the currently active master connection.
+     * Returns the PDO instance for the currently connection.
      *
-     * This method will open the master DB connection and then return {@see pdo}.
+     * This method will open the DB connection and then return {@see pdo}.
      *
      * @throws Exception|InvalidConfigException
      *
-     * @return PDO|null the PDO instance for the currently active master connection.
+     * @return PDO|null the PDO instance for the currently connection.
      */
-    public function getMasterPDO(): PDO|null;
-
-    /**
-     * Returns the PDO instance for the currently active slave connection.
-     *
-     * When {@see enableSlaves} is true, one of the slaves will be used for read queries, and its PDO instance will be
-     * returned by this method.
-     *
-     * @param bool $fallbackToMaster whether to return a master PDO in case none of the slave connections is available.
-     *
-     * @throws Exception
-     *
-     * @return PDO|null the PDO instance for the currently active slave connection. `null` is returned if no slave
-     * connection is available and `$fallbackToMaster` is false.
-     */
-    public function getSlavePDO(bool $fallbackToMaster = true): ?PDO;
+    public function getOpenPDO(string $sql = '', ?bool $forRead = null): ?PDO;
 }

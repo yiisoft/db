@@ -22,14 +22,6 @@ use function version_compare;
 interface ConnectionInterface
 {
     /**
-     * Whether to enable read/write splitting by using {@see slaves} to read data.
-     *
-     * Note that if {@see slaves} is empty, read/write splitting will NOT be enabled no matter what value this property
-     * takes.
-     */
-    public function areSlavesEnabled(): bool;
-
-    /**
      * Starts a transaction.
      *
      * @param string|null $isolationLevel The isolation level to use for this transaction.
@@ -128,16 +120,6 @@ interface ConnectionInterface
     public function getLastInsertID(string $sequenceName = ''): string;
 
     /**
-     * Returns the currently active master connection.
-     *
-     * If this method is called for the first time, it will try to open a master connection.
-     *
-     * @return self|null The currently active master connection. `null` is returned if there is no master
-     * available.
-     */
-    public function getMaster(): ?self;
-
-    /**
      * Returns the query builder for the current DB connection.
      *
      * @return QueryBuilderInterface the query builder for the current DB connection.
@@ -162,20 +144,6 @@ interface ConnectionInterface
      * @return string server version as a string.
      */
     public function getServerVersion(): string;
-
-    /**
-     * Returns the currently active slave connection.
-     *
-     * If this method is called for the first time, it will try to open a slave connection when {@see setEnableSlaves()}
-     * is true.
-     *
-     * @param bool $fallbackToMaster Whether to return a master connection in case there is no slave connection
-     * available.
-     *
-     * @return self|null The currently active slave connection. `null` is returned if there is no slave available
-     * and `$fallbackToMaster` is false.
-     */
-    public function getSlave(bool $fallbackToMaster = true): ?self;
 
     /**
      * Return table prefix for current DB connection.
@@ -258,50 +226,12 @@ interface ConnectionInterface
     public function setEmulatePrepare(bool $value): void;
 
     /**
-     * Whether to enable read/write splitting by using {@see setSlaves()} to read data. Note that if {@see setSlaves()}
-     * is empty, read/write splitting will NOT be enabled no matter what value this property takes.
-     *
-     * @param bool $value
-     */
-    public function setEnableSlaves(bool $value): void;
-
-    /**
      * Whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint). Note that if the underlying DBMS does not
      * support savepoint, setting this property to be true will have no effect.
      *
      * @param bool $value Whether to enable savepoint.
      */
     public function setEnableSavepoint(bool $value): void;
-
-    /**
-     * Set connection for master server, you can specify multiple connections, adding the id for each one.
-     *
-     * @param string $key Index master connection.
-     * @param ConnectionInterface $master The connection every master.
-     */
-    public function setMaster(string $key, self $master): void;
-
-    /**
-     * The retry interval in seconds for dead servers listed in {@see setMaster()} and {@see setSlave()}.
-     *
-     * @param int $value The retry interval in seconds.
-     */
-    public function setServerRetryInterval(int $value): void;
-
-    /**
-     * Whether to shuffle {@see setMaster()} before getting one.
-     *
-     * @param bool $value Whether to shuffle {@see setMaster()} before getting one.
-     */
-    public function setShuffleMasters(bool $value): void;
-
-    /**
-     * Set connection for master slave, you can specify multiple connections, adding the id for each one.
-     *
-     * @param string $key Index slave connection.
-     * @param ConnectionInterface $slave The connection every slave.
-     */
-    public function setSlave(string $key, self $slave): void;
 
     /**
      * The common prefix or suffix for table names. If a table name is given as `{{%TableName}}`, then the percentage
@@ -323,25 +253,4 @@ interface ConnectionInterface
      * @return mixed Result of callback function.
      */
     public function transaction(callable $callback, string $isolationLevel = null): mixed;
-
-    /**
-     * Executes the provided callback by using the master connection.
-     *
-     * This method is provided so that you can temporarily force using the master connection to perform DB operations
-     * even if they are read queries. For example,
-     *
-     * ```php
-     * $result = $db->useMaster(function (ConnectionInterface $db) {
-     *     return $db->createCommand('SELECT * FROM user LIMIT 1')->queryOne();
-     * });
-     * ```
-     *
-     * @param callable $callback a PHP callable to be executed by this method. Its signature is
-     * `function (ConnectionInterface $db)`. Its return value will be returned by this method.
-     *
-     * @throws Throwable If there is any exception thrown from the callback.
-     *
-     * @return mixed The return value of the callback.
-     */
-    public function useMaster(callable $callback): mixed;
 }

@@ -1019,9 +1019,9 @@ trait TestQueryBuilderTrait
                 $expectedColumnSchemaBuilder = $column;
             }
 
+            $this->assertEquals($expectedColumnSchemaBuilder, $builder->__toString());
             $this->assertEquals($expected, $qb->getColumnType($column));
             $this->assertEquals($expected, $qb->getColumnType($builder));
-            $this->assertEquals($expectedColumnSchemaBuilder, $builder->__toString());
         }
     }
 
