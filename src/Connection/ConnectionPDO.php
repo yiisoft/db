@@ -118,7 +118,7 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
      *
      * @return PDO|null
      */
-    public function getOpenPDO(?string $sql = '', ?bool $forRead = null): ?PDO
+    public function getActivePDO(?string $sql = '', ?bool $forRead = null): ?PDO
     {
         $this->open();
 
@@ -132,7 +132,7 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
     {
         if ($this->serverVersion === '') {
             /** @var mixed */
-            $version = $this->getOpenPDO()?->getAttribute(PDO::ATTR_SERVER_VERSION);
+            $version = $this->getActivePDO()?->getAttribute(PDO::ATTR_SERVER_VERSION);
             $this->serverVersion = is_string($version) ? $version : 'Version could not be determined.';
         }
 

@@ -36,5 +36,5 @@ interface ConnectionPDOInterface extends ConnectionInterface
      *
      * @return PDO|null the PDO instance for the currently connection.
      */
-    public function getOpenPDO(string $sql = '', ?bool $forRead = null): ?PDO;
+    public function getActivePDO(string $sql = '', ?bool $forRead = null): ?PDO;
 }

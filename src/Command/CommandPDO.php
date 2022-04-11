@@ -8,6 +8,7 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use Throwable;
+use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -19,7 +20,11 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
     private int $fetchMode = PDO::FETCH_ASSOC;
 
     protected ?PDOStatement $pdoStatement = null;
-    protected ConnectionPDOInterface $db;
+
+    public function __construct(protected ConnectionPDOInterface $db, QueryCache $queryCache)
+    {
+        parent::__construct($queryCache);
+    }
 
     public function getPdoStatement(): ?PDOStatement
     {
@@ -154,7 +159,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
 
         $sql = $this->getSql();
 
-        $pdo = $this->db->getOpenPDO($sql, $forRead);
+        $pdo = $this->db->getActivePDO($sql, $forRead);
 
         try {
             $this->pdoStatement = $pdo?->prepare($sql);
