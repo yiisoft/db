@@ -31,11 +31,11 @@ trait TestSchemaTrait
     {
         $db = $this->getConnection(false);
 
-        $db->getSlavePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 
         $this->assertCount(count($db->getSchema()->getTableNames()), $db->getSchema()->getTableSchemas());
 
-        $db->getSlavePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 
         $this->assertCount(count($db->getSchema()->getTableNames()), $db->getSchema()->getTableSchemas());
     }

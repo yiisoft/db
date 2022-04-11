@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Command;
 
 use PDO;
+use PDOException;
 use PDOStatement;
 use Throwable;
+use Yiisoft\Db\Cache\QueryCache;
+use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Pdo\PdoValue;
 use Yiisoft\Db\Query\Data\DataReader;
 
@@ -16,6 +20,11 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
     private int $fetchMode = PDO::FETCH_ASSOC;
 
     protected ?PDOStatement $pdoStatement = null;
+
+    public function __construct(protected ConnectionPDOInterface $db, QueryCache $queryCache)
+    {
+        parent::__construct($queryCache);
+    }
 
     public function getPdoStatement(): ?PDOStatement
     {
@@ -135,6 +144,33 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         $this->pdoStatement?->closeCursor();
 
         return $result;
+    }
+
+    /**
+     * @throws Exception|InvalidConfigException|PDOException
+     */
+    public function prepare(?bool $forRead = null): void
+    {
+        if (isset($this->pdoStatement)) {
+            $this->bindPendingParams();
+
+            return;
+        }
+
+        $sql = $this->getSql();
+
+        $pdo = $this->db->getActivePDO($sql, $forRead);
+
+        try {
+            $this->pdoStatement = $pdo?->prepare($sql);
+            $this->bindPendingParams();
+        } catch (PDOException $e) {
+            $message = $e->getMessage() . "\nFailed to prepare SQL: $sql";
+            /** @var array|null */
+            $errorInfo = $e->errorInfo ?? null;
+
+            throw new Exception($message, $errorInfo, $e);
+        }
     }
 
     /**

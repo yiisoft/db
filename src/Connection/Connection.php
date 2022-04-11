@@ -10,7 +10,6 @@ use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
 use Yiisoft\Db\AwareTrait\ProfilerAwareTrait;
 use Yiisoft\Db\Cache\QueryCache;
-use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Schema\TableSchema;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
@@ -19,25 +18,14 @@ abstract class Connection implements ConnectionInterface
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
 
-    protected array $masters = [];
-    protected array $slaves = [];
-    protected ?ConnectionInterface $master = null;
-    protected ?ConnectionInterface $slave = null;
     protected ?TransactionInterface $transaction = null;
     private ?bool $emulatePrepare = null;
     private bool $enableSavepoint = true;
-    private bool $enableSlaves = true;
     private int $serverRetryInterval = 600;
-    private bool $shuffleMasters = true;
     private string $tablePrefix = '';
 
     public function __construct(private QueryCache $queryCache)
     {
-    }
-
-    public function areSlavesEnabled(): bool
-    {
-        return $this->enableSlaves;
     }
 
     public function beginTransaction(string $isolationLevel = null): TransactionInterface
@@ -78,30 +66,6 @@ abstract class Connection implements ConnectionInterface
     public function getLastInsertID(string $sequenceName = ''): string
     {
         return $this->getSchema()->getLastInsertID($sequenceName);
-    }
-
-    public function getMaster(): ?ConnectionInterface
-    {
-        if ($this->master === null) {
-            $this->master = $this->shuffleMasters
-                ? $this->openFromPool($this->masters)
-                : $this->openFromPoolSequentially($this->masters);
-        }
-
-        return $this->master;
-    }
-
-    public function getSlave(bool $fallbackToMaster = true): ?ConnectionInterface
-    {
-        if (!$this->enableSlaves) {
-            return $fallbackToMaster ? $this : null;
-        }
-
-        if ($this->slave === null) {
-            $this->slave = $this->openFromPool($this->slaves);
-        }
-
-        return $this->slave === null && $fallbackToMaster ? $this : $this->slave;
     }
 
     public function getTablePrefix(): string
@@ -145,31 +109,6 @@ abstract class Connection implements ConnectionInterface
         $this->enableSavepoint = $value;
     }
 
-    public function setEnableSlaves(bool $value): void
-    {
-        $this->enableSlaves = $value;
-    }
-
-    public function setMaster(string $key, ConnectionInterface $master): void
-    {
-        $this->masters[$key] = $master;
-    }
-
-    public function setServerRetryInterval(int $value): void
-    {
-        $this->serverRetryInterval = $value;
-    }
-
-    public function setShuffleMasters(bool $value): void
-    {
-        $this->shuffleMasters = $value;
-    }
-
-    public function setSlave(string $key, ConnectionInterface $slave): void
-    {
-        $this->slaves[$key] = $slave;
-    }
-
     public function setTablePrefix(string $value): void
     {
         $this->tablePrefix = $value;
@@ -195,96 +134,6 @@ abstract class Connection implements ConnectionInterface
         }
 
         return $result;
-    }
-
-    public function useMaster(callable $callback): mixed
-    {
-        if ($this->enableSlaves) {
-            $this->enableSlaves = false;
-
-            try {
-                /** @var mixed */
-                $result = $callback($this);
-            } catch (Throwable $e) {
-                $this->enableSlaves = true;
-
-                throw $e;
-            }
-            $this->enableSlaves = true;
-        } else {
-            /** @var mixed */
-            $result = $callback($this);
-        }
-
-        return $result;
-    }
-
-    /**
-     * Opens the connection to a server in the pool.
-     *
-     * This method implements the load balancing among the given list of the servers.
-     *
-     * Connections will be tried in random order.
-     *
-     * @param array $pool The list of connection configurations in the server pool.
-     *
-     * @return ConnectionInterface|null The opened DB connection, or `null` if no server is available.
-     */
-    protected function openFromPool(array $pool): ?ConnectionInterface
-    {
-        shuffle($pool);
-        return $this->openFromPoolSequentially($pool);
-    }
-
-    /**
-     * Opens the connection to a server in the pool.
-     *
-     * This method implements the load balancing among the given list of the servers.
-     *
-     * Connections will be tried in sequential order.
-     *
-     * @param array $pool
-     *
-     * @return ConnectionInterface|null The opened DB connection, or `null` if no server is available.
-     */
-    protected function openFromPoolSequentially(array $pool): ?ConnectionInterface
-    {
-        if (!$pool) {
-            return null;
-        }
-
-        /** @psalm-var array<array-key, ConnectionPDOInterface> $pool */
-        foreach ($pool as $poolConnection) {
-            $key = [__METHOD__, $poolConnection->getDriver()->getDsn()];
-
-            if (
-                $this->getSchema()->getSchemaCache()->isEnabled() &&
-                $this->getSchema()->getSchemaCache()->getOrSet($key, null, $this->serverRetryInterval)
-            ) {
-                /** should not try this dead server now */
-                continue;
-            }
-
-            try {
-                $poolConnection->open();
-
-                return $poolConnection;
-            } catch (Exception $e) {
-                $this->logger?->log(
-                    LogLevel::WARNING,
-                    "Connection ({$poolConnection->getDriver()->getDsn()}) failed: " . $e->getMessage() . ' ' . __METHOD__
-                );
-
-                if ($this->getSchema()->getSchemaCache()->isEnabled()) {
-                    /** mark this server as dead and only retry it after the specified interval */
-                    $this->getSchema()->getSchemaCache()->set($key, 1, $this->serverRetryInterval);
-                }
-
-                return null;
-            }
-        }
-
-        return null;
     }
 
     /**
