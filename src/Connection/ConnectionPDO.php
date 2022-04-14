@@ -18,7 +18,6 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use function array_keys;
 use function is_string;
-use function strncmp;
 
 abstract class ConnectionPDO extends Connection implements ConnectionPDOInterface
 {
