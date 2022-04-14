@@ -43,11 +43,6 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
     public function __clone()
     {
         $this->transaction = null;
-
-        if (strncmp($this->driver->getDsn(), 'sqlite::memory:', 15) !== 0) {
-            /** reset PDO connection, unless its sqlite in-memory, which can only have one connection */
-            $this->pdo = null;
-        }
     }
 
     /**
