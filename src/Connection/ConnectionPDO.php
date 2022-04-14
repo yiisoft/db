@@ -7,6 +7,8 @@ namespace Yiisoft\Db\Connection;
 use PDO;
 use PDOException;
 use Psr\Log\LogLevel;
+use Yiisoft\Db\Cache\QueryCache;
+use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Driver\PDODriver;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -21,12 +23,19 @@ use function strncmp;
 abstract class ConnectionPDO extends Connection implements ConnectionPDOInterface
 {
     protected ?PDO $pdo = null;
-    protected PDODriver $driver;
     protected string $serverVersion = '';
 
     protected ?QueryBuilderInterface $queryBuilder = null;
     protected ?QuoterInterface $quoter = null;
     protected ?SchemaInterface $schema = null;
+
+    public function __construct(
+        protected PDODriver $driver,
+        protected QueryCache $queryCache,
+        protected SchemaCache $schemaCache
+    ) {
+        parent::__construct($queryCache);
+    }
 
     /**
      * Reset the connection after cloning.
