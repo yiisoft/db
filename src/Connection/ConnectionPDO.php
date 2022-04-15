@@ -7,6 +7,8 @@ namespace Yiisoft\Db\Connection;
 use PDO;
 use PDOException;
 use Psr\Log\LogLevel;
+use Yiisoft\Db\Cache\QueryCache;
+use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Driver\PDODriver;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -16,17 +18,23 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use function array_keys;
 use function is_string;
-use function strncmp;
 
 abstract class ConnectionPDO extends Connection implements ConnectionPDOInterface
 {
     protected ?PDO $pdo = null;
-    protected PDODriver $driver;
     protected string $serverVersion = '';
 
     protected ?QueryBuilderInterface $queryBuilder = null;
     protected ?QuoterInterface $quoter = null;
     protected ?SchemaInterface $schema = null;
+
+    public function __construct(
+        protected PDODriver $driver,
+        protected QueryCache $queryCache,
+        protected SchemaCache $schemaCache
+    ) {
+        parent::__construct($queryCache);
+    }
 
     /**
      * Reset the connection after cloning.
@@ -34,11 +42,7 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
     public function __clone()
     {
         $this->transaction = null;
-
-        if (strncmp($this->driver->getDsn(), 'sqlite::memory:', 15) !== 0) {
-            /** reset PDO connection, unless its sqlite in-memory, which can only have one connection */
-            $this->pdo = null;
-        }
+        $this->pdo = null;
     }
 
     /**
