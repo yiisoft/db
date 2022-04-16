@@ -812,7 +812,16 @@ trait TestCommandTrait
         $sql = 'INSERT INTO {{profile}}([[description]]) VALUES (\'non duplicate\')';
         $command = $db->createCommand($sql);
         $command->execute();
-        $this->assertEquals(3, $db->getSchema()->getLastInsertID());
+        $this->assertEquals(3, $db->getLastInsertID());
+    }
+
+    public function testLastInsertIdException(): void
+    {
+        $db = $this->getConnection();
+        $db->close();
+
+        $this->expectException(InvalidCallException::class);
+        $db->getLastInsertID();
     }
 
     public function testQueryCache(): void

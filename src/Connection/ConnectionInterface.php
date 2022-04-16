@@ -117,7 +117,7 @@ interface ConnectionInterface
     /**
      * Returns the ID of the last inserted row or sequence value.
      *
-     * @param string $sequenceName name of the sequence object (required by some DBMS)
+     * @param string|null $sequenceName name of the sequence object (required by some DBMS)
      *
      * @throws Exception|InvalidCallException
      *
@@ -125,7 +125,7 @@ interface ConnectionInterface
      *
      * @link http://php.net/manual/en/pdo.lastinsertid.php'>http://php.net/manual/en/pdo.lastinsertid.php
      */
-    public function getLastInsertID(string $sequenceName = ''): string;
+    public function getLastInsertID(?string $sequenceName = null): string;
 
     /**
      * Returns the query builder for the current DB connection.

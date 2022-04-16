@@ -63,11 +63,6 @@ abstract class Connection implements ConnectionInterface
         return $this->emulatePrepare;
     }
 
-    public function getLastInsertID(string $sequenceName = ''): string
-    {
-        return $this->getSchema()->getLastInsertID($sequenceName);
-    }
-
     public function getTablePrefix(): string
     {
         return $this->tablePrefix;

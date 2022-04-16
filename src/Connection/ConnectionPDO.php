@@ -11,6 +11,7 @@ use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Driver\PDODriver;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
 use Yiisoft\Db\Query\QueryBuilderInterface;
@@ -127,6 +128,15 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
         $this->open();
 
         return $this->getPDO();
+    }
+
+    public function getLastInsertID(?string $sequenceName = null): string
+    {
+        if ($this->isActive()) {
+            return $this->pdo->lastInsertID($sequenceName === null ? null : $this->getQuoter()->quoteTableName($sequenceName));
+        }
+
+        throw new InvalidCallException('DB Connection is not active.');
     }
 
     /**
