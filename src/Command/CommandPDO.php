@@ -173,6 +173,11 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         }
     }
 
+    protected function getCacheKey(int $queryMode, string $rawSql): array
+    {
+        return array_merge([static::class , $queryMode], $this->db->getCacheKey(), [$rawSql]);
+    }
+
     /**
      * Executes a prepared statement.
      *

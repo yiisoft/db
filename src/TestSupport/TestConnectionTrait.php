@@ -14,6 +14,12 @@ use function unserialize;
 
 trait TestConnectionTrait
 {
+    public function testCacheKey(): void
+    {
+        $db = $this->getConnection();
+        $this->assertEquals([$this->dsn, $this->username], $db->getCacheKey());
+    }
+
     public function testSerialize(): void
     {
         $db = $this->getConnection();

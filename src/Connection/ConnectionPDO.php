@@ -101,9 +101,9 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
         }
     }
 
-    public function getDriver(): PDODriver
+    public function getCacheKey(): array
     {
-        return $this->driver;
+        return [$this->driver->getDsn(), $this->driver->getUsername()];
     }
 
     public function getPdo(): ?PDO

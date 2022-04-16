@@ -95,6 +95,14 @@ interface ConnectionInterface
     public function close(): void;
 
     /**
+     * Return cache key as array.
+     * For example in PDO implementation: [$dsn, $username]
+     *
+     * @return array
+     */
+    public function getCacheKey(): array;
+
+    /**
      * Returns the name of the DB driver.
      *
      * @return string name of the DB driver
