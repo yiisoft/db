@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Connection;
 
 use PDO;
-use Yiisoft\Db\Driver\PDODriver;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
