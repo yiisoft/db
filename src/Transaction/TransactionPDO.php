@@ -139,6 +139,7 @@ class TransactionPDO implements TransactionInterface
 
     /**
      * @inheritDoc
+     *
      * @throws Exception|InvalidConfigException|Throwable
      */
     public function rollBack(): void
