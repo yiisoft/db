@@ -132,7 +132,7 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
 
     public function getLastInsertID(?string $sequenceName = null): string
     {
-        if ($this->isActive()) {
+        if ($this->isActive() && $this->pdo) {
             return $this->pdo->lastInsertID($sequenceName === null ? null : $this->getQuoter()->quoteTableName($sequenceName));
         }
 
