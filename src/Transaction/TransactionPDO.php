@@ -39,77 +39,18 @@ use Yiisoft\Db\Exception\NotSupportedException;
  * containing DBMS specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`. This property is write-only.
  * @property int $level The current nesting level of the transaction. This property is read-only.
  */
-class Transaction
+class TransactionPDO implements TransactionInterface
 {
     use LoggerAwareTrait;
 
-    /**
-     * A constant representing the transaction isolation level `READ UNCOMMITTED`.
-     *
-     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
-     */
-    public const READ_UNCOMMITTED = 'READ UNCOMMITTED';
-
-    /**
-     * A constant representing the transaction isolation level `READ COMMITTED`.
-     *
-     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
-     */
-    public const READ_COMMITTED = 'READ COMMITTED';
-
-    /**
-     * A constant representing the transaction isolation level `REPEATABLE READ`.
-     *
-     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
-     */
-    public const REPEATABLE_READ = 'REPEATABLE READ';
-
-    /**
-     * A constant representing the transaction isolation level `SERIALIZABLE`.
-     *
-     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
-     */
-    public const SERIALIZABLE = 'SERIALIZABLE';
-
     private int $level = 0;
 
-    public function __construct(private ConnectionPDOInterface $db)
+    public function __construct(protected ConnectionPDOInterface $db)
     {
     }
 
     /**
-     * Returns a value indicating whether this transaction is active.
-     *
-     * @return bool whether this transaction is active. Only an active transaction can {@see commit()} or
-     * {@see rollBack()}.
-     */
-    public function isActive(): bool
-    {
-        return $this->level > 0 && $this->db->isActive();
-    }
-
-    /**
-     * Begins a transaction.
-     *
-     * @param string|null $isolationLevel The {@see isolation level}[] to use for this transaction.
-     * This can be one of {@see READ_UNCOMMITTED}, {@see READ_COMMITTED}, {@see REPEATABLE_READ} and {@see SERIALIZABLE}
-     * but also a string containing DBMS specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`.
-     *
-     * If not specified (`null`) the isolation level will not be set explicitly and the DBMS default will be used.
-     *
-     * > Note: This setting does not work for PostgresSQL, where setting the isolation level before the transaction has
-     * no effect. You have to call {@see setIsolationLevel()} in this case after the transaction has started.
-     *
-     * > Note: Some (DBMS) allow setting of the isolation level only for the whole connection so subsequent transactions
-     * may get the same isolation level even if you did not specify any. When using this feature you may need to set the
-     * isolation level for all transactions explicitly to avoid conflicting settings.
-     * At the time of this writing affected DBMS are MSSQL and SQLite.
-     *
-     * [isolation level]: http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
-     *
-     * @throws InvalidConfigException if {@see db} is `null`
-     * @throws NotSupportedException if the DBMS does not support nested transactions
-     * @throws Exception|Throwable if DB connection fails
+     * @inheritDoc
      */
     public function begin(?string $isolationLevel = null): void
     {
@@ -117,7 +58,7 @@ class Transaction
 
         if ($this->level === 0) {
             if ($isolationLevel !== null) {
-                $this->db->getSchema()->setTransactionIsolationLevel($isolationLevel);
+                $this->setTransactionIsolationLevel($isolationLevel);
             }
 
             $this->logger?->log(
@@ -137,7 +78,7 @@ class Transaction
         if ($schema->supportsSavepoint()) {
             $this->logger?->log(LogLevel::DEBUG, 'Set savepoint ' . $this->level . ' ' . __METHOD__);
 
-            $schema->createSavepoint('LEVEL' . $this->level);
+            $this->createSavepoint('LEVEL' . $this->level);
         } else {
             $this->logger?->log(
                 LogLevel::DEBUG,
@@ -151,9 +92,7 @@ class Transaction
     }
 
     /**
-     * Commits a transaction.
-     *
-     * @throws Exception|Throwable if the transaction is not active
+     * @inheritDoc
      */
     public function commit(): void
     {
@@ -173,7 +112,7 @@ class Transaction
 
         if ($schema->supportsSavepoint()) {
             $this->logger?->log(LogLevel::DEBUG, 'Release savepoint ' . $this->level . ' ' . __METHOD__);
-            $schema->releaseSavepoint('LEVEL' . $this->level);
+            $this->releaseSavepoint('LEVEL' . $this->level);
         } else {
             $this->logger?->log(
                 LogLevel::INFO,
@@ -183,7 +122,24 @@ class Transaction
     }
 
     /**
-     * Rolls back a transaction.
+     * @inheritDoc
+     */
+    public function getLevel(): int
+    {
+        return $this->level;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isActive(): bool
+    {
+        return $this->level > 0 && $this->db->isActive();
+    }
+
+    /**
+     * @inheritDoc
+     * @throws Exception|InvalidConfigException|Throwable
      */
     public function rollBack(): void
     {
@@ -206,7 +162,7 @@ class Transaction
         $schema = $this->db->getSchema();
         if ($schema->supportsSavepoint()) {
             $this->logger?->log(LogLevel::DEBUG, 'Roll back to savepoint ' . $this->level . ' ' . __METHOD__);
-            $schema->rollBackSavepoint('LEVEL' . $this->level);
+            $this->rollBackSavepoint('LEVEL' . $this->level);
         } else {
             $this->logger?->log(
                 LogLevel::INFO,
@@ -216,19 +172,7 @@ class Transaction
     }
 
     /**
-     * Sets the transaction isolation level for this transaction.
-     *
-     * This method can be used to set the isolation level while the transaction is already active.
-     * However, this is not supported by all DBMS, so you might rather specify the isolation level directly when calling
-     * {@see begin()}.
-     *
-     * @param string $level The transaction isolation level to use for this transaction.
-     * This can be one of {@see READ_UNCOMMITTED}, {@see READ_COMMITTED}, {@see REPEATABLE_READ} and {@see SERIALIZABLE}
-     * but also a string containing DBMS specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`.
-     *
-     * @throws Exception|Throwable if the transaction is not active.
-     *
-     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
+     * @inheritDoc
      */
     public function setIsolationLevel(string $level): void
     {
@@ -240,14 +184,36 @@ class Transaction
             LogLevel::DEBUG,
             'Setting transaction isolation level to ' . $this->level . ' ' . __METHOD__
         );
-        $this->db->getSchema()->setTransactionIsolationLevel($level);
+        $this->setTransactionIsolationLevel($level);
+    }
+
+    protected function setTransactionIsolationLevel(string $level): void
+    {
+        $this->db->createCommand("SET TRANSACTION ISOLATION LEVEL $level")->execute();
     }
 
     /**
-     * @return int the nesting level of the transaction. 0 means the outermost level.
+     * Creates a new savepoint.
+     *
+     * @param string $name the savepoint name
+     *
+     * @throws Exception|InvalidConfigException|Throwable
      */
-    public function getLevel(): int
+    public function createSavepoint(string $name): void
     {
-        return $this->level;
+        $this->db->createCommand("SAVEPOINT $name")->execute();
+    }
+
+    public function rollBackSavepoint(string $name): void
+    {
+        $this->db->createCommand("ROLLBACK TO SAVEPOINT $name")->execute();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function releaseSavepoint(string $name): void
+    {
+        $this->db->createCommand("RELEASE SAVEPOINT $name")->execute();
     }
 }
