@@ -9,6 +9,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Transaction\Transaction;
 
+use function PHPUnit\Framework\assertEquals;
 use function serialize;
 use function unserialize;
 
@@ -39,7 +40,7 @@ trait TestConnectionTrait
 
     public function testTransaction(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $this->assertNull($db->getTransaction());
 
@@ -68,6 +69,109 @@ trait TestConnectionTrait
         $this->assertNull($db->getTransaction());
         $this->assertEquals(1, $db->createCommand(
             "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
+        )->queryScalar());
+    }
+
+    public function testRollbackTransactionsWithSavePoints(): void
+    {
+        $db = $this->getConnection(true);
+        $db->open();
+
+        $transaction = $db->beginTransaction();
+        assertEquals(1, $transaction->getLevel());
+
+        $db->createCommand()->insert('profile', ['description' => 'test transaction'])->execute();
+
+        $transaction->begin();
+        assertEquals(2, $transaction->getLevel());
+
+        $db->createCommand()->insert('profile', ['description' => 'test transaction'])->execute();
+
+        $transaction->rollBack();
+        assertEquals(1, $transaction->getLevel());
+        $this->assertTrue($transaction->isActive());
+
+        $db->createCommand()->insert('profile', ['description' => 'test transaction'])->execute();
+
+        $transaction->rollBack();
+        assertEquals(0, $transaction->getLevel());
+
+        $this->assertFalse($transaction->isActive());
+        $this->assertNull($db->getTransaction());
+        $this->assertEquals(0, $db->createCommand(
+            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
+        )->queryScalar());
+    }
+
+    public function testPartialRollbackTransactionsWithSavePoints(): void
+    {
+        $db = $this->getConnection(true);
+        $db->open();
+
+        $transaction = $db->beginTransaction();
+        assertEquals(1, $transaction->getLevel());
+
+        $db->createCommand()->insert('profile', ['description' => 'test transaction1'])->execute();
+
+        $transaction->begin();
+        assertEquals(2, $transaction->getLevel());
+
+        $db->createCommand()->insert('profile', ['description' => 'test transaction2'])->execute();
+
+        $transaction->rollBack();
+        assertEquals(1, $transaction->getLevel());
+        $this->assertTrue($transaction->isActive());
+
+        $db->createCommand()->insert('profile', ['description' => 'test transaction3'])->execute();
+
+        $transaction->commit();
+        assertEquals(0, $transaction->getLevel());
+
+        $this->assertFalse($transaction->isActive());
+        $this->assertNull($db->getTransaction());
+        $this->assertEquals(1, $db->createCommand(
+            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction1'"
+        )->queryScalar());
+        $this->assertEquals(0, $db->createCommand(
+            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction2'"
+        )->queryScalar());
+        $this->assertEquals(1, $db->createCommand(
+            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction3'"
+        )->queryScalar());
+    }
+
+    public function testCommitTransactionsWithSavepoints(): void
+    {
+        $db = $this->getConnection(true);
+
+        $transaction = $db->beginTransaction();
+        assertEquals(1, $transaction->getLevel());
+
+        $db->createCommand()->insert('profile', ['description' => 'test transaction1'])->execute();
+
+        $transaction->begin();
+        assertEquals(2, $transaction->getLevel());
+
+        $db->createCommand()->insert('profile', ['description' => 'test transaction2'])->execute();
+
+        $transaction->commit();
+        assertEquals(1, $transaction->getLevel());
+
+        $db->createCommand()->insert('profile', ['description' => 'test transaction3'])->execute();
+
+        $transaction->commit();
+        assertEquals(0, $transaction->getLevel());
+
+        $this->assertFalse($transaction->isActive());
+        $this->assertNull($db->getTransaction());
+        $this->assertEquals(1, $db->createCommand(
+            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction1'"
+        )->queryScalar());
+        $this->assertEquals(1, $db->createCommand(
+            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction2'"
+        )->queryScalar());
+        $this->assertEquals(1, $db->createCommand(
+            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction3'"
         )->queryScalar());
     }
 

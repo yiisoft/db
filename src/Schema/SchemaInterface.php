@@ -4,24 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 interface SchemaInterface extends ConstraintSchemaInterface
 {
-    /**
-     * Creates a new savepoint.
-     *
-     * @param string $name the savepoint name
-     *
-     * @throws Exception|InvalidConfigException|Throwable
-     */
-    public function createSavepoint(string $name): void;
-
     /**
      * Return default schema name.
      */
@@ -138,39 +126,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param string $name Table name.
      */
     public function refreshTableSchema(string $name): void;
-
-    /**
-     * Releases an existing savepoint.
-     *
-     * @param string $name the savepoint name
-     *
-     * @throws Exception|InvalidConfigException|Throwable
-     */
-    public function releaseSavepoint(string $name): void;
-
-    /**
-     * Rolls back to a previously created savepoint.
-     *
-     * @param string $name The savepoint name
-     *
-     * @throws Exception|InvalidConfigException|Throwable
-     */
-    public function rollBackSavepoint(string $name): void;
-
-    /**
-     * Sets the isolation level of the current transaction.
-     *
-     * @param string $level The transaction isolation level to use for this transaction.
-     *
-     * This can be one of {@see Transaction::READ_UNCOMMITTED}, {@see Transaction::READ_COMMITTED},
-     * {@see Transaction::REPEATABLE_READ} and {@see Transaction::SERIALIZABLE} but also a string containing DBMS
-     * specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`.
-     *
-     * @throws Exception|InvalidConfigException|Throwable
-     *
-     * @link http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
-     */
-    public function setTransactionIsolationLevel(string $level): void;
 
     /**
      * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).

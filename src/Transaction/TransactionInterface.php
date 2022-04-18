@@ -13,6 +13,34 @@ use Yiisoft\Db\Exception\NotSupportedException;
 interface TransactionInterface extends LoggerAwareInterface
 {
     /**
+     * A constant representing the transaction isolation level `READ UNCOMMITTED`.
+     *
+     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
+     */
+    public const READ_UNCOMMITTED = 'READ UNCOMMITTED';
+
+    /**
+     * A constant representing the transaction isolation level `READ COMMITTED`.
+     *
+     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
+     */
+    public const READ_COMMITTED = 'READ COMMITTED';
+
+    /**
+     * A constant representing the transaction isolation level `REPEATABLE READ`.
+     *
+     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
+     */
+    public const REPEATABLE_READ = 'REPEATABLE READ';
+
+    /**
+     * A constant representing the transaction isolation level `SERIALIZABLE`.
+     *
+     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
+     */
+    public const SERIALIZABLE = 'SERIALIZABLE';
+
+    /**
      * Begins a transaction.
      *
      * @param string|null $isolationLevel The {@see isolation level}[] to use for this transaction.
@@ -75,7 +103,34 @@ interface TransactionInterface extends LoggerAwareInterface
      *
      * @throws Exception|Throwable If the transaction is not active.
      *
-     * @link http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     public function setIsolationLevel(string $level): void;
+
+    /**
+     * Creates a new savepoint.
+     *
+     * @param string $name the savepoint name
+     *
+     * @throws Exception|InvalidConfigException|Throwable
+     */
+    public function createSavepoint(string $name): void;
+
+    /**
+     * Rolls back to a previously created savepoint.
+     *
+     * @param string $name The savepoint name
+     *
+     * @throws Exception|InvalidConfigException|Throwable
+     */
+    public function rollBackSavepoint(string $name): void;
+
+    /**
+     * Releases an existing savepoint.
+     *
+     * @param string $name the savepoint name
+     *
+     * @throws Exception|InvalidConfigException|Throwable
+     */
+    public function releaseSavepoint(string $name): void;
 }
