@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestSupport;
 
+use PDO;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Transaction\Transaction;
 
 use function PHPUnit\Framework\assertEquals;
 use function serialize;
@@ -19,6 +19,26 @@ trait TestConnectionTrait
     {
         $db = $this->getConnection();
         $this->assertEquals([$this->dsn, $this->username], $db->getCacheKey());
+    }
+
+    public function testOpenClose(): void
+    {
+        $db = $this->getConnection();
+        $this->assertFalse($db->isActive());
+        $this->assertNull($db->getPDO());
+
+        $db->open();
+        $this->assertTrue($db->isActive());
+        $this->assertInstanceOf(PDO::class, $db->getPDO());
+
+        $db->close();
+        $this->assertFalse($db->isActive());
+        $this->assertNull($db->getPDO());
+
+        $db = $this->getConnection(false, 'unknown::memory:');
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('could not find driver');
+        $db->open();
     }
 
     public function testSerialize(): void
