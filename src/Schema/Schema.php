@@ -511,7 +511,7 @@ abstract class Schema implements SchemaInterface
      * @param string $name
      * @param bool $refresh
      *
-     * @return Constraint|Constraint[]|TableSchema|null
+     * @return array|Constraint|TableSchema|null
      */
     protected function getTableTypeMetadata(
         string $type,
