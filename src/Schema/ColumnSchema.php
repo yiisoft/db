@@ -107,8 +107,8 @@ class ColumnSchema
         }
 
         switch ($this->phpType) {
-            case 'resource':
-            case 'string':
+            case Schema::PHP_TYPE_RESOURCE:
+            case Schema::PHP_TYPE_STRING:
                 if (is_resource($value)) {
                     return $value;
                 }
@@ -123,15 +123,15 @@ class ColumnSchema
                 }
 
                 return (string) $value;
-            case 'integer':
+            case Schema::PHP_TYPE_INTEGER:
                 return (int) $value;
-            case 'boolean':
+            case Schema::PHP_TYPE_BOOLEAN:
                 /**
                  * treating a 0 bit value as false too
                  * https://github.com/yiisoft/yii2/issues/9006
                  */
                 return (bool) $value && $value !== "\0";
-            case 'double':
+            case Schema::PHP_TYPE_DOUBLE:
                 return (float) $value;
         }
 

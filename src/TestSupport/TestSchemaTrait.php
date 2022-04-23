@@ -7,6 +7,7 @@ namespace Yiisoft\Db\TestSupport;
 use PDO;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Constraint\DefaultValueConstraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Schema\ColumnSchema;
@@ -38,6 +39,86 @@ trait TestSchemaTrait
         $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 
         $this->assertCount(count($db->getSchema()->getTableNames()), $db->getSchema()->getTableSchemas());
+    }
+
+    public function testGetSchemaPrimaryKeys(): void
+    {
+        $db = $this->getConnection(false);
+
+        $tablePks = $db->getSchema()->getSchemaPrimaryKeys();
+
+        $this->assertIsArray($tablePks);
+        $this->assertContainsOnlyInstancesOf(Constraint::class, $tablePks);
+    }
+
+    public function testGetSchemaChecks(): void
+    {
+        $db = $this->getConnection(false);
+
+        $tableChecks = $db->getSchema()->getSchemaChecks();
+
+        $this->assertIsArray($tableChecks);
+
+        foreach($tableChecks as $checks) {
+            $this->assertIsArray($checks);
+            $this->assertContainsOnlyInstancesOf(CheckConstraint::class, $checks);
+        }
+    }
+
+    public function testGetSchemaDefaultValues(): void
+    {
+        $db = $this->getConnection(false);
+
+        $tableDefaultValues = $db->getSchema()->getSchemaDefaultValues();
+
+        $this->assertIsArray($tableDefaultValues);
+
+        foreach($tableDefaultValues as $defaultValues) {
+            $this->assertIsArray($defaultValues);
+            $this->assertContainsOnlyInstancesOf(DefaultValueConstraint::class, $defaultValues);
+        }
+    }
+
+    public function testGetSchemaForeignKeys(): void
+    {
+        $db = $this->getConnection(false);
+
+        $tableForeignKeys = $db->getSchema()->getSchemaForeignKeys();
+
+        $this->assertIsArray($tableForeignKeys);
+
+        foreach($tableForeignKeys as $foreignKeys) {
+            $this->assertIsArray($foreignKeys);
+            $this->assertContainsOnlyInstancesOf(ForeignKeyConstraint::class, $foreignKeys);
+        }
+    }
+
+    public function testGetSchemaIndexes(): void
+    {
+        $db = $this->getConnection(false);
+
+        $tableIndexes = $db->getSchema()->getSchemaIndexes();
+
+        $this->assertIsArray($tableIndexes);
+
+        foreach($tableIndexes as $indexes) {
+            $this->assertIsArray($indexes);
+            $this->assertContainsOnlyInstancesOf(IndexConstraint::class, $indexes);
+        }
+    }
+
+    public function testGetSchemaUniques(): void
+    {
+        $db = $this->getConnection(false);
+
+        $tableUniques = $db->getSchema()->getSchemaUniques();
+
+        $this->assertIsArray($tableUniques);
+
+        foreach($tableUniques as $uniques) {
+            $this->assertIsArray($uniques);
+            $this->assertContainsOnlyInstancesOf(Constraint::class, $uniques);
+        }
     }
 
     public function testGetNonExistingTableSchema(): void
@@ -349,14 +430,14 @@ trait TestSchemaTrait
         return [
             '1: primary key' => [
                 'T_constraints_1',
-                'primaryKey',
+                Schema::PRIMARY_KEY,
                 (new Constraint())
                     ->name(AnyValue::getInstance())
                     ->columnNames(['C_id']),
             ],
             '1: check' => [
                 'T_constraints_1',
-                'checks',
+                Schema::CHECKS,
                 [
                     (new CheckConstraint())
                         ->name(AnyValue::getInstance())
@@ -366,7 +447,7 @@ trait TestSchemaTrait
             ],
             '1: unique' => [
                 'T_constraints_1',
-                'uniques',
+                Schema::UNIQUES,
                 [
                     (new Constraint())
                         ->name('CN_unique')
@@ -375,7 +456,7 @@ trait TestSchemaTrait
             ],
             '1: index' => [
                 'T_constraints_1',
-                'indexes',
+                Schema::INDEXES,
                 [
                     (new IndexConstraint())
                         ->name(AnyValue::getInstance())
@@ -389,18 +470,18 @@ trait TestSchemaTrait
                         ->unique(true),
                 ],
             ],
-            '1: default' => ['T_constraints_1', 'defaultValues', false],
+            '1: default' => ['T_constraints_1', Schema::DEFAULT_VALUES, false],
 
             '2: primary key' => [
                 'T_constraints_2',
-                'primaryKey',
+                Schema::PRIMARY_KEY,
                 (new Constraint())
                     ->name('CN_pk')
                     ->columnNames(['C_id_1', 'C_id_2']),
             ],
             '2: unique' => [
                 'T_constraints_2',
-                'uniques',
+                Schema::UNIQUES,
                 [
                     (new Constraint())
                         ->name('CN_constraints_2_multi')
@@ -409,7 +490,7 @@ trait TestSchemaTrait
             ],
             '2: index' => [
                 'T_constraints_2',
-                'indexes',
+                Schema::INDEXES,
                 [
                     (new IndexConstraint())
                         ->name(AnyValue::getInstance())
@@ -428,13 +509,13 @@ trait TestSchemaTrait
                         ->unique(true),
                 ],
             ],
-            '2: check' => ['T_constraints_2', 'checks', []],
-            '2: default' => ['T_constraints_2', 'defaultValues', false],
+            '2: check' => ['T_constraints_2', Schema::CHECKS, []],
+            '2: default' => ['T_constraints_2', Schema::DEFAULT_VALUES, false],
 
-            '3: primary key' => ['T_constraints_3', 'primaryKey', null],
+            '3: primary key' => ['T_constraints_3', Schema::PRIMARY_KEY, null],
             '3: foreign key' => [
                 'T_constraints_3',
-                'foreignKeys',
+                Schema::FOREIGN_KEYS,
                 [
                     (new ForeignKeyConstraint())
                         ->name('CN_constraints_3')
@@ -445,10 +526,10 @@ trait TestSchemaTrait
                         ->onUpdate('CASCADE'),
                 ],
             ],
-            '3: unique' => ['T_constraints_3', 'uniques', []],
+            '3: unique' => ['T_constraints_3', Schema::UNIQUES, []],
             '3: index' => [
                 'T_constraints_3',
-                'indexes',
+                Schema::INDEXES,
                 [
                     (new IndexConstraint())
                         ->name('CN_constraints_3')
@@ -457,27 +538,27 @@ trait TestSchemaTrait
                         ->primary(false),
                 ],
             ],
-            '3: check' => ['T_constraints_3', 'checks', []],
-            '3: default' => ['T_constraints_3', 'defaultValues', false],
+            '3: check' => ['T_constraints_3', Schema::CHECKS, []],
+            '3: default' => ['T_constraints_3', Schema::DEFAULT_VALUES, false],
 
             '4: primary key' => [
                 'T_constraints_4',
-                'primaryKey',
+                Schema::PRIMARY_KEY,
                 (new Constraint())
                     ->name(AnyValue::getInstance())
                     ->columnNames(['C_id']),
             ],
             '4: unique' => [
                 'T_constraints_4',
-                'uniques',
+                Schema::UNIQUES,
                 [
                     (new Constraint())
                         ->name('CN_constraints_4')
                         ->columnNames(['C_col_1', 'C_col_2']),
                 ],
             ],
-            '4: check' => ['T_constraints_4', 'checks', []],
-            '4: default' => ['T_constraints_4', 'defaultValues', false],
+            '4: check' => ['T_constraints_4', Schema::CHECKS, []],
+            '4: default' => ['T_constraints_4', Schema::DEFAULT_VALUES, false],
         ];
     }
 
