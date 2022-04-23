@@ -59,7 +59,7 @@ trait TestSchemaTrait
 
         $this->assertIsArray($tableChecks);
 
-        foreach($tableChecks as $checks) {
+        foreach ($tableChecks as $checks) {
             $this->assertIsArray($checks);
             $this->assertContainsOnlyInstancesOf(CheckConstraint::class, $checks);
         }
@@ -73,7 +73,7 @@ trait TestSchemaTrait
 
         $this->assertIsArray($tableDefaultValues);
 
-        foreach($tableDefaultValues as $defaultValues) {
+        foreach ($tableDefaultValues as $defaultValues) {
             $this->assertIsArray($defaultValues);
             $this->assertContainsOnlyInstancesOf(DefaultValueConstraint::class, $defaultValues);
         }
@@ -87,7 +87,7 @@ trait TestSchemaTrait
 
         $this->assertIsArray($tableForeignKeys);
 
-        foreach($tableForeignKeys as $foreignKeys) {
+        foreach ($tableForeignKeys as $foreignKeys) {
             $this->assertIsArray($foreignKeys);
             $this->assertContainsOnlyInstancesOf(ForeignKeyConstraint::class, $foreignKeys);
         }
@@ -101,7 +101,7 @@ trait TestSchemaTrait
 
         $this->assertIsArray($tableIndexes);
 
-        foreach($tableIndexes as $indexes) {
+        foreach ($tableIndexes as $indexes) {
             $this->assertIsArray($indexes);
             $this->assertContainsOnlyInstancesOf(IndexConstraint::class, $indexes);
         }
@@ -115,7 +115,7 @@ trait TestSchemaTrait
 
         $this->assertIsArray($tableUniques);
 
-        foreach($tableUniques as $uniques) {
+        foreach ($tableUniques as $uniques) {
             $this->assertIsArray($uniques);
             $this->assertContainsOnlyInstancesOf(Constraint::class, $uniques);
         }
