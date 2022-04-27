@@ -26,7 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-mysql-${{ matrix.mysql }}
 
     env:
-      COMPOSER_ROOT_VERSION: "dev-dev"
+      COMPOSER_ROOT_VERSION: dev-dev
       extensions: pdo, pdo_mysql
 
     runs-on: ${{ matrix.os }}
@@ -56,7 +56,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
@@ -77,7 +77,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: matrix.php == '8.0'
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
