@@ -13,7 +13,7 @@ use Yiisoft\Cache\Cache;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Log\Logger;
 use Yiisoft\Profiler\Profiler;
 use Yiisoft\Profiler\ProfilerInterface;
@@ -53,7 +53,7 @@ trait TestTrait
         self::assertThat($actual, new IsOneOfAssert($expected), $message);
     }
 
-    protected function createCache(): Cache
+    protected function createCache(): CacheInterface
     {
         if ($this->cache === null) {
             $this->cache = new Cache(new ArrayCache());
@@ -61,7 +61,7 @@ trait TestTrait
         return $this->cache;
     }
 
-    protected function createLogger(): Logger
+    protected function createLogger(): LoggerInterface
     {
         if ($this->logger === null) {
             $this->logger = new Logger();
@@ -69,7 +69,7 @@ trait TestTrait
         return $this->logger;
     }
 
-    protected function createProfiler(): Profiler
+    protected function createProfiler(): ProfilerInterface
     {
         if ($this->profiler === null) {
             $this->profiler = new Profiler($this->createLogger());
@@ -151,7 +151,7 @@ trait TestTrait
         return $result;
     }
 
-    protected function prepareDatabase(ConnectionInterface $db, string $fixture): void
+    protected function prepareDatabase(ConnectionPDOInterface $db, string $fixture): void
     {
         $db->open();
 

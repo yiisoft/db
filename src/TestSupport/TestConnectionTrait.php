@@ -6,6 +6,7 @@ namespace Yiisoft\Db\TestSupport;
 
 use PDO;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 
@@ -53,7 +54,7 @@ trait TestConnectionTrait
 
         $unserialized = unserialize($serialized);
 
-        $this->assertInstanceOf(ConnectionInterface::class, $unserialized);
+        $this->assertInstanceOf(ConnectionPDOInterface::class, $unserialized);
         $this->assertNull($unserialized->getPDO());
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
     }

@@ -656,7 +656,7 @@ trait TestQueryTrait
         $row = (new Query($db))->from('customer')->emulateExecution()->one();
         $this->assertFalse($row);
 
-        $exists = (new Query($db))->from('customer')->emulateExecution()->exists($db);
+        $exists = (new Query($db))->from('customer')->emulateExecution()->exists();
         $this->assertFalse($exists);
 
         $count = (new Query($db))->from('customer')->emulateExecution()->count('*');
@@ -682,7 +682,7 @@ trait TestQueryTrait
     }
 
     /**
-     * @param Connection $db
+     * @param ConnectionInterface $db
      * @param string $tableName
      * @param string $columnName
      * @param array $condition
@@ -716,7 +716,7 @@ trait TestQueryTrait
             $result = (int) $result;
         }
 
-        return $result;
+        return 0;
     }
 
     /**

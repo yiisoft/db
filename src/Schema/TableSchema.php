@@ -11,7 +11,7 @@ use function array_keys;
  *
  * @property array $columnNames List of column names. This property is read-only.
  */
-abstract class TableSchema
+abstract class TableSchema implements TableSchemaInterface
 {
     private ?string $schemaName = null;
     private string $name = '';
@@ -21,6 +21,8 @@ abstract class TableSchema
     private array $primaryKey = [];
     /** @psalm-var ColumnSchema[] */
     private array $columns = [];
+    /** @psalm-var array<array-key, array> */
+    protected array $foreignKeys = [];
 
     /**
      * Gets the named column metadata.
@@ -130,5 +132,29 @@ abstract class TableSchema
     public function columns(string $index, ColumnSchema $value): void
     {
         $this->columns[$index] = $value;
+    }
+
+    /**
+     * ```php
+     * [
+     *  'ForeignTableName',
+     *  'fk1' => 'pk1',  // pk1 is in foreign table
+     *  'fk2' => 'pk2',  // if composite foreign key
+     * ]
+     * ```
+     *
+     * @return array foreign keys of this table. Each array element is of the following structure:
+     */
+    public function getForeignKeys(): array
+    {
+        return $this->foreignKeys;
+    }
+
+    /**
+     * @psalm-param array<array-key, array> $value
+     */
+    public function foreignKeys(array $value): void
+    {
+        $this->foreignKeys = $value;
     }
 }

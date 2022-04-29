@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
+use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 interface SchemaInterface extends ConstraintSchemaInterface
@@ -74,6 +77,40 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @return array All table names in the database.
      */
     public function getTableNames(string $schema = '', bool $refresh = false): array;
+
+    /**
+     * Create a column schema builder instance giving the type and value precision.
+     *
+     * This method may be overridden by child classes to create a DBMS-specific column schema builder.
+     *
+     * @param string $type type of the column. See {@see ColumnSchemaBuilder::$type}.
+     * @param array|int|string|null $length length or precision of the column {@see ColumnSchemaBuilder::$length}.
+     *
+     * @return ColumnSchemaBuilder column schema builder instance
+     *
+     * @psalm-param string[]|int|string|null $length
+     */
+    public function createColumnSchemaBuilder(string $type, array|int|string $length = null): ColumnSchemaBuilder;
+
+    /**
+     * Returns all unique indexes for the given table.
+     *
+     * Each array element is of the following structure:
+     *
+     * ```php
+     * [
+     *     'IndexName1' => ['col1' [, ...]],
+     *     'IndexName2' => ['col2' [, ...]],
+     * ]
+     * ```
+     *
+     * @param TableSchemaInterface $table the table metadata.
+     *
+     * @throws Exception|InvalidConfigException|Throwable
+     *
+     * @return array all unique indexes for the given table.
+     */
+    public function findUniqueIndexes(TableSchemaInterface $table): array;
 
     /**
      * Obtains the metadata for the named table.

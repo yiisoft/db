@@ -1544,4 +1544,14 @@ trait TestQueryBuilderTrait
         $this->assertSame($this->replaceQuotes('SELECT * FROM [[admin_user]] WHERE [[id]] IN (:qp0, :qp1)'), $sql);
         $this->assertSame([':qp0' => '1', ':qp1' => '0'], $params);
     }
+
+    public function buildFromDataProviderTrait(): array
+    {
+        return [
+            ['test t1', '[[test]] [[t1]]'],
+            ['test as t1', '[[test]] [[t1]]'],
+            ['test AS t1', '[[test]] [[t1]]'],
+            ['test', '[[test]]'],
+        ];
+    }
 }
