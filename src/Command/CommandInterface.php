@@ -225,8 +225,8 @@ interface CommandInterface
      * being the parameter names, and array values the corresponding parameter values,
      * e.g. `[':name' => 'John', ':age' => 25]`.
      * By default, the PDO type of each value is determined  by its PHP type. You may explicitly specify the PDO type by
-     * using a {@see PdoValue} class: `new PdoValue(value, type)`,
-     * e.g. `[':name' => 'John', ':profile' => new PdoValue($profile, \PDO::PARAM_LOB)]`.
+     * using a {@see PDOValue} class: `new PDOValue(value, type)`,
+     * e.g. `[':name' => 'John', ':profile' => new PDOValue($profile, \PDO::PARAM_LOB)]`.
      *
      * @return static The current command being executed.
      */

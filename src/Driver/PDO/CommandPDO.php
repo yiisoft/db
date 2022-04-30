@@ -2,24 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Command;
+namespace Yiisoft\Db\Driver\PDO;
 
 use PDO;
 use PDOException;
 use PDOStatement;
 use Throwable;
 use Yiisoft\Db\Cache\QueryCache;
-use Yiisoft\Db\Connection\ConnectionPDOInterface;
+use Yiisoft\Db\Command\Command;
+use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Pdo\PdoValue;
+use Yiisoft\Db\Exception\InvalidParamException;
+use Yiisoft\Db\Driver\PDO\PDOValue;
 use Yiisoft\Db\Query\Data\DataReader;
 
 abstract class CommandPDO extends Command implements CommandPDOInterface
 {
-    private int $fetchMode = PDO::FETCH_ASSOC;
-
     protected ?PDOStatement $pdoStatement = null;
+    private int $fetchMode = PDO::FETCH_ASSOC;
 
     public function __construct(protected ConnectionPDOInterface $db, QueryCache $queryCache)
     {
@@ -102,14 +104,14 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         }
 
         /**
-         * @psalm-var array<string, int>|ParamInterface|PdoValue|int $value
+         * @psalm-var array<string, int>|ParamInterface|PDOValue|int $value
          */
         foreach ($values as $name => $value) {
             if ($value instanceof ParamInterface) {
                 $this->params[$value->getName()] = $value;
             } elseif (is_array($value)) { // TODO: Drop in Yii 2.1
                 $this->params[$name] = new Param($name, ...$value);
-            } elseif ($value instanceof PdoValue && is_int($value->getType())) {
+            } elseif ($value instanceof PDOValue && is_int($value->getType())) {
                 $this->params[$name] = new Param($name, $value->getValue(), $value->getType());
             } else {
                 $type = $this->queryBuilder()->schema()->getPdoType($value);
@@ -120,6 +122,9 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         return $this;
     }
 
+    /**
+     * @throws InvalidParamException
+     */
     protected function internalGetQueryResult(int $queryMode): mixed
     {
         if ($queryMode === static::QUERY_MODE_CURSOR) {

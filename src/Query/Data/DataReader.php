@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Query\Data;
 
 use PDO;
 use PDOStatement;
-use Yiisoft\Db\Command\CommandPDOInterface;
+use Yiisoft\Db\Driver\PDO\CommandPDOInterface;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidParamException;
 
