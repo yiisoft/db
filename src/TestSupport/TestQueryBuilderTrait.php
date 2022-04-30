@@ -1246,6 +1246,12 @@ trait TestQueryBuilderTrait
     {
         $db = $this->getConnection();
 
+        $expressionString = $this->replaceQuotes(
+            "case t.Status_Id when 1 then 'Acknowledge' when 2 then 'No Action' else 'Unknown Action'"
+            . ' END as [[Next Action]]'
+        );
+        $this->assertIsString($expressionString);
+
         $query = (new Query($db))
             ->select([
                 'ID' => 't.id',
@@ -1253,12 +1259,7 @@ trait TestQueryBuilderTrait
                 'part.Part',
                 'Part Cost' => 't.Part_Cost',
                 'st_x(location::geometry) as lon',
-                new Expression(
-                    $this->replaceQuotes(
-                        "case t.Status_Id when 1 then 'Acknowledge' when 2 then 'No Action' else 'Unknown Action'"
-                        . ' END as [[Next Action]]'
-                    )
-                ),
+                new Expression($expressionString),
             ])
             ->from('tablename');
 

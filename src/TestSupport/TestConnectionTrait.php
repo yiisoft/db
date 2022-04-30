@@ -243,8 +243,9 @@ trait TestConnectionTrait
             $this->assertNotNull($db->getTransaction());
 
             $db->transaction(function (ConnectionInterface $db) {
-                $this->assertNotNull($db->getTransaction());
-                $db->getTransaction()->rollBack();
+                $transaction = $db->getTransaction();
+                $this->assertNotNull($transaction);
+                $transaction->rollBack();
             });
 
             $this->assertNotNull($db->getTransaction());
@@ -277,6 +278,9 @@ trait TestConnectionTrait
         /* profiling and logging */
         $db->setLogger($this->logger);
         $db->setProfiler($this->profiler);
+
+        $this->assertNotNull($this->logger);
+        $this->assertNotNull($this->profiler);
 
         $this->logger->flush();
         $this->profiler->flush();

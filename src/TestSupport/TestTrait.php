@@ -21,6 +21,7 @@ use Yiisoft\Profiler\ProfilerInterface;
 trait TestTrait
 {
     protected ?CacheInterface $cache = null;
+    /** @psalm-var Logger|null  */
     protected ?LoggerInterface $logger = null;
     protected ?ProfilerInterface $profiler = null;
     protected ?QueryCache $queryCache = null;
@@ -170,7 +171,7 @@ trait TestTrait
 
         foreach ($lines as $line) {
             if (trim($line) !== '') {
-                $db->getPDO()->exec($line);
+                $db->getPDO()?->exec($line);
             }
         }
     }

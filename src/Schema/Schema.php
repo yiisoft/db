@@ -615,4 +615,20 @@ abstract class Schema implements SchemaInterface
             new TagDependency($this->getCacheTag()),
         );
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function findViewNames(string $schema = ''): array
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getViewNames(string $schema = '', bool $refresh = false): array
+    {
+        return [];
+    }
 }

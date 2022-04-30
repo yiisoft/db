@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
+use Yiisoft\Db\Exception\NotSupportedException;
 use function array_keys;
 
 /**
@@ -134,6 +135,22 @@ abstract class TableSchema implements TableSchemaInterface
         $this->columns[$index] = $value;
     }
 
+    private ?string $catalogName = null;
+
+    public function getCatalogName(): ?string
+    {
+        return $this->catalogName;
+    }
+
+    /**
+     * @param string|null name of the catalog (database) that this table belongs to. Defaults to null, meaning no
+     * catalog (or the current database).
+     */
+    public function catalogName(?string $value): void
+    {
+        $this->catalogName = $value;
+    }
+
     /**
      * ```php
      * [
@@ -156,5 +173,15 @@ abstract class TableSchema implements TableSchemaInterface
     public function foreignKeys(array $value): void
     {
         $this->foreignKeys = $value;
+    }
+
+    public function foreignKey(string|int $id, array $to): void
+    {
+        $this->foreignKeys[$id] = $to;
+    }
+
+    public function compositeFK(int $id, string $from, string $to): void
+    {
+        throw new NotSupportedException('Composite foreign key not supported');
     }
 }
