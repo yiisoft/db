@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use PDO;
+use Throwable;
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Constraint\Constraint;
@@ -68,6 +69,7 @@ abstract class Schema implements SchemaInterface
     protected ?string $defaultSchema = null;
     private array $schemaNames = [];
     private array $tableNames = [];
+    protected array $viewNames = [];
     private array $tableMetadata = [];
 
     public function __construct(private SchemaCache $schemaCache)
@@ -616,19 +618,20 @@ abstract class Schema implements SchemaInterface
         );
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function findViewNames(string $schema = ''): array
+    protected function findViewNames(string $schema = ''): array
     {
         return [];
     }
 
     /**
-     * @inheritDoc
+     * @throws Throwable
      */
     public function getViewNames(string $schema = '', bool $refresh = false): array
     {
-        return [];
+        if (!isset($this->viewNames[$schema]) || $refresh) {
+            $this->viewNames[$schema] = $this->findViewNames($schema);
+        }
+
+        return $this->viewNames[$schema];
     }
 }
