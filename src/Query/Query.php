@@ -780,7 +780,7 @@ class Query implements QueryInterface
      *
      *@throws Exception|InvalidConfigException|Throwable
      *
-     * @return bool|int|string|null|float
+     * @return bool|float|int|string|null
      *
      * @psalm-suppress PossiblyUndefinedVariable
      */
