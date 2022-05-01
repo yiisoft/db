@@ -428,8 +428,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return bool|int|string|null the value of the first column in the first row of the query result. False is
+     * @return bool|float|int|string|null the value of the first column in the first row of the query result. False is
      * returned if the query result is empty.
      */
-    public function scalar(): bool|int|null|string;
+    public function scalar(): bool|int|null|string|float;
 }

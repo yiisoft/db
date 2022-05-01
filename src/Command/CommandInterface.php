@@ -225,8 +225,8 @@ interface CommandInterface
      * being the parameter names, and array values the corresponding parameter values,
      * e.g. `[':name' => 'John', ':age' => 25]`.
      * By default, the PDO type of each value is determined  by its PHP type. You may explicitly specify the PDO type by
-     * using a {@see PdoValue} class: `new PdoValue(value, type)`,
-     * e.g. `[':name' => 'John', ':profile' => new PdoValue($profile, \PDO::PARAM_LOB)]`.
+     * using a {@see PDOValue} class: `new PDOValue(value, type)`,
+     * e.g. `[':name' => 'John', ':profile' => new PDOValue($profile, \PDO::PARAM_LOB)]`.
      *
      * @return static The current command being executed.
      */
@@ -619,10 +619,10 @@ interface CommandInterface
      *
      * @throws Exception|Throwable Execution failed.
      *
-     * @return false|int|string|null The value of the first column in the first row of the query result.
+     * @return false|float|int|string|null The value of the first column in the first row of the query result.
      * False is returned if there is no value.
      */
-    public function queryScalar(): bool|string|null|int;
+    public function queryScalar(): bool|string|null|int|float;
 
     /**
      * Creates a SQL command for renaming a column.

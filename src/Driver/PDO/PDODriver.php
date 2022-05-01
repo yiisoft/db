@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Driver;
+namespace Yiisoft\Db\Driver\PDO;
 
 use PDO;
+use Yiisoft\Db\Driver\DriverInterface;
 
 final class PDODriver implements DriverInterface
 {
@@ -44,7 +45,7 @@ final class PDODriver implements DriverInterface
      * `;charset=UTF-8` to the DSN string.
      *
      * The same applies for if you're using GBK or BIG5 charset with MySQL, then it's highly recommended specifying
-     * charset via {@see dsn} like `'mysql:dbname=mydatabase;host=127.0.0.1;charset=GBK;'`.
+     * charset via {@see dsn} like `'mysql:dbname=database;host=127.0.0.1;charset=GBK;'`.
      *
      * @param string|null $charset
      */
