@@ -118,9 +118,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh Whether to reload the table schema even if it is found in the cache.
      *
-     * @return TableSchema|null Table metadata. `null` if the named table does not exist.
+     * @return TableSchemaInterface|null Table metadata. `null` if the named table does not exist.
      */
-    public function getTableSchema(string $name, bool $refresh = false): ?TableSchema;
+    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface;
 
     /**
      * Returns the metadata for all tables in the database.
@@ -133,7 +133,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @throws NotSupportedException
      *
      * @return array The metadata for all tables in the database. Each array element is an instance of
-     * {@see TableSchema} or its child class.
+     * {@see TableSchemaInterface} or its child class.
      */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array;
 
