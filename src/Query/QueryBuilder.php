@@ -188,7 +188,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addUnique($name, $table, $columns);
     }
 
-    public function alterColumn(string $table, string $column, string $type): string
+    public function alterColumn(string $table, string $column, string|ColumnSchemaBuilder $type): string
     {
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
