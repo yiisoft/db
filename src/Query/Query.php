@@ -321,7 +321,7 @@ class Query implements QueryInterface
     {
         return match ($this->emulateExecution) {
             true => 0,
-            false => is_numeric($count = $this->queryScalar("COUNT($q)")) ? $count : 0,
+            false => is_numeric($count = $this->queryScalar("COUNT($q)")) ? (int) $count : 0,
         };
     }
 
@@ -692,7 +692,7 @@ class Query implements QueryInterface
         return $this->addParams($params);
     }
 
-    public function scalar(): bool|int|null|string
+    public function scalar(): bool|int|null|string|float
     {
         return match ($this->emulateExecution) {
             true => null,
@@ -780,11 +780,11 @@ class Query implements QueryInterface
      *
      *@throws Exception|InvalidConfigException|Throwable
      *
-     * @return bool|int|string|null
+     * @return bool|int|string|null|float
      *
      * @psalm-suppress PossiblyUndefinedVariable
      */
-    protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|null|string
+    protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|null|string|float
     {
         if ($this->emulateExecution) {
             return null;
