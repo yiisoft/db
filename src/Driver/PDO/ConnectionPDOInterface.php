@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Connection;
+namespace Yiisoft\Db\Driver\PDO;
 
 use PDO;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
@@ -22,13 +23,13 @@ interface ConnectionPDOInterface extends ConnectionInterface
     public function getPDO(): ?PDO;
 
     /**
-     * Returns the PDO instance for the currently connection.
+     * Returns the PDO instance for the current connection.
      *
      * This method will open the DB connection and then return {@see pdo}.
      *
      * @throws Exception|InvalidConfigException
      *
-     * @return PDO|null the PDO instance for the currently connection.
+     * @return PDO|null the PDO instance for the current connection.
      */
     public function getActivePDO(string $sql = '', ?bool $forRead = null): ?PDO;
 }

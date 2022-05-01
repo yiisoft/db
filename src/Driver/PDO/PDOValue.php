@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Pdo;
+namespace Yiisoft\Db\Driver\PDO;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 
 /**
- * Class PdoValue represents a $value that should be bound to PDO with exact $type.
+ * Class PDOValue represents a $value that should be bound to PDO with exact $type.
  *
  * For example, it will be useful when you need to bind binary data to BLOB column in DBMS:
  *
  * ```php
- * [':name' => 'John', ':profile' => new PdoValue($profile, \PDO::PARAM_LOB)]`.
+ * [':name' => 'John', ':profile' => new PDOValue($profile, \PDO::PARAM_LOB)]`.
  * ```
  *
  * To see possible types, check [PDO::PARAM_* constants](http://php.net/manual/en/pdo.constants.php).
  *
  * @link http://php.net/manual/en/pdostatement.bindparam.php
  */
-final class PdoValue implements ExpressionInterface
+final class PDOValue implements ExpressionInterface
 {
     public function __construct(private ?string $value = null, private ?int $type = null)
     {
@@ -31,7 +31,7 @@ final class PdoValue implements ExpressionInterface
         ExpressionInterface $expression,
         array &$params = []
     ): string {
-        return (new PdoValueBuilder())->build($expression, $params);
+        return (new PDOValueBuilder())->build($expression, $params);
     }
 
     public function getValue(): ?string

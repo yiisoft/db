@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Transaction;
+namespace Yiisoft\Db\Driver\PDO;
 
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
-use Yiisoft\Db\Connection\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Transaction\TransactionInterface;
 
 /**
  * Transaction represents a DB transaction.
@@ -39,7 +39,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
  * containing DBMS specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`. This property is write-only.
  * @property int $level The current nesting level of the transaction. This property is read-only.
  */
-class TransactionPDO implements TransactionInterface
+abstract class TransactionPDO implements TransactionInterface
 {
     use LoggerAwareTrait;
 
@@ -188,6 +188,9 @@ class TransactionPDO implements TransactionInterface
         $this->setTransactionIsolationLevel($level);
     }
 
+    /**
+     * @throws Exception|InvalidConfigException|Throwable
+     */
     protected function setTransactionIsolationLevel(string $level): void
     {
         $this->db->createCommand("SET TRANSACTION ISOLATION LEVEL $level")->execute();

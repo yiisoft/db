@@ -9,6 +9,8 @@ use JsonException;
 use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\Driver\PDO\PDOValue;
+use Yiisoft\Db\Driver\PDO\PDOValueBuilder;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -17,8 +19,6 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilder;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Pdo\PdoValue;
-use Yiisoft\Db\Pdo\PdoValueBuilder;
 use Yiisoft\Db\Query\Conditions\HashCondition;
 use Yiisoft\Db\Query\Conditions\Interface\ConditionInterface;
 use Yiisoft\Db\Query\Conditions\SimpleCondition;
@@ -835,7 +835,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
     {
         return [
             Query::class => QueryExpressionBuilder::class,
-            PdoValue::class => PdoValueBuilder::class,
+            PDOValue::class => PDOValueBuilder::class,
             Expression::class => ExpressionBuilder::class,
             Conditions\ConjunctionCondition::class => Conditions\Builder\ConjunctionConditionBuilder::class,
             Conditions\NotCondition::class => Conditions\Builder\NotConditionBuilder::class,
