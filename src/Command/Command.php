@@ -507,7 +507,7 @@ abstract class Command implements CommandInterface
      * @psalm-suppress MixedReturnStatement
      * @psalm-suppress MixedInferredReturnType
      */
-    public function queryScalar(): bool|string|null|int
+    public function queryScalar(): bool|string|null|int|float
     {
         $firstRow = $this->queryInternal((int) static::QUERY_MODE_ROW);
 
