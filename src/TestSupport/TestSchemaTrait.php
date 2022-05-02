@@ -12,8 +12,8 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Schema\ColumnSchema;
 use Yiisoft\Db\Schema\Schema;
-use Yiisoft\Db\Schema\TableSchema;
 
+use Yiisoft\Db\Schema\TableSchemaInterface;
 use function array_keys;
 use function fclose;
 use function fopen;
@@ -333,7 +333,7 @@ trait TestSchemaTrait
 
         foreach ($tableNames as $tableName) {
             $tableSchema = $schema->getTableSchema($tableName);
-            $this->assertInstanceOf(TableSchema::class, $tableSchema, $tableName);
+            $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema, $tableName);
         }
     }
 
