@@ -1246,6 +1246,12 @@ trait TestQueryBuilderTrait
     {
         $db = $this->getConnection();
 
+        $expressionString = $this->replaceQuotes(
+            "case t.Status_Id when 1 then 'Acknowledge' when 2 then 'No Action' else 'Unknown Action'"
+            . ' END as [[Next Action]]'
+        );
+        $this->assertIsString($expressionString);
+
         $query = (new Query($db))
             ->select([
                 'ID' => 't.id',
@@ -1253,12 +1259,7 @@ trait TestQueryBuilderTrait
                 'part.Part',
                 'Part Cost' => 't.Part_Cost',
                 'st_x(location::geometry) as lon',
-                new Expression(
-                    $this->replaceQuotes(
-                        "case t.Status_Id when 1 then 'Acknowledge' when 2 then 'No Action' else 'Unknown Action'"
-                        . ' END as [[Next Action]]'
-                    )
-                ),
+                new Expression($expressionString),
             ])
             ->from('tablename');
 
@@ -1543,5 +1544,15 @@ trait TestQueryBuilderTrait
 
         $this->assertSame($this->replaceQuotes('SELECT * FROM [[admin_user]] WHERE [[id]] IN (:qp0, :qp1)'), $sql);
         $this->assertSame([':qp0' => '1', ':qp1' => '0'], $params);
+    }
+
+    public function buildFromDataProviderTrait(): array
+    {
+        return [
+            ['test t1', '[[test]] [[t1]]'],
+            ['test as t1', '[[test]] [[t1]]'],
+            ['test AS t1', '[[test]] [[t1]]'],
+            ['test', '[[test]]'],
+        ];
     }
 }

@@ -6,6 +6,7 @@ namespace Yiisoft\Db\TestSupport;
 
 use PDO;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 
@@ -53,7 +54,7 @@ trait TestConnectionTrait
 
         $unserialized = unserialize($serialized);
 
-        $this->assertInstanceOf(ConnectionInterface::class, $unserialized);
+        $this->assertInstanceOf(ConnectionPDOInterface::class, $unserialized);
         $this->assertNull($unserialized->getPDO());
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
     }
@@ -242,8 +243,9 @@ trait TestConnectionTrait
             $this->assertNotNull($db->getTransaction());
 
             $db->transaction(function (ConnectionInterface $db) {
-                $this->assertNotNull($db->getTransaction());
-                $db->getTransaction()->rollBack();
+                $transaction = $db->getTransaction();
+                $this->assertNotNull($transaction);
+                $transaction->rollBack();
             });
 
             $this->assertNotNull($db->getTransaction());
@@ -276,6 +278,9 @@ trait TestConnectionTrait
         /* profiling and logging */
         $db->setLogger($this->logger);
         $db->setProfiler($this->profiler);
+
+        $this->assertNotNull($this->logger);
+        $this->assertNotNull($this->profiler);
 
         $this->logger->flush();
         $this->profiler->flush();

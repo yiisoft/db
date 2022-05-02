@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
+use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 interface SchemaInterface extends ConstraintSchemaInterface
@@ -76,14 +79,48 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function getTableNames(string $schema = '', bool $refresh = false): array;
 
     /**
+     * Create a column schema builder instance giving the type and value precision.
+     *
+     * This method may be overridden by child classes to create a DBMS-specific column schema builder.
+     *
+     * @param string $type type of the column. See {@see ColumnSchemaBuilder::$type}.
+     * @param array|int|string|null $length length or precision of the column {@see ColumnSchemaBuilder::$length}.
+     *
+     * @return ColumnSchemaBuilder column schema builder instance
+     *
+     * @psalm-param string[]|int|string|null $length
+     */
+    public function createColumnSchemaBuilder(string $type, array|int|string $length = null): ColumnSchemaBuilder;
+
+    /**
+     * Returns all unique indexes for the given table.
+     *
+     * Each array element is of the following structure:
+     *
+     * ```php
+     * [
+     *     'IndexName1' => ['col1' [, ...]],
+     *     'IndexName2' => ['col2' [, ...]],
+     * ]
+     * ```
+     *
+     * @param TableSchemaInterface $table the table metadata.
+     *
+     * @throws Exception|InvalidConfigException|Throwable
+     *
+     * @return array all unique indexes for the given table.
+     */
+    public function findUniqueIndexes(TableSchemaInterface $table): array;
+
+    /**
      * Obtains the metadata for the named table.
      *
      * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh Whether to reload the table schema even if it is found in the cache.
      *
-     * @return TableSchema|null Table metadata. `null` if the named table does not exist.
+     * @return TableSchemaInterface|null Table metadata. `null` if the named table does not exist.
      */
-    public function getTableSchema(string $name, bool $refresh = false): ?TableSchema;
+    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface;
 
     /**
      * Returns the metadata for all tables in the database.
@@ -96,7 +133,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @throws NotSupportedException
      *
      * @return array The metadata for all tables in the database. Each array element is an instance of
-     * {@see TableSchema} or its child class.
+     * {@see TableSchemaInterface} or its child class.
      */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array;
 
@@ -131,4 +168,16 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
      */
     public function supportsSavepoint(): bool;
+
+    /**
+     * Returns all view names in the database.
+     *
+     * @param string $schema the schema of the views. Defaults to empty string, meaning the current or default schema
+     * name. If not empty, the returned view names will be prefixed with the schema name.
+     * @param bool $refresh whether to fetch the latest available view names. If this is false, view names fetched
+     * previously (if available) will be returned.
+     *
+     * @return array all view names in the database.
+     */
+    public function getViewNames(string $schema = '', bool $refresh = false): array;
 }

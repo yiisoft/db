@@ -14,7 +14,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
-use Yiisoft\Db\Schema\TableSchema;
+use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function version_compare;
@@ -164,9 +164,9 @@ interface ConnectionInterface
      * @param string $name table name.
      * @param bool $refresh whether to reload the table schema even if it is found in the cache.
      *
-     * @return TableSchema|null
+     * @return TableSchemaInterface|null
      */
-    public function getTableSchema(string $name, bool $refresh = false): ?TableSchema;
+    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface;
 
     /**
      * Returns the currently active transaction.

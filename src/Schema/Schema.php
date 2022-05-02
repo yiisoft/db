@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use PDO;
+use Throwable;
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Constraint\Constraint;
@@ -68,6 +69,7 @@ abstract class Schema implements SchemaInterface
     protected ?string $defaultSchema = null;
     private array $schemaNames = [];
     private array $tableNames = [];
+    protected array $viewNames = [];
     private array $tableMetadata = [];
 
     public function __construct(private SchemaCache $schemaCache)
@@ -151,9 +153,9 @@ abstract class Schema implements SchemaInterface
      *
      * @param string $name table name.
      *
-     * @return TableSchema|null DBMS-dependent table metadata, `null` if the table does not exist.
+     * @return TableSchemaInterface|null DBMS-dependent table metadata, `null` if the table does not exist.
      */
-    abstract protected function loadTableSchema(string $name): ?TableSchema;
+    abstract protected function loadTableSchema(string $name): ?TableSchemaInterface;
 
     public function getDefaultSchema(): ?string
     {
@@ -284,11 +286,11 @@ abstract class Schema implements SchemaInterface
         return $tablePrimaryKey instanceof Constraint ? $tablePrimaryKey : null;
     }
 
-    public function getTableSchema(string $name, bool $refresh = false): ?TableSchema
+    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface
     {
         /** @var mixed */
         $tableSchema = $this->getTableMetadata($name, self::SCHEMA, $refresh);
-        return $tableSchema instanceof TableSchema ? $tableSchema : null;
+        return $tableSchema instanceof TableSchemaInterface ? $tableSchema : null;
     }
 
     public function getTableSchemas(string $schema = '', bool $refresh = false): array
@@ -431,7 +433,7 @@ abstract class Schema implements SchemaInterface
      *
      * @return array of metadata.
      *
-     * @psalm-return list<Constraint|TableSchema|array>
+     * @psalm-return list<Constraint|TableSchemaInterface|array>
      */
     protected function getSchemaMetadata(string $schema, string $type, bool $refresh): array
     {
@@ -488,9 +490,9 @@ abstract class Schema implements SchemaInterface
      * @param string $type
      * @param string $name
      *
-     * @return array|Constraint|TableSchema|null
+     * @return array|Constraint|TableSchemaInterface|null
      */
-    protected function loadTableTypeMetadata(string $type, string $name): Constraint|array|TableSchema|null
+    protected function loadTableTypeMetadata(string $type, string $name): Constraint|array|TableSchemaInterface|null
     {
         return match ($type) {
             self::SCHEMA => $this->loadTableSchema($name),
@@ -511,13 +513,13 @@ abstract class Schema implements SchemaInterface
      * @param string $name
      * @param bool $refresh
      *
-     * @return array|Constraint|TableSchema|null
+     * @return array|Constraint|TableSchemaInterface|null
      */
     protected function getTableTypeMetadata(
         string $type,
         string $name,
         bool $refresh = false
-    ): Constraint|array|null|TableSchema {
+    ): Constraint|array|null|TableSchemaInterface {
         return match ($type) {
             self::SCHEMA => $this->getTableSchema($name, $refresh),
             self::PRIMARY_KEY => $this->getTablePrimaryKey($name, $refresh),
@@ -537,11 +539,11 @@ abstract class Schema implements SchemaInterface
      *
      * @throws NotSupportedException if this method is not supported by the DBMS.
      *
-     * @return TableSchema with resolved table, schema, etc. names.
+     * @return TableSchemaInterface with resolved table, schema, etc. names.
      *
-     * {@see \Yiisoft\Db\Schema\TableSchema}
+     * {@see \Yiisoft\Db\Schema\TableSchemaInterface}
      */
-    protected function resolveTableName(string $name): TableSchema
+    protected function resolveTableName(string $name): TableSchemaInterface
     {
         throw new NotSupportedException(static::class . ' does not support resolving table names.');
     }
@@ -603,7 +605,7 @@ abstract class Schema implements SchemaInterface
             return;
         }
 
-        /** @psalm-var array<string, array<TableSchema|int>> */
+        /** @psalm-var array<string, array<TableSchemaInterface|int>> */
         $metadata = $this->tableMetadata[$rawName];
         /** @var int */
         $metadata[self::CACHE_VERSION] = static::SCHEMA_CACHE_VERSION;
@@ -614,5 +616,22 @@ abstract class Schema implements SchemaInterface
             $this->schemaCache->getDuration(),
             new TagDependency($this->getCacheTag()),
         );
+    }
+
+    protected function findViewNames(string $schema = ''): array
+    {
+        return [];
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function getViewNames(string $schema = '', bool $refresh = false): array
+    {
+        if (!isset($this->viewNames[$schema]) || $refresh) {
+            $this->viewNames[$schema] = $this->findViewNames($schema);
+        }
+
+        return (array) $this->viewNames[$schema];
     }
 }

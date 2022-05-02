@@ -12,8 +12,8 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Schema\ColumnSchema;
 use Yiisoft\Db\Schema\Schema;
-use Yiisoft\Db\Schema\TableSchema;
 
+use Yiisoft\Db\Schema\TableSchemaInterface;
 use function array_keys;
 use function fclose;
 use function fopen;
@@ -47,6 +47,7 @@ trait TestSchemaTrait
 
         $tablePks = $db->getSchema()->getSchemaPrimaryKeys();
 
+        /** @psalm-suppress RedundantCondition */
         $this->assertIsArray($tablePks);
         $this->assertContainsOnlyInstancesOf(Constraint::class, $tablePks);
     }
@@ -57,6 +58,7 @@ trait TestSchemaTrait
 
         $tableChecks = $db->getSchema()->getSchemaChecks();
 
+        /** @psalm-suppress RedundantCondition */
         $this->assertIsArray($tableChecks);
 
         foreach ($tableChecks as $checks) {
@@ -71,6 +73,7 @@ trait TestSchemaTrait
 
         $tableDefaultValues = $db->getSchema()->getSchemaDefaultValues();
 
+        /** @psalm-suppress RedundantCondition */
         $this->assertIsArray($tableDefaultValues);
 
         foreach ($tableDefaultValues as $defaultValues) {
@@ -85,6 +88,7 @@ trait TestSchemaTrait
 
         $tableForeignKeys = $db->getSchema()->getSchemaForeignKeys();
 
+        /** @psalm-suppress RedundantCondition */
         $this->assertIsArray($tableForeignKeys);
 
         foreach ($tableForeignKeys as $foreignKeys) {
@@ -99,6 +103,7 @@ trait TestSchemaTrait
 
         $tableIndexes = $db->getSchema()->getSchemaIndexes();
 
+        /** @psalm-suppress RedundantCondition */
         $this->assertIsArray($tableIndexes);
 
         foreach ($tableIndexes as $indexes) {
@@ -113,6 +118,7 @@ trait TestSchemaTrait
 
         $tableUniques = $db->getSchema()->getSchemaUniques();
 
+        /** @psalm-suppress RedundantCondition */
         $this->assertIsArray($tableUniques);
 
         foreach ($tableUniques as $uniques) {
@@ -132,6 +138,7 @@ trait TestSchemaTrait
 
         $schema = $db->getSchema();
 
+        $this->assertNotNull($this->schemaCache);
         $this->schemaCache->setEnable(true);
 
         $noCacheTable = $schema->getTableSchema('type', true);
@@ -155,6 +162,8 @@ trait TestSchemaTrait
     {
         $schema = $this->getConnection()->getSchema();
 
+        $this->assertNotNull($this->schemaCache);
+
         $this->schemaCache->setEnable(true);
 
         $noCacheTable = $schema->getTableSchema('type', true);
@@ -171,6 +180,8 @@ trait TestSchemaTrait
         $schema = $this->getConnection()->getSchema();
 
         $table = $schema->getTableSchema('composite_fk');
+
+        $this->assertNotNull($table);
 
         $fk = $table->getForeignKeys();
 
@@ -209,6 +220,7 @@ trait TestSchemaTrait
         $columns = $this->getExpectedColumns();
 
         $table = $this->getConnection(false)->getSchema()->getTableSchema('type', true);
+        $this->assertNotNull($table);
 
         $expectedColNames = array_keys($columns);
 
@@ -274,6 +286,7 @@ trait TestSchemaTrait
             }
             /* Pgsql only */
             if (isset($expected['dimension'])) {
+                /** @psalm-suppress UndefinedMethod */
                 $this->assertSame(
                     $expected['dimension'],
                     $column->getDimension(),
@@ -298,12 +311,13 @@ trait TestSchemaTrait
 
         $table = $schema->getTableSchema('negative_default_values');
 
-        $this->assertEquals(-123, $table->getColumn('tinyint_col')->getDefaultValue());
-        $this->assertEquals(-123, $table->getColumn('smallint_col')->getDefaultValue());
-        $this->assertEquals(-123, $table->getColumn('int_col')->getDefaultValue());
-        $this->assertEquals(-123, $table->getColumn('bigint_col')->getDefaultValue());
-        $this->assertEquals(-12345.6789, $table->getColumn('float_col')->getDefaultValue());
-        $this->assertEquals(-33.22, $table->getColumn('numeric_col')->getDefaultValue());
+        $this->assertNotNull($table);
+        $this->assertEquals(-123, $table->getColumn('tinyint_col')?->getDefaultValue());
+        $this->assertEquals(-123, $table->getColumn('smallint_col')?->getDefaultValue());
+        $this->assertEquals(-123, $table->getColumn('int_col')?->getDefaultValue());
+        $this->assertEquals(-123, $table->getColumn('bigint_col')?->getDefaultValue());
+        $this->assertEquals(-12345.6789, $table->getColumn('float_col')?->getDefaultValue());
+        $this->assertEquals(-33.22, $table->getColumn('numeric_col')?->getDefaultValue());
     }
 
     public function testContraintTablesExistance(): void
@@ -319,7 +333,7 @@ trait TestSchemaTrait
 
         foreach ($tableNames as $tableName) {
             $tableSchema = $schema->getTableSchema($tableName);
-            $this->assertInstanceOf(TableSchema::class, $tableSchema, $tableName);
+            $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema, $tableName);
         }
     }
 
@@ -328,6 +342,7 @@ trait TestSchemaTrait
         $schema = $this->getConnection()->getSchema();
         $table = $schema->getTableSchema('negative_default_values');
 
+        $this->assertNotNull($table);
         $this->assertNull($table->getColumn('no_exist'));
     }
 
@@ -347,6 +362,7 @@ trait TestSchemaTrait
 
         if (is_array($expected)) {
             $this->normalizeArrayKeys($expected, false);
+            /** @psalm-suppress PossiblyInvalidArgument */
             $this->normalizeArrayKeys($actual, false);
         }
 
@@ -420,7 +436,9 @@ trait TestSchemaTrait
             if ($expectedConstraint->getName() instanceof AnyValue) {
                 $actualConstraint->name($expectedConstraint->getName());
             } elseif ($expectedConstraint->getName() instanceof AnyCaseValue) {
-                $actualConstraint->name(new AnyCaseValue($actualConstraint->getName()));
+                $actualConstraintName = $actualConstraint->getName();
+                $this->assertIsString($actualConstraintName);
+                $actualConstraint->name(new AnyCaseValue($actualConstraintName));
             }
         }
     }

@@ -188,8 +188,10 @@ trait TestQueryTrait
         $tables = new Expression('(SELECT id,name FROM user) u');
 
         $query->from($tables);
+        $from = $query->getFrom();
 
-        $this->assertInstanceOf(Expression::class, $query->getFrom()[0]);
+        $this->assertIsArray($from);
+        $this->assertInstanceOf(Expression::class, $from[0]);
     }
 
     protected function createQuery(): Query
@@ -656,7 +658,7 @@ trait TestQueryTrait
         $row = (new Query($db))->from('customer')->emulateExecution()->one();
         $this->assertFalse($row);
 
-        $exists = (new Query($db))->from('customer')->emulateExecution()->exists($db);
+        $exists = (new Query($db))->from('customer')->emulateExecution()->exists();
         $this->assertFalse($exists);
 
         $count = (new Query($db))->from('customer')->emulateExecution()->count('*');
@@ -682,7 +684,7 @@ trait TestQueryTrait
     }
 
     /**
-     * @param Connection $db
+     * @param ConnectionInterface $db
      * @param string $tableName
      * @param string $columnName
      * @param array $condition
@@ -702,8 +704,6 @@ trait TestQueryTrait
         array $condition,
         string $operator = 'or'
     ): int {
-        $db = $this->getConnection();
-
         $whereCondition = [$operator];
 
         foreach ($condition as $value) {
@@ -713,10 +713,10 @@ trait TestQueryTrait
         $result = (new Query($db))->from($tableName)->where($whereCondition)->count('*');
 
         if (is_numeric($result)) {
-            $result = (int) $result;
+            return (int) $result;
         }
 
-        return $result;
+        return 0;
     }
 
     /**
@@ -792,6 +792,7 @@ trait TestQueryTrait
     {
         $db = $this->getConnection();
 
+        /** @psalm-suppress PossiblyNullReference */
         $this->queryCache->setEnable(true);
 
         $query = (new Query($db))

@@ -10,7 +10,7 @@ use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
 use Yiisoft\Db\AwareTrait\ProfilerAwareTrait;
 use Yiisoft\Db\Cache\QueryCache;
-use Yiisoft\Db\Schema\TableSchema;
+use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 abstract class Connection implements ConnectionInterface
@@ -68,7 +68,7 @@ abstract class Connection implements ConnectionInterface
         return $this->tablePrefix;
     }
 
-    public function getTableSchema(string $name, bool $refresh = false): ?TableSchema
+    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface
     {
         return $this->getSchema()->getTableSchema($name, $refresh);
     }

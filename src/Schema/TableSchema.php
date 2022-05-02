@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
+use Yiisoft\Db\Exception\NotSupportedException;
 use function array_keys;
 
 /**
@@ -11,7 +12,7 @@ use function array_keys;
  *
  * @property array $columnNames List of column names. This property is read-only.
  */
-abstract class TableSchema
+abstract class TableSchema implements TableSchemaInterface
 {
     private ?string $schemaName = null;
     private string $name = '';
@@ -21,6 +22,8 @@ abstract class TableSchema
     private array $primaryKey = [];
     /** @psalm-var ColumnSchema[] */
     private array $columns = [];
+    /** @psalm-var array<array-key, array> */
+    protected array $foreignKeys = [];
 
     /**
      * Gets the named column metadata.
@@ -130,5 +133,56 @@ abstract class TableSchema
     public function columns(string $index, ColumnSchema $value): void
     {
         $this->columns[$index] = $value;
+    }
+
+    private ?string $catalogName = null;
+
+    public function getCatalogName(): ?string
+    {
+        return $this->catalogName;
+    }
+
+    /**
+     * @param string|null name of the catalog (database) that this table belongs to. Defaults to null, meaning no
+     * catalog (or the current database).
+     */
+    public function catalogName(?string $value): void
+    {
+        $this->catalogName = $value;
+    }
+
+    /**
+     * ```php
+     * [
+     *  'ForeignTableName',
+     *  'fk1' => 'pk1',  // pk1 is in foreign table
+     *  'fk2' => 'pk2',  // if composite foreign key
+     * ]
+     * ```
+     *
+     * @return array foreign keys of this table. Each array element is of the following structure:
+     * @psalm-return array<array-key, array>
+     */
+    public function getForeignKeys(): array
+    {
+        return $this->foreignKeys;
+    }
+
+    /**
+     * @psalm-param array<array-key, array> $value
+     */
+    public function foreignKeys(array $value): void
+    {
+        $this->foreignKeys = $value;
+    }
+
+    public function foreignKey(string|int $id, array $to): void
+    {
+        $this->foreignKeys[$id] = $to;
+    }
+
+    public function compositeFK(int $id, string $from, string $to): void
+    {
+        throw new NotSupportedException('Composite foreign key not supported');
     }
 }

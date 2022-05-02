@@ -99,6 +99,7 @@ trait TestBatchQueryResultTrait
         $allRows = [];
 
         foreach ($query->each(2) as $index => $row) {
+            /** @psalm-suppress PossiblyNullArrayOffset */
             $allRows[$index] = $row;
         }
         $this->assertCount(3, $allRows);
@@ -114,6 +115,7 @@ trait TestBatchQueryResultTrait
         $allRows = [];
 
         foreach ($query->each(100) as $key => $row) {
+            /** @psalm-suppress PossiblyNullArrayOffset */
             $allRows[$key] = $row;
         }
 
@@ -171,6 +173,7 @@ trait TestBatchQueryResultTrait
         $allRows = [];
 
         foreach ($each as $index => $row) {
+            /** @psalm-suppress PossiblyNullArrayOffset */
             $allRows[$index] = $row;
         }
 

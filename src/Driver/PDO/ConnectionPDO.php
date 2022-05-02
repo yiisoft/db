@@ -121,13 +121,18 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
      * @throws Exception
      * @throws InvalidConfigException
      *
-     * @return PDO|null
+     * @return PDO
      */
-    public function getActivePDO(?string $sql = '', ?bool $forRead = null): ?PDO
+    public function getActivePDO(?string $sql = '', ?bool $forRead = null): PDO
     {
         $this->open();
+        $pdo = $this->getPDO();
 
-        return $this->getPDO();
+        if ($pdo === null) {
+            throw new Exception('PDO cannot be initialized.');
+        }
+
+        return $pdo;
     }
 
     public function getLastInsertID(?string $sequenceName = null): string
@@ -146,7 +151,7 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
     {
         if ($this->serverVersion === '') {
             /** @var mixed */
-            $version = $this->getActivePDO()?->getAttribute(PDO::ATTR_SERVER_VERSION);
+            $version = $this->getActivePDO()->getAttribute(PDO::ATTR_SERVER_VERSION);
             $this->serverVersion = is_string($version) ? $version : 'Version could not be determined.';
         }
 

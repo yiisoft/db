@@ -178,6 +178,8 @@ trait TestCommandTrait
         $command = $db->createCommand($sql);
         $command->prepare();
         $row = $command->queryOne();
+
+        $this->assertIsArray($row);
         $this->assertEquals(1, $row['id']);
         $this->assertEquals('user1', $row['name']);
 
@@ -204,6 +206,7 @@ trait TestCommandTrait
         $db = $this->getConnection();
 
         $rows = $db->createCommand('SELECT [[id]],[[name]] FROM {{customer}}')->queryAll();
+        /** @psalm-suppress RedundantCondition */
         $this->assertIsArray($rows);
         $this->assertCount(3, $rows);
 
@@ -252,17 +255,18 @@ trait TestCommandTrait
     public function testBatchInsertWithYield(): void
     {
         $rows = (static function () {
-            if (false) {
-                yield [];
+            foreach ([['test@email.com', 'test name', 'test address']] as $row) {
+                yield $row;
             }
         })();
+
         $command = $this->getConnection()->createCommand();
         $command->batchInsert(
             '{{customer}}',
             ['email', 'name', 'address'],
             $rows
         );
-        $this->assertEquals(0, $command->execute());
+        $this->assertEquals(1, $command->execute());
     }
 
     /**
@@ -396,6 +400,7 @@ trait TestCommandTrait
         }
 
         $customer = $db->createCommand('SELECT * FROM {{customer}} WHERE id=' . $customerId)->queryOne();
+        $this->assertIsArray($customer);
         $this->assertEquals('Some {{weird}} name', $customer['name']);
         $this->assertEquals('Some {{%weird}} address', $customer['address']);
 
@@ -408,6 +413,7 @@ trait TestCommandTrait
             ['id' => $customerId]
         )->execute();
         $customer = $db->createCommand('SELECT * FROM {{customer}} WHERE id=' . $customerId)->queryOne();
+        $this->assertIsArray($customer);
         $this->assertEquals('Some {{updated}} name', $customer['name']);
         $this->assertEquals('Some {{%updated}} address', $customer['address']);
     }
@@ -828,6 +834,7 @@ trait TestCommandTrait
     {
         $db = $this->getConnection(true);
 
+        /** @psalm-suppress PossiblyNullReference */
         $this->queryCache->setEnable(true);
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
         $this->assertEquals('user1', $command->bindValue(':id', 1)->queryScalar());
@@ -850,6 +857,7 @@ trait TestCommandTrait
             $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
         }, 10);
 
+        /** @psalm-suppress PossiblyNullReference */
         $this->queryCache->setEnable(false);
 
         $db->cache(function () use ($command, $update) {
@@ -858,6 +866,7 @@ trait TestCommandTrait
             $this->assertEquals('user2', $command->bindValue(':id', 2)->queryScalar());
         }, 10);
 
+        /** @psalm-suppress PossiblyNullReference */
         $this->queryCache->setEnable(true);
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->cache();
         $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
