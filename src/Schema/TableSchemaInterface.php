@@ -141,6 +141,7 @@ interface TableSchemaInterface
 
     /**
      * Set one foreignKey by index
+     *
      * @param int|string $id
      * @param array $to
      */
