@@ -8,6 +8,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 
 abstract class DDLQueryBuilder
 {
@@ -124,7 +125,7 @@ abstract class DDLQueryBuilder
             . ' UNIQUE (' . implode(', ', $columns) . ')';
     }
 
-    public function alterColumn(string $table, string $column, string $type): string
+    public function alterColumn(string $table, string $column, string|ColumnSchemaBuilder $type): string
     {
         return 'ALTER TABLE '
             . $this->queryBuilder->quoter()->quoteTableName($table)

@@ -13,7 +13,7 @@ use Yiisoft\Cache\Cache;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Connection\ConnectionPDOInterface;
+use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Log\Logger;
 use Yiisoft\Profiler\Profiler;
 use Yiisoft\Profiler\ProfilerInterface;

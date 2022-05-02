@@ -161,6 +161,7 @@ abstract class TableSchema implements TableSchemaInterface
      * ```
      *
      * @return array foreign keys of this table. Each array element is of the following structure:
+     * @psalm-return array<array-key, array>
      */
     public function getForeignKeys(): array
     {

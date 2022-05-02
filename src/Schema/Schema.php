@@ -632,6 +632,6 @@ abstract class Schema implements SchemaInterface
             $this->viewNames[$schema] = $this->findViewNames($schema);
         }
 
-        return $this->viewNames[$schema];
+        return (array) $this->viewNames[$schema];
     }
 }

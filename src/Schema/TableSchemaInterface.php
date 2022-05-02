@@ -123,6 +123,7 @@ interface TableSchemaInterface
      * ```
      *
      * @return array foreign keys of this table. Each array element is of the following structure:
+     * @psalm-return array<array-key, array>
      */
     public function getForeignKeys(): array;
 
@@ -134,7 +135,7 @@ interface TableSchemaInterface
 
     /**
      * Set one foreignKey by index
-     * @param string $id
+     * @param string|int $id
      * @param array $to
      */
     public function foreignKey(string|int $id, array $to): void;

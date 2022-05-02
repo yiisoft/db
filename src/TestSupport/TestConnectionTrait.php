@@ -6,7 +6,7 @@ namespace Yiisoft\Db\TestSupport;
 
 use PDO;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Connection\ConnectionPDOInterface;
+use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 
