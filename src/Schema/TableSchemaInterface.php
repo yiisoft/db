@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-
 interface TableSchemaInterface
 {
     /**
@@ -65,36 +64,42 @@ interface TableSchemaInterface
 
     /**
      * Set the name of the schema that this table belongs to.
+     *
      * @param string|null $value
      */
     public function schemaName(?string $value): void;
 
     /**
      * Set name of this table
+     *
      * @param string $value
      */
     public function name(string $value): void;
 
     /**
      * Set the full name of this table, which includes the schema name prefix, if any.
+     *
      * @param string|null $value
      */
     public function fullName(?string $value): void;
 
     /**
      * Set sequence name for the primary key
+     *
      * @param string|null $value
      */
     public function sequenceName(?string $value): void;
 
     /**
      * Set primary keys of this table.
+     *
      * @param string $value
      */
     public function primaryKey(string $value): void;
 
     /**
      * Set one column metadata of this table
+     *
      * @param string $index
      * @param ColumnSchema $value
      */
@@ -129,13 +134,14 @@ interface TableSchemaInterface
 
     /**
      * Set foreign keys of this table
+     *
      * @psalm-param array<array-key, array> $value
      */
     public function foreignKeys(array $value): void;
 
     /**
      * Set one foreignKey by index
-     * @param string|int $id
+     * @param int|string $id
      * @param array $to
      */
     public function foreignKey(string|int $id, array $to): void;
