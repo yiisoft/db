@@ -271,6 +271,7 @@ abstract class DMLQueryBuilder
 
     /**
      * @psalm-param Constraint[] $constraints
+     *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|JsonException|NotSupportedException
      */
     protected function prepareUpsertColumns(

@@ -367,9 +367,8 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
                 $columns[$i] = "$column AS " . $this->quoter->quoteColumnName($i);
             } elseif (!str_contains($column, '(')) {
                 if (preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $column, $matches)) {
-                    $columns[$i] = $this->quoter->quoteColumnName(
-                            $matches[1]
-                        ) . ' AS ' . $this->quoter->quoteColumnName($matches[2]);
+                    $columns[$i] = $this->quoter->quoteColumnName($matches[1])
+                        . ' AS ' . $this->quoter->quoteColumnName($matches[2]);
                 } else {
                     $columns[$i] = $this->quoter->quoteColumnName($column);
                 }
