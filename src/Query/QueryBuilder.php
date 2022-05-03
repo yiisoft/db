@@ -5,51 +5,21 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Generator;
-use JsonException;
 use Yiisoft\Db\Command\Command;
-use Yiisoft\Db\Constraint\Constraint;
-use Yiisoft\Db\Constraint\IndexConstraint;
-use Yiisoft\Db\Driver\PDO\PDOValue;
-use Yiisoft\Db\Driver\PDO\PDOValueBuilder;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\ExpressionBuilder;
-use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Conditions\HashCondition;
 use Yiisoft\Db\Query\Conditions\Interface\ConditionInterface;
-use Yiisoft\Db\Query\Conditions\SimpleCondition;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
-use function array_combine;
-use function array_diff;
-use function array_filter;
-use function array_map;
-use function array_merge;
-use function array_shift;
-use function array_unique;
-use function array_values;
 use function count;
-use function ctype_digit;
-use function get_class;
-use function implode;
-use function in_array;
-use function is_array;
-use function is_int;
-use function is_string;
-use function json_encode;
-use function ltrim;
 use function preg_match;
 use function preg_replace;
-use function preg_split;
-use function reset;
-use function strtoupper;
-use function trim;
 
 /**
  * QueryBuilder builds a SELECT SQL statement based on the specification given as a {@see Query} object.
@@ -86,53 +56,13 @@ abstract class QueryBuilder implements QueryBuilderInterface
      */
     protected array $typeMap = [];
 
-    /**
-     * @var array map of condition aliases to condition classes. For example:
-     *
-     * ```php
-     * return [
-     *     'LIKE' => \Yiisoft\Db\Condition\LikeCondition::class,
-     * ];
-     * ```
-     *
-     * This property is used by {@see createConditionFromArray} method.
-     * See default condition classes list in {@see defaultConditionClasses()} method.
-     *
-     * In case you want to add custom conditions support, use the {@see setConditionClasses()} method.
-     *
-     * @see setConditonClasses()
-     * @see defaultConditionClasses()
-     */
-    protected array $conditionClasses = [];
-
-    /**
-     * @psalm-var array<string, class-string<ExpressionBuilderInterface>> maps expression class to expression builder
-     * class.
-     *
-     * For example:
-     *
-     * ```php
-     * [
-     *    Expression::class => ExpressionBuilder::class
-     * ]
-     * ```
-     * This property is mainly used by {@see buildExpression()} to build SQL expressions form expression objects.
-     * See default values in {@see defaultExpressionBuilders()} method.
-     *
-     * {@see setExpressionBuilders()}
-     * {@see defaultExpressionBuilders()}
-     */
-    protected array $expressionBuilders = [];
-    protected string $separator = ' ';
-
     public function __construct(
-        private QuoterInterface $quoter,
-        private SchemaInterface $schema,
+        protected QuoterInterface $quoter,
+        protected SchemaInterface $schema,
         private DDLQueryBuilder $ddlBuilder,
-        private DMLQueryBuilder $dmlBuilder
+        private DMLQueryBuilder $dmlBuilder,
+        private DQLQueryBuilder $dqlBuilder
     ) {
-        $this->expressionBuilders = $this->defaultExpressionBuilders();
-        $this->conditionClasses = $this->defaultConditionClasses();
     }
 
     public function addCheck(string $name, string $table, string $expression): string
@@ -145,17 +75,11 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addColumn($table, $column, $type);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function addCommentOnColumn(string $table, string $column, string $comment): string
     {
         return $this->ddlBuilder->addCommentOnColumn($table, $column, $comment);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function addCommentOnTable(string $table, string $comment): string
     {
         return $this->ddlBuilder->addCommentOnTable($table, $comment);
@@ -193,9 +117,6 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
     {
         return $this->dmlBuilder->batchInsert($table, $columns, $rows, $params);
@@ -212,226 +133,52 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
     public function build(QueryInterface $query, array $params = []): array
     {
-        $query = $query->prepare($this);
-        $params = empty($params) ? $query->getParams() : array_merge($params, $query->getParams());
-        $clauses = [
-            $this->buildSelect($query->getSelect(), $params, $query->getDistinct(), $query->getSelectOption()),
-            $this->buildFrom($query->getFrom(), $params),
-            $this->buildJoin($query->getJoin(), $params),
-            $this->buildWhere($query->getWhere(), $params),
-            $this->buildGroupBy($query->getGroupBy(), $params),
-            $this->buildHaving($query->getHaving(), $params),
-        ];
-        $sql = implode($this->separator, array_filter($clauses));
-        $sql = $this->buildOrderByAndLimit($sql, $query->getOrderBy(), $query->getLimit(), $query->getOffset());
-
-        if (!empty($query->getOrderBy())) {
-            /** @psalm-var array<string, ExpressionInterface|string> */
-            foreach ($query->getOrderBy() as $expression) {
-                if ($expression instanceof ExpressionInterface) {
-                    $this->buildExpression($expression, $params);
-                }
-            }
-        }
-
-        if (!empty($query->getGroupBy())) {
-            /** @psalm-var array<string, ExpressionInterface|string> */
-            foreach ($query->getGroupBy() as $expression) {
-                if ($expression instanceof ExpressionInterface) {
-                    $this->buildExpression($expression, $params);
-                }
-            }
-        }
-
-        $union = $this->buildUnion($query->getUnion(), $params);
-
-        if ($union !== '') {
-            $sql = "($sql)$this->separator$union";
-        }
-
-        $with = $this->buildWithQueries($query->getWithQueries(), $params);
-
-        if ($with !== '') {
-            $sql = "$with$this->separator$sql";
-        }
-
-        return [$sql, $params];
+        return $this->dqlBuilder->build($query, $params);
     }
 
     public function buildColumns(array|string $columns): string
     {
-        if (!is_array($columns)) {
-            if (str_contains($columns, '(')) {
-                return $columns;
-            }
-
-            $rawColumns = $columns;
-            $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
-
-            if ($columns === false) {
-                throw new InvalidArgumentException("$rawColumns is not valid columns.");
-            }
-        }
-
-        /** @psalm-var array<array-key, ExpressionInterface|string> $columns */
-        foreach ($columns as $i => $column) {
-            if ($column instanceof ExpressionInterface) {
-                $columns[$i] = $this->buildExpression($column);
-            } elseif (!str_contains($column, '(')) {
-                $columns[$i] = $this->quoter->quoteColumnName($column);
-            }
-        }
-
-        /** @psalm-var string[] $columns */
-        return implode(', ', $columns);
+        return $this->dqlBuilder->buildColumns($columns);
     }
 
     public function buildCondition(array|string|ExpressionInterface|null $condition, array &$params = []): string
     {
-        if (is_array($condition)) {
-            if (empty($condition)) {
-                return '';
-            }
-
-            $condition = $this->createConditionFromArray($condition);
-        }
-
-        if ($condition instanceof ExpressionInterface) {
-            return $this->buildExpression($condition, $params);
-        }
-
-        return $condition ?? '';
+        return $this->dqlBuilder->buildCondition($condition, $params);
     }
 
-    /**
-     * @throws InvalidArgumentException
-     *
-     * @psalm-suppress UndefinedInterfaceMethod
-     * @psalm-suppress MixedMethodCall
-     */
     public function buildExpression(ExpressionInterface $expression, array &$params = []): string
     {
-        $builder = $this->getExpressionBuilder($expression);
-        return (string) $builder->build($expression, $params);
+        return $this->dqlBuilder->buildExpression($expression, $params);
     }
 
     public function buildFrom(?array $tables, array &$params): string
     {
-        if (empty($tables)) {
-            return '';
-        }
-
-        /** @psalm-var string[] */
-        $tables = $this->quoteTableNames($tables, $params);
-
-        return 'FROM ' . implode(', ', $tables);
+        return $this->dqlBuilder->buildFrom($tables, $params);
     }
 
     public function buildGroupBy(array $columns, array &$params = []): string
     {
-        if (empty($columns)) {
-            return '';
-        }
-
-        /** @psalm-var array<string, Expression|string> $columns */
-        foreach ($columns as $i => $column) {
-            if ($column instanceof Expression) {
-                $columns[$i] = $this->buildExpression($column);
-                $params = array_merge($params, $column->getParams());
-            } elseif (!str_contains($column, '(')) {
-                $columns[$i] = $this->quoter->quoteColumnName($column);
-            }
-        }
-
-        return 'GROUP BY ' . implode(', ', $columns);
+        return $this->dqlBuilder->buildGroupBy($columns, $params);
     }
 
     public function buildHaving(array|ExpressionInterface|string|null $condition, array &$params = []): string
     {
-        $having = $this->buildCondition($condition, $params);
-
-        return ($having === '') ? '' : ('HAVING ' . $having);
+        return $this->dqlBuilder->buildHaving($condition, $params);
     }
 
     public function buildJoin(array $joins, array &$params): string
     {
-        if (empty($joins)) {
-            return '';
-        }
-
-        /**
-         * @psalm-var array<
-         *   array-key,
-         *   array{
-         *     0?:string,
-         *     1?:array<array-key, Query|string>|string,
-         *     2?:array|ExpressionInterface|string|null
-         *   }|null
-         * > $joins
-         */
-        foreach ($joins as $i => $join) {
-            if (!is_array($join) || !isset($join[0], $join[1])) {
-                throw new Exception(
-                    'A join clause must be specified as an array of join type, join table, and optionally join '
-                    . 'condition.'
-                );
-            }
-
-            /* 0:join type, 1:join table, 2:on-condition (optional) */
-            [$joinType, $table] = $join;
-
-            $tables = $this->quoteTableNames((array) $table, $params);
-
-            /** @var string $table */
-            $table = reset($tables);
-            $joins[$i] = "$joinType $table";
-
-            if (isset($join[2])) {
-                $condition = $this->buildCondition($join[2], $params);
-                if ($condition !== '') {
-                    $joins[$i] .= ' ON ' . $condition;
-                }
-            }
-        }
-
-        /** @psalm-var array<string> $joins */
-        return implode($this->separator, $joins);
+        return $this->dqlBuilder->buildJoin($joins, $params);
     }
 
     public function buildLimit(Expression|int|null $limit, Expression|int|null $offset): string
     {
-        $sql = '';
-
-        if ($this->hasLimit($limit)) {
-            $sql = 'LIMIT ' . (string) $limit;
-        }
-
-        if ($this->hasOffset($offset)) {
-            $sql .= ' OFFSET ' . (string) $offset;
-        }
-
-        return ltrim($sql);
+        return $this->dqlBuilder->buildLimit($limit, $offset);
     }
 
     public function buildOrderBy(array $columns, array &$params = []): string
     {
-        if (empty($columns)) {
-            return '';
-        }
-
-        $orders = [];
-
-        /** @psalm-var array<string, Expression|int|string> $columns */
-        foreach ($columns as $name => $direction) {
-            if ($direction instanceof Expression) {
-                $orders[] = $this->buildExpression($direction);
-                $params = array_merge($params, $direction->getParams());
-            } else {
-                $orders[] = $this->quoter->quoteColumnName($name) . ($direction === SORT_DESC ? ' DESC' : '');
-            }
-        }
-
-        return 'ORDER BY ' . implode(', ', $orders);
+        return $this->dqlBuilder->buildOrderBy($columns, $params);
     }
 
     public function buildOrderByAndLimit(
@@ -441,16 +188,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         Expression|int|null $offset,
         array &$params = []
     ): string {
-        $orderBy = $this->buildOrderBy($orderBy, $params);
-        if ($orderBy !== '') {
-            $sql .= $this->separator . $orderBy;
-        }
-        $limit = $this->buildLimit($limit, $offset);
-        if ($limit !== '') {
-            $sql .= $this->separator . $limit;
-        }
-
-        return $sql;
+        return $this->dqlBuilder->buildOrderByAndLimit($sql, $orderBy, $limit, $offset, $params);
     }
 
     public function buildSelect(
@@ -459,100 +197,24 @@ abstract class QueryBuilder implements QueryBuilderInterface
         ?bool $distinct = false,
         string $selectOption = null
     ): string {
-        $select = $distinct ? 'SELECT DISTINCT' : 'SELECT';
-
-        if ($selectOption !== null) {
-            $select .= ' ' . $selectOption;
-        }
-
-        if (empty($columns)) {
-            return $select . ' *';
-        }
-
-        /** @psalm-var array<array-key, ExpressionInterface|Query|string> $columns */
-        foreach ($columns as $i => $column) {
-            if ($column instanceof ExpressionInterface) {
-                if (is_int($i)) {
-                    $columns[$i] = $this->buildExpression($column, $params);
-                } else {
-                    $columns[$i] = $this->buildExpression($column, $params) . ' AS '
-                        . $this->quoter->quoteColumnName($i);
-                }
-            } elseif ($column instanceof QueryInterface) {
-                [$sql, $params] = $this->build($column, $params);
-                $columns[$i] = "($sql) AS " . $this->quoter->quoteColumnName((string) $i);
-            } elseif (is_string($i) && $i !== $column) {
-                if (!str_contains($column, '(')) {
-                    $column = $this->quoter->quoteColumnName($column);
-                }
-                $columns[$i] = "$column AS " . $this->quoter->quoteColumnName($i);
-            } elseif (!str_contains($column, '(')) {
-                if (preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $column, $matches)) {
-                    $columns[$i] = $this->quoter->quoteColumnName(
-                        $matches[1]
-                    ) . ' AS ' . $this->quoter->quoteColumnName($matches[2]);
-                } else {
-                    $columns[$i] = $this->quoter->quoteColumnName($column);
-                }
-            }
-        }
-
-        return $select . ' ' . implode(', ', $columns);
+        return $this->dqlBuilder->buildSelect($columns, $params, $distinct, $selectOption);
     }
 
     public function buildUnion(array $unions, array &$params): string
     {
-        if (empty($unions)) {
-            return '';
-        }
-
-        $result = '';
-
-        /** @psalm-var array<array{query:Query|string, all:bool}> $unions */
-        foreach ($unions as $i => $union) {
-            $query = $union['query'];
-            if ($query instanceof QueryInterface) {
-                [$unions[$i]['query'], $params] = $this->build($query, $params);
-            }
-
-            $result .= 'UNION ' . ($union['all'] ? 'ALL ' : '') . '( ' . $unions[$i]['query'] . ' ) ';
-        }
-
-        return trim($result);
+        return $this->dqlBuilder->buildUnion($unions, $params);
     }
 
     public function buildWhere(
         array|string|ConditionInterface|ExpressionInterface|null $condition,
         array &$params = []
     ): string {
-        $where = $this->buildCondition($condition, $params);
-        return ($where === '') ? '' : ('WHERE ' . $where);
+        return $this->dqlBuilder->buildWhere($condition, $params);
     }
 
     public function buildWithQueries(array $withs, array &$params): string
     {
-        if (empty($withs)) {
-            return '';
-        }
-
-        $recursive = false;
-        $result = [];
-
-        /** @psalm-var array<array-key, array{query:string|Query, alias:string, recursive:bool}> $withs */
-        foreach ($withs as $with) {
-            if ($with['recursive']) {
-                $recursive = true;
-            }
-
-            $query = $with['query'];
-            if ($query instanceof QueryInterface) {
-                [$with['query'], $params] = $this->build($query, $params);
-            }
-
-            $result[] = $with['alias'] . ' AS (' . $with['query'] . ')';
-        }
-
-        return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);
+        return $this->dqlBuilder->buildWithQueries($withs, $params);
     }
 
     public function checkIntegrity(string $schema = '', string $table = '', bool $check = true): string
@@ -562,18 +224,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
     public function createConditionFromArray(array $condition): ConditionInterface
     {
-        /** operator format: operator, operand 1, operand 2, ... */
-        if (isset($condition[0])) {
-            $operator = strtoupper((string) array_shift($condition));
-
-            $className = $this->conditionClasses[$operator] ?? SimpleCondition::class;
-
-            /** @var ConditionInterface $className */
-            return $className::fromArrayDefinition($operator, $condition);
-        }
-
-        /** hash format: 'column1' => 'value1', 'column2' => 'value2', ... */
-        return new HashCondition($condition);
+        return $this->dqlBuilder->createConditionFromArray($condition);
     }
 
     public function createIndex(string $name, string $table, array|string $columns, bool $unique = false): string
@@ -678,27 +329,9 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $type;
     }
 
-    /**
-     * @throws InvalidArgumentException
-     *
-     * @psalm-suppress InvalidStringClass
-     */
     public function getExpressionBuilder(ExpressionInterface $expression): object
     {
-        $className = get_class($expression);
-
-        if (!isset($this->expressionBuilders[$className])) {
-            throw new InvalidArgumentException(
-                'Expression of class ' . $className . ' can not be built in ' . static::class
-            );
-        }
-
-        return new $this->expressionBuilders[$className]($this);
-    }
-
-    public function getQuoter(): QuoterInterface
-    {
-        return $this->quoter;
+        return $this->dqlBuilder->getExpressionBuilder($expression);
     }
 
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
@@ -712,6 +345,11 @@ abstract class QueryBuilder implements QueryBuilderInterface
     public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         return $this->dmlBuilder->insertEx($table, $columns, $params);
+    }
+
+    public function quoter(): QuoterInterface
+    {
+        return $this->quoter;
     }
 
     public function renameColumn(string $table, string $oldName, string $newName): string
@@ -729,50 +367,29 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->resetSequence($tableName, $value);
     }
 
+    public function schema(): SchemaInterface
+    {
+        return $this->schema;
+    }
+
     public function selectExists(string $rawSql): string
     {
-        return $this->dmlBuilder->selectExists($rawSql);
+        return $this->dqlBuilder->selectExists($rawSql);
     }
 
-    /**
-     * Setter for {@see conditionClasses} property.
-     *
-     * @param string[] $classes map of condition aliases to condition classes. For example:
-     *
-     * ```php
-     * ['LIKE' => \Yiisoft\Db\Condition\LikeCondition::class]
-     * ```
-     *
-     * See {@see conditionClasses} docs for details.
-     */
     public function setConditionClasses(array $classes): void
     {
-        $this->conditionClasses = array_merge($this->conditionClasses, $classes);
+        $this->dqlBuilder->setConditionClasses($classes);
     }
 
-    /**
-     * Setter for {@see expressionBuilders property.
-     *
-     * @param string[] $builders array of builders that should be merged with the pre-defined ones in property.
-     *
-     * See {@see expressionBuilders} docs for details.
-     *
-     * @psalm-param array<string, class-string<ExpressionBuilderInterface>> $builders
-     */
     public function setExpressionBuilders(array $builders): void
     {
-        /** @psalm-var array<string, class-string<ExpressionBuilderInterface>> */
-        $this->expressionBuilders = array_merge($this->expressionBuilders, $builders);
+        $this->dqlBuilder->setExpressionBuilders($builders);
     }
 
-    /**
-     * @param string the separator between different fragments of a SQL statement.
-     *
-     * Defaults to an empty space. This is mainly used by {@see build()} when generating a SQL statement.
-     */
     public function setSeparator(string $separator): void
     {
-        $this->separator = $separator;
+        $this->dqlBuilder->setSeparator($separator);
     }
 
     public function truncateTable(string $table): string
@@ -792,358 +409,5 @@ abstract class QueryBuilder implements QueryBuilderInterface
         array &$params = []
     ): string {
         return $this->dmlBuilder->upsert($table, $insertColumns, $updateColumns, $params);
-    }
-
-    /**
-     * Contains array of default condition classes. Extend this method, if you want to change default condition classes
-     * for the query builder.
-     *
-     * @return array
-     *
-     * See {@see conditionClasses} docs for details.
-     */
-    protected function defaultConditionClasses(): array
-    {
-        return [
-            'NOT' => Conditions\NotCondition::class,
-            'AND' => Conditions\AndCondition::class,
-            'OR' => Conditions\OrCondition::class,
-            'BETWEEN' => Conditions\BetweenCondition::class,
-            'NOT BETWEEN' => Conditions\BetweenCondition::class,
-            'IN' => Conditions\InCondition::class,
-            'NOT IN' => Conditions\InCondition::class,
-            'LIKE' => Conditions\LikeCondition::class,
-            'NOT LIKE' => Conditions\LikeCondition::class,
-            'OR LIKE' => Conditions\LikeCondition::class,
-            'OR NOT LIKE' => Conditions\LikeCondition::class,
-            'EXISTS' => Conditions\ExistsCondition::class,
-            'NOT EXISTS' => Conditions\ExistsCondition::class,
-        ];
-    }
-
-    /**
-     * Contains array of default expression builders. Extend this method and override it, if you want to change default
-     * expression builders for this query builder.
-     *
-     * @return array
-     *
-     * See {@see expressionBuilders} docs for details.
-     *
-     * @psalm-return array<string, class-string<ExpressionBuilderInterface>>
-     */
-    protected function defaultExpressionBuilders(): array
-    {
-        return [
-            Query::class => QueryExpressionBuilder::class,
-            PDOValue::class => PDOValueBuilder::class,
-            Expression::class => ExpressionBuilder::class,
-            Conditions\ConjunctionCondition::class => Conditions\Builder\ConjunctionConditionBuilder::class,
-            Conditions\NotCondition::class => Conditions\Builder\NotConditionBuilder::class,
-            Conditions\AndCondition::class => Conditions\Builder\ConjunctionConditionBuilder::class,
-            Conditions\OrCondition::class => Conditions\Builder\ConjunctionConditionBuilder::class,
-            Conditions\BetweenCondition::class => Conditions\Builder\BetweenConditionBuilder::class,
-            Conditions\InCondition::class => Conditions\Builder\InConditionBuilder::class,
-            Conditions\LikeCondition::class => Conditions\Builder\LikeConditionBuilder::class,
-            Conditions\ExistsCondition::class => Conditions\Builder\ExistsConditionBuilder::class,
-            Conditions\SimpleCondition::class => Conditions\Builder\SimpleConditionBuilder::class,
-            Conditions\HashCondition::class => Conditions\Builder\HashConditionBuilder::class,
-            Conditions\BetweenColumnsCondition::class => Conditions\Builder\BetweenColumnsConditionBuilder::class,
-        ];
-    }
-
-    /**
-     * Extracts table alias if there is one or returns false.
-     *
-     * @param string $table
-     *
-     * @return array|bool
-     *
-     * @psalm-return string[]|bool
-     */
-    protected function extractAlias(string $table): array|bool
-    {
-        if (preg_match('/^(.*?)(?i:\s+as|)\s+([^ ]+)$/', $table, $matches)) {
-            return $matches;
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks to see if the given limit is effective.
-     *
-     * @param mixed $limit the given limit.
-     *
-     * @return bool whether the limit is effective.
-     */
-    protected function hasLimit(mixed $limit): bool
-    {
-        return ($limit instanceof ExpressionInterface) || ctype_digit((string) $limit);
-    }
-
-    /**
-     * Checks to see if the given offset is effective.
-     *
-     * @param mixed $offset the given offset.
-     *
-     * @return bool whether the offset is effective.
-     */
-    protected function hasOffset(mixed $offset): bool
-    {
-        return ($offset instanceof ExpressionInterface) || (ctype_digit((string)$offset) && (string)$offset !== '0');
-    }
-
-    /**
-     * Prepare select-subquery and field names for INSERT INTO ... SELECT SQL statement.
-     *
-     * @param QueryInterface $columns Object, which represents select query.
-     * @param array $params the parameters to be bound to the generated SQL statement. These parameters will be included
-     * in the result with the additional parameters generated during the query building process.
-     *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
-     *
-     * @return array array of column names, values and params.
-     */
-    protected function prepareInsertSelectSubQuery(QueryInterface $columns, array $params = []): array
-    {
-        if (empty($columns->getSelect()) || in_array('*', $columns->getSelect(), true)) {
-            throw new InvalidArgumentException('Expected select query object with enumerated (named) parameters');
-        }
-
-        [$values, $params] = $this->build($columns, $params);
-
-        $names = [];
-        $values = ' ' . $values;
-        /** @psalm-var string[] */
-        $select = $columns->getSelect();
-
-        foreach ($select as $title => $field) {
-            if (is_string($title)) {
-                $names[] = $this->quoter->quoteColumnName($title);
-            } elseif (preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $field, $matches)) {
-                $names[] = $this->quoter->quoteColumnName($matches[2]);
-            } else {
-                $names[] = $this->quoter->quoteColumnName($field);
-            }
-        }
-
-        return [$names, $values, $params];
-    }
-
-    public function prepareInsertValues(string $table, QueryInterface|array $columns, array $params = []): array
-    {
-        $tableSchema = $this->schema->getTableSchema($table);
-        $columnSchemas = $tableSchema !== null ? $tableSchema->getColumns() : [];
-        $names = [];
-        $placeholders = [];
-        $values = ' DEFAULT VALUES';
-
-        if ($columns instanceof QueryInterface) {
-            [$names, $values, $params] = $this->prepareInsertSelectSubQuery($columns, $params);
-        } else {
-            /**
-             * @var mixed $value
-             * @psalm-var array<string, mixed> $columns
-             */
-            foreach ($columns as $name => $value) {
-                $names[] = $this->quoter->quoteColumnName($name);
-                /** @var mixed $value */
-                $value = isset($columnSchemas[$name]) ? $columnSchemas[$name]->dbTypecast($value) : $value;
-
-                if ($value instanceof ExpressionInterface) {
-                    $placeholders[] = $this->buildExpression($value, $params);
-                } elseif ($value instanceof QueryInterface) {
-                    [$sql, $params] = $this->build($value, $params);
-                    $placeholders[] = "($sql)";
-                } else {
-                    $placeholders[] = $this->bindParam($value, $params);
-                }
-            }
-        }
-
-        return [$names, $placeholders, $values, $params];
-    }
-
-    public function prepareUpdateSets(string $table, array $columns, array $params = []): array
-    {
-        $tableSchema = $this->schema->getTableSchema($table);
-
-        $columnSchemas = $tableSchema !== null ? $tableSchema->getColumns() : [];
-
-        $sets = [];
-
-        /**
-         * @psalm-var array<string, mixed> $columns
-         * @psalm-var mixed $value
-         */
-        foreach ($columns as $name => $value) {
-            /** @var mixed */
-            $value = isset($columnSchemas[$name]) ? $columnSchemas[$name]->dbTypecast($value) : $value;
-            if ($value instanceof ExpressionInterface) {
-                $placeholder = $this->buildExpression($value, $params);
-            } else {
-                $placeholder = $this->bindParam($value, $params);
-            }
-
-            $sets[] = $this->quoter->quoteColumnName($name) . '=' . $placeholder;
-        }
-
-        return [$sets, $params];
-    }
-
-    /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|JsonException|NotSupportedException
-     */
-    public function prepareUpsertColumns(
-        string $table,
-        QueryInterface|array $insertColumns,
-        QueryInterface|bool|array $updateColumns,
-        array &$constraints = []
-    ): array {
-        $insertNames = [];
-
-        if ($insertColumns instanceof QueryInterface) {
-            /** @psalm-var list<string> $insertNames */
-            [$insertNames] = $this->prepareInsertSelectSubQuery($insertColumns);
-        } else {
-            /** @psalm-var array<string, string> $insertColumns */
-            foreach ($insertColumns as $key => $_value) {
-                $insertNames[] = $this->quoter->quoteColumnName($key);
-            }
-        }
-
-        /** @psalm-var string[] */
-        $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
-
-        foreach ($uniqueNames as $key => $name) {
-            $insertNames[$key] = $this->quoter->quoteColumnName($name);
-        }
-
-        if ($updateColumns !== true) {
-            return [$uniqueNames, $insertNames, null];
-        }
-
-        return [$uniqueNames, $insertNames, array_diff($insertNames, $uniqueNames)];
-    }
-
-    /**
-     * Quotes table names passed.
-     *
-     * @param array $tables
-     * @param array $params
-     *
-     * @throws Exception|InvalidConfigException|NotSupportedException
-     *
-     * @return array
-     */
-    private function quoteTableNames(array $tables, array &$params): array
-    {
-        /** @psalm-var array<array-key, array|QueryInterface|string> $tables */
-        foreach ($tables as $i => $table) {
-            if ($table instanceof QueryInterface) {
-                [$sql, $params] = $this->build($table, $params);
-                $tables[$i] = "($sql) " . $this->quoter->quoteTableName((string) $i);
-            } elseif (is_string($table) && is_string($i)) {
-                if (!str_contains($table, '(')) {
-                    $table = $this->quoter->quoteTableName($table);
-                }
-                $tables[$i] = "$table " . $this->quoter->quoteTableName($i);
-            } elseif (is_string($table) && !str_contains($table, '(')) {
-                $tableWithAlias = $this->extractAlias($table);
-                if (is_array($tableWithAlias)) { // with alias
-                    $tables[$i] = $this->quoter->quoteTableName($tableWithAlias[1]) . ' '
-                        . $this->quoter->quoteTableName($tableWithAlias[2]);
-                } else {
-                    $tables[$i] = $this->quoter->quoteTableName($table);
-                }
-            }
-        }
-
-        return $tables;
-    }
-
-    /**
-     * Returns all column names belonging to constraints enforcing uniqueness (`PRIMARY KEY`, `UNIQUE INDEX`, etc.)
-     * for the named table removing constraints which did not cover the specified column list.
-     *
-     * The column list will be unique by column names.
-     *
-     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param string[] $columns source column list.
-     * @param Constraint[] $constraints this parameter optionally receives a matched constraint list. The constraints
-     * will be unique by their column names.
-     *
-     * @throws JsonException
-     *
-     * @return array column list.
-     *
-     * @psalm-param list<string> $columns
-     * @param-out list<Constraint|mixed> $constraints
-     */
-    private function getTableUniqueColumnNames(string $name, array $columns, array &$constraints = []): array
-    {
-        $constraints = [];
-        $primaryKey = $this->schema->getTablePrimaryKey($name);
-
-        if ($primaryKey !== null) {
-            $constraints[] = $primaryKey;
-        }
-
-        /** @psalm-var IndexConstraint[] */
-        $tableIndexes = $this->schema->getTableIndexes($name);
-
-        foreach ($tableIndexes as $constraint) {
-            if ($constraint->isUnique()) {
-                $constraints[] = $constraint;
-            }
-        }
-
-        $constraints = array_merge($constraints, $this->schema->getTableUniques($name));
-
-        /** Remove duplicates */
-        $constraints = array_combine(
-            array_map(
-                static function (Constraint $constraint) {
-                    $columns = $constraint->getColumnNames() ?? [];
-                    $columns = is_array($columns) ? $columns : [$columns];
-                    sort($columns, SORT_STRING);
-                    return json_encode($columns, JSON_THROW_ON_ERROR);
-                },
-                $constraints
-            ),
-            $constraints
-        );
-
-        $columnNames = [];
-        $quoter = $this->quoter;
-
-        // Remove all constraints which do not cover the specified column list.
-        $constraints = array_values(
-            array_filter(
-                $constraints,
-                static function (Constraint $constraint) use ($quoter, $columns, &$columnNames) {
-                    /** @psalm-var string[]|string */
-                    $getColumnNames = $constraint->getColumnNames() ?? [];
-                    $constraintColumnNames = [];
-
-                    if (is_array($getColumnNames)) {
-                        foreach ($getColumnNames as $columnName) {
-                            $constraintColumnNames[] = $quoter->quoteColumnName($columnName);
-                        }
-                    }
-
-                    $result = !array_diff($constraintColumnNames, $columns);
-
-                    if ($result) {
-                        $columnNames = array_merge((array) $columnNames, $constraintColumnNames);
-                    }
-
-                    return $result;
-                }
-            )
-        );
-
-        /** @var array $columnNames */
-        return array_unique($columnNames);
     }
 }

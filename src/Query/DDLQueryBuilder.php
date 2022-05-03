@@ -10,27 +10,38 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 
+use Yiisoft\Db\Schema\QuoterInterface;
+use Yiisoft\Db\Schema\SchemaInterface;
+use function implode;
+use function is_string;
+use function preg_split;
+
 abstract class DDLQueryBuilder
 {
+    protected SchemaInterface $schema;
+    protected QuoterInterface $quoter;
+
     public function __construct(private QueryBuilderInterface $queryBuilder)
     {
+        $this->schema = $this->queryBuilder->schema();
+        $this->quoter = $this->queryBuilder->quoter();
     }
 
     public function addCheck(string $name, string $table, string $expression): string
     {
         return 'ALTER TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
+            . $this->quoter->quoteTableName($table)
             . ' ADD CONSTRAINT '
-            . $this->queryBuilder->quoter()->quoteColumnName($name)
-            . ' CHECK (' . $this->queryBuilder->quoter()->quoteSql($expression) . ')';
+            . $this->quoter->quoteColumnName($name)
+            . ' CHECK (' . $this->quoter->quoteSql($expression) . ')';
     }
 
     public function addColumn(string $table, string $column, string $type): string
     {
         return 'ALTER TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
+            . $this->quoter->quoteTableName($table)
             . ' ADD '
-            . $this->queryBuilder->quoter()->quoteColumnName($column)
+            . $this->quoter->quoteColumnName($column)
             . ' '
             . $this->queryBuilder->getColumnType($type);
     }
@@ -38,19 +49,19 @@ abstract class DDLQueryBuilder
     public function addCommentOnColumn(string $table, string $column, string $comment): string
     {
         return 'COMMENT ON COLUMN '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
+            . $this->quoter->quoteTableName($table)
             . '.'
-            . $this->queryBuilder->quoter()->quoteColumnName($column)
+            . $this->quoter->quoteColumnName($column)
             . ' IS '
-            . (string) $this->queryBuilder->quoter()->quoteValue($comment);
+            . (string) $this->quoter->quoteValue($comment);
     }
 
     public function addCommentOnTable(string $table, string $comment): string
     {
         return 'COMMENT ON TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
+            . $this->quoter->quoteTableName($table)
             . ' IS '
-            . (string) $this->queryBuilder->quoter()->quoteValue($comment);
+            . (string) $this->quoter->quoteValue($comment);
     }
 
     /**
@@ -74,10 +85,10 @@ abstract class DDLQueryBuilder
         ?string $update = null
     ): string {
         $sql = 'ALTER TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
-            . ' ADD CONSTRAINT ' . $this->queryBuilder->quoter()->quoteColumnName($name)
+            . $this->quoter->quoteTableName($table)
+            . ' ADD CONSTRAINT ' . $this->quoter->quoteColumnName($name)
             . ' FOREIGN KEY (' . $this->queryBuilder->buildColumns($columns) . ')'
-            . ' REFERENCES ' . $this->queryBuilder->quoter()->quoteTableName($refTable)
+            . ' REFERENCES ' . $this->quoter->quoteTableName($refTable)
             . ' (' . $this->queryBuilder->buildColumns($refColumns) . ')';
 
         if ($delete !== null) {
@@ -99,12 +110,12 @@ abstract class DDLQueryBuilder
 
         /** @var string[] $columns */
         foreach ($columns as $i => $col) {
-            $columns[$i] = $this->queryBuilder->quoter()->quoteColumnName($col);
+            $columns[$i] = $this->quoter->quoteColumnName($col);
         }
 
         return 'ALTER TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
-            . ' ADD CONSTRAINT ' . $this->queryBuilder->quoter()->quoteColumnName($name)
+            . $this->quoter->quoteTableName($table)
+            . ' ADD CONSTRAINT ' . $this->quoter->quoteColumnName($name)
             . ' PRIMARY KEY (' . implode(', ', $columns) . ')';
     }
 
@@ -116,23 +127,23 @@ abstract class DDLQueryBuilder
 
         /** @var string[] $columns */
         foreach ($columns as $i => $col) {
-            $columns[$i] = $this->queryBuilder->quoter()->quoteColumnName($col);
+            $columns[$i] = $this->quoter->quoteColumnName($col);
         }
 
         return 'ALTER TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
-            . ' ADD CONSTRAINT ' . $this->queryBuilder->quoter()->quoteColumnName($name)
+            . $this->quoter->quoteTableName($table)
+            . ' ADD CONSTRAINT ' . $this->quoter->quoteColumnName($name)
             . ' UNIQUE (' . implode(', ', $columns) . ')';
     }
 
     public function alterColumn(string $table, string $column, ColumnSchemaBuilder|string $type): string
     {
         return 'ALTER TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
+            . $this->quoter->quoteTableName($table)
             . ' CHANGE '
-            . $this->queryBuilder->quoter()->quoteColumnName($column)
+            . $this->quoter->quoteColumnName($column)
             . ' '
-            . $this->queryBuilder->quoter()->quoteColumnName($column) . ' '
+            . $this->quoter->quoteColumnName($column) . ' '
             . $this->queryBuilder->getColumnType($type);
     }
 
@@ -150,8 +161,8 @@ abstract class DDLQueryBuilder
     public function createIndex(string $name, string $table, array|string $columns, bool $unique = false): string
     {
         return ($unique ? 'CREATE UNIQUE INDEX ' : 'CREATE INDEX ')
-            . $this->queryBuilder->quoter()->quoteTableName($name)
-            . ' ON ' . $this->queryBuilder->quoter()->quoteTableName($table)
+            . $this->quoter->quoteTableName($name)
+            . ' ON ' . $this->quoter->quoteTableName($table)
             . ' (' . $this->queryBuilder->buildColumns($columns) . ')';
     }
 
@@ -163,7 +174,7 @@ abstract class DDLQueryBuilder
         foreach ($columns as $name => $type) {
             if (is_string($name)) {
                 $cols[] = "\t"
-                    . $this->queryBuilder->quoter()->quoteColumnName($name)
+                    . $this->quoter->quoteColumnName($name)
                     . ' '
                     . $this->queryBuilder->getColumnType($type);
             } else {
@@ -172,7 +183,7 @@ abstract class DDLQueryBuilder
         }
 
         $sql = 'CREATE TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table) . " (\n" . implode(",\n", $cols) . "\n)";
+            . $this->quoter->quoteTableName($table) . " (\n" . implode(",\n", $cols) . "\n)";
 
         return $options === null ? $sql : $sql . ' ' . $options;
     }
@@ -188,44 +199,44 @@ abstract class DDLQueryBuilder
             /** @var mixed $value */
             foreach ($params as $key => $value) {
                 /** @var mixed */
-                $params[$key] = $this->queryBuilder->quoter()->quoteValue($value);
+                $params[$key] = $this->quoter->quoteValue($value);
             }
 
             $subQuery = strtr($rawQuery, $params);
         }
 
-        return 'CREATE VIEW ' . $this->queryBuilder->quoter()->quoteTableName($viewName) . ' AS ' . $subQuery;
+        return 'CREATE VIEW ' . $this->quoter->quoteTableName($viewName) . ' AS ' . $subQuery;
     }
 
     public function dropCheck(string $name, string $table): string
     {
         return 'ALTER TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
+            . $this->quoter->quoteTableName($table)
             . ' DROP CONSTRAINT '
-            . $this->queryBuilder->quoter()->quoteColumnName($name);
+            . $this->quoter->quoteColumnName($name);
     }
 
     public function dropColumn(string $table, string $column): string
     {
         return 'ALTER TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
+            . $this->quoter->quoteTableName($table)
             . ' DROP COLUMN '
-            . $this->queryBuilder->quoter()->quoteColumnName($column);
+            . $this->quoter->quoteColumnName($column);
     }
 
     public function dropCommentFromColumn(string $table, string $column): string
     {
         return 'COMMENT ON COLUMN '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
+            . $this->quoter->quoteTableName($table)
             . '.'
-            . $this->queryBuilder->quoter()->quoteColumnName($column)
+            . $this->quoter->quoteColumnName($column)
             . ' IS NULL';
     }
 
     public function dropCommentFromTable(string $table): string
     {
         return 'COMMENT ON TABLE '
-             . $this->queryBuilder->quoter()->quoteTableName($table)
+             . $this->quoter->quoteTableName($table)
              . ' IS NULL';
     }
 
@@ -240,62 +251,62 @@ abstract class DDLQueryBuilder
     public function dropForeignKey(string $name, string $table): string
     {
         return 'ALTER TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
+            . $this->quoter->quoteTableName($table)
             . ' DROP CONSTRAINT '
-            . $this->queryBuilder->quoter()->quoteColumnName($name);
+            . $this->quoter->quoteColumnName($name);
     }
 
     public function dropIndex(string $name, string $table): string
     {
         return 'DROP INDEX '
-            . $this->queryBuilder->quoter()->quoteTableName($name)
+            . $this->quoter->quoteTableName($name)
             . ' ON '
-            . $this->queryBuilder->quoter()->quoteTableName($table);
+            . $this->quoter->quoteTableName($table);
     }
 
     public function dropPrimaryKey(string $name, string $table): string
     {
         return 'ALTER TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
+            . $this->quoter->quoteTableName($table)
             . ' DROP CONSTRAINT '
-            . $this->queryBuilder->quoter()->quoteColumnName($name);
+            . $this->quoter->quoteColumnName($name);
     }
 
     public function dropTable(string $table): string
     {
-        return 'DROP TABLE ' . $this->queryBuilder->quoter()->quoteTableName($table);
+        return 'DROP TABLE ' . $this->quoter->quoteTableName($table);
     }
 
     public function dropUnique(string $name, string $table): string
     {
         return 'ALTER TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
+            . $this->quoter->quoteTableName($table)
             . ' DROP CONSTRAINT '
-            . $this->queryBuilder->quoter()->quoteColumnName($name);
+            . $this->quoter->quoteColumnName($name);
     }
 
     public function dropView(string $viewName): string
     {
-        return 'DROP VIEW ' . $this->queryBuilder->quoter()->quoteTableName($viewName);
+        return 'DROP VIEW ' . $this->quoter->quoteTableName($viewName);
     }
 
     public function renameColumn(string $table, string $oldName, string $newName): string
     {
         return 'ALTER TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($table)
-            . ' RENAME COLUMN ' . $this->queryBuilder->quoter()->quoteColumnName($oldName)
-            . ' TO ' . $this->queryBuilder->quoter()->quoteColumnName($newName);
+            . $this->quoter->quoteTableName($table)
+            . ' RENAME COLUMN ' . $this->quoter->quoteColumnName($oldName)
+            . ' TO ' . $this->quoter->quoteColumnName($newName);
     }
 
     public function renameTable(string $oldName, string $newName): string
     {
         return 'RENAME TABLE '
-            . $this->queryBuilder->quoter()->quoteTableName($oldName)
-            . ' TO ' . $this->queryBuilder->quoter()->quoteTableName($newName);
+            . $this->quoter->quoteTableName($oldName)
+            . ' TO ' . $this->quoter->quoteTableName($newName);
     }
 
     public function truncateTable(string $table): string
     {
-        return 'TRUNCATE TABLE ' . $this->queryBuilder->quoter()->quoteTableName($table);
+        return 'TRUNCATE TABLE ' . $this->quoter->quoteTableName($table);
     }
 }
