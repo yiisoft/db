@@ -25,14 +25,14 @@ class ColumnSchemaBuilder
     public const CATEGORY_TIME = 'time';
     public const CATEGORY_OTHER = 'other';
 
-    private ?bool $isNotNull = null;
-    private bool $isUnique = false;
-    private ?string $check = null;
-    private mixed $default = null;
-    private ?string $append = null;
-    private bool $isUnsigned = false;
-    private ?string $after = null;
-    private bool $isFirst = false;
+    protected ?bool $isNotNull = null;
+    protected bool $isUnique = false;
+    protected ?string $check = null;
+    protected mixed $default = null;
+    protected ?string $append = null;
+    protected bool $isUnsigned = false;
+    protected ?string $after = null;
+    protected bool $isFirst = false;
     /** @psalm-var string[] */
     private array $categoryMap = [
         Schema::TYPE_PK => self::CATEGORY_PK,
@@ -57,12 +57,12 @@ class ColumnSchemaBuilder
         Schema::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
         Schema::TYPE_MONEY => self::CATEGORY_NUMERIC,
     ];
-    private ?string $comment = null;
+    protected ?string $comment = null;
 
     public function __construct(
-        private string $type,
+        protected string $type,
         /** @psalm-var int|string|string[]|null */
-        private int|string|array|null $length = null
+        protected int|string|array|null $length = null
     ) {
     }
 

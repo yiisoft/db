@@ -415,11 +415,11 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * This method is called by {@see QueryBuilderInterface} when it starts to build SQL from a query object.
      * You may override this method to do some final preparation work when converting a query into a SQL statement.
      *
-     * @param QueryBuilder $builder
+     * @param QueryBuilderInterface $builder
      *
      * @return Query A prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
      */
-    public function prepare(QueryBuilder $builder): Query;
+    public function prepare(QueryBuilderInterface $builder): Query;
 
     /**
      * Returns the query result as a scalar value.

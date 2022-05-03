@@ -28,6 +28,7 @@ class ColumnSchema
     private bool $autoIncrement = false;
     private bool $unsigned = false;
     private ?string $comment = null;
+    private ?string $extra = null;
 
     /**
      * Converts the input value according to {@see phpType} after retrieval from the database.
@@ -273,6 +274,14 @@ class ColumnSchema
         return $this->comment;
     }
 
+    /**
+     * @return string|null extra of this column. Not all DBMS support this.
+     */
+    public function getExtra(): ?string
+    {
+        return $this->extra;
+    }
+
     public function name(string $value): void
     {
         $this->name = $value;
@@ -341,5 +350,10 @@ class ColumnSchema
     public function comment(?string $value): void
     {
         $this->comment = $value;
+    }
+
+    public function extra(?string $value): void
+    {
+        $this->extra = $value;
     }
 }
