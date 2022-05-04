@@ -704,7 +704,7 @@ abstract class Command implements CommandInterface
     protected function refreshTableSchema(): void
     {
         if ($this->refreshTableName !== null) {
-            $this->schema()->refreshTableSchema($this->refreshTableName);
+            $this->queryBuilder()->schema()->refreshTableSchema($this->refreshTableName);
         }
     }
 

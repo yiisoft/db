@@ -8,6 +8,8 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
+use Yiisoft\Db\Schema\QuoterInterface;
+use Yiisoft\Db\Schema\SchemaInterface;
 
 interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilderInterface, DQLQueryBuilderInterface
 {
@@ -81,4 +83,14 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * {@see expressionBuilders}
      */
     public function getExpressionBuilder(ExpressionInterface $expression): object;
+
+    /**
+     * Return quoter interface instance.
+     */
+    public function quoter(): QuoterInterface;
+
+    /**
+     * Return schema interface instance.
+     */
+    public function schema(): SchemaInterface;
 }
