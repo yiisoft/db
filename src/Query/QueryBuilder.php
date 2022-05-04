@@ -57,8 +57,8 @@ abstract class QueryBuilder implements QueryBuilderInterface
     protected array $typeMap = [];
 
     public function __construct(
-        protected QuoterInterface $quoter,
-        protected SchemaInterface $schema,
+        private QuoterInterface $quoter,
+        private SchemaInterface $schema,
         private DDLQueryBuilder $ddlBuilder,
         private DMLQueryBuilder $dmlBuilder,
         private DQLQueryBuilder $dqlBuilder

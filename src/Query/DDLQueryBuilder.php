@@ -9,22 +9,20 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
-
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
+
 use function implode;
 use function is_string;
 use function preg_split;
 
 abstract class DDLQueryBuilder
 {
-    protected SchemaInterface $schema;
-    protected QuoterInterface $quoter;
-
-    public function __construct(private QueryBuilderInterface $queryBuilder)
-    {
-        $this->schema = $this->queryBuilder->schema();
-        $this->quoter = $this->queryBuilder->quoter();
+    public function __construct(
+        private QueryBuilderInterface $queryBuilder,
+        private QuoterInterface $quoter,
+        private SchemaInterface $schema
+    ) {
     }
 
     public function addCheck(string $name, string $table, string $expression): string

@@ -33,13 +33,11 @@ use function preg_match;
 
 abstract class DMLQueryBuilder
 {
-    protected SchemaInterface $schema;
-    protected QuoterInterface $quoter;
-
-    public function __construct(private QueryBuilderInterface $queryBuilder)
-    {
-        $this->schema = $this->queryBuilder->schema();
-        $this->quoter = $this->queryBuilder->quoter();
+    public function __construct(
+        private QueryBuilderInterface $queryBuilder,
+        private QuoterInterface $quoter,
+        private SchemaInterface $schema
+    ) {
     }
 
     /**
