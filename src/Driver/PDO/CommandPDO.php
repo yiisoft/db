@@ -71,7 +71,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         $this->prepare();
 
         if ($dataType === null) {
-            $dataType = $this->queryBuilder()->schema()->getPdoType($value);
+            $dataType = $this->db->getSchema()->getPdoType($value);
         }
 
         if ($length === null) {
@@ -88,7 +88,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
     public function bindValue(int|string $name, mixed $value, ?int $dataType = null): self
     {
         if ($dataType === null) {
-            $dataType = $this->queryBuilder()->schema()->getPdoType($value);
+            $dataType = $this->db->getSchema()->getPdoType($value);
         }
 
         $this->params[$name] = new Param($name, $value, $dataType);
@@ -113,7 +113,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
             } elseif ($value instanceof PDOValue && is_int($value->getType())) {
                 $this->params[$name] = new Param($name, $value->getValue(), $value->getType());
             } else {
-                $type = $this->queryBuilder()->schema()->getPdoType($value);
+                $type = $this->db->getSchema()->getPdoType($value);
                 $this->params[$name] = new Param($name, $value, $type);
             }
         }

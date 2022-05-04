@@ -39,8 +39,6 @@ use function trim;
 abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
 {
     protected string $separator = ' ';
-    protected QuoterInterface $quoter;
-    protected SchemaInterface $schema;
 
     /**
      * @var array map of condition aliases to condition classes. For example:
@@ -80,11 +78,11 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
      */
     protected array $expressionBuilders = [];
 
-    public function __construct(protected QueryBuilderInterface $queryBuilder)
-    {
-        $this->quoter = $this->queryBuilder->quoter();
-        $this->schema = $this->queryBuilder->schema();
-
+    public function __construct(
+        private QueryBuilderInterface $queryBuilder,
+        private QuoterInterface $quoter,
+        private SchemaInterface $schema
+    ) {
         $this->expressionBuilders = $this->defaultExpressionBuilders();
         $this->conditionClasses = $this->defaultConditionClasses();
     }

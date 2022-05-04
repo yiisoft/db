@@ -57,8 +57,8 @@ abstract class QueryBuilder implements QueryBuilderInterface
     protected array $typeMap = [];
 
     public function __construct(
-        protected QuoterInterface $quoter,
-        protected SchemaInterface $schema,
+        private QuoterInterface $quoter,
+        private SchemaInterface $schema,
         private DDLQueryBuilder $ddlBuilder,
         private DMLQueryBuilder $dmlBuilder,
         private DQLQueryBuilder $dqlBuilder
@@ -365,11 +365,6 @@ abstract class QueryBuilder implements QueryBuilderInterface
     public function resetSequence(string $tableName, array|int|string|null $value = null): string
     {
         return $this->dmlBuilder->resetSequence($tableName, $value);
-    }
-
-    public function schema(): SchemaInterface
-    {
-        return $this->schema;
     }
 
     public function selectExists(string $rawSql): string
