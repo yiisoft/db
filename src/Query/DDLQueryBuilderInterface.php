@@ -181,9 +181,9 @@ interface DDLQueryBuilderInterface
      * @param string|null $indexType type of index supported DBMS - for example: UNIQUE, FULLTEXT, SPATIAL, BITMAP or null as default
      * @param string|null $indexMethod for setting index organization method (with 'USING', not all DBMS)
      *
-     * @return string the SQL statement for creating a new index.
-     *
      * @throws Exception|InvalidArgumentException
+     *
+     * @return string the SQL statement for creating a new index.
      */
     public function createIndex(string $name, string $table, array|string $columns, ?string $indexType = null, ?string $indexMethod = null): string;
 
