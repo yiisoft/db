@@ -15,6 +15,7 @@ use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 
 use function call_user_func_array;
@@ -758,14 +759,14 @@ trait TestCommandTrait
         $this->assertEmpty($schema->getTableIndexes($tableName, true));
         $this->assertEmpty($schema->getTableIndexes($tableName, true));
 
-        $db->createCommand()->createIndex($name, $tableName, ['int1'], true)->execute();
+        $db->createCommand()->createIndex($name, $tableName, ['int1'], QueryBuilder::INDEX_UNIQUE)->execute();
         $this->assertEquals(['int1'], $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
         $this->assertTrue($schema->getTableIndexes($tableName, true)[0]->isUnique());
 
         $db->createCommand()->dropIndex($name, $tableName)->execute();
         $this->assertEmpty($schema->getTableIndexes($tableName, true));
 
-        $db->createCommand()->createIndex($name, $tableName, ['int1', 'int2'], true)->execute();
+        $db->createCommand()->createIndex($name, $tableName, ['int1', 'int2'], QueryBuilder::INDEX_UNIQUE)->execute();
         $this->assertEquals(['int1', 'int2'], $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
         $this->assertTrue($schema->getTableIndexes($tableName, true)[0]->isUnique());
     }

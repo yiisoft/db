@@ -10,6 +10,7 @@ use Yiisoft\Db\Query\Conditions\BetweenColumnsCondition;
 use Yiisoft\Db\Query\Conditions\InCondition;
 use Yiisoft\Db\Query\Conditions\LikeCondition;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\TestSupport\Helper\DbHelper;
 use Yiisoft\Db\TestSupport\TraversableObject;
@@ -816,13 +817,13 @@ final class QueryBuilderProvider
             'create unique' => [
                 "CREATE UNIQUE INDEX [[$name1]] ON {{{$tableName}}} ([[C_index_1]])",
                 static function (QueryBuilderInterface $qb) use ($tableName, $name1) {
-                    return $qb->createIndex($name1, $tableName, 'C_index_1', true);
+                    return $qb->createIndex($name1, $tableName, 'C_index_1', QueryBuilder::INDEX_UNIQUE);
                 },
             ],
             'create unique (2 columns)' => [
                 "CREATE UNIQUE INDEX [[$name2]] ON {{{$tableName}}} ([[C_index_2_1]], [[C_index_2_2]])",
                 static function (QueryBuilderInterface $qb) use ($tableName, $name2) {
-                    return $qb->createIndex($name2, $tableName, 'C_index_2_1, C_index_2_2', true);
+                    return $qb->createIndex($name2, $tableName, 'C_index_2_1, C_index_2_2', QueryBuilder::INDEX_UNIQUE);
                 },
             ],
         ];

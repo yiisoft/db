@@ -43,6 +43,11 @@ use function preg_replace;
 abstract class QueryBuilder implements QueryBuilderInterface
 {
     /**
+     * Defines a UNIQUE index type for {@see createIndex()}.
+     */
+    public const INDEX_UNIQUE = 'UNIQUE';
+
+    /**
      * The prefix for automatically generated query binding parameters.
      */
     public const PARAM_PREFIX = ':qp';
@@ -227,9 +232,9 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->createConditionFromArray($condition);
     }
 
-    public function createIndex(string $name, string $table, array|string $columns, bool $unique = false): string
+    public function createIndex(string $name, string $table, array|string $columns, ?string $indexType = null, ?string $indexMethod = null): string
     {
-        return $this->ddlBuilder->createIndex($name, $table, $columns, $unique);
+        return $this->ddlBuilder->createIndex($name, $table, $columns, $indexType, $indexMethod);
     }
 
     public function createTable(string $table, array $columns, ?string $options = null): string
@@ -394,7 +399,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
     public function truncateTable(string $table): string
     {
-        return $this->ddlBuilder->truncateTable($table);
+        return $this->dmlBuilder->truncateTable($table);
     }
 
     public function update(string $table, array $columns, array|string $condition, array &$params = []): string

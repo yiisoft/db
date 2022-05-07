@@ -236,9 +236,9 @@ abstract class Command implements CommandInterface
     /**
      * @throws Exception|InvalidArgumentException
      */
-    public function createIndex(string $name, string $table, array|string $columns, bool $unique = false): self
+    public function createIndex(string $name, string $table, array|string $columns, ?string $indexType = null, ?string $indexMethod = null): self
     {
-        $sql = $this->queryBuilder()->createIndex($name, $table, $columns, $unique);
+        $sql = $this->queryBuilder()->createIndex($name, $table, $columns, $indexType, $indexMethod);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 

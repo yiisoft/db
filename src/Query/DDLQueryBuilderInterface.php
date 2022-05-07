@@ -178,13 +178,14 @@ interface DDLQueryBuilderInterface
      * @param array|string $columns the column(s) that should be included in the index. If there are multiple columns,
      * separate them with commas or use an array to represent them. Each column name will be properly quoted by the
      * method, unless a parenthesis is found in the name.
-     * @param bool $unique whether to add UNIQUE constraint on the created index.
-     *
-     * @throws Exception|InvalidArgumentException
+     * @param string|null $indexType type of index supported DBMS - for example: UNIQUE, FULLTEXT, SPATIAL, BITMAP or null as default
+     * @param string|null $indexMethod for setting index organization method (with 'USING', not all DBMS)
      *
      * @return string the SQL statement for creating a new index.
+     *
+     * @throws Exception|InvalidArgumentException
      */
-    public function createIndex(string $name, string $table, array|string $columns, bool $unique = false): string;
+    public function createIndex(string $name, string $table, array|string $columns, ?string $indexType = null, ?string $indexMethod = null): string;
 
     /**
      * Builds a SQL statement for creating a new DB table.

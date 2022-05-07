@@ -119,6 +119,17 @@ interface TableSchemaInterface
     public function catalogName(?string $value): void;
 
     /**
+     * @return string|null return sql for create current table or null if query not found/exists
+     * Now supported only in MySQL and Oracle
+     */
+    public function getCreateSql(): ?string;
+
+    /**
+     * @param string $sql
+     */
+    public function createSql(string $sql): void;
+
+    /**
      * ```php
      * [
      *  'ForeignTableName',

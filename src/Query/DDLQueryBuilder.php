@@ -16,7 +16,7 @@ use function implode;
 use function is_string;
 use function preg_split;
 
-abstract class DDLQueryBuilder
+abstract class DDLQueryBuilder implements DDLQueryBuilderInterface
 {
     public function __construct(
         private QueryBuilderInterface $queryBuilder,
@@ -154,11 +154,11 @@ abstract class DDLQueryBuilder
     }
 
     /**
-     * @throws Exception|InvalidArgumentException|
+     * @throws Exception|InvalidArgumentException
      */
-    public function createIndex(string $name, string $table, array|string $columns, bool $unique = false): string
+    public function createIndex(string $name, string $table, array|string $columns, ?string $indexType = null, ?string $indexMethod = null): string
     {
-        return ($unique ? 'CREATE UNIQUE INDEX ' : 'CREATE INDEX ')
+        return 'CREATE '. ($indexType ? ($indexType . ' '): '') . 'INDEX '
             . $this->quoter->quoteTableName($name)
             . ' ON ' . $this->quoter->quoteTableName($table)
             . ' (' . $this->queryBuilder->buildColumns($columns) . ')';
