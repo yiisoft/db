@@ -178,6 +178,6 @@ interface DMLQueryBuilderInterface
         string $table,
         QueryInterface|array $insertColumns,
         bool|array $updateColumns,
-        array &$params = []
+        array &$params
     ): string;
 }

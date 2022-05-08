@@ -31,7 +31,7 @@ use function is_string;
 use function json_encode;
 use function preg_match;
 
-abstract class DMLQueryBuilder
+abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
 {
     public function __construct(
         private QueryBuilderInterface $queryBuilder,
@@ -142,6 +142,11 @@ abstract class DMLQueryBuilder
     public function resetSequence(string $tableName, array|int|string|null $value = null): string
     {
         throw new NotSupportedException(static::class . ' does not support resetting sequence.');
+    }
+
+    public function truncateTable(string $table): string
+    {
+        return 'TRUNCATE TABLE ' . $this->quoter->quoteTableName($table);
     }
 
     /**

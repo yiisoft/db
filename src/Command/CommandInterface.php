@@ -278,7 +278,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function createIndex(string $name, string $table, array|string $columns, bool $unique = false): self;
+    public function createIndex(string $name, string $table, array|string $columns, ?string $indexType = null, ?string $indexMethod = null): self;
 
     /**
      * Creates a SQL command for creating a new DB table.

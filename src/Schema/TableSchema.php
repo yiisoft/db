@@ -24,6 +24,8 @@ abstract class TableSchema implements TableSchemaInterface
     private array $columns = [];
     /** @psalm-var array<array-key, array> */
     protected array $foreignKeys = [];
+    protected ?string $createSql = null;
+    private ?string $catalogName = null;
 
     /**
      * Gets the named column metadata.
@@ -135,8 +137,6 @@ abstract class TableSchema implements TableSchemaInterface
         $this->columns[$index] = $value;
     }
 
-    private ?string $catalogName = null;
-
     public function getCatalogName(): ?string
     {
         return $this->catalogName;
@@ -149,6 +149,16 @@ abstract class TableSchema implements TableSchemaInterface
     public function catalogName(?string $value): void
     {
         $this->catalogName = $value;
+    }
+
+    public function getCreateSql(): ?string
+    {
+        return $this->createSql;
+    }
+
+    public function createSql(string $sql): void
+    {
+        $this->createSql = $sql;
     }
 
     /**
