@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Driver\PDO;
 
 use PDO;
-use Yiisoft\Db\Driver\DriverInterface;
 
-final class PDODriver implements DriverInterface
+abstract class PDODriver implements PDODriverInterface
 {
-    private ?string $charset = null;
-    private ?PDO $pdo = null;
+    protected ?string $charset = null;
 
     public function __construct(
-        private string $dsn,
-        private string $username = '',
-        private string $password = '',
-        private array $attributes = []
+        protected string $dsn,
+        protected string $username = '',
+        protected string $password = '',
+        protected array $attributes = []
     ) {
     }
 
@@ -85,16 +83,6 @@ final class PDODriver implements DriverInterface
     }
 
     /**
-     * Returns the PDO instance.
-     *
-     * @return PDO|null the PDO instance, null if the connection is not established yet.
-     */
-    public function getPDO(): ?PDO
-    {
-        return $this->pdo;
-    }
-
-    /**
      * Returns the username for establishing DB connection.
      *
      * @return string the username for establishing DB connection.
@@ -103,6 +91,8 @@ final class PDODriver implements DriverInterface
     {
         return $this->username;
     }
+
+    abstract public function getDriverName(): string;
 
     /**
      * The password for establishing DB connection. Defaults to `null` meaning no password to use.

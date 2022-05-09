@@ -30,7 +30,7 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
     protected ?SchemaInterface $schema = null;
 
     public function __construct(
-        protected PDODriver $driver,
+        protected PDODriverInterface $driver,
         protected QueryCache $queryCache,
         protected SchemaCache $schemaCache
     ) {
@@ -105,6 +105,11 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
     public function getCacheKey(): array
     {
         return [$this->driver->getDsn(), $this->driver->getUsername()];
+    }
+
+    public function getDriverName(): string
+    {
+        return $this->driver->getDriverName();
     }
 
     public function getPdo(): ?PDO
