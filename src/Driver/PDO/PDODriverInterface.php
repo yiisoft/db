@@ -5,19 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Driver\PDO;
 
 use PDO;
+use Yiisoft\Db\Driver\DriverInterface;
 
-abstract class PDODriver implements PDODriverInterface
+interface PDODriverInterface extends DriverInterface
 {
-    protected ?string $charset = null;
-
-    public function __construct(
-        protected string $dsn,
-        protected string $username = '',
-        protected string $password = '',
-        protected array $attributes = []
-    ) {
-    }
-
     /**
      * PDO attributes (name => value) that should be set when calling {@see open()} to establish a DB connection.
      * Please refer to the [PHP manual](http://php.net/manual/en/pdo.setattribute.php) for details about available
@@ -25,15 +16,9 @@ abstract class PDODriver implements PDODriverInterface
      *
      * @param array $attributes the attributes (name => value) to be set on the DB connection.
      */
-    public function attributes(array $attributes): void
-    {
-        $this->attributes = $attributes;
-    }
+    public function attributes(array $attributes): void;
 
-    public function createConnection(): PDO
-    {
-        return new PDO($this->dsn, $this->username, $this->password, $this->attributes);
-    }
+    public function createConnection(): PDO;
 
     /**
      * The charset used for database connection. The property is only used for MySQL, PostgresSQL databases. Defaults to
@@ -47,10 +32,7 @@ abstract class PDODriver implements PDODriverInterface
      *
      * @param string|null $charset
      */
-    public function charset(?string $charset): void
-    {
-        $this->charset = $charset;
-    }
+    public function charset(?string $charset): void;
 
     /**
      * Returns the charset currently used for database connection. The returned charset is only applicable for MySQL,
@@ -59,58 +41,45 @@ abstract class PDODriver implements PDODriverInterface
      * @return string|null the charset of the pdo instance. Null is returned if the charset is not set yet or not
      * supported by the pdo driver
      */
-    public function getCharset(): ?string
-    {
-        return $this->charset;
-    }
+    public function getCharset(): ?string;
 
     /**
      * Return dsn string for current driver.
      */
-    public function getDsn(): string
-    {
-        return $this->dsn;
-    }
+    public function getDsn(): string;
 
     /**
      * Returns the password for establishing DB connection.
      *
      * @return string the password for establishing DB connection.
      */
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
+    public function getPassword(): string;
 
     /**
      * Returns the username for establishing DB connection.
      *
      * @return string the username for establishing DB connection.
      */
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
+    public function getUsername(): string;
 
-    abstract public function getDriverName(): string;
+    /**
+     * Returns the driver name
+     *
+     * @return string the driver name DB connection.
+     */
+    public function getDriverName(): string;
 
     /**
      * The password for establishing DB connection. Defaults to `null` meaning no password to use.
      *
      * @param string $password the password for establishing DB connection.
      */
-    public function password(string $password): void
-    {
-        $this->password = $password;
-    }
+    public function password(string $password): void;
 
     /**
      * The username for establishing DB connection. Defaults to `null` meaning no username to use.
      *
      * @param string $username the username for establishing DB connection.
      */
-    public function username(string $username): void
-    {
-        $this->username = $username;
-    }
+    public function username(string $username): void;
 }
