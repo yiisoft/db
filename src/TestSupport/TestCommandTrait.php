@@ -1387,7 +1387,7 @@ trait TestCommandTrait
             'blob_col' => serialize(['test' => 'data', 'num' => 222]),
         ];
         $db->createCommand()->insert('type', $columns)->execute();
-        $result = $db->createCommand('select * from {{type}}')->queryOne();
+        $result = $db->createCommand('SELECT [[blob_col]] FROM {{type}}')->queryOne();
 
         $this->assertIsArray($result);
         $resultBlob = is_resource($result['blob_col']) ? stream_get_contents($result['blob_col']) : $result['blob_col'];
