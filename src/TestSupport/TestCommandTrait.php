@@ -1372,4 +1372,26 @@ trait TestCommandTrait
             ['id' => 2, 'bar' => 'hello'],
         ], $records);
     }
+
+    public function testInsertToBlob(): void
+    {
+        $db = $this->getConnection(true);
+
+        $db->createCommand()->delete('type')->execute();
+
+        $columns = [
+            'int_col' => 1,
+            'char_col' => 'test',
+            'float_col' => 3.14,
+            'bool_col' => true,
+            'blob_col' => serialize(['test' => 'data', 'num' => 222]),
+        ];
+        $db->createCommand()->insert('type', $columns)->execute();
+        $result = $db->createCommand('SELECT [[blob_col]] FROM {{type}}')->queryOne();
+
+        $this->assertIsArray($result);
+        $resultBlob = is_resource($result['blob_col']) ? stream_get_contents($result['blob_col']) : $result['blob_col'];
+
+        $this->assertEquals($columns['blob_col'], $resultBlob);
+    }
 }
