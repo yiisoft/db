@@ -6,11 +6,11 @@ namespace Yiisoft\Db\TestSupport;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 
 trait GetTablesAliasTestTrait
 {
-    abstract protected function createQuery(): Query;
+    abstract protected function createQuery(): QueryInterface;
 
     public function testGetTableNamesIsFromArrayWithAlias(): void
     {

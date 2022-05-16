@@ -4,11 +4,55 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Closure;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 interface QueryPartsInterface
 {
+    /**
+     * Adds additional group-by columns to the existing ones.
+     *
+     * @param array|ExpressionInterface|string $columns additional columns to be grouped by.
+     * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
+     * The method will automatically quote the column names unless a column contains some parenthesis (which means the
+     * column contains a DB expression).
+     *
+     * Note that if your group-by is an expression containing commas, you should always use an array to represent the
+     * group-by information. Otherwise, the method will not be able to correctly determine the group-by columns.
+     *
+     * {@see Expression} object can be passed to specify the GROUP BY part explicitly in plain SQL.
+     * {@see ExpressionInterface} object can be passed as well.
+     *
+     * @return $this the query object itself
+     *
+     * {@see groupBy()}
+     */
+    public function addGroupBy(array|string|ExpressionInterface $columns): self;
+
+    /**
+     * Adds additional ORDER BY columns to the query.
+     *
+     * @param array|ExpressionInterface|string $columns the columns (and the directions) to be ordered by.
+     * Columns can be specified in either a string (e.g. "id ASC, name DESC") or an array
+     * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
+     *
+     * The method will automatically quote the column names unless a column contains some parenthesis
+     * (which means the column contains a DB expression).
+     *
+     * Note that if your order-by is an expression containing commas, you should always use an array
+     * to represent the order-by information. Otherwise, the method will not be able to correctly determine
+     * the order-by columns.
+     *
+     * Since {@see ExpressionInterface} object can be passed to specify the ORDER BY part explicitly in plain SQL.
+     *
+     * @return $this the query object itself
+     *
+     * {@see orderBy()}
+     */
+    public function addOrderBy(array|string|ExpressionInterface $columns): self;
+
     /**
      * Add more columns to the SELECT part of the query.
      *
@@ -60,6 +104,42 @@ interface QueryPartsInterface
     public function andFilterCompare(string $name, ?string $value, string $defaultOperator = '='): self;
 
     /**
+     * Adds HAVING condition to the existing one but ignores {@see isEmpty()|empty operands}.
+     *
+     * The new condition and the existing one will be joined using the `AND` operator.
+     *
+     * This method is similar to {@see andHaving()}. The main difference is that this method will remove
+     * {@see isEmpty()|empty query operands}. As a result, this method is best suited for building query conditions
+     * based on filter values entered by users.
+     *
+     * @param array $condition the new HAVING condition. Please refer to {@see having()} on how to specify this
+     * parameter.
+     *
+     * @throws NotSupportedException
+     *
+     * @return $this the query object itself.
+     *
+     * {@see filterHaving()}
+     * {@see orFilterHaving()}
+     */
+    public function andFilterHaving(array $condition): self;
+
+    /**
+     * Adds HAVING condition to the existing one.
+     * The new condition and the existing one will be joined using the `AND` operator.
+     *
+     * @param array|ExpressionInterface|string $condition the new HAVING condition. Please refer to {@see where()}
+     * on how to specify this parameter.
+     * @param array $params the parameters (name => value) to be bound to the query.
+     *
+     * @return $this the query object itself.
+     *
+     * {@see having()}
+     * {@see orHaving()}
+     */
+    public function andHaving(array|string|ExpressionInterface $condition, array $params = []): self;
+
+    /**
      * Adds an additional WHERE condition to the existing one but ignores {@see isEmpty()|empty operands}.
      *
      * The new condition and the existing one will be joined using the 'AND' operator.
@@ -103,6 +183,39 @@ interface QueryPartsInterface
      * @return static the query object itself
      */
     public function distinct(?bool $value = true): self;
+
+    /**
+     * Sets the HAVING part of the query but ignores {@see isEmpty()|empty operands}.
+     *
+     * This method is similar to {@see having()}. The main difference is that this method will remove
+     * {@see isEmpty()|empty query operands}. As a result, this method is best suited for building query conditions
+     * based on filter values entered by users.
+     *
+     * The following code shows the difference between this method and {@see having()}:
+     *
+     * ```php
+     * // HAVING `age`=:age
+     * $query->filterHaving(['name' => null, 'age' => 20]);
+     * // HAVING `age`=:age
+     * $query->having(['age' => 20]);
+     * // HAVING `name` IS NULL AND `age`=:age
+     * $query->having(['name' => null, 'age' => 20]);
+     * ```
+     *
+     * Note that unlike {@see having()}, you cannot pass binding parameters to this method.
+     *
+     * @param array $condition the conditions that should be put in the HAVING part.
+     * See {@see having()} on how to specify this parameter.
+     *
+     * @throws NotSupportedException
+     *
+     * @return $this the query object itself.
+     *
+     * {@see having()}
+     * {@see andFilterHaving()}
+     * {@see orFilterHaving()}
+     */
+    public function filterHaving(array $condition): self;
 
     /**
      * Sets the WHERE part of the query but ignores [[isEmpty()|empty operands]].
@@ -178,6 +291,58 @@ interface QueryPartsInterface
     public function from(array|ExpressionInterface|string $tables): self;
 
     /**
+     * Sets the GROUP BY part of the query.
+     *
+     * @param array|ExpressionInterface|string $columns the columns to be grouped by.
+     * Columns can be specified in either a string (e.g. "id, name") or an array (e.g. ['id', 'name']).
+     * The method will automatically quote the column names unless a column contains some parenthesis (which means the
+     * column contains a DB expression).
+     *
+     * Note that if your group-by is an expression containing commas, you should always use an array to represent the
+     * group-by information. Otherwise, the method will not be able to correctly determine the group-by columns.
+     *
+     * {@see ExpressionInterface} object can be passed to specify the GROUP BY part explicitly in plain SQL.
+     * {@see ExpressionInterface} object can be passed as well.
+     *
+     * @return $this the query object itself.
+     *
+     * {@see addGroupBy()}
+     */
+    public function groupBy(array|string|ExpressionInterface $columns): self;
+
+    /**
+     * Sets the HAVING part of the query.
+     *
+     * @param array|ExpressionInterface|string|null $condition the conditions to be put after HAVING.
+     * Please refer to {@see where()} on how to specify this parameter.
+     * @param array $params the parameters (name => value) to be bound to the query.
+     *
+     * @return $this the query object itself.
+     *
+     * {@see andHaving()}
+     * {@see orHaving()}
+     */
+    public function having(array|ExpressionInterface|string|null $condition, array $params = []): self;
+
+    /**
+     * Sets the {@see indexBy} property.
+     *
+     * @param Closure|string|null $column the name of the column by which the query results should be indexed by.
+     * This can also be a callable (e.g. anonymous function) that returns the index value based on the given row data.
+     * The signature of the callable should be:
+     *
+     * ```php
+     * function ($row)
+     * {
+     *     // return the index value corresponding to $row
+     * }
+     * ```
+     *
+     * @return QueryInterface the query object itself.
+     */
+    public function indexBy(string|Closure|null $column): self;
+
+    /**
      * Appends an INNER JOIN part to the query.
      *
      * @param array|string $table the table to be joined.
@@ -248,6 +413,47 @@ interface QueryPartsInterface
     public function leftJoin(array|string $table, array|string $on = '', array $params = []): self;
 
     /**
+     * Sets the LIMIT part of the query.
+     *
+     * @param Expression|int|null $limit the limit. Use null or negative value to disable limit.
+     *
+     * @return $this the query object itself
+     */
+    public function limit(Expression|int|null $limit): self;
+
+    /**
+     * Sets the OFFSET part of the query.
+     *
+     * @param Expression|int|null $offset $offset the offset. Use null or negative value to disable offset.
+     *
+     * @return QueryInterface the query object itself
+     */
+    public function offset(Expression|int|null $offset): self;
+
+    /**
+     * Sets the ORDER BY part of the query.
+     *
+     * @param array|ExpressionInterface|string $columns the columns (and the directions) to be ordered by.
+     *
+     * Columns can be specified in either a string (e.g. `"id ASC, name DESC"`) or an array
+     * (e.g. `['id' => SORT_ASC, 'name' => SORT_DESC]`).
+     *
+     * The method will automatically quote the column names unless a column contains some parenthesis
+     * (which means the column contains a DB expression).
+     *
+     * Note that if your order-by is an expression containing commas, you should always use an array
+     * to represent the order-by information. Otherwise, the method will not be able to correctly determine
+     * the order-by columns.
+     *
+     * Since {@see ExpressionInterface} object can be passed to specify the ORDER BY part explicitly in plain SQL.
+     *
+     * @return $this the query object itself
+     *
+     * {@see addOrderBy()}
+     */
+    public function orderBy(array|string|ExpressionInterface $columns): self;
+
+    /**
      * Adds an additional WHERE condition to the existing one but ignores {@see isEmpty()|empty operands}.
      *
      * The new condition and the existing one will be joined using the 'OR' operator.
@@ -266,6 +472,43 @@ interface QueryPartsInterface
      * {@see andFilterWhere()}
      */
     public function orFilterWhere(array $condition): self;
+
+    /**
+     * Adds HAVING condition to the existing one but ignores {@see isEmpty()|empty operands}.
+     *
+     * The new condition and the existing one will be joined using the `OR` operator.
+     *
+     * This method is similar to {@see orHaving()}. The main difference is that this method will remove
+     * {@see isEmpty()|empty query operands}. As a result, this method is best suited for building query conditions
+     * based on filter values entered by users.
+     *
+     * @param array $condition the new HAVING condition. Please refer to {@see having()} on how to specify this
+     * parameter.
+     *
+     * @throws NotSupportedException
+     *
+     * @return $this the query object itself.
+     *
+     * {@see filterHaving()}
+     * {@see andFilterHaving()}
+     */
+    public function orFilterHaving(array $condition): self;
+
+    /**
+     * Adds HAVING condition to the existing one.
+     *
+     * The new condition and the existing one will be joined using the `OR` operator.
+     *
+     * @param array|ExpressionInterface|string $condition the new HAVING condition. Please refer to {@see where()}
+     * on how to specify this parameter.
+     * @param array $params the parameters (name => value) to be bound to the query.
+     *
+     * @return $this the query object itself.
+     *
+     * {@see having()}
+     * {@see andHaving()}
+     */
+    public function orHaving(array|string|ExpressionInterface $condition, array $params = []): self;
 
     /**
      * Adds WHERE condition to the existing one.
@@ -325,6 +568,12 @@ interface QueryPartsInterface
      * @return static the query object itself.
      */
     public function select(array|string|ExpressionInterface $columns, ?string $option = null): self;
+
+    public function selectOption(?string $value): QueryInterface;
+
+    public function setJoin(array $value): QueryInterface;
+
+    public function setUnion(array $value): QueryInterface;
 
     /**
      * Appends a SQL statement using UNION operator.
@@ -443,4 +692,6 @@ interface QueryPartsInterface
      * @return static the query object itself.
      */
     public function withQuery(QueryInterface|string $query, string $alias, bool $recursive = false): self;
+
+    public function withQueries(array $value): QueryInterface;
 }
