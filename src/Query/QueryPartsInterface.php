@@ -473,7 +473,6 @@ interface QueryPartsInterface
      */
     public function orFilterWhere(array $condition): self;
 
-
     /**
      * Adds HAVING condition to the existing one but ignores {@see isEmpty()|empty operands}.
      *

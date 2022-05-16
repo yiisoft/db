@@ -83,7 +83,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @return $this the Query object itself.
      */
-    public function cache(?int $duration = 3600, ?Dependency $dependency = null): QueryInterface;
+    public function cache(?int $duration = 3600, ?Dependency $dependency = null): self;
 
     /**
      * Executes the query and returns the first column of the result.
@@ -193,7 +193,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     public function getWithQueries(): array;
 
-    public function noCache(): QueryInterface;
+    public function noCache(): self;
 
     /**
      * Executes the query and returns a single row of result.
@@ -241,7 +241,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @return QueryInterface A prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
      */
-    public function prepare(QueryBuilderInterface $builder): QueryInterface;
+    public function prepare(QueryBuilderInterface $builder): self;
 
     /**
      * Returns the query result as a scalar value.
