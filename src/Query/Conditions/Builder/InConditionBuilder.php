@@ -15,8 +15,8 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Conditions\InCondition;
 use Yiisoft\Db\Query\Conditions\Interface\InConditionInterface;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryBuilderInterface;
+use Yiisoft\Db\Query\QueryInterface;
 
 use function array_merge;
 use function array_values;
@@ -54,11 +54,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
             return $operator === 'IN' ? '0=1' : '';
         }
 
-        if ($values instanceof Query) {
+        if ($values instanceof QueryInterface) {
             return $this->buildSubqueryInCondition($operator, $column, $values, $params);
         }
 
-        if (!is_array($values) && !$values instanceof Traversable) {
+        if (!is_array($values) && !is_iterable($values)) {
             /** ensure values is an array */
             $values = (array) $values;
         }
@@ -200,7 +200,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
     protected function buildCompositeInCondition(
         ?string $operator,
         array|Traversable $columns,
-        array|Traversable $values,
+        iterable|Iterator $values,
         array &$params = []
     ): string {
         $vss = [];

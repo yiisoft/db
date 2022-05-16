@@ -11,6 +11,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Schema;
 
 trait TestQueryTrait
@@ -194,7 +195,7 @@ trait TestQueryTrait
         $this->assertInstanceOf(Expression::class, $from[0]);
     }
 
-    protected function createQuery(): Query
+    protected function createQuery(): QueryInterface
     {
         return new Query($this->getConnection());
     }
@@ -618,7 +619,7 @@ trait TestQueryTrait
 
         $result = $query->andFilterCompare('name', null);
 
-        $this->assertInstanceOf(Query::class, $result);
+        $this->assertInstanceOf(QueryInterface::class, $result);
         $this->assertNull($query->getWhere());
 
         $query->andFilterCompare('name', '');

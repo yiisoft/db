@@ -169,7 +169,7 @@ interface DQLQueryBuilderInterface
         array $columns,
         array &$params,
         ?bool $distinct = false,
-        string $selectOption = null
+        ?string $selectOption = null
     ): string;
 
     /**
