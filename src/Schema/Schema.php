@@ -236,9 +236,11 @@ abstract class Schema implements SchemaInterface
     public function getLastInsertID(string $sequenceName = ''): string
     {
         if ($this->db->isActive()) {
-            return $this->db->getPDO()->lastInsertId(
-                $sequenceName === '' ? null : $this->quoteTableName($sequenceName)
-            );
+            return $this->db
+                ->getPDO()
+                ->lastInsertId(
+                    $sequenceName === '' ? null : $this->quoteTableName($sequenceName)
+                );
         }
 
         throw new InvalidCallException('DB Connection is not active.');
@@ -257,7 +259,9 @@ abstract class Schema implements SchemaInterface
      */
     public function createSavepoint(string $name): void
     {
-        $this->db->createCommand("SAVEPOINT $name")->execute();
+        $this->db
+            ->createCommand("SAVEPOINT $name")
+            ->execute();
     }
 
     /**
@@ -265,7 +269,9 @@ abstract class Schema implements SchemaInterface
      */
     public function releaseSavepoint(string $name): void
     {
-        $this->db->createCommand("RELEASE SAVEPOINT $name")->execute();
+        $this->db
+            ->createCommand("RELEASE SAVEPOINT $name")
+            ->execute();
     }
 
     /**
@@ -273,7 +279,9 @@ abstract class Schema implements SchemaInterface
      */
     public function rollBackSavepoint(string $name): void
     {
-        $this->db->createCommand("ROLLBACK TO SAVEPOINT $name")->execute();
+        $this->db
+            ->createCommand("ROLLBACK TO SAVEPOINT $name")
+            ->execute();
     }
 
     /**
@@ -281,7 +289,9 @@ abstract class Schema implements SchemaInterface
      */
     public function setTransactionIsolationLevel(string $level): void
     {
-        $this->db->createCommand("SET TRANSACTION ISOLATION LEVEL $level")->execute();
+        $this->db
+            ->createCommand("SET TRANSACTION ISOLATION LEVEL $level")
+            ->execute();
     }
 
     /**
@@ -289,7 +299,9 @@ abstract class Schema implements SchemaInterface
      */
     public function insert(string $table, array $columns)
     {
-        $command = $this->db->createCommand()->insert($table, $columns);
+        $command = $this->db
+            ->createCommand()
+            ->insert($table, $columns);
 
         if (!$command->execute()) {
             return false;
@@ -299,12 +311,16 @@ abstract class Schema implements SchemaInterface
         $result = [];
 
         foreach ($tableSchema->getPrimaryKey() as $name) {
-            if ($tableSchema->getColumn($name)->isAutoIncrement()) {
+            if ($tableSchema
+                ->getColumn($name)
+                ->isAutoIncrement()) {
                 $result[$name] = $this->getLastInsertID($tableSchema->getSequenceName());
                 break;
             }
 
-            $result[$name] = $columns[$name] ?? $tableSchema->getColumn($name)->getDefaultValue();
+            $result[$name] = $columns[$name] ?? $tableSchema
+                    ->getColumn($name)
+                    ->getDefaultValue();
         }
 
         return $result;
@@ -319,7 +335,9 @@ abstract class Schema implements SchemaInterface
             return $str;
         }
 
-        if (($value = $this->db->getSlavePdo()->quote($str)) !== false) {
+        if (($value = $this->db
+                ->getSlavePdo()
+                ->quote($str)) !== false) {
             return $value;
         }
 
@@ -486,7 +504,9 @@ abstract class Schema implements SchemaInterface
     public function getServerVersion(): string
     {
         if ($this->serverVersion === null) {
-            $this->serverVersion = $this->db->getSlavePdo()->getAttribute(PDO::ATTR_SERVER_VERSION);
+            $this->serverVersion = $this->db
+                ->getSlavePdo()
+                ->getAttribute(PDO::ATTR_SERVER_VERSION);
         }
 
         return $this->serverVersion;
@@ -808,7 +828,9 @@ abstract class Schema implements SchemaInterface
      */
     protected function normalizePdoRowKeyCase(array $row, bool $multiple): array
     {
-        if ($this->db->getSlavePdo()->getAttribute(PDO::ATTR_CASE) !== PDO::CASE_UPPER) {
+        if ($this->db
+                ->getSlavePdo()
+                ->getAttribute(PDO::ATTR_CASE) !== PDO::CASE_UPPER) {
             return $row;
         }
 

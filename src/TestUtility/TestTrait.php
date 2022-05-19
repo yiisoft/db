@@ -214,7 +214,9 @@ trait TestTrait
 
         foreach ($lines as $line) {
             if (trim($line) !== '') {
-                $this->connection->getPDO()->exec($line);
+                $this->connection
+                    ->getPDO()
+                    ->exec($line);
             }
         }
     }

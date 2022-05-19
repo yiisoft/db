@@ -38,7 +38,9 @@ trait TestQueryBuilderTrait
      */
     public function columnTypes(): array
     {
-        $version = $this->getConnection()->getServerVersion();
+        $version = $this
+            ->getConnection()
+            ->getServerVersion();
 
         $items = [
             [
@@ -54,7 +56,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_BIGINT . ' NOT NULL',
-                $this->bigInteger()->notNull(),
+                $this
+                    ->bigInteger()
+                    ->notNull(),
                 [
                     'mysql' => 'bigint(20) NOT NULL',
                     'pgsql' => 'bigint NOT NULL',
@@ -65,7 +69,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_BIGINT . ' CHECK (value > 5)',
-                $this->bigInteger()->check('value > 5'),
+                $this
+                    ->bigInteger()
+                    ->check('value > 5'),
                 [
                     'mysql' => 'bigint(20) CHECK (value > 5)',
                     'pgsql' => 'bigint CHECK (value > 5)',
@@ -87,7 +93,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_BIGINT . '(8) CHECK (value > 5)',
-                $this->bigInteger(8)->check('value > 5'),
+                $this
+                    ->bigInteger(8)
+                    ->check('value > 5'),
                 [
                     'mysql' => 'bigint(8) CHECK (value > 5)',
                     'pgsql' => 'bigint CHECK (value > 5)',
@@ -118,7 +126,10 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_BOOLEAN . ' NOT NULL DEFAULT 1',
-                $this->boolean()->notNull()->defaultValue(1),
+                $this
+                    ->boolean()
+                    ->notNull()
+                    ->defaultValue(1),
                 [
                     'mysql' => 'tinyint(1) NOT NULL DEFAULT 1',
                     'sqlite' => 'boolean NOT NULL DEFAULT 1',
@@ -127,7 +138,10 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_BOOLEAN . ' NOT NULL DEFAULT TRUE',
-                $this->boolean()->notNull()->defaultValue(true),
+                $this
+                    ->boolean()
+                    ->notNull()
+                    ->defaultValue(true),
                 [
                     'pgsql' => 'boolean NOT NULL DEFAULT TRUE',
                 ],
@@ -145,14 +159,18 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_CHAR . ' CHECK (value LIKE \'test%\')',
-                $this->char()->check('value LIKE \'test%\''),
+                $this
+                    ->char()
+                    ->check('value LIKE \'test%\''),
                 [
                     'pgsql' => 'char(1) CHECK (value LIKE \'test%\')',
                 ],
             ],
             [
                 Schema::TYPE_CHAR . ' CHECK (value LIKE "test%")',
-                $this->char()->check('value LIKE "test%"'),
+                $this
+                    ->char()
+                    ->check('value LIKE "test%"'),
                 [
                     'mysql' => 'char(1) CHECK (value LIKE "test%")',
                     'sqlite' => 'char(1) CHECK (value LIKE "test%")',
@@ -160,7 +178,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_CHAR . ' NOT NULL',
-                $this->char()->notNull(),
+                $this
+                    ->char()
+                    ->notNull(),
                 [
                     'mysql' => 'char(1) NOT NULL',
                     'pgsql' => 'char(1) NOT NULL',
@@ -170,7 +190,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_CHAR . '(6) CHECK (value LIKE "test%")',
-                $this->char(6)->check('value LIKE "test%"'),
+                $this
+                    ->char(6)
+                    ->check('value LIKE "test%"'),
                 [
                     'mysql' => 'char(6) CHECK (value LIKE "test%")',
                     'sqlite' => 'char(6) CHECK (value LIKE "test%")',
@@ -178,7 +200,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_CHAR . '(6)',
-                $this->char(6)->unsigned(),
+                $this
+                    ->char(6)
+                    ->unsigned(),
                 [
                     'pgsql' => 'char(6)',
                 ],
@@ -205,7 +229,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_DATE . ' NOT NULL',
-                $this->date()->notNull(),
+                $this
+                    ->date()
+                    ->notNull(),
                 [
                     'pgsql' => 'date NOT NULL',
                     'sqlite' => 'date NOT NULL',
@@ -226,7 +252,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_DATETIME . ' NOT NULL',
-                $this->dateTime()->notNull(),
+                $this
+                    ->dateTime()
+                    ->notNull(),
                 [
                     'mysql' => version_compare($version, '5.6.4', '>=') ? 'datetime(0) NOT NULL' : 'datetime NOT NULL',
                     'pgsql' => 'timestamp(0) NOT NULL',
@@ -248,7 +276,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_DECIMAL . ' CHECK (value > 5.6)',
-                $this->decimal()->check('value > 5.6'),
+                $this
+                    ->decimal()
+                    ->check('value > 5.6'),
                 [
                     'mysql' => 'decimal(10,0) CHECK (value > 5.6)',
                     'pgsql' => 'numeric(10,0) CHECK (value > 5.6)',
@@ -259,7 +289,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_DECIMAL . ' NOT NULL',
-                $this->decimal()->notNull(),
+                $this
+                    ->decimal()
+                    ->notNull(),
                 [
                     'mysql' => 'decimal(10,0) NOT NULL',
                     'pgsql' => 'numeric(10,0) NOT NULL',
@@ -270,7 +302,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_DECIMAL . '(12,4) CHECK (value > 5.6)',
-                $this->decimal(12, 4)->check('value > 5.6'),
+                $this
+                    ->decimal(12, 4)
+                    ->check('value > 5.6'),
                 [
                     'mysql' => 'decimal(12,4) CHECK (value > 5.6)',
                     'pgsql' => 'numeric(12,4) CHECK (value > 5.6)',
@@ -303,7 +337,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_DOUBLE . ' CHECK (value > 5.6)',
-                $this->double()->check('value > 5.6'),
+                $this
+                    ->double()
+                    ->check('value > 5.6'),
                 [
                     'mysql' => 'double CHECK (value > 5.6)',
                     'pgsql' => 'double precision CHECK (value > 5.6)',
@@ -314,7 +350,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_DOUBLE . ' NOT NULL',
-                $this->double()->notNull(),
+                $this
+                    ->double()
+                    ->notNull(),
                 [
                     'mysql' => 'double NOT NULL',
                     'pgsql' => 'double precision NOT NULL',
@@ -325,7 +363,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_DOUBLE . '(16) CHECK (value > 5.6)',
-                $this->double(16)->check('value > 5.6'),
+                $this
+                    ->double(16)
+                    ->check('value > 5.6'),
                 [
                     'mysql' => 'double CHECK (value > 5.6)',
                     'pgsql' => 'double precision CHECK (value > 5.6)',
@@ -357,7 +397,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_FLOAT . ' CHECK (value > 5.6)',
-                $this->float()->check('value > 5.6'),
+                $this
+                    ->float()
+                    ->check('value > 5.6'),
                 [
                     'mysql' => 'float CHECK (value > 5.6)',
                     'pgsql' => 'double precision CHECK (value > 5.6)',
@@ -368,7 +410,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_FLOAT . ' NOT NULL',
-                $this->float()->notNull(),
+                $this
+                    ->float()
+                    ->notNull(),
                 [
                     'mysql' => 'float NOT NULL',
                     'pgsql' => 'double precision NOT NULL',
@@ -379,7 +423,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_FLOAT . '(16) CHECK (value > 5.6)',
-                $this->float(16)->check('value > 5.6'),
+                $this
+                    ->float(16)
+                    ->check('value > 5.6'),
                 [
                     'mysql' => 'float CHECK (value > 5.6)',
                     'pgsql' => 'double precision CHECK (value > 5.6)',
@@ -411,7 +457,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_INTEGER . ' CHECK (value > 5)',
-                $this->integer()->check('value > 5'),
+                $this
+                    ->integer()
+                    ->check('value > 5'),
                 [
                     'mysql' => 'int(11) CHECK (value > 5)',
                     'pgsql' => 'integer CHECK (value > 5)',
@@ -422,7 +470,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_INTEGER . ' NOT NULL',
-                $this->integer()->notNull(),
+                $this
+                    ->integer()
+                    ->notNull(),
                 [
                     'mysql' => 'int(11) NOT NULL',
                     'pgsql' => 'integer NOT NULL',
@@ -433,7 +483,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_INTEGER . '(8) CHECK (value > 5)',
-                $this->integer(8)->check('value > 5'),
+                $this
+                    ->integer(8)
+                    ->check('value > 5'),
                 [
                     'mysql' => 'int(8) CHECK (value > 5)',
                     'pgsql' => 'integer CHECK (value > 5)',
@@ -444,7 +496,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_INTEGER . '(8)',
-                $this->integer(8)->unsigned(),
+                $this
+                    ->integer(8)
+                    ->unsigned(),
                 [
                     'pgsql' => 'integer',
                 ],
@@ -473,7 +527,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_MONEY . ' CHECK (value > 0.0)',
-                $this->money()->check('value > 0.0'),
+                $this
+                    ->money()
+                    ->check('value > 0.0'),
                 [
                     'mysql' => 'decimal(19,4) CHECK (value > 0.0)',
                     'pgsql' => 'numeric(19,4) CHECK (value > 0.0)',
@@ -484,7 +540,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_MONEY . ' NOT NULL',
-                $this->money()->notNull(),
+                $this
+                    ->money()
+                    ->notNull(),
                 [
                     'mysql' => 'decimal(19,4) NOT NULL',
                     'pgsql' => 'numeric(19,4) NOT NULL',
@@ -495,7 +553,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_MONEY . '(16,2) CHECK (value > 0.0)',
-                $this->money(16, 2)->check('value > 0.0'),
+                $this
+                    ->money(16, 2)
+                    ->check('value > 0.0'),
                 [
                     'mysql' => 'decimal(16,2) CHECK (value > 0.0)',
                     'pgsql' => 'numeric(16,2) CHECK (value > 0.0)',
@@ -528,21 +588,28 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_PK . ' AFTER `col_before`',
-                $this->primaryKey()->after('col_before'),
+                $this
+                    ->primaryKey()
+                    ->after('col_before'),
                 [
                     'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY AFTER `col_before`',
                 ],
             ],
             [
                 Schema::TYPE_PK . ' FIRST',
-                $this->primaryKey()->first(),
+                $this
+                    ->primaryKey()
+                    ->first(),
                 [
                     'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
                 ],
             ],
             [
                 Schema::TYPE_PK . ' FIRST',
-                $this->primaryKey()->first()->after('col_before'),
+                $this
+                    ->primaryKey()
+                    ->first()
+                    ->after('col_before'),
                 [
                     'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
                 ],
@@ -552,35 +619,48 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_PK . '(8) AFTER `col_before`',
-                $this->primaryKey(8)->after('col_before'),
+                $this
+                    ->primaryKey(8)
+                    ->after('col_before'),
                 [
                     'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY AFTER `col_before`',
                 ],
             ],
             [
                 Schema::TYPE_PK . '(8) FIRST',
-                $this->primaryKey(8)->first(),
+                $this
+                    ->primaryKey(8)
+                    ->first(),
                 [
                     'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
                 ],
             ],
             [
                 Schema::TYPE_PK . '(8) FIRST',
-                $this->primaryKey(8)->first()->after('col_before'),
+                $this
+                    ->primaryKey(8)
+                    ->first()
+                    ->after('col_before'),
                 [
                     'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
                 ],
             ],
             [
                 Schema::TYPE_PK . " COMMENT 'test' AFTER `col_before`",
-                $this->primaryKey()->comment('test')->after('col_before'),
+                $this
+                    ->primaryKey()
+                    ->comment('test')
+                    ->after('col_before'),
                 [
                     'mysql' => "int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'test' AFTER `col_before`",
                 ],
             ],
             [
                 Schema::TYPE_PK . " COMMENT 'testing \'quote\'' AFTER `col_before`",
-                $this->primaryKey()->comment('testing \'quote\'')->after('col_before'),
+                $this
+                    ->primaryKey()
+                    ->comment('testing \'quote\'')
+                    ->after('col_before'),
                 [
                     'mysql' => "int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'testing \'quote\''"
                         . ' AFTER `col_before`',
@@ -588,7 +668,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_PK . ' CHECK (value > 5)',
-                $this->primaryKey()->check('value > 5'),
+                $this
+                    ->primaryKey()
+                    ->check('value > 5'),
                 [
                     'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY CHECK (value > 5)',
                     'pgsql' => 'serial NOT NULL PRIMARY KEY CHECK (value > 5)',
@@ -599,7 +681,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_PK . '(8) CHECK (value > 5)',
-                $this->primaryKey(8)->check('value > 5'),
+                $this
+                    ->primaryKey(8)
+                    ->check('value > 5'),
                 [
                     'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY CHECK (value > 5)',
                     'oci' => 'NUMBER(8) NOT NULL PRIMARY KEY CHECK (value > 5)',
@@ -637,7 +721,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_TINYINT . ' UNSIGNED',
-                $this->tinyInteger()->unsigned(),
+                $this
+                    ->tinyInteger()
+                    ->unsigned(),
                 [
                     'mysql' => 'tinyint(3) UNSIGNED',
                     'sqlite' => 'tinyint UNSIGNED',
@@ -678,7 +764,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_STRING . " CHECK (value LIKE 'test%')",
-                $this->string()->check("value LIKE 'test%'"),
+                $this
+                    ->string()
+                    ->check("value LIKE 'test%'"),
                 [
                     'mysql' => "varchar(255) CHECK (value LIKE 'test%')",
                     'sqlite' => "varchar(255) CHECK (value LIKE 'test%')",
@@ -687,7 +775,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_STRING . ' CHECK (value LIKE \'test%\')',
-                $this->string()->check('value LIKE \'test%\''),
+                $this
+                    ->string()
+                    ->check('value LIKE \'test%\''),
                 [
                     'pgsql' => 'varchar(255) CHECK (value LIKE \'test%\')',
                     'oci' => 'VARCHAR2(255) CHECK (value LIKE \'test%\')',
@@ -695,7 +785,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_STRING . ' NOT NULL',
-                $this->string()->notNull(),
+                $this
+                    ->string()
+                    ->notNull(),
                 [
                     'mysql' => 'varchar(255) NOT NULL',
                     'pgsql' => 'varchar(255) NOT NULL',
@@ -706,7 +798,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_STRING . "(32) CHECK (value LIKE 'test%')",
-                $this->string(32)->check("value LIKE 'test%'"),
+                $this
+                    ->string(32)
+                    ->check("value LIKE 'test%'"),
                 [
                     'mysql' => "varchar(32) CHECK (value LIKE 'test%')",
                     'sqlite' => "varchar(32) CHECK (value LIKE 'test%')",
@@ -715,7 +809,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_STRING . '(32) CHECK (value LIKE \'test%\')',
-                $this->string(32)->check('value LIKE \'test%\''),
+                $this
+                    ->string(32)
+                    ->check('value LIKE \'test%\''),
                 [
                     'pgsql' => 'varchar(32) CHECK (value LIKE \'test%\')',
                     'oci' => 'VARCHAR2(32) CHECK (value LIKE \'test%\')',
@@ -745,7 +841,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_TEXT . " CHECK (value LIKE 'test%')",
-                $this->text()->check("value LIKE 'test%'"),
+                $this
+                    ->text()
+                    ->check("value LIKE 'test%'"),
                 [
                     'mysql' => "text CHECK (value LIKE 'test%')",
                     'sqlite' => "text CHECK (value LIKE 'test%')",
@@ -754,7 +852,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_TEXT . ' CHECK (value LIKE \'test%\')',
-                $this->text()->check('value LIKE \'test%\''),
+                $this
+                    ->text()
+                    ->check('value LIKE \'test%\''),
                 [
                     'pgsql' => 'text CHECK (value LIKE \'test%\')',
                     'oci' => 'CLOB CHECK (value LIKE \'test%\')',
@@ -762,7 +862,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_TEXT . ' NOT NULL',
-                $this->text()->notNull(),
+                $this
+                    ->text()
+                    ->notNull(),
                 [
                     'mysql' => 'text NOT NULL',
                     'pgsql' => 'text NOT NULL',
@@ -773,7 +875,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_TEXT . " CHECK (value LIKE 'test%')",
-                $this->text()->check("value LIKE 'test%'"),
+                $this
+                    ->text()
+                    ->check("value LIKE 'test%'"),
                 [
                     'mysql' => "text CHECK (value LIKE 'test%')",
                     'sqlite' => "text CHECK (value LIKE 'test%')",
@@ -783,7 +887,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_TEXT . ' CHECK (value LIKE \'test%\')',
-                $this->text()->check('value LIKE \'test%\''),
+                $this
+                    ->text()
+                    ->check('value LIKE \'test%\''),
                 [
                     'pgsql' => 'text CHECK (value LIKE \'test%\')',
                     'oci' => 'CLOB CHECK (value LIKE \'test%\')',
@@ -792,7 +898,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_TEXT . ' NOT NULL',
-                $this->text()->notNull(),
+                $this
+                    ->text()
+                    ->notNull(),
                 [
                     'mysql' => 'text NOT NULL',
                     'pgsql' => 'text NOT NULL',
@@ -827,7 +935,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_TIME . ' NOT NULL',
-                $this->time()->notNull(),
+                $this
+                    ->time()
+                    ->notNull(),
                 [
                     'mysql' => version_compare($version, '5.6.4', '>=') ? 'time(0) NOT NULL' : 'time NOT NULL',
                     'pgsql' => 'time(0) NOT NULL',
@@ -849,7 +959,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_TIMESTAMP . ' NOT NULL',
-                $this->timestamp()->notNull(),
+                $this
+                    ->timestamp()
+                    ->notNull(),
                 [
                     'mysql' => version_compare($version, '5.6.4', '>=') ? 'timestamp(0) NOT NULL'
                         : 'timestamp NOT NULL',
@@ -861,7 +973,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_TIMESTAMP . ' NULL DEFAULT NULL',
-                $this->timestamp()->defaultValue(null),
+                $this
+                    ->timestamp()
+                    ->defaultValue(null),
                 [
                     'mysql' => version_compare($version, '5.6.4', '>=') ? 'timestamp(0) NULL DEFAULT NULL'
                         : 'timestamp NULL DEFAULT NULL',
@@ -894,7 +1008,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_UPK,
-                $this->primaryKey()->unsigned(),
+                $this
+                    ->primaryKey()
+                    ->unsigned(),
                 [
                     'mysql' => 'int(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
                     'pgsql' => 'serial NOT NULL PRIMARY KEY',
@@ -903,7 +1019,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_UBIGPK,
-                $this->bigPrimaryKey()->unsigned(),
+                $this
+                    ->bigPrimaryKey()
+                    ->unsigned(),
                 [
                     'mysql' => 'bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
                     'pgsql' => 'bigserial NOT NULL PRIMARY KEY',
@@ -912,7 +1030,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_INTEGER . " COMMENT 'test comment'",
-                $this->integer()->comment('test comment'),
+                $this
+                    ->integer()
+                    ->comment('test comment'),
                 [
                     'mysql' => "int(11) COMMENT 'test comment'",
                     'sqlsrv' => 'int',
@@ -923,7 +1043,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_PK . " COMMENT 'test comment'",
-                $this->primaryKey()->comment('test comment'),
+                $this
+                    ->primaryKey()
+                    ->comment('test comment'),
                 [
                     'mysql' => "int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'test comment'",
                     'sqlsrv' => 'int IDENTITY PRIMARY KEY',
@@ -934,7 +1056,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_PK . ' FIRST',
-                $this->primaryKey()->first(),
+                $this
+                    ->primaryKey()
+                    ->first(),
                 [
                     'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
                     'sqlsrv' => 'int IDENTITY PRIMARY KEY',
@@ -946,7 +1070,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_INTEGER . ' FIRST',
-                $this->integer()->first(),
+                $this
+                    ->integer()
+                    ->first(),
                 [
                     'mysql' => 'int(11) FIRST',
                     'sqlsrv' => 'int',
@@ -959,7 +1085,9 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_STRING . ' FIRST',
-                $this->string()->first(),
+                $this
+                    ->string()
+                    ->first(),
                 [
                     'mysql' => 'varchar(255) FIRST',
                     'sqlsrv' => 'nvarchar(255)',
@@ -971,7 +1099,10 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_INTEGER . ' NOT NULL FIRST',
-                $this->integer()->append('NOT NULL')->first(),
+                $this
+                    ->integer()
+                    ->append('NOT NULL')
+                    ->first(),
                 [
                     'mysql' => 'int(11) NOT NULL FIRST',
                     'sqlsrv' => 'int NOT NULL',
@@ -983,7 +1114,10 @@ trait TestQueryBuilderTrait
             ],
             [
                 Schema::TYPE_STRING . ' NOT NULL FIRST',
-                $this->string()->append('NOT NULL')->first(),
+                $this
+                    ->string()
+                    ->append('NOT NULL')
+                    ->first(),
                 [
                     'mysql' => 'varchar(255) NOT NULL FIRST',
                     'sqlsrv' => 'nvarchar(255) NOT NULL',
@@ -1003,8 +1137,12 @@ trait TestQueryBuilderTrait
         ];
 
         foreach ($items as $i => $item) {
-            if (array_key_exists($this->getConnection()->getDriverName(), $item[2])) {
-                $item[2] = $item[2][$this->getConnection()->getDriverName()];
+            if (array_key_exists($this
+                ->getConnection()
+                ->getDriverName(), $item[2])) {
+                $item[2] = $item[2][$this
+                    ->getConnection()
+                    ->getDriverName()];
                 $items[$i] = $item;
             } else {
                 unset($items[$i]);
@@ -1021,8 +1159,12 @@ trait TestQueryBuilderTrait
         foreach ($this->columnTypes() as $item) {
             [$column, $builder, $expected] = $item;
 
-            if (isset($item[3][$this->getConnection()->getDriverName()])) {
-                $expectedColumnSchemaBuilder = $item[3][$this->getConnection()->getDriverName()];
+            if (isset($item[3][$this
+                    ->getConnection()
+                    ->getDriverName()])) {
+                $expectedColumnSchemaBuilder = $item[3][$this
+                    ->getConnection()
+                    ->getDriverName()];
             } elseif (isset($item[3]) && !is_array($item[3])) {
                 $expectedColumnSchemaBuilder = $item[3];
             } else {
@@ -1039,8 +1181,12 @@ trait TestQueryBuilderTrait
     {
         $qb = $this->getQueryBuilder();
 
-        if ($qb->getDb()->getTableSchema('column_type_table', true) !== null) {
-            $this->getConnection(false)->createCommand($qb->dropTable('column_type_table'))->execute();
+        if ($qb
+                ->getDb()
+                ->getTableSchema('column_type_table', true) !== null) {
+            $this
+                ->getConnection(false)
+                ->createCommand($qb->dropTable('column_type_table'))->execute();
         }
 
         $columns = [];
@@ -1060,9 +1206,13 @@ trait TestQueryBuilderTrait
             }
         }
 
-        $this->getConnection(false)->createCommand($qb->createTable('column_type_table', $columns))->execute();
+        $this
+            ->getConnection(false)
+            ->createCommand($qb->createTable('column_type_table', $columns))->execute();
 
-        $this->assertNotEmpty($qb->getDb()->getTableSchema('column_type_table', true));
+        $this->assertNotEmpty($qb
+            ->getDb()
+            ->getTableSchema('column_type_table', true));
     }
 
     public function testBuildWhereExistsWithParameters(): void
@@ -1078,19 +1228,23 @@ trait TestQueryBuilderTrait
 
         $subQuery = new Query($db);
 
-        $subQuery->select('1')
+        $subQuery
+            ->select('1')
             ->from('Website w')
             ->where('w.id = t.website_id')
             ->andWhere('w.merchant_id = :merchant_id', [':merchant_id' => 6]);
 
         $query = new Query($db);
 
-        $query->select('id')
+        $query
+            ->select('id')
             ->from('TotalExample t')
             ->where(['exists', $subQuery])
             ->andWhere('t.some_column = :some_value', [':some_value' => 'asd']);
 
-        [$actualQuerySql, $queryParams] = $this->getQueryBuilder()->build($query);
+        [$actualQuerySql, $queryParams] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $this->assertEquals($expectedQuerySql, $actualQuerySql);
         $this->assertEquals($expectedQueryParams, $queryParams);
@@ -1110,19 +1264,23 @@ trait TestQueryBuilderTrait
 
         $subQuery = new Query($db);
 
-        $subQuery->select('1')
+        $subQuery
+            ->select('1')
             ->from('Website w')
             ->where('w.id = t.website_id')
             ->andWhere(['w.merchant_id' => 6, 'w.user_id' => '210']);
 
         $query = new Query($db);
 
-        $query->select('id')
+        $query
+            ->select('id')
             ->from('TotalExample t')
             ->where(['exists', $subQuery])
             ->andWhere(['t.some_column' => 'asd']);
 
-        [$actualQuerySql, $queryParams] = $this->getQueryBuilder()->build($query);
+        [$actualQuerySql, $queryParams] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $this->assertEquals($expectedQuerySql, $actualQuerySql);
         $this->assertEquals($expectedQueryParams, $queryParams);
@@ -1145,23 +1303,28 @@ trait TestQueryBuilderTrait
         $query = new Query($db);
         $secondQuery = new Query($db);
 
-        $secondQuery->select('id')
-              ->from('TotalTotalExample t2')
-              ->where('w > 5');
+        $secondQuery
+            ->select('id')
+            ->from('TotalTotalExample t2')
+            ->where('w > 5');
 
         $thirdQuery = new Query($db);
 
-        $thirdQuery->select('id')
-              ->from('TotalTotalExample t3')
-              ->where('w = 3');
+        $thirdQuery
+            ->select('id')
+            ->from('TotalTotalExample t3')
+            ->where('w = 3');
 
-        $query->select('id')
-              ->from('TotalExample t1')
-              ->where(['and', 'w > 0', 'x < 2'])
-              ->union($secondQuery)
-              ->union($thirdQuery, true);
+        $query
+            ->select('id')
+            ->from('TotalExample t1')
+            ->where(['and', 'w > 0', 'x < 2'])
+            ->union($secondQuery)
+            ->union($thirdQuery, true);
 
-        [$actualQuerySql, $queryParams] = $this->getQueryBuilder()->build($query);
+        [$actualQuerySql, $queryParams] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $this->assertEquals($expectedQuerySql, $actualQuerySql);
         $this->assertEquals([], $queryParams);
@@ -1198,7 +1361,9 @@ trait TestQueryBuilderTrait
             ->withQuery($with2Query->union($with3Query), 'a2')
             ->from('a2');
 
-        [$actualQuerySql, $queryParams] = $this->getQueryBuilder()->build($query);
+        [$actualQuerySql, $queryParams] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $this->assertEquals($expectedQuerySql, $actualQuerySql);
         $this->assertEquals([], $queryParams);
@@ -1221,7 +1386,9 @@ trait TestQueryBuilderTrait
             ->withQuery($with1Query, 'a1', true)
             ->from('a1');
 
-        [$actualQuerySql, $queryParams] = $this->getQueryBuilder()->build($query);
+        [$actualQuerySql, $queryParams] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $this->assertEquals($expectedQuerySql, $actualQuerySql);
         $this->assertEquals([], $queryParams);
@@ -1241,7 +1408,9 @@ trait TestQueryBuilderTrait
             ->from('accounts')
             ->addSelect(['operations_count' => $subquery]);
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes(
             'SELECT *, (SELECT COUNT(*) FROM [[operations]] WHERE account_id = accounts.id) AS [[operations_count]]'
@@ -1272,7 +1441,9 @@ trait TestQueryBuilderTrait
             ])
             ->from('tablename');
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes(
             'SELECT [[t]].[[id]] AS [[ID]], [[gsm]].[[username]] AS [[GSM]], [[part]].[[Part]], [[t]].[[Part_Cost]]'
@@ -1292,7 +1463,9 @@ trait TestQueryBuilderTrait
             ->select(new Expression('1 AS ab'))
             ->from('tablename');
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes('SELECT 1 AS ab FROM [[tablename]]');
 
@@ -1305,7 +1478,9 @@ trait TestQueryBuilderTrait
             ->addSelect(['ef' => new Expression('3')])
             ->from('tablename');
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes('SELECT 1 AS ab, 2 AS cd, 3 AS [[ef]] FROM [[tablename]]');
 
@@ -1316,7 +1491,9 @@ trait TestQueryBuilderTrait
             ->select(new Expression('SUBSTR(name, 0, :len)', [':len' => 4]))
             ->from('tablename');
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes('SELECT SUBSTR(name, 0, :len) FROM [[tablename]]');
 
@@ -1333,7 +1510,9 @@ trait TestQueryBuilderTrait
 
         $query = (new Query($db))->from([new Expression('{{%user}} USE INDEX (primary)')]);
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes('SELECT * FROM {{%user}} USE INDEX (primary)');
 
@@ -1344,7 +1523,9 @@ trait TestQueryBuilderTrait
             ->from([new Expression('{{user}} {{t}} FORCE INDEX (primary) IGNORE INDEX FOR ORDER BY (i1)')])
             ->leftJoin(['p' => 'profile'], 'user.id = profile.user_id USE INDEX (i2)');
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes(
             'SELECT * FROM {{user}} {{t}} FORCE INDEX (primary) IGNORE INDEX FOR ORDER BY (i1)'
@@ -1360,12 +1541,16 @@ trait TestQueryBuilderTrait
         $db = $this->getConnection();
 
         /* query subquery */
-        $subquery = (new Query($db))->from('user')->where('account_id = accounts.id');
+        $subquery = (new Query($db))
+            ->from('user')
+            ->where('account_id = accounts.id');
 
         $query = (new Query($db))->from(['activeusers' => $subquery]);
 
         /* SELECT * FROM (SELECT * FROM [[user]] WHERE [[active]] = 1) [[activeusers]]; */
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes(
             'SELECT * FROM (SELECT * FROM [[user]] WHERE account_id = accounts.id) [[activeusers]]'
@@ -1375,12 +1560,18 @@ trait TestQueryBuilderTrait
         $this->assertEmpty($params);
 
         /* query subquery with params */
-        $subquery = (new Query($db))->from('user')->where('account_id = :id', ['id' => 1]);
+        $subquery = (new Query($db))
+            ->from('user')
+            ->where('account_id = :id', ['id' => 1]);
 
-        $query = (new Query($db))->from(['activeusers' => $subquery])->where('abc = :abc', ['abc' => 'abc']);
+        $query = (new Query($db))
+            ->from(['activeusers' => $subquery])
+            ->where('abc = :abc', ['abc' => 'abc']);
 
         /* SELECT * FROM (SELECT * FROM [[user]] WHERE [[active]] = 1) [[activeusers]]; */
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes(
             'SELECT * FROM (SELECT * FROM [[user]] WHERE account_id = :id) [[activeusers]] WHERE abc = :abc'
@@ -1395,7 +1586,9 @@ trait TestQueryBuilderTrait
         $query = (new Query($db))->from(['activeusers' => $subquery]);
 
         /* SELECT * FROM (SELECT * FROM [[user]] WHERE [[active]] = 1) [[activeusers]]; */
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes(
             'SELECT * FROM (SELECT * FROM user WHERE account_id = accounts.id) [[activeusers]]'
@@ -1415,7 +1608,9 @@ trait TestQueryBuilderTrait
             ->from('operations')
             ->orderBy('name ASC, date DESC');
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes('SELECT * FROM [[operations]] ORDER BY [[name]], [[date]] DESC');
 
@@ -1428,7 +1623,9 @@ trait TestQueryBuilderTrait
             ->from('operations')
             ->orderBy(['name' => SORT_ASC, 'date' => SORT_DESC]);
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes('SELECT * FROM [[operations]] ORDER BY [[name]], [[date]] DESC');
 
@@ -1442,7 +1639,9 @@ trait TestQueryBuilderTrait
             ->where('account_id = accounts.id')
             ->orderBy(new Expression('SUBSTR(name, 3, 4) DESC, x ASC'));
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes(
             'SELECT * FROM [[operations]] WHERE account_id = accounts.id ORDER BY SUBSTR(name, 3, 4) DESC, x ASC'
@@ -1457,7 +1656,9 @@ trait TestQueryBuilderTrait
             ->from('operations')
             ->orderBy(new Expression('SUBSTR(name, 3, :to) DESC, x ASC', [':to' => 4]));
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes('SELECT * FROM [[operations]] ORDER BY SUBSTR(name, 3, :to) DESC, x ASC');
 
@@ -1475,7 +1676,9 @@ trait TestQueryBuilderTrait
             ->from('operations')
             ->groupBy('name, date');
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes('SELECT * FROM [[operations]] GROUP BY [[name]], [[date]]');
 
@@ -1488,7 +1691,9 @@ trait TestQueryBuilderTrait
             ->from('operations')
             ->groupBy(['name', 'date']);
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes('SELECT * FROM [[operations]] GROUP BY [[name]], [[date]]');
 
@@ -1502,7 +1707,9 @@ trait TestQueryBuilderTrait
             ->where('account_id = accounts.id')
             ->groupBy(new Expression('SUBSTR(name, 0, 1), x'));
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes(
             'SELECT * FROM [[operations]] WHERE account_id = accounts.id GROUP BY SUBSTR(name, 0, 1), x'
@@ -1517,7 +1724,9 @@ trait TestQueryBuilderTrait
             ->from('operations')
             ->groupBy(new Expression('SUBSTR(name, 0, :to), x', [':to' => 4]));
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $expected = $this->replaceQuotes('SELECT * FROM [[operations]] GROUP BY SUBSTR(name, 0, :to), x');
 
@@ -1548,7 +1757,9 @@ trait TestQueryBuilderTrait
             ->where([])
             ->andWhere(['in', 'id', ['1', '0']]);
 
-        [$sql, $params] = $this->getQueryBuilder()->build($query);
+        [$sql, $params] = $this
+            ->getQueryBuilder()
+            ->build($query);
 
         $this->assertSame($this->replaceQuotes('SELECT * FROM [[admin_user]] WHERE [[id]] IN (:qp0, :qp1)'), $sql);
         $this->assertSame([':qp0' => '1', ':qp1' => '0'], $params);
@@ -2040,7 +2251,9 @@ trait TestQueryBuilderTrait
             [new Expression('NOT (any_expression(:a))', [':a' => 1]), 'NOT (any_expression(:a))', [':a' => 1]],
         ];
 
-        switch ($this->getConnection()->getDriverName()) {
+        switch ($this
+            ->getConnection()
+            ->getDriverName()) {
             case 'sqlsrv':
             case 'sqlite':
                 $conditions = array_merge($conditions, [

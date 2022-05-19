@@ -76,8 +76,12 @@ use function strncmp;
  * ```php
  * $transaction = $connection->beginTransaction();
  * try {
- *     $connection->createCommand($sql1)->execute();
- *     $connection->createCommand($sql2)->execute();
+ *     $connection
+ *         ->createCommand($sql1)
+ *         ->execute();
+ *     $connection
+ *         ->createCommand($sql2)
+ *         ->execute();
  *     // ... executing other SQL statements ...
  *     $transaction->commit();
  * } catch (Exceptions $e) {
@@ -310,7 +314,9 @@ abstract class Connection implements ConnectionInterface
      * // The customer will be fetched from cache if available.
      * // If not, the query will be made against DB and cached for use next time.
      * $customer = $db->cache(function (ConnectionInterface $db) {
-     *     return $db->createCommand('SELECT * FROM customer WHERE id=1')->queryOne();
+     *     return $db
+     *         ->createCommand('SELECT * FROM customer WHERE id=1')
+     *         ->queryOne();
      * });
      * ```
      *
@@ -402,7 +408,9 @@ abstract class Connection implements ConnectionInterface
      */
     public function getLastInsertID(string $sequenceName = ''): string
     {
-        return $this->getSchema()->getLastInsertID($sequenceName);
+        return $this
+            ->getSchema()
+            ->getLastInsertID($sequenceName);
     }
 
     /**
@@ -464,12 +472,16 @@ abstract class Connection implements ConnectionInterface
      */
     public function getQueryBuilder(): QueryBuilder
     {
-        return $this->getSchema()->getQueryBuilder();
+        return $this
+            ->getSchema()
+            ->getQueryBuilder();
     }
 
     public function getServerVersion(): string
     {
-        return $this->getSchema()->getServerVersion();
+        return $this
+            ->getSchema()
+            ->getServerVersion();
     }
 
     /**
@@ -528,7 +540,9 @@ abstract class Connection implements ConnectionInterface
 
     public function getTableSchema(string $name, $refresh = false): ?TableSchema
     {
-        return $this->getSchema()->getTableSchema($name, $refresh);
+        return $this
+            ->getSchema()
+            ->getTableSchema($name, $refresh);
     }
 
     /**
@@ -558,7 +572,9 @@ abstract class Connection implements ConnectionInterface
      *
      *     return $db->noCache(function (ConnectionInterface $db) {
      *         // this query will not use query cache
-     *         return $db->createCommand('SELECT * FROM customer WHERE id=1')->queryOne();
+     *         return $db
+     *             ->createCommand('SELECT * FROM customer WHERE id=1')
+     *             ->queryOne();
      *     });
      * });
      * ```
@@ -738,8 +754,14 @@ abstract class Connection implements ConnectionInterface
             $key = [__METHOD__, $poolConnetion->getDsn()];
 
             if (
-                $this->getSchema()->getSchemaCache()->isEnabled() &&
-                $this->getSchema()->getSchemaCache()->getOrSet($key, null, $this->serverRetryInterval)
+                $this
+                    ->getSchema()
+                    ->getSchemaCache()
+                    ->isEnabled() &&
+                $this
+                    ->getSchema()
+                    ->getSchemaCache()
+                    ->getOrSet($key, null, $this->serverRetryInterval)
             ) {
                 /** should not try this dead server now */
                 continue;
@@ -757,9 +779,15 @@ abstract class Connection implements ConnectionInterface
                     );
                 }
 
-                if ($this->getSchema()->getSchemaCache()->isEnabled()) {
+                if ($this
+                    ->getSchema()
+                    ->getSchemaCache()
+                    ->isEnabled()) {
                     /** mark this server as dead and only retry it after the specified interval */
-                    $this->getSchema()->getSchemaCache()->set($key, 1, $this->serverRetryInterval);
+                    $this
+                        ->getSchema()
+                        ->getSchemaCache()
+                        ->set($key, 1, $this->serverRetryInterval);
                 }
 
                 return null;
@@ -772,7 +800,9 @@ abstract class Connection implements ConnectionInterface
     public function quoteColumnName(string $name): string
     {
         return $this->quotedColumnNames[$name]
-            ?? ($this->quotedColumnNames[$name] = $this->getSchema()->quoteColumnName($name));
+            ?? ($this->quotedColumnNames[$name] = $this
+                ->getSchema()
+                ->quoteColumnName($name));
     }
 
     /**
@@ -815,7 +845,9 @@ abstract class Connection implements ConnectionInterface
     public function quoteTableName(string $name): string
     {
         return $this->quotedTableNames[$name]
-            ?? ($this->quotedTableNames[$name] = $this->getSchema()->quoteTableName($name));
+            ?? ($this->quotedTableNames[$name] = $this
+                ->getSchema()
+                ->quoteTableName($name));
     }
 
     /**
@@ -833,7 +865,9 @@ abstract class Connection implements ConnectionInterface
      */
     public function quoteValue($value)
     {
-        return $this->getSchema()->quoteValue($value);
+        return $this
+            ->getSchema()
+            ->quoteValue($value);
     }
 
     /**
@@ -1026,7 +1060,9 @@ abstract class Connection implements ConnectionInterface
      *
      * ```php
      * $result = $db->useMaster(function (ConnectionInterface $db) {
-     *     return $db->createCommand('SELECT * FROM user LIMIT 1')->queryOne();
+     *     return $db
+     *         ->createCommand('SELECT * FROM user LIMIT 1')
+     *         ->queryOne();
      * });
      * ```
      *

@@ -29,15 +29,18 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  * {
  *     $sort = new Sort();
  *
- *     $sort->attributes(
- *         [
- *             'age',
- *             'name' => [
- *                  'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
- *                  'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
+ *     $sort
+ *         ->attributes(
+ *             [
+ *                 'age',
+ *                 'name' => [
+ *                      'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
+ *                      'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
+ *                 ]
  *             ]
- *         ]
- *     )->params(['sort' => 'age,-name'])->enableMultiSort(true);
+ *         )
+ *         ->params(['sort' => 'age,-name'])
+ *         ->enableMultiSort(true);
  * }
  * ```
  *

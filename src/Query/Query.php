@@ -102,7 +102,9 @@ class Query implements QueryInterface, ExpressionInterface
      */
     public function createCommand(): Command
     {
-        [$sql, $params] = $this->db->getQueryBuilder()->build($this);
+        [$sql, $params] = $this->db
+            ->getQueryBuilder()
+            ->build($this);
 
         $command = $this->db->createCommand($sql, $params);
 
@@ -198,7 +200,9 @@ class Query implements QueryInterface, ExpressionInterface
             return [];
         }
 
-        $rows = $this->createCommand()->queryAll();
+        $rows = $this
+            ->createCommand()
+            ->queryAll();
 
         return $this->populate($rows);
     }
@@ -244,7 +248,9 @@ class Query implements QueryInterface, ExpressionInterface
             return false;
         }
 
-        return $this->createCommand()->queryOne();
+        return $this
+            ->createCommand()
+            ->queryOne();
     }
 
     /**
@@ -263,7 +269,9 @@ class Query implements QueryInterface, ExpressionInterface
             return null;
         }
 
-        return $this->createCommand()->queryScalar();
+        return $this
+            ->createCommand()
+            ->queryScalar();
     }
 
     /**
@@ -282,7 +290,9 @@ class Query implements QueryInterface, ExpressionInterface
         }
 
         if ($this->indexBy === null) {
-            return $this->createCommand()->queryColumn();
+            return $this
+                ->createCommand()
+                ->queryColumn();
         }
 
         if (is_string($this->indexBy) && is_array($this->select) && count($this->select) === 1) {
@@ -293,7 +303,9 @@ class Query implements QueryInterface, ExpressionInterface
             }
         }
 
-        $rows = $this->createCommand()->queryAll();
+        $rows = $this
+            ->createCommand()
+            ->queryAll();
         $results = [];
         foreach ($rows as $row) {
             $value = reset($row);
@@ -411,7 +423,9 @@ class Query implements QueryInterface, ExpressionInterface
 
         $command = $this->createCommand();
         $params = $command->getParams();
-        $command->setSql($this->db->getQueryBuilder()->selectExists($command->getSql()));
+        $command->setSql($this->db
+            ->getQueryBuilder()
+            ->selectExists($command->getSql()));
         $command->bindValues($params);
 
         return (bool) $command->queryScalar();

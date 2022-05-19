@@ -110,9 +110,13 @@ final class SqlDataProvider extends DataProvider
             $offset = $pagination->getOffset();
         }
 
-        $sql = $this->db->getQueryBuilder()->buildOrderByAndLimit($sql, $orders, $limit, $offset);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->buildOrderByAndLimit($sql, $orders, $limit, $offset);
 
-        return $this->db->createCommand($sql, $this->params)->queryAll();
+        return $this->db
+            ->createCommand($sql, $this->params)
+            ->queryAll();
     }
 
     /**

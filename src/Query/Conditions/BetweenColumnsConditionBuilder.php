@@ -66,7 +66,9 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
         }
 
         if (strpos($columnName, '(') === false) {
-            return $this->queryBuilder->getDb()->quoteColumnName($columnName);
+            return $this->queryBuilder
+                ->getDb()
+                ->quoteColumnName($columnName);
         }
 
         return $columnName;

@@ -28,7 +28,12 @@ trait TestConnectionTrait
 
         $this->assertInstanceOf(ConnectionInterface::class, $unserialized);
         $this->assertNull($unserialized->getPDO());
-        $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
+        $this->assertEquals(
+            123,
+            $unserialized
+                ->createCommand('SELECT 123')
+                ->queryScalar(),
+        );
     }
 
     public function testTransaction(): void
@@ -42,27 +47,40 @@ trait TestConnectionTrait
         $this->assertNotNull($db->getTransaction());
         $this->assertTrue($transaction->isActive());
 
-        $db->createCommand()->insert('profile', ['description' => 'test transaction'])->execute();
+        $db
+            ->createCommand()
+            ->insert('profile', ['description' => 'test transaction'])
+            ->execute();
 
         $transaction->rollBack();
 
         $this->assertFalse($transaction->isActive());
         $this->assertNull($db->getTransaction());
-        $this->assertEquals(0, $db->createCommand(
-            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
-        )->queryScalar());
+        $this->assertEquals(0, $db
+            ->createCommand(
+                "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
+            )
+            ->queryScalar(),
+        );
 
         $transaction = $db->beginTransaction();
 
-        $db->createCommand()->insert('profile', ['description' => 'test transaction'])->execute();
+        $db
+            ->createCommand()
+            ->insert('profile', ['description' => 'test transaction'])
+            ->execute();
 
         $transaction->commit();
 
         $this->assertFalse($transaction->isActive());
         $this->assertNull($db->getTransaction());
-        $this->assertEquals(1, $db->createCommand(
-            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
-        )->queryScalar());
+        $this->assertEquals(
+            1, $db
+            ->createCommand(
+                "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
+            )
+            ->queryScalar(),
+        );
     }
 
     public function testTransactionIsolation(): void
@@ -96,12 +114,17 @@ trait TestConnectionTrait
         $this->expectException(Exception::class);
 
         $db->transaction(function () use ($db) {
-            $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
+            $db
+                ->createCommand()
+                ->insert('profile', ['description' => 'test transaction shortcut'])
+                ->execute();
             throw new Exception('Exception in transaction shortcut');
         });
-        $profilesCount = $db->createCommand(
-            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction shortcut'"
-        )->queryScalar();
+        $profilesCount = $db
+            ->createCommand(
+                "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction shortcut'"
+            )
+            ->queryScalar();
         $this->assertEquals(0, $profilesCount, 'profile should not be inserted in transaction shortcut');
     }
 
@@ -110,15 +133,20 @@ trait TestConnectionTrait
         $db = $this->getConnection(true);
 
         $result = $db->transaction(static function () use ($db) {
-            $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
+            $db
+                ->createCommand()
+                ->insert('profile', ['description' => 'test transaction shortcut'])
+                ->execute();
             return true;
         });
 
         $this->assertTrue($result, 'transaction shortcut valid value should be returned from callback');
 
-        $profilesCount = $db->createCommand(
-            "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction shortcut'"
-        )->queryScalar();
+        $profilesCount = $db
+            ->createCommand(
+                "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction shortcut'"
+            )
+            ->queryScalar();
 
         $this->assertEquals(1, $profilesCount, 'profile should be inserted in transaction shortcut');
     }
@@ -128,15 +156,20 @@ trait TestConnectionTrait
         $db = $this->getConnection(true);
 
         $result = $db->transaction(static function (ConnectionInterface $db) {
-            $db->createCommand()->insert('profile', ['description' => 'test transaction shortcut'])->execute();
+            $db
+                ->createCommand()
+                ->insert('profile', ['description' => 'test transaction shortcut'])
+                ->execute();
             return true;
         }, Transaction::READ_UNCOMMITTED);
 
         $this->assertTrue($result, 'transaction shortcut valid value should be returned from callback');
 
-        $profilesCount = $db->createCommand(
-            "SELECT COUNT(*) FROM profile WHERE description = 'test transaction shortcut';"
-        )->queryScalar();
+        $profilesCount = $db
+            ->createCommand(
+                "SELECT COUNT(*) FROM profile WHERE description = 'test transaction shortcut';"
+            )
+            ->queryScalar();
 
         $this->assertEquals(1, $profilesCount, 'profile should be inserted in transaction shortcut');
     }
@@ -155,7 +188,9 @@ trait TestConnectionTrait
 
             $db->transaction(function (ConnectionInterface $db) {
                 $this->assertNotNull($db->getTransaction());
-                $db->getTransaction()->rollBack();
+                $db
+                    ->getTransaction()
+                    ->rollBack();
             });
 
             $this->assertNotNull($db->getTransaction());
@@ -181,7 +216,10 @@ trait TestConnectionTrait
 
         foreach (['qlog1', 'qlog2', 'qlog3', 'qlog4'] as $table) {
             if ($db->getTableSchema($table, true) !== null) {
-                $db->createCommand()->dropTable($table)->execute();
+                $db
+                    ->createCommand()
+                    ->dropTable($table)
+                    ->execute();
             }
         }
 
@@ -192,7 +230,10 @@ trait TestConnectionTrait
         $this->logger->flush();
         $this->profiler->flush();
 
-        $db->createCommand()->createTable('qlog1', ['id' => 'pk'])->execute();
+        $db
+            ->createCommand()
+            ->createTable('qlog1', ['id' => 'pk'])
+            ->execute();
 
         $this->assertCount(1, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
@@ -201,7 +242,9 @@ trait TestConnectionTrait
         $this->logger->flush();
         $this->profiler->flush();
 
-        $db->createCommand('SELECT * FROM {{qlog1}}')->queryAll();
+        $db
+            ->createCommand('SELECT * FROM {{qlog1}}')
+            ->queryAll();
 
         $this->assertCount(1, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
@@ -213,7 +256,10 @@ trait TestConnectionTrait
         $this->logger->flush();
         $this->profiler->flush();
 
-        $db->createCommand()->createTable('qlog2', ['id' => 'pk'])->execute();
+        $db
+            ->createCommand()
+            ->createTable('qlog2', ['id' => 'pk'])
+            ->execute();
 
         $this->assertCount(0, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
@@ -222,7 +268,9 @@ trait TestConnectionTrait
         $this->logger->flush();
         $this->profiler->flush();
 
-        $db->createCommand('SELECT * FROM {{qlog2}}')->queryAll();
+        $db
+            ->createCommand('SELECT * FROM {{qlog2}}')
+            ->queryAll();
 
         $this->assertCount(0, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
@@ -234,7 +282,10 @@ trait TestConnectionTrait
         $this->logger->flush();
         $this->profiler->flush();
 
-        $db->createCommand()->createTable('qlog3', ['id' => 'pk'])->execute();
+        $db
+            ->createCommand()
+            ->createTable('qlog3', ['id' => 'pk'])
+            ->execute();
 
         $this->assertCount(1, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
@@ -243,7 +294,9 @@ trait TestConnectionTrait
         $this->logger->flush();
         $this->profiler->flush();
 
-        $db->createCommand('SELECT * FROM {{qlog3}}')->queryAll();
+        $db
+            ->createCommand('SELECT * FROM {{qlog3}}')
+            ->queryAll();
 
         $this->assertCount(1, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
@@ -255,13 +308,18 @@ trait TestConnectionTrait
         $this->logger->flush();
         $this->profiler->flush();
 
-        $db->createCommand()->createTable('qlog4', ['id' => 'pk'])->execute();
+        $db
+            ->createCommand()
+            ->createTable('qlog4', ['id' => 'pk'])
+            ->execute();
 
         $this->assertNotNull($db->getTableSchema('qlog4', true));
         $this->assertCount(0, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
-        $db->createCommand('SELECT * FROM {{qlog4}}')->queryAll();
+        $db
+            ->createCommand('SELECT * FROM {{qlog4}}')
+            ->queryAll();
 
         $this->assertCount(0, $this->getInaccessibleProperty($this->logger, 'messages'));
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
@@ -272,7 +330,10 @@ trait TestConnectionTrait
         $db = $this->getConnection();
 
         if ($db->getTableSchema('qlog1', true) === null) {
-            $db->createCommand()->createTable('qlog1', ['id' => 'pk'])->execute();
+            $db
+                ->createCommand()
+                ->createTable('qlog1', ['id' => 'pk'])
+                ->execute();
         }
 
         $db->setEmulatePrepare(true);
@@ -326,10 +387,12 @@ trait TestConnectionTrait
         $thrown = false;
 
         try {
-            $db->createCommand(
-                'SELECT * FROM qlog1 WHERE id=:a ORDER BY nonexistingcolumn;',
-                [':a' => 1]
-            )->queryAll();
+            $db
+                ->createCommand(
+                    'SELECT * FROM qlog1 WHERE id=:a ORDER BY nonexistingcolumn;',
+                    [':a' => 1]
+                )
+                ->queryAll();
         } catch (Exception $e) {
             $this->assertStringContainsString(
                 'SELECT * FROM qlog1 WHERE id=1 ORDER BY nonexistingcolumn;',

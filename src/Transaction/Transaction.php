@@ -22,8 +22,12 @@ use Yiisoft\Db\Exception\NotSupportedException;
  * ```php
  * $transaction = $connection->beginTransaction();
  * try {
- *     $connection->createCommand($sql1)->execute();
- *     $connection->createCommand($sql2)->execute();
+ *     $connection
+ *         ->createCommand($sql1)
+ *         ->execute();
+ *     $connection
+ *         ->createCommand($sql2)
+ *         ->execute();
  *     //.... other SQL executions
  *     $transaction->commit();
  * } catch (\Throwable $e) {
@@ -123,7 +127,9 @@ class Transaction
 
         if ($this->level === 0) {
             if ($isolationLevel !== null) {
-                $this->db->getSchema()->setTransactionIsolationLevel($isolationLevel);
+                $this->db
+                    ->getSchema()
+                    ->setTransactionIsolationLevel($isolationLevel);
             }
 
             if ($this->logger !== null) {
@@ -134,7 +140,9 @@ class Transaction
                 );
             }
 
-            $this->db->getPDO()->beginTransaction();
+            $this->db
+                ->getPDO()
+                ->beginTransaction();
             $this->level = 1;
 
             return;
@@ -179,7 +187,9 @@ class Transaction
                 $this->logger->log(LogLevel::DEBUG, 'Commit transaction ' . __METHOD__);
             }
 
-            $this->db->getPDO()->commit();
+            $this->db
+                ->getPDO()
+                ->commit();
 
             return;
         }
@@ -221,7 +231,9 @@ class Transaction
                 $this->logger->log(LogLevel::INFO, 'Roll back transaction ' . __METHOD__);
             }
 
-            $this->db->getPDO()->rollBack();
+            $this->db
+                ->getPDO()
+                ->rollBack();
 
             return;
         }
@@ -271,7 +283,9 @@ class Transaction
             );
         }
 
-        $this->db->getSchema()->setTransactionIsolationLevel($level);
+        $this->db
+            ->getSchema()
+            ->setTransactionIsolationLevel($level);
     }
 
     /**
