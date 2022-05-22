@@ -32,7 +32,9 @@ trait TestQueryTrait
 
         $query = new Query($db);
 
-        $query->select('id, name', 'something')->distinct(true);
+        $query
+            ->select('id, name', 'something')
+            ->distinct(true);
 
         $this->assertEquals(['id' => 'id', 'name' => 'name'], $query->getSelect());
         $this->assertTrue($query->getDistinct());
@@ -143,11 +145,13 @@ trait TestQueryTrait
             'out_sum' => 'SUM(IF(f.type = :type_out, f.amount, 0))',
         ];
 
-        $query = (new Query($db))->select($selectedCols)->addParams([
-            ':type_in' => 'in',
-            ':type_out' => 'out',
-            ':type_partner' => 'partner',
-        ]);
+        $query = (new Query($db))
+            ->select($selectedCols)
+            ->addParams([
+                ':type_in' => 'in',
+                ':type_out' => 'out',
+                ':type_partner' => 'partner',
+            ]);
 
         $this->assertSame($selectedCols, $query->getSelect());
 
@@ -464,7 +468,9 @@ trait TestQueryTrait
 
         $query = new Query($db);
 
-        $query->limit(10)->offset(5);
+        $query
+            ->limit(10)
+            ->offset(5);
 
         $this->assertEquals(10, $query->getLimit());
         $this->assertEquals(5, $query->getOffset());
@@ -474,7 +480,10 @@ trait TestQueryTrait
     {
         $db = $this->getConnection();
 
-        $query = (new Query($db))->from('customer')->select('id')->orderBy('id');
+        $query = (new Query($db))
+            ->from('customer')
+            ->select('id')
+            ->orderBy('id');
 
         $query
             ->limit(new Expression('1 + 1'))
@@ -499,11 +508,17 @@ trait TestQueryTrait
     {
         $db = $this->getConnection(true);
 
-        $result = (new Query($db))->from('customer')->where(['status' => 2])->one();
+        $result = (new Query($db))
+            ->from('customer')
+            ->where(['status' => 2])
+            ->one();
 
         $this->assertEquals('user3', $result['name']);
 
-        $result = (new Query($db))->from('customer')->where(['status' => 3])->one();
+        $result = (new Query($db))
+            ->from('customer')
+            ->where(['status' => 3])
+            ->one();
 
         $this->assertFalse($result);
     }
@@ -512,11 +527,17 @@ trait TestQueryTrait
     {
         $db = $this->getConnection();
 
-        $result = (new Query($db))->from('customer')->where(['status' => 2])->exists();
+        $result = (new Query($db))
+            ->from('customer')
+            ->where(['status' => 2])
+            ->exists();
 
         $this->assertTrue($result);
 
-        $result = (new Query($db))->from('customer')->where(['status' => 3])->exists();
+        $result = (new Query($db))
+            ->from('customer')
+            ->where(['status' => 3])
+            ->exists();
 
         $this->assertFalse($result);
     }
@@ -536,7 +557,8 @@ trait TestQueryTrait
         /**
          * {@see https://github.com/yiisoft/yii2/issues/7515}
          */
-        $result = (new Query($db))->from('customer')
+        $result = (new Query($db))
+            ->from('customer')
             ->select('name')
             ->orderBy(['id' => SORT_DESC])
             ->indexBy('id')
@@ -547,7 +569,8 @@ trait TestQueryTrait
         /**
          * {@see https://github.com/yiisoft/yii2/issues/12649}
          */
-        $result = (new Query($db))->from('customer')
+        $result = (new Query($db))
+            ->from('customer')
             ->select(['name', 'id'])
             ->orderBy(['id' => SORT_DESC])
             ->indexBy(function ($row) {
@@ -557,7 +580,8 @@ trait TestQueryTrait
 
         $this->assertEquals([6 => 'user3', 4 => 'user2', 2 => 'user1'], $result);
 
-        $result = (new Query($db))->from('customer')
+        $result = (new Query($db))
+            ->from('customer')
             ->select(['name'])
             ->indexBy('name')
             ->orderBy(['id' => SORT_DESC])
@@ -570,11 +594,16 @@ trait TestQueryTrait
     {
         $db = $this->getConnection();
 
-        $count = (new Query($db))->from('customer')->count('*');
+        $count = (new Query($db))
+            ->from('customer')
+            ->count('*');
 
         $this->assertEquals(3, $count);
 
-        $count = (new Query($db))->from('customer')->where(['status' => 2])->count('*');
+        $count = (new Query($db))
+            ->from('customer')
+            ->where(['status' => 2])
+            ->count('*');
 
         $this->assertEquals(1, $count);
 
@@ -587,11 +616,18 @@ trait TestQueryTrait
         $this->assertEquals(2, $count);
 
         /* testing that orderBy() should be ignored here as it does not affect the count anyway. */
-        $count = (new Query($db))->from('customer')->orderBy('status')->count('*');
+        $count = (new Query($db))
+            ->from('customer')
+            ->orderBy('status')
+            ->count('*');
 
         $this->assertEquals(3, $count);
 
-        $count = (new Query($db))->from('customer')->orderBy('id')->limit(1)->count('*');
+        $count = (new Query($db))
+            ->from('customer')
+            ->orderBy('id')
+            ->limit(1)
+            ->count('*');
 
         $this->assertEquals(3, $count);
     }
@@ -640,45 +676,79 @@ trait TestQueryTrait
     {
         $db = $this->getConnection();
 
-        $this->assertGreaterThan(0, (new Query($db))->from('customer')->count('*'));
+        $this->assertGreaterThan(0, (new Query($db))
+            ->from('customer')
+            ->count('*'));
 
-        $rows = (new Query($db))->from('customer')->emulateExecution()->all();
+        $rows = (new Query($db))
+            ->from('customer')
+            ->emulateExecution()
+            ->all();
 
         $this->assertSame([], $rows);
 
-        $row = (new Query($db))->from('customer')->emulateExecution()->one();
+        $row = (new Query($db))
+            ->from('customer')
+            ->emulateExecution()
+            ->one();
 
         $this->assertFalse($row);
 
-        $exists = (new Query($db))->from('customer')->emulateExecution()->exists($db);
+        $exists = (new Query($db))
+            ->from('customer')
+            ->emulateExecution()
+            ->exists($db);
 
         $this->assertFalse($exists);
 
-        $count = (new Query($db))->from('customer')->emulateExecution()->count('*');
+        $count = (new Query($db))
+            ->from('customer')
+            ->emulateExecution()
+            ->count('*');
 
         $this->assertSame(0, $count);
 
-        $sum = (new Query($db))->from('customer')->emulateExecution()->sum('id');
+        $sum = (new Query($db))
+            ->from('customer')
+            ->emulateExecution()
+            ->sum('id');
 
         $this->assertSame(0, $sum);
 
-        $sum = (new Query($db))->from('customer')->emulateExecution()->average('id');
+        $sum = (new Query($db))
+            ->from('customer')
+            ->emulateExecution()
+            ->average('id');
 
         $this->assertSame(0, $sum);
 
-        $max = (new Query($db))->from('customer')->emulateExecution()->max('id');
+        $max = (new Query($db))
+            ->from('customer')
+            ->emulateExecution()
+            ->max('id');
 
         $this->assertNull($max);
 
-        $min = (new Query($db))->from('customer')->emulateExecution()->min('id');
+        $min = (new Query($db))
+            ->from('customer')
+            ->emulateExecution()
+            ->min('id');
 
         $this->assertNull($min);
 
-        $scalar = (new Query($db))->select(['id'])->from('customer')->emulateExecution()->scalar();
+        $scalar = (new Query($db))
+            ->select(['id'])
+            ->from('customer')
+            ->emulateExecution()
+            ->scalar();
 
         $this->assertNull($scalar);
 
-        $column = (new Query($db))->select(['id'])->from('customer')->emulateExecution()->column();
+        $column = (new Query($db))
+            ->select(['id'])
+            ->from('customer')
+            ->emulateExecution()
+            ->column();
 
         $this->assertSame([], $column);
     }
@@ -712,7 +782,10 @@ trait TestQueryTrait
             $whereCondition[] = ['like', $columnName, $value];
         }
 
-        $result = (new Query($db))->from($tableName)->where($whereCondition)->count('*');
+        $result = (new Query($db))
+            ->from($tableName)
+            ->where($whereCondition)
+            ->count('*');
 
         if (is_numeric($result)) {
             $result = (int) $result;
@@ -731,22 +804,35 @@ trait TestQueryTrait
         $tableName = 'like_test';
         $columnName = 'col';
 
-        if ($db->getSchema()->getTableSchema($tableName) !== null) {
-            $db->createCommand()->dropTable($tableName)->execute();
+        if ($db
+                ->getSchema()
+                ->getTableSchema($tableName) !== null) {
+            $db
+                ->createCommand()
+                ->dropTable($tableName)
+                ->execute();
         }
 
-        $db->createCommand()->createTable($tableName, [
-            $columnName => $db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_STRING, 64),
-        ])->execute();
+        $db
+            ->createCommand()
+            ->createTable($tableName, [
+                $columnName => $db
+                    ->getSchema()
+                    ->createColumnSchemaBuilder(Schema::TYPE_STRING, 64),
+            ])
+            ->execute();
 
-        $db->createCommand()->batchInsert($tableName, ['col'], [
-            ['test0'],
-            ['test\1'],
-            ['test\2'],
-            ['foo%'],
-            ['%bar'],
-            ['%baz%'],
-        ])->execute();
+        $db
+            ->createCommand()
+            ->batchInsert($tableName, ['col'], [
+                ['test0'],
+                ['test\1'],
+                ['test\2'],
+                ['foo%'],
+                ['%bar'],
+                ['%baz%'],
+            ])
+            ->execute();
 
         /* Basic tests */
         $this->assertSame(1, $this->countLikeQuery($db, $tableName, $columnName, ['test0']));
@@ -802,14 +888,20 @@ trait TestQueryTrait
 
         $update = $db->createCommand('UPDATE {{customer}} SET [[name]] = :name WHERE [[id]] = :id');
 
-        $this->assertEquals('user1', $query->where(['id' => 1])->scalar(), 'Asserting initial value');
+        $this->assertEquals('user1', $query
+            ->where(['id' => 1])
+            ->scalar(), 'Asserting initial value');
 
         /* No cache */
-        $update->bindValues([':id' => 1, ':name' => 'user11'])->execute();
+        $update
+            ->bindValues([':id' => 1, ':name' => 'user11'])
+            ->execute();
 
         $this->assertEquals(
             'user11',
-            $query->where(['id' => 1])->scalar(),
+            $query
+                ->where(['id' => 1])
+                ->scalar(),
             'Query reflects DB changes when caching is disabled'
         );
 
@@ -817,29 +909,39 @@ trait TestQueryTrait
         $db->cache(function (ConnectionInterface $db) use ($query, $update) {
             $this->assertEquals(
                 'user2',
-                $query->where(['id' => 2])->scalar(),
+                $query
+                    ->where(['id' => 2])
+                    ->scalar(),
                 'Asserting initial value for user #2'
             );
 
-            $update->bindValues([':id' => 2, ':name' => 'user22'])->execute();
+            $update
+                ->bindValues([':id' => 2, ':name' => 'user22'])
+                ->execute();
 
             $this->assertEquals(
                 'user2',
-                $query->where(['id' => 2])->scalar(),
+                $query
+                    ->where(['id' => 2])
+                    ->scalar(),
                 'Query does NOT reflect DB changes when wrapped in connection caching'
             );
 
             $db->noCache(function () use ($query) {
                 $this->assertEquals(
                     'user22',
-                    $query->where(['id' => 2])->scalar(),
+                    $query
+                        ->where(['id' => 2])
+                        ->scalar(),
                     'Query reflects DB changes when wrapped in connection caching and noCache simultaneously'
                 );
             });
 
             $this->assertEquals(
                 'user2',
-                $query->where(['id' => 2])->scalar(),
+                $query
+                    ->where(['id' => 2])
+                    ->scalar(),
                 'Cache does not get changes after getting newer data from DB in noCache block.'
             );
         }, 10);
@@ -849,37 +951,58 @@ trait TestQueryTrait
         $db->cache(function () use ($query, $update) {
             $this->assertEquals(
                 'user22',
-                $query->where(['id' => 2])->scalar(),
+                $query
+                    ->where(['id' => 2])
+                    ->scalar(),
                 'When cache is disabled for the whole connection, Query inside cache block does not get cached'
             );
 
-            $update->bindValues([':id' => 2, ':name' => 'user2'])->execute();
+            $update
+                ->bindValues([':id' => 2, ':name' => 'user2'])
+                ->execute();
 
-            $this->assertEquals('user2', $query->where(['id' => 2])->scalar());
+            $this->assertEquals('user2', $query
+                ->where(['id' => 2])
+                ->scalar());
         }, 10);
 
         $this->queryCache->setEnable(true);
 
         $query->cache();
 
-        $this->assertEquals('user11', $query->where(['id' => 1])->scalar());
+        $this->assertEquals('user11', $query
+            ->where(['id' => 1])
+            ->scalar());
 
-        $update->bindValues([':id' => 1, ':name' => 'user1'])->execute();
+        $update
+            ->bindValues([':id' => 1, ':name' => 'user1'])
+            ->execute();
 
         $this->assertEquals(
             'user11',
-            $query->where(['id' => 1])->scalar(),
+            $query
+                ->where(['id' => 1])
+                ->scalar(),
             'When both Connection and Query have cache enabled, we get cached value'
         );
         $this->assertEquals(
             'user1',
-            $query->noCache()->where(['id' => 1])->scalar(),
+            $query
+                ->noCache()
+                ->where(['id' => 1])
+                ->scalar(),
             'When Query has disabled cache, we get actual data'
         );
 
         $db->cache(function () use ($query) {
-            $this->assertEquals('user1', $query->noCache()->where(['id' => 1])->scalar());
-            $this->assertEquals('user11', $query->cache()->where(['id' => 1])->scalar());
+            $this->assertEquals('user1', $query
+                ->noCache()
+                ->where(['id' => 1])
+                ->scalar());
+            $this->assertEquals('user11', $query
+                ->cache()
+                ->where(['id' => 1])
+                ->scalar());
         }, 10);
     }
 

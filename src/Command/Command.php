@@ -49,7 +49,9 @@ use function strtr;
  * For example,
  *
  * ```php
- * $users = $connectionInterface->createCommand('SELECT * FROM user')->queryAll();
+ * $users = $connectionInterface
+ *     ->createCommand('SELECT * FROM user')
+ *     ->queryAll();
  * ```
  *
  * Command supports SQL statement preparation and parameter binding.
@@ -65,10 +67,12 @@ use function strtr;
  * For example, the following code will create and execute an INSERT SQL statement:
  *
  * ```php
- * $connectionInterface->createCommand()->insert('user', [
- *     'name' => 'Sam',
- *     'age' => 30,
- * ])->execute();
+ * $connectionInterface->createCommand()
+ *     ->insert('user', [
+ *         'name' => 'Sam',
+ *         'age' => 30,
+ *     ])
+ *     ->execute();
  * ```
  *
  * To build SELECT SQL statements, please use {@see Query} instead.
@@ -285,7 +289,9 @@ class Command
             $forRead = false;
         }
 
-        if ($forRead || ($forRead === null && $this->db->getSchema()->isReadQuery($sql))) {
+        if ($forRead || ($forRead === null && $this->db
+                    ->getSchema()
+                    ->isReadQuery($sql))) {
             $pdo = $this->db->getSlavePdo();
         } else {
             $pdo = $this->db->getMasterPdo();
@@ -335,7 +341,9 @@ class Command
         $this->prepare();
 
         if ($dataType === null) {
-            $dataType = $this->db->getSchema()->getPdoType($value);
+            $dataType = $this->db
+                ->getSchema()
+                ->getPdoType($value);
         }
 
         if ($length === null) {
@@ -382,7 +390,9 @@ class Command
     public function bindValue($name, $value, ?int $dataType = null): self
     {
         if ($dataType === null) {
-            $dataType = $this->db->getSchema()->getPdoType($value);
+            $dataType = $this->db
+                ->getSchema()
+                ->getPdoType($value);
         }
 
         $this->pendingParams[$name] = [$value, $dataType];
@@ -529,10 +539,12 @@ class Command
      * For example,
      *
      * ```php
-     * $connectionInterface->createCommand()->insert('user', [
-     *     'name' => 'Sam',
-     *     'age' => 30,
-     * ])->execute();
+     * $connectionInterface->createCommand()
+     *     ->insert('user', [
+     *         'name' => 'Sam',
+     *         'age' => 30,
+     *     ])
+     *     ->execute();
      * ```
      *
      * The method will properly escape the column names, and bind the values to be inserted.
@@ -548,8 +560,12 @@ class Command
     public function insert(string $table, $columns): self
     {
         $params = [];
-        $sql = $this->db->getQueryBuilder()->insert($table, $columns, $params);
-        return $this->setSql($sql)->bindValues($params);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->insert($table, $columns, $params);
+        return $this
+            ->setSql($sql)
+            ->bindValues($params);
     }
 
     /**
@@ -558,11 +574,14 @@ class Command
      * For example,
      *
      * ```php
-     * $connectionInterface->createCommand()->batchInsert('user', ['name', 'age'], [
-     *     ['Tom', 30],
-     *     ['Jane', 20],
-     *     ['Linda', 25],
-     * ])->execute();
+     * $connectionInterface
+     *     ->createCommand()
+     *     ->batchInsert('user', ['name', 'age'], [
+     *         ['Tom', 30],
+     *         ['Jane', 20],
+     *         ['Linda', 25],
+     *     ])
+     *     ->execute();
      * ```
      *
      * The method will properly escape the column names, and quote the values to be inserted.
@@ -585,7 +604,9 @@ class Command
 
         $params = [];
 
-        $sql = $this->db->getQueryBuilder()->batchInsert($table, $columns, $rows, $params);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->batchInsert($table, $columns, $rows, $params);
 
         $this->setRawSql($sql);
         $this->bindValues($params);
@@ -623,8 +644,12 @@ class Command
      */
     public function upsert(string $table, $insertColumns, $updateColumns = true, array $params = []): self
     {
-        $sql = $this->db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
-        return $this->setSql($sql)->bindValues($params);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->upsert($table, $insertColumns, $updateColumns, $params);
+        return $this
+            ->setSql($sql)
+            ->bindValues($params);
     }
 
     /**
@@ -633,19 +658,25 @@ class Command
      * For example,
      *
      * ```php
-     * $connectionInterface->createCommand()->update('user', ['status' => 1], 'age > 30')->execute();
+     * $connectionInterface
+     *     ->createCommand()
+     *     ->update('user', ['status' => 1], 'age > 30')
+     *     ->execute();
      * ```
      *
      * or with using parameter binding for the condition:
      *
      * ```php
      * $minAge = 30;
-     * $connectionInterface->createCommand()->update(
-     *     'user',
-     *     ['status' => 1],
-     *     'age > :minAge',
-     *     [':minAge' => $minAge]
-     * )->execute();
+     * $connectionInterface
+     *     ->createCommand()
+     *     ->update(
+     *         'user',
+     *         ['status' => 1],
+     *         'age > :minAge',
+     *         [':minAge' => $minAge]
+     *     )
+     *     ->execute();
      * ```
      *
      * The method will properly escape the column names and bind the values to be updated.
@@ -662,8 +693,12 @@ class Command
      */
     public function update(string $table, array $columns, $condition = '', array $params = []): self
     {
-        $sql = $this->db->getQueryBuilder()->update($table, $columns, $condition, $params);
-        return $this->setSql($sql)->bindValues($params);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->update($table, $columns, $condition, $params);
+        return $this
+            ->setSql($sql)
+            ->bindValues($params);
     }
 
     /**
@@ -672,14 +707,20 @@ class Command
      * For example,
      *
      * ```php
-     * $connectionInterface->createCommand()->delete('user', 'status = 0')->execute();
+     * $connectionInterface
+     *     ->createCommand()
+     *     ->delete('user', 'status = 0')
+     *     ->execute();
      * ```
      *
      * or with using parameter binding for the condition:
      *
      * ```php
      * $status = 0;
-     * $connectionInterface->createCommand()->delete('user', 'status = :status', [':status' => $status])->execute();
+     * $connectionInterface
+     *     ->createCommand()
+     *     ->delete('user', 'status = :status', [':status' => $status])
+     *     ->execute();
      * ```
      *
      * The method will properly escape the table and column names.
@@ -695,8 +736,12 @@ class Command
      */
     public function delete(string $table, $condition = '', array $params = []): self
     {
-        $sql = $this->db->getQueryBuilder()->delete($table, $condition, $params);
-        return $this->setSql($sql)->bindValues($params);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->delete($table, $condition, $params);
+        return $this
+            ->setSql($sql)
+            ->bindValues($params);
     }
 
     /**
@@ -721,8 +766,12 @@ class Command
      */
     public function createTable(string $table, array $columns, ?string $options = null): self
     {
-        $sql = $this->db->getQueryBuilder()->createTable($table, $columns, $options);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->createTable($table, $columns, $options);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -735,8 +784,12 @@ class Command
      */
     public function renameTable(string $table, string $newName): self
     {
-        $sql = $this->db->getQueryBuilder()->renameTable($table, $newName);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->renameTable($table, $newName);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -748,8 +801,12 @@ class Command
      */
     public function dropTable(string $table): self
     {
-        $sql = $this->db->getQueryBuilder()->dropTable($table);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->dropTable($table);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -761,7 +818,9 @@ class Command
      */
     public function truncateTable(string $table): self
     {
-        $sql = $this->db->getQueryBuilder()->truncateTable($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->truncateTable($table);
         return $this->setSql($sql);
     }
 
@@ -779,8 +838,12 @@ class Command
      */
     public function addColumn(string $table, string $column, string $type): self
     {
-        $sql = $this->db->getQueryBuilder()->addColumn($table, $column, $type);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->addColumn($table, $column, $type);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -793,8 +856,12 @@ class Command
      */
     public function dropColumn(string $table, string $column): self
     {
-        $sql = $this->db->getQueryBuilder()->dropColumn($table, $column);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->dropColumn($table, $column);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -808,8 +875,12 @@ class Command
      */
     public function renameColumn(string $table, string $oldName, string $newName): self
     {
-        $sql = $this->db->getQueryBuilder()->renameColumn($table, $oldName, $newName);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->renameColumn($table, $oldName, $newName);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -826,8 +897,12 @@ class Command
      */
     public function alterColumn(string $table, string $column, string $type): self
     {
-        $sql = $this->db->getQueryBuilder()->alterColumn($table, $column, $type);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->alterColumn($table, $column, $type);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -843,8 +918,12 @@ class Command
      */
     public function addPrimaryKey(string $name, string $table, $columns): self
     {
-        $sql = $this->db->getQueryBuilder()->addPrimaryKey($name, $table, $columns);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->addPrimaryKey($name, $table, $columns);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -857,8 +936,12 @@ class Command
      */
     public function dropPrimaryKey(string $name, string $table): self
     {
-        $sql = $this->db->getQueryBuilder()->dropPrimaryKey($name, $table);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->dropPrimaryKey($name, $table);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -883,23 +966,27 @@ class Command
     public function addForeignKey(
         string $name,
         string $table,
-        $columns,
+               $columns,
         string $refTable,
-        $refColumns,
+               $refColumns,
         ?string $delete = null,
         ?string $update = null
     ): self {
-        $sql = $this->db->getQueryBuilder()->addForeignKey(
-            $name,
-            $table,
-            $columns,
-            $refTable,
-            $refColumns,
-            $delete,
-            $update
-        );
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->addForeignKey(
+                $name,
+                $table,
+                $columns,
+                $refTable,
+                $refColumns,
+                $delete,
+                $update
+            );
 
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -913,8 +1000,12 @@ class Command
      */
     public function dropForeignKey(string $name, string $table): self
     {
-        $sql = $this->db->getQueryBuilder()->dropForeignKey($name, $table);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->dropForeignKey($name, $table);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -931,8 +1022,12 @@ class Command
      */
     public function createIndex(string $name, string $table, $columns, bool $unique = false): self
     {
-        $sql = $this->db->getQueryBuilder()->createIndex($name, $table, $columns, $unique);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->createIndex($name, $table, $columns, $unique);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -945,8 +1040,12 @@ class Command
      */
     public function dropIndex(string $name, string $table): self
     {
-        $sql = $this->db->getQueryBuilder()->dropIndex($name, $table);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->dropIndex($name, $table);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -962,8 +1061,12 @@ class Command
      */
     public function addUnique(string $name, string $table, $columns): self
     {
-        $sql = $this->db->getQueryBuilder()->addUnique($name, $table, $columns);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->addUnique($name, $table, $columns);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -978,8 +1081,12 @@ class Command
      */
     public function dropUnique(string $name, string $table): self
     {
-        $sql = $this->db->getQueryBuilder()->dropUnique($name, $table);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->dropUnique($name, $table);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -994,8 +1101,12 @@ class Command
      */
     public function addCheck(string $name, string $table, string $expression): self
     {
-        $sql = $this->db->getQueryBuilder()->addCheck($name, $table, $expression);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->addCheck($name, $table, $expression);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -1010,8 +1121,12 @@ class Command
      */
     public function dropCheck(string $name, string $table): self
     {
-        $sql = $this->db->getQueryBuilder()->dropCheck($name, $table);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->dropCheck($name, $table);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -1028,8 +1143,12 @@ class Command
      */
     public function addDefaultValue(string $name, string $table, string $column, $value): self
     {
-        $sql = $this->db->getQueryBuilder()->addDefaultValue($name, $table, $column, $value);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->addDefaultValue($name, $table, $column, $value);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -1044,8 +1163,12 @@ class Command
      */
     public function dropDefaultValue(string $name, string $table): self
     {
-        $sql = $this->db->getQueryBuilder()->dropDefaultValue($name, $table);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->dropDefaultValue($name, $table);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -1062,7 +1185,9 @@ class Command
      */
     public function resetSequence(string $table, $value = null): self
     {
-        $sql = $this->db->getQueryBuilder()->resetSequence($table, $value);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->resetSequence($table, $value);
         return $this->setSql($sql);
     }
 
@@ -1097,7 +1222,9 @@ class Command
      */
     public function checkIntegrity(string $schema, string $table, bool $check = true): self
     {
-        $sql = $this->db->getQueryBuilder()->checkIntegrity($schema, $table, $check);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->checkIntegrity($schema, $table, $check);
         return $this->setSql($sql);
     }
 
@@ -1114,8 +1241,12 @@ class Command
      */
     public function addCommentOnColumn(string $table, string $column, string $comment): self
     {
-        $sql = $this->db->getQueryBuilder()->addCommentOnColumn($table, $column, $comment);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->addCommentOnColumn($table, $column, $comment);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -1129,7 +1260,9 @@ class Command
      */
     public function addCommentOnTable(string $table, string $comment): self
     {
-        $sql = $this->db->getQueryBuilder()->addCommentOnTable($table, $comment);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->addCommentOnTable($table, $comment);
         return $this->setSql($sql);
     }
 
@@ -1145,8 +1278,12 @@ class Command
      */
     public function dropCommentFromColumn(string $table, string $column): self
     {
-        $sql = $this->db->getQueryBuilder()->dropCommentFromColumn($table, $column);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->dropCommentFromColumn($table, $column);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($table);
     }
 
     /**
@@ -1159,7 +1296,9 @@ class Command
      */
     public function dropCommentFromTable(string $table): self
     {
-        $sql = $this->db->getQueryBuilder()->dropCommentFromTable($table);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->dropCommentFromTable($table);
         return $this->setSql($sql);
     }
 
@@ -1174,8 +1313,12 @@ class Command
      */
     public function createView(string $viewName, $subquery): self
     {
-        $sql = $this->db->getQueryBuilder()->createView($viewName, $subquery);
-        return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->createView($viewName, $subquery);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($viewName);
     }
 
     /**
@@ -1187,8 +1330,12 @@ class Command
      */
     public function dropView(string $viewName): self
     {
-        $sql = $this->db->getQueryBuilder()->dropView($viewName);
-        return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
+        $sql = $this->db
+            ->getQueryBuilder()
+            ->dropView($viewName);
+        return $this
+            ->setSql($sql)
+            ->requireTableSchemaRefresh($viewName);
     }
 
     /**
@@ -1401,7 +1548,9 @@ class Command
     protected function refreshTableSchema(): void
     {
         if ($this->refreshTableName !== null) {
-            $this->db->getSchema()->refreshTableSchema($this->refreshTableName);
+            $this->db
+                ->getSchema()
+                ->refreshTableSchema($this->refreshTableName);
         }
     }
 
@@ -1471,7 +1620,9 @@ class Command
                 break;
             } catch (\Exception $e) {
                 $rawSql = $rawSql ?: $this->getRawSql();
-                $e = $this->db->getSchema()->convertException($e, $rawSql);
+                $e = $this->db
+                    ->getSchema()
+                    ->convertException($e, $rawSql);
 
                 if ($this->retryHandler === null || !($this->retryHandler)($e, $attempt)) {
                     throw $e;

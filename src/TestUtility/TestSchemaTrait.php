@@ -31,18 +31,39 @@ trait TestSchemaTrait
     {
         $db = $this->getConnection(false);
 
-        $db->getSlavePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $db
+            ->getSlavePdo()
+            ->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 
-        $this->assertCount(count($db->getSchema()->getTableNames()), $db->getSchema()->getTableSchemas());
+        $this->assertCount(
+            count($db
+                ->getSchema()
+                ->getTableNames()),
+            $db
+                ->getSchema()
+                ->getTableSchemas(),
+        );
 
-        $db->getSlavePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+        $db
+            ->getSlavePdo()
+            ->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 
-        $this->assertCount(count($db->getSchema()->getTableNames()), $db->getSchema()->getTableSchemas());
+        $this->assertCount(
+            count($db
+                ->getSchema()
+                ->getTableNames()),
+            $db
+                ->getSchema()
+                ->getTableSchemas(),
+        );
     }
 
     public function testGetNonExistingTableSchema(): void
     {
-        $this->assertNull($this->getConnection()->getSchema()->getTableSchema('nonexisting_table'));
+        $this->assertNull($this
+            ->getConnection()
+            ->getSchema()
+            ->getTableSchema('nonexisting_table'));
     }
 
     public function testSchemaCache(): void
@@ -58,13 +79,17 @@ trait TestSchemaTrait
 
         $this->assertEquals($noCacheTable, $cachedTable);
 
-        $db->createCommand()->renameTable('type', 'type_test');
+        $db
+            ->createCommand()
+            ->renameTable('type', 'type_test');
 
         $noCacheTable = $schema->getTableSchema('type', true);
 
         $this->assertNotSame($noCacheTable, $cachedTable);
 
-        $db->createCommand()->renameTable('type_test', 'type');
+        $db
+            ->createCommand()
+            ->renameTable('type_test', 'type');
     }
 
     /**
@@ -72,7 +97,9 @@ trait TestSchemaTrait
      */
     public function testRefreshTableSchema(): void
     {
-        $schema = $this->getConnection()->getSchema();
+        $schema = $this
+            ->getConnection()
+            ->getSchema();
 
         $this->schemaCache->setEnable(true);
 
@@ -87,7 +114,9 @@ trait TestSchemaTrait
 
     public function testCompositeFk(): void
     {
-        $schema = $this->getConnection()->getSchema();
+        $schema = $this
+            ->getConnection()
+            ->getSchema();
 
         $table = $schema->getTableSchema('composite_fk');
 
@@ -114,7 +143,9 @@ trait TestSchemaTrait
             [$fp = fopen(__FILE__, 'rb'), PDO::PARAM_LOB],
         ];
 
-        $schema = $this->getConnection()->getSchema();
+        $schema = $this
+            ->getConnection()
+            ->getSchema();
 
         foreach ($values as $value) {
             $this->assertEquals($value[1], $schema->getPdoType($value[0]), 'type for value ' . print_r($value[0], true) . ' does not match.');
@@ -127,7 +158,10 @@ trait TestSchemaTrait
     {
         $columns = $this->getExpectedColumns();
 
-        $table = $this->getConnection(false)->getSchema()->getTableSchema('type', true);
+        $table = $this
+            ->getConnection(false)
+            ->getSchema()
+            ->getTableSchema('type', true);
 
         $expectedColNames = array_keys($columns);
 
@@ -213,16 +247,48 @@ trait TestSchemaTrait
 
     public function testNegativeDefaultValues(): void
     {
-        $schema = $this->getConnection()->getSchema();
+        $schema = $this
+            ->getConnection()
+            ->getSchema();
 
         $table = $schema->getTableSchema('negative_default_values');
 
-        $this->assertEquals(-123, $table->getColumn('tinyint_col')->getDefaultValue());
-        $this->assertEquals(-123, $table->getColumn('smallint_col')->getDefaultValue());
-        $this->assertEquals(-123, $table->getColumn('int_col')->getDefaultValue());
-        $this->assertEquals(-123, $table->getColumn('bigint_col')->getDefaultValue());
-        $this->assertEquals(-12345.6789, $table->getColumn('float_col')->getDefaultValue());
-        $this->assertEquals(-33.22, $table->getColumn('numeric_col')->getDefaultValue());
+        $this->assertEquals(
+            -123,
+            $table
+                ->getColumn('tinyint_col')
+                ->getDefaultValue(),
+        );
+        $this->assertEquals(
+            -123,
+            $table
+                ->getColumn('smallint_col')
+                ->getDefaultValue(),
+        );
+        $this->assertEquals(
+            -123,
+            $table
+                ->getColumn('int_col')
+                ->getDefaultValue(),
+        );
+        $this->assertEquals(
+            -123,
+            $table
+                ->getColumn('bigint_col')
+                ->getDefaultValue(),
+        );
+        $this->assertEquals(
+            -12345.6789,
+            $table
+                ->getColumn('float_col')
+                ->getDefaultValue(),
+        );
+        $this->assertEquals(
+            -33.22,
+            $table
+                ->getColumn('numeric_col')
+                ->getDefaultValue(),
+        );
     }
 
     public function testContraintTablesExistance(): void
@@ -234,7 +300,9 @@ trait TestSchemaTrait
             'T_constraints_4',
         ];
 
-        $schema = $this->getConnection()->getSchema();
+        $schema = $this
+            ->getConnection()
+            ->getSchema();
 
         foreach ($tableNames as $tableName) {
             $tableSchema = $schema->getTableSchema($tableName);
@@ -244,7 +312,9 @@ trait TestSchemaTrait
 
     public function testGetColumnNoExist(): void
     {
-        $schema = $this->getConnection()->getSchema();
+        $schema = $this
+            ->getConnection()
+            ->getSchema();
         $table = $schema->getTableSchema('negative_default_values');
 
         $this->assertNull($table->getColumn('no_exist'));

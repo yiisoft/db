@@ -40,7 +40,9 @@ trait TestSqlDataProviderTrait
         /** with {@see Sort::class} options {@see withSort()} */
         $ids = [];
         $dataProvider = new SqlDataProvider($this->getConnection(), 'SELECT * FROM {{customer}}');
-        $dataProvider->withSort((new Sort())->attributes(['id'])->defaultOrder(['id' => ['default' => 'desc']]));
+        $dataProvider->withSort((new Sort())
+            ->attributes(['id'])
+            ->defaultOrder(['id' => ['default' => 'desc']]));
 
         $models = $dataProvider->getModels();
 

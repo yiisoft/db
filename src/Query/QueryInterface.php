@@ -115,7 +115,10 @@ interface QueryInterface
      *   `['in', ['id', 'name'], [['id' => 1, 'name' => 'foo'], ['id' => 2, 'name' => 'bar']] ]`.
      *
      *   You may also specify a sub-query that is used to get the values for the `IN`-condition:
-     *   `['in', 'user_id', (new Query())->select('id')->from('users')->where(['active' => 1])]`
+     *   `['in', 'user_id', (new Query())
+     *        ->select('id')
+     *        ->from('users')
+     *        ->where(['active' => 1])]`
      *
      * - **not in**: similar to the `in` operator except that `IN` is replaced with `NOT IN` in the generated condition.
      *
@@ -140,7 +143,10 @@ interface QueryInterface
      *   predicates.
      *
      * - **exists**: operand 1 is a query object that used to build an `EXISTS` condition. For example
-     *   `['exists', (new Query())->select('id')->from('users')->where(['active' => 1])]` will result in the following
+     *   `['exists', (new Query())
+     *        ->select('id')
+     *        ->from('users')
+     *        ->where(['active' => 1])]` will result in the following
      *   SQL expression:
      *   `EXISTS (SELECT "id" FROM "users" WHERE "active"=1)`.
      *

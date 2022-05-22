@@ -13,15 +13,18 @@ final class SortTest extends TestCase
     {
         $sort = new Sort();
 
-        $sort->attributes(
-            [
-                'age',
-                'name' => [
-                    'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
-                    'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
-                ],
-            ]
-        )->params(['sort' => 'age,-name'])->enableMultiSort(true);
+        $sort
+            ->attributes(
+                [
+                    'age',
+                    'name' => [
+                        'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
+                        'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
+                    ],
+                ]
+            )
+            ->params(['sort' => 'age,-name'])
+            ->enableMultiSort(true);
 
         $orders = $sort->getOrders();
 
@@ -45,15 +48,18 @@ final class SortTest extends TestCase
     {
         $sort = new Sort();
 
-        $sort->attributes(
-            [
-                'age',
-                'name' => [
-                    'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
-                    'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
+        $sort
+            ->attributes(
+                [
+                    'age',
+                    'name' => [
+                        'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
+                        'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
+                    ],
                 ],
-            ],
-        )->params(['sort' => 'age,-name'])->enableMultiSort(true);
+            )
+            ->params(['sort' => 'age,-name'])
+            ->enableMultiSort(true);
 
         $orders = $sort->getAttributeOrders();
         $this->assertCount(2, $orders);
@@ -73,15 +79,18 @@ final class SortTest extends TestCase
     {
         $sort = new Sort();
 
-        $sort->attributes(
-            [
-                'age',
-                'name' => [
-                    'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
-                    'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
-                ],
-            ]
-        )->params(['sort' => 'age,-name'])->enableMultiSort(true);
+        $sort
+            ->attributes(
+                [
+                    'age',
+                    'name' => [
+                        'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
+                        'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
+                    ],
+                ]
+            )
+            ->params(['sort' => 'age,-name'])
+            ->enableMultiSort(true);
 
         $this->assertEquals(SORT_ASC, $sort->getAttributeOrder('age'));
         $this->assertEquals(SORT_DESC, $sort->getAttributeOrder('name'));
@@ -92,15 +101,18 @@ final class SortTest extends TestCase
     {
         $sort = new Sort();
 
-        $sort->attributes(
-            [
-                'age',
-                'name' => [
-                    'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
-                    'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
-                ],
-            ]
-        )->params(['sort' => 'age,-name'])->enableMultiSort(true);
+        $sort
+            ->attributes(
+                [
+                    'age',
+                    'name' => [
+                        'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
+                        'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
+                    ],
+                ]
+            )
+            ->params(['sort' => 'age,-name'])
+            ->enableMultiSort(true);
 
         $sort->attributeOrders(['age' => SORT_DESC, 'name' => SORT_ASC]);
         $this->assertEquals(['age' => SORT_DESC, 'name' => SORT_ASC], $sort->getAttributeOrders());
@@ -123,15 +135,18 @@ final class SortTest extends TestCase
     {
         $sort = new Sort();
 
-        $sort->attributes(
-            [
-                'age',
-                'name' => [
-                    'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
-                    'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
-                ],
-            ]
-        )->params(['sort' => 'age,-name'])->enableMultiSort(true);
+        $sort
+            ->attributes(
+                [
+                    'age',
+                    'name' => [
+                        'asc' => ['first_name' => SORT_ASC, 'last_name' => SORT_ASC],
+                        'desc' => ['first_name' => SORT_DESC, 'last_name' => SORT_DESC],
+                    ],
+                ]
+            )
+            ->params(['sort' => 'age,-name'])
+            ->enableMultiSort(true);
 
         $this->assertEquals('-age,-name', $sort->createSortParam('age'));
         $this->assertEquals('name,age', $sort->createSortParam('name'));
