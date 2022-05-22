@@ -56,7 +56,9 @@ trait TestConnectionTrait
 
         $this->assertFalse($transaction->isActive());
         $this->assertNull($db->getTransaction());
-        $this->assertEquals(0, $db
+        $this->assertEquals(
+            0,
+            $db
             ->createCommand(
                 "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
             )
@@ -75,7 +77,8 @@ trait TestConnectionTrait
         $this->assertFalse($transaction->isActive());
         $this->assertNull($db->getTransaction());
         $this->assertEquals(
-            1, $db
+            1,
+            $db
             ->createCommand(
                 "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
             )
