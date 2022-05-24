@@ -19,15 +19,15 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^8.0",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "psr/log": "^1.1",
+        "psr/log": "^2.0|^3.0",
         "yiisoft/arrays": "^2.0",
         "yiisoft/cache": "^1.0",
         "yiisoft/data": "3.0.x-dev",
-        "yiisoft/log": "^1.0",
+        "yiisoft/log": "^2.0",
         "yiisoft/profiler": "^1.0",
         "yiisoft/strings": "^2.0"
     },
