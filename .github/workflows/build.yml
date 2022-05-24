@@ -38,7 +38,6 @@ jobs:
           - ubuntu-latest
 
         php:
-          - 7.4
           - 8.0
           - 8.1
 
@@ -154,16 +153,12 @@ jobs:
       - name: Install db-sqlite
         run: composer require yiisoft/db-sqlite --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
-      - name: Run tests with phpunit and coverage on Linux php 7.4
-        if: matrix.php == '7.4'
-        run: vendor/bin/phpunit --coverage-clover=coverage.clover --colors=always
-
       - name: Run tests with phpunit without coverage
         if: matrix.php == '8.0' || matrix.php == '8.1'
         run: vendor/bin/phpunit --colors=always
 
       - name: Code coverage
-        if: matrix.php == '7.4'
+        if: matrix.php == '8.0'
         run: |
           wget https://scrutinizer-ci.com/ocular.phar
           php ocular.phar code-coverage:upload --format=php-clover coverage.clover
