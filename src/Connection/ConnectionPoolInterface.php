@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types = 1);
 
 namespace Yiisoft\Db\Connection;
@@ -92,9 +93,9 @@ interface ConnectionPoolInterface
      * @param callable $callback a PHP callable to be executed by this method. Its signature is
      * `function (ConnectionInterface $db)`. Its return value will be returned by this method.
      *
-     * @return mixed The return value of the callback.
      * @throws Throwable If there is any exception thrown from the callback.
      *
+     * @return mixed The return value of the callback.
      */
     public function useMaster(callable $callback): mixed;
 }
