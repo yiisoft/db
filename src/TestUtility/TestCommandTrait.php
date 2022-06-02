@@ -332,10 +332,12 @@ trait TestCommandTrait
                 ->batchInsert('type', $cols, $data)
                 ->execute();
 
-            $data = $db->createCommand(
-                'SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] ' .
-                'FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]'
-            )->queryAll();
+            $data = $db
+                ->createCommand(
+                    'SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] ' .
+                    'FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]'
+                )
+                ->queryAll();
 
             $this->assertCount(3, $data);
             $this->assertEquals(1, $data[0]['int_col']);
@@ -386,7 +388,9 @@ trait TestCommandTrait
             )
             ->execute();
 
-        $this->assertEquals(1, $db->createCommand('SELECT COUNT(*) FROM {{customer}};')->queryScalar());
+        $this->assertEquals(1, $db
+            ->createCommand('SELECT COUNT(*) FROM {{customer}};')
+            ->queryScalar());
 
         $record = $db
             ->createCommand('SELECT [[email]], [[name]], [[address]] FROM {{customer}}')
@@ -503,7 +507,8 @@ trait TestCommandTrait
 
         $this->assertEquals(
             2,
-            $db->createCommand('SELECT COUNT(*) FROM {{customer}}')
+            $db
+                ->createCommand('SELECT COUNT(*) FROM {{customer}}')
                 ->queryScalar(),
         );
 
@@ -624,13 +629,14 @@ trait TestCommandTrait
 
         $command = $db->createCommand();
 
-        $command->insert(
-            '{{order_with_null_fk}}',
-            [
-                'created_at' => new Expression($expression),
-                'total' => 1,
-            ]
-        )
+        $command
+            ->insert(
+                '{{order_with_null_fk}}',
+                [
+                    'created_at' => new Expression($expression),
+                    'total' => 1,
+                ]
+            )
             ->execute();
 
         $this->assertEquals(
@@ -883,8 +889,12 @@ trait TestCommandTrait
             ->addForeignKey($name, $tableName, ['int1'], $tableName, ['int3'])
             ->execute();
 
-        $this->assertEquals(['int1'], $schema->getTableForeignKeys($tableName, true)[0]->getColumnNames());
-        $this->assertEquals(['int3'], $schema->getTableForeignKeys($tableName, true)[0]->getForeignColumnNames());
+        $this->assertEquals(['int1'], $schema
+            ->getTableForeignKeys($tableName, true)[0]
+            ->getColumnNames());
+        $this->assertEquals(['int3'], $schema
+            ->getTableForeignKeys($tableName, true)[0]
+            ->getForeignColumnNames());
 
         $db
             ->createCommand()
@@ -906,11 +916,15 @@ trait TestCommandTrait
 
         $this->assertEquals(
             ['int1', 'int2'],
-            $schema->getTableForeignKeys($tableName, true)[0]->getColumnNames()
+            $schema
+                ->getTableForeignKeys($tableName, true)[0]
+                ->getColumnNames()
         );
         $this->assertEquals(
             ['int3', 'int4'],
-            $schema->getTableForeignKeys($tableName, true)[0]->getForeignColumnNames()
+            $schema
+                ->getTableForeignKeys($tableName, true)[0]
+                ->getForeignColumnNames()
         );
     }
 
@@ -945,8 +959,12 @@ trait TestCommandTrait
             ->createIndex($name, $tableName, ['int1'])
             ->execute();
 
-        $this->assertEquals(['int1'], $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
-        $this->assertFalse($schema->getTableIndexes($tableName, true)[0]->isUnique());
+        $this->assertEquals(['int1'], $schema
+            ->getTableIndexes($tableName, true)[0]
+            ->getColumnNames());
+        $this->assertFalse($schema
+            ->getTableIndexes($tableName, true)[0]
+            ->isUnique());
 
         $db
             ->createCommand()
@@ -960,8 +978,12 @@ trait TestCommandTrait
             ->createIndex($name, $tableName, ['int1', 'int2'])
             ->execute();
 
-        $this->assertEquals(['int1', 'int2'], $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
-        $this->assertFalse($schema->getTableIndexes($tableName, true)[0]->isUnique());
+        $this->assertEquals(['int1', 'int2'], $schema
+            ->getTableIndexes($tableName, true)[0]
+            ->getColumnNames());
+        $this->assertFalse($schema
+            ->getTableIndexes($tableName, true)[0]
+            ->isUnique());
 
         $db
             ->createCommand()
@@ -976,8 +998,12 @@ trait TestCommandTrait
             ->createIndex($name, $tableName, ['int1'], true)
             ->execute();
 
-        $this->assertEquals(['int1'], $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
-        $this->assertTrue($schema->getTableIndexes($tableName, true)[0]->isUnique());
+        $this->assertEquals(['int1'], $schema
+            ->getTableIndexes($tableName, true)[0]
+            ->getColumnNames());
+        $this->assertTrue($schema
+            ->getTableIndexes($tableName, true)[0]
+            ->isUnique());
 
         $db
             ->createCommand()
@@ -991,8 +1017,12 @@ trait TestCommandTrait
             ->createIndex($name, $tableName, ['int1', 'int2'], true)
             ->execute();
 
-        $this->assertEquals(['int1', 'int2'], $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
-        $this->assertTrue($schema->getTableIndexes($tableName, true)[0]->isUnique());
+        $this->assertEquals(['int1', 'int2'], $schema
+            ->getTableIndexes($tableName, true)[0]
+            ->getColumnNames());
+        $this->assertTrue($schema
+            ->getTableIndexes($tableName, true)[0]
+            ->isUnique());
     }
 
     public function testAddDropUnique(): void
@@ -1026,7 +1056,9 @@ trait TestCommandTrait
             ->addUnique($name, $tableName, ['int1'])
             ->execute();
 
-        $this->assertEquals(['int1'], $schema->getTableUniques($tableName, true)[0]->getColumnNames());
+        $this->assertEquals(['int1'], $schema
+            ->getTableUniques($tableName, true)[0]
+            ->getColumnNames());
 
         $db
             ->createCommand()
@@ -1040,7 +1072,9 @@ trait TestCommandTrait
             ->addUnique($name, $tableName, ['int1', 'int2'])
             ->execute();
 
-        $this->assertEquals(['int1', 'int2'], $schema->getTableUniques($tableName, true)[0]->getColumnNames());
+        $this->assertEquals(['int1', 'int2'], $schema
+            ->getTableUniques($tableName, true)[0]
+            ->getColumnNames());
     }
 
     public function testIntegrityViolation(): void

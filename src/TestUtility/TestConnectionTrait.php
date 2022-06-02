@@ -59,10 +59,10 @@ trait TestConnectionTrait
         $this->assertEquals(
             0,
             $db
-            ->createCommand(
-                "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
-            )
-            ->queryScalar(),
+                ->createCommand(
+                    "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
+                )
+                ->queryScalar(),
         );
 
         $transaction = $db->beginTransaction();
@@ -79,10 +79,10 @@ trait TestConnectionTrait
         $this->assertEquals(
             1,
             $db
-            ->createCommand(
-                "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
-            )
-            ->queryScalar(),
+                ->createCommand(
+                    "SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'test transaction'"
+                )
+                ->queryScalar(),
         );
     }
 
@@ -374,7 +374,9 @@ trait TestConnectionTrait
         $thrown = false;
 
         try {
-            $db->createCommand('INSERT INTO qlog1(a) VALUES(:a);', [':a' => 1])->execute();
+            $db
+                ->createCommand('INSERT INTO qlog1(a) VALUES(:a);', [':a' => 1])
+                ->execute();
         } catch (Exception $e) {
             $this->assertStringContainsString(
                 'INSERT INTO qlog1(a) VALUES(1);',

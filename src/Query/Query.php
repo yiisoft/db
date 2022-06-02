@@ -649,7 +649,9 @@ PATTERN;
      * select all remaining columns too:
      *
      * ```php
-     * $query->addSelect(["*", "CONCAT(first_name, ' ', last_name) AS full_name"])->one();
+     * $query
+     *     ->addSelect(["*", "CONCAT(first_name, ' ', last_name) AS full_name"])
+     *     ->one();
      * ```
      *
      * @param array|ExpressionInterface|string $columns the columns to add to the select. See {@see select()} for more

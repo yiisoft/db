@@ -1186,7 +1186,8 @@ trait TestQueryBuilderTrait
                 ->getTableSchema('column_type_table', true) !== null) {
             $this
                 ->getConnection(false)
-                ->createCommand($qb->dropTable('column_type_table'))->execute();
+                ->createCommand($qb->dropTable('column_type_table'))
+                ->execute();
         }
 
         $columns = [];
@@ -1208,7 +1209,8 @@ trait TestQueryBuilderTrait
 
         $this
             ->getConnection(false)
-            ->createCommand($qb->createTable('column_type_table', $columns))->execute();
+            ->createCommand($qb->createTable('column_type_table', $columns))
+            ->execute();
 
         $this->assertNotEmpty($qb
             ->getDb()

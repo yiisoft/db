@@ -21,9 +21,11 @@ use Yiisoft\Db\Query\Query;
  * SqlDataProvider may be used in the following way:
  *
  * ```php
- * $count = Yii::$app->db->createCommand('
- *     SELECT COUNT(*) FROM user WHERE status=:status
- * ', [':status' => 1])->queryScalar();
+ * $count = Yii::$app->db
+ *     ->createCommand('
+ *         SELECT COUNT(*) FROM user WHERE status=:status
+ *     ', [':status' => 1])
+ *     ->queryScalar();
  *
  * $dataProvider = new SqlDataProvider([
  *     'sql' => 'SELECT * FROM user WHERE status=:status',
@@ -152,6 +154,9 @@ final class SqlDataProvider extends DataProvider
      */
     protected function prepareTotalCount(): int
     {
-        return (int) (new Query($this->db))->from(['sub' => "({$this->sql})"])->params($this->params)->count('*');
+        return (int) (new Query($this->db))
+            ->from(['sub' => "({$this->sql})"])
+            ->params($this->params)
+            ->count('*');
     }
 }
