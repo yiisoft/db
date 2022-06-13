@@ -600,10 +600,9 @@ abstract class Command implements CommandInterface
     /**
      * @param int $queryMode - one from modes QUERY_MODE_*
      *
-     * @return mixed
-     * @throws Exception
-     *
      * @throws Exception|Throwable
+     *
+     * @return mixed
      */
     protected function queryInternal(int $queryMode): mixed
     {

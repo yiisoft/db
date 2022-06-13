@@ -1,7 +1,8 @@
 <?php
 
-namespace Yiisoft\Db\Schema;
+declare(strict_types=1);
 
+namespace Yiisoft\Db\Schema;
 
 /**
  * ColumnSchema class describes the metadata of a column in a database table.

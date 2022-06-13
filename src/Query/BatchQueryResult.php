@@ -11,9 +11,8 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Query\Data\DataReader;
-
 use Yiisoft\Db\Query\Data\DataReaderInterface;
+
 use function current;
 use function key;
 use function next;

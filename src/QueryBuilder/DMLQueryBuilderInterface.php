@@ -95,7 +95,7 @@ interface DMLQueryBuilderInterface
      * Creates an INSERT SQL statement with returning inserted values.
      *
      * @param string $table
-     * @param QueryInterface|array $columns
+     * @param array|QueryInterface $columns
      * @param array $params
      * @return string
      */
