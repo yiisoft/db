@@ -19,7 +19,6 @@ abstract class Connection implements ConnectionInterface
     use ProfilerAwareTrait;
 
     protected ?TransactionInterface $transaction = null;
-    private ?bool $emulatePrepare = null;
     private bool $enableSavepoint = true;
     private int $serverRetryInterval = 600;
     private string $tablePrefix = '';
@@ -58,11 +57,6 @@ abstract class Connection implements ConnectionInterface
         return $result;
     }
 
-    public function getEmulatePrepare(): ?bool
-    {
-        return $this->emulatePrepare;
-    }
-
     public function getTablePrefix(): string
     {
         return $this->tablePrefix;
@@ -92,11 +86,6 @@ abstract class Connection implements ConnectionInterface
         $queryCache->removeLastInfo();
 
         return $result;
-    }
-
-    public function setEmulatePrepare(bool $value): void
-    {
-        $this->emulatePrepare = $value;
     }
 
     public function setEnableSavepoint(bool $value): void

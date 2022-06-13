@@ -385,11 +385,11 @@ abstract class Schema implements SchemaInterface
     /**
      * Extracts the PHP type from abstract DB type.
      *
-     * @param ColumnSchema $column the column schema information.
+     * @param ColumnSchemaInterface $column the column schema information.
      *
      * @return string PHP type name.
      */
-    protected function getColumnPhpType(ColumnSchema $column): string
+    protected function getColumnPhpType(ColumnSchemaInterface $column): string
     {
         /** @psalm-var string[] */
         $typeMap = [

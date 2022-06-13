@@ -20,16 +20,10 @@ use Yiisoft\Db\Query\Data\DataReader;
 abstract class CommandPDO extends Command implements CommandPDOInterface
 {
     protected ?PDOStatement $pdoStatement = null;
-    private int $fetchMode = PDO::FETCH_ASSOC;
 
     public function __construct(protected ConnectionPDOInterface $db, QueryCache $queryCache)
     {
         parent::__construct($queryCache);
-    }
-
-    public function getPdoStatement(): ?PDOStatement
-    {
-        return $this->pdoStatement;
     }
 
     /**
@@ -41,19 +35,9 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         $this->pdoStatement = null;
     }
 
-    /**
-     * Binds pending parameters that were registered via {@see bindValue()} and {@see bindValues()}.
-     *
-     * Note that this method requires an active {@see pdoStatement}.
-     */
-    protected function bindPendingParams(): void
+    public function getPdoStatement(): ?PDOStatement
     {
-        /**
-         * @psalm-var ParamInterface $value
-         */
-        foreach ($this->params as $name => $value) {
-            $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
-        }
+        return $this->pdoStatement;
     }
 
     /**
@@ -122,35 +106,6 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
     }
 
     /**
-     * @throws InvalidParamException
-     */
-    protected function internalGetQueryResult(int $queryMode): mixed
-    {
-        if ($queryMode === static::QUERY_MODE_CURSOR) {
-            return new DataReader($this);
-        }
-
-        if ($queryMode === static::QUERY_MODE_NONE) {
-            return $this->pdoStatement?->rowCount() ?? 0;
-        }
-
-        if ($queryMode === static::QUERY_MODE_ROW) {
-            /** @var mixed */
-            $result = $this->pdoStatement?->fetch($this->fetchMode);
-        } elseif ($queryMode === static::QUERY_MODE_COLUMN) {
-            /** @var mixed */
-            $result = $this->pdoStatement?->fetchAll(PDO::FETCH_COLUMN);
-        } else {
-            /** @var mixed */
-            $result = $this->pdoStatement?->fetchAll($this->fetchMode);
-        }
-
-        $this->pdoStatement?->closeCursor();
-
-        return $result;
-    }
-
-    /**
      * @throws Exception|InvalidConfigException|PDOException
      */
     public function prepare(?bool $forRead = null): void
@@ -177,9 +132,53 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         }
     }
 
+    /**
+     * Binds pending parameters that were registered via {@see bindValue()} and {@see bindValues()}.
+     *
+     * Note that this method requires an active {@see pdoStatement}.
+     */
+    protected function bindPendingParams(): void
+    {
+        /**
+         * @psalm-var ParamInterface $value
+         */
+        foreach ($this->params as $name => $value) {
+            $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
+        }
+    }
+
     protected function getCacheKey(int $queryMode, string $rawSql): array
     {
         return array_merge([static::class , $queryMode], $this->db->getCacheKey(), [$rawSql]);
+    }
+
+    /**
+     * @throws InvalidParamException
+     */
+    protected function internalGetQueryResult(int $queryMode): mixed
+    {
+        if ($queryMode === static::QUERY_MODE_CURSOR) {
+            return new DataReader($this);
+        }
+
+        if ($queryMode === static::QUERY_MODE_NONE) {
+            return $this->pdoStatement?->rowCount() ?? 0;
+        }
+
+        if ($queryMode === static::QUERY_MODE_ROW) {
+            /** @var mixed */
+            $result = $this->pdoStatement?->fetch(PDO::FETCH_ASSOC);
+        } elseif ($queryMode === static::QUERY_MODE_COLUMN) {
+            /** @var mixed */
+            $result = $this->pdoStatement?->fetchAll(PDO::FETCH_COLUMN);
+        } else {
+            /** @var mixed */
+            $result = $this->pdoStatement?->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        $this->pdoStatement?->closeCursor();
+
+        return $result;
     }
 
     /**

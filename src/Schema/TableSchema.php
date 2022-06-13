@@ -20,7 +20,7 @@ abstract class TableSchema implements TableSchemaInterface
     private ?string $sequenceName = null;
     /** @psalm-var string[] */
     private array $primaryKey = [];
-    /** @psalm-var ColumnSchema[] */
+    /** @psalm-var ColumnSchemaInterface[] */
     private array $columns = [];
     /** @psalm-var array<array-key, array> */
     protected array $foreignKeys = [];
@@ -34,9 +34,9 @@ abstract class TableSchema implements TableSchemaInterface
      *
      * @param string $name column name
      *
-     * @return ColumnSchema|null metadata of the named column. Null if the named column does not exist.
+     * @return ColumnSchemaInterface|null metadata of the named column. Null if the named column does not exist.
      */
-    public function getColumn(string $name): ?ColumnSchema
+    public function getColumn(string $name): ?ColumnSchemaInterface
     {
         return $this->columns[$name] ?? null;
     }
@@ -97,10 +97,10 @@ abstract class TableSchema implements TableSchemaInterface
     }
 
     /**
-     * @return array column metadata of this table. Each array element is a {@see ColumnSchema} object, indexed by
+     * @return array column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object, indexed by
      * column names.
      *
-     * @psalm-return ColumnSchema[]
+     * @psalm-return ColumnSchemaInterface[]
      */
     public function getColumns(): array
     {
@@ -132,7 +132,7 @@ abstract class TableSchema implements TableSchemaInterface
         $this->primaryKey[] = $value;
     }
 
-    public function columns(string $index, ColumnSchema $value): void
+    public function columns(string $index, ColumnSchemaInterface $value): void
     {
         $this->columns[$index] = $value;
     }

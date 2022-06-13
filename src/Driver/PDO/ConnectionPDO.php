@@ -13,7 +13,7 @@ use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Query\QueryBuilderInterface;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -24,6 +24,8 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
 {
     protected ?PDO $pdo = null;
     protected string $serverVersion = '';
+
+    protected ?bool $emulatePrepare = null;
 
     protected ?QueryBuilderInterface $queryBuilder = null;
     protected ?QuoterInterface $quoter = null;
@@ -112,6 +114,11 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
         return $this->driver->getDriverName();
     }
 
+    public function getEmulatePrepare(): ?bool
+    {
+        return $this->emulatePrepare;
+    }
+
     public function getPdo(): ?PDO
     {
         return $this->pdo;
@@ -166,6 +173,11 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
     public function isActive(): bool
     {
         return $this->pdo !== null;
+    }
+
+    public function setEmulatePrepare(bool $value): void
+    {
+        $this->emulatePrepare = $value;
     }
 
     abstract protected function initConnection(): void;

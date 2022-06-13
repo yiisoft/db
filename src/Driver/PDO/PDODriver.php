@@ -64,6 +64,8 @@ abstract class PDODriver implements PDODriverInterface
         return $this->charset;
     }
 
+    abstract public function getDriverName(): string;
+
     /**
      * Return dsn string for current driver.
      */
@@ -91,8 +93,6 @@ abstract class PDODriver implements PDODriverInterface
     {
         return $this->username;
     }
-
-    abstract public function getDriverName(): string;
 
     /**
      * The password for establishing DB connection. Defaults to `null` meaning no password to use.

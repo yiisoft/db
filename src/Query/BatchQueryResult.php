@@ -11,7 +11,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Query\Data\DataReader;
+use Yiisoft\Db\Query\Data\DataReaderInterface;
 
 use function current;
 use function key;
@@ -42,9 +42,9 @@ final class BatchQueryResult implements Iterator
     private int|string|null $key = null;
 
     /**
-     * @var DataReader|null the data reader associated with this batch query.
+     * @var DataReaderInterface|null the data reader associated with this batch query.
      */
-    private ?DataReader $dataReader = null;
+    private ?DataReaderInterface $dataReader = null;
 
     /**
      * @var array|null the data retrieved in the current batch
@@ -82,8 +82,6 @@ final class BatchQueryResult implements Iterator
      * Resets the batch query.
      *
      * This method will clean up the existing batch query so that a new batch query can be performed.
-     *
-     * @throws InvalidCallException
      */
     public function reset(): void
     {
@@ -199,7 +197,7 @@ final class BatchQueryResult implements Iterator
     /**
      * Returns the current dataset.
      *
-     * This method is required by the interface {@see \Iterator}.
+     * This method is required by the interface {@see Iterator}.
      *
      * @return mixed the current dataset.
      */

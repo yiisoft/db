@@ -14,6 +14,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
  * The QueryInterface defines the minimum set of methods to be implemented by a database query.
@@ -193,6 +194,11 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     public function getWithQueries(): array;
 
+    /**
+     * Disables query cache for this Query.
+     *
+     * @return $this the Query object itself.
+     */
     public function noCache(): self;
 
     /**

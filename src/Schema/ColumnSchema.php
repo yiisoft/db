@@ -9,10 +9,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Driver\PDO\PDOValue;
 use Yiisoft\Strings\NumericHelper;
 
-/**
- * ColumnSchema class describes the metadata of a column in a database table.
- */
-class ColumnSchema
+class ColumnSchema implements ColumnSchemaInterface
 {
     private string $name = '';
     private bool $allowNull = false;
@@ -30,30 +27,11 @@ class ColumnSchema
     private ?string $comment = null;
     private ?string $extra = null;
 
-    /**
-     * Converts the input value according to {@see phpType} after retrieval from the database.
-     *
-     * If the value is null or an {@see Expression}, it will not be converted.
-     *
-     * @param mixed $value input value
-     *
-     * @return mixed converted value
-     */
     public function phpTypecast(mixed $value): mixed
     {
         return $this->typecast($value);
     }
 
-    /**
-     * Converts the input value according to {@see type} and {@see dbType} for use in a db query.
-     *
-     * If the value is null or an {@see Expression}, it will not be converted.
-     *
-     * @param mixed $value input value
-     *
-     * @return mixed converted value. This may also be an array containing the value as the first element
-     * and the PDO type as the second element.
-     */
     public function dbTypecast(mixed $value): mixed
     {
         /**
@@ -61,6 +39,161 @@ class ColumnSchema
          * annotation of explicit PDO type.
          */
         return $this->typecast($value);
+    }
+
+    public function setType(string $value): void
+    {
+        $this->type = $value;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function isAllowNull(): bool
+    {
+        return $this->allowNull;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function getPhpType(): ?string
+    {
+        return $this->phpType;
+    }
+
+    public function getDbType(): string
+    {
+        return $this->dbType;
+    }
+
+    public function getDefaultValue(): mixed
+    {
+        return $this->defaultValue;
+    }
+
+    public function getEnumValues(): ?array
+    {
+        return $this->enumValues;
+    }
+
+    public function getSize(): ?int
+    {
+        return $this->size;
+    }
+
+    public function getPrecision(): ?int
+    {
+        return $this->precision;
+    }
+
+    public function getScale(): ?int
+    {
+        return $this->scale;
+    }
+
+    public function isPrimaryKey(): bool
+    {
+        return $this->isPrimaryKey;
+    }
+
+    public function isAutoIncrement(): bool
+    {
+        return $this->autoIncrement;
+    }
+
+    public function isUnsigned(): bool
+    {
+        return $this->unsigned;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function getExtra(): ?string
+    {
+        return $this->extra;
+    }
+
+    public function name(string $value): void
+    {
+        $this->name = $value;
+    }
+
+    public function allowNull(bool $value): void
+    {
+        $this->allowNull = $value;
+    }
+
+    public function type(string $value): void
+    {
+        $this->type = $value;
+    }
+
+    public function phpType(?string $value): void
+    {
+        $this->phpType = $value;
+    }
+
+    public function dbType(string $value): void
+    {
+        $this->dbType = $value;
+    }
+
+    public function defaultValue(mixed $value): void
+    {
+        $this->defaultValue = $value;
+    }
+
+    public function enumValues(?array $value): void
+    {
+        $this->enumValues = $value;
+    }
+
+    public function size(?int $value): void
+    {
+        $this->size = $value;
+    }
+
+    public function precision(?int $value): void
+    {
+        $this->precision = $value;
+    }
+
+    public function scale(?int $value): void
+    {
+        $this->scale = $value;
+    }
+
+    public function primaryKey(bool $value): void
+    {
+        $this->isPrimaryKey = $value;
+    }
+
+    public function autoIncrement(bool $value): void
+    {
+        $this->autoIncrement = $value;
+    }
+
+    public function unsigned(bool $value): void
+    {
+        $this->unsigned = $value;
+    }
+
+    public function comment(?string $value): void
+    {
+        $this->comment = $value;
+    }
+
+    public function extra(?string $value): void
+    {
+        $this->extra = $value;
     }
 
     /**
@@ -152,208 +285,5 @@ class ColumnSchema
             PDO::PARAM_NULL,
             PDO::PARAM_STMT,
         ];
-    }
-
-    public function setType(string $value): void
-    {
-        $this->type = $value;
-    }
-
-    /**
-     * @return string name of this column (without quotes).
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @return bool whether this column can be null.
-     */
-    public function isAllowNull(): bool
-    {
-        return $this->allowNull;
-    }
-
-    /**
-     * @return string abstract type of this column. Possible abstract types include: char, string, text, boolean,
-     * smallint, integer, bigint, float, decimal, datetime, timestamp, time, date, binary, and money.
-     */
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    /**
-     * @return string|null the PHP type of this column. Possible PHP types include: `string`, `boolean`, `integer`,
-     * `double`, `array`.
-     */
-    public function getPhpType(): ?string
-    {
-        return $this->phpType;
-    }
-
-    /**
-     * @return string the DB type of this column. Possible DB types vary according to the type of DBMS.
-     */
-    public function getDbType(): string
-    {
-        return $this->dbType;
-    }
-
-    /**
-     * @return mixed default value of this column
-     */
-    public function getDefaultValue(): mixed
-    {
-        return $this->defaultValue;
-    }
-
-    /**
-     * @return array|null enumerable values. This is set only if the column is declared to be an enumerable type.
-     */
-    public function getEnumValues(): ?array
-    {
-        return $this->enumValues;
-    }
-
-    /**
-     * @return int|null display size of the column.
-     */
-    public function getSize(): ?int
-    {
-        return $this->size;
-    }
-
-    /**
-     * @return int|null precision of the column data, if it is numeric.
-     */
-    public function getPrecision(): ?int
-    {
-        return $this->precision;
-    }
-
-    /**
-     * @return int|null scale of the column data, if it is numeric.
-     */
-    public function getScale(): ?int
-    {
-        return $this->scale;
-    }
-
-    /**
-     * @return bool whether this column is a primary key
-     */
-    public function isPrimaryKey(): bool
-    {
-        return $this->isPrimaryKey;
-    }
-
-    /**
-     * @return bool whether this column is auto-incremental
-     */
-    public function isAutoIncrement(): bool
-    {
-        return $this->autoIncrement;
-    }
-
-    /**
-     * @return bool whether this column is unsigned. This is only meaningful when {@see type} is `smallint`, `integer`
-     * or `bigint`.
-     */
-    public function isUnsigned(): bool
-    {
-        return $this->unsigned;
-    }
-
-    /**
-     * @return string|null comment of this column. Not all DBMS support this.
-     */
-    public function getComment(): ?string
-    {
-        return $this->comment;
-    }
-
-    /**
-     * @return string|null extra of this column. Not all DBMS support this.
-     */
-    public function getExtra(): ?string
-    {
-        return $this->extra;
-    }
-
-    public function name(string $value): void
-    {
-        $this->name = $value;
-    }
-
-    public function allowNull(bool $value): void
-    {
-        $this->allowNull = $value;
-    }
-
-    public function type(string $value): void
-    {
-        $this->type = $value;
-    }
-
-    public function phpType(?string $value): void
-    {
-        $this->phpType = $value;
-    }
-
-    public function dbType(string $value): void
-    {
-        $this->dbType = $value;
-    }
-
-    public function defaultValue(mixed $value): void
-    {
-        $this->defaultValue = $value;
-    }
-
-    public function enumValues(?array $value): void
-    {
-        $this->enumValues = $value;
-    }
-
-    public function size(?int $value): void
-    {
-        $this->size = $value;
-    }
-
-    public function precision(?int $value): void
-    {
-        $this->precision = $value;
-    }
-
-    public function scale(?int $value): void
-    {
-        $this->scale = $value;
-    }
-
-    public function primaryKey(bool $value): void
-    {
-        $this->isPrimaryKey = $value;
-    }
-
-    public function autoIncrement(bool $value): void
-    {
-        $this->autoIncrement = $value;
-    }
-
-    public function unsigned(bool $value): void
-    {
-        $this->unsigned = $value;
-    }
-
-    public function comment(?string $value): void
-    {
-        $this->comment = $value;
-    }
-
-    public function extra(?string $value): void
-    {
-        $this->extra = $value;
     }
 }

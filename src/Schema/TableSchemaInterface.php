@@ -13,9 +13,9 @@ interface TableSchemaInterface
      *
      * @param string $name column name
      *
-     * @return ColumnSchema|null metadata of the named column. Null if the named column does not exist.
+     * @return ColumnSchemaInterface|null metadata of the named column. Null if the named column does not exist.
      */
-    public function getColumn(string $name): ?ColumnSchema;
+    public function getColumn(string $name): ?ColumnSchemaInterface;
 
     /**
      * Returns the names of all columns in this table.
@@ -55,10 +55,10 @@ interface TableSchemaInterface
     public function getPrimaryKey(): array;
 
     /**
-     * @return array column metadata of this table. Each array element is a {@see ColumnSchema} object, indexed by
+     * @return array column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object, indexed by
      * column names.
      *
-     * @psalm-return ColumnSchema[]
+     * @psalm-return ColumnSchemaInterface[]
      */
     public function getColumns(): array;
 
@@ -101,9 +101,9 @@ interface TableSchemaInterface
      * Set one column metadata of this table
      *
      * @param string $index
-     * @param ColumnSchema $value
+     * @param ColumnSchemaInterface $value
      */
-    public function columns(string $index, ColumnSchema $value): void;
+    public function columns(string $index, ColumnSchemaInterface $value): void;
 
     /**
      * @return string|null name of the catalog (database) that this table belongs to. Defaults to null, meaning no
