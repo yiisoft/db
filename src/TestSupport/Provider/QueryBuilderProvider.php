@@ -6,12 +6,12 @@ namespace Yiisoft\Db\TestSupport\Provider;
 
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Query\Conditions\BetweenColumnsCondition;
-use Yiisoft\Db\Query\Conditions\InCondition;
-use Yiisoft\Db\Query\Conditions\LikeCondition;
+use Yiisoft\Db\QueryBuilder\Conditions\BetweenColumnsCondition;
+use Yiisoft\Db\QueryBuilder\Conditions\InCondition;
+use Yiisoft\Db\QueryBuilder\Conditions\LikeCondition;
+use Yiisoft\Db\QueryBuilder\QueryBuilder;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Query\QueryBuilder;
-use Yiisoft\Db\Query\QueryBuilderInterface;
 use Yiisoft\Db\TestSupport\Helper\DbHelper;
 use Yiisoft\Db\TestSupport\TraversableObject;
 

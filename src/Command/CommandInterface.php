@@ -10,12 +10,18 @@ use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Query\Data\DataReader;
+use Yiisoft\Db\Query\Data\DataReaderInterface;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Query\QueryBuilderInterface;
 
 interface CommandInterface
 {
+    public const QUERY_MODE_NONE = 0;
+    public const QUERY_MODE_ROW = 1;
+    public const QUERY_MODE_ALL = 2;
+    public const QUERY_MODE_CURSOR = 3;
+    public const QUERY_MODE_COLUMN = 7;
+
     /**
      * Creates a SQL command for adding a check constraint to an existing table.
      *
@@ -573,9 +579,9 @@ interface CommandInterface
      *
      * @throws Exception|Throwable execution failed.
      *
-     * @return DataReader The reader object for fetching the query result.
+     * @return DataReaderInterface The reader object for fetching the query result.
      */
-    public function query(): DataReader;
+    public function query(): DataReaderInterface;
 
     /**
      * Executes the SQL statement and returns ALL rows at once.

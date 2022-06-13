@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Driver\PDO;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\QueryBuilderInterface;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
  * Class PDOValue represents a $value that should be bound to PDO with exact $type.

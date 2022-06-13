@@ -19,7 +19,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Query\Data\DataReader;
+use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
@@ -83,12 +83,6 @@ abstract class Command implements CommandInterface
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
 
-    public const QUERY_MODE_NONE = 0;
-    public const QUERY_MODE_ROW = 1;
-    public const QUERY_MODE_ALL = 2;
-    public const QUERY_MODE_CURSOR = 3;
-    public const QUERY_MODE_COLUMN = 7;
-
     protected ?string $isolationLevel = null;
     protected ?string $refreshTableName = null;
     /** @var callable|null */
@@ -101,17 +95,6 @@ abstract class Command implements CommandInterface
     public function __construct(protected QueryCache $queryCache)
     {
     }
-
-    /**
-     * Returns the cache key for the query.
-     *
-     * @param string $rawSql the raw SQL with parameter values inserted into the corresponding placeholders.
-     *
-     * @throws JsonException
-     *
-     * @return array the cache key.
-     */
-    abstract protected function getCacheKey(int $queryMode, string $rawSql): array;
 
     public function addCheck(string $name, string $table, string $expression): self
     {
@@ -216,6 +199,10 @@ abstract class Command implements CommandInterface
 
         return $this;
     }
+
+    abstract public function bindValue(int|string $name, mixed $value, ?int $dataType = null): self;
+
+    abstract public function bindValues(array $values): self;
 
     public function cache(?int $duration = null, Dependency $dependency = null): self
     {
@@ -462,7 +449,7 @@ abstract class Command implements CommandInterface
      * @psalm-suppress MixedReturnStatement
      * @psalm-suppress MixedInferredReturnType
      */
-    public function query(): DataReader
+    public function query(): DataReaderInterface
     {
         return $this->queryInternal((int) static::QUERY_MODE_CURSOR);
     }
@@ -525,12 +512,98 @@ abstract class Command implements CommandInterface
         return $result;
     }
 
+    public function renameColumn(string $table, string $oldName, string $newName): self
+    {
+        $sql = $this->queryBuilder()->renameColumn($table, $oldName, $newName);
+        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+    }
+
+    public function renameTable(string $table, string $newName): self
+    {
+        $sql = $this->queryBuilder()->renameTable($table, $newName);
+        return $this->setSql($sql)->requireTableSchemaRefresh($table);
+    }
+
+    /**
+     * @throws Exception|NotSupportedException
+     */
+    public function resetSequence(string $table, array|int|string|null $value = null): self
+    {
+        $sql = $this->queryBuilder()->resetSequence($table, $value);
+        return $this->setSql($sql);
+    }
+
+    public function setParams(array $value): void
+    {
+        $this->params = $value;
+    }
+
+    public function setRawSql(string $sql): self
+    {
+        if ($sql !== $this->sql) {
+            $this->cancel();
+            $this->reset();
+            $this->sql = $sql;
+        }
+
+        return $this;
+    }
+
+    public function setSql(string $sql): self
+    {
+        $this->cancel();
+        $this->reset();
+        $this->sql = $this->queryBuilder()->quoter()->quoteSql($sql);
+
+        return $this;
+    }
+
+    public function truncateTable(string $table): self
+    {
+        $sql = $this->queryBuilder()->truncateTable($table);
+        return $this->setSql($sql);
+    }
+
+    /**
+     * @throws Exception|InvalidArgumentException
+     */
+    public function update(string $table, array $columns, array|string $condition = '', array $params = []): self
+    {
+        $sql = $this->queryBuilder()->update($table, $columns, $condition, $params);
+        return $this->setSql($sql)->bindValues($params);
+    }
+
+    /**
+     * @throws Exception|InvalidConfigException|JsonException|NotSupportedException
+     */
+    public function upsert(
+        string $table,
+        QueryInterface|array $insertColumns,
+        bool|array $updateColumns = true,
+        array $params = []
+    ): self {
+        $sql = $this->queryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
+        return $this->setSql($sql)->bindValues($params);
+    }
+
+    /**
+     * Returns the cache key for the query.
+     *
+     * @param string $rawSql the raw SQL with parameter values inserted into the corresponding placeholders.
+     *
+     * @throws JsonException
+     *
+     * @return array the cache key.
+     */
+    abstract protected function getCacheKey(int $queryMode, string $rawSql): array;
+
     /**
      * @param int $queryMode - one from modes QUERY_MODE_*
      *
-     * @throws Exception|Throwable
-     *
      * @return mixed
+     * @throws Exception
+     *
+     * @throws Exception|Throwable
      */
     protected function queryInternal(int $queryMode): mixed
     {
@@ -611,80 +684,6 @@ abstract class Command implements CommandInterface
     abstract protected function internalExecute(?string $rawSql): void;
 
     abstract protected function internalGetQueryResult(int $queryMode): mixed;
-
-    public function renameColumn(string $table, string $oldName, string $newName): self
-    {
-        $sql = $this->queryBuilder()->renameColumn($table, $oldName, $newName);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
-    }
-
-    public function renameTable(string $table, string $newName): self
-    {
-        $sql = $this->queryBuilder()->renameTable($table, $newName);
-        return $this->setSql($sql)->requireTableSchemaRefresh($table);
-    }
-
-    /**
-     * @throws Exception|NotSupportedException
-     */
-    public function resetSequence(string $table, array|int|string|null $value = null): self
-    {
-        $sql = $this->queryBuilder()->resetSequence($table, $value);
-        return $this->setSql($sql);
-    }
-
-    public function setParams(array $value): void
-    {
-        $this->params = $value;
-    }
-
-    public function setRawSql(string $sql): self
-    {
-        if ($sql !== $this->sql) {
-            $this->cancel();
-            $this->reset();
-            $this->sql = $sql;
-        }
-
-        return $this;
-    }
-
-    public function setSql(string $sql): self
-    {
-        $this->cancel();
-        $this->reset();
-        $this->sql = $this->queryBuilder()->quoter()->quoteSql($sql);
-
-        return $this;
-    }
-
-    public function truncateTable(string $table): self
-    {
-        $sql = $this->queryBuilder()->truncateTable($table);
-        return $this->setSql($sql);
-    }
-
-    /**
-     * @throws Exception|InvalidArgumentException
-     */
-    public function update(string $table, array $columns, array|string $condition = '', array $params = []): self
-    {
-        $sql = $this->queryBuilder()->update($table, $columns, $condition, $params);
-        return $this->setSql($sql)->bindValues($params);
-    }
-
-    /**
-     * @throws Exception|InvalidConfigException|JsonException|NotSupportedException
-     */
-    public function upsert(
-        string $table,
-        QueryInterface|array $insertColumns,
-        bool|array $updateColumns = true,
-        array $params = []
-    ): self {
-        $sql = $this->queryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
-        return $this->setSql($sql)->bindValues($params);
-    }
 
     /**
      * Logs the current database query if query logging is enabled and returns the profiling token if profiling is
@@ -770,8 +769,6 @@ abstract class Command implements CommandInterface
     }
 
     /**
-     * @throws \JsonException
-     *
      * @psalm-param array{CacheInterface, DateInterval|int|null, Dependency|null} $info
      */
     private function getFromCacheInfo(?array $info, array $cacheKey): mixed
@@ -798,8 +795,6 @@ abstract class Command implements CommandInterface
     }
 
     /**
-     * @throws \JsonException
-     *
      * @psalm-param array{CacheInterface, DateInterval|int|null, Dependency|null} $info
      */
     private function setToCacheInfo(?array $info, array $cacheKey, mixed $result): void

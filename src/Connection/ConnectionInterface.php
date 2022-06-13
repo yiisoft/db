@@ -11,7 +11,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Query\QueryBuilderInterface;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
@@ -108,11 +108,6 @@ interface ConnectionInterface
      * @return string name of the DB driver
      */
     public function getDriverName(): string;
-
-    /**
-     * Return emulate prepare value.
-     */
-    public function getEmulatePrepare(): ?bool;
 
     /**
      * Returns the ID of the last inserted row or sequence value.
@@ -222,16 +217,6 @@ interface ConnectionInterface
      * @throws Exception|InvalidConfigException if connection fails
      */
     public function open(): void;
-
-    /**
-     * Whether to turn on prepare emulation. Defaults to false, meaning PDO will use the native prepare support if
-     * available. For some databases (such as MySQL), this may need to be set true so that PDO can emulate to prepare
-     * support to bypass the buggy native prepare support. The default value is null, which means the PDO
-     * ATTR_EMULATE_PREPARES value will not be changed.
-     *
-     * @param bool $value whether to turn on prepare emulation.
-     */
-    public function setEmulatePrepare(bool $value): void;
 
     /**
      * Whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint). Note that if the underlying DBMS does not

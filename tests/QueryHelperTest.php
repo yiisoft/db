@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Query\QueryHelper;
+use Yiisoft\Db\Query\Helper\QueryHelper;
 use Yiisoft\Db\Schema\Quoter;
 
 final class QueryHelperTest extends TestCase

@@ -32,4 +32,19 @@ interface ConnectionPDOInterface extends ConnectionInterface
      * @return PDO|null the PDO instance for the current connection.
      */
     public function getActivePDO(string $sql = '', ?bool $forRead = null): ?PDO;
+
+    /**
+     * Return emulate prepare value.
+     */
+    public function getEmulatePrepare(): ?bool;
+
+    /**
+     * Whether to turn on prepare emulation. Defaults to false, meaning PDO will use the native prepare support if
+     * available. For some databases (such as MySQL), this may need to be set true so that PDO can emulate to prepare
+     * support to bypass the buggy native prepare support. The default value is null, which means the PDO
+     * ATTR_EMULATE_PREPARES value will not be changed.
+     *
+     * @param bool $value whether to turn on prepare emulation.
+     */
+    public function setEmulatePrepare(bool $value): void;
 }

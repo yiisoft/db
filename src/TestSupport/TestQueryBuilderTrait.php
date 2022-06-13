@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\TestSupport;
 
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Query\QueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\SchemaBuilderTrait;
 

@@ -12,10 +12,11 @@ use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Helper\QueryHelper;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function array_merge;
 use function count;
@@ -155,7 +156,7 @@ class Query implements QueryInterface
 
     public function andFilterHaving(array $condition): QueryInterface
     {
-        $condition = $this->createQueryHelper()->filterCondition($condition);
+        $condition = $this->filterCondition($condition);
 
         if ($condition !== []) {
             $this->andHaving($condition);
@@ -166,7 +167,7 @@ class Query implements QueryInterface
 
     public function andFilterWhere(array $condition): QueryInterface
     {
-        $condition = $this->createQueryHelper()->filterCondition($condition);
+        $condition = $this->filterCondition($condition);
 
         if ($condition !== []) {
             $this->andWhere($condition);
@@ -247,18 +248,6 @@ class Query implements QueryInterface
         return (new BatchQueryResult($this->db, $this))->batchSize($batchSize);
     }
 
-    /**
-     * Enables query cache for this Query.
-     *
-     * @param int|null $duration the number of seconds that query results can remain valid in cache.
-     * Use 0 to indicate that the cached data will never expire.
-     * Use a negative number to indicate that query cache should not be used.
-     * @param Dependency|null $dependency the cache dependency associated with the cached result.
-     *
-     * @return $this the Query object itself.
-     *
-     * @todo Check if this method @darkdef
-     */
     public function cache(?int $duration = 3600, ?Dependency $dependency = null): QueryInterface
     {
         $this->queryCacheDuration = $duration;
@@ -268,14 +257,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Executes the query and returns the first column of the result.
-     *
-     * If this parameter is not given, the `db` application component will be used.
-     *
-     * @throws Exception|InvalidConfigException|Throwable
-     *
-     * @return array the first column of the query result. An empty array is returned if the query results in nothing.
-     *
      * @psalm-suppress MixedArrayOffset
      */
     public function column(): array
@@ -347,11 +328,7 @@ class Query implements QueryInterface
     }
 
     /**
-     * Returns a value indicating whether the query result contains any row of data.
-     *
      * @throws Exception|InvalidConfigException|Throwable
-     *
-     * @return bool whether the query result contains any row of data.
      */
     public function exists(): bool
     {
@@ -376,7 +353,7 @@ class Query implements QueryInterface
 
     public function filterHaving(array $condition): QueryInterface
     {
-        $condition = $this->createQueryHelper()->filterCondition($condition);
+        $condition = $this->filterCondition($condition);
 
         if ($condition !== []) {
             $this->having($condition);
@@ -387,7 +364,7 @@ class Query implements QueryInterface
 
     public function filterWhere(array $condition): QueryInterface
     {
-        $condition = $this->createQueryHelper()->filterCondition($condition);
+        $condition = $this->filterCondition($condition);
 
         if ($condition !== []) {
             $this->where($condition);
@@ -471,15 +448,6 @@ class Query implements QueryInterface
         return $this->selectOption;
     }
 
-    /**
-     * Returns table names used in {@see from} indexed by aliases.
-     *
-     * Both aliases and names are enclosed into {{ and }}.
-     *
-     * @throws InvalidArgumentException
-     *
-     * @return array table names indexed by aliases
-     */
     public function getTablesUsedInFrom(): array
     {
         return empty($this->from) ? [] : $this->createQueryHelper()->cleanUpTableNames(
@@ -572,11 +540,6 @@ class Query implements QueryInterface
         return is_numeric($min) ? $min : null;
     }
 
-    /**
-     * Disables query cache for this Query.
-     *
-     * @return $this the Query object itself.
-     */
     public function noCache(): QueryInterface
     {
         $this->queryCacheDuration = -1;
@@ -608,7 +571,7 @@ class Query implements QueryInterface
 
     public function orFilterHaving(array $condition): QueryInterface
     {
-        $condition = $this->createQueryHelper()->filterCondition($condition);
+        $condition = $this->filterCondition($condition);
 
         if ($condition !== []) {
             $this->orHaving($condition);
@@ -619,7 +582,7 @@ class Query implements QueryInterface
 
     public function orFilterWhere(array $condition): QueryInterface
     {
-        $condition = $this->createQueryHelper()->filterCondition($condition);
+        $condition = $this->filterCondition($condition);
 
         if ($condition !== []) {
             $this->orWhere($condition);
@@ -856,5 +819,10 @@ class Query implements QueryInterface
         }
 
         return $this->queryHelper;
+    }
+
+    private function filterCondition(array $condition): array
+    {
+        return (array) $this->createQueryHelper()->filterCondition($condition);
     }
 }
