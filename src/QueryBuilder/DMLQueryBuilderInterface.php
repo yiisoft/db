@@ -97,6 +97,7 @@ interface DMLQueryBuilderInterface
      * @param string $table
      * @param array|QueryInterface $columns
      * @param array $params
+     *
      * @return string
      */
     public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string;
