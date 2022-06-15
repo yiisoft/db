@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\TestSupport;
 
-use Yiisoft\Db\Query\BatchQueryResult;
+use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\Query;
 
 use function array_merge;
@@ -22,7 +22,7 @@ trait TestBatchQueryResultTrait
 
         $result = $query->batch(2);
 
-        $this->assertInstanceOf(BatchQueryResult::class, $result);
+        $this->assertInstanceOf(BatchQueryResultInterface::class, $result);
         $this->assertEquals(2, $result->getBatchSize());
         $this->assertSame($result->getQuery(), $query);
 
@@ -157,7 +157,7 @@ trait TestBatchQueryResultTrait
         $this->assertEquals('user3', $customers[2]['name']);
     }
 
-    protected function getAllRowsFromBatch(BatchQueryResult $batch): array
+    protected function getAllRowsFromBatch(BatchQueryResultInterface $batch): array
     {
         $allRows = [];
 
@@ -168,7 +168,7 @@ trait TestBatchQueryResultTrait
         return $allRows;
     }
 
-    protected function getAllRowsFromEach(BatchQueryResult $each): array
+    protected function getAllRowsFromEach(BatchQueryResultInterface $each): array
     {
         $allRows = [];
 

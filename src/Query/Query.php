@@ -243,9 +243,9 @@ class Query implements QueryInterface
         };
     }
 
-    public function batch(int $batchSize = 100): BatchQueryResult
+    public function batch(int $batchSize = 100): BatchQueryResultInterface
     {
-        return (new BatchQueryResult($this->db, $this))->batchSize($batchSize);
+        return $this->db->createBatchQueryResult($this)->batchSize($batchSize);
     }
 
     public function cache(?int $duration = 3600, ?Dependency $dependency = null): QueryInterface
@@ -322,9 +322,9 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function each(int $batchSize = 100): BatchQueryResult
+    public function each(int $batchSize = 100): BatchQueryResultInterface
     {
-        return (new BatchQueryResult($this->db, $this, true))->batchSize($batchSize);
+        return $this->db->createBatchQueryResult($this, true)->batchSize($batchSize);
     }
 
     /**
