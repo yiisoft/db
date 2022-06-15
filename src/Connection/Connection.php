@@ -10,6 +10,9 @@ use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
 use Yiisoft\Db\AwareTrait\ProfilerAwareTrait;
 use Yiisoft\Db\Cache\QueryCache;
+use Yiisoft\Db\Query\BatchQueryResult;
+use Yiisoft\Db\Query\BatchQueryResultInterface;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
@@ -55,6 +58,11 @@ abstract class Connection implements ConnectionInterface
         $this->queryCache->removeLastInfo();
 
         return $result;
+    }
+
+    public function createBatchQueryResult(QueryInterface $query, bool $each = false): BatchQueryResultInterface
+    {
+        return (new BatchQueryResult($query, $each));
     }
 
     public function getTablePrefix(): string

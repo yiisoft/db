@@ -55,7 +55,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * A batch query supports fetching data in batches, which can keep the memory usage under a limit.
      *
-     * This method will return a {@see BatchQueryResult} object which implements the {@see Iterator} interface and can
+     * This method will return a {@see BatchQueryResultInterface} object which implements the {@see Iterator} interface and can
      * be traversed to retrieve the data in batches.
      *
      * For example,
@@ -69,10 +69,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @param int $batchSize the number of records to be fetched in each batch.
      *
-     * @return BatchQueryResult the batch query result. It implements the {@see Iterator} interface and can be
+     * @return BatchQueryResultInterface the batch query result. It implements the {@see Iterator} interface and can be
      * traversed to retrieve the data in batches.
      */
-    public function batch(int $batchSize = 100): BatchQueryResult;
+    public function batch(int $batchSize = 100): BatchQueryResultInterface;
 
     /**
      * Enables query cache for this Query.
@@ -122,10 +122,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @param int $batchSize the number of records to be fetched in each batch.
      *
-     * @return BatchQueryResult the batch query result. It implements the {@see Iterator} interface and can be
+     * @return BatchQueryResultInterface the batch query result. It implements the {@see Iterator} interface and can be
      * traversed to retrieve the data in batches.
      */
-    public function each(int $batchSize = 100): BatchQueryResult;
+    public function each(int $batchSize = 100): BatchQueryResultInterface;
 
     /**
      * Sets whether to emulate query execution, preventing any interaction with data storage.
