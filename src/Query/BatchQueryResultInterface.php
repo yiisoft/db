@@ -91,5 +91,5 @@ interface BatchQueryResultInterface extends Iterator
      *
      * @return $this
      */
-    public function batchSize(int $value): BatchQueryResultInterface;
+    public function batchSize(int $value): self;
 }
