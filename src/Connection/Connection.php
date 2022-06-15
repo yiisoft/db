@@ -62,7 +62,7 @@ abstract class Connection implements ConnectionInterface
 
     public function createBatchQueryResult(QueryInterface $query, bool $each = false): BatchQueryResultInterface
     {
-        return (new BatchQueryResult($query, $each));
+        return new BatchQueryResult($query, $each);
     }
 
     public function getTablePrefix(): string
