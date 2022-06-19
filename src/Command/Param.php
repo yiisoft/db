@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
-final class Param implements ParamInterface
-{
-    public function __construct(private int|string $name, private mixed $value, private int $type)
-    {
-    }
+use Yiisoft\Db\Expression\ExpressionInterface;
 
-    public function getName(): int|string
+final class Param implements ParamInterface, ExpressionInterface
+{
+    public function __construct(private mixed $value, private int $type)
     {
-        return $this->name;
     }
 
     public function getValue(): mixed

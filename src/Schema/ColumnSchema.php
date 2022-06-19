@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use PDO;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Driver\PDO\PDOValue;
 use Yiisoft\Strings\NumericHelper;
 
 class ColumnSchema implements ColumnSchemaInterface
@@ -237,7 +237,7 @@ class ColumnSchema implements ColumnSchemaInterface
             && isset($value[1])
             && in_array($value[1], $this->getPdoParamTypes(), true)
         ) {
-            return new PDOValue((string) $value[0], $value[1]);
+            return new Param((string) $value[0], $value[1]);
         }
 
         switch ($this->phpType) {

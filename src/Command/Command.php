@@ -90,6 +90,7 @@ abstract class Command implements CommandInterface
     protected ?int $queryCacheDuration = null;
     private string $sql = '';
     protected ?Dependency $queryCacheDependency = null;
+    /** * @var ParamInterface[] */
     protected array $params = [];
 
     public function __construct(protected QueryCache $queryCache)
@@ -330,8 +331,12 @@ abstract class Command implements CommandInterface
         return $this->resetSequence($table, $value);
     }
 
-    public function getParams(): array
+    public function getParams(bool $asValues = true): array
     {
+        if (!$asValues) {
+            return $this->params;
+        }
+
         $buildParams = [];
 
         /** @psalm-var ParamInterface|array $value */
@@ -531,11 +536,6 @@ abstract class Command implements CommandInterface
     {
         $sql = $this->queryBuilder()->resetSequence($table, $value);
         return $this->setSql($sql);
-    }
-
-    public function setParams(array $value): void
-    {
-        $this->params = $value;
     }
 
     public function setRawSql(string $sql): self
