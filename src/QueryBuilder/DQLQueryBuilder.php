@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamBuilder;
-use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -530,7 +530,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
     {
         return [
             Query::class => QueryExpressionBuilder::class,
-            ParamInterface::class => ParamBuilder::class,
+            Param::class => ParamBuilder::class,
             Expression::class => ExpressionBuilder::class,
             Conditions\ConjunctionCondition::class => Conditions\Builder\ConjunctionConditionBuilder::class,
             Conditions\NotCondition::class => Conditions\Builder\NotConditionBuilder::class,
