@@ -227,12 +227,12 @@ interface CommandInterface
      *
      * Note that the SQL data type of each value is determined by its PHP type.
      *
-     * @param array $values The values to be bound. This must be given in terms of an associative array with array keys
+     * @param array|ParamInterface[]| $values The values to be bound. This must be given in terms of an associative array with array keys
      * being the parameter names, and array values the corresponding parameter values,
      * e.g. `[':name' => 'John', ':age' => 25]`.
      * By default, the PDO type of each value is determined  by its PHP type. You may explicitly specify the PDO type by
-     * using a {@see PDOValue} class: `new PDOValue(value, type)`,
-     * e.g. `[':name' => 'John', ':profile' => new PDOValue($profile, \PDO::PARAM_LOB)]`.
+     * using a {@see Param} class: `new Param(value, type)`,
+     * e.g. `[':name' => 'John', ':profile' => new Param($profile, \PDO::PARAM_LOB)]`.
      *
      * @return static The current command being executed.
      */
@@ -495,8 +495,14 @@ interface CommandInterface
 
     /**
      * Return the params used in the last query.
+     *
+     * @param bool $asParams - by default - returned array of pair name => value
+     * if true - be returned array of ParamInterface
+     *
+     * @psalm-return array|ParamInterface[]
+     * @return array
      */
-    public function getParams(): array;
+    public function getParams(bool $asValues = true): array;
 
     /**
      * Returns the raw SQL by inserting parameter values into the corresponding placeholders in {@see sql}.
@@ -664,16 +670,6 @@ interface CommandInterface
      * @return static
      */
     public function resetSequence(string $table, array|int|string|null $value = null): self;
-
-    /**
-     * The parameters (name => value) that are bound to the current PDO statement.
-     *
-     * This property is maintained by methods such as {@see bindValue()}. It is mainly provided for logging purpose and
-     * is used to generate {@see rawSql}. Do not modify it directly.
-     *
-     * @param array $value The parameters that are bound to the current PDO statement.
-     */
-    public function setParams(array $value): void;
 
     /**
      * Specifies the SQL statement to be executed. The SQL statement will not be modified in any way.

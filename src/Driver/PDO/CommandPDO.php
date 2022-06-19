@@ -75,7 +75,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
             $dataType = $this->db->getSchema()->getPdoType($value);
         }
 
-        $this->params[$name] = new Param($name, $value, $dataType);
+        $this->params[$name] = new Param($value, $dataType);
 
         return $this;
     }
@@ -87,18 +87,14 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         }
 
         /**
-         * @psalm-var array<string, int>|ParamInterface|PDOValue|int $value
+         * @psalm-var array<string, int>|ParamInterface|int $value
          */
         foreach ($values as $name => $value) {
             if ($value instanceof ParamInterface) {
-                $this->params[$value->getName()] = $value;
-            } elseif (is_array($value)) { // TODO: Drop in Yii 2.1
-                $this->params[$name] = new Param($name, ...$value);
-            } elseif ($value instanceof PDOValue && is_int($value->getType())) {
-                $this->params[$name] = new Param($name, $value->getValue(), $value->getType());
+                $this->params[$name] = $value;
             } else {
                 $type = $this->db->getSchema()->getPdoType($value);
-                $this->params[$name] = new Param($name, $value, $type);
+                $this->params[$name] = new Param($value, $type);
             }
         }
 
@@ -139,9 +135,6 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
      */
     protected function bindPendingParams(): void
     {
-        /**
-         * @psalm-var ParamInterface $value
-         */
         foreach ($this->params as $name => $value) {
             $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
         }

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Driver\PDO;
+namespace Yiisoft\Db\Command;
 
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
- * Class PDOValueBuilder builds object of the {@see PDOValue} expression class.
+ * Class ParamBuilder builds object of the {@see Param} expression class.
  */
-final class PDOValueBuilder implements ExpressionBuilderInterface
+final class ParamBuilder implements ExpressionBuilderInterface
 {
     public const PARAM_PREFIX = ':pv';
 

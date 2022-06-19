@@ -6,6 +6,8 @@ namespace Yiisoft\Db\TestSupport;
 
 use PDO;
 use Throwable;
+use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
@@ -799,6 +801,41 @@ trait TestCommandTrait
 
         $db->createCommand()->addUnique($name, $tableName, ['int1', 'int2'])->execute();
         $this->assertEquals(['int1', 'int2'], $schema->getTableUniques($tableName, true)[0]->getColumnNames());
+    }
+
+    public function testBindValues(): void
+    {
+        $command = $this->getConnection()->createCommand();
+
+        $values = [
+            'int' => 1,
+            'string' => 'str',
+        ];
+        $command->bindValues($values);
+        $bindedValues = $command->getParams(false);
+
+        $this->assertIsArray($bindedValues);
+        $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
+        $this->assertCount(2, $bindedValues);
+
+        $param = new Param('str', 99);
+        $command->bindValues(['param' => $param]);
+        $bindedValues = $command->getParams(false);
+
+        $this->assertIsArray($bindedValues);
+        $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
+        $this->assertCount(3, $bindedValues);
+        $this->assertEquals($param, $bindedValues['param']);
+        $this->assertNotEquals($param, $bindedValues['int']);
+
+        // Replace test
+        $command->bindValues(['int' => $param]);
+        $bindedValues = $command->getParams(false);
+
+        $this->assertIsArray($bindedValues);
+        $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
+        $this->assertCount(3, $bindedValues);
+        $this->assertEquals($param, $bindedValues['int']);
     }
 
     public function testIntegrityViolation(): void
