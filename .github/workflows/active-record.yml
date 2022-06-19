@@ -26,7 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-active-record-${{ matrix.os }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-dev
+      COMPOSER_ROOT_VERSION: dev-master
       extensions: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.0-beta1
 
     runs-on: ${{ matrix.os }}
@@ -94,22 +94,22 @@ jobs:
         run: composer self-update
 
       - name: Install db-mssql
-        run: composer require yiisoft/db-mssql:dev-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/db-mssql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-mysql
-        run: composer require yiisoft/db-mysql:dev-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/db-mysql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-pgsql
-        run: composer require yiisoft/db-pgsql:dev-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/db-pgsql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-oracle
-        run: composer require yiisoft/db-oracle:dev-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/db-oracle --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-sqlite
-        run: composer require yiisoft/db-sqlite:dev-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/db-sqlite --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install active-record
-        run: composer require yiisoft/active-record:dev-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/active-record --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run tests with phpunit with code coverage
         run: vendor/bin/phpunit --testsuite ActiveRecord --coverage-clover=coverage.xml --colors=always

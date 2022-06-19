@@ -26,7 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-${{ matrix.os }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-dev
+      COMPOSER_ROOT_VERSION: dev-master
       extensions: dom, json, libxml, mbstring, pdo, pdo_mysql, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.9.0preview1, tokenizer
 
     runs-on: ${{ matrix.os }}
