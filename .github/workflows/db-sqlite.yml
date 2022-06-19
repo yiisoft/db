@@ -26,7 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-sqlite
 
     env:
-      COMPOSER_ROOT_VERSION: dev-dev
+      COMPOSER_ROOT_VERSION: dev-master
       extensions: pdo, pdo_sqlite
 
     runs-on: ${{ matrix.os }}
@@ -58,7 +58,7 @@ jobs:
         run: composer self-update
 
       - name: Install db-sqlite
-        run: composer require yiisoft/db-sqlite:dev-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/db-sqlite --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run sqlite tests with phpunit
         run: vendor/bin/phpunit --testsuite Sqlite --coverage-clover=coverage.xml --colors=always

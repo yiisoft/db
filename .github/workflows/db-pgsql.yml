@@ -26,7 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-pgsql-${{ matrix.pgsql }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-dev
+      COMPOSER_ROOT_VERSION: dev-master
       extensions: pdo, pdo_pgsql
 
     runs-on: ${{ matrix.os }}
@@ -75,7 +75,7 @@ jobs:
         run: composer self-update
 
       - name: Install db-pgsql
-        run: composer require yiisoft/db-pgsql:dev-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/db-pgsql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run pgsql tests with phpunit
         run: vendor/bin/phpunit --testsuite Pgsql --coverage-clover=coverage.xml --colors=always
