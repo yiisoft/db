@@ -500,6 +500,7 @@ interface CommandInterface
      * if true - be returned array of ParamInterface
      *
      * @psalm-return array|ParamInterface[]
+     *
      * @return array
      */
     public function getParams(bool $asValues = true): array;
