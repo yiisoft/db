@@ -257,7 +257,7 @@ trait TestCommandTrait
             '{{customer}}',
             ['email', 'name', 'address'],
             [
-                ['t1@example.com', 'test_name', 'test_address']
+                ['t1@example.com', 'test_name', 'test_address'],
             ]
         );
         $this->assertEquals(1, $command->execute());
@@ -275,7 +275,7 @@ trait TestCommandTrait
             '{{customer}}',
             ['email', 'name', 'address'],
             [
-                ['t1@example.com', 'test_name', 'test_address']
+                ['t1@example.com', 'test_name', 'test_address'],
             ]
         );
         $this->assertEquals(1, $command->execute());
