@@ -58,8 +58,23 @@ final class Dsn
         return $this->asString();
     }
 
+    public function getDatabaseName(): string
+    {
+        return $this->databaseName;
+    }
+
     public function getDriver(): string
     {
         return $this->driver;
+    }
+
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
+    public function getPort(): ?string
+    {
+        return $this->port;
     }
 }

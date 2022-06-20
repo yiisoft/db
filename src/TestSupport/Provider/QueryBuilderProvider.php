@@ -136,7 +136,7 @@ final class QueryBuilderProvider
                 DbHelper::replaceQuotes(
                     'INSERT INTO [[customer]] ([[email]], [[name]], [[address]])'
                     . " VALUES ('test@example.com', 'silverfire', 'Kyiv {{city}}, Ukraine')",
-                    $this->db->getDriverName(),
+                    $this->db->getDriver()->getDriverName(),
                 ),
             ],
             'escape-danger-chars' => [
@@ -145,7 +145,7 @@ final class QueryBuilderProvider
                 [["SQL-danger chars are escaped: '); --"]],
                 'expected' => DbHelper::replaceQuotes(
                     "INSERT INTO [[customer]] ([[address]]) VALUES ('SQL-danger chars are escaped: \'); --')",
-                    $this->db->getDriverName(),
+                    $this->db->getDriver()->getDriverName(),
                 ),
             ],
             [
@@ -160,7 +160,7 @@ final class QueryBuilderProvider
                 [['no columns passed']],
                 DbHelper::replaceQuotes(
                     "INSERT INTO [[customer]] () VALUES ('no columns passed')",
-                    $this->db->getDriverName(),
+                    $this->db->getDriver()->getDriverName(),
                 ),
             ],
             'bool-false, bool2-null' => [
@@ -169,7 +169,7 @@ final class QueryBuilderProvider
                 [[false, null]],
                 'expected' => DbHelper::replaceQuotes(
                     'INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (0, NULL)',
-                    $this->db->getDriverName(),
+                    $this->db->getDriver()->getDriverName(),
                 ),
             ],
             [
@@ -495,7 +495,7 @@ final class QueryBuilderProvider
             [new Expression('NOT (any_expression(:a))', [':a' => 1]), 'NOT (any_expression(:a))', [':a' => 1]],
         ];
 
-        $conditions = match ($this->db->getDriverName()) {
+        $conditions = match ($this->db->getDriver()->getDriverName()) {
             'sqlsrv', 'sqlite' => array_merge($conditions, [
                 [
                     ['in', ['id', 'name'], [['id' => 1, 'name' => 'foo'], ['id' => 2, 'name' => 'bar']]],
@@ -556,7 +556,7 @@ final class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->db->getDriverName());
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->db->getDriver()->getDriverName());
         }
 
         return $conditions;
@@ -569,14 +569,14 @@ final class QueryBuilderProvider
                 'exists',
                 DbHelper::replaceQuotes(
                     'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
-                    $this->db->getDriverName()
+                    $this->db->getDriver()->getDriverName()
                 ),
             ],
             [
                 'not exists',
                 DbHelper::replaceQuotes(
                     'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
-                    $this->db->getDriverName()
+                    $this->db->getDriver()->getDriverName()
                 ),
             ],
         ];
@@ -624,7 +624,7 @@ final class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->db->getDriverName());
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->db->getDriver()->getDriverName());
         }
 
         return $conditions;
@@ -768,7 +768,7 @@ final class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->db->getDriverName());
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->db->getDriver()->getDriverName());
             if (!empty($this->likeEscapeCharSql)) {
                 preg_match_all('/(?P<condition>LIKE.+?)( AND| OR|$)/', $conditions[$i][1], $matches, PREG_SET_ORDER);
 
@@ -840,7 +840,7 @@ final class QueryBuilderProvider
                 ],
                 DbHelper::replaceQuotes(
                     'DELETE FROM [[user]] WHERE ([[is_enabled]]=:qp0) AND ([[power]]=WRONG_POWER())',
-                    $this->db->getDriverName(),
+                    $this->db->getDriver()->getDriverName(),
                 ),
                 [
                     ':qp0' => false,
@@ -863,7 +863,7 @@ final class QueryBuilderProvider
                 ],
                 DbHelper::replaceQuotes(
                     'UPDATE [[customer]] SET [[status]]=:qp0, [[updated_at]]=now() WHERE [[id]]=:qp1',
-                    $this->db->getDriverName(),
+                    $this->db->getDriver()->getDriverName(),
                 ),
                 [
                     ':qp0' => 1,

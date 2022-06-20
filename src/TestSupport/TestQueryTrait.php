@@ -487,7 +487,8 @@ trait TestQueryTrait
 
         $this->assertCount(2, $result);
 
-        if ($db->getDriverName() !== 'sqlsrv' && $db->getDriverName() !== 'oci') {
+        $driverName = $db->getDriver()->getDriverName();
+        if ($driverName !== 'sqlsrv' && $driverName !== 'oci') {
             $this->assertContains(2, $result);
             $this->assertContains(3, $result);
         } else {

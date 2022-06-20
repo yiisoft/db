@@ -6,6 +6,7 @@ namespace Yiisoft\Db\TestSupport;
 
 use PDO;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Driver\DriverInterface;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -476,5 +477,11 @@ trait TestConnectionTrait
         $this->assertNotNull($db->getPDO());
         $this->assertNull($conn3->getTransaction());
         $this->assertNull($conn3->getPDO());
+    }
+
+    public function testGetDriver(): void
+    {
+        $db = $this->getConnection();
+        $this->assertInstanceOf(DriverInterface::class, $db->getDriver());
     }
 }

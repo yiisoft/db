@@ -109,9 +109,9 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
         return [$this->driver->getDsn(), $this->driver->getUsername()];
     }
 
-    public function getDriverName(): string
+    public function getDriver(): PDODriverInterface
     {
-        return $this->driver->getDriverName();
+        return $this->driver;
     }
 
     public function getEmulatePrepare(): ?bool

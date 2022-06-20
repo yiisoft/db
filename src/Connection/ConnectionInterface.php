@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Connection;
 use Throwable;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Driver\PDO\PDODriverInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -107,11 +108,11 @@ interface ConnectionInterface
     public function getCacheKey(): array;
 
     /**
-     * Returns the name of the DB driver.
+     * Returns current DB driver.
      *
-     * @return string name of the DB driver
+     * @return PDODriverInterface - DB driver used to create current connection
      */
-    public function getDriverName(): string;
+    public function getDriver(): PDODriverInterface;
 
     /**
      * Returns the ID of the last inserted row or sequence value.
