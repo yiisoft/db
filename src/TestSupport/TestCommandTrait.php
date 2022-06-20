@@ -261,10 +261,6 @@ trait TestCommandTrait
             ]
         );
         $this->assertEquals(1, $command->execute());
-
-        $result = (new Query($db))->select(['email', 'name', 'address'])->from('customer')->where(['email' => 't1@example'])->scalar();
-        var_dump($result);
-        die;
     }
 
     /**
