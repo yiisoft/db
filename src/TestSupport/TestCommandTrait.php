@@ -283,7 +283,7 @@ trait TestCommandTrait
         $result = (new Query($db))
             ->select(['email', 'name', 'address'])
             ->from('{{customer}}')
-            ->where(['=', 'email', 't1@example.com'])
+            ->where(['=', '[[email]]', 't1@example.com'])
             ->one();
 
         $this->assertCount(3, $result);
