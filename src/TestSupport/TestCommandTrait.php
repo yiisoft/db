@@ -244,13 +244,47 @@ trait TestCommandTrait
         /**
          * @link https://github.com/yiisoft/yii2/issues/11693
          */
-        $command = $this->getConnection()->createCommand();
+        $command = $db->createCommand();
         $command->batchInsert(
             '{{customer}}',
             ['email', 'name', 'address'],
             []
         );
         $this->assertEquals(0, $command->execute());
+    }
+
+    /**
+     * @throws Exception|InvalidConfigException|Throwable
+     */
+    public function testBatchInsertFailsOld(): void
+    {
+        $db = $this->getConnection(true);
+
+        $command = $db->createCommand();
+        $command->batchInsert(
+            '{{customer}}',
+            ['email', 'name', 'address'],
+            [
+                ['t1@example.com', 'test_name', 'test_address'],
+            ]
+        );
+        $this->assertEquals(1, $command->execute());
+
+        $result = (new Query($db))
+            ->select(['email', 'name', 'address'])
+            ->from('{{customer}}')
+            ->where(['=', '[[email]]', 't1@example.com'])
+            ->one();
+
+        $this->assertCount(3, $result);
+        $this->assertSame(
+            [
+                'email' => 't1@example.com',
+                'name' => 'test_name',
+                'address' => 'test_address',
+            ],
+            $result,
+        );
     }
 
     /**
