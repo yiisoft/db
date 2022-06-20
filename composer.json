@@ -23,11 +23,10 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "psr/log": "^2.0|^3.0",
+        "psr/log": "^1.1",
         "yiisoft/arrays": "^2.0",
         "yiisoft/cache": "^1.0",
-        "yiisoft/data": "3.0.x-dev",
-        "yiisoft/log": "^2.0",
+        "yiisoft/log": "^1.0",
         "yiisoft/profiler": "^1.0",
         "yiisoft/strings": "^2.0"
     },

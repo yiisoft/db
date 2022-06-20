@@ -47,21 +47,12 @@ jobs:
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: "${{ matrix.php }}"
           extensions: ${{ env.extensions }}
           tools: composer:v2, cs2pr
           coverage: pcov
-
-      - name: Determine composer cache directory
-        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
-
-      - name: Cache dependencies installed with composer
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.COMPOSER_CACHE_DIR }}
-          key: php${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: |
-            php${{ matrix.php }}-composer-
+        env:
+          update: true
 
       - name: Update composer
         run: composer self-update

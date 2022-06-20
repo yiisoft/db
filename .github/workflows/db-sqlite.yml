@@ -1,0 +1,71 @@
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'infection.json.dist'
+      - 'psalm.xml'
+
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - '.gitignore'
+      - '.gitattributes'
+      - 'infection.json.dist'
+      - 'psalm.xml'
+
+name: db-sqlite
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php }}-sqlite
+
+    env:
+      COMPOSER_ROOT_VERSION: dev-master
+      extensions: pdo, pdo_sqlite
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+
+        php:
+          - 8.0
+          - 8.1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install PHP with extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: ${{ env.extensions }}
+          ini-values: date.timezone='UTC'
+          coverage: pcov
+          tools: composer:v2, pecl
+
+      - name: Update composer
+        run: composer self-update
+
+      - name: Install db-sqlite
+        run: composer require yiisoft/db-sqlite --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Run sqlite tests with phpunit
+        run: vendor/bin/phpunit --testsuite Sqlite --coverage-clover=coverage.xml --colors=always
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.php == '8.0'
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml

@@ -16,14 +16,12 @@ use function is_array;
  */
 final class QueryCache
 {
-    private CacheInterface $cache;
     private bool $enabled = true;
     public array $info = [];
     private ?int $duration = 3600;
 
-    public function __construct(CacheInterface $cache)
+    public function __construct(private CacheInterface $cache)
     {
-        $this->cache = $cache;
     }
 
     /**
@@ -61,14 +59,17 @@ final class QueryCache
         $result = null;
 
         if ($this->enabled) {
+            /** @var mixed */
             $info = end($this->info);
 
             if (is_array($info)) {
                 if ($duration === null) {
+                    /** @var int */
                     $duration = $info[0];
                 }
 
                 if ($dependency === null) {
+                    /** @var Dependency */
                     $dependency = $info[1];
                 }
             }
@@ -107,9 +108,9 @@ final class QueryCache
     /**
      * Add an element to the array that QueryCache information.
      *
-     * @param $value
+     * @param mixed $value
      */
-    public function setInfo($value): void
+    public function setInfo(mixed $value): void
     {
         $this->info[] = $value;
     }

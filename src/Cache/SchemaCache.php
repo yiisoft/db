@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Cache;
 
+use DateInterval;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Cache\Dependency\TagDependency;
@@ -13,14 +14,12 @@ use Yiisoft\Cache\Dependency\TagDependency;
  */
 final class SchemaCache
 {
-    private CacheInterface $cache;
     private bool $enabled = true;
     private ?int $duration = 3600;
     private array $exclude = [];
 
-    public function __construct(CacheInterface $cache)
+    public function __construct(private CacheInterface $cache)
     {
-        $this->cache = $cache;
     }
 
     /**
@@ -28,13 +27,17 @@ final class SchemaCache
      *
      * @param mixed $key a key identifying the value to be deleted from cache.
      */
-    public function remove($key): void
+    public function remove(mixed $key): void
     {
         $this->cache->remove($key);
     }
 
-    public function getOrSet($key, $value = null, $ttl = null, Dependency $dependency = null)
-    {
+    public function getOrSet(
+        mixed $key,
+        mixed $value = null,
+        DateInterval|int|null $ttl = null,
+        Dependency $dependency = null
+    ): mixed {
         return $this->cache->getOrSet(
             $key,
             static fn () => $value,
@@ -43,8 +46,12 @@ final class SchemaCache
         );
     }
 
-    public function set($key, $value, $ttl = null, Dependency $dependency = null)
-    {
+    public function set(
+        mixed $key,
+        mixed $value,
+        DateInterval|int|null $ttl = null,
+        Dependency $dependency = null
+    ): void {
         $this->remove($key);
         $this->getOrSet($key, $value, $ttl, $dependency);
     }

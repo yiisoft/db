@@ -27,8 +27,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      extensions: dom, json, pdo, pdo_mysql
-      key: cache-v1
+      extensions: pdo, pdo_mysql
 
     runs-on: ${{ matrix.os }}
 
@@ -43,6 +42,7 @@ jobs:
 
         mysql:
           - 5.7
+          - 8.0
 
     services:
       mysql:
@@ -59,21 +59,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup cache environment
-        id: cache-env
-        uses: shivammathur/cache-extensions@v1
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: ${{ env.extensions }}
-          key: ${{ env.key }}
-
-      - name: Cache extensions
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.cache-env.outputs.dir }}
-          key: ${{ steps.cache-env.outputs.key }}
-          restore-keys: ${{ steps.cache-env.outputs.key }}
-
       - name: Install PHP with extensions
         uses: shivammathur/setup-php@v2
         with:
@@ -82,25 +67,18 @@ jobs:
           ini-values: date.timezone='UTC'
           coverage: pcov
 
-      - name: Determine composer cache directory
-        run: echo "COMPOSER_CACHE_DIR=$(composer config cache-dir)" >> $GITHUB_ENV
-
-      - name: Cache dependencies installed with composer
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.COMPOSER_CACHE_DIR }}
-          key: php${{ matrix.php }}-composer-${{ matrix.dependencies }}-${{ hashFiles('**/composer.json') }}
-          restore-keys: |
-            php${{ matrix.php }}-composer-${{ matrix.dependencies }}-
-
       - name: Update composer
         run: composer self-update
-
-      - name: Install dependencies with composer
-        run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-mysql
         run: composer require yiisoft/db-mysql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run tests with phpunit
-        run: vendor/bin/phpunit --testsuite Mysql --colors=always
+        run: vendor/bin/phpunit --testsuite Mysql --coverage-clover=coverage.xml --colors=always
+
+      - name: Upload coverage to Codecov
+        if: matrix.php == '8.0'
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml

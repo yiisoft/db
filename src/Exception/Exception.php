@@ -9,16 +9,9 @@ namespace Yiisoft\Db\Exception;
  */
 class Exception extends \Exception
 {
-    /**
-     * @var array|null the error info provided by a PDO exception. This is the same as returned by
-     * [PDO::errorInfo](http://www.php.net/manual/en/pdo.errorinfo.php).
-     */
-    public ?array $errorInfo;
-
-    public function __construct(string $message, ?array $errorInfo = [], \Exception $previous = null)
+    public function __construct(string $message, public ?array $errorInfo = [], \Exception $previous = null)
     {
         parent::__construct($message, 0, $previous);
-        $this->errorInfo = $errorInfo;
     }
 
     /**
