@@ -304,7 +304,7 @@ trait TestCommandTrait
             $db->createCommand()->delete('type')->execute();
 
             /* change, for point oracle. */
-            if ($db->getDriverName() === 'oci') {
+            if ($db->getDriver()->getDriverName() === 'oci') {
                 $db->createCommand("ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,'")->execute();
             }
 
@@ -397,7 +397,7 @@ trait TestCommandTrait
             ]
         )->execute();
 
-        if ($db->getDriverName() === 'pgsql') {
+        if ($db->getDriver()->getDriverName() === 'pgsql') {
             $customerId = $db->getLastInsertID('public.customer_id_seq');
         } else {
             $customerId = $db->getLastInsertID();
@@ -534,7 +534,7 @@ trait TestCommandTrait
         $db = $this->getConnection();
 
         $db->createCommand('DELETE FROM {{order_with_null_fk}}')->execute();
-        switch ($db->getDriverName()) {
+        switch ($db->getDriver()->getDriverName()) {
             case 'pgsql':
                 $expression = "EXTRACT(YEAR FROM TIMESTAMP 'now')";
                 break;
@@ -574,7 +574,7 @@ trait TestCommandTrait
             'total' => 42,
         ])->execute();
 
-        if ($db->getDriverName() === 'pgsql') {
+        if ($db->getDriver()->getDriverName() === 'pgsql') {
             $orderId = $db->getLastInsertID('public.order_id_seq');
         } else {
             $orderId = $db->getLastInsertID();
@@ -1384,7 +1384,7 @@ trait TestCommandTrait
     {
         $db = $this->getConnection();
 
-        if ($db->getDriverName() === 'sqlite') {
+        if ($db->getDriver()->getDriverName() === 'sqlite') {
             $this->markTestSkipped('Sqlite does not support alterTable');
         }
 

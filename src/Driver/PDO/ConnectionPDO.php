@@ -10,6 +10,7 @@ use Psr\Log\LogLevel;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Driver\DriverInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -109,9 +110,9 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
         return [$this->driver->getDsn(), $this->driver->getUsername()];
     }
 
-    public function getDriverName(): string
+    public function getDriver(): PDODriverInterface
     {
-        return $this->driver->getDriverName();
+        return $this->driver;
     }
 
     public function getEmulatePrepare(): ?bool
