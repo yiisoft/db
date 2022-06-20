@@ -93,9 +93,7 @@ class BatchQueryResult implements BatchQueryResultInterface
     protected function fetchData(): array
     {
         if ($this->dataReader === null) {
-            $this->dataReader = $this->query
-                ->createCommand()
-                ->query();
+            $this->dataReader = $this->query->createCommand()->query();
         }
 
         $rows = $this->getRows();

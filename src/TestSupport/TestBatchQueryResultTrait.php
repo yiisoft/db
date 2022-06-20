@@ -18,9 +18,7 @@ trait TestBatchQueryResultTrait
 
         $query = new Query($db);
 
-        $query
-            ->from('customer')
-            ->orderBy('id');
+        $query->from('customer')->orderBy('id');
 
         $result = $query->batch(2);
 
@@ -31,9 +29,7 @@ trait TestBatchQueryResultTrait
         /* normal query */
         $query = new Query($db);
 
-        $query
-            ->from('customer')
-            ->orderBy('id');
+        $query->from('customer')->orderBy('id');
 
         $allRows = [];
 
@@ -68,9 +64,7 @@ trait TestBatchQueryResultTrait
         /* empty query */
         $query = new Query($db);
 
-        $query
-            ->from('customer')
-            ->where(['id' => 100]);
+        $query->from('customer')->where(['id' => 100]);
 
         $allRows = [];
 
@@ -85,9 +79,7 @@ trait TestBatchQueryResultTrait
         /* query with index */
         $query = new Query($db);
 
-        $query
-            ->from('customer')
-            ->indexBy('name');
+        $query->from('customer')->indexBy('name');
 
         $allRows = [];
 
@@ -103,9 +95,7 @@ trait TestBatchQueryResultTrait
         /* each */
         $query = new Query($db);
 
-        $query
-            ->from('customer')
-            ->orderBy('id');
+        $query->from('customer')->orderBy('id');
         $allRows = [];
 
         foreach ($query->each(2) as $index => $row) {
@@ -120,10 +110,7 @@ trait TestBatchQueryResultTrait
         /* each with key */
         $query = new Query($db);
 
-        $query
-            ->from('customer')
-            ->orderBy('id')
-            ->indexBy('name');
+        $query->from('customer')->orderBy('id')->indexBy('name');
 
         $allRows = [];
 
@@ -144,10 +131,7 @@ trait TestBatchQueryResultTrait
 
         $query = new Query($db);
 
-        $query = $query
-            ->from('customer')
-            ->orderBy('id')
-            ->limit(3);
+        $query = $query->from('customer')->orderBy('id')->limit(3);
 
         $customers = $this->getAllRowsFromBatch($query->batch(2));
 
@@ -163,11 +147,7 @@ trait TestBatchQueryResultTrait
 
         $query = new Query($db);
 
-        $query
-            ->from('customer')
-            ->orderBy('id')
-            ->limit(3)
-            ->indexBy('id');
+        $query->from('customer')->orderBy('id')->limit(3)->indexBy('id');
 
         $customers = $this->getAllRowsFromBatch($query->batch(2));
 
