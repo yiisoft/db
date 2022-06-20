@@ -266,7 +266,7 @@ trait TestCommandTrait
     /**
      * @throws Exception|InvalidConfigException|Throwable
      */
-    public function testBatchInsertFails(): void
+    public function testBatchInsertFailsOld(): void
     {
         $db = $this->getConnection(true);
 
