@@ -991,7 +991,7 @@ trait TestQueryBuilderTrait
             ],
         ];
 
-        $driverName = $this->getConnection()->getDriverName();
+        $driverName = $this->getConnection()->getDriver()->getDriverName();
         foreach ($items as $i => $item) {
             if (array_key_exists($driverName, $item[2])) {
                 $item[2] = $item[2][$driverName];
@@ -1012,7 +1012,7 @@ trait TestQueryBuilderTrait
         foreach ($this->columnTypes() as $item) {
             [$column, $builder, $expected] = $item;
 
-            $driverName = $db->getDriverName();
+            $driverName = $db->getDriver()->getDriverName();
             if (isset($item[3][$driverName])) {
                 $expectedColumnSchemaBuilder = $item[3][$driverName];
             } elseif (isset($item[3]) && !is_array($item[3])) {
