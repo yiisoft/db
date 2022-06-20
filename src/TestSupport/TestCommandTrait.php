@@ -282,7 +282,7 @@ trait TestCommandTrait
 
         $result = (new Query($db))
             ->select(['email', 'name', 'address'])
-            ->from('customer')
+            ->from('{{customer}}')
             ->where(['=', 'email', 't1@example.com'])
             ->one();
 
