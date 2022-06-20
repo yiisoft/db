@@ -251,16 +251,6 @@ trait TestCommandTrait
             []
         );
         $this->assertEquals(0, $command->execute());
-
-        $command = $db->createCommand();
-        $command->batchInsert(
-            '{{customer}}',
-            ['email', 'name', 'address'],
-            [
-                ['t1@example.com', 'test_name', 'test_address'],
-            ]
-        );
-        $this->assertEquals(1, $command->execute());
     }
 
     /**
