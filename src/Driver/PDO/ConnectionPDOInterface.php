@@ -34,6 +34,13 @@ interface ConnectionPDOInterface extends ConnectionInterface
     public function getActivePDO(string $sql = '', ?bool $forRead = null): ?PDO;
 
     /**
+     * Returns current DB driver.
+     *
+     * @return PDODriverInterface - DB driver used to create current connection
+     */
+    public function getDriver(): PDODriverInterface;
+
+    /**
      * Return emulate prepare value.
      */
     public function getEmulatePrepare(): ?bool;

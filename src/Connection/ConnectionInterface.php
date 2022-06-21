@@ -108,13 +108,6 @@ interface ConnectionInterface
     public function getCacheKey(): array;
 
     /**
-     * Returns current DB driver.
-     *
-     * @return PDODriverInterface - DB driver used to create current connection
-     */
-    public function getDriver(): PDODriverInterface;
-
-    /**
      * Returns the ID of the last inserted row or sequence value.
      *
      * @param string|null $sequenceName name of the sequence object (required by some DBMS)
