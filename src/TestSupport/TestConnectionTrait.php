@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\TestSupport;
 
 use PDO;
+use Psr\Log\NullLogger;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Driver\DriverInterface;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
@@ -301,7 +302,7 @@ trait TestConnectionTrait
         $this->assertCount(1, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
         /* profiling only */
-        $db->setLogger(null);
+        $db->setLogger(new NullLogger());
         $db->setProfiler($this->profiler);
 
         $this->logger->flush();
@@ -343,7 +344,7 @@ trait TestConnectionTrait
         $this->assertCount(0, $this->getInaccessibleProperty($this->profiler, 'messages'));
 
         /* disabled */
-        $db->setLogger(null);
+        $db->setLogger(new NullLogger());
         $db->setProfiler(null);
 
         $this->logger->flush();
@@ -378,7 +379,7 @@ trait TestConnectionTrait
         $this->runExceptionTest($db);
 
         /* profiling only */
-        $db->setLogger(null);
+        $db->setLogger(new NullLogger());
         $db->setProfiler($this->profiler);
 
         $this->runExceptionTest($db);
@@ -390,7 +391,7 @@ trait TestConnectionTrait
         $this->runExceptionTest($db);
 
         /* disabled */
-        $db->setLogger(null);
+        $db->setLogger(new NullLogger());
         $db->setProfiler(null);
 
         $this->runExceptionTest($db);
