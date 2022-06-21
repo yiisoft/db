@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Driver\PDO;
 
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;

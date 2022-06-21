@@ -6,11 +6,11 @@ namespace Yiisoft\Db\Command;
 
 use DateInterval;
 use JsonException;
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
 use Yiisoft\Db\AwareTrait\ProfilerAwareTrait;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Connection\ConnectionInterface;

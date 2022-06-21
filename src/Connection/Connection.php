@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Connection;
 
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\AwareTrait\LoggerAwareTrait;
 use Yiisoft\Db\AwareTrait\ProfilerAwareTrait;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Query\BatchQueryResult;
@@ -145,10 +145,8 @@ abstract class Connection implements ConnectionInterface
             try {
                 $transaction->rollBack();
             } catch (\Exception $e) {
-                if ($this->logger !== null) {
-                    $this->logger->log(LogLevel::ERROR, (string) $e, [__METHOD__]);
-                    /** hide this exception to be able to continue throwing original exception outside */
-                }
+                $this->logger?->log(LogLevel::ERROR, (string) $e, [__METHOD__]);
+                /** hide this exception to be able to continue throwing original exception outside */
             }
         }
     }
