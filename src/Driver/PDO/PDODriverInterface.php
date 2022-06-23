@@ -63,13 +63,6 @@ interface PDODriverInterface extends DriverInterface
     public function getUsername(): string;
 
     /**
-     * Returns the driver name
-     *
-     * @return string the driver name DB connection.
-     */
-    public function getDriverName(): string;
-
-    /**
      * The password for establishing DB connection. Defaults to `null` meaning no password to use.
      *
      * @param string $password the password for establishing DB connection.

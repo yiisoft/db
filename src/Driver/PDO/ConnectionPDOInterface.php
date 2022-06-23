@@ -36,7 +36,7 @@ interface ConnectionPDOInterface extends ConnectionInterface
     /**
      * Returns current DB driver.
      *
-     * @return PDODriverInterface - DB driver used to create current connection
+     * @return PDODriverInterface DB driver used to create current connection.
      */
     public function getDriver(): PDODriverInterface;
 
