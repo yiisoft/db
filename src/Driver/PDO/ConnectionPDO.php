@@ -159,7 +159,7 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
 
     public function getName(): string
     {
-        return $this->getDriver()->getName();
+        return $this->driver->getDriverName();
     }
 
     /**
