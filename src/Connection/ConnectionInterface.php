@@ -109,6 +109,8 @@ interface ConnectionInterface
     /**
      * Returns the name of the DB driver for the current `dsn`.
      *
+     * Use this method for informational purposes only.
+     *
      * @return string
      */
     public function getName(): string;
