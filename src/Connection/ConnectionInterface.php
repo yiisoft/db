@@ -107,6 +107,13 @@ interface ConnectionInterface
     public function getCacheKey(): array;
 
     /**
+     * Returns the name of the DB driver for the current `dsn`.
+     *
+     * @return string
+     */
+    public function getName(): string;
+
+    /**
      * Returns the ID of the last inserted row or sequence value.
      *
      * @param string|null $sequenceName name of the sequence object (required by some DBMS)
