@@ -24,6 +24,12 @@ trait TestConnectionTrait
         $this->assertEquals([$this->dsn, $this->username], $db->getCacheKey());
     }
 
+    public function testGetName(): void
+    {
+        $db = $this->getConnection();
+        $this->assertEquals($this->drivername, $db->getName());
+    }
+
     public function testOpenClose(): void
     {
         $db = $this->getConnection();

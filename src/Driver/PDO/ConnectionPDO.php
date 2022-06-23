@@ -150,10 +150,16 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
     public function getLastInsertID(?string $sequenceName = null): string
     {
         if ($this->isActive() && $this->pdo) {
-            return $this->pdo->lastInsertID($sequenceName === null ? null : $this->getQuoter()->quoteTableName($sequenceName));
+            return $this->pdo->lastInsertID($sequenceName === null
+                ? null : $this->getQuoter()->quoteTableName($sequenceName));
         }
 
         throw new InvalidCallException('DB Connection is not active.');
+    }
+
+    public function getName(): string
+    {
+        return $this->driver->getDriverName();
     }
 
     /**
