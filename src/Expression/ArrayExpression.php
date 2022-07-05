@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
+use ArrayAccess;
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
 use Traversable;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\QueryInterface;
+
+use function count;
 
 /**
  * Class ArrayExpression represents an array SQL expression.
@@ -17,24 +23,13 @@ use Yiisoft\Db\Query\QueryInterface;
  * $query->andWhere(['@>', 'items', new ArrayExpression([1, 2, 3], 'integer')])
  * ```
  *
- * which, depending on DBMS, will result in a well-prepared condition. For example, in PostgreSQL it will be compiled to
- * `WHERE "items" @> ARRAY[1, 2, 3]::integer[]`.
+ * Which, depending on DBMS, will result in a well-prepared condition. For example, in PostgresSQL it will be compiled
+ * to `WHERE "items" @> ARRAY[1, 2, 3]::integer[]`.
  */
-class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, \IteratorAggregate
+class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
 {
-    private ?string $type = null;
-    private $value;
-    private int $dimension;
-
-    public function __construct($value = [], $type = null, $dimension = 1)
+    public function __construct(private mixed $value = [], private ?string $type = null, private int $dimension = 1)
     {
-        if ($value instanceof self) {
-            $value = $value->getValue();
-        }
-
-        $this->value = $value;
-        $this->type = $type;
-        $this->dimension = $dimension;
     }
 
     /**
@@ -51,17 +46,18 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
     }
 
     /**
-     * The array's content. In can be represented as an array of values or a {@see Query} that returns these values.
+     * The array's content. In can be represented as an array of values or a {@see QueryInterface} that returns these
+     * values.
      *
-     * @return array|QueryInterface
+     * @return mixed
      */
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->value;
     }
 
     /**
-     * @return int the number of indices needed to select an element
+     * @return int The number of indices needed to select an element
      */
     public function getDimension(): int
     {
@@ -69,17 +65,20 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
     }
 
     /**
-     * Whether a offset exists.
+     * Whether an offset exists.
      *
      * @link http://php.net/manual/en/arrayaccess.offsetexists.php
      *
      * @param mixed $offset An offset to check for.
      *
-     * @return bool true on success or false on failure.
+     * @return bool true On success or false on failure.
      *
-     * The return value will be casted to boolean if non-boolean was returned.
+     * The return value will be cast to boolean if non-boolean was returned.
+     *
+     * @psalm-suppress MixedArrayOffset
+     * @psalm-suppress MixedAssignment
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->value[$offset]);
     }
@@ -92,9 +91,11 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * @param mixed $offset The offset to retrieve.
      *
      * @return mixed Can return all value types.
+     *
+     * @psalm-suppress MixedArrayAccess
+     * @psalm-suppress MixedArrayOffset
      */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->value[$offset];
     }
@@ -106,8 +107,11 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      *
      * @param mixed $offset The offset to assign the value to.
      * @param mixed $value  The value to set.
+     *
+     * @psalm-suppress MixedArrayOffset
+     * @psalm-suppress MixedArrayAssignment
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->value[$offset] = $value;
     }
@@ -118,8 +122,11 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
      *
      * @param mixed $offset
+     *
+     * @psalm-suppress MixedArrayAccess
+     * @psalm-suppress MixedArrayOffset
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->value[$offset]);
     }
@@ -135,7 +142,7 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      */
     public function count(): int
     {
-        return \count($this->value);
+        return count((array) $this->value);
     }
 
     /**
@@ -143,22 +150,16 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      *
      * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
      *
-     * @throws InvalidConfigException when ArrayExpression contains QueryInterface object
+     * @throws InvalidConfigException When ArrayExpression contains QueryInterface object.
      *
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>
+     * @return ArrayIterator An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>.
      */
     public function getIterator(): Traversable
     {
-        $value = $this->getValue();
-        if ($value instanceof QueryInterface) {
-            throw new InvalidConfigException(
-                'The ArrayExpression class can not be iterated when the value is a QueryInterface object'
-            );
-        }
-        if ($value === null) {
-            $value = [];
+        if (!is_array($this->value)) {
+            throw new InvalidConfigException('The ArrayExpression value must be an array.');
         }
 
-        return new \ArrayIterator($value);
+        return new ArrayIterator($this->value);
     }
 }

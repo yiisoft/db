@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
+use Stringable;
+
 /**
  * Expression represents a DB expression that does not need escaping or quoting.
  *
@@ -16,18 +18,13 @@ namespace Yiisoft\Db\Expression;
  * echo $now; // prints the current date
  * ```
  *
- * Expression objects are mainly created for passing raw SQL expressions to methods of {@see Query}, {@see ActiveQuery},
- * and related classes.
+ * Expression objects are mainly created for passing raw SQL expressions to methods of {@see QueryInterface},
+ * {@see ActiveQuery}, and related classes.
  */
-class Expression implements ExpressionInterface
+class Expression implements ExpressionInterface, Stringable
 {
-    private string $expression;
-    private array $params = [];
-
-    public function __construct(string $expression, array $params = [])
+    public function __construct(private string $expression, private array $params = [])
     {
-        $this->expression = $expression;
-        $this->params = $params;
     }
 
     /**

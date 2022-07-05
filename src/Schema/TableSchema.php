@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Exception\InvalidArgumentException;
-
+use Yiisoft\Db\Exception\NotSupportedException;
 use function array_keys;
 
 /**
@@ -13,14 +12,20 @@ use function array_keys;
  *
  * @property array $columnNames List of column names. This property is read-only.
  */
-abstract class TableSchema
+abstract class TableSchema implements TableSchemaInterface
 {
     private ?string $schemaName = null;
     private string $name = '';
     private ?string $fullName = null;
     private ?string $sequenceName = null;
+    /** @psalm-var string[] */
     private array $primaryKey = [];
+    /** @psalm-var ColumnSchemaInterface[] */
     private array $columns = [];
+    /** @psalm-var array<array-key, array> */
+    protected array $foreignKeys = [];
+    protected ?string $createSql = null;
+    private ?string $catalogName = null;
 
     /**
      * Gets the named column metadata.
@@ -29,9 +34,9 @@ abstract class TableSchema
      *
      * @param string $name column name
      *
-     * @return ColumnSchema|null metadata of the named column. Null if the named column does not exist.
+     * @return ColumnSchemaInterface|null metadata of the named column. Null if the named column does not exist.
      */
-    public function getColumn(string $name): ?ColumnSchema
+    public function getColumn(string $name): ?ColumnSchemaInterface
     {
         return $this->columns[$name] ?? null;
     }
@@ -44,31 +49,6 @@ abstract class TableSchema
     public function getColumnNames(): array
     {
         return array_keys($this->columns);
-    }
-
-    /**
-     * Manually specifies the primary key for this table.
-     *
-     * @param array|string $keys the primary key (can be composite)
-     *
-     * @throws InvalidArgumentException if the specified key cannot be found in the table.
-     */
-    public function fixPrimaryKey($keys): void
-    {
-        $keys = (array) $keys;
-        $this->primaryKey = $keys;
-
-        foreach ($this->columns as $column) {
-            $column->primaryKey(false);
-        }
-
-        foreach ($keys as $key) {
-            if (isset($this->columns[$key])) {
-                $this->columns[$key]->primaryKey(true);
-            } else {
-                throw new InvalidArgumentException("Primary key '$key' cannot be found in table '$this->name'.");
-            }
-        }
     }
 
     /**
@@ -108,6 +88,8 @@ abstract class TableSchema
 
     /**
      * @return array primary keys of this table.
+     *
+     * @psalm-return string[]
      */
     public function getPrimaryKey(): array
     {
@@ -115,8 +97,10 @@ abstract class TableSchema
     }
 
     /**
-     * @return ColumnSchema[] column metadata of this table. Each array element is a {@see ColumnSchema} object, indexed
-     * by column names.
+     * @return array column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object, indexed by
+     * column names.
+     *
+     * @psalm-return ColumnSchemaInterface[]
      */
     public function getColumns(): array
     {
@@ -148,8 +132,67 @@ abstract class TableSchema
         $this->primaryKey[] = $value;
     }
 
-    public function columns(string $index, ColumnSchema $value): void
+    public function columns(string $index, ColumnSchemaInterface $value): void
     {
         $this->columns[$index] = $value;
+    }
+
+    public function getCatalogName(): ?string
+    {
+        return $this->catalogName;
+    }
+
+    /**
+     * @param string|null name of the catalog (database) that this table belongs to. Defaults to null, meaning no
+     * catalog (or the current database).
+     */
+    public function catalogName(?string $value): void
+    {
+        $this->catalogName = $value;
+    }
+
+    public function getCreateSql(): ?string
+    {
+        return $this->createSql;
+    }
+
+    public function createSql(string $sql): void
+    {
+        $this->createSql = $sql;
+    }
+
+    /**
+     * ```php
+     * [
+     *  'ForeignTableName',
+     *  'fk1' => 'pk1',  // pk1 is in foreign table
+     *  'fk2' => 'pk2',  // if composite foreign key
+     * ]
+     * ```
+     *
+     * @return array foreign keys of this table. Each array element is of the following structure:
+     * @psalm-return array<array-key, array>
+     */
+    public function getForeignKeys(): array
+    {
+        return $this->foreignKeys;
+    }
+
+    /**
+     * @psalm-param array<array-key, array> $value
+     */
+    public function foreignKeys(array $value): void
+    {
+        $this->foreignKeys = $value;
+    }
+
+    public function foreignKey(string|int $id, array $to): void
+    {
+        $this->foreignKeys[$id] = $to;
+    }
+
+    public function compositeFK(int $id, string $from, string $to): void
+    {
+        throw new NotSupportedException('Composite foreign key not supported');
     }
 }

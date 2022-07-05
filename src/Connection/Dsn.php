@@ -6,19 +6,13 @@ namespace Yiisoft\Db\Connection;
 
 final class Dsn
 {
-    private ?string $databaseName;
-    private string $driver;
-    private ?string $host;
-    private ?string $port;
-    private array $options;
-
-    public function __construct(string $driver, string $host, string $databaseName, string $port = null, array $options = [])
-    {
-        $this->driver = $driver;
-        $this->host = $host;
-        $this->databaseName = $databaseName;
-        $this->port = $port;
-        $this->options = $options;
+    public function __construct(
+        private string $driver,
+        private string $host,
+        private string $databaseName,
+        private ?string $port = null,
+        private array $options = []
+    ) {
     }
 
     /**
@@ -45,7 +39,10 @@ final class Dsn
 
         $parts = [];
 
-        foreach ($this->options as $key => $value) {
+        /** @psalm-var string[] */
+        $options = $this->options;
+
+        foreach ($options as $key => $value) {
             $parts[] = "$key=$value";
         }
 
@@ -61,8 +58,23 @@ final class Dsn
         return $this->asString();
     }
 
+    public function getDatabaseName(): string
+    {
+        return $this->databaseName;
+    }
+
     public function getDriver(): string
     {
         return $this->driver;
+    }
+
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
+    public function getPort(): ?string
+    {
+        return $this->port;
     }
 }

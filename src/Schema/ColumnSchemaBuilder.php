@@ -25,16 +25,15 @@ class ColumnSchemaBuilder
     public const CATEGORY_TIME = 'time';
     public const CATEGORY_OTHER = 'other';
 
-    private ?string $type;
-    private $length;
-    private ?bool $isNotNull = null;
-    private bool $isUnique = false;
-    private ?string $check = null;
-    private $default;
-    private ?string $append = null;
-    private bool $isUnsigned = false;
-    private ?string $after = null;
-    private bool $isFirst = false;
+    protected ?bool $isNotNull = null;
+    protected bool $isUnique = false;
+    protected ?string $check = null;
+    protected mixed $default = null;
+    protected ?string $append = null;
+    protected bool $isUnsigned = false;
+    protected ?string $after = null;
+    protected bool $isFirst = false;
+    /** @psalm-var string[] */
     private array $categoryMap = [
         Schema::TYPE_PK => self::CATEGORY_PK,
         Schema::TYPE_UPK => self::CATEGORY_PK,
@@ -58,12 +57,13 @@ class ColumnSchemaBuilder
         Schema::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
         Schema::TYPE_MONEY => self::CATEGORY_NUMERIC,
     ];
-    private ?string $comment = null;
+    protected ?string $comment = null;
 
-    public function __construct(string $type, $length = null)
-    {
-        $this->type = $type;
-        $this->length = $length;
+    public function __construct(
+        protected string $type,
+        /** @psalm-var int|string|string[]|null */
+        protected int|string|array|null $length = null
+    ) {
     }
 
     /**
@@ -129,14 +129,13 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function defaultValue($default): self
+    public function defaultValue(mixed $default): self
     {
         if ($default === null) {
             $this->null();
         }
 
         $this->default = $default;
-
         return $this;
     }
 
@@ -257,9 +256,10 @@ class ColumnSchemaBuilder
      */
     protected function buildLengthString(): string
     {
-        if ($this->length === null || $this->length === []) {
+        if (empty($this->length)) {
             return '';
         }
+
         if (is_array($this->length)) {
             $this->length = implode(',', $this->length);
         }
@@ -308,21 +308,13 @@ class ColumnSchemaBuilder
         }
 
         $string = ' DEFAULT ';
-        switch (gettype($this->default)) {
-            case 'object':
-            case 'integer':
-                $string .= $this->default;
-                break;
-            case 'double':
-                /* ensure type cast always has . as decimal separator in all locales */
-                $string .= NumericHelper::normalize((string) $this->default);
-                break;
-            case 'boolean':
-                $string .= $this->default ? 'TRUE' : 'FALSE';
-                break;
-            default:
-                $string .= "'{$this->default}'";
-        }
+
+        $string .= match (gettype($this->default)) {
+            'object', 'integer' => (string)$this->default,
+            'double' => NumericHelper::normalize((string)$this->default),
+            'boolean' => $this->default ? 'TRUE' : 'FALSE',
+            default => "'{$this->default}'",
+        };
 
         return $string;
     }
@@ -382,7 +374,7 @@ class ColumnSchemaBuilder
      *
      * @return string|null a string containing the column type category name.
      */
-    protected function getTypeCategory(): ?string
+    protected function getTypeCategory(): string|null
     {
         return $this->categoryMap[$this->type] ?? null;
     }
@@ -431,11 +423,11 @@ class ColumnSchemaBuilder
     }
 
     /**
-     * @return array|int|string column size or precision definition. This is what goes into the parenthesis after the
-     * column type. This can be either a string, an integer or an array. If it is an array, the array values will be
+     * @return array|int|string|null column size or precision definition. This is what goes into the parenthesis after
+     * the column type. This can be either a string, an integer or an array. If it is an array, the array values will be
      * joined into a string separated by comma.
      */
-    public function getLength()
+    public function getLength(): array|int|string|null
     {
         return $this->length;
     }
@@ -468,15 +460,15 @@ class ColumnSchemaBuilder
     /**
      * @return mixed default value of the column.
      */
-    public function getDefault()
+    public function getDefault(): mixed
     {
         return $this->default;
     }
 
     /**
-     * @return string SQL string to be appended to column schema definition.
+     * @return string|null SQL string to be appended to column schema definition.
      */
-    public function getAppend(): string
+    public function getAppend(): string|null
     {
         return $this->append;
     }
@@ -515,7 +507,7 @@ class ColumnSchemaBuilder
     }
 
     /**
-     * @return string comment value of the column.
+     * @return string|null comment value of the column.
      */
     public function getComment(): ?string
     {
