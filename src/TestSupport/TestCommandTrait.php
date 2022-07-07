@@ -189,7 +189,7 @@ trait TestCommandTrait
 
         $sql = 'SELECT * FROM {{customer}} WHERE [[id]] = 10';
         $command = $db->createCommand($sql);
-        $this->assertFalse($command->queryOne());
+        $this->assertNull($command->queryOne());
     }
 
     public function testQueryColumn(): void
@@ -202,7 +202,7 @@ trait TestCommandTrait
         $this->assertIsArray($column);
 
         $command = $db->createCommand('SELECT [[id]] FROM {{customer}} WHERE [[id]] = 10');
-        $this->assertFalse($command->queryColumn());
+        $this->assertEmpty($command->queryColumn());
     }
 
     public function testQueryAll(): void

@@ -509,7 +509,7 @@ trait TestQueryTrait
 
         $result = (new Query($db))->from('customer')->where(['status' => 3])->one();
 
-        $this->assertFalse($result);
+        $this->assertNull($result);
     }
 
     public function testExists(): void
@@ -658,7 +658,7 @@ trait TestQueryTrait
         $this->assertSame([], $rows);
 
         $row = (new Query($db))->from('customer')->emulateExecution()->one();
-        $this->assertFalse($row);
+        $this->assertNull($row);
 
         $exists = (new Query($db))->from('customer')->emulateExecution()->exists();
         $this->assertFalse($exists);
