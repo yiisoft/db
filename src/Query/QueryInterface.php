@@ -208,10 +208,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return array|null The first row (in terms of an array) of the query result. Null is returned if the query
+     * @return mixed The first row (in terms of an array) of the query result. Null is returned if the query
      * results in nothing.
      */
-    public function one(): ?array;
+    public function one(): mixed;
 
     /**
      * Sets the parameters to be bound to the query.
