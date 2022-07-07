@@ -17,7 +17,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * The QueryInterface defines the minimum set of methods to be implemented by a database query.
+ * The `QueryInterface` defines the minimum set of methods to be implemented by a database query.
  *
  * The default implementation of this interface is provided by {@see QueryTrait}.
  *
@@ -208,10 +208,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return mixed the first row (in terms of an array) of the query result. False is returned if the query
+     * @return array|null The first row (in terms of an array) of the query result. Null is returned if the query
      * results in nothing.
      */
-    public function one(): mixed;
+    public function one(): ?array;
 
     /**
      * Sets the parameters to be bound to the query.
