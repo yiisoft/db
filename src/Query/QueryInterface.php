@@ -93,7 +93,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return array the first column of the query result. An empty array is returned if the query results in nothing.
+     * @return array The first column of the query result. An empty array is returned if the query results in nothing.
      */
     public function column(): array;
 
@@ -208,10 +208,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @throws Exception|InvalidConfigException|Throwable
      *
-     * @return mixed The first row (in terms of an array) of the query result. Null is returned if the query
+     * @return array|object|null The first row (in terms of an array) of the query result. Null is returned if the query
      * results in nothing.
      */
-    public function one(): mixed;
+    public function one(): array|object|null;
 
     /**
      * Sets the parameters to be bound to the query.
