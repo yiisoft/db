@@ -550,7 +550,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function one(): ?array
+    public function one(): array|object|null
     {
         return match ($this->emulateExecution) {
             true => null,
