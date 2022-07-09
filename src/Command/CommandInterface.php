@@ -608,7 +608,7 @@ interface CommandInterface
      *
      * @throws Exception|Throwable Execution failed.
      *
-     * @return array The first column of the query result.
+     * @return array The first column of the query result. Empty array is returned if the query results in nothing.
      */
     public function queryColumn(): array;
 
