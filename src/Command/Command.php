@@ -471,28 +471,20 @@ abstract class Command implements CommandInterface
         return [];
     }
 
-    public function queryColumn(): array|false
+    public function queryColumn(): array
     {
-        /** @psalm-var array<array-key, array<mixed>>|null */
-        $results = $this->queryInternal((int) static::QUERY_MODE_COLUMN);
+        /** @psalm-var mixed */
+        $results = $this->queryInternal(self::QUERY_MODE_COLUMN);
 
-        if (is_array($results) && count($results)) {
-            return $results;
-        }
-
-        return false;
+        return is_array($results) ? $results : [];
     }
 
-    public function queryOne(): array|false
+    public function queryOne(): ?array
     {
-        /** @psalm-var array<array-key, array<mixed>>|null */
-        $results = $this->queryInternal((int) static::QUERY_MODE_ROW);
+        /** @psalm-var mixed */
+        $results = $this->queryInternal(self::QUERY_MODE_ROW);
 
-        if (is_array($results) && count($results)) {
-            return $results;
-        }
-
-        return false;
+        return is_array($results) ? $results : null;
     }
 
     /**

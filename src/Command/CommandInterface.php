@@ -608,10 +608,9 @@ interface CommandInterface
      *
      * @throws Exception|Throwable Execution failed.
      *
-     * @return array|false The first column of the query result.
-     * False is returned if the query results in nothing.
+     * @return array The first column of the query result. Empty array is returned if the query results in nothing.
      */
-    public function queryColumn(): array|false;
+    public function queryColumn(): array;
 
     /**
      * Executes the SQL statement and returns the first row of the result.
@@ -620,10 +619,10 @@ interface CommandInterface
      *
      * @throws Exception|Throwable Execution failed.
      *
-     * @return array|false The first row (in terms of an array) of the query result.
-     * False is returned if the query results in nothing.
+     * @return array|null The first row (in terms of an array) of the query result. Null is returned if the query
+     * results in nothing.
      */
-    public function queryOne(): array|false;
+    public function queryOne(): ?array;
 
     /**
      * Executes the SQL statement and returns the value of the first column in the first row of data.
