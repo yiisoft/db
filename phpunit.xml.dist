@@ -14,23 +14,26 @@
     <ini name="error_reporting" value="-1"/>
   </php>
   <testsuites>
-    <testsuite name="ActiveRecord">
-      <directory>./vendor/yiisoft/active-record/tests</directory>
+    <testsuite name="CommonTests">
+      <directory>./tests</directory>
     </testsuite>
-    <testsuite name="Mssql">
-      <directory>./vendor/yiisoft/db-mssql/tests</directory>
-    </testsuite>
-    <testsuite name="Mysql">
-      <directory>./vendor/yiisoft/db-mysql/tests</directory>
-    </testsuite>
-    <testsuite name="Oracle">
-      <directory>./vendor/yiisoft/db-oracle/tests</directory>
-    </testsuite>
-    <testsuite name="Pgsql">
-      <directory>./vendor/yiisoft/db-pgsql/tests</directory>
-    </testsuite>
-    <testsuite name="Sqlite">
-      <directory>./vendor/yiisoft/db-sqlite/tests</directory>
-    </testsuite>
+<!--    <testsuite name="ActiveRecord">-->
+<!--      <directory>./vendor/yiisoft/active-record/tests</directory>-->
+<!--    </testsuite>-->
+<!--    <testsuite name="Mssql">-->
+<!--      <directory>./vendor/yiisoft/db-mssql/tests</directory>-->
+<!--    </testsuite>-->
+<!--    <testsuite name="Mysql">-->
+<!--      <directory>./vendor/yiisoft/db-mysql/tests</directory>-->
+<!--    </testsuite>-->
+<!--    <testsuite name="Oracle">-->
+<!--      <directory>./vendor/yiisoft/db-oracle/tests</directory>-->
+<!--    </testsuite>-->
+<!--    <testsuite name="Pgsql">-->
+<!--      <directory>./vendor/yiisoft/db-pgsql/tests</directory>-->
+<!--    </testsuite>-->
+<!--    <testsuite name="Sqlite">-->
+<!--      <directory>./vendor/yiisoft/db-sqlite/tests</directory>-->
+<!--    </testsuite>-->
   </testsuites>
 </phpunit>

@@ -119,6 +119,17 @@ interface TableSchemaInterface
     public function catalogName(?string $value): void;
 
     /**
+     * @return string|null name of the server
+     * Specifically for MS SQL Server
+     */
+    public function getServerName(): ?string;
+
+    /**
+     * @param string|null set name of the server
+     */
+    public function serverName(?string $value): void;
+
+    /**
      * @return string|null return sql for create current table or null if query not found/exists
      * Now supported only in MySQL and Oracle
      */

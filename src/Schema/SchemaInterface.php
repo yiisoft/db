@@ -40,11 +40,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * This method will strip off curly brackets from the given table name and replace the percentage character '%' with
      * {@see ConnectionInterface::tablePrefix}.
      *
-     * @param string $name The table name to be converted.
+     * @param string|TableNameInterface $name The table name to be converted.
      *
      * @return string The real name of the given table name.
      */
-    public function getRawTableName(string $name): string;
+    public function getRawTableName(string|TableNameInterface $name): string;
 
     /**
      * Return schema cache instance.
@@ -115,12 +115,12 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Obtains the metadata for the named table.
      *
-     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string $tableName Table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh Whether to reload the table schema even if it is found in the cache.
      *
      * @return TableSchemaInterface|null Table metadata. `null` if the named table does not exist.
      */
-    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface;
+    public function getTableSchema(string $tableName, bool $refresh = false): ?TableSchemaInterface;
 
     /**
      * Returns the metadata for all tables in the database.
@@ -160,9 +160,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * This method cleans up cached table schema so that it can be re-created later to reflect the database schema
      * change.
      *
-     * @param string $name Table name.
+     * @param string $tableName Table name.
      */
-    public function refreshTableSchema(string $name): void;
+    public function refreshTableSchema(string $tableName): void;
 
     /**
      * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
