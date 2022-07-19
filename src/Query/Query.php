@@ -266,11 +266,7 @@ class Query implements QueryInterface
         }
 
         if ($this->indexBy === null) {
-            $result = $this->createCommand()->queryColumn();
-            if (is_array($result)) {
-                return $result;
-            }
-            return [];
+            return $this->createCommand()->queryColumn();
         }
 
         if (is_string($this->indexBy) && count($this->select) === 1) {
@@ -554,10 +550,10 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function one(): mixed
+    public function one(): array|object|null
     {
         return match ($this->emulateExecution) {
-            true => false,
+            true => null,
             false => $this->createCommand()->queryOne(),
         };
     }
