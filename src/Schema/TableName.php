@@ -23,25 +23,20 @@ class TableName implements Stringable, TableNameInterface
 
     /**
      * @param string|ExpressionInterface $tableName
+     * @param string|null $prefix
      * @param string|null $schemaName
      * @param string|null $catalogName
      * @param string|null $serverName
      *
      * @todo check tablePrefix
      */
-    public function __construct(string|ExpressionInterface $tableName, ?string $schemaName = null, ?string $catalogName = null, ?string $serverName = null)
+    public function __construct(string|ExpressionInterface $tableName, ?string $prefix = null, ?string $schemaName = null, ?string $catalogName = null, ?string $serverName = null)
     {
         $this->tableName = $tableName;
+        $this->prefix = $prefix;
         $this->schemaName = $schemaName;
         $this->catalogName = $catalogName;
         $this->serverName = $serverName;
-    }
-
-    public function withPrefix(string $prefix): self
-    {
-        $new = clone $this;
-        $new->prefix = $prefix;
-        return $new;
     }
 
     public function getServerName(): ?string
@@ -75,7 +70,18 @@ class TableName implements Stringable, TableNameInterface
             $this->serverName,
             $this->catalogName,
             $this->schemaName,
-            ($this->prefix ?? '') . $this->tableName,
+            $this->addPrefix($this->tableName),
         ]));
+    }
+
+    private function addPrefix(string $name): string
+    {
+        if (!str_contains($name, '{{')) {
+            return $name;
+        }
+
+        $name = preg_replace('/{{(.*?)}}/', '\1', $name);
+
+        return str_replace('%', $this->prefix, $name);
     }
 }

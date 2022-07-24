@@ -16,6 +16,7 @@ use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
+use Yiisoft\Db\Schema\TableNameInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
@@ -85,6 +86,8 @@ interface ConnectionInterface
      * @return CommandInterface
      */
     public function createCommand(?string $sql = null, array $params = []): CommandInterface;
+
+    public function createTableName(string $name): TableNameInterface;
 
     /**
      * Create a transaction instance.

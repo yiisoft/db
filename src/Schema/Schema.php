@@ -241,31 +241,31 @@ abstract class Schema implements SchemaInterface
         return $this->getSchemaMetadata($schema, self::UNIQUES, $refresh);
     }
 
-    public function getTableChecks(string|TableNameInterface $tableName, bool $refresh = false): array
+    public function getTableChecks(string|TableNameInterface $name, bool $refresh = false): array
     {
         /** @var mixed */
-        $tableChecks = $this->getTableMetadata($tableName, self::CHECKS, $refresh);
+        $tableChecks = $this->getTableMetadata($name, self::CHECKS, $refresh);
         return is_array($tableChecks) ? $tableChecks : [];
     }
 
-    public function getTableDefaultValues(string|TableNameInterface $tableName, bool $refresh = false): array
+    public function getTableDefaultValues(string|TableNameInterface $name, bool $refresh = false): array
     {
         /** @var mixed */
-        $tableDefaultValues = $this->getTableMetadata($tableName, self::DEFAULT_VALUES, $refresh);
+        $tableDefaultValues = $this->getTableMetadata($name, self::DEFAULT_VALUES, $refresh);
         return is_array($tableDefaultValues) ? $tableDefaultValues : [];
     }
 
-    public function getTableForeignKeys(string|TableNameInterface $tableName, bool $refresh = false): array
+    public function getTableForeignKeys(string|TableNameInterface $name, bool $refresh = false): array
     {
         /** @var mixed */
-        $tableForeignKeys = $this->getTableMetadata($tableName, self::FOREIGN_KEYS, $refresh);
+        $tableForeignKeys = $this->getTableMetadata($name, self::FOREIGN_KEYS, $refresh);
         return is_array($tableForeignKeys) ? $tableForeignKeys : [];
     }
 
-    public function getTableIndexes(string|TableNameInterface $tableName, bool $refresh = false): array
+    public function getTableIndexes(string|TableNameInterface $name, bool $refresh = false): array
     {
         /** @var mixed */
-        $tableIndexes = $this->getTableMetadata($tableName, self::INDEXES, $refresh);
+        $tableIndexes = $this->getTableMetadata($name, self::INDEXES, $refresh);
         return is_array($tableIndexes) ? $tableIndexes : [];
     }
 
@@ -279,17 +279,17 @@ abstract class Schema implements SchemaInterface
         return is_array($this->tableNames[$schema]) ? $this->tableNames[$schema] : [];
     }
 
-    public function getTablePrimaryKey(string|TableNameInterface $tableName, bool $refresh = false): ?Constraint
+    public function getTablePrimaryKey(string|TableNameInterface $name, bool $refresh = false): ?Constraint
     {
         /** @var mixed */
-        $tablePrimaryKey = $this->getTableMetadata($tableName, self::PRIMARY_KEY, $refresh);
+        $tablePrimaryKey = $this->getTableMetadata($name, self::PRIMARY_KEY, $refresh);
         return $tablePrimaryKey instanceof Constraint ? $tablePrimaryKey : null;
     }
 
-    public function getTableSchema(string|TableNameInterface $tableName, bool $refresh = false): ?TableSchemaInterface
+    public function getTableSchema(string|TableNameInterface $name, bool $refresh = false): ?TableSchemaInterface
     {
         /** @var mixed */
-        $tableSchema = $this->getTableMetadata($tableName, self::SCHEMA, $refresh);
+        $tableSchema = $this->getTableMetadata($name, self::SCHEMA, $refresh);
         return $tableSchema instanceof TableSchemaInterface ? $tableSchema : null;
     }
 
@@ -300,10 +300,10 @@ abstract class Schema implements SchemaInterface
         return is_array($tableSchemas) ? $tableSchemas : [];
     }
 
-    public function getTableUniques(string|TableNameInterface $tableName, bool $refresh = false): array
+    public function getTableUniques(string|TableNameInterface $name, bool $refresh = false): array
     {
         /** @var mixed */
-        $tableUniques = $this->getTableMetadata($tableName, self::UNIQUES, $refresh);
+        $tableUniques = $this->getTableMetadata($name, self::UNIQUES, $refresh);
         return is_array($tableUniques) ? $tableUniques : [];
     }
 
@@ -337,9 +337,9 @@ abstract class Schema implements SchemaInterface
         $this->tableMetadata = [];
     }
 
-    public function refreshTableSchema(string|TableNameInterface $tableName): void
+    public function refreshTableSchema(string|TableNameInterface $name): void
     {
-        $rawName = $this->getRawTableName($tableName);
+        $rawName = $this->getRawTableName($name);
 
         unset($this->tableMetadata[$rawName]);
 
@@ -471,13 +471,14 @@ abstract class Schema implements SchemaInterface
     protected function getTableMetadata(string|TableNameInterface $tableName, string $type, bool $refresh = false): mixed
     {
         $rawName = $this->getRawTableName($tableName);
-
+//echo $rawName;die;
         if (!isset($this->tableMetadata[$rawName])) {
             $this->loadTableMetadataFromCache($rawName);
         }
 
         if ($refresh || !isset($this->tableMetadata[$rawName][$type])) {
-            $this->tableMetadata[$rawName][$type] = $this->loadTableTypeMetadata($type, $rawName);
+//            $this->tableMetadata[$rawName][$type] = $this->loadTableTypeMetadata($type, $rawName);
+            $this->tableMetadata[$rawName][$type] = $this->loadTableTypeMetadata($type, $tableName);
             $this->saveTableMetadataToCache($rawName);
         }
 
@@ -488,20 +489,20 @@ abstract class Schema implements SchemaInterface
      * This method returns the desired metadata type for the table name.
      *
      * @param string $type
-     * @param string|TableNameInterface $tableName
+     * @param string|TableNameInterface $name
      *
      * @return array|Constraint|TableSchemaInterface|null
      */
-    protected function loadTableTypeMetadata(string $type, string|TableNameInterface $tableName): Constraint|array|TableSchemaInterface|null
+    protected function loadTableTypeMetadata(string $type, string|TableNameInterface $name): Constraint|array|TableSchemaInterface|null
     {
         return match ($type) {
-            self::SCHEMA => $this->loadTableSchema($tableName),
-            self::PRIMARY_KEY => $this->loadTablePrimaryKey($tableName),
-            self::UNIQUES => $this->loadTableUniques($tableName),
-            self::FOREIGN_KEYS => $this->loadTableForeignKeys($tableName),
-            self::INDEXES => $this->loadTableIndexes($tableName),
-            self::DEFAULT_VALUES => $this->loadTableDefaultValues($tableName),
-            self::CHECKS => $this->loadTableChecks($tableName),
+            self::SCHEMA => $this->loadTableSchema($name),
+            self::PRIMARY_KEY => $this->loadTablePrimaryKey($name),
+            self::UNIQUES => $this->loadTableUniques($name),
+            self::FOREIGN_KEYS => $this->loadTableForeignKeys($name),
+            self::INDEXES => $this->loadTableIndexes($name),
+            self::DEFAULT_VALUES => $this->loadTableDefaultValues($name),
+            self::CHECKS => $this->loadTableChecks($name),
             default => null,
         };
     }
@@ -535,15 +536,14 @@ abstract class Schema implements SchemaInterface
     /**
      * Resolves the table name and schema name (if any).
      *
-     * @param string $name the table name.
+     * @param TableSchemaInterface $table the table name.
+     * @param string|TableNameInterface $name the table name.
      *
      * @throws NotSupportedException if this method is not supported by the DBMS.
      *
-     * @return TableSchemaInterface with resolved table, schema, etc. names.
-     *
      * {@see \Yiisoft\Db\Schema\TableSchemaInterface}
      */
-    protected function resolveTableName(string|TableSchemaInterface $name): TableSchemaInterface
+    protected function resolveTableNames(TableSchemaInterface $table, string|TableNameInterface $name): void
     {
         throw new NotSupportedException(static::class . ' does not support resolving table names.');
     }

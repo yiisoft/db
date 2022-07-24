@@ -91,60 +91,60 @@ interface ConstraintSchemaInterface
     /**
      * Obtains the check constraints' information for the named table.
      *
-     * @param string $tableName Table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh Whether to reload the information even if it is found in the cache.
      *
      * @return array Table check constraints.
      */
-    public function getTableChecks(string $tableName, bool $refresh = false): array;
+    public function getTableChecks(string $name, bool $refresh = false): array;
 
     /**
      * Obtains the default value constraints information for the named table.
      *
-     * @param string $tableName Table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh Whether to reload the information even if it is found in the cache.
      *
      * @return array Table default value constraints.
      */
-    public function getTableDefaultValues(string $tableName, bool $refresh = false): array;
+    public function getTableDefaultValues(string $name, bool $refresh = false): array;
 
     /**
      * Obtains the foreign keys' information for the named table.
      *
-     * @param string $tableName Table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh Whether to reload the information even if it is found in the cache.
      *
      * @return array Table foreign keys.
      */
-    public function getTableForeignKeys(string $tableName, bool $refresh = false): array;
+    public function getTableForeignKeys(string $name, bool $refresh = false): array;
 
     /**
      * Obtains the indexes' information for the named table.
      *
-     * @param string $tableName Table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh Whether to reload the information even if it is found in the cache.
      *
      * @return array Table indexes.
      */
-    public function getTableIndexes(string $tableName, bool $refresh = false): array;
+    public function getTableIndexes(string $name, bool $refresh = false): array;
 
     /**
      * Obtains the primary key for the named table.
      *
-     * @param string $tableName Table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh Whether to reload the information even if it is found in the cache.
      *
      * @return Constraint|null Table primary key, `null` if the table has no primary key.
      */
-    public function getTablePrimaryKey(string $tableName, bool $refresh = false): ?Constraint;
+    public function getTablePrimaryKey(string $name, bool $refresh = false): ?Constraint;
 
     /**
      * Obtains the unique constraints' information for the named table.
      *
-     * @param string $tableName Table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh Whether to reload the information even if it is found in the cache.
      *
      * @return array Table unique constraints.
      */
-    public function getTableUniques(string $tableName, bool $refresh = false): array;
+    public function getTableUniques(string $name, bool $refresh = false): array;
 }

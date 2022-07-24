@@ -13,6 +13,8 @@ use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\TableName;
+use Yiisoft\Db\Schema\TableNameInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
@@ -63,6 +65,11 @@ abstract class Connection implements ConnectionInterface
     public function createBatchQueryResult(QueryInterface $query, bool $each = false): BatchQueryResultInterface
     {
         return new BatchQueryResult($query, $each);
+    }
+
+    public function createTableName(string $name): TableNameInterface
+    {
+        return new TableName($name, $this->tablePrefix);
     }
 
     public function getTablePrefix(): string

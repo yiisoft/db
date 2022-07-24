@@ -10,8 +10,6 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  */
 interface TableNameInterface
 {
-    public function withPrefix(string $prefix): self;
-
     public function getServerName(): ?string;
 
     public function getCatalogName(): ?string;

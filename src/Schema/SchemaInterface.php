@@ -115,12 +115,12 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Obtains the metadata for the named table.
      *
-     * @param string $tableName Table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh Whether to reload the table schema even if it is found in the cache.
      *
      * @return TableSchemaInterface|null Table metadata. `null` if the named table does not exist.
      */
-    public function getTableSchema(string $tableName, bool $refresh = false): ?TableSchemaInterface;
+    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface;
 
     /**
      * Returns the metadata for all tables in the database.
@@ -160,9 +160,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * This method cleans up cached table schema so that it can be re-created later to reflect the database schema
      * change.
      *
-     * @param string $tableName Table name.
+     * @param string $name Table name.
      */
-    public function refreshTableSchema(string $tableName): void;
+    public function refreshTableSchema(string $name): void;
 
     /**
      * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).

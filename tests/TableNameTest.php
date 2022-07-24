@@ -5,10 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Query\Helper\QueryHelper;
-use Yiisoft\Db\Schema\Quoter;
 use Yiisoft\Db\Schema\TableName;
 
 final class TableNameTest extends TestCase
