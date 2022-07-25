@@ -16,7 +16,9 @@ interface TableNameInterface
 
     public function getSchemaName(): ?string;
 
-    public function getTableName(): string|ExpressionInterface;
+    public function getTableName(): string;
+
+    public function getSourceTableName(): string|ExpressionInterface;
 
     public function getPrefix(): ?string;
 }

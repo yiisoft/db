@@ -67,9 +67,9 @@ abstract class Connection implements ConnectionInterface
         return new BatchQueryResult($query, $each);
     }
 
-    public function createTableName(string $name): TableNameInterface
+    public function createTableName(string $name, string $schemaName = null): TableNameInterface
     {
-        return new TableName($name, $this->tablePrefix);
+        return new TableName($name, $this->tablePrefix, $schemaName);
     }
 
     public function getTablePrefix(): string

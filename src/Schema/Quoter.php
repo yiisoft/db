@@ -97,6 +97,7 @@ class Quoter implements QuoterInterface
         );
     }
 
+    /** @todo need fix to work with TableNameInterface */
     public function quoteTableName(string $name): string
     {
         if (str_starts_with($name, '(') && strpos($name, ')') === strlen($name) - 1) {

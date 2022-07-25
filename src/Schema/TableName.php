@@ -54,7 +54,12 @@ class TableName implements Stringable, TableNameInterface
         return $this->schemaName;
     }
 
-    public function getTableName(): string|ExpressionInterface
+    public function getTableName(): string
+    {
+        return $this->addPrefix($this->tableName);
+    }
+
+    public function getSourceTableName(): string|ExpressionInterface
     {
         return $this->tableName;
     }
@@ -70,7 +75,7 @@ class TableName implements Stringable, TableNameInterface
             $this->serverName,
             $this->catalogName,
             $this->schemaName,
-            $this->addPrefix($this->tableName),
+            $this->getTableName(),
         ]));
     }
 
