@@ -47,7 +47,7 @@ abstract class PDODriver implements PDODriverInterface
      *
      * @param string|null $charset
      */
-    public function charset(?string $charset): void
+    public function setCharset(?string $charset): void
     {
         $this->charset = $charset;
     }
