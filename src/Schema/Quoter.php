@@ -28,6 +28,11 @@ class Quoter implements QuoterInterface
     ) {
     }
 
+    public function getTableNameParts(string $name): array
+    {
+        return explode('.', $name);
+    }
+
     public function ensureNameQuoted(string $name): string
     {
         $name = str_replace(["'", '"', '`', '[', ']'], '', $name);
@@ -151,17 +156,5 @@ class Quoter implements QuoterInterface
         }
 
         return !str_contains($name, $startingCharacter) ? $name : substr($name, 1, -1);
-    }
-
-    /**
-     * Splits full table name into parts
-     *
-     * @param string $name
-     *
-     * @return array
-     */
-    protected function getTableNameParts(string $name): array
-    {
-        return explode('.', $name);
     }
 }

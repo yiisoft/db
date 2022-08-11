@@ -79,7 +79,7 @@ final class TableNameTest extends TestCase
     {
         $this->assertEquals(
             $expected,
-            (new TableName($tableName, $schemaName, $catalogName, $serverName))->withPrefix(self::PREFIX)
+            (new TableName($tableName, $schemaName, $catalogName, $serverName))->setPrefix(self::PREFIX)
         );
     }
 }

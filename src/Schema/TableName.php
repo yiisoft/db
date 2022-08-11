@@ -4,54 +4,31 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Stringable;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * TableName - abstraction for name of table in DataBase
  */
-class TableName implements Stringable, TableNameInterface
+class TableName implements TableNameInterface
 {
     private const DELIMITER = '.';
 
-    private ?string $serverName;
-    private ?string $catalogName;
-    private ?string $schemaName;
     private string|ExpressionInterface $tableName;
-
     private ?string $prefix;
+    private ?string $schemaName;
+    private ?string $catalogName;
+    private ?string $serverName;
 
-    /**
-     * @param string|ExpressionInterface $tableName
-     * @param string|null $prefix
-     * @param string|null $schemaName
-     * @param string|null $catalogName
-     * @param string|null $serverName
-     *
-     * @todo check tablePrefix
-     */
-    public function __construct(string|ExpressionInterface $tableName, ?string $prefix = null, ?string $schemaName = null, ?string $catalogName = null, ?string $serverName = null)
-    {
+    public function __construct(
+        string|ExpressionInterface $tableName,
+        ?string $schemaName = null,
+        ?string $catalogName = null,
+        ?string $serverName = null
+    ) {
         $this->tableName = $tableName;
-        $this->prefix = $prefix;
         $this->schemaName = $schemaName;
         $this->catalogName = $catalogName;
         $this->serverName = $serverName;
-    }
-
-    public function getServerName(): ?string
-    {
-        return $this->serverName;
-    }
-
-    public function getCatalogName(): ?string
-    {
-        return $this->catalogName;
-    }
-
-    public function getSchemaName(): ?string
-    {
-        return $this->schemaName;
     }
 
     public function getTableName(): string
@@ -59,7 +36,7 @@ class TableName implements Stringable, TableNameInterface
         return $this->addPrefix($this->tableName);
     }
 
-    public function getSourceTableName(): string|ExpressionInterface
+    public function getRawTableName(): string|ExpressionInterface
     {
         return $this->tableName;
     }
@@ -67,6 +44,27 @@ class TableName implements Stringable, TableNameInterface
     public function getPrefix(): ?string
     {
         return $this->prefix;
+    }
+
+    public function setPrefix(?string $prefix = null): static
+    {
+        $this->prefix = $prefix;
+        return $this;
+    }
+
+    public function getSchemaName(): ?string
+    {
+        return $this->schemaName;
+    }
+
+    public function getCatalogName(): ?string
+    {
+        return $this->catalogName;
+    }
+
+    public function getServerName(): ?string
+    {
+        return $this->serverName;
     }
 
     public function __toString()
@@ -87,6 +85,6 @@ class TableName implements Stringable, TableNameInterface
 
         $name = preg_replace('/{{(.*?)}}/', '\1', $name);
 
-        return str_replace('%', $this->prefix, $name);
+        return str_replace('%', $this->prefix ?? '', $name);
     }
 }

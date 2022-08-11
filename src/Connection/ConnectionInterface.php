@@ -87,7 +87,7 @@ interface ConnectionInterface
      */
     public function createCommand(?string $sql = null, array $params = []): CommandInterface;
 
-    public function createTableName(string $name, string $schemaName = null): TableNameInterface;
+    public function createTableName(string $name, string $schemaName = null, string $catalogName = null, string $serverName = null): TableNameInterface;
 
     /**
      * Create a transaction instance.

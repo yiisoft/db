@@ -8,6 +8,7 @@ use PDO;
 use Throwable;
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 
@@ -72,7 +73,7 @@ abstract class Schema implements SchemaInterface
     protected array $viewNames = [];
     private array $tableMetadata = [];
 
-    public function __construct(private SchemaCache $schemaCache)
+    public function __construct(protected ConnectionInterface $db, private SchemaCache $schemaCache)
     {
     }
 
@@ -97,65 +98,65 @@ abstract class Schema implements SchemaInterface
     /**
      * Loads all check constraints for the given table.
      *
-     * @param string|TableNameInterface $tableName table name.
+     * @param TableNameInterface $tableName table name.
      *
      * @return array check constraints for the given table.
      */
-    abstract protected function loadTableChecks(string|TableNameInterface $tableName): array;
+    abstract protected function loadTableChecks(TableNameInterface $tableName): array;
 
     /**
      * Loads all default value constraints for the given table.
      *
-     * @param string|TableNameInterface $tableName table name.
+     * @param TableNameInterface $tableName table name.
      *
      * @return array default value constraints for the given table.
      */
-    abstract protected function loadTableDefaultValues(string|TableNameInterface $tableName): array;
+    abstract protected function loadTableDefaultValues(TableNameInterface $tableName): array;
 
     /**
      * Loads all foreign keys for the given table.
      *
-     * @param string|TableNameInterface $tableName table name.
+     * @param TableNameInterface $tableName table name.
      *
      * @return array foreign keys for the given table.
      */
-    abstract protected function loadTableForeignKeys(string|TableNameInterface $tableName): array;
+    abstract protected function loadTableForeignKeys(TableNameInterface $tableName): array;
 
     /**
      * Loads all indexes for the given table.
      *
-     * @param string|TableNameInterface $tableName table name.
+     * @param TableNameInterface $tableName table name.
      *
      * @return array indexes for the given table.
      */
-    abstract protected function loadTableIndexes(string|TableNameInterface $tableName): array;
+    abstract protected function loadTableIndexes(TableNameInterface $tableName): array;
 
     /**
      * Loads a primary key for the given table.
      *
-     * @param string|TableNameInterface $tableName table name.
+     * @param TableNameInterface $tableName table name.
      *
      * @return Constraint|null primary key for the given table, `null` if the table has no primary key.
      */
-    abstract protected function loadTablePrimaryKey(string|TableNameInterface $tableName): ?Constraint;
+    abstract protected function loadTablePrimaryKey(TableNameInterface $tableName): ?Constraint;
 
     /**
      * Loads all unique constraints for the given table.
      *
-     * @param string|TableNameInterface $tableName table name.
+     * @param TableNameInterface $tableName table name.
      *
      * @return array unique constraints for the given table.
      */
-    abstract protected function loadTableUniques(string|TableNameInterface $tableName): array;
+    abstract protected function loadTableUniques(TableNameInterface $tableName): array;
 
     /**
      * Loads the metadata for the specified table.
      *
-     * @param string|TableNameInterface $name table name.
+     * @param TableNameInterface $name table name.
      *
      * @return TableSchemaInterface|null DBMS-dependent table metadata, `null` if the table does not exist.
      */
-    abstract protected function loadTableSchema(string|TableNameInterface $name): ?TableSchemaInterface;
+    abstract protected function loadTableSchema(TableNameInterface $name): ?TableSchemaInterface;
 
     public function getDefaultSchema(): ?string
     {
@@ -339,7 +340,8 @@ abstract class Schema implements SchemaInterface
 
     public function refreshTableSchema(string|TableNameInterface $name): void
     {
-        $rawName = $this->getRawTableName($name);
+        $name = $this->toTableNameInterface($name);
+        $rawName = (string) $name;
 
         unset($this->tableMetadata[$rawName]);
 
@@ -446,6 +448,7 @@ abstract class Schema implements SchemaInterface
                 $name = $schema . '.' . $name;
             }
 
+            $name = $this->toTableNameInterface($name);
             $tableMetadata = $this->getTableTypeMetadata($type, $name, $refresh);
 
             if ($tableMetadata !== null) {
@@ -459,7 +462,7 @@ abstract class Schema implements SchemaInterface
     /**
      * Returns the metadata of the given type for the given table.
      *
-     * @param string $tableName table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
      * @param string $type metadata type.
      * @param bool $refresh whether to reload the table metadata even if it is found in the cache.
      *
@@ -468,17 +471,17 @@ abstract class Schema implements SchemaInterface
      * @psalm-suppress MixedArrayAccess
      * @psalm-suppress MixedArrayAssignment
      */
-    protected function getTableMetadata(string|TableNameInterface $tableName, string $type, bool $refresh = false): mixed
+    protected function getTableMetadata(string|TableNameInterface $name, string $type, bool $refresh = false): mixed
     {
-        $rawName = $this->getRawTableName($tableName);
-//echo $rawName;die;
+        $name = $this->toTableNameInterface($name);
+        $rawName = (string) $name;
+
         if (!isset($this->tableMetadata[$rawName])) {
             $this->loadTableMetadataFromCache($rawName);
         }
 
         if ($refresh || !isset($this->tableMetadata[$rawName][$type])) {
-//            $this->tableMetadata[$rawName][$type] = $this->loadTableTypeMetadata($type, $rawName);
-            $this->tableMetadata[$rawName][$type] = $this->loadTableTypeMetadata($type, $tableName);
+            $this->tableMetadata[$rawName][$type] = $this->loadTableTypeMetadata($type, $name);
             $this->saveTableMetadataToCache($rawName);
         }
 
@@ -495,6 +498,8 @@ abstract class Schema implements SchemaInterface
      */
     protected function loadTableTypeMetadata(string $type, string|TableNameInterface $name): Constraint|array|TableSchemaInterface|null
     {
+        $name = $this->toTableNameInterface($name);
+
         return match ($type) {
             self::SCHEMA => $this->loadTableSchema($name),
             self::PRIMARY_KEY => $this->loadTablePrimaryKey($name),
@@ -511,14 +516,14 @@ abstract class Schema implements SchemaInterface
      * This method returns the desired metadata type for table name (with refresh if needed)
      *
      * @param string $type
-     * @param string $name
+     * @param TableNameInterface $name
      * @param bool $refresh
      *
      * @return array|Constraint|TableSchemaInterface|null
      */
     protected function getTableTypeMetadata(
         string $type,
-        string $name,
+        TableNameInterface $name,
         bool $refresh = false
     ): Constraint|array|null|TableSchemaInterface {
         return match ($type) {
@@ -536,14 +541,15 @@ abstract class Schema implements SchemaInterface
     /**
      * Resolves the table name and schema name (if any).
      *
-     * @param TableSchemaInterface $table the table name.
-     * @param string|TableNameInterface $name the table name.
+     * @param TableNameInterface $name the table name.
      *
      * @throws NotSupportedException if this method is not supported by the DBMS.
      *
      * {@see \Yiisoft\Db\Schema\TableSchemaInterface}
+     *
+     * @return TableSchemaInterface
      */
-    protected function resolveTableNames(TableSchemaInterface $table, string|TableNameInterface $name): void
+    protected function resolveTableName(TableNameInterface $name): TableSchemaInterface
     {
         throw new NotSupportedException(static::class . ' does not support resolving table names.');
     }
@@ -551,15 +557,15 @@ abstract class Schema implements SchemaInterface
     /**
      * Sets the metadata of the given type for the given table.
      *
-     * @param string $name table name.
+     * @param TableNameInterface $name table name.
      * @param string $type metadata type.
      * @param mixed $data metadata.
      *
      * @psalm-suppress MixedArrayAssignment
      */
-    protected function setTableMetadata(string $name, string $type, mixed $data): void
+    protected function setTableMetadata(TableNameInterface $name, string $type, mixed $data): void
     {
-        $this->tableMetadata[$this->getRawTableName($name)][$type] = $data;
+        $this->tableMetadata[(string) $name][$type] = $data;
     }
 
     /**
@@ -616,6 +622,17 @@ abstract class Schema implements SchemaInterface
             $this->schemaCache->getDuration(),
             new TagDependency($this->getCacheTag()),
         );
+    }
+
+    protected function toTableNameInterface(string|TableNameInterface $name): TableNameInterface
+    {
+        if (!$name instanceof TableNameInterface) {
+            $parts = array_reverse($this->db->getQuoter()->getTableNameParts($name));
+            /** @psalm-var non-empty-array<string> $parts */
+            $name = $this->db->createTableName(...$parts);
+        }
+
+        return $name;
     }
 
     protected function findViewNames(string $schema = ''): array

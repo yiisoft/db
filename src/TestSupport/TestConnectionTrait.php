@@ -12,6 +12,7 @@ use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\NotSupportedException;
 
+use Yiisoft\Db\Schema\TableNameInterface;
 use function PHPUnit\Framework\assertEquals;
 use function serialize;
 use function unserialize;
@@ -490,5 +491,142 @@ trait TestConnectionTrait
     {
         $db = $this->getConnection();
         $this->assertInstanceOf(DriverInterface::class, $db->getDriver());
+    }
+
+    /**
+     * @dataProvider createTableNameProvider
+     */
+    public function testCreateTableName(
+        string $expectedName,
+        string $expectedFullName,
+        string $name,
+        string $schemaName = null,
+        string $catalogName = null,
+        string $serverName = null
+    ): void
+    {
+        $db = $this->getConnection();
+
+        $tableName = $db->createTableName($name, $schemaName, $catalogName, $serverName);
+
+        $this->assertInstanceOf(TableNameInterface::class, $tableName);
+
+        $this->assertEquals($expectedName, $tableName->getTableName());
+        $this->assertEquals($expectedFullName, (string) $tableName);
+
+        $this->assertEquals($db->getTablePrefix(), $tableName->getPrefix());
+
+        $this->assertEquals($name, $tableName->getRawTableName());
+        $this->assertEquals($schemaName, $tableName->getSchemaName());
+        $this->assertEquals($catalogName, $tableName->getCatalogName());
+        $this->assertEquals($serverName, $tableName->getServerName());
+    }
+
+    /**
+     * @dataProvider createTableNameWithPrefixProvider
+     */
+    public function testCreateTableNameWithPrefix(
+        string $expectedName,
+        string $expectedFullName,
+        string $name,
+        string $schemaName = null,
+        string $catalogName = null,
+        string $serverName = null
+    ): void
+    {
+        $db = $this->getConnection();
+        $db->setTablePrefix('pre_');
+
+        $tableName = $db->createTableName($name, $schemaName, $catalogName, $serverName);
+
+        $this->assertInstanceOf(TableNameInterface::class, $tableName);
+
+        $this->assertEquals($expectedName, $tableName->getTableName());
+        $this->assertEquals($expectedFullName, (string) $tableName);
+
+        $this->assertEquals($db->getTablePrefix(), $tableName->getPrefix());
+
+        $this->assertEquals($name, $tableName->getRawTableName());
+        $this->assertEquals($schemaName, $tableName->getSchemaName());
+        $this->assertEquals($catalogName, $tableName->getCatalogName());
+        $this->assertEquals($serverName, $tableName->getServerName());
+    }
+
+    /**
+     * @return string[][]
+     */
+    public function createTableNameProvider(): array
+    {
+        return [
+            'table without prefix1' => [
+                'table1',
+                'table1',
+                'table1',
+            ],
+            'table without prefix2' => [
+                'table1',
+                'table1',
+                '{{table1}}',
+            ],
+            'table with prefix' => [
+                'table1',
+                'table1',
+                '{{%table1}}',
+            ],
+            [
+                'table1',
+                'dbo.table1',
+                '{{%table1}}', 'dbo',
+            ],
+            [
+                'table1',
+                'catalog1.dbo.table1',
+                '{{%table1}}', 'dbo', 'catalog1',
+            ],
+            [
+                'table1',
+                'serverName1.catalog1.dbo.table1',
+                '{{%table1}}', 'dbo', 'catalog1', 'serverName1'
+            ],
+        ];
+    }
+
+    /**
+     * @return string[][]
+     */
+    public function createTableNameWithPrefixProvider(): array
+    {
+        return [
+            'table without prefix1' => [
+                'table1',
+                'table1',
+                'table1',
+            ],
+            'table without prefix2' => [
+                'table1',
+                'table1',
+                '{{table1}}',
+            ],
+            'table with prefix' => [
+                'pre_table1',
+                'pre_table1',
+                '{{%table1}}',
+            ],
+            [
+                'pre_table1',
+                'dbo.pre_table1',
+                '{{%table1}}', 'dbo',
+            ],
+            [
+                'pre_table1',
+                'catalog1.dbo.pre_table1',
+                '{{%table1}}', 'dbo', 'catalog1',
+            ],
+            [
+                'pre_table1',
+                'serverName1.catalog1.dbo.pre_table1',
+                '{{%table1}}', 'dbo', 'catalog1', 'serverName1'
+            ],
+        ];
     }
 }

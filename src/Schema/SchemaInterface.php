@@ -115,12 +115,12 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Obtains the metadata for the named table.
      *
-     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string|TableNameInterface $name Table name. The table name may contain schema name if any. Do not quote the table name.
      * @param bool $refresh Whether to reload the table schema even if it is found in the cache.
      *
      * @return TableSchemaInterface|null Table metadata. `null` if the named table does not exist.
      */
-    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface;
+    public function getTableSchema(string|TableNameInterface $name, bool $refresh = false): ?TableSchemaInterface;
 
     /**
      * Returns the metadata for all tables in the database.
