@@ -503,8 +503,7 @@ trait TestConnectionTrait
         string $schemaName = null,
         string $catalogName = null,
         string $serverName = null
-    ): void
-    {
+    ): void {
         $db = $this->getConnection();
 
         $tableName = $db->createTableName($name, $schemaName, $catalogName, $serverName);
@@ -532,8 +531,7 @@ trait TestConnectionTrait
         string $schemaName = null,
         string $catalogName = null,
         string $serverName = null
-    ): void
-    {
+    ): void {
         $db = $this->getConnection();
         $db->setTablePrefix('pre_');
 
@@ -586,7 +584,7 @@ trait TestConnectionTrait
             [
                 'table1',
                 'serverName1.catalog1.dbo.table1',
-                '{{%table1}}', 'dbo', 'catalog1', 'serverName1'
+                '{{%table1}}', 'dbo', 'catalog1', 'serverName1',
             ],
         ];
     }
@@ -625,7 +623,7 @@ trait TestConnectionTrait
             [
                 'pre_table1',
                 'serverName1.catalog1.dbo.pre_table1',
-                '{{%table1}}', 'dbo', 'catalog1', 'serverName1'
+                '{{%table1}}', 'dbo', 'catalog1', 'serverName1',
             ],
         ];
     }

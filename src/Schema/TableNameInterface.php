@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db\Schema;
 
 use Stringable;
@@ -12,6 +14,7 @@ interface TableNameInterface extends Stringable
 {
     /**
      * Replacing % symbol to table prefix before returning value
+     *
      * @return string
      */
     public function getTableName(): string;
