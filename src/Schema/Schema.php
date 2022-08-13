@@ -631,6 +631,9 @@ abstract class Schema implements SchemaInterface
         }
 
         $parts = array_reverse($this->db->getQuoter()->getTableNameParts($name));
+        foreach ($parts as &$part) {
+            $part = $this->db->getQuoter()->unquoteSimpleTableName($part);
+        }
         /** @psalm-var non-empty-array<string> $parts */
         return $this->db->createTableName(...$parts);
     }

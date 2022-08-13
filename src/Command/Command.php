@@ -184,11 +184,11 @@ abstract class Command implements CommandInterface
      */
     public function batchInsert(string $table, array $columns, iterable $rows): self
     {
-        $table = $this->queryBuilder()->quoter()->quoteTableName($table);
+        $table = $this->queryBuilder()->quoter()->quoteSql($table);
 
         /** @psalm-var string[] $columns */
         foreach ($columns as &$column) {
-            $column = $this->queryBuilder()->quoter()->quoteColumnName($column);
+            $column = $this->queryBuilder()->quoter()->quoteSql($column);
         }
         unset($column);
 
