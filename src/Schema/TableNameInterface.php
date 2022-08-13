@@ -25,6 +25,8 @@ interface TableNameInterface extends Stringable
 
     public function setPrefix(?string $prefix = null): static;
 
+    public function withPrefix(?string $prefix = null): static;
+
     public function getSchemaName(): ?string;
 
     public function getCatalogName(): ?string;

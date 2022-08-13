@@ -69,7 +69,7 @@ abstract class Connection implements ConnectionInterface
 
     public function createTableName(string $name, string $schemaName = null, string $catalogName = null, string $serverName = null): TableNameInterface
     {
-        return (new TableName($name, $schemaName, $catalogName, $serverName))->setPrefix($this->tablePrefix);
+        return (new TableName($name, $schemaName, $catalogName, $serverName))->withPrefix($this->tablePrefix);
     }
 
     public function getTablePrefix(): string

@@ -52,6 +52,13 @@ class TableName implements TableNameInterface
         return $this;
     }
 
+    public function withPrefix(?string $prefix = null): static
+    {
+        $new = clone $this;
+        $new->prefix = $prefix;
+        return $new;
+    }
+
     public function getSchemaName(): ?string
     {
         return $this->schemaName;

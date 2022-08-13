@@ -340,7 +340,7 @@ abstract class Schema implements SchemaInterface
 
     public function refreshTableSchema(string|TableNameInterface $name): void
     {
-        $name = $this->toTableNameInterface($name);
+        $name = $this->asTableNameInterface($name);
         $rawName = (string) $name;
 
         unset($this->tableMetadata[$rawName]);
@@ -448,7 +448,7 @@ abstract class Schema implements SchemaInterface
                 $name = $schema . '.' . $name;
             }
 
-            $name = $this->toTableNameInterface($name);
+            $name = $this->asTableNameInterface($name);
             $tableMetadata = $this->getTableTypeMetadata($type, $name, $refresh);
 
             if ($tableMetadata !== null) {
@@ -473,7 +473,7 @@ abstract class Schema implements SchemaInterface
      */
     protected function getTableMetadata(string|TableNameInterface $name, string $type, bool $refresh = false): mixed
     {
-        $name = $this->toTableNameInterface($name);
+        $name = $this->asTableNameInterface($name);
         $rawName = (string) $name;
 
         if (!isset($this->tableMetadata[$rawName])) {
@@ -498,7 +498,7 @@ abstract class Schema implements SchemaInterface
      */
     protected function loadTableTypeMetadata(string $type, string|TableNameInterface $name): Constraint|array|TableSchemaInterface|null
     {
-        $name = $this->toTableNameInterface($name);
+        $name = $this->asTableNameInterface($name);
 
         return match ($type) {
             self::SCHEMA => $this->loadTableSchema($name),
@@ -624,15 +624,15 @@ abstract class Schema implements SchemaInterface
         );
     }
 
-    protected function toTableNameInterface(string|TableNameInterface $name): TableNameInterface
+    protected function asTableNameInterface(string|TableNameInterface $name): TableNameInterface
     {
-        if (!$name instanceof TableNameInterface) {
-            $parts = array_reverse($this->db->getQuoter()->getTableNameParts($name));
-            /** @psalm-var non-empty-array<string> $parts */
-            $name = $this->db->createTableName(...$parts);
+        if ($name instanceof TableNameInterface) {
+            return $name->withPrefix($this->db->getTablePrefix());
         }
 
-        return $name;
+        $parts = array_reverse($this->db->getQuoter()->getTableNameParts($name));
+        /** @psalm-var non-empty-array<string> $parts */
+        return $this->db->createTableName(...$parts);
     }
 
     protected function findViewNames(string $schema = ''): array
