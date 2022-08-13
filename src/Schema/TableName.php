@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Expression\ExpressionInterface;
-
 /**
  * TableName - abstraction for name of table in DataBase
  */
@@ -13,14 +11,15 @@ class TableName implements TableNameInterface
 {
     private const DELIMITER = '.';
 
-    private string|ExpressionInterface $tableName;
-    private ?string $prefix;
+    private ?string $prefix = null;
+
+    private string $tableName;
     private ?string $schemaName;
     private ?string $catalogName;
     private ?string $serverName;
 
     public function __construct(
-        string|ExpressionInterface $tableName,
+        string $tableName,
         ?string $schemaName = null,
         ?string $catalogName = null,
         ?string $serverName = null
@@ -36,7 +35,7 @@ class TableName implements TableNameInterface
         return $this->addPrefix($this->tableName);
     }
 
-    public function getRawTableName(): string|ExpressionInterface
+    public function getRawTableName(): string
     {
         return $this->tableName;
     }
@@ -76,7 +75,7 @@ class TableName implements TableNameInterface
 
     public function __toString()
     {
-        return implode(static::DELIMITER, array_filter([
+        return implode((string) static::DELIMITER, array_filter([
             $this->serverName,
             $this->catalogName,
             $this->schemaName,

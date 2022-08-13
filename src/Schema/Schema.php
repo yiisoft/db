@@ -462,7 +462,7 @@ abstract class Schema implements SchemaInterface
     /**
      * Returns the metadata of the given type for the given table.
      *
-     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string|TableNameInterface $name table name. The table name may contain schema name if any. Do not quote the table name.
      * @param string $type metadata type.
      * @param bool $refresh whether to reload the table metadata even if it is found in the cache.
      *

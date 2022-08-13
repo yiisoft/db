@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Stringable;
-use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * TableName - abstraction for name of table in DataBase
@@ -19,7 +18,7 @@ interface TableNameInterface extends Stringable
      */
     public function getTableName(): string;
 
-    public function getRawTableName(): string|ExpressionInterface;
+    public function getRawTableName(): string;
 
     public function getPrefix(): ?string;
 
