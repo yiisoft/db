@@ -30,7 +30,7 @@ class Quoter implements QuoterInterface
 
     public function getTableNameParts(string $name): array
     {
-        return explode('.', $name);
+        return array_slice(explode('.', $name), -2, 2, true);
     }
 
     public function ensureNameQuoted(string $name): string
