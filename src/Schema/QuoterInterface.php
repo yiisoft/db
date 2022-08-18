@@ -11,7 +11,7 @@ interface QuoterInterface
      *
      * @param string $name
      *
-     * @return array
+     * @return string[]
      */
     public function getTableNameParts(string $name): array;
 

@@ -28,7 +28,6 @@ class Quoter implements QuoterInterface
     ) {
     }
 
-    // @todo add test
     public function getTableNameParts(string $name): array
     {
         $parts = array_slice(explode('.', $name), -2, 2);
