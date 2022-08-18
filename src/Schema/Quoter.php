@@ -31,7 +31,9 @@ class Quoter implements QuoterInterface
     public function getTableNameParts(string $name): array
     {
         $parts = array_slice(explode('.', $name), -2, 2);
-        return array_map(function($part) {return $this->unquoteSimpleTableName($part);}, $parts);
+        return array_map(function($part) {
+            return $this->unquoteSimpleTableName($part);
+        }, $parts);
     }
 
     public function ensureNameQuoted(string $name): string
