@@ -8,6 +8,7 @@ use PDO;
 use Throwable;
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 
@@ -72,7 +73,7 @@ abstract class Schema implements SchemaInterface
     protected array $viewNames = [];
     private array $tableMetadata = [];
 
-    public function __construct(private SchemaCache $schemaCache)
+    public function __construct(protected ConnectionInterface $db, private SchemaCache $schemaCache)
     {
     }
 
@@ -177,6 +178,17 @@ abstract class Schema implements SchemaInterface
         $type = gettype($data);
 
         return $typeMap[$type] ?? PDO::PARAM_STR;
+    }
+
+    public function getRawTableName(string $name): string
+    {
+        if (str_contains($name, '{{')) {
+            $name = preg_replace('/{{(.*?)}}/', '\1', $name);
+
+            return str_replace('%', $this->db->getTablePrefix(), $name);
+        }
+
+        return $name;
     }
 
     public function getSchemaCache(): SchemaCache

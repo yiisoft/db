@@ -7,6 +7,15 @@ namespace Yiisoft\Db\Schema;
 interface QuoterInterface
 {
     /**
+     * Splits full table name into parts
+     *
+     * @param string $name
+     *
+     * @return string[]
+     */
+    public function getTableNameParts(string $name): array;
+
+    /**
      * Ensures name is wrapped with {{ and }}.
      *
      * @param string $name
