@@ -119,7 +119,6 @@ class Quoter implements QuoterInterface
             return $this->quoteSimpleTableName($name);
         }
 
-        /** @var string[] */
         $parts = $this->getTableNameParts($name);
 
         foreach ($parts as $i => $part) {
