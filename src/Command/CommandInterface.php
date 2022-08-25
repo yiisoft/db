@@ -11,8 +11,8 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 interface CommandInterface
 {
@@ -32,7 +32,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function addCheck(string $name, string $table, string $expression): self;
+    public function addCheck(string $name, string $table, string $expression): static;
 
     /**
      * Creates a SQL command for adding a new DB column.
@@ -46,7 +46,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function addColumn(string $table, string $column, string $type): self;
+    public function addColumn(string $table, string $column, string $type): static;
 
     /**
      * Builds a SQL command for adding comment to column.
@@ -59,7 +59,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function addCommentOnColumn(string $table, string $column, string $comment): self;
+    public function addCommentOnColumn(string $table, string $column, string $comment): static;
 
     /**
      * Builds a SQL command for adding comment to table.
@@ -70,7 +70,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function addCommentOnTable(string $table, string $comment): self;
+    public function addCommentOnTable(string $table, string $comment): static;
 
     /**
      * Creates a SQL command for adding a default value constraint to an existing table.
@@ -84,7 +84,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function addDefaultValue(string $name, string $table, string $column, mixed $value): self;
+    public function addDefaultValue(string $name, string $table, string $column, mixed $value): static;
 
     /**
      * Creates a SQL command for adding a foreign key constraint to an existing table.
@@ -111,9 +111,9 @@ interface CommandInterface
         array|string $columns,
         string $refTable,
         array|string $refColumns,
-        ?string $delete = null,
-        ?string $update = null
-    ): self;
+        string $delete = null,
+        string $update = null
+    ): static;
 
     /**
      * Creates a SQL command for adding a primary key constraint to an existing table.
@@ -126,7 +126,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function addPrimaryKey(string $name, string $table, array|string $columns): self;
+    public function addPrimaryKey(string $name, string $table, array|string $columns): static;
 
     /**
      * Creates a SQL command for adding a unique constraint to an existing table.
@@ -139,7 +139,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function addUnique(string $name, string $table, array|string $columns): self;
+    public function addUnique(string $name, string $table, array|string $columns): static;
 
     /**
      * Creates a SQL command for changing the definition of a column.
@@ -147,13 +147,13 @@ interface CommandInterface
      * @param string $table The table whose column is to be changed. The table name will be properly quoted by the
      * method.
      * @param string $column The name of the column to be changed. The name will be properly quoted by the method.
-     * @param string $type The column type. {@see QueryBuilder::getColumnType()} will be called to
-     * convert the give column type to the physical one. For example, `string` will be converted as `varchar(255)`, and
-     * `string not null` becomes `varchar(255) not null`.
+     * @param string $type The column type. {@see QueryBuilder::getColumnType()} will be called to convert the give
+     * column type to the physical one. For example, `string` will be converted as `varchar(255)`, and `string not null`
+     * becomes `varchar(255) not null`.
      *
      * @return static
      */
-    public function alterColumn(string $table, string $column, string $type): self;
+    public function alterColumn(string $table, string $column, string $type): static;
 
     /**
      * Creates a batch INSERT command.
@@ -161,11 +161,15 @@ interface CommandInterface
      * For example,
      *
      * ```php
-     * $connectionInterface->createCommand()->batchInsert('user', ['name', 'age'], [
-     *     ['Tom', 30],
-     *     ['Jane', 20],
-     *     ['Linda', 25],
-     * ])->execute();
+     * $connectionInterface->createCommand()->batchInsert(
+     *     'user',
+     *     ['name', 'age'],
+     *     [
+     *         ['Tom', 30],
+     *         ['Jane', 20],
+     *         ['Linda', 25],
+     *     ]
+     * )->execute();
      * ```
      *
      * The method will properly escape the column names, and quote the values to be inserted.
@@ -175,12 +179,12 @@ interface CommandInterface
      * Also note that the created command is not executed until {@see execute()} is called.
      *
      * @param string $table The table that new rows will be inserted into.
-     * @param array $columns The column names
+     * @param array $columns The column names.
      * @param iterable $rows The rows to be batched inserted into the table.
      *
      * @return static
      */
-    public function batchInsert(string $table, array $columns, iterable $rows): self;
+    public function batchInsert(string $table, array $columns, iterable $rows): static;
 
     /**
      * Binds a parameter to the SQL statement to be executed.
@@ -201,10 +205,10 @@ interface CommandInterface
     public function bindParam(
         int|string $name,
         mixed &$value,
-        ?int $dataType = null,
-        ?int $length = null,
+        int $dataType = null,
+        int $length = null,
         mixed $driverOptions = null
-    ): self;
+    ): static;
 
     /**
      * Binds a value to a parameter.
@@ -218,7 +222,7 @@ interface CommandInterface
      *
      * @return static The current command being executed.
      */
-    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): self;
+    public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
 
     /**
      * Binds a list of values to the corresponding parameters.
@@ -227,8 +231,8 @@ interface CommandInterface
      *
      * Note that the SQL data type of each value is determined by its PHP type.
      *
-     * @param array|ParamInterface[]| $values The values to be bound. This must be given in terms of an associative array with array keys
-     * being the parameter names, and array values the corresponding parameter values,
+     * @param array|ParamInterface[] $values The values to be bound. This must be given in terms of an associative
+     * array with array keys being the parameter names, and array values the corresponding parameter values,
      * e.g. `[':name' => 'John', ':age' => 25]`.
      * By default, the PDO type of each value is determined  by its PHP type. You may explicitly specify the PDO type by
      * using a {@see Param} class: `new Param(value, type)`,
@@ -236,7 +240,7 @@ interface CommandInterface
      *
      * @return static The current command being executed.
      */
-    public function bindValues(array $values): self;
+    public function bindValues(array $values): static;
 
     /**
      * Enables query cache for this command.
@@ -248,7 +252,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function cache(?int $duration = null, Dependency $dependency = null): self;
+    public function cache(int $duration = null, Dependency $dependency = null): static;
 
     /**
      * Cancels the execution of the SQL statement.
@@ -265,7 +269,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function checkIntegrity(string $schema, string $table, bool $check = true): self;
+    public function checkIntegrity(string $schema, string $table, bool $check = true): static;
 
     /**
      * Create query builder instance.
@@ -284,7 +288,13 @@ interface CommandInterface
      *
      * @return static
      */
-    public function createIndex(string $name, string $table, array|string $columns, ?string $indexType = null, ?string $indexMethod = null): self;
+    public function createIndex(
+        string $name,
+        string $table,
+        array|string $columns,
+        string $indexType = null,
+        string $indexMethod = null
+    ): static;
 
     /**
      * Creates a SQL command for creating a new DB table.
@@ -306,7 +316,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function createTable(string $table, array $columns, ?string $options = null): self;
+    public function createTable(string $table, array $columns, string $options = null): static;
 
     /**
      * Creates a SQL View.
@@ -317,7 +327,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function createView(string $viewName, QueryInterface|string $subquery): self;
+    public function createView(string $viewName, QueryInterface|string $subquery): static;
 
     /**
      * Creates a DELETE command.
@@ -346,7 +356,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function delete(string $table, array|string $condition = '', array $params = []): self;
+    public function delete(string $table, array|string $condition = '', array $params = []): static;
 
     /**
      * Creates a SQL command for dropping a check constraint.
@@ -358,7 +368,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function dropCheck(string $name, string $table): self;
+    public function dropCheck(string $name, string $table): static;
 
     /**
      * Creates a SQL command for dropping a DB column.
@@ -368,7 +378,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function dropColumn(string $table, string $column): self;
+    public function dropColumn(string $table, string $column): static;
 
     /**
      * Builds a SQL command for dropping comment from column.
@@ -380,7 +390,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function dropCommentFromColumn(string $table, string $column): self;
+    public function dropCommentFromColumn(string $table, string $column): static;
 
     /**
      * Builds a SQL command for dropping comment from table.
@@ -390,7 +400,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function dropCommentFromTable(string $table): self;
+    public function dropCommentFromTable(string $table): static;
 
     /**
      * Creates a SQL command for dropping a default value constraint.
@@ -402,7 +412,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function dropDefaultValue(string $name, string $table): self;
+    public function dropDefaultValue(string $name, string $table): static;
 
     /**
      * Creates a SQL command for dropping a foreign key constraint.
@@ -413,7 +423,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function dropForeignKey(string $name, string $table): self;
+    public function dropForeignKey(string $name, string $table): static;
 
     /**
      * Creates a SQL command for dropping an index.
@@ -423,7 +433,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function dropIndex(string $name, string $table): self;
+    public function dropIndex(string $name, string $table): static;
 
     /**
      * Creates a SQL command for removing a primary key constraint to an existing table.
@@ -433,7 +443,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function dropPrimaryKey(string $name, string $table): self;
+    public function dropPrimaryKey(string $name, string $table): static;
 
     /**
      * Creates a SQL command for dropping a DB table.
@@ -442,7 +452,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function dropTable(string $table): self;
+    public function dropTable(string $table): static;
 
     /**
      * Creates a SQL command for dropping a unique constraint.
@@ -454,7 +464,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function dropUnique(string $name, string $table): self;
+    public function dropUnique(string $name, string $table): static;
 
     /**
      * Drops a SQL View.
@@ -463,7 +473,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function dropView(string $viewName): self;
+    public function dropView(string $viewName): static;
 
     /**
      * Executes the SQL statement.
@@ -491,7 +501,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function executeResetSequence(string $table, array|int|string|null $value = null): self;
+    public function executeResetSequence(string $table, array|int|string $value = null): static;
 
     /**
      * Return the params used in the last query.
@@ -529,10 +539,13 @@ interface CommandInterface
      * For example,
      *
      * ```php
-     * $connectionInterface->createCommand()->insert('user', [
-     *     'name' => 'Sam',
-     *     'age' => 30,
-     * ])->execute();
+     * $connectionInterface->createCommand()->insert(
+     *     'user',
+     *     [
+     *         'name' => 'Sam',
+     *         'age' => 30,
+     *     ]
+     * )->execute();
      * ```
      *
      * The method will properly escape the column names, and bind the values to be inserted.
@@ -545,7 +558,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function insert(string $table, QueryInterface|array $columns): self;
+    public function insert(string $table, QueryInterface|array $columns): static;
 
     /**
      * Executes the INSERT command, returning primary key inserted values.
@@ -564,7 +577,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function noCache(): self;
+    public function noCache(): static;
 
     /**
      * Prepares the SQL statement to be executed.
@@ -577,7 +590,7 @@ interface CommandInterface
      *
      * @throws Exception If there is any DB error.
      */
-    public function prepare(?bool $forRead = null): void;
+    public function prepare(bool $forRead = null): void;
 
     /**
      * Executes the SQL statement and returns query result.
@@ -622,7 +635,7 @@ interface CommandInterface
      * @return array|null The first row (in terms of an array) of the query result. Null is returned if the query
      * results in nothing.
      */
-    public function queryOne(): ?array;
+    public function queryOne(): array|null;
 
     /**
      * Executes the SQL statement and returns the value of the first column in the first row of data.
@@ -645,7 +658,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function renameColumn(string $table, string $oldName, string $newName): self;
+    public function renameColumn(string $table, string $oldName, string $newName): static;
 
     /**
      * Creates a SQL command for renaming a DB table.
@@ -655,7 +668,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function renameTable(string $table, string $newName): self;
+    public function renameTable(string $table, string $newName): static;
 
     /**
      * Creates a SQL command for resetting the sequence value of a table's primary key.
@@ -669,7 +682,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function resetSequence(string $table, array|int|string|null $value = null): self;
+    public function resetSequence(string $table, array|int|string $value = null): static;
 
     /**
      * Specifies the SQL statement to be executed. The SQL statement will not be modified in any way.
@@ -684,7 +697,7 @@ interface CommandInterface
      * {@see reset()}
      * {@see cancel()}
      */
-    public function setRawSql(string $sql): self;
+    public function setRawSql(string $sql): static;
 
     /**
      * Specifies the SQL statement to be executed. The SQL statement will be quoted using
@@ -700,7 +713,7 @@ interface CommandInterface
      * {@see reset()}
      * {@see cancel()}
      */
-    public function setSql(string $sql): self;
+    public function setSql(string $sql): static;
 
     /**
      * Creates a SQL command for truncating a DB table.
@@ -709,7 +722,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function truncateTable(string $table): self;
+    public function truncateTable(string $table): static;
 
     /**
      * Creates an UPDATE command.
@@ -744,7 +757,7 @@ interface CommandInterface
      *
      * @return static
      */
-    public function update(string $table, array $columns, array|string $condition = '', array $params = []): self;
+    public function update(string $table, array $columns, array|string $condition = '', array $params = []): static;
 
     /**
      * Creates a command to insert rows into a database table if they do not already exist (matching unique constraints)
@@ -753,13 +766,18 @@ interface CommandInterface
      * For example,
      *
      * ```php
-     * $sql = $queryBuilder->upsert('pages', [
-     *     'name' => 'Front page',
-     *     'url' => 'http://example.com/', // url is unique
-     *     'visits' => 0,
-     * ], [
-     *     'visits' => new \Yiisoft\Db\Expression\Expression('visits + 1'),
-     * ], $params);
+     * $sql = $queryBuilder->upsert(
+     *     'pages',
+     *     [
+     *         'name' => 'Front page',
+     *         'url' => 'http://example.com/', // url is unique
+     *         'visits' => 0,
+     *     ],
+     *     [
+     *         'visits' => new \Yiisoft\Db\Expression\Expression('visits + 1'),
+     *     ],
+     *     $params,
+     * );
      * ```
      *
      * The method will properly escape the table and column names.
@@ -779,5 +797,5 @@ interface CommandInterface
         QueryInterface|array $insertColumns,
         bool|array $updateColumns = true,
         array $params = []
-    ): self;
+    ): static;
 }
