@@ -27,6 +27,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
+      composer_flag: "${{ matrix.php == '8.2' && '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs' || '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi' }}"
       extensions: pdo, pdo_mysql
 
     runs-on: ${{ matrix.os }}
@@ -72,7 +73,7 @@ jobs:
         run: composer self-update
 
       - name: Install db-mysql
-        run: composer require yiisoft/db-mysql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs
+        run: composer require yiisoft/db-mysql ${{ env.composer_flag }}
 
       - name: Run tests with phpunit
         run: vendor/bin/phpunit --testsuite Mysql --coverage-clover=coverage.xml --colors=always

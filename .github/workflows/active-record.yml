@@ -27,8 +27,8 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      extensions: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1
       composer_flag: "${{ matrix.php == '8.2' && '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs' || '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi' }}"
+      extensions: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
 

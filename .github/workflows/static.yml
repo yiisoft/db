@@ -27,6 +27,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
+      composer_flag: "${{ matrix.php == '8.2' && '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs' || '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi' }}"
       extensions: dom, json, libxml, mbstring, pdo, pdo_mysql, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1, tokenizer
 
     runs-on: ${{ matrix.os }}
@@ -59,7 +60,7 @@ jobs:
         run: composer self-update
 
       - name: Install dependencies with composer
-        run: composer update --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs
+        run: composer update ${{ env.composer_flag }}
 
       - name: Static analysis with psalm
         run: vendor/bin/psalm --shepherd --stats --output-format=checkstyle | cs2pr --graceful-warnings --colorize
