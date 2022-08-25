@@ -26,6 +26,7 @@ abstract class TableSchema implements TableSchemaInterface
     protected array $foreignKeys = [];
     protected ?string $createSql = null;
     private ?string $catalogName = null;
+    private ?string $serverName = null;
 
     /**
      * Gets the named column metadata.
@@ -149,6 +150,19 @@ abstract class TableSchema implements TableSchemaInterface
     public function catalogName(?string $value): void
     {
         $this->catalogName = $value;
+    }
+
+    public function getServerName(): ?string
+    {
+        return $this->serverName;
+    }
+
+    /**
+     * @param string|null name of the server
+     */
+    public function serverName(?string $value): void
+    {
+        $this->serverName = $value;
     }
 
     public function getCreateSql(): ?string

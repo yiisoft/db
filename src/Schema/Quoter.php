@@ -28,6 +28,14 @@ class Quoter implements QuoterInterface
     ) {
     }
 
+    public function getTableNameParts(string $name): array
+    {
+        $parts = array_slice(explode('.', $name), -2, 2);
+        return array_map(function ($part) {
+            return $this->unquoteSimpleTableName($part);
+        }, $parts);
+    }
+
     public function ensureNameQuoted(string $name): string
     {
         $name = str_replace(["'", '"', '`', '[', ']'], '', $name);
@@ -111,7 +119,6 @@ class Quoter implements QuoterInterface
             return $this->quoteSimpleTableName($name);
         }
 
-        /** @var string[] */
         $parts = $this->getTableNameParts($name);
 
         foreach ($parts as $i => $part) {
@@ -150,17 +157,5 @@ class Quoter implements QuoterInterface
         }
 
         return !str_contains($name, $startingCharacter) ? $name : substr($name, 1, -1);
-    }
-
-    /**
-     * Splits full table name into parts
-     *
-     * @param string $name
-     *
-     * @return array
-     */
-    protected function getTableNameParts(string $name): array
-    {
-        return explode('.', $name);
     }
 }
