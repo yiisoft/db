@@ -27,7 +27,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      extensions: pdo, pdo_sqlsrv-5.10.0-beta1
+      extensions: pdo, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
 
@@ -39,6 +39,7 @@ jobs:
         php:
           - 8.0
           - 8.1
+          - 8.2
 
         mssql:
           - server:2017-latest
