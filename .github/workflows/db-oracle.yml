@@ -68,7 +68,7 @@ jobs:
         run: composer self-update
 
       - name: Install db-oracle
-        run: composer require yiisoft/db-oracle --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/db-oracle --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs
 
       - name: Run oracle tests with phpunit
         run: vendor/bin/phpunit --testsuite Oracle --coverage-clover=coverage.xml --colors=always

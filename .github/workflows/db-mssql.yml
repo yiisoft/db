@@ -78,7 +78,7 @@ jobs:
         run: composer self-update
 
       - name: Install db-mssql
-        run: composer require yiisoft/db-mssql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/db-mssql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs
 
       - name: Run mssql tests with phpunit
         run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always
