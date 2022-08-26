@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Connection;
 
+use Closure;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
@@ -16,12 +17,15 @@ use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
+/**
+ * Connection is the base class for all database connection classes.
+ */
 abstract class Connection implements ConnectionInterface
 {
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
 
-    protected ?TransactionInterface $transaction = null;
+    protected TransactionInterface|null $transaction = null;
     private bool $enableSavepoint = true;
     private int $serverRetryInterval = 600;
     private string $tablePrefix = '';
@@ -48,13 +52,13 @@ abstract class Connection implements ConnectionInterface
         return $this->transaction;
     }
 
-    public function cache(callable $callable, int $duration = null, Dependency $dependency = null): mixed
+    public function cache(Closure $closure, int $duration = null, Dependency $dependency = null): mixed
     {
         $this->queryCache->setInfo(
             [$duration ?? $this->queryCache->getDuration(), $dependency]
         );
         /** @var mixed */
-        $result = $callable($this);
+        $result = $closure($this);
         $this->queryCache->removeLastInfo();
 
         return $result;
@@ -70,12 +74,12 @@ abstract class Connection implements ConnectionInterface
         return $this->tablePrefix;
     }
 
-    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface
+    public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null
     {
         return $this->getSchema()->getTableSchema($name, $refresh);
     }
 
-    public function getTransaction(): ?TransactionInterface
+    public function getTransaction(): TransactionInterface|null
     {
         return $this->transaction && $this->transaction->isActive() ? $this->transaction : null;
     }
@@ -85,12 +89,12 @@ abstract class Connection implements ConnectionInterface
         return $this->enableSavepoint;
     }
 
-    public function noCache(callable $callable): mixed
+    public function noCache(Closure $closure): mixed
     {
         $queryCache = $this->queryCache;
         $queryCache->setInfo(false);
         /** @var mixed */
-        $result = $callable($this);
+        $result = $closure($this);
         $queryCache->removeLastInfo();
 
         return $result;
@@ -106,7 +110,7 @@ abstract class Connection implements ConnectionInterface
         $this->tablePrefix = $value;
     }
 
-    public function transaction(callable $callback, string $isolationLevel = null): mixed
+    public function transaction(Closure $callback, string $isolationLevel = null): mixed
     {
         $transaction = $this->beginTransaction($isolationLevel);
 
