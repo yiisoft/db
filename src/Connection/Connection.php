@@ -110,7 +110,7 @@ abstract class Connection implements ConnectionInterface
         $this->tablePrefix = $value;
     }
 
-    public function transaction(Closure $callback, string $isolationLevel = null): mixed
+    public function transaction(Closure $closure, string $isolationLevel = null): mixed
     {
         $transaction = $this->beginTransaction($isolationLevel);
 
@@ -118,7 +118,7 @@ abstract class Connection implements ConnectionInterface
 
         try {
             /** @var mixed */
-            $result = $callback($this);
+            $result = $closure($this);
 
             if ($transaction->isActive() && $transaction->getLevel() === $level) {
                 $transaction->commit();
