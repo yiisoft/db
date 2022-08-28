@@ -119,7 +119,7 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
         return $this->emulatePrepare;
     }
 
-    public function getPdo(): ?PDO
+    public function getPDO(): ?PDO
     {
         return $this->pdo;
     }

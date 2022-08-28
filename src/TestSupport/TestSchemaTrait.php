@@ -348,6 +348,45 @@ trait TestSchemaTrait
 
     public function testQuoterEscapingValue()
     {
+        $db = $this->getConnection(true);
+        $quoter = $db->getQuoter();
+
+        $db->createCommand('delete from {{quoter}}')->execute();
+        $data = $this->generateQuoterEscapingValues();
+
+        foreach ($data as $index => $value) {
+            $quotedName = $quoter->quoteValue('testValue_' . $index);
+            $quoteValue = $quoter->quoteValue($value);
+
+            $db->createCommand('insert into {{quoter}}([[name]], [[description]]) values(' . $quotedName . ', ' . $quoteValue . ')')->execute();
+            $result = $db->createCommand('select * from {{quoter}} where [[name]]=' . $quotedName)->queryOne();
+            $this->assertEquals($value, $result['description']);
+        }
+    }
+
+    public function generateQuoterEscapingValues()
+    {
+        $result = [];
+        $stringLength = 16;
+        for ($i = 1; $i < 128 - $stringLength; $i += $stringLength) {
+            $str = '';
+            for ($symbol = $i; $symbol < $i + $stringLength; $symbol++) {
+                $str .= mb_chr($symbol, 'UTF-8');
+            }
+            $result[] = $str;
+
+            $str = '';
+            for ($symbol = $i; $symbol < $i + $stringLength; $symbol++) {
+                $str .= mb_chr($symbol, 'UTF-8') . mb_chr($symbol, 'UTF-8');
+            }
+            $result[] = $str;
+        }
+
+        return $result;
+    }
+
+    public function testQuoterEscapingValueFull()
+    {
         $this->markTestSkipped('Very long test - only for check quoteValue');
         $template = 'aaaaa{1}aaa{1}aaaabbbbb{2}bbbb{2}bbbb';
 
