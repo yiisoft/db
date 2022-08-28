@@ -97,6 +97,11 @@ abstract class Connection implements ConnectionInterface, ProfilerAwareInterface
         return $result;
     }
 
+    public function notProfiler(): void
+    {
+        $this->profiler = null;
+    }
+
     public function setEnableSavepoint(bool $value): void
     {
         $this->enableSavepoint = $value;
