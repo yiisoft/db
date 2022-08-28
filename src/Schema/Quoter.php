@@ -136,7 +136,7 @@ class Quoter implements QuoterInterface
             return $value;
         }
 
-    if ($this->pdo && ($value = $this->pdo->quote($value)) !== false) {
+        if ($this->pdo && ($value = $this->pdo->quote($value)) !== false) {
             return $value;
         }
 
