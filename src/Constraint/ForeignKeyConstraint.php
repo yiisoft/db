@@ -43,9 +43,9 @@ final class ForeignKeyConstraint extends Constraint
     /**
      * @param string|null $value the referenced table schema name.
      *
-     * @return static
+     * @return self
      */
-    public function foreignSchemaName(string|null $value): static
+    public function foreignSchemaName(string|null $value): self
     {
         $this->foreignSchemaName = $value;
 
@@ -55,9 +55,9 @@ final class ForeignKeyConstraint extends Constraint
     /**
      * @param string|null $value The referenced table name.
      *
-     * @return static
+     * @return self
      */
-    public function foreignTableName(string|null $value): static
+    public function foreignTableName(string|null $value): self
     {
         $this->foreignTableName = $value;
 
@@ -67,9 +67,9 @@ final class ForeignKeyConstraint extends Constraint
     /**
      * @param array $value The list of referenced table column names.
      *
-     * @return static
+     * @return self
      */
-    public function foreignColumnNames(array $value): static
+    public function foreignColumnNames(array $value): self
     {
         $this->foreignColumnNames = $value;
 
@@ -79,9 +79,9 @@ final class ForeignKeyConstraint extends Constraint
     /**
      * @param string|null $value The referential action if rows in a referenced table are to be updated.
      *
-     * @return static
+     * @return self
      */
-    public function onUpdate(string|null $value): static
+    public function onUpdate(string|null $value): self
     {
         $this->onUpdate = $value;
 
@@ -91,9 +91,9 @@ final class ForeignKeyConstraint extends Constraint
     /**
      * @param string|null $value The referential action if rows in a referenced table are to be deleted.
      *
-     * @return static
+     * @return self
      */
-    public function onDelete(string|null $value): static
+    public function onDelete(string|null $value): self
     {
         $this->onDelete = $value;
 

@@ -25,9 +25,9 @@ class Constraint
     /**
      * @param array|string|null $value list of column names the constraint belongs to.
      *
-     * @return self
+     * @return static
      */
-    public function columnNames(array|string|null $value): self
+    public function columnNames(array|string|null $value): static
     {
         $this->columnNames = $value;
 
@@ -37,9 +37,9 @@ class Constraint
     /**
      * @param object|string|null $value the constraint name.
      *
-     * @return self
+     * @return static
      */
-    public function name(object|string|null $value): self
+    public function name(object|string|null $value): static
     {
         $this->name = $value;
 
