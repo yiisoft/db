@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Constraint;
 /**
  * IndexConstraint represents the metadata of a table `INDEX` constraint.
  */
-class IndexConstraint extends Constraint
+final class IndexConstraint extends Constraint
 {
     private bool $isUnique = false;
     private bool $isPrimary = false;
@@ -25,7 +25,7 @@ class IndexConstraint extends Constraint
     /**
      * @param bool $value whether the index is unique.
      *
-     * @return $this
+     * @return static
      */
     public function unique(bool $value): self
     {
@@ -37,7 +37,7 @@ class IndexConstraint extends Constraint
     /**
      * @param bool $value whether the index was created for a primary key.
      *
-     * @return $this
+     * @return static
      */
     public function primary(bool $value): self
     {

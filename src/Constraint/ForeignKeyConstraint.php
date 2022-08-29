@@ -7,20 +7,20 @@ namespace Yiisoft\Db\Constraint;
 /**
  * ForeignKeyConstraint represents the metadata of a table `FOREIGN KEY` constraint.
  */
-class ForeignKeyConstraint extends Constraint
+final class ForeignKeyConstraint extends Constraint
 {
-    private ?string $foreignSchemaName = null;
-    private ?string $foreignTableName = null;
+    private string|null $foreignSchemaName = null;
+    private string|null $foreignTableName = null;
     private array $foreignColumnNames = [];
-    private ?string $onUpdate = null;
-    private ?string $onDelete = null;
+    private string|null $onUpdate = null;
+    private string|null $onDelete = null;
 
-    public function getForeignSchemaName(): ?string
+    public function getForeignSchemaName(): string|null
     {
         return $this->foreignSchemaName;
     }
 
-    public function getForeignTableName(): ?string
+    public function getForeignTableName(): string|null
     {
         return $this->foreignTableName;
     }
@@ -30,22 +30,22 @@ class ForeignKeyConstraint extends Constraint
         return $this->foreignColumnNames;
     }
 
-    public function getOnUpdate(): ?string
+    public function getOnUpdate(): string|null
     {
         return $this->onUpdate;
     }
 
-    public function getOnDelete(): ?string
+    public function getOnDelete(): string|null
     {
         return $this->onDelete;
     }
 
     /**
-     * @param string|null $value referenced table schema name.
+     * @param string|null $value the referenced table schema name.
      *
-     * @return $this
+     * @return static
      */
-    public function foreignSchemaName(?string $value): self
+    public function foreignSchemaName(string|null $value): static
     {
         $this->foreignSchemaName = $value;
 
@@ -53,11 +53,11 @@ class ForeignKeyConstraint extends Constraint
     }
 
     /**
-     * @param string|null $value referenced table name.
+     * @param string|null $value The referenced table name.
      *
-     * @return $this
+     * @return static
      */
-    public function foreignTableName(?string $value): self
+    public function foreignTableName(string|null $value): static
     {
         $this->foreignTableName = $value;
 
@@ -65,11 +65,11 @@ class ForeignKeyConstraint extends Constraint
     }
 
     /**
-     * @param array $value list of referenced table column names.
+     * @param array $value The list of referenced table column names.
      *
-     * @return $this
+     * @return static
      */
-    public function foreignColumnNames(array $value): self
+    public function foreignColumnNames(array $value): static
     {
         $this->foreignColumnNames = $value;
 
@@ -77,11 +77,11 @@ class ForeignKeyConstraint extends Constraint
     }
 
     /**
-     * @param string|null $value referential action if rows in a referenced table are to be updated.
+     * @param string|null $value The referential action if rows in a referenced table are to be updated.
      *
-     * @return $this
+     * @return static
      */
-    public function onUpdate(?string $value): self
+    public function onUpdate(string|null $value): static
     {
         $this->onUpdate = $value;
 
@@ -89,11 +89,11 @@ class ForeignKeyConstraint extends Constraint
     }
 
     /**
-     * @param string|null $value referential action if rows in a referenced table are to be deleted.
+     * @param string|null $value The referential action if rows in a referenced table are to be deleted.
      *
-     * @return $this
+     * @return static
      */
-    public function onDelete(?string $value): self
+    public function onDelete(string|null $value): static
     {
         $this->onDelete = $value;
 
