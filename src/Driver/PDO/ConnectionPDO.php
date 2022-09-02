@@ -24,9 +24,7 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
 {
     protected ?PDO $pdo = null;
     protected string $serverVersion = '';
-
     protected ?bool $emulatePrepare = null;
-
     protected ?QueryBuilderInterface $queryBuilder = null;
     protected ?QuoterInterface $quoter = null;
     protected ?SchemaInterface $schema = null;
@@ -68,11 +66,11 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
 
     public function open(): void
     {
-        if (!empty($this->pdo)) {
+        if ($this->isActive()) {
             return;
         }
 
-        if (empty($this->driver->getDsn())) {
+        if ($this->driver->getDsn() === '') {
             throw new InvalidConfigException('Connection::dsn cannot be empty.');
         }
 
@@ -93,7 +91,7 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
 
     public function close(): void
     {
-        if ($this->pdo !== null) {
+        if ($this->isActive()) {
             $this->logger?->log(
                 LogLevel::DEBUG,
                 'Closing DB connection: ' . $this->driver->getDsn() . ' ' . __METHOD__,
@@ -137,8 +135,11 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
      */
     public function getActivePDO(?string $sql = '', ?bool $forRead = null): PDO
     {
-        $this->open();
-        $pdo = $this->getPDO();
+        if ($this->isActive() === false) {
+            $this->open();
+        }
+
+        $pdo = $this->pdo;
 
         if ($pdo === null) {
             throw new Exception('PDO cannot be initialized.');

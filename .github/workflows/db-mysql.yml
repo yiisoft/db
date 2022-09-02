@@ -46,6 +46,7 @@ jobs:
 
     services:
       mysql:
+        command: ["--max_connections=500"]
         image: mysql:${{ matrix.mysql }}
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
