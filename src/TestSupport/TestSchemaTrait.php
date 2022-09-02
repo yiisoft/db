@@ -387,7 +387,6 @@ trait TestSchemaTrait
 
     public function testQuoterEscapingValueFull()
     {
-        $this->markTestSkipped('Very long test - only for check quoteValue');
         $template = 'aaaaa{1}aaa{1}aaaabbbbb{2}bbbb{2}bbbb';
 
         $db = $this->getConnection(true);
