@@ -137,8 +137,11 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
      */
     public function getActivePDO(?string $sql = '', ?bool $forRead = null): PDO
     {
-        $this->open();
-        $pdo = $this->getPDO();
+        if ($this->pdo === null) {
+            $this->open();
+        }
+
+        $pdo = $this->pdo;
 
         if ($pdo === null) {
             throw new Exception('PDO cannot be initialized.');
