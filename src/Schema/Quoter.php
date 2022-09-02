@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
+use PDO;
 use function addcslashes;
 use function explode;
 use function implode;
@@ -24,7 +25,8 @@ class Quoter implements QuoterInterface
         private array|string $columnQuoteCharacter,
         /** @psalm-var string[]|string */
         private array|string $tableQuoteCharacter,
-        private string $tablePrefix = ''
+        private string $tablePrefix = '',
+        protected PDO|null $pdo = null
     ) {
     }
 
@@ -131,6 +133,10 @@ class Quoter implements QuoterInterface
     public function quoteValue(mixed $value): mixed
     {
         if (!is_string($value)) {
+            return $value;
+        }
+
+        if ($this->pdo && ($value = $this->pdo->quote($value)) !== false) {
             return $value;
         }
 
