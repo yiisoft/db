@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use PDO;
+use Yiisoft\Db\Connection\ConnectionInterface;
+
 use function addcslashes;
 use function explode;
 use function implode;
@@ -21,12 +22,12 @@ use function substr;
 class Quoter implements QuoterInterface
 {
     public function __construct(
+        private ConnectionInterface $connection,
         /** @psalm-var string[]|string */
         private array|string $columnQuoteCharacter,
         /** @psalm-var string[]|string */
         private array|string $tableQuoteCharacter,
-        private string $tablePrefix = '',
-        protected PDO|null $pdo = null
+        private string $tablePrefix = ''
     ) {
     }
 
@@ -136,7 +137,7 @@ class Quoter implements QuoterInterface
             return $value;
         }
 
-        if ($this->pdo && ($value = $this->pdo->quote($value)) !== false) {
+        if (($value = $this->connection->quoteValue($value)) !== false) {
             return $value;
         }
 

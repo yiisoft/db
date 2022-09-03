@@ -181,6 +181,15 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
         return $this->pdo !== null;
     }
 
+    public function quoteValue(mixed $value): mixed
+    {
+        if (!is_string($value)) {
+            return $value;
+        }
+
+        return $this->getActivePDO()->quote($value);
+    }
+
     public function setEmulatePrepare(bool $value): void
     {
         $this->emulatePrepare = $value;
