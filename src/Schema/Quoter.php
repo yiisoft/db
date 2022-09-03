@@ -137,8 +137,8 @@ class Quoter implements QuoterInterface
             return $value;
         }
 
-        if (($value = $this->connection->quoteValue($value)) !== false) {
-            return $value;
+        if (($quotedValue = $this->connection->quoteValue($value)) !== false) {
+            return $quotedValue;
         }
 
         return '\'' . str_replace('\'', '\'\'', addcslashes($value, "\000\032")) . '\'';
