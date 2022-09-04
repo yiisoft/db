@@ -187,7 +187,11 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
             return $value;
         }
 
-        return $this->getActivePDO()->quote($value);
+        if (($quotedValue = $this->connection->quoteValue($value)) !== false) {
+            return $quotedValue;
+        }
+
+        return $this->getQuoter()->escapeString($value);
     }
 
     public function setEmulatePrepare(bool $value): void

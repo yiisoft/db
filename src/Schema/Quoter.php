@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Connection\ConnectionInterface;
-
 use function addcslashes;
 use function explode;
 use function implode;
@@ -22,13 +20,17 @@ use function substr;
 class Quoter implements QuoterInterface
 {
     public function __construct(
-        private ConnectionInterface $connection,
         /** @psalm-var string[]|string */
         private array|string $columnQuoteCharacter,
         /** @psalm-var string[]|string */
         private array|string $tableQuoteCharacter,
         private string $tablePrefix = ''
     ) {
+    }
+
+    public function escapeString(mixed $value): mixed
+    {
+        return '\'' . str_replace('\'', '\'\'', addcslashes($value, "\000\032")) . '\'';
     }
 
     public function getTableNameParts(string $name): array
@@ -129,19 +131,6 @@ class Quoter implements QuoterInterface
         }
 
         return implode('.', $parts);
-    }
-
-    public function quoteValue(mixed $value): mixed
-    {
-        if (!is_string($value)) {
-            return $value;
-        }
-
-        if (($quotedValue = $this->connection->quoteValue($value)) !== false) {
-            return $quotedValue;
-        }
-
-        return '\'' . str_replace('\'', '\'\'', addcslashes($value, "\000\032")) . '\'';
     }
 
     public function unquoteSimpleColumnName(string $name): string

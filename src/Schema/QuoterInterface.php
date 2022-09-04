@@ -7,6 +7,17 @@ namespace Yiisoft\Db\Schema;
 interface QuoterInterface
 {
     /**
+     * Escapes a value for use in a query.
+     *
+     * Note that if the parameter is not a string, it will be returned without change.
+     *
+     * @param mixed $value The value to be escaped.
+     *
+     * @return mixed The properly quoted string.
+     */
+    public function escapeString(mixed $value): mixed;
+
+    /**
      * Splits full table name into parts
      *
      * @param string $name
@@ -88,17 +99,6 @@ interface QuoterInterface
      * {@see quoteSimpleTableName()}
      */
     public function quoteTableName(string $name): string;
-
-    /**
-     * Quotes a string value for use in a query.
-     *
-     * Note that if the parameter is not a string, it will be returned without change.
-     *
-     * @param mixed $value
-     *
-     * @return mixed The properly quoted string.
-     */
-    public function quoteValue(mixed $value): mixed;
 
     /**
      * Unquotes a simple column name.
