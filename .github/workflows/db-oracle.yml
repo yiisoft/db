@@ -27,6 +27,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
+      composer_flag: "${{ matrix.php == '8.2' && '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs' || '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi' }}"
       extensions: pdo, pdo_oci
 
     runs-on: ${{ matrix.os }}
@@ -39,6 +40,7 @@ jobs:
         php:
           - 8.0
           - 8.1
+          - 8.2
 
         oracle:
           - oracle-xe-11g-r2:latest
@@ -67,7 +69,7 @@ jobs:
         run: composer self-update
 
       - name: Install db-oracle
-        run: composer require yiisoft/db-oracle --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/db-oracle ${{ env.composer_flag }}
 
       - name: Run oracle tests with phpunit
         run: vendor/bin/phpunit --testsuite Oracle --coverage-clover=coverage.xml --colors=always
