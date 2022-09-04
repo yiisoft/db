@@ -12,7 +12,6 @@ use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\AwareTrait\ProfilerAwareTrait;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
@@ -23,6 +22,8 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
+use Yiisoft\Profiler\ProfilerAwareInterface;
+use Yiisoft\Profiler\ProfilerAwareTrait;
 
 use function explode;
 use function get_resource_type;
@@ -73,7 +74,7 @@ use function strtr;
  *
  * To build SELECT SQL statements, please use {@see QueryInterface} instead.
  */
-abstract class Command implements CommandInterface
+abstract class Command implements CommandInterface, ProfilerAwareInterface
 {
     use LoggerAwareTrait;
     use ProfilerAwareTrait;

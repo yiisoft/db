@@ -216,6 +216,11 @@ interface ConnectionInterface
     public function noCache(callable $callable): mixed;
 
     /**
+     * Disabled profiling for current DB connection.
+     */
+    public function notProfiler(): void;
+
+    /**
      * Establishes a DB connection.
      *
      * It does nothing if a DB connection has already been established.
