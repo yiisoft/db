@@ -225,6 +225,15 @@ interface ConnectionInterface
     public function open(): void;
 
     /**
+     * Quotes a value for use in a query.
+     *
+     * @param mixed $value
+     *
+     * @return mixed The properly quoted string.
+     */
+    public function quoteValue(mixed $value): mixed;
+
+    /**
      * Whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint). Note that if the underlying DBMS does not
      * support savepoint, setting this property to be true will have no effect.
      *
