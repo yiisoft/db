@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
+use Closure;
 use DateInterval;
 use JsonException;
 use Psr\Log\LoggerAwareTrait;
@@ -43,8 +44,8 @@ use function strtr;
  * The SQL statement it represents can be set via the {@see sql} property.
  *
  * To execute a non-query SQL (such as INSERT, DELETE, UPDATE), call {@see execute()}.
- * To execute a SQL statement that returns a result data set (such as SELECT), use {@see queryAll()},
- * {@see queryOne()}, {@see queryColumn()}, {@see queryScalar()}, or {@see query()}.
+ * To execute a SQL statement that returns a result data set (such as SELECT), use {@see queryAll()}, {@see queryOne()},
+ * {@see queryColumn()}, {@see queryScalar()}, or {@see query()}.
  *
  * For example,
  *
@@ -65,32 +66,25 @@ use function strtr;
  * For example, the following code will create and execute an INSERT SQL statement:
  *
  * ```php
- * $connectionInterface->createCommand()->insert('user', [
- *     'name' => 'Sam',
- *     'age' => 30,
- * ])->execute();
+ * $connectionInterface->createCommand()->insert(
+ *     'user',
+ *     ['name' => 'Sam', 'age' => 30],
+ * )->execute();
  * ```
  *
  * To build SELECT SQL statements, please use {@see QueryInterface} instead.
- *
- * For more details and usage information on Command, see the [guide article on Database Access Objects](guide:db-dao).
- *
- * @property string $rawSql The raw SQL with parameter values inserted into the corresponding placeholders in
- * {@see sql}.
- * @property string $sql The SQL statement to be executed.
  */
 abstract class Command implements CommandInterface, ProfilerAwareInterface
 {
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
 
-    protected ?string $isolationLevel = null;
-    protected ?string $refreshTableName = null;
-    /** @var callable|null */
-    protected $retryHandler = null;
-    protected ?int $queryCacheDuration = null;
+    protected string|null $isolationLevel = null;
+    protected string|null $refreshTableName = null;
+    protected Closure|null $retryHandler = null;
+    protected int|null $queryCacheDuration = null;
     private string $sql = '';
-    protected ?Dependency $queryCacheDependency = null;
+    protected Dependency|null $queryCacheDependency = null;
     /** * @var ParamInterface[] */
     protected array $params = [];
 
@@ -98,13 +92,13 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     {
     }
 
-    public function addCheck(string $name, string $table, string $expression): self
+    public function addCheck(string $name, string $table, string $expression): static
     {
         $sql = $this->queryBuilder()->addCheck($name, $table, $expression);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function addColumn(string $table, string $column, string $type): self
+    public function addColumn(string $table, string $column, string $type): static
     {
         $sql = $this->queryBuilder()->addColumn($table, $column, $type);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -113,7 +107,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws \Exception
      */
-    public function addCommentOnColumn(string $table, string $column, string $comment): self
+    public function addCommentOnColumn(string $table, string $column, string $comment): static
     {
         $sql = $this->queryBuilder()->addCommentOnColumn($table, $column, $comment);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -122,7 +116,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws \Exception
      */
-    public function addCommentOnTable(string $table, string $comment): self
+    public function addCommentOnTable(string $table, string $comment): static
     {
         $sql = $this->queryBuilder()->addCommentOnTable($table, $comment);
         return $this->setSql($sql);
@@ -131,7 +125,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|NotSupportedException
      */
-    public function addDefaultValue(string $name, string $table, string $column, mixed $value): self
+    public function addDefaultValue(string $name, string $table, string $column, mixed $value): static
     {
         $sql = $this->queryBuilder()->addDefaultValue($name, $table, $column, $value);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -146,9 +140,9 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         array|string $columns,
         string $refTable,
         array|string $refColumns,
-        ?string $delete = null,
-        ?string $update = null
-    ): self {
+        string $delete = null,
+        string $update = null
+    ): static {
         $sql = $this->queryBuilder()->addForeignKey(
             $name,
             $table,
@@ -162,19 +156,19 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function addPrimaryKey(string $name, string $table, array|string $columns): self
+    public function addPrimaryKey(string $name, string $table, array|string $columns): static
     {
         $sql = $this->queryBuilder()->addPrimaryKey($name, $table, $columns);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function addUnique(string $name, string $table, array|string $columns): self
+    public function addUnique(string $name, string $table, array|string $columns): static
     {
         $sql = $this->queryBuilder()->addUnique($name, $table, $columns);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function alterColumn(string $table, string $column, string $type): self
+    public function alterColumn(string $table, string $column, string $type): static
     {
         $sql = $this->queryBuilder()->alterColumn($table, $column, $type);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -183,7 +177,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|InvalidArgumentException
      */
-    public function batchInsert(string $table, array $columns, iterable $rows): self
+    public function batchInsert(string $table, array $columns, iterable $rows): static
     {
         $table = $this->queryBuilder()->quoter()->quoteSql($table);
 
@@ -191,6 +185,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         foreach ($columns as &$column) {
             $column = $this->queryBuilder()->quoter()->quoteSql($column);
         }
+
         unset($column);
 
         $params = [];
@@ -198,15 +193,14 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
 
         $this->setRawSql($sql);
         $this->bindValues($params);
-
         return $this;
     }
 
-    abstract public function bindValue(int|string $name, mixed $value, ?int $dataType = null): self;
+    abstract public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
 
-    abstract public function bindValues(array $values): self;
+    abstract public function bindValues(array $values): static;
 
-    public function cache(?int $duration = null, Dependency $dependency = null): self
+    public function cache(int $duration = null, Dependency $dependency = null): static
     {
         $this->queryCacheDuration = $duration ?? $this->queryCache->getDuration();
         $this->queryCacheDependency = $dependency;
@@ -216,7 +210,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|NotSupportedException
      */
-    public function checkIntegrity(string $schema, string $table, bool $check = true): self
+    public function checkIntegrity(string $schema, string $table, bool $check = true): static
     {
         $sql = $this->queryBuilder()->checkIntegrity($schema, $table, $check);
         return $this->setSql($sql);
@@ -225,13 +219,18 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|InvalidArgumentException
      */
-    public function createIndex(string $name, string $table, array|string $columns, ?string $indexType = null, ?string $indexMethod = null): self
-    {
+    public function createIndex(
+        string $name,
+        string $table,
+        array|string $columns,
+        string $indexType = null,
+        string $indexMethod = null
+    ): static {
         $sql = $this->queryBuilder()->createIndex($name, $table, $columns, $indexType, $indexMethod);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function createTable(string $table, array $columns, ?string $options = null): self
+    public function createTable(string $table, array $columns, string $options = null): static
     {
         $sql = $this->queryBuilder()->createTable($table, $columns, $options);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -240,7 +239,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|InvalidConfigException|NotSupportedException
      */
-    public function createView(string $viewName, QueryInterface|string $subquery): self
+    public function createView(string $viewName, QueryInterface|string $subquery): static
     {
         $sql = $this->queryBuilder()->createView($viewName, $subquery);
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
@@ -249,31 +248,31 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|InvalidArgumentException
      */
-    public function delete(string $table, array|string $condition = '', array $params = []): self
+    public function delete(string $table, array|string $condition = '', array $params = []): static
     {
         $sql = $this->queryBuilder()->delete($table, $condition, $params);
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function dropCheck(string $name, string $table): self
+    public function dropCheck(string $name, string $table): static
     {
         $sql = $this->queryBuilder()->dropCheck($name, $table);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropColumn(string $table, string $column): self
+    public function dropColumn(string $table, string $column): static
     {
         $sql = $this->queryBuilder()->dropColumn($table, $column);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropCommentFromColumn(string $table, string $column): self
+    public function dropCommentFromColumn(string $table, string $column): static
     {
         $sql = $this->queryBuilder()->dropCommentFromColumn($table, $column);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropCommentFromTable(string $table): self
+    public function dropCommentFromTable(string $table): static
     {
         $sql = $this->queryBuilder()->dropCommentFromTable($table);
         return $this->setSql($sql);
@@ -282,43 +281,43 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|NotSupportedException
      */
-    public function dropDefaultValue(string $name, string $table): self
+    public function dropDefaultValue(string $name, string $table): static
     {
         $sql = $this->queryBuilder()->dropDefaultValue($name, $table);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropForeignKey(string $name, string $table): self
+    public function dropForeignKey(string $name, string $table): static
     {
         $sql = $this->queryBuilder()->dropForeignKey($name, $table);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropIndex(string $name, string $table): self
+    public function dropIndex(string $name, string $table): static
     {
         $sql = $this->queryBuilder()->dropIndex($name, $table);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropPrimaryKey(string $name, string $table): self
+    public function dropPrimaryKey(string $name, string $table): static
     {
         $sql = $this->queryBuilder()->dropPrimaryKey($name, $table);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropTable(string $table): self
+    public function dropTable(string $table): static
     {
         $sql = $this->queryBuilder()->dropTable($table);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropUnique(string $name, string $table): self
+    public function dropUnique(string $name, string $table): static
     {
         $sql = $this->queryBuilder()->dropUnique($name, $table);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropView(string $viewName): self
+    public function dropView(string $viewName): static
     {
         $sql = $this->queryBuilder()->dropView($viewName);
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
@@ -327,7 +326,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|NotSupportedException
      */
-    public function executeResetSequence(string $table, array|int|string|null $value = null): self
+    public function executeResetSequence(string $table, array|int|string $value = null): static
     {
         return $this->resetSequence($table, $value);
     }
@@ -411,7 +410,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      */
-    public function insert(string $table, QueryInterface|array $columns): self
+    public function insert(string $table, QueryInterface|array $columns): static
     {
         $params = [];
         $sql = $this->queryBuilder()->insert($table, $columns, $params);
@@ -420,7 +419,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
 
     abstract public function insertEx(string $table, array $columns): bool|array;
 
-    public function noCache(): self
+    public function noCache(): static
     {
         $this->queryCacheDuration = -1;
         return $this;
@@ -480,7 +479,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         return is_array($results) ? $results : [];
     }
 
-    public function queryOne(): ?array
+    public function queryOne(): array|null
     {
         /** @psalm-var mixed */
         $results = $this->queryInternal(self::QUERY_MODE_ROW);
@@ -510,13 +509,13 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         return $result;
     }
 
-    public function renameColumn(string $table, string $oldName, string $newName): self
+    public function renameColumn(string $table, string $oldName, string $newName): static
     {
         $sql = $this->queryBuilder()->renameColumn($table, $oldName, $newName);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function renameTable(string $table, string $newName): self
+    public function renameTable(string $table, string $newName): static
     {
         $sql = $this->queryBuilder()->renameTable($table, $newName);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -525,13 +524,13 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|NotSupportedException
      */
-    public function resetSequence(string $table, array|int|string|null $value = null): self
+    public function resetSequence(string $table, array|int|string $value = null): static
     {
         $sql = $this->queryBuilder()->resetSequence($table, $value);
         return $this->setSql($sql);
     }
 
-    public function setRawSql(string $sql): self
+    public function setRawSql(string $sql): static
     {
         if ($sql !== $this->sql) {
             $this->cancel();
@@ -542,7 +541,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         return $this;
     }
 
-    public function setSql(string $sql): self
+    public function setSql(string $sql): static
     {
         $this->cancel();
         $this->reset();
@@ -551,7 +550,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         return $this;
     }
 
-    public function truncateTable(string $table): self
+    public function truncateTable(string $table): static
     {
         $sql = $this->queryBuilder()->truncateTable($table);
         return $this->setSql($sql);
@@ -560,7 +559,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|InvalidArgumentException
      */
-    public function update(string $table, array $columns, array|string $condition = '', array $params = []): self
+    public function update(string $table, array $columns, array|string $condition = '', array $params = []): static
     {
         $sql = $this->queryBuilder()->update($table, $columns, $condition, $params);
         return $this->setSql($sql)->bindValues($params);
@@ -574,7 +573,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         QueryInterface|array $insertColumns,
         bool|array $updateColumns = true,
         array $params = []
-    ): self {
+    ): static {
         $sql = $this->queryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
         return $this->setSql($sql)->bindValues($params);
     }
@@ -673,7 +672,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      *
      * @throws Exception|Throwable
      */
-    abstract protected function internalExecute(?string $rawSql): void;
+    abstract protected function internalExecute(string|null $rawSql): void;
 
     abstract protected function internalGetQueryResult(int $queryMode): mixed;
 
@@ -706,7 +705,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      *
      * @return static
      */
-    protected function requireTableSchemaRefresh(string $name): self
+    protected function requireTableSchemaRefresh(string $name): static
     {
         $this->refreshTableName = $name;
         return $this;
@@ -721,7 +720,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      *
      * @return static
      */
-    protected function requireTransaction(?string $isolationLevel = null): self
+    protected function requireTransaction(string $isolationLevel = null): static
     {
         $this->isolationLevel = $isolationLevel;
         return $this;
@@ -737,8 +736,8 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     }
 
     /**
-     * Sets a callable (e.g. anonymous function) that is called when {@see Exception} is thrown when executing the
-     * command. The signature of the callable should be:.
+     * Sets a Closure (e.g. anonymous function) that is called when {@see Exception} is thrown when executing the
+     * command. The signature of the Closure should be:.
      *
      * ```php
      * function (Exceptions $e, $attempt)
@@ -747,14 +746,14 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      * }
      * ```
      *
-     * The callable will receive a database exception thrown and a current attempt (to execute the command) number
+     * The Closure will receive a database exception thrown and a current attempt (to execute the command) number
      * starting from 1.
      *
-     * @param callable|null $handler A PHP callback to handle database exceptions.
+     * @param Closure|null $handler A PHP callback to handle database exceptions.
      *
      * @return static
      */
-    protected function setRetryHandler(?callable $handler): self
+    protected function setRetryHandler(Closure|null $handler): static
     {
         $this->retryHandler = $handler;
         return $this;
@@ -763,7 +762,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @psalm-param array{CacheInterface, DateInterval|int|null, Dependency|null} $info
      */
-    private function getFromCacheInfo(?array $info, array $cacheKey): mixed
+    private function getFromCacheInfo(array|null $info, array $cacheKey): mixed
     {
         if (!is_array($info)) {
             return null;
@@ -789,7 +788,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @psalm-param array{CacheInterface, DateInterval|int|null, Dependency|null} $info
      */
-    private function setToCacheInfo(?array $info, array $cacheKey, mixed $result): void
+    private function setToCacheInfo(array|null $info, array $cacheKey, mixed $result): void
     {
         if (!is_array($info)) {
             return;

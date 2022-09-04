@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Constraint;
 /**
  * DefaultValueConstraint represents the metadata of a table `DEFAULT` constraint.
  */
-class DefaultValueConstraint extends Constraint
+final class DefaultValueConstraint extends Constraint
 {
     private mixed $value;
 
@@ -19,7 +19,7 @@ class DefaultValueConstraint extends Constraint
     /**
      * @param mixed default value as returned by the DBMS.
      *
-     * @return $this
+     * @return self
      */
     public function value(mixed $value): self
     {

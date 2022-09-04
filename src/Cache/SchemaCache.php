@@ -15,7 +15,7 @@ use Yiisoft\Cache\Dependency\TagDependency;
 final class SchemaCache
 {
     private bool $enabled = true;
-    private ?int $duration = 3600;
+    private int|null $duration = 3600;
     private array $exclude = [];
 
     public function __construct(private CacheInterface $cache)
@@ -25,7 +25,7 @@ final class SchemaCache
     /**
      * Remove a value with the specified key from cache.
      *
-     * @param mixed $key a key identifying the value to be deleted from cache.
+     * @param mixed $key A key identifying the value to be deleted from cache.
      */
     public function remove(mixed $key): void
     {
@@ -49,7 +49,7 @@ final class SchemaCache
     public function set(
         mixed $key,
         mixed $value,
-        DateInterval|int|null $ttl = null,
+        DateInterval|int $ttl = null,
         Dependency $dependency = null
     ): void {
         $this->remove($key);
@@ -61,7 +61,7 @@ final class SchemaCache
      *
      * @return int|null
      */
-    public function getDuration(): ?int
+    public function getDuration(): int|null
     {
         return $this->duration;
     }
@@ -69,7 +69,7 @@ final class SchemaCache
     /**
      * Return true if the table is excluded from cache the table metadata.
      *
-     * @param string $value
+     * @param string $value The table name.
      *
      * @return bool
      */
@@ -79,9 +79,9 @@ final class SchemaCache
     }
 
     /**
-     * Invalidates all the cached values that are associated with any of the specified {@see tags}.
+     * Invalidates all the cached values that are associated with any of the specified.
      *
-     * @param string $cacheTag
+     * @param string $cacheTag The cache tag used to identify the values to be invalidated.
      */
     public function invalidate(string $cacheTag): void
     {
@@ -100,11 +100,11 @@ final class SchemaCache
 
     /**
      * Whether to enable schema caching. Note that in order to enable truly schema caching, a valid cache component as
-     * specified must be enabled and {@see setEnable()} must be set true.
+     * specified must be enabled and must be set true.
      *
-     * @param bool $value
+     * @param bool $value Whether to enable schema caching.
      *
-     * {@see setduration()}
+     * {@see setDuration()}
      * {@see setExclude()}
      */
     public function setEnable(bool $value): void
@@ -116,7 +116,7 @@ final class SchemaCache
      * Number of seconds that table metadata can remain valid in cache. Use 'null' to indicate that the cached data will
      * never expire.
      *
-     * @param int|null $value
+     * @param int|null $value The number of seconds that table metadata can remain valid in cache.
      *
      * {@see setEnable()}
      */
@@ -129,7 +129,7 @@ final class SchemaCache
      * List of tables whose metadata should NOT be cached. Defaults to empty array. The table names may contain schema
      * prefix, if any. Do not quote the table names.
      *
-     * @param array $value
+     * @param array $value The table names.
      *
      * {@see setEnable()}
      */

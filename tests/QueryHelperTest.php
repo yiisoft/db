@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Helper\QueryHelper;
@@ -34,17 +35,24 @@ final class QueryHelperTest extends TestCase
      */
     public function testCleanUpTableNames(array $tables, string $prefixDatabase, array $expected): void
     {
+        $connection = $this->createConnectionMock();
+
         $this->assertEquals(
             $expected,
-            $this->createQueryHelper()->cleanUpTableNames($tables, new Quoter('"', '"'))
+            $this->createQueryHelper()->cleanUpTableNames($tables, new Quoter($connection, '"', '"'))
         );
     }
 
     public function testCleanUpTableNamesException(): void
     {
+        $connection = $this->createConnectionMock();
+
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('To use Expression in from() method, pass it in array format with alias.');
-        $this->createQueryHelper()->cleanUpTableNames([new Expression('(SELECT id FROM user)')], new Quoter('"', '"'));
+        $this->createQueryHelper()->cleanUpTableNames(
+            [new Expression('(SELECT id FROM user)')],
+            new Quoter($connection, '"', '"')
+        );
     }
 
     public function filterConditionDataProvider(): array
@@ -148,5 +156,10 @@ final class QueryHelperTest extends TestCase
     private function createQueryHelper(): QueryHelper
     {
         return new QueryHelper();
+    }
+
+    private function createConnectionMock(): ConnectionInterface
+    {
+        return $this->createMock(ConnectionInterface::class);
     }
 }

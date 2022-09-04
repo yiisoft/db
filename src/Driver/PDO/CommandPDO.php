@@ -69,7 +69,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         return $this;
     }
 
-    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): self
+    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static
     {
         if ($dataType === null) {
             $dataType = $this->db->getSchema()->getPdoType($value);
@@ -80,7 +80,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         return $this;
     }
 
-    public function bindValues(array $values): self
+    public function bindValues(array $values): static
     {
         if (empty($values)) {
             return $this;
