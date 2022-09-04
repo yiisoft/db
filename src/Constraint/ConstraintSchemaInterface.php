@@ -136,7 +136,7 @@ interface ConstraintSchemaInterface
      *
      * @return Constraint|null Table primary key, `null` if the table has no primary key.
      */
-    public function getTablePrimaryKey(string $name, bool $refresh = false): ?Constraint;
+    public function getTablePrimaryKey(string $name, bool $refresh = false): Constraint|null;
 
     /**
      * Obtains the unique constraints' information for the named table.
