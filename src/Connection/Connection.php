@@ -15,7 +15,6 @@ use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
-use Yiisoft\Profiler\ProfilerAwareInterface;
 use Yiisoft\Profiler\ProfilerAwareTrait;
 
 /**
