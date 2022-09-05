@@ -218,6 +218,11 @@ interface ConnectionInterface
     public function noCache(Closure $closure): mixed;
 
     /**
+     * Disabled profiling for current DB connection.
+     */
+    public function notProfiler(): void;
+
+    /**
      * Establishes a DB connection.
      *
      * It does nothing if a DB connection has already been established.
@@ -225,6 +230,15 @@ interface ConnectionInterface
      * @throws Exception|InvalidConfigException If connection fails
      */
     public function open(): void;
+
+    /**
+     * Quotes a value for use in a query.
+     *
+     * @param mixed $value
+     *
+     * @return mixed The properly quoted string.
+     */
+    public function quoteValue(mixed $value): mixed;
 
     /**
      * Whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint). Note that if the underlying DBMS does not
