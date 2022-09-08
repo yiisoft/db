@@ -29,7 +29,7 @@ final class QueryCache
      *
      * @return int|null
      */
-    public function getDuration(): ?int
+    public function getDuration(): int|null
     {
         return $this->duration;
     }
@@ -47,14 +47,14 @@ final class QueryCache
     /**
      * Returns the current query cache information.
      *
-     * This method is used internally by {@see Command}.
+     * This method is used internally by {@see \Yiisoft\Db\Command\Command}.
      *
-     * @param int|null $duration the preferred caching duration. If null, it will be ignored.
-     * @param Dependency|null $dependency the preferred caching dependency. If null, it will be ignored.
+     * @param int|null $duration The preferred caching duration. If null, it will be ignored.
+     * @param Dependency|null $dependency The preferred caching dependency. If null, it will be ignored.
      *
-     * @return array|null the current query cache information, or null if query cache is not enabled.
+     * @return array|null The current query cache information, or null if query cache is not enabled.
      */
-    public function info(?int $duration, Dependency $dependency = null): ?array
+    public function info(int|null $duration, Dependency $dependency = null): array|null
     {
         $result = null;
 
@@ -92,13 +92,9 @@ final class QueryCache
 
     /**
      * Whether to enable query caching. Note that in order to enable query caching, a valid cache component as specified
-     * must be enabled and {@see enabled} must be set true. Also, only the results of the queries enclosed within
-     * {@see cache()} will be cached.
+     * must be enabled and must be set true. Also, only the results of the queries enclosed within will be cached.
      *
-     * @param bool $value
-     *
-     * {@see cache()}
-     * {@see noCache()}
+     * @param bool $value Whether to enable query caching.
      */
     public function setEnable(bool $value): void
     {
@@ -108,7 +104,7 @@ final class QueryCache
     /**
      * Add an element to the array that QueryCache information.
      *
-     * @param mixed $value
+     * @param mixed $value The value to be added to the array.
      */
     public function setInfo(mixed $value): void
     {
@@ -118,13 +114,11 @@ final class QueryCache
     /**
      * The default number of seconds that query results can remain valid in cache. Defaults to 3600, meaning 3600
      * seconds, or one hour. Use `null` to indicate that the cached data will never expire. The value of this property
-     * will be used when {@see cache()} is called without a cache duration.
+     * will be used when is called without a cache duration.
      *
-     * @param int|null $value
-     *
-     * {@see cache()}
+     * @param int|null $value The number of seconds that query results can remain valid in cache.
      */
-    public function setDuration(?int $value): void
+    public function setDuration(int|null $value): void
     {
         $this->duration = $value;
     }

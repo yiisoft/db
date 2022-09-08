@@ -330,7 +330,7 @@ trait TestConnectionTrait
 
         /* logging only */
         $db->setLogger($this->logger);
-        $db->setProfiler(null);
+        $db->notProfiler();
 
         $this->logger->flush();
         $this->profiler->flush();
@@ -351,7 +351,7 @@ trait TestConnectionTrait
 
         /* disabled */
         $db->setLogger(new NullLogger());
-        $db->setProfiler(null);
+        $db->notProfiler();
 
         $this->logger->flush();
         $this->profiler->flush();
@@ -392,13 +392,13 @@ trait TestConnectionTrait
 
         /* logging only */
         $db->setLogger($this->logger);
-        $db->setProfiler(null);
+        $db->notProfiler();
 
         $this->runExceptionTest($db);
 
         /* disabled */
         $db->setLogger(new NullLogger());
-        $db->setProfiler(null);
+        $db->notProfiler();
 
         $this->runExceptionTest($db);
     }

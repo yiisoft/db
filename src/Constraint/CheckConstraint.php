@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Constraint;
 /**
  * CheckConstraint represents the metadata of a table `CHECK` constraint.
  */
-class CheckConstraint extends Constraint
+final class CheckConstraint extends Constraint
 {
     private string $expression = '';
 
@@ -19,7 +19,7 @@ class CheckConstraint extends Constraint
     /**
      * @param string $value the SQL of the `CHECK` constraint.
      *
-     * @return $this
+     * @return self
      */
     public function expression(string $value): self
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Connection;
 
+use Closure;
 use Throwable;
 
 interface ConnectionPoolInterface
@@ -24,7 +25,7 @@ interface ConnectionPoolInterface
      * @return ConnectionInterface|null The currently active master connection. `null` is returned if there is no master
      * available.
      */
-    public function getMaster(): ?ConnectionInterface;
+    public function getMaster(): ConnectionInterface|null;
 
     /**
      * Returns the currently active slave connection.
@@ -35,10 +36,10 @@ interface ConnectionPoolInterface
      * @param bool $fallbackToMaster Whether to return a master connection in case there is no slave connection
      * available.
      *
-     * @return ConnectionInterface|null The currently active slave connection. `null` is returned if there is no slave available
-     * and `$fallbackToMaster` is false.
+     * @return ConnectionInterface|null The currently active slave connection. `null` is returned if there is no slave
+     * available and `$fallbackToMaster` is false.
      */
-    public function getSlave(bool $fallbackToMaster = true): ?ConnectionInterface;
+    public function getSlave(bool $fallbackToMaster = true): ConnectionInterface|null;
 
     /**
      * Whether to enable read/write splitting by using {@see setSlaves()} to read data. Note that if {@see setSlaves()}
@@ -90,12 +91,12 @@ interface ConnectionPoolInterface
      * });
      * ```
      *
-     * @param callable $callback a PHP callable to be executed by this method. Its signature is
+     * @param Closure $callback a PHP Closure to be executed by this method. Its signature is
      * `function (ConnectionInterface $db)`. Its return value will be returned by this method.
      *
      * @throws Throwable If there is any exception thrown from the callback.
      *
      * @return mixed The return value of the callback.
      */
-    public function useMaster(callable $callback): mixed;
+    public function useMaster(Closure $closure): mixed;
 }
