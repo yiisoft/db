@@ -135,7 +135,7 @@ final class QueryBuilderProvider
                 [['test@example.com', 'silverfire', 'Kyiv {{city}}, Ukraine']],
                 'expected' => DbHelper::replaceQuotes(
                     'INSERT INTO [[customer]] ([[email]], [[name]], [[address]])'
-                    . " VALUES (:qp0, :qp1, :qp2)",
+                    . ' VALUES (:qp0, :qp1, :qp2)',
                     $this->db->getDriver()->getDriverName(),
                 ),
                 [
@@ -149,7 +149,7 @@ final class QueryBuilderProvider
                 ['address'],
                 [["SQL-danger chars are escaped: '); --"]],
                 'expected' => DbHelper::replaceQuotes(
-                    "INSERT INTO [[customer]] ([[address]]) VALUES (:qp0)",
+                    'INSERT INTO [[customer]] ([[address]]) VALUES (:qp0)',
                     $this->db->getDriver()->getDriverName(),
                 ),
                 [
@@ -167,7 +167,7 @@ final class QueryBuilderProvider
                 [],
                 [['no columns passed']],
                 'expected' => DbHelper::replaceQuotes(
-                    "INSERT INTO [[customer]] () VALUES (:qp0)",
+                    'INSERT INTO [[customer]] () VALUES (:qp0)',
                     $this->db->getDriver()->getDriverName(),
                 ),
                 [

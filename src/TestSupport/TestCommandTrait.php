@@ -289,7 +289,7 @@ trait TestCommandTrait
 
         $command = $db->createCommand();
         for ($i = 0; $i < $attemptsInsertRows; $i++) {
-            $values[$i] = ['t' . $i .'@any.com', 't'.$i, 't' . $i . ' address'];
+            $values[$i] = ['t' . $i . '@any.com', 't'. $i, 't' . $i . ' address'];
         }
 
         $command->batchInsert('{{customer}}', ['email', 'name', 'address'], $values);
@@ -1147,7 +1147,7 @@ trait TestCommandTrait
                 ],
                 'expected' => DbHelper::replaceQuotes(
                     'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]])'
-                    . " VALUES (:qp0, :qp1, :qp2, :qp3), (:qp4, :qp5, :qp6, :qp7)",
+                    . ' VALUES (:qp0, :qp1, :qp2, :qp3), (:qp4, :qp5, :qp6, :qp7)',
                     $db->getDriver()->getDriverName(),
                 ),
                 'expectedParams' => [
@@ -1173,7 +1173,7 @@ trait TestCommandTrait
                  */
                 'expected' => DbHelper::replaceQuotes(
                     'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]])'
-                    . " VALUES (:qp0, :qp1, :qp2, :qp3)",
+                    . ' VALUES (:qp0, :qp1, :qp2, :qp3)',
                     $db->getDriver()->getDriverName(),
                 ),
                 'expectedParams' => [
@@ -1196,7 +1196,7 @@ trait TestCommandTrait
                  */
                 'expected' => DbHelper::replaceQuotes(
                     'INSERT INTO [[type]] ([[type]].[[int_col]], [[float_col]], [[char_col]], [[bool_col]])'
-                    . " VALUES (:qp0, :qp1, :qp2, :qp3)",
+                    . ' VALUES (:qp0, :qp1, :qp2, :qp3)',
                     $db->getDriver()->getDriverName(),
                 ),
                 'expectedParams' => [
@@ -1216,7 +1216,7 @@ trait TestCommandTrait
                 'values' => [[new Expression(':exp1', [':exp1' => 42]), 1, 'test', false]],
                 'expected' => DbHelper::replaceQuotes(
                     'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]])'
-                    . " VALUES (:exp1, :qp1, :qp2, :qp3)",
+                    . ' VALUES (:exp1, :qp1, :qp2, :qp3)',
                     $db->getDriver()->getDriverName(),
                 ),
                 'expectedParams' => [

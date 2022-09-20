@@ -59,7 +59,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
         $values = [];
 
         /** @psalm-var array<array-key, array<array-key, string>> $rows */
-        foreach($rows as $row) {
+        foreach ($rows as $row) {
             $placeholders = [];
             foreach ($row as $index => $value) {
                 if (isset($columns[$index], $columnSchemas[$columns[$index]])) {
@@ -386,6 +386,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * @param mixed $value
      * @param ColumnSchemaInterface|null $columnSchema
+     *
      * @return mixed
      */
     protected function getTypecastValue(mixed $value, ColumnSchemaInterface $columnSchema = null): mixed
