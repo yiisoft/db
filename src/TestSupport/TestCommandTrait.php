@@ -20,6 +20,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\TestSupport\Helper\DbHelper;
 
 use function call_user_func_array;
 use function date;
@@ -240,6 +241,34 @@ trait TestCommandTrait
             ]
         );
         $this->assertEquals(2, $command->execute());
+        $result = (new Query($db))
+            ->select(['email', 'name', 'address'])
+            ->from('{{customer}}')
+            ->where(['=', '[[email]]', 't1@example.com'])
+            ->one();
+        $this->assertCount(3, $result);
+        $this->assertSame(
+            [
+                'email' => 't1@example.com',
+                'name' => 't1',
+                'address' => 't1 address',
+            ],
+            $result,
+        );
+        $result = (new Query($db))
+            ->select(['email', 'name', 'address'])
+            ->from('{{customer}}')
+            ->where(['=', '[[email]]', 't2@example.com'])
+            ->one();
+        $this->assertCount(3, $result);
+        $this->assertSame(
+            [
+                'email' => 't2@example.com',
+                'name' => null,
+                'address' => '0',
+            ],
+            $result,
+        );
 
         /**
          * @link https://github.com/yiisoft/yii2/issues/11693
@@ -251,6 +280,24 @@ trait TestCommandTrait
             []
         );
         $this->assertEquals(0, $command->execute());
+    }
+
+    public function testBatchInsertWithManyData(): void
+    {
+        $attemptsInsertRows = 200;
+        $db = $this->getConnection(true);
+
+        $command = $db->createCommand();
+        for ($i = 0; $i < $attemptsInsertRows; $i++) {
+            $values[$i] = ['t' . $i .'@any.com', 't'.$i, 't' . $i . ' address'];
+        }
+
+        $command->batchInsert('{{customer}}', ['email', 'name', 'address'], $values);
+
+        $this->assertEquals($attemptsInsertRows, $command->execute());
+
+        $insertedRowsCount = (new Query($db))->from('{{customer}}')->count();
+        $this->assertGreaterThanOrEqual($attemptsInsertRows, $insertedRowsCount);
     }
 
     /**
@@ -1088,23 +1135,58 @@ trait TestCommandTrait
 
     public function batchInsertSqlProviderTrait(): array
     {
+        $db = $this->getConnection();
+
         return [
+            'multirow' => [
+                'type',
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
+                'values' => [
+                    ['0', '0.0', 'test string', true,],
+                    [false, 0, 'test string2', false,],
+                ],
+                'expected' => DbHelper::replaceQuotes(
+                    'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]])'
+                    . " VALUES (:qp0, :qp1, :qp2, :qp3), (:qp4, :qp5, :qp6, :qp7)",
+                    $db->getDriver()->getDriverName(),
+                ),
+                'expectedParams' => [
+                    ':qp0' => 0,
+                    ':qp1' => 0.0,
+                    ':qp2' => 'test string',
+                    ':qp3' => true,
+                    ':qp4' => 0,
+                    ':qp5' => 0.0,
+                    ':qp6' => 'test string2',
+                    ':qp7' => false,
+                ],
+                2,
+            ],
             'issue11242' => [
                 'type',
-                ['int_col', 'float_col', 'char_col'],
-                [['', '', 'Kyiv {{city}}, Ukraine']],
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
+                'values' => [[1.0, 1.1, 'Kyiv {{city}}, Ukraine', true]],
                 /**
                  * {@see https://github.com/yiisoft/yii2/issues/11242}
                  *
                  * Make sure curly bracelets (`{{..}}`) in values will not be escaped
                  */
-                'expected' => 'INSERT INTO `type` (`int_col`, `float_col`, `char_col`)'
-                    . " VALUES (NULL, NULL, 'Kyiv {{city}}, Ukraine')",
+                'expected' => DbHelper::replaceQuotes(
+                    'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]])'
+                    . " VALUES (:qp0, :qp1, :qp2, :qp3)",
+                    $db->getDriver()->getDriverName(),
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 1.1,
+                    ':qp2' => 'Kyiv {{city}}, Ukraine',
+                    ':qp3' => true,
+                ],
             ],
             'wrongBehavior' => [
                 '{{%type}}',
-                ['{{%type}}.[[int_col]]', '[[float_col]]', 'char_col'],
-                [['', '', 'Kyiv {{city}}, Ukraine']],
+                ['{{%type}}.[[int_col]]', '[[float_col]]', 'char_col', 'bool_col'],
+                'values' => [['0', '0.0', 'Kyiv {{city}}, Ukraine', false]],
                 /**
                  * Test covers potentially wrong behavior and marks it as expected!.
                  *
@@ -1112,19 +1194,37 @@ trait TestCommandTrait
                  * determine the table schema and typecast values properly.
                  * TODO: make it work. Impossible without BC breaking for public methods.
                  */
-                'expected' => 'INSERT INTO `type` (`type`.`int_col`, `float_col`, `char_col`)'
-                    . " VALUES ('', '', 'Kyiv {{city}}, Ukraine')",
+                'expected' => DbHelper::replaceQuotes(
+                    'INSERT INTO [[type]] ([[type]].[[int_col]], [[float_col]], [[char_col]], [[bool_col]])'
+                    . " VALUES (:qp0, :qp1, :qp2, :qp3)",
+                    $db->getDriver()->getDriverName(),
+                ),
+                'expectedParams' => [
+                    ':qp0' => '0',
+                    ':qp1' => '0.0',
+                    ':qp2' => 'Kyiv {{city}}, Ukraine',
+                    ':qp3' => false,
+                ],
             ],
             'batchInsert binds params from expression' => [
                 '{{%type}}',
-                ['int_col'],
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 /**
                  * This example is completely useless. This feature of batchInsert is intended to be used with complex
                  * expression objects, such as JsonExpression.
                  */
-                [[new Expression(':qp1', [':qp1' => 42])]],
-                'expected' => 'INSERT INTO `type` (`int_col`) VALUES (:qp1)',
-                'expectedParams' => [':qp1' => 42],
+                'values' => [[new Expression(':exp1', [':exp1' => 42]), 1, 'test', false]],
+                'expected' => DbHelper::replaceQuotes(
+                    'INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]])'
+                    . " VALUES (:exp1, :qp1, :qp2, :qp3)",
+                    $db->getDriver()->getDriverName(),
+                ),
+                'expectedParams' => [
+                    ':exp1' => 42,
+                    ':qp1' => 1.0,
+                    ':qp2' => 'test',
+                    ':qp3' => false,
+                ],
             ],
         ];
     }
