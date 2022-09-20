@@ -289,7 +289,7 @@ trait TestCommandTrait
 
         $command = $db->createCommand();
         for ($i = 0; $i < $attemptsInsertRows; $i++) {
-            $values[$i] = ['t' . $i . '@any.com', 't'. $i, 't' . $i . ' address'];
+            $values[$i] = ['t' . $i . '@any.com', 't' . $i, 't' . $i . ' address'];
         }
 
         $command->batchInsert('{{customer}}', ['email', 'name', 'address'], $values);
