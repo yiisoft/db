@@ -14,9 +14,9 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
-use Yiisoft\Strings\NumericHelper;
 
 use function array_combine;
 use function array_diff;
@@ -60,30 +60,20 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
 
         /** @psalm-var array<array-key, array<array-key, string>> $rows */
         foreach ($rows as $row) {
-            $vs = [];
+            $placeholders = [];
+            foreach ($row as $index => $value) {
+                if (isset($columns[$index], $columnSchemas[$columns[$index]])) {
+                    /** @var mixed $value */
+                    $value = $this->getTypecastValue($value, $columnSchemas[$columns[$index]]);
+                }
 
-            foreach ($row as $i => $value) {
-                if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
-                    /** @var mixed */
-                    $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
+                if ($value instanceof ExpressionInterface) {
+                    $placeholders[] = $this->queryBuilder->buildExpression($value, $params);
+                } else {
+                    $placeholders[] = $this->queryBuilder->bindParam($value, $params);
                 }
-                if (is_string($value)) {
-                    /** @var string */
-                    $value = $this->quoter->quoteValue($value);
-                } elseif (is_float($value)) {
-                    /* ensure type cast always has . as decimal separator in all locales */
-                    $value = NumericHelper::normalize((string) $value);
-                } elseif ($value === false) {
-                    $value = 0;
-                } elseif ($value === null) {
-                    $value = 'NULL';
-                } elseif ($value instanceof ExpressionInterface) {
-                    $value = $this->queryBuilder->buildExpression($value, $params);
-                }
-                /** @var string */
-                $vs[] = $value;
             }
-            $values[] = '(' . implode(', ', $vs) . ')';
+            $values[] = '(' . implode(', ', $placeholders) . ')';
         }
 
         if (empty($values)) {
@@ -230,7 +220,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
             foreach ($columns as $name => $value) {
                 $names[] = $this->quoter->quoteColumnName($name);
                 /** @var mixed $value */
-                $value = isset($columnSchemas[$name]) ? $columnSchemas[$name]->dbTypecast($value) : $value;
+                $value = $this->getTypecastValue($value, $columnSchemas[$name] ?? null);
 
                 if ($value instanceof ExpressionInterface) {
                     $placeholders[] = $this->queryBuilder->buildExpression($value, $params);
@@ -391,5 +381,20 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
 
         /** @psalm-var array $columnNames */
         return array_unique($columnNames);
+    }
+
+    /**
+     * @param mixed $value
+     * @param ColumnSchemaInterface|null $columnSchema
+     *
+     * @return mixed
+     */
+    protected function getTypecastValue(mixed $value, ColumnSchemaInterface $columnSchema = null): mixed
+    {
+        if ($columnSchema) {
+            return $columnSchema->dbTypecast($value);
+        }
+
+        return $value;
     }
 }

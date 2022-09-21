@@ -50,6 +50,15 @@ class Quoter implements QuoterInterface
         return $name;
     }
 
+    public function ensureColumnName(string $name): string
+    {
+        if (strrpos($name, '.') !== false) {
+            $parts = explode('.', $name);
+            $name = $parts[count($parts)-1];
+        }
+        return preg_replace('|^\[\[([_\w\-. ]+)\]\]$|', '\1', $name);
+    }
+
     public function quoteColumnName(string $name): string
     {
         if (str_contains($name, '(') || str_contains($name, '[[')) {
