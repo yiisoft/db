@@ -368,7 +368,7 @@ trait TestSchemaTrait
     {
         $result = [];
         $stringLength = 16;
-        for ($i = 1; $i < 128 - $stringLength; $i += $stringLength) {
+        for ($i = 32; $i < 128 - $stringLength; $i += $stringLength) {
             $str = '';
             for ($symbol = $i; $symbol < $i + $stringLength; $symbol++) {
                 $str .= mb_chr($symbol, 'UTF-8');
