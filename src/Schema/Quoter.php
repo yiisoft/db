@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Connection\ConnectionInterface;
-
 use function addcslashes;
 use function explode;
 use function implode;
@@ -22,7 +20,6 @@ use function substr;
 class Quoter implements QuoterInterface
 {
     public function __construct(
-        private ConnectionInterface $connection,
         /** @psalm-var string[]|string */
         private array|string $columnQuoteCharacter,
         /** @psalm-var string[]|string */
@@ -144,10 +141,6 @@ class Quoter implements QuoterInterface
     {
         if (!is_string($value)) {
             return $value;
-        }
-
-        if (($quotedValue = $this->connection->quoteValue($value)) !== false) {
-            return $quotedValue;
         }
 
         return '\'' . str_replace('\'', '\'\'', addcslashes($value, "\000\032")) . '\'';

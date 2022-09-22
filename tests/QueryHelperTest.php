@@ -39,7 +39,7 @@ final class QueryHelperTest extends TestCase
 
         $this->assertEquals(
             $expected,
-            $this->createQueryHelper()->cleanUpTableNames($tables, new Quoter($connection, '"', '"'))
+            $this->createQueryHelper()->cleanUpTableNames($tables, new Quoter('"', '"'))
         );
     }
 
@@ -51,7 +51,7 @@ final class QueryHelperTest extends TestCase
         $this->expectExceptionMessage('To use Expression in from() method, pass it in array format with alias.');
         $this->createQueryHelper()->cleanUpTableNames(
             [new Expression('(SELECT id FROM user)')],
-            new Quoter($connection, '"', '"')
+            new Quoter('"', '"')
         );
     }
 
