@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Connection\ConnectionInterface;
-
 use function addcslashes;
 use function explode;
 use function implode;
