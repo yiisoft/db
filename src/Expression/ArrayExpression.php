@@ -117,7 +117,6 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
      *
-     *
      * @psalm-suppress MixedArrayAccess
      * @psalm-suppress MixedArrayOffset
      */

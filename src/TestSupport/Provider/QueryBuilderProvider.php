@@ -33,12 +33,12 @@ final class QueryBuilderProvider
         return [
             'drop' => [
                 "ALTER TABLE {{{$tableName}}} DROP CONSTRAINT [[$name]]",
-                static fn(QueryBuilderInterface $qb) => $qb->dropForeignKey($name, $tableName),
+                static fn (QueryBuilderInterface $qb) => $qb->dropForeignKey($name, $tableName),
             ],
             'add' => [
                 "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]])"
                 . " REFERENCES {{{$pkTableName}}} ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE",
-                static fn(QueryBuilderInterface $qb) => $qb->addForeignKey(
+                static fn (QueryBuilderInterface $qb) => $qb->addForeignKey(
                     $name,
                     $tableName,
                     'C_fk_id_1',
@@ -51,7 +51,7 @@ final class QueryBuilderProvider
             'add (2 columns)' => [
                 "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]])"
                 . " REFERENCES {{{$pkTableName}}} ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE",
-                static fn(QueryBuilderInterface $qb) => $qb->addForeignKey(
+                static fn (QueryBuilderInterface $qb) => $qb->addForeignKey(
                     $name,
                     $tableName,
                     'C_fk_id_1, C_fk_id_2',
@@ -72,15 +72,15 @@ final class QueryBuilderProvider
         return [
             'drop' => [
                 "ALTER TABLE {{{$tableName}}} DROP CONSTRAINT [[$name]]",
-                static fn(QueryBuilderInterface $qb) => $qb->dropPrimaryKey($name, $tableName),
+                static fn (QueryBuilderInterface $qb) => $qb->dropPrimaryKey($name, $tableName),
             ],
             'add' => [
                 "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]])",
-                static fn(QueryBuilderInterface $qb) => $qb->addPrimaryKey($name, $tableName, 'C_id_1'),
+                static fn (QueryBuilderInterface $qb) => $qb->addPrimaryKey($name, $tableName, 'C_id_1'),
             ],
             'add (2 columns)' => [
                 "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]], [[C_id_2]])",
-                static fn(QueryBuilderInterface $qb) => $qb->addPrimaryKey($name, $tableName, 'C_id_1, C_id_2'),
+                static fn (QueryBuilderInterface $qb) => $qb->addPrimaryKey($name, $tableName, 'C_id_1, C_id_2'),
             ],
         ];
     }
@@ -95,15 +95,15 @@ final class QueryBuilderProvider
         return [
             'drop' => [
                 "ALTER TABLE {{{$tableName1}}} DROP CONSTRAINT [[$name1]]",
-                static fn(QueryBuilderInterface $qb) => $qb->dropUnique($name1, $tableName1),
+                static fn (QueryBuilderInterface $qb) => $qb->dropUnique($name1, $tableName1),
             ],
             'add' => [
                 "ALTER TABLE {{{$tableName1}}} ADD CONSTRAINT [[$name1]] UNIQUE ([[C_unique]])",
-                static fn(QueryBuilderInterface $qb) => $qb->addUnique($name1, $tableName1, 'C_unique'),
+                static fn (QueryBuilderInterface $qb) => $qb->addUnique($name1, $tableName1, 'C_unique'),
             ],
             'add (2 columns)' => [
                 "ALTER TABLE {{{$tableName2}}} ADD CONSTRAINT [[$name2]] UNIQUE ([[C_index_2_1]], [[C_index_2_2]])",
-                static fn(QueryBuilderInterface $qb) => $qb->addUnique($name2, $tableName2, 'C_index_2_1, C_index_2_2'),
+                static fn (QueryBuilderInterface $qb) => $qb->addUnique($name2, $tableName2, 'C_index_2_1, C_index_2_2'),
             ],
         ];
     }
@@ -802,23 +802,23 @@ final class QueryBuilderProvider
         return [
             'drop' => [
                 "DROP INDEX [[$name1]] ON {{{$tableName}}}",
-                static fn(QueryBuilderInterface $qb) => $qb->dropIndex($name1, $tableName),
+                static fn (QueryBuilderInterface $qb) => $qb->dropIndex($name1, $tableName),
             ],
             'create' => [
                 "CREATE INDEX [[$name1]] ON {{{$tableName}}} ([[C_index_1]])",
-                static fn(QueryBuilderInterface $qb) => $qb->createIndex($name1, $tableName, 'C_index_1'),
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex($name1, $tableName, 'C_index_1'),
             ],
             'create (2 columns)' => [
                 "CREATE INDEX [[$name2]] ON {{{$tableName}}} ([[C_index_2_1]], [[C_index_2_2]])",
-                static fn(QueryBuilderInterface $qb) => $qb->createIndex($name2, $tableName, 'C_index_2_1, C_index_2_2'),
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex($name2, $tableName, 'C_index_2_1, C_index_2_2'),
             ],
             'create unique' => [
                 "CREATE UNIQUE INDEX [[$name1]] ON {{{$tableName}}} ([[C_index_1]])",
-                static fn(QueryBuilderInterface $qb) => $qb->createIndex($name1, $tableName, 'C_index_1', QueryBuilder::INDEX_UNIQUE),
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex($name1, $tableName, 'C_index_1', QueryBuilder::INDEX_UNIQUE),
             ],
             'create unique (2 columns)' => [
                 "CREATE UNIQUE INDEX [[$name2]] ON {{{$tableName}}} ([[C_index_2_1]], [[C_index_2_2]])",
-                static fn(QueryBuilderInterface $qb) => $qb->createIndex($name2, $tableName, 'C_index_2_1, C_index_2_2', QueryBuilder::INDEX_UNIQUE),
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex($name2, $tableName, 'C_index_2_1, C_index_2_2', QueryBuilder::INDEX_UNIQUE),
             ],
         ];
     }

@@ -194,8 +194,6 @@ final class QueryHelper
 
     /**
      * Normalizes the SELECT columns passed to {@see select()} or {@see addSelect()}.
-     *
-     *
      */
     public function normalizeSelect(array|ExpressionInterface|string $columns): array
     {

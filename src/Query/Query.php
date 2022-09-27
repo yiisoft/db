@@ -739,7 +739,6 @@ class Query implements QueryInterface
      *
      *@throws Exception|InvalidConfigException|Throwable
      *
-     *
      * @psalm-suppress PossiblyUndefinedVariable
      */
     protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|null|string|float

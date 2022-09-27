@@ -498,8 +498,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * This method returns the desired metadata type for the table name.
-     *
-     *
      */
     protected function loadTableTypeMetadata(string $type, string $name): Constraint|array|TableSchemaInterface|null
     {
@@ -517,8 +515,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * This method returns the desired metadata type for table name (with refresh if needed)
-     *
-     *
      */
     protected function getTableTypeMetadata(
         string $type,
