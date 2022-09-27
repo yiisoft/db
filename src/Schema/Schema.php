@@ -498,11 +498,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * This method returns the desired metadata type for the table name.
-     *
-     * @param string $type
-     * @param string $name
-     *
-     * @return array|Constraint|TableSchemaInterface|null
      */
     protected function loadTableTypeMetadata(string $type, string $name): Constraint|array|TableSchemaInterface|null
     {
@@ -520,12 +515,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * This method returns the desired metadata type for table name (with refresh if needed)
-     *
-     * @param string $type
-     * @param string $name
-     * @param bool $refresh
-     *
-     * @return array|Constraint|TableSchemaInterface|null
      */
     protected function getTableTypeMetadata(
         string $type,
@@ -576,8 +565,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * Tries to load and populate table metadata from cache.
-     *
-     * @param string $rawName
      */
     private function loadTableMetadataFromCache(string $rawName): void
     {
@@ -608,8 +595,6 @@ abstract class Schema implements SchemaInterface
 
     /**
      * Saves table metadata to cache.
-     *
-     * @param string $rawName
      */
     private function saveTableMetadataToCache(string $rawName): void
     {

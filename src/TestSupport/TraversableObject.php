@@ -12,12 +12,10 @@ namespace Yiisoft\Db\TestSupport;
  */
 class TraversableObject implements \Iterator, \Countable
 {
-    protected array $data = [];
     private int $position = 0;
 
-    public function __construct(array $array)
+    public function __construct(protected array $data)
     {
-        $this->data = $array;
     }
 
     /**

@@ -29,10 +29,6 @@ trait TestTrait
 
     /**
      * Asserting two strings equality ignoring line endings.
-     *
-     * @param string $expected
-     * @param string $actual
-     * @param string $message
      */
     protected function assertEqualsWithoutLE(string $expected, string $actual, string $message = ''): void
     {
@@ -44,10 +40,6 @@ trait TestTrait
 
     /**
      * Asserts that value is one of expected values.
-     *
-     * @param mixed $actual
-     * @param array $expected
-     * @param string $message
      */
     protected function assertIsOneOf(mixed $actual, array $expected, string $message = ''): void
     {
@@ -97,11 +89,7 @@ trait TestTrait
     /**
      * Gets an inaccessible object property.
      *
-     * @param object $object
-     * @param string $propertyName
      * @param bool $revoke whether to make property inaccessible after getting.
-     *
-     * @return mixed
      */
     protected function getInaccessibleProperty(object $object, string $propertyName, bool $revoke = true): mixed
     {
@@ -127,14 +115,9 @@ trait TestTrait
     /**
      * Invokes an inaccessible method.
      *
-     * @param object $object
-     * @param string $method
-     * @param array $args
      * @param bool $revoke whether to make method inaccessible after execution.
      *
      * @throws ReflectionException
-     *
-     * @return mixed
      */
     protected function invokeMethod(object $object, string $method, array $args = [], bool $revoke = true): mixed
     {
@@ -180,8 +163,6 @@ trait TestTrait
      * Adjust dbms specific escaping.
      *
      * @param $sql
-     *
-     * @return array|string|null
      */
     protected function replaceQuotes($sql): string|array|null
     {
@@ -197,8 +178,6 @@ trait TestTrait
     /**
      * Sets an inaccessible object property to a designated value.
      *
-     * @param object $object
-     * @param string $propertyName
      * @param $value
      * @param bool $revoke whether to make property inaccessible after setting
      */

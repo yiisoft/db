@@ -13,21 +13,12 @@ use function call_user_func_array;
 
 trait TestColumnSchemaBuilderTrait
 {
-    /**
-     * @param string $type
-     * @param int|null $length
-     *
-     * @return ColumnSchemaBuilder
-     */
     public function getColumnSchemaBuilder(string $type, ?int $length = null): ColumnSchemaBuilder
     {
         return new ColumnSchemaBuilder($type, $length);
     }
 
     /**
-     * @param string $expected
-     * @param string $type
-     * @param int|null $length
      * @param array $calls
      */
     public function checkBuildString(string $expected, string $type, ?int $length, $calls): void
