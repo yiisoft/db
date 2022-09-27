@@ -491,7 +491,7 @@ trait TestSchemaTrait
 
     private function normalizeConstraintPair(Constraint $expectedConstraint, Constraint $actualConstraint): void
     {
-        if (get_class($expectedConstraint) !== get_class($actualConstraint)) {
+        if ($expectedConstraint::class !== $actualConstraint::class) {
             return;
         }
 

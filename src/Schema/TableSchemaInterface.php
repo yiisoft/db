@@ -64,44 +64,31 @@ interface TableSchemaInterface
 
     /**
      * Set the name of the schema that this table belongs to.
-     *
-     * @param string|null $value
      */
     public function schemaName(?string $value): void;
 
     /**
      * Set name of this table
-     *
-     * @param string $value
      */
     public function name(string $value): void;
 
     /**
      * Set the full name of this table, which includes the schema name prefix, if any.
-     *
-     * @param string|null $value
      */
     public function fullName(?string $value): void;
 
     /**
      * Set sequence name for the primary key
-     *
-     * @param string|null $value
      */
     public function sequenceName(?string $value): void;
 
     /**
      * Set primary keys of this table.
-     *
-     * @param string $value
      */
     public function primaryKey(string $value): void;
 
     /**
      * Set one column metadata of this table
-     *
-     * @param string $index
-     * @param ColumnSchemaInterface $value
      */
     public function columns(string $index, ColumnSchemaInterface $value): void;
 
@@ -135,9 +122,6 @@ interface TableSchemaInterface
      */
     public function getCreateSql(): ?string;
 
-    /**
-     * @param string $sql
-     */
     public function createSql(string $sql): void;
 
     /**
@@ -163,9 +147,6 @@ interface TableSchemaInterface
 
     /**
      * Set one foreignKey by index
-     *
-     * @param int|string $id
-     * @param array $to
      */
     public function foreignKey(string|int $id, array $to): void;
 

@@ -453,7 +453,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function getExpressionBuilder(ExpressionInterface $expression): object
     {
-        $className = get_class($expression);
+        $className = $expression::class;
 
         if (!isset($this->expressionBuilders[$className])) {
             throw new InvalidArgumentException(
@@ -493,7 +493,6 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
      * Contains array of default condition classes. Extend this method, if you want to change default condition classes
      * for the query builder.
      *
-     * @return array
      *
      * See {@see conditionClasses} docs for details.
      */
@@ -520,10 +519,8 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
      * Contains array of default expression builders. Extend this method and override it, if you want to change default
      * expression builders for this query builder.
      *
-     * @return array
      *
      * See {@see expressionBuilders} docs for details.
-     *
      * @psalm-return array<string, class-string<ExpressionBuilderInterface>>
      */
     protected function defaultExpressionBuilders(): array
@@ -549,9 +546,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
     /**
      * Extracts table alias if there is one or returns false.
      *
-     * @param string $table
      *
-     * @return array|bool
      *
      * @psalm-return string[]|bool
      */
@@ -591,12 +586,9 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
     /**
      * Quotes table names passed.
      *
-     * @param array $tables
-     * @param array $params
      *
      * @throws Exception|InvalidConfigException|NotSupportedException
      *
-     * @return array
      */
     private function quoteTableNames(array $tables, array &$params): array
     {

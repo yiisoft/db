@@ -234,7 +234,6 @@ interface ConnectionInterface
     /**
      * Quotes a value for use in a query.
      *
-     * @param mixed $value
      *
      * @return mixed The properly quoted string.
      */

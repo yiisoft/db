@@ -384,10 +384,8 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * @param mixed $value
      * @param ColumnSchemaInterface|null $columnSchema
      *
-     * @return mixed
      */
     protected function getTypecastValue(mixed $value, ColumnSchemaInterface $columnSchema = null): mixed
     {

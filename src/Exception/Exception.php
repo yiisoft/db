@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Exception;
 /**
  * Exceptions represents an exception that is caused by some DB-related operations.
  */
-class Exception extends \Exception
+class Exception extends \Exception implements \Stringable
 {
     public function __construct(string $message, public ?array $errorInfo = [], \Exception $previous = null)
     {
