@@ -15,17 +15,13 @@ use function in_array;
  */
 final class IsOneOfAssert extends Constraint
 {
-    private array $allowedValues;
-
-    public function __construct(array $allowedValues)
+    public function __construct(private array $allowedValues)
     {
-        $this->allowedValues = $allowedValues;
     }
 
     /**
      * Returns a string representation of the object.
      *
-     * @return string
      */
     public function toString(): string
     {

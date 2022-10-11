@@ -45,7 +45,6 @@ interface ConnectionPoolInterface
      * Whether to enable read/write splitting by using {@see setSlaves()} to read data. Note that if {@see setSlaves()}
      * is empty, read/write splitting will NOT be enabled no matter what value this property takes.
      *
-     * @param bool $value
      */
     public function setEnableSlaves(bool $value): void;
 

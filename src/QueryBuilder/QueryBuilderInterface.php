@@ -16,7 +16,6 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
     /**
      * Helper method to add $value to $params array using {@see PARAM_PREFIX}.
      *
-     * @param mixed $value
      * @param array $params passed by reference.
      *
      * @return string the placeholder name in $params array.

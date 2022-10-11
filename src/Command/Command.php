@@ -594,7 +594,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      *
      * @throws Exception|Throwable
      *
-     * @return mixed
      */
     protected function queryInternal(int $queryMode): mixed
     {
@@ -625,7 +624,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         $cacheResult = $this->getFromCacheInfo($info, $cacheKey);
 
         if ($cacheResult) {
-            $this->logger?->log(LogLevel::DEBUG, 'Get query result from cache', [__CLASS__ . '::query']);
+            $this->logger?->log(LogLevel::DEBUG, 'Get query result from cache', [self::class . '::query']);
             return $cacheResult;
         }
 
@@ -639,7 +638,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     protected function queryWithoutCache(string $rawSql, int $queryMode): mixed
     {
         $isReadMode = $this->isReadMode($queryMode);
-        $logCategory = __CLASS__ . '::' . ($isReadMode ? 'query' : 'execute');
+        $logCategory = self::class . '::' . ($isReadMode ? 'query' : 'execute');
 
         $this->logQuery($rawSql, $logCategory);
 
@@ -680,7 +679,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      * Logs the current database query if query logging is enabled and returns the profiling token if profiling is
      * enabled.
      *
-     * @param string $rawSql
      * @param string $category The log category.
      */
     protected function logQuery(string $rawSql, string $category): void
@@ -703,7 +701,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      *
      * @param string $name Name of the table, which schema should be refreshed.
      *
-     * @return static
      */
     protected function requireTableSchemaRefresh(string $name): static
     {
@@ -718,7 +715,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      *
      * {@see TransactionInterface::begin()} for details.
      *
-     * @return static
      */
     protected function requireTransaction(string $isolationLevel = null): static
     {
@@ -751,7 +747,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      *
      * @param Closure|null $handler A PHP callback to handle database exceptions.
      *
-     * @return static
      */
     protected function setRetryHandler(Closure|null $handler): static
     {
@@ -777,7 +772,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         );
 
         if (is_array($result) && isset($result[0])) {
-            $this->logger?->log(LogLevel::DEBUG, 'Query result served from cache', [__CLASS__ . '::query']);
+            $this->logger?->log(LogLevel::DEBUG, 'Query result served from cache', [self::class . '::query']);
 
             return $result[0];
         }
@@ -803,7 +798,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
             $info[2]
         );
 
-        $this->logger?->log(LogLevel::DEBUG, 'Saved query result in cache', [__CLASS__ . '::query']);
+        $this->logger?->log(LogLevel::DEBUG, 'Saved query result in cache', [self::class . '::query']);
     }
 
     private function isReadMode(int $queryMode): bool

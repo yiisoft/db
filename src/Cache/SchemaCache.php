@@ -59,7 +59,6 @@ final class SchemaCache
     /**
      * Return number of seconds that table metadata can remain valid in cache.
      *
-     * @return int|null
      */
     public function getDuration(): int|null
     {
@@ -71,7 +70,6 @@ final class SchemaCache
      *
      * @param string $value The table name.
      *
-     * @return bool
      */
     public function isExcluded(string $value): bool
     {
@@ -91,7 +89,6 @@ final class SchemaCache
     /**
      * Return true if SchemaCache is active.
      *
-     * @return bool
      */
     public function isEnabled(): bool
     {

@@ -88,11 +88,9 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @param string $operator
      *
      * @throws InvalidArgumentException
      *
-     * @return array
      *
      * @psalm-return array{0: string, 1: bool, 2: string}
      */

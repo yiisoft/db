@@ -12,7 +12,7 @@ use Yiisoft\Strings\NumericHelper;
  *
  * See {@see SchemaBuilderTrait} for more detailed description and usage examples.
  */
-class ColumnSchemaBuilder
+class ColumnSchemaBuilder implements \Stringable
 {
     /**
      * Internally used constants representing categories that abstract column types fall under.
@@ -252,7 +252,6 @@ class ColumnSchemaBuilder
     /**
      * Builds the length/precision part of the column.
      *
-     * @return string
      */
     protected function buildLengthString(): string
     {

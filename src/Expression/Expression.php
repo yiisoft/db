@@ -42,7 +42,6 @@ class Expression implements ExpressionInterface, Stringable
      *
      * The keys are placeholders appearing in {@see expression} and the values are the corresponding parameter values.
      *
-     * @return array
      */
     public function getParams(): array
     {

@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Exception;
 /**
  * Exceptions represents an exception that is caused by some DB-related operations.
  */
-class Exception extends \Exception
+class Exception extends \Exception implements \Stringable
 {
     public function __construct(string $message, public ?array $errorInfo = [], \Exception $previous = null)
     {
@@ -19,7 +19,6 @@ class Exception extends \Exception
      */
     public function __toString(): string
     {
-        return parent::__toString() . PHP_EOL .
-            'Additional Information:' . PHP_EOL . print_r($this->errorInfo, true);
+        return parent::__toString() . PHP_EOL . 'Additional Information:' . PHP_EOL . print_r($this->errorInfo, true);
     }
 }

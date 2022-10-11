@@ -739,12 +739,13 @@ class Query implements QueryInterface
      *
      *@throws Exception|InvalidConfigException|Throwable
      *
-     * @return bool|float|int|string|null
      *
      * @psalm-suppress PossiblyUndefinedVariable
      */
     protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|null|string|float
     {
+        $command = null;
+
         if ($this->emulateExecution) {
             return null;
         }
@@ -777,7 +778,7 @@ class Query implements QueryInterface
             $this->limit = $limit;
             $this->offset = $offset;
 
-            if (isset($e)) {
+            if (isset($e) || $command === null) {
                 throw $e;
             }
 
@@ -797,7 +798,6 @@ class Query implements QueryInterface
      *
      * @param CommandInterface $command The command instance.
      *
-     * @return CommandInterface
      */
     protected function setCommandCache(CommandInterface $command): CommandInterface
     {
