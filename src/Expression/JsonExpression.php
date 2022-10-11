@@ -31,7 +31,6 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
 
     /**
      * The value must be compatible with {@see \Yiisoft\Json\Json::encode()|Json::encode()} input requirements.
-     *
      */
     public function getValue(): mixed
     {
@@ -44,7 +43,6 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
      * This property will be encountered only for DBMSs that support different types of JSON.
      *
      * For example, PostgresSQL has `json` and `jsonb` types.
-     *
      */
     public function getType(): ?string
     {

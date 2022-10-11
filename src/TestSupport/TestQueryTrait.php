@@ -554,7 +554,7 @@ trait TestQueryTrait
         $result = (new Query($db))->from('customer')
             ->select(['name', 'id'])
             ->orderBy(['id' => SORT_DESC])
-            ->indexBy(fn($row) => $row['id'] * 2)
+            ->indexBy(fn ($row) => $row['id'] * 2)
             ->column();
 
         $this->assertEquals([6 => 'user3', 4 => 'user2', 2 => 'user1'], $result);
@@ -684,12 +684,10 @@ trait TestQueryTrait
     }
 
     /**
-     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
-     *
      */
     protected function countLikeQuery(
         ConnectionInterface $db,

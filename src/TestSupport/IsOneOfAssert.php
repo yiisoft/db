@@ -21,7 +21,6 @@ final class IsOneOfAssert extends Constraint
 
     /**
      * Returns a string representation of the object.
-     *
      */
     public function toString(): string
     {

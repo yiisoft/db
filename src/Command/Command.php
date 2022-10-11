@@ -593,7 +593,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      * @param int $queryMode - one from modes QUERY_MODE_*
      *
      * @throws Exception|Throwable
-     *
      */
     protected function queryInternal(int $queryMode): mixed
     {
@@ -700,7 +699,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      * Marks a specified table schema to be refreshed after command execution.
      *
      * @param string $name Name of the table, which schema should be refreshed.
-     *
      */
     protected function requireTableSchemaRefresh(string $name): static
     {
@@ -714,7 +712,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      *
      * {@see TransactionInterface::begin()} for details.
-     *
      */
     protected function requireTransaction(string $isolationLevel = null): static
     {
@@ -746,7 +743,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      * starting from 1.
      *
      * @param Closure|null $handler A PHP callback to handle database exceptions.
-     *
      */
     protected function setRetryHandler(Closure|null $handler): static
     {

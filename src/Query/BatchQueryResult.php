@@ -106,7 +106,6 @@ class BatchQueryResult implements BatchQueryResultInterface
      *
      * @throws InvalidCallException
      *
-     *
      * @psalm-suppress MixedArrayAccess
      */
     protected function getRows(): array

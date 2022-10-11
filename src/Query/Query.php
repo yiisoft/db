@@ -739,7 +739,6 @@ class Query implements QueryInterface
      *
      *@throws Exception|InvalidConfigException|Throwable
      *
-     *
      * @psalm-suppress PossiblyUndefinedVariable
      */
     protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|null|string|float
@@ -797,7 +796,6 @@ class Query implements QueryInterface
      * Sets $command cache, if this query has enabled caching.
      *
      * @param CommandInterface $command The command instance.
-     *
      */
     protected function setCommandCache(CommandInterface $command): CommandInterface
     {

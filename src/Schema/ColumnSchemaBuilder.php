@@ -251,7 +251,6 @@ class ColumnSchemaBuilder implements \Stringable
 
     /**
      * Builds the length/precision part of the column.
-     *
      */
     protected function buildLengthString(): string
     {

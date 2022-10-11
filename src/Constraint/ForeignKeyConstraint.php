@@ -42,7 +42,6 @@ final class ForeignKeyConstraint extends Constraint
 
     /**
      * @param string|null $value the referenced table schema name.
-     *
      */
     public function foreignSchemaName(string|null $value): self
     {
@@ -53,7 +52,6 @@ final class ForeignKeyConstraint extends Constraint
 
     /**
      * @param string|null $value The referenced table name.
-     *
      */
     public function foreignTableName(string|null $value): self
     {
@@ -64,7 +62,6 @@ final class ForeignKeyConstraint extends Constraint
 
     /**
      * @param array $value The list of referenced table column names.
-     *
      */
     public function foreignColumnNames(array $value): self
     {
@@ -75,7 +72,6 @@ final class ForeignKeyConstraint extends Constraint
 
     /**
      * @param string|null $value The referential action if rows in a referenced table are to be updated.
-     *
      */
     public function onUpdate(string|null $value): self
     {
@@ -86,7 +82,6 @@ final class ForeignKeyConstraint extends Constraint
 
     /**
      * @param string|null $value The referential action if rows in a referenced table are to be deleted.
-     *
      */
     public function onDelete(string|null $value): self
     {

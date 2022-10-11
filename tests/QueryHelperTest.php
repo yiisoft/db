@@ -28,7 +28,6 @@ final class QueryHelperTest extends TestCase
 
     /**
      * @dataProvider tablesNameDataProvider
-     *
      */
     public function testCleanUpTableNames(array $tables, string $prefixDatabase, array $expected): void
     {
@@ -95,7 +94,6 @@ final class QueryHelperTest extends TestCase
 
     /**
      * @dataProvider filterConditionDataProvider
-     *
      */
     public function testFilterCondition(array|string $condition, array|string $expected): void
     {
@@ -114,7 +112,6 @@ final class QueryHelperTest extends TestCase
 
     /**
      * @dataProvider normalizeOrderByProvider
-     *
      */
     public function testNormalizeOrderBy(array|string|Expression $columns, array|string $expected): void
     {
@@ -137,7 +134,6 @@ final class QueryHelperTest extends TestCase
 
     /**
      * @dataProvider normalizeSelectProvider
-     *
      */
     public function testNormalizeSelect(array|string|Expression $columns, array|string $expected): void
     {

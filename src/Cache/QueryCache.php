@@ -26,7 +26,6 @@ final class QueryCache
 
     /**
      * Return number of seconds that query results can remain valid in cache.
-     *
      */
     public function getDuration(): int|null
     {
@@ -35,7 +34,6 @@ final class QueryCache
 
     /**
      * Return true if QueryCache is active.
-     *
      */
     public function isEnabled(): bool
     {

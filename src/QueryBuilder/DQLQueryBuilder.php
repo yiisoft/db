@@ -27,7 +27,6 @@ use function array_filter;
 use function array_merge;
 use function array_shift;
 use function ctype_digit;
-use function get_class;
 use function implode;
 use function is_array;
 use function is_int;
@@ -493,7 +492,6 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
      * Contains array of default condition classes. Extend this method, if you want to change default condition classes
      * for the query builder.
      *
-     *
      * See {@see conditionClasses} docs for details.
      */
     protected function defaultConditionClasses(): array
@@ -518,7 +516,6 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
     /**
      * Contains array of default expression builders. Extend this method and override it, if you want to change default
      * expression builders for this query builder.
-     *
      *
      * See {@see expressionBuilders} docs for details.
      *
@@ -546,8 +543,6 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
 
     /**
      * Extracts table alias if there is one or returns false.
-     *
-     *
      *
      * @psalm-return string[]|bool
      */
@@ -587,9 +582,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
     /**
      * Quotes table names passed.
      *
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException
-     *
      */
     private function quoteTableNames(array $tables, array &$params): array
     {

@@ -167,7 +167,6 @@ final class QueryHelper
      * @param array|ExpressionInterface|string $columns the columns value to normalize.
      *
      * See {@see orderBy} and {@see addOrderBy}.
-     *
      */
     public function normalizeOrderBy(array|string|ExpressionInterface $columns): array
     {
@@ -195,8 +194,6 @@ final class QueryHelper
 
     /**
      * Normalizes the SELECT columns passed to {@see select()} or {@see addSelect()}.
-     *
-     *
      */
     public function normalizeSelect(array|ExpressionInterface|string $columns): array
     {

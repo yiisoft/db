@@ -64,37 +64,31 @@ interface TableSchemaInterface
 
     /**
      * Set the name of the schema that this table belongs to.
-     *
      */
     public function schemaName(?string $value): void;
 
     /**
      * Set name of this table
-     *
      */
     public function name(string $value): void;
 
     /**
      * Set the full name of this table, which includes the schema name prefix, if any.
-     *
      */
     public function fullName(?string $value): void;
 
     /**
      * Set sequence name for the primary key
-     *
      */
     public function sequenceName(?string $value): void;
 
     /**
      * Set primary keys of this table.
-     *
      */
     public function primaryKey(string $value): void;
 
     /**
      * Set one column metadata of this table
-     *
      */
     public function columns(string $index, ColumnSchemaInterface $value): void;
 
@@ -153,7 +147,6 @@ interface TableSchemaInterface
 
     /**
      * Set one foreignKey by index
-     *
      */
     public function foreignKey(string|int $id, array $to): void;
 
