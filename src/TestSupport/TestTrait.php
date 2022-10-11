@@ -90,7 +90,6 @@ trait TestTrait
      * Gets an inaccessible object property.
      *
      * @param bool $revoke whether to make property inaccessible after getting.
-     *
      */
     protected function getInaccessibleProperty(object $object, string $propertyName, bool $revoke = true): mixed
     {
@@ -119,7 +118,6 @@ trait TestTrait
      * @param bool $revoke whether to make method inaccessible after execution.
      *
      * @throws ReflectionException
-     *
      */
     protected function invokeMethod(object $object, string $method, array $args = [], bool $revoke = true): mixed
     {
