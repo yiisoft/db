@@ -72,12 +72,6 @@ trait TestQuoterTrait
     {
         return [
             ['*', '*'],
-            ['table.*', '[table].*'],
-            ['[table].*', '[table].*'],
-            ['table.column', '[table].[column]'],
-            ['[table].column', '[table].[column]'],
-            ['table.[column]', '[table].[column]'],
-            ['[table].[column]', '[table].[column]'],
         ];
     }
 }
