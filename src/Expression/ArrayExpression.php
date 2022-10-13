@@ -28,7 +28,7 @@ use function count;
  */
 class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
 {
-    public function __construct(private mixed $value = [], private ?string $type = null, private int $dimension = 1)
+    public function __construct(private mixed $value = [], private string|null $type = null, private int $dimension = 1)
     {
     }
 
@@ -38,7 +38,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * Note that in case when type is not specified explicitly and DBMS can not guess it from the context, SQL error
      * will be raised.
      */
-    public function getType(): ?string
+    public function getType(): string|null
     {
         return $this->type;
     }

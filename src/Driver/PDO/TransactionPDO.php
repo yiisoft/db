@@ -52,7 +52,7 @@ abstract class TransactionPDO implements TransactionInterface
     /**
      * @inheritDoc
      */
-    public function begin(?string $isolationLevel = null): void
+    public function begin(string $isolationLevel = null): void
     {
         $this->db->open();
 

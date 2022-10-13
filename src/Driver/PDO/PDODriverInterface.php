@@ -27,7 +27,7 @@ interface PDODriverInterface extends DriverInterface
      * @return string|null the charset of the pdo instance. Null is returned if the charset is not set yet or not
      * supported by the pdo driver
      */
-    public function getCharset(): ?string;
+    public function getCharset(): string|null;
 
     /**
      * Return dsn string for current driver.
@@ -74,7 +74,7 @@ interface PDODriverInterface extends DriverInterface
      *
      * @param string|null $charset
      */
-    public function setCharset(?string $charset): void;
+    public function setCharset(string|null $charset): void;
 
     /**
      * The username for establishing DB connection. Defaults to `null` meaning no username to use.

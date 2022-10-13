@@ -15,7 +15,7 @@ use Yiisoft\Db\QueryBuilder\Conditions\Interface\LikeConditionInterface;
  */
 final class LikeCondition implements LikeConditionInterface
 {
-    protected ?array $escapingReplacements = [];
+    protected array|null $escapingReplacements = [];
 
     public function __construct(
         private string|Expression $column,

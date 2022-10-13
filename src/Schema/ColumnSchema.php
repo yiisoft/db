@@ -14,18 +14,18 @@ class ColumnSchema implements ColumnSchemaInterface
     private string $name = '';
     private bool $allowNull = false;
     private string $type = '';
-    private ?string $phpType = null;
+    private string|null $phpType = null;
     private string $dbType = '';
     private mixed $defaultValue = null;
-    private ?array $enumValues = null;
-    private ?int $size = null;
-    private ?int $precision = null;
-    private ?int $scale = null;
+    private array|null $enumValues = null;
+    private int|null $size = null;
+    private int|null $precision = null;
+    private int|null $scale = null;
     private bool $isPrimaryKey = false;
     private bool $autoIncrement = false;
     private bool $unsigned = false;
-    private ?string $comment = null;
-    private ?string $extra = null;
+    private string|null $comment = null;
+    private string|null $extra = null;
 
     public function phpTypecast(mixed $value): mixed
     {
@@ -61,7 +61,7 @@ class ColumnSchema implements ColumnSchemaInterface
         return $this->type;
     }
 
-    public function getPhpType(): ?string
+    public function getPhpType(): string|null
     {
         return $this->phpType;
     }
@@ -76,22 +76,22 @@ class ColumnSchema implements ColumnSchemaInterface
         return $this->defaultValue;
     }
 
-    public function getEnumValues(): ?array
+    public function getEnumValues(): array|null
     {
         return $this->enumValues;
     }
 
-    public function getSize(): ?int
+    public function getSize(): int|null
     {
         return $this->size;
     }
 
-    public function getPrecision(): ?int
+    public function getPrecision(): int|null
     {
         return $this->precision;
     }
 
-    public function getScale(): ?int
+    public function getScale(): int|null
     {
         return $this->scale;
     }
@@ -111,12 +111,12 @@ class ColumnSchema implements ColumnSchemaInterface
         return $this->unsigned;
     }
 
-    public function getComment(): ?string
+    public function getComment(): string|null
     {
         return $this->comment;
     }
 
-    public function getExtra(): ?string
+    public function getExtra(): string|null
     {
         return $this->extra;
     }
@@ -136,7 +136,7 @@ class ColumnSchema implements ColumnSchemaInterface
         $this->type = $value;
     }
 
-    public function phpType(?string $value): void
+    public function phpType(string|null $value): void
     {
         $this->phpType = $value;
     }
@@ -151,22 +151,22 @@ class ColumnSchema implements ColumnSchemaInterface
         $this->defaultValue = $value;
     }
 
-    public function enumValues(?array $value): void
+    public function enumValues(array|null $value): void
     {
         $this->enumValues = $value;
     }
 
-    public function size(?int $value): void
+    public function size(int|null $value): void
     {
         $this->size = $value;
     }
 
-    public function precision(?int $value): void
+    public function precision(int|null $value): void
     {
         $this->precision = $value;
     }
 
-    public function scale(?int $value): void
+    public function scale(int|null $value): void
     {
         $this->scale = $value;
     }
@@ -186,12 +186,12 @@ class ColumnSchema implements ColumnSchemaInterface
         $this->unsigned = $value;
     }
 
-    public function comment(?string $value): void
+    public function comment(string|null $value): void
     {
         $this->comment = $value;
     }
 
-    public function extra(?string $value): void
+    public function extra(string|null $value): void
     {
         $this->extra = $value;
     }

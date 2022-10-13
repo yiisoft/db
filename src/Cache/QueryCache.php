@@ -18,7 +18,7 @@ final class QueryCache
 {
     private bool $enabled = true;
     public array $info = [];
-    private ?int $duration = 3600;
+    private int|null $duration = 3600;
 
     public function __construct(private CacheInterface $cache)
     {

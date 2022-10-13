@@ -8,7 +8,7 @@ use PDO;
 
 abstract class PDODriver implements PDODriverInterface
 {
-    protected ?string $charset = null;
+    protected string|null $charset = null;
 
     public function __construct(
         protected string $dsn,
@@ -47,7 +47,7 @@ abstract class PDODriver implements PDODriverInterface
      *
      * @param string|null $charset
      */
-    public function setCharset(?string $charset): void
+    public function setCharset(string|null $charset): void
     {
         $this->charset = $charset;
     }
@@ -59,7 +59,7 @@ abstract class PDODriver implements PDODriverInterface
      * @return string|null the charset of the pdo instance. Null is returned if the charset is not set yet or not
      * supported by the pdo driver
      */
-    public function getCharset(): ?string
+    public function getCharset(): string|null
     {
         return $this->charset;
     }

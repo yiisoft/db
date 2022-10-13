@@ -19,7 +19,7 @@ use Yiisoft\Db\Query\Data\DataReader;
 
 abstract class CommandPDO extends Command implements CommandPDOInterface
 {
-    protected ?PDOStatement $pdoStatement = null;
+    protected PDOStatement|null $pdoStatement = null;
 
     public function __construct(protected ConnectionPDOInterface $db, QueryCache $queryCache)
     {
@@ -35,7 +35,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         $this->pdoStatement = null;
     }
 
-    public function getPdoStatement(): ?PDOStatement
+    public function getPdoStatement(): PDOStatement|null
     {
         return $this->pdoStatement;
     }
@@ -48,8 +48,8 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
     public function bindParam(
         int|string $name,
         mixed &$value,
-        ?int $dataType = null,
-        ?int $length = null,
+        int|null $dataType = null,
+        int|null $length = null,
         mixed $driverOptions = null
     ): static {
         $this->prepare();
@@ -69,7 +69,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         return $this;
     }
 
-    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static
+    public function bindValue(int|string $name, mixed $value, int|null $dataType = null): static
     {
         if ($dataType === null) {
             $dataType = $this->db->getSchema()->getPdoType($value);
@@ -104,7 +104,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
     /**
      * @throws Exception|InvalidConfigException|PDOException
      */
-    public function prepare(?bool $forRead = null): void
+    public function prepare(bool|null $forRead = null): void
     {
         if (isset($this->pdoStatement)) {
             $this->bindPendingParams();
@@ -183,5 +183,5 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
      *
      * @throws Exception|Throwable
      */
-    abstract protected function internalExecute(?string $rawSql): void;
+    abstract protected function internalExecute(string|null $rawSql): void;
 }

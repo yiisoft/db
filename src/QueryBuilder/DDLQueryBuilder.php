@@ -80,8 +80,8 @@ abstract class DDLQueryBuilder implements DDLQueryBuilderInterface
         array|string $columns,
         string $refTable,
         array|string $refColumns,
-        ?string $delete = null,
-        ?string $update = null
+        string|null $delete = null,
+        string|null $update = null
     ): string {
         $sql = 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
@@ -157,15 +157,20 @@ abstract class DDLQueryBuilder implements DDLQueryBuilderInterface
     /**
      * @throws Exception|InvalidArgumentException
      */
-    public function createIndex(string $name, string $table, array|string $columns, ?string $indexType = null, ?string $indexMethod = null): string
-    {
+    public function createIndex(
+        string $name,
+        string $table,
+        array|string $columns,
+        string $indexType = null,
+        string $indexMethod = null
+    ): string {
         return 'CREATE ' . ($indexType ? ($indexType . ' ') : '') . 'INDEX '
             . $this->quoter->quoteTableName($name)
             . ' ON ' . $this->quoter->quoteTableName($table)
             . ' (' . $this->queryBuilder->buildColumns($columns) . ')';
     }
 
-    public function createTable(string $table, array $columns, ?string $options = null): string
+    public function createTable(string $table, array $columns, string $options = null): string
     {
         $cols = [];
 

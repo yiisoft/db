@@ -36,7 +36,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         '_' => '\_',
         '\\' => '\\\\',
     ];
-    protected ?string $escapeCharacter = null;
+    protected string|null $escapeCharacter = null;
 
     /**
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException

@@ -23,12 +23,12 @@ class BatchQueryResult implements BatchQueryResultInterface
     /**
      * @var DataReaderInterface|null the data reader associated with this batch query.
      */
-    protected ?DataReaderInterface $dataReader = null;
+    protected DataReaderInterface|null $dataReader = null;
 
     /**
      * @var array|null the data retrieved in the current batch
      */
-    private ?array $batch = null;
+    private array|null $batch = null;
 
     /**
      * @var mixed the value for the current iteration

@@ -16,12 +16,12 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Return default schema name.
      */
-    public function getDefaultSchema(): ?string;
+    public function getDefaultSchema(): string|null;
 
     /**
      * @inheritDoc
      */
-    public function getLastInsertID(?string $sequenceName = null): string;
+    public function getLastInsertID(string $sequenceName = null): string;
 
     /**
      * Determines the PDO type for the given PHP data value.
@@ -120,7 +120,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @return TableSchemaInterface|null Table metadata. `null` if the named table does not exist.
      */
-    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface;
+    public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null;
 
     /**
      * Returns the metadata for all tables in the database.

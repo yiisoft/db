@@ -161,8 +161,6 @@ trait TestTrait
 
     /**
      * Adjust dbms specific escaping.
-     *
-     * @param $sql
      */
     protected function replaceQuotes($sql): string|array|null
     {

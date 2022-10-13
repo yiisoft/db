@@ -22,7 +22,7 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
     public const TYPE_JSON = 'json';
     public const TYPE_JSONB = 'jsonb';
 
-    public function __construct(protected mixed $value, private ?string $type = null)
+    public function __construct(protected mixed $value, private string|null $type = null)
     {
         if ($value instanceof self) {
             $this->value = $value->getValue();
@@ -44,7 +44,7 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
      *
      * For example, PostgresSQL has `json` and `jsonb` types.
      */
-    public function getType(): ?string
+    public function getType(): string|null
     {
         return $this->type;
     }

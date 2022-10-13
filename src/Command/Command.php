@@ -677,8 +677,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * Logs the current database query if query logging is enabled and returns the profiling token if profiling is
      * enabled.
-     *
-     * @param string $category The log category.
      */
     protected function logQuery(string $rawSql, string $category): void
     {

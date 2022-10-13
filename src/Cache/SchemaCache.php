@@ -114,7 +114,7 @@ final class SchemaCache
      *
      * {@see setEnable()}
      */
-    public function setDuration(?int $value): void
+    public function setDuration(int|null $value): void
     {
         $this->duration = $value;
     }

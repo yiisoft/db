@@ -102,8 +102,8 @@ abstract class QueryBuilder implements QueryBuilderInterface
         array|string $columns,
         string $refTable,
         array|string $refColumns,
-        ?string $delete = null,
-        ?string $update = null
+        string $delete = null,
+        string $update = null
     ): string {
         return $this->ddlBuilder->addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete, $update);
     }
@@ -157,7 +157,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->buildExpression($expression, $params);
     }
 
-    public function buildFrom(?array $tables, array &$params): string
+    public function buildFrom(array|null $tables, array &$params): string
     {
         return $this->dqlBuilder->buildFrom($tables, $params);
     }
@@ -200,7 +200,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
     public function buildSelect(
         array $columns,
         array &$params,
-        ?bool $distinct = false,
+        bool|null $distinct = false,
         string $selectOption = null
     ): string {
         return $this->dqlBuilder->buildSelect($columns, $params, $distinct, $selectOption);
@@ -233,12 +233,17 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->createConditionFromArray($condition);
     }
 
-    public function createIndex(string $name, string $table, array|string $columns, ?string $indexType = null, ?string $indexMethod = null): string
-    {
+    public function createIndex(
+        string $name,
+        string $table,
+        array|string $columns,
+        string $indexType = null,
+        string $indexMethod = null
+    ): string {
         return $this->ddlBuilder->createIndex($name, $table, $columns, $indexType, $indexMethod);
     }
 
-    public function createTable(string $table, array $columns, ?string $options = null): string
+    public function createTable(string $table, array $columns, string $options = null): string
     {
         return $this->ddlBuilder->createTable($table, $columns, $options);
     }

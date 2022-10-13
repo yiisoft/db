@@ -383,9 +383,6 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
         return array_unique($columnNames);
     }
 
-    /**
-     * @param ColumnSchemaInterface|null $columnSchema
-     */
     protected function getTypecastValue(mixed $value, ColumnSchemaInterface $columnSchema = null): mixed
     {
         if ($columnSchema) {

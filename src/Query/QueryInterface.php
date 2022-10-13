@@ -84,7 +84,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @return $this the Query object itself.
      */
-    public function cache(?int $duration = 3600, ?Dependency $dependency = null): self;
+    public function cache(int|null $duration = 3600, Dependency $dependency = null): self;
 
     /**
      * Executes the query and returns the first column of the result.
@@ -147,7 +147,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      */
     public function exists(): bool;
 
-    public function getDistinct(): ?bool;
+    public function getDistinct(): bool|null;
 
     public function getFrom(): array|null;
 
@@ -175,7 +175,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      */
     public function getSelect(): array;
 
-    public function getSelectOption(): ?string;
+    public function getSelectOption(): string|null;
 
     /**
      * Returns table names used in {@see from} indexed by aliases.

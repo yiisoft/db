@@ -67,7 +67,7 @@ abstract class Schema implements SchemaInterface
     /**
      * @var string|null the default schema name used for the current session.
      */
-    protected ?string $defaultSchema = null;
+    protected string|null $defaultSchema = null;
     private array $schemaNames = [];
     private array $tableNames = [];
     protected array $viewNames = [];
@@ -138,7 +138,7 @@ abstract class Schema implements SchemaInterface
      *
      * @return Constraint|null primary key for the given table, `null` if the table has no primary key.
      */
-    abstract protected function loadTablePrimaryKey(string $tableName): ?Constraint;
+    abstract protected function loadTablePrimaryKey(string $tableName): Constraint|null;
 
     /**
      * Loads all unique constraints for the given table.
@@ -156,9 +156,9 @@ abstract class Schema implements SchemaInterface
      *
      * @return TableSchemaInterface|null DBMS-dependent table metadata, `null` if the table does not exist.
      */
-    abstract protected function loadTableSchema(string $name): ?TableSchemaInterface;
+    abstract protected function loadTableSchema(string $name): TableSchemaInterface|null;
 
-    public function getDefaultSchema(): ?string
+    public function getDefaultSchema(): string|null
     {
         return $this->defaultSchema;
     }
@@ -291,14 +291,14 @@ abstract class Schema implements SchemaInterface
         return is_array($this->tableNames[$schema]) ? $this->tableNames[$schema] : [];
     }
 
-    public function getTablePrimaryKey(string $name, bool $refresh = false): ?Constraint
+    public function getTablePrimaryKey(string $name, bool $refresh = false): Constraint|null
     {
         /** @var mixed */
         $tablePrimaryKey = $this->getTableMetadata($name, self::PRIMARY_KEY, $refresh);
         return $tablePrimaryKey instanceof Constraint ? $tablePrimaryKey : null;
     }
 
-    public function getTableSchema(string $name, bool $refresh = false): ?TableSchemaInterface
+    public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null
     {
         /** @var mixed */
         $tableSchema = $this->getTableMetadata($name, self::SCHEMA, $refresh);
