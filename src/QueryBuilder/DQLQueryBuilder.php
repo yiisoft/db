@@ -27,7 +27,6 @@ use function array_filter;
 use function array_merge;
 use function array_shift;
 use function ctype_digit;
-use function get_class;
 use function implode;
 use function is_array;
 use function is_int;
@@ -195,7 +194,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
         return (string) $builder->build($expression, $params);
     }
 
-    public function buildFrom(?array $tables, array &$params): string
+    public function buildFrom(array|null $tables, array &$params): string
     {
         if (empty($tables)) {
             return '';
@@ -336,8 +335,8 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
     public function buildSelect(
         array $columns,
         array &$params,
-        ?bool $distinct = false,
-        ?string $selectOption = null
+        bool|null $distinct = false,
+        string $selectOption = null
     ): string {
         $select = $distinct ? 'SELECT DISTINCT' : 'SELECT';
 
@@ -453,7 +452,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function getExpressionBuilder(ExpressionInterface $expression): object
     {
-        $className = get_class($expression);
+        $className = $expression::class;
 
         if (!isset($this->expressionBuilders[$className])) {
             throw new InvalidArgumentException(
@@ -493,8 +492,6 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
      * Contains array of default condition classes. Extend this method, if you want to change default condition classes
      * for the query builder.
      *
-     * @return array
-     *
      * See {@see conditionClasses} docs for details.
      */
     protected function defaultConditionClasses(): array
@@ -519,8 +516,6 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
     /**
      * Contains array of default expression builders. Extend this method and override it, if you want to change default
      * expression builders for this query builder.
-     *
-     * @return array
      *
      * See {@see expressionBuilders} docs for details.
      *
@@ -548,10 +543,6 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
 
     /**
      * Extracts table alias if there is one or returns false.
-     *
-     * @param string $table
-     *
-     * @return array|bool
      *
      * @psalm-return string[]|bool
      */
@@ -591,12 +582,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
     /**
      * Quotes table names passed.
      *
-     * @param array $tables
-     * @param array $params
-     *
      * @throws Exception|InvalidConfigException|NotSupportedException
-     *
-     * @return array
      */
     private function quoteTableNames(array $tables, array &$params): array
     {

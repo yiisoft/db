@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Exception\NotSupportedException;
+
 use function array_keys;
 
 /**
@@ -14,19 +15,19 @@ use function array_keys;
  */
 abstract class TableSchema implements TableSchemaInterface
 {
-    private ?string $schemaName = null;
+    private string|null $schemaName = null;
     private string $name = '';
-    private ?string $fullName = null;
-    private ?string $sequenceName = null;
+    private string|null $fullName = null;
+    private string|null $sequenceName = null;
     /** @psalm-var string[] */
     private array $primaryKey = [];
     /** @psalm-var ColumnSchemaInterface[] */
     private array $columns = [];
     /** @psalm-var array<array-key, array> */
     protected array $foreignKeys = [];
-    protected ?string $createSql = null;
-    private ?string $catalogName = null;
-    private ?string $serverName = null;
+    protected string|null $createSql = null;
+    private string|null $catalogName = null;
+    private string|null $serverName = null;
 
     /**
      * Gets the named column metadata.
@@ -37,7 +38,7 @@ abstract class TableSchema implements TableSchemaInterface
      *
      * @return ColumnSchemaInterface|null metadata of the named column. Null if the named column does not exist.
      */
-    public function getColumn(string $name): ?ColumnSchemaInterface
+    public function getColumn(string $name): ColumnSchemaInterface|null
     {
         return $this->columns[$name] ?? null;
     }
@@ -55,7 +56,7 @@ abstract class TableSchema implements TableSchemaInterface
     /**
      * @return string|null the name of the schema that this table belongs to.
      */
-    public function getSchemaName(): ?string
+    public function getSchemaName(): string|null
     {
         return $this->schemaName;
     }
@@ -74,7 +75,7 @@ abstract class TableSchema implements TableSchemaInterface
      * schema name is the same as the {@see Schema::defaultSchema|default schema name}, the schema name will not be
      * included.
      */
-    public function getFullName(): ?string
+    public function getFullName(): string|null
     {
         return $this->fullName;
     }
@@ -82,7 +83,7 @@ abstract class TableSchema implements TableSchemaInterface
     /**
      * @return string|null sequence name for the primary key. Null if no sequence.
      */
-    public function getSequenceName(): ?string
+    public function getSequenceName(): string|null
     {
         return $this->sequenceName;
     }
@@ -108,7 +109,7 @@ abstract class TableSchema implements TableSchemaInterface
         return $this->columns;
     }
 
-    public function schemaName(?string $value): void
+    public function schemaName(string|null $value): void
     {
         $this->schemaName = $value;
     }
@@ -118,12 +119,12 @@ abstract class TableSchema implements TableSchemaInterface
         $this->name = $value;
     }
 
-    public function fullName(?string $value): void
+    public function fullName(string|null $value): void
     {
         $this->fullName = $value;
     }
 
-    public function sequenceName(?string $value): void
+    public function sequenceName(string|null $value): void
     {
         $this->sequenceName = $value;
     }
@@ -138,7 +139,7 @@ abstract class TableSchema implements TableSchemaInterface
         $this->columns[$index] = $value;
     }
 
-    public function getCatalogName(): ?string
+    public function getCatalogName(): string|null
     {
         return $this->catalogName;
     }
@@ -147,12 +148,12 @@ abstract class TableSchema implements TableSchemaInterface
      * @param string|null name of the catalog (database) that this table belongs to. Defaults to null, meaning no
      * catalog (or the current database).
      */
-    public function catalogName(?string $value): void
+    public function catalogName(string|null $value): void
     {
         $this->catalogName = $value;
     }
 
-    public function getServerName(): ?string
+    public function getServerName(): string|null
     {
         return $this->serverName;
     }
@@ -160,12 +161,12 @@ abstract class TableSchema implements TableSchemaInterface
     /**
      * @param string|null name of the server
      */
-    public function serverName(?string $value): void
+    public function serverName(string|null $value): void
     {
         $this->serverName = $value;
     }
 
-    public function getCreateSql(): ?string
+    public function getCreateSql(): string|null
     {
         return $this->createSql;
     }

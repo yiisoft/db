@@ -12,5 +12,5 @@ interface CommandPDOInterface extends CommandInterface
     /**
      * Return the PDO statement.
      */
-    public function getPdoStatement(): ?PDOStatement;
+    public function getPdoStatement(): PDOStatement|null;
 }

@@ -22,14 +22,12 @@ use function is_string;
 
 abstract class ConnectionPDO extends Connection implements ConnectionPDOInterface
 {
-    protected ?PDO $pdo = null;
+    protected PDO|null $pdo = null;
     protected string $serverVersion = '';
-
-    protected ?bool $emulatePrepare = null;
-
-    protected ?QueryBuilderInterface $queryBuilder = null;
-    protected ?QuoterInterface $quoter = null;
-    protected ?SchemaInterface $schema = null;
+    protected bool|null $emulatePrepare = null;
+    protected QueryBuilderInterface|null $queryBuilder = null;
+    protected QuoterInterface|null $quoter = null;
+    protected SchemaInterface|null $schema = null;
 
     public function __construct(
         protected PDODriverInterface $driver,
@@ -114,12 +112,12 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
         return $this->driver;
     }
 
-    public function getEmulatePrepare(): ?bool
+    public function getEmulatePrepare(): bool|null
     {
         return $this->emulatePrepare;
     }
 
-    public function getPDO(): ?PDO
+    public function getPDO(): PDO|null
     {
         return $this->pdo;
     }
@@ -127,15 +125,10 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
     /**
      * Input variables $sql and $forRead needs for future implementation of Connection + Pool
      *
-     * @param string|null $sql
-     * @param bool|null $forRead
-     *
      * @throws Exception
      * @throws InvalidConfigException
-     *
-     * @return PDO
      */
-    public function getActivePDO(?string $sql = '', ?bool $forRead = null): PDO
+    public function getActivePDO(string|null $sql = '', bool|null $forRead = null): PDO
     {
         $this->open();
         $pdo = $this->getPDO();
@@ -147,7 +140,7 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
         return $pdo;
     }
 
-    public function getLastInsertID(?string $sequenceName = null): string
+    public function getLastInsertID(string $sequenceName = null): string
     {
         if ($this->isActive() && $this->pdo) {
             return $this->pdo->lastInsertID($sequenceName === null

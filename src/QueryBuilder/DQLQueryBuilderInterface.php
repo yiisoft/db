@@ -84,7 +84,7 @@ interface DQLQueryBuilderInterface
      *
      * @return string the FROM clause built from {@see Query::$from}.
      */
-    public function buildFrom(?array $tables, array &$params): string;
+    public function buildFrom(array|null $tables, array &$params): string;
 
     /**
      * @param array $columns
@@ -169,8 +169,8 @@ interface DQLQueryBuilderInterface
     public function buildSelect(
         array $columns,
         array &$params,
-        ?bool $distinct = false,
-        ?string $selectOption = null
+        bool|null $distinct = false,
+        string $selectOption = null
     ): string;
 
     /**

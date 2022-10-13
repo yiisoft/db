@@ -112,8 +112,8 @@ interface DDLQueryBuilderInterface
         array|string $columns,
         string $refTable,
         array|string $refColumns,
-        ?string $delete = null,
-        ?string $update = null
+        string|null $delete = null,
+        string|null $update = null
     ): string;
 
     /**
@@ -179,14 +179,21 @@ interface DDLQueryBuilderInterface
      * @param array|string $columns the column(s) that should be included in the index. If there are multiple columns,
      * separate them with commas or use an array to represent them. Each column name will be properly quoted by the
      * method, unless a parenthesis is found in the name.
-     * @param string|null $indexType type of index supported DBMS - for example: UNIQUE, FULLTEXT, SPATIAL, BITMAP or null as default
+     * @param string|null $indexType type of index supported DBMS - for example: UNIQUE, FULLTEXT, SPATIAL, BITMAP or
+     * null as default
      * @param string|null $indexMethod for setting index organization method (with 'USING', not all DBMS)
      *
      * @throws Exception|InvalidArgumentException
      *
      * @return string the SQL statement for creating a new index.
      */
-    public function createIndex(string $name, string $table, array|string $columns, ?string $indexType = null, ?string $indexMethod = null): string;
+    public function createIndex(
+        string $name,
+        string $table,
+        array|string $columns,
+        string $indexType = null,
+        string $indexMethod = null
+    ): string;
 
     /**
      * Builds a SQL statement for creating a new DB table.
@@ -216,7 +223,7 @@ interface DDLQueryBuilderInterface
      *
      * @return string the SQL statement for creating a new DB table.
      */
-    public function createTable(string $table, array $columns, ?string $options = null): string;
+    public function createTable(string $table, array $columns, string $options = null): string;
 
     /**
      * Creates a SQL View.

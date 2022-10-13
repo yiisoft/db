@@ -284,6 +284,7 @@ trait TestCommandTrait
 
     public function testBatchInsertWithManyData(): void
     {
+        $values = [];
         $attemptsInsertRows = 200;
         $db = $this->getConnection(true);
 

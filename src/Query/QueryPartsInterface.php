@@ -101,7 +101,7 @@ interface QueryPartsInterface
      *
      * @return static the query object itself.
      */
-    public function andFilterCompare(string $name, ?string $value, string $defaultOperator = '='): self;
+    public function andFilterCompare(string $name, string|null $value, string $defaultOperator = '='): self;
 
     /**
      * Adds HAVING condition to the existing one but ignores {@see isEmpty()|empty operands}.
@@ -182,7 +182,7 @@ interface QueryPartsInterface
      *
      * @return static the query object itself
      */
-    public function distinct(?bool $value = true): self;
+    public function distinct(bool|null $value = true): self;
 
     /**
      * Sets the HAVING part of the query but ignores {@see isEmpty()|empty operands}.
@@ -567,9 +567,9 @@ interface QueryPartsInterface
      *
      * @return static the query object itself.
      */
-    public function select(array|string|ExpressionInterface $columns, ?string $option = null): self;
+    public function select(array|string|ExpressionInterface $columns, string $option = null): self;
 
-    public function selectOption(?string $value): QueryInterface;
+    public function selectOption(string|null $value): QueryInterface;
 
     public function setJoin(array $value): QueryInterface;
 

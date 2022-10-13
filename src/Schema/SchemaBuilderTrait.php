@@ -190,7 +190,7 @@ trait SchemaBuilderTrait
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
      */
-    public function decimal(int $precision = null, ?int $scale = null): ColumnSchemaBuilder
+    public function decimal(int $precision = null, int $scale = null): ColumnSchemaBuilder
     {
         $length = [];
 
@@ -226,7 +226,7 @@ trait SchemaBuilderTrait
      *
      * @return ColumnSchemaBuilder the column instance which can be further customized.
      */
-    public function timestamp(?int $precision = null): ColumnSchemaBuilder
+    public function timestamp(int $precision = null): ColumnSchemaBuilder
     {
         return $this->db->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TIMESTAMP, $precision);
     }

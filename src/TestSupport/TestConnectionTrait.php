@@ -403,9 +403,6 @@ trait TestConnectionTrait
         $this->runExceptionTest($db);
     }
 
-    /**
-     * @param ConnectionInterface $db
-     */
     private function runExceptionTest(ConnectionInterface $db): void
     {
         $thrown = false;

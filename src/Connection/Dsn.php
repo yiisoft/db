@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Connection;
 /**
  * Dns represents the data source name that specifies how to connect to the database.
  */
-final class Dsn
+final class Dsn implements \Stringable
 {
     public function __construct(
         private string $driver,

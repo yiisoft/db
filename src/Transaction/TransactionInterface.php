@@ -63,7 +63,7 @@ interface TransactionInterface extends LoggerAwareInterface
      * @throws InvalidConfigException If {@see db} is `null` or invalid.
      * @throws NotSupportedException If the DBMS does not support nested transactions or the transaction is active.
      */
-    public function begin(?string $isolationLevel = null): void;
+    public function begin(string $isolationLevel = null): void;
 
     /**
      * Commits a transaction.

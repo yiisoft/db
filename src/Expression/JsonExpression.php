@@ -22,7 +22,7 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
     public const TYPE_JSON = 'json';
     public const TYPE_JSONB = 'jsonb';
 
-    public function __construct(protected mixed $value, private ?string $type = null)
+    public function __construct(protected mixed $value, private string|null $type = null)
     {
         if ($value instanceof self) {
             $this->value = $value->getValue();
@@ -31,8 +31,6 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
 
     /**
      * The value must be compatible with {@see \Yiisoft\Json\Json::encode()|Json::encode()} input requirements.
-     *
-     * @return mixed
      */
     public function getValue(): mixed
     {
@@ -45,10 +43,8 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
      * This property will be encountered only for DBMSs that support different types of JSON.
      *
      * For example, PostgresSQL has `json` and `jsonb` types.
-     *
-     * @return string|null
      */
-    public function getType(): ?string
+    public function getType(): string|null
     {
         return $this->type;
     }

@@ -28,7 +28,7 @@ use function count;
  */
 class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
 {
-    public function __construct(private mixed $value = [], private ?string $type = null, private int $dimension = 1)
+    public function __construct(private mixed $value = [], private string|null $type = null, private int $dimension = 1)
     {
     }
 
@@ -37,10 +37,8 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * Note that in case when type is not specified explicitly and DBMS can not guess it from the context, SQL error
      * will be raised.
-     *
-     * @return string|null
      */
-    public function getType(): ?string
+    public function getType(): string|null
     {
         return $this->type;
     }
@@ -48,8 +46,6 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     /**
      * The array's content. In can be represented as an array of values or a {@see QueryInterface} that returns these
      * values.
-     *
-     * @return mixed
      */
     public function getValue(): mixed
     {
@@ -120,8 +116,6 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * Offset to unset.
      *
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @param mixed $offset
      *
      * @psalm-suppress MixedArrayAccess
      * @psalm-suppress MixedArrayOffset

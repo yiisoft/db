@@ -68,8 +68,8 @@ use function trim;
 class Query implements QueryInterface
 {
     protected array $select = [];
-    protected ?string $selectOption = null;
-    protected ?bool $distinct = null;
+    protected string|null $selectOption = null;
+    protected bool|null $distinct = null;
     protected array|null $from = null;
     protected array $groupBy = [];
     protected array|ExpressionInterface|string|null $having = null;
@@ -82,8 +82,8 @@ class Query implements QueryInterface
     private Closure|string|null $indexBy = null;
     private Expression|int|null $limit = null;
     private Expression|int|null $offset = null;
-    private ?Dependency $queryCacheDependency = null;
-    private ?int $queryCacheDuration = null;
+    private Dependency|null $queryCacheDependency = null;
+    private int|null $queryCacheDuration = null;
     private QueryHelper|null $queryHelper = null;
     private array|string|ExpressionInterface|null $where = null;
 
@@ -200,7 +200,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function andFilterCompare(string $name, ?string $value, string $defaultOperator = '='): QueryInterface
+    public function andFilterCompare(string $name, string|null $value, string $defaultOperator = '='): QueryInterface
     {
         $operator = $defaultOperator;
 
@@ -248,7 +248,7 @@ class Query implements QueryInterface
         return $this->db->createBatchQueryResult($this)->batchSize($batchSize);
     }
 
-    public function cache(?int $duration = 3600, ?Dependency $dependency = null): QueryInterface
+    public function cache(int|null $duration = 3600, Dependency $dependency = null): QueryInterface
     {
         $this->queryCacheDuration = $duration;
         $this->queryCacheDependency = $dependency;
@@ -311,7 +311,7 @@ class Query implements QueryInterface
         return $command;
     }
 
-    public function distinct(?bool $value = true): QueryInterface
+    public function distinct(bool|null $value = true): QueryInterface
     {
         $this->distinct = $value;
 
@@ -384,7 +384,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function getDistinct(): ?bool
+    public function getDistinct(): bool|null
     {
         return $this->distinct;
     }
@@ -439,7 +439,7 @@ class Query implements QueryInterface
         return $this->select;
     }
 
-    public function getSelectOption(): ?string
+    public function getSelectOption(): string|null
     {
         return $this->selectOption;
     }
@@ -659,7 +659,7 @@ class Query implements QueryInterface
         };
     }
 
-    public function select(array|string|ExpressionInterface $columns, ?string $option = null): QueryInterface
+    public function select(array|string|ExpressionInterface $columns, string $option = null): QueryInterface
     {
         $this->select = $this->createQueryHelper()->normalizeSelect($columns);
         $this->selectOption = $option;
@@ -739,12 +739,12 @@ class Query implements QueryInterface
      *
      *@throws Exception|InvalidConfigException|Throwable
      *
-     * @return bool|float|int|string|null
-     *
      * @psalm-suppress PossiblyUndefinedVariable
      */
     protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|null|string|float
     {
+        $command = null;
+
         if ($this->emulateExecution) {
             return null;
         }
@@ -777,7 +777,7 @@ class Query implements QueryInterface
             $this->limit = $limit;
             $this->offset = $offset;
 
-            if (isset($e)) {
+            if (isset($e) || $command === null) {
                 throw $e;
             }
 
@@ -796,8 +796,6 @@ class Query implements QueryInterface
      * Sets $command cache, if this query has enabled caching.
      *
      * @param CommandInterface $command The command instance.
-     *
-     * @return CommandInterface
      */
     protected function setCommandCache(CommandInterface $command): CommandInterface
     {

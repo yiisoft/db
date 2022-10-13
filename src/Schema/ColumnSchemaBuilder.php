@@ -12,7 +12,7 @@ use Yiisoft\Strings\NumericHelper;
  *
  * See {@see SchemaBuilderTrait} for more detailed description and usage examples.
  */
-class ColumnSchemaBuilder
+class ColumnSchemaBuilder implements \Stringable
 {
     /**
      * Internally used constants representing categories that abstract column types fall under.
@@ -25,13 +25,13 @@ class ColumnSchemaBuilder
     public const CATEGORY_TIME = 'time';
     public const CATEGORY_OTHER = 'other';
 
-    protected ?bool $isNotNull = null;
+    protected bool|null $isNotNull = null;
     protected bool $isUnique = false;
-    protected ?string $check = null;
+    protected string|null $check = null;
     protected mixed $default = null;
-    protected ?string $append = null;
+    protected string|null $append = null;
     protected bool $isUnsigned = false;
-    protected ?string $after = null;
+    protected string|null $after = null;
     protected bool $isFirst = false;
     /** @psalm-var string[] */
     private array $categoryMap = [
@@ -57,7 +57,7 @@ class ColumnSchemaBuilder
         Schema::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
         Schema::TYPE_MONEY => self::CATEGORY_NUMERIC,
     ];
-    protected ?string $comment = null;
+    protected string|null $comment = null;
 
     public function __construct(
         protected string $type,
@@ -115,7 +115,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function check(?string $check): self
+    public function check(string|null $check): self
     {
         $this->check = $check;
 
@@ -146,7 +146,7 @@ class ColumnSchemaBuilder
      *
      * @return $this
      */
-    public function comment(?string $comment): self
+    public function comment(string|null $comment): self
     {
         $this->comment = $comment;
 
@@ -251,8 +251,6 @@ class ColumnSchemaBuilder
 
     /**
      * Builds the length/precision part of the column.
-     *
-     * @return string
      */
     protected function buildLengthString(): string
     {
@@ -417,7 +415,7 @@ class ColumnSchemaBuilder
     /**
      * @return string|null the column type definition such as INTEGER, VARCHAR, DATETIME, etc.
      */
-    public function getType(): ?string
+    public function getType(): string|null
     {
         return $this->type;
     }
@@ -436,7 +434,7 @@ class ColumnSchemaBuilder
      * @return bool|null whether the column is or not nullable. If this is `true`, a `NOT NULL` constraint will be
      * added. If this is `false`, a `NULL` constraint will be added.
      */
-    public function getIsNotNull(): ?bool
+    public function getIsNotNull(): bool|null
     {
         return $this->isNotNull;
     }
@@ -452,7 +450,7 @@ class ColumnSchemaBuilder
     /**
      * @return string|null the `CHECK` constraint for the column.
      */
-    public function getCheck(): ?string
+    public function getCheck(): string|null
     {
         return $this->check;
     }
@@ -485,7 +483,7 @@ class ColumnSchemaBuilder
     /**
      * @return string|null the column after which this column will be added.
      */
-    public function getAfter(): ?string
+    public function getAfter(): string|null
     {
         return $this->after;
     }
@@ -509,7 +507,7 @@ class ColumnSchemaBuilder
     /**
      * @return string|null comment value of the column.
      */
-    public function getComment(): ?string
+    public function getComment(): string|null
     {
         return $this->comment;
     }

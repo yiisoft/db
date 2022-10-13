@@ -20,7 +20,7 @@ interface ConnectionPDOInterface extends ConnectionInterface
      *
      * {@see pdoClass}
      */
-    public function getPDO(): ?PDO;
+    public function getPDO(): PDO|null;
 
     /**
      * Returns the PDO instance for the current connection.
@@ -31,7 +31,7 @@ interface ConnectionPDOInterface extends ConnectionInterface
      *
      * @return PDO|null the PDO instance for the current connection.
      */
-    public function getActivePDO(string $sql = '', ?bool $forRead = null): ?PDO;
+    public function getActivePDO(string $sql = '', bool $forRead = null): PDO|null;
 
     /**
      * Returns current DB driver.
@@ -43,7 +43,7 @@ interface ConnectionPDOInterface extends ConnectionInterface
     /**
      * Return emulate prepare value.
      */
-    public function getEmulatePrepare(): ?bool;
+    public function getEmulatePrepare(): bool|null;
 
     /**
      * Whether to turn on prepare emulation. Defaults to false, meaning PDO will use the native prepare support if

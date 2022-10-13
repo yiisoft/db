@@ -11,11 +11,11 @@ use Yiisoft\Db\QueryBuilder\Conditions\Interface\HashConditionInterface;
  */
 final class HashCondition implements HashConditionInterface
 {
-    public function __construct(private ?array $hash = [])
+    public function __construct(private array|null $hash = [])
     {
     }
 
-    public function getHash(): ?array
+    public function getHash(): array|null
     {
         return $this->hash;
     }

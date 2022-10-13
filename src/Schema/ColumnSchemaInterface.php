@@ -54,7 +54,7 @@ interface ColumnSchemaInterface
      * @return string|null the PHP type of this column. Possible PHP types include: `string`, `boolean`, `integer`,
      * `double`, `array`.
      */
-    public function getPhpType(): ?string;
+    public function getPhpType(): string|null;
 
     /**
      * @return string the DB type of this column. Possible DB types vary according to the type of DBMS.
@@ -69,22 +69,22 @@ interface ColumnSchemaInterface
     /**
      * @return array|null enumerable values. This is set only if the column is declared to be an enumerable type.
      */
-    public function getEnumValues(): ?array;
+    public function getEnumValues(): array|null;
 
     /**
      * @return int|null display size of the column.
      */
-    public function getSize(): ?int;
+    public function getSize(): int|null;
 
     /**
      * @return int|null precision of the column data, if it is numeric.
      */
-    public function getPrecision(): ?int;
+    public function getPrecision(): int|null;
 
     /**
      * @return int|null scale of the column data, if it is numeric.
      */
-    public function getScale(): ?int;
+    public function getScale(): int|null;
 
     /**
      * @return bool whether this column is a primary key
@@ -105,12 +105,12 @@ interface ColumnSchemaInterface
     /**
      * @return string|null comment of this column. Not all DBMS support this.
      */
-    public function getComment(): ?string;
+    public function getComment(): string|null;
 
     /**
      * @return string|null extra of this column. Not all DBMS support this.
      */
-    public function getExtra(): ?string;
+    public function getExtra(): string|null;
 
     public function name(string $value): void;
 
@@ -118,19 +118,19 @@ interface ColumnSchemaInterface
 
     public function type(string $value): void;
 
-    public function phpType(?string $value): void;
+    public function phpType(string|null $value): void;
 
     public function dbType(string $value): void;
 
     public function defaultValue(mixed $value): void;
 
-    public function enumValues(?array $value): void;
+    public function enumValues(array|null $value): void;
 
-    public function size(?int $value): void;
+    public function size(int|null $value): void;
 
-    public function precision(?int $value): void;
+    public function precision(int|null $value): void;
 
-    public function scale(?int $value): void;
+    public function scale(int|null $value): void;
 
     public function primaryKey(bool $value): void;
 
@@ -138,7 +138,7 @@ interface ColumnSchemaInterface
 
     public function unsigned(bool $value): void;
 
-    public function comment(?string $value): void;
+    public function comment(string|null $value): void;
 
-    public function extra(?string $value): void;
+    public function extra(string|null $value): void;
 }

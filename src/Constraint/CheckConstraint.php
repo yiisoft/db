@@ -18,8 +18,6 @@ final class CheckConstraint extends Constraint
 
     /**
      * @param string $value the SQL of the `CHECK` constraint.
-     *
-     * @return self
      */
     public function expression(string $value): self
     {
