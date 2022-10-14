@@ -496,12 +496,12 @@ interface CommandInterface
      * maximum existing value +1.
      *
      * @param string $table The name of the table whose primary key sequence is reset.
-     * @param array|int|string|null $value The value for the primary key of the next new row inserted. If this is not
-     * set, the next new row's primary key will have the maximum existing value +1.
+     * @param int|string|null $value The value for the primary key of the next new row inserted. If this is not set, the
+     * next new row's primary key will have the maximum existing value +1.
      *
      * @return static
      */
-    public function executeResetSequence(string $table, array|int|string $value = null): static;
+    public function executeResetSequence(string $table, int|string $value = null): static;
 
     /**
      * Return the params used in the last query.
@@ -677,12 +677,12 @@ interface CommandInterface
      * or 1.
      *
      * @param string $table The name of the table whose primary key sequence will be reset.
-     * @param array|int|string|null $value The value for the primary key of the next new row inserted. If this is not
+     * @param int|string|null $value The value for the primary key of the next new row inserted. If this is not
      * set, the next new row's primary key will have a value 1.
      *
      * @return static
      */
-    public function resetSequence(string $table, array|int|string $value = null): static;
+    public function resetSequence(string $table, int|string $value = null): static;
 
     /**
      * Specifies the SQL statement to be executed. The SQL statement will not be modified in any way.

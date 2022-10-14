@@ -373,7 +373,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->renameTable($oldName, $newName);
     }
 
-    public function resetSequence(string $tableName, array|int|string|null $value = null): string
+    public function resetSequence(string $tableName, int|string|null $value = null): string
     {
         return $this->dmlBuilder->resetSequence($tableName, $value);
     }
