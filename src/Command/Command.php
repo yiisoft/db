@@ -326,7 +326,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|NotSupportedException
      */
-    public function executeResetSequence(string $table, array|int|string $value = null): static
+    public function executeResetSequence(string $table, int|string $value = null): static
     {
         return $this->resetSequence($table, $value);
     }
@@ -524,7 +524,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     /**
      * @throws Exception|NotSupportedException
      */
-    public function resetSequence(string $table, array|int|string $value = null): static
+    public function resetSequence(string $table, int|string $value = null): static
     {
         $sql = $this->queryBuilder()->resetSequence($table, $value);
         return $this->setSql($sql);
