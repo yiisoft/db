@@ -28,17 +28,6 @@ trait TestTrait
     protected ?SchemaCache $schemaCache = null;
 
     /**
-     * Asserting two strings equality ignoring line endings.
-     */
-    protected function assertEqualsWithoutLE(string $expected, string $actual, string $message = ''): void
-    {
-        $expected = str_replace("\r\n", "\n", $expected);
-        $actual = str_replace("\r\n", "\n", $actual);
-
-        $this->assertEquals($expected, $actual, $message);
-    }
-
-    /**
      * Asserts that value is one of expected values.
      */
     protected function assertIsOneOf(mixed $actual, array $expected, string $message = ''): void
