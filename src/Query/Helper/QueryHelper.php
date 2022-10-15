@@ -39,7 +39,7 @@ final class QueryHelper
     {
         $cleanedUpTableNames = [];
         $pattern = <<<PATTERN
-        ~^\s*((?:['"`\[]|{{).*?(?:['"`\]]|}})|\(.*?\)|.*?)(?:(?:\s+(?:as)?\s*)((?:['"`\[]|{{).*?(?:['"`\]]|}})|.*?))?\s*$~iux
+        ~^\s*((?:['"`\[]|{{).*?(?:['"`\]]|}})|\(.*?\)|.*?)(?:(?:\s+(?:as\s+)?)((?:['"`\[]|{{).*?(?:['"`\]]|}})|.*?))?\s*$~iux
         PATTERN;
 
         /** @psalm-var array<array-key, Expression|string> $tableNames */
