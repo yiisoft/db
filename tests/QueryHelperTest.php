@@ -18,6 +18,7 @@ final class QueryHelperTest extends TestCase
         return [
             [['customer'], '', ['{{customer}}' => '{{customer}}']],
             [['profile AS "prf"'], '', ['{{prf}}' => '{{profile}}']],
+            [['mainframe as400'], '', ['{{as400}}' => '{{mainframe}}']],
             [
                 ['x' => new Expression('(SELECT id FROM user)')],
                 '',
