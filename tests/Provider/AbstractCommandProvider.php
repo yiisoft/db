@@ -10,7 +10,6 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
 use function implode;
-use function len;
 
 abstract class AbstractCommandProvider
 {

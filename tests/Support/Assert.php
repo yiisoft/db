@@ -8,7 +8,6 @@ use PHPUnit\Framework\Assert as PHPUnit;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionObject;
-use Yiisoft\Db\Tests\Support\IsOneOfAssert;
 
 final class Assert extends PHPUnit
 {

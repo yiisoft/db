@@ -23,12 +23,10 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\TestSupport\Helper\DbHelper;
 
 use function call_user_func_array;
 use function date;
 use function is_array;
-use function range;
 use function rtrim;
 use function setlocale;
 use function time;
@@ -1069,7 +1067,7 @@ abstract class AbstractCommandTest extends TestCase
                     $hitHandler = true;
 
                     return $attempt <= 2;
-                }
+                },
             ],
         );
 

@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Query\Query;
 
 abstract class AbstractCommandQueryCacheTest extends TestCase
 {

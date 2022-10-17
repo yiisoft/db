@@ -13,8 +13,6 @@ use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
-use function array_key_exists;
-use function array_values;
 use function is_array;
 use function str_replace;
 use function str_starts_with;
@@ -23,8 +21,8 @@ use function substr;
 
 abstract class AbstractQueryBuilderTest extends TestCase
 {
-    use SchemaBuilderTrait;
     use QueryBuilderColumnsTypeTrait;
+    use SchemaBuilderTrait;
 
     private ConnectionInterface $db;
 

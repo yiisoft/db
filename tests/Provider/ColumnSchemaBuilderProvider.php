@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
-use PDO;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Mssql\Schema;
 
