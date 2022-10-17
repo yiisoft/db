@@ -231,6 +231,14 @@ interface ConnectionInterface
      */
     public function open(): void;
 
+
+    /**
+     * Allows you to enable and disable the query cache.
+     *
+     * @param bool $value whether to enable or disable the query cache.
+     */
+    public function queryCacheEnable(bool $value): void;
+
     /**
      * Quotes a value for use in a query.
      *

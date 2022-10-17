@@ -333,12 +333,6 @@ abstract class Schema implements SchemaInterface
         return preg_match($pattern, $sql) > 0;
     }
 
-    /**
-     * Refreshes the schema.
-     *
-     * This method cleans up all cached table schemas so that they can be re-created later to reflect the database
-     * schema change.
-     */
     public function refresh(): void
     {
         if ($this->schemaCache->isEnabled()) {
@@ -360,6 +354,11 @@ abstract class Schema implements SchemaInterface
         if ($this->schemaCache->isEnabled()) {
             $this->schemaCache->remove($this->getCacheKey($rawName));
         }
+    }
+
+    public function schemaCacheEnable(bool $value): void
+    {
+        $this->schemaCache->setEnable($value);
     }
 
     /**
