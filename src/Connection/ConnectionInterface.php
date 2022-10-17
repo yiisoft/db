@@ -231,7 +231,6 @@ interface ConnectionInterface
      */
     public function open(): void;
 
-
     /**
      * Allows you to enable and disable the query cache.
      *
