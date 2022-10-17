@@ -21,32 +21,32 @@ class TraversableObject implements \Iterator, \Countable
     /**
      * @throws \Exception
      */
-    public function count()
+    public function count(): int
     {
         throw new \Exception('Count called on object that should only be traversed.');
     }
 
-    public function current()
+    public function current(): mixed
     {
         return $this->data[$this->position];
     }
 
-    public function next()
+    public function next(): void
     {
         $this->position++;
     }
 
-    public function key()
+    public function key(): mixed
     {
         return $this->position;
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return array_key_exists($this->position, $this->data);
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }
