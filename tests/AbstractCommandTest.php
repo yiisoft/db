@@ -926,7 +926,7 @@ abstract class AbstractCommandTest extends TestCase
 
         foreach ($reader as $row) {
             $this->assertIsArray($row);
-            $this->assertTrue(count($row) >= 6);
+            $this->assertTrue((is_countable($row) ? count($row) : 0) >= 6);
         }
 
         $command = $db->createCommand('bad SQL');
@@ -949,7 +949,7 @@ abstract class AbstractCommandTest extends TestCase
 
         $this->assertSame('3', $row['id']);
         $this->assertSame('user3', $row['name']);
-        $this->assertTrue(is_array($rows) && count($rows) > 1 && count($rows[0]) === 2);
+        $this->assertTrue(is_array($rows) && count($rows) > 1 && (is_countable($rows[0]) ? count($rows[0]) : 0) === 2);
 
         $rows = $db->createCommand('SELECT * FROM {{customer}} WHERE [[id]] = 10')->queryAll();
 
