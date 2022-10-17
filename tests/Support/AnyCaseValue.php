@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\TestSupport;
+namespace Yiisoft\Db\Tests\Support;
 
 use function strtolower;
 
 final class AnyCaseValue extends CompareValue
 {
-    public $value;
+    public string|array $value;
 
     /**
      * @psalm-param string|string[] $value

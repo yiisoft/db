@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\TestSupport\Helper;
+namespace Yiisoft\Db\Tests\Support;
+
+use function preg_replace;
+use function str_replace;
 
 final class DbHelper
 {

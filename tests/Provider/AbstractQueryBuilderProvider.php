@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\TestSupport\Provider;
+namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
@@ -12,19 +12,12 @@ use Yiisoft\Db\QueryBuilder\Conditions\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\TestSupport\Helper\DbHelper;
-use Yiisoft\Db\TestSupport\TraversableObject;
+use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\TraversableObject;
 
-final class QueryBuilderProvider
+abstract class AbstractQueryBuilderProvider
 {
-    public function __construct(
-        private ConnectionInterface $db,
-        private string $likeEscapeCharSql = '',
-        private array $likeParameterReplacements = []
-    ) {
-    }
-
-    public function addDropForeignKeysProvider(): array
+    public function addDropForeignKeys(): array
     {
         $name = 'CN_constraints_3';
         $pkTableName = 'T_constraints_2';
@@ -64,7 +57,7 @@ final class QueryBuilderProvider
         ];
     }
 
-    public function addDropPrimaryKeysProvider(): array
+    public function addDropPrimaryKeys(): array
     {
         $tableName = 'T_constraints_1';
         $name = 'CN_pk';
@@ -85,7 +78,7 @@ final class QueryBuilderProvider
         ];
     }
 
-    public function addDropUniquesProvider(): array
+    public function addDropUniques(): array
     {
         $tableName1 = 'T_constraints_1';
         $name1 = 'CN_unique';
@@ -108,7 +101,62 @@ final class QueryBuilderProvider
         ];
     }
 
-    public function batchInsertProvider(): array
+    public function buildFromData(): array
+    {
+        return [
+            ['test t1', '[[test]] [[t1]]'],
+            ['test as t1', '[[test]] [[t1]]'],
+            ['test AS t1', '[[test]] [[t1]]'],
+            ['test', '[[test]]'],
+        ];
+    }
+
+    public function createDropIndexes(): array
+    {
+        $tableName = 'T_constraints_2';
+        $name1 = 'CN_constraints_2_single';
+        $name2 = 'CN_constraints_2_multi';
+
+        return [
+            'drop' => [
+                "DROP INDEX [[$name1]] ON {{{$tableName}}}",
+                static fn (QueryBuilderInterface $qb) => $qb->dropIndex($name1, $tableName),
+            ],
+            'create' => [
+                "CREATE INDEX [[$name1]] ON {{{$tableName}}} ([[C_index_1]])",
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex($name1, $tableName, 'C_index_1'),
+            ],
+            'create (2 columns)' => [
+                "CREATE INDEX [[$name2]] ON {{{$tableName}}} ([[C_index_2_1]], [[C_index_2_2]])",
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex(
+                    $name2,
+                    $tableName,
+                    'C_index_2_1, C_index_2_2',
+                ),
+            ],
+            'create unique' => [
+                "CREATE UNIQUE INDEX [[$name1]] ON {{{$tableName}}} ([[C_index_1]])",
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex(
+                    $name1,
+                    $tableName,
+                    'C_index_1',
+                    QueryBuilder::INDEX_UNIQUE,
+                ),
+            ],
+            'create unique (2 columns)' => [
+                "CREATE UNIQUE INDEX [[$name2]] ON {{{$tableName}}} ([[C_index_2_1]], [[C_index_2_2]])",
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex(
+                    $name2,
+                    $tableName,
+                    'C_index_2_1,
+                    C_index_2_2',
+                    QueryBuilder::INDEX_UNIQUE,
+                ),
+            ],
+        ];
+    }
+
+    public function getBatchInsert(string $driverName): array
     {
         return [
             'simple' => [
@@ -118,7 +166,7 @@ final class QueryBuilderProvider
                 'expected' => DbHelper::replaceQuotes(
                     'INSERT INTO [[customer]] ([[email]], [[name]], [[address]])'
                     . ' VALUES (:qp0, :qp1, :qp2)',
-                    $this->db->getDriver()->getDriverName(),
+                    $driverName,
                 ),
                 [
                     ':qp0' => 'test@example.com',
@@ -132,7 +180,7 @@ final class QueryBuilderProvider
                 [["SQL-danger chars are escaped: '); --"]],
                 'expected' => DbHelper::replaceQuotes(
                     'INSERT INTO [[customer]] ([[address]]) VALUES (:qp0)',
-                    $this->db->getDriver()->getDriverName(),
+                    $driverName,
                 ),
                 [
                     ':qp0' => "SQL-danger chars are escaped: '); --",
@@ -150,7 +198,7 @@ final class QueryBuilderProvider
                 [['no columns passed']],
                 'expected' => DbHelper::replaceQuotes(
                     'INSERT INTO [[customer]] () VALUES (:qp0)',
-                    $this->db->getDriver()->getDriverName(),
+                    $driverName,
                 ),
                 [
                     ':qp0' => 'no columns passed',
@@ -162,7 +210,7 @@ final class QueryBuilderProvider
                 [[false, null]],
                 'expected' => DbHelper::replaceQuotes(
                     'INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)',
-                    $this->db->getDriver()->getDriverName(),
+                    $driverName,
                 ),
                 [
                     ':qp0' => 0,
@@ -191,7 +239,7 @@ final class QueryBuilderProvider
         ];
     }
 
-    public function buildConditionsProvider(): array
+    public function getBuildConditions(ConnectionInterface $db): array
     {
         $conditions = [
             /* empty values */
@@ -205,9 +253,7 @@ final class QueryBuilderProvider
             [
                 [
                     'not',
-                    (new Query($this->db))
-                        ->select('exists')
-                        ->from('some_table'),
+                    (new Query($db))->select('exists')->from('some_table'),
                 ],
                 'NOT ((SELECT [[exists]] FROM [[some_table]]))', [],
             ],
@@ -220,9 +266,7 @@ final class QueryBuilderProvider
                 [
                     'and',
                     ['expired' => false],
-                    (new Query($this->db))
-                        ->select('count(*) > 1')
-                        ->from('queue'),
+                    (new Query($db))->select('count(*) > 1')->from('queue'),
                 ],
                 '([[expired]]=:qp0) AND ((SELECT count(*) > 1 FROM [[queue]]))',
                 [':qp0' => false],
@@ -280,9 +324,7 @@ final class QueryBuilderProvider
                 new BetweenColumnsCondition(
                     new Expression('NOW()'),
                     'NOT BETWEEN',
-                    (new Query($this->db))
-                        ->select('min_date')
-                        ->from('some_table'),
+                    (new Query($db))->select('min_date')->from('some_table'),
                     'max_date'
                 ),
                 'NOW() NOT BETWEEN (SELECT [[min_date]] FROM [[some_table]]) AND [[max_date]]',
@@ -297,9 +339,7 @@ final class QueryBuilderProvider
                     [
                         1,
                         2,
-                        (new Query($this->db))
-                            ->select('three')
-                            ->from('digits'),
+                        (new Query($db))->select('three')->from('digits'),
                     ],
                 ],
                 '[[id]] IN (:qp0, :qp1, (SELECT [[three]] FROM [[digits]]))',
@@ -314,10 +354,7 @@ final class QueryBuilderProvider
                 [
                     'in',
                     'id',
-                    (new Query($this->db))
-                        ->select('id')
-                        ->from('users')
-                        ->where(['active' => 1]),
+                    (new Query($db))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 '[[id]] IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -326,10 +363,7 @@ final class QueryBuilderProvider
                 [
                     'not in',
                     'id',
-                    (new Query($this->db))
-                        ->select('id')
-                        ->from('users')
-                        ->where(['active' => 1]),
+                    (new Query($db))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -406,10 +440,7 @@ final class QueryBuilderProvider
             [
                 [
                     'exists',
-                    (new Query($this->db))
-                        ->select('id')
-                        ->from('users')
-                        ->where(['active' => 1]),
+                    (new Query($db))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -417,10 +448,7 @@ final class QueryBuilderProvider
             [
                 [
                     'not exists',
-                    (new Query($this->db))
-                        ->select('id')
-                        ->from('users')
-                        ->where(['active' => 1]),
+                    (new Query($db))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'NOT EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1],
             ],
@@ -447,10 +475,7 @@ final class QueryBuilderProvider
                 [
                     '=',
                     'date',
-                    (new Query($this->db))
-                        ->select('max(date)')
-                        ->from('test')
-                        ->where(['id' => 5]),
+                    (new Query($db))->select('max(date)')->from('test')->where(['id' => 5]),
                 ],
                 '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]]=:qp0)',
                 [':qp0' => 5],
@@ -465,10 +490,7 @@ final class QueryBuilderProvider
             [
                 [
                     '=',
-                    (new Query($this->db))
-                        ->select('COUNT(*)')
-                        ->from('test')
-                        ->where(['id' => 6]),
+                    (new Query($db))->select('COUNT(*)')->from('test')->where(['id' => 6]),
                     0,
                 ],
                 '(SELECT COUNT(*) FROM [[test]] WHERE [[id]]=:qp0) = :qp1',
@@ -499,7 +521,7 @@ final class QueryBuilderProvider
             [new Expression('NOT (any_expression(:a))', [':a' => 1]), 'NOT (any_expression(:a))', [':a' => 1]],
         ];
 
-        $conditions = match ($this->db->getDriver()->getDriverName()) {
+        $conditions = match ($db->getName()) {
             'sqlsrv', 'sqlite' => array_merge($conditions, [
                 [
                     ['in', ['id', 'name'], [['id' => 1, 'name' => 'foo'], ['id' => 2, 'name' => 'bar']]],
@@ -517,8 +539,6 @@ final class QueryBuilderProvider
                         ':qp2' => 2,
                         ':qp3' => 'bar',],
                 ],
-                //[['in', ['id', 'name'], (new Query())->select(['id', 'name'])->from('users')->where(['active' => 1])], 'EXISTS (SELECT 1 FROM (SELECT [[id]], [[name]] FROM [[users]] WHERE [[active]]=:qp0) AS a WHERE a.[[id]] = [[id AND a.]]name[[ = ]]name`)', [':qp0' => 1] ],
-                //[ ['not in', ['id', 'name'], (new Query())->select(['id', 'name'])->from('users')->where(['active' => 1])], 'NOT EXISTS (SELECT 1 FROM (SELECT [[id]], [[name]] FROM [[users]] WHERE [[active]]=:qp0) AS a WHERE a.[[id]] = [[id]] AND a.[[name = ]]name`)', [':qp0' => 1] ],
             ]),
             default => array_merge($conditions, [
                 [
@@ -535,10 +555,7 @@ final class QueryBuilderProvider
                     [
                         'in',
                         ['id', 'name'],
-                        (new Query($this->db))
-                            ->select(['id', 'name'])
-                            ->from('users')
-                            ->where(['active' => 1]),
+                        (new Query($db))->select(['id', 'name'])->from('users')->where(['active' => 1]),
                     ],
                     '([[id]], [[name]]) IN (SELECT [[id]], [[name]] FROM [[users]] WHERE [[active]]=:qp0)',
                     [':qp0' => 1],
@@ -547,10 +564,7 @@ final class QueryBuilderProvider
                     [
                         'not in',
                         ['id', 'name'],
-                        (new Query($this->db))
-                            ->select(['id', 'name'])
-                            ->from('users')
-                            ->where(['active' => 1]),
+                        (new Query($db))->select(['id', 'name'])->from('users')->where(['active' => 1]),
                     ],
                     '([[id]], [[name]]) NOT IN (SELECT [[id]], [[name]] FROM [[users]] WHERE [[active]]=:qp0)',
                     [':qp0' => 1],
@@ -560,33 +574,33 @@ final class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->db->getDriver()->getDriverName());
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $db->getName());
         }
 
         return $conditions;
     }
 
-    public function buildExistsParamsProvider(): array
+    public function getBuildExistsParams(string $driverName): array
     {
         return [
             [
                 'exists',
                 DbHelper::replaceQuotes(
                     'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
-                    $this->db->getDriver()->getDriverName()
+                    $driverName,
                 ),
             ],
             [
                 'not exists',
                 DbHelper::replaceQuotes(
                     'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
-                    $this->db->getDriver()->getDriverName()
+                    $driverName,
                 ),
             ],
         ];
     }
 
-    public function buildFilterConditionProvider(): array
+    public function getBuildFilterCondition(string $driverName): array
     {
         $conditions = [
             /* like */
@@ -628,23 +642,13 @@ final class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->db->getDriver()->getDriverName());
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $driverName);
         }
 
         return $conditions;
     }
 
-    public function buildFromDataProvider(): array
-    {
-        return [
-            ['test t1', '[[test]] [[t1]]'],
-            ['test as t1', '[[test]] [[t1]]'],
-            ['test AS t1', '[[test]] [[t1]]'],
-            ['test', '[[test]]'],
-        ];
-    }
-
-    public function buildLikeConditionsProvider(): array
+    public function getBuildLikeConditions(string $driverName): array
     {
         $conditions = [
             /* simple like */
@@ -772,7 +776,7 @@ final class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->db->getDriver()->getDriverName());
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $driverName);
             if (!empty($this->likeEscapeCharSql)) {
                 preg_match_all('/(?P<condition>LIKE.+?)( AND| OR|$)/', $conditions[$i][1], $matches, PREG_SET_ORDER);
 
@@ -793,37 +797,7 @@ final class QueryBuilderProvider
         return $conditions;
     }
 
-    public function createDropIndexesProvider(): array
-    {
-        $tableName = 'T_constraints_2';
-        $name1 = 'CN_constraints_2_single';
-        $name2 = 'CN_constraints_2_multi';
-
-        return [
-            'drop' => [
-                "DROP INDEX [[$name1]] ON {{{$tableName}}}",
-                static fn (QueryBuilderInterface $qb) => $qb->dropIndex($name1, $tableName),
-            ],
-            'create' => [
-                "CREATE INDEX [[$name1]] ON {{{$tableName}}} ([[C_index_1]])",
-                static fn (QueryBuilderInterface $qb) => $qb->createIndex($name1, $tableName, 'C_index_1'),
-            ],
-            'create (2 columns)' => [
-                "CREATE INDEX [[$name2]] ON {{{$tableName}}} ([[C_index_2_1]], [[C_index_2_2]])",
-                static fn (QueryBuilderInterface $qb) => $qb->createIndex($name2, $tableName, 'C_index_2_1, C_index_2_2'),
-            ],
-            'create unique' => [
-                "CREATE UNIQUE INDEX [[$name1]] ON {{{$tableName}}} ([[C_index_1]])",
-                static fn (QueryBuilderInterface $qb) => $qb->createIndex($name1, $tableName, 'C_index_1', QueryBuilder::INDEX_UNIQUE),
-            ],
-            'create unique (2 columns)' => [
-                "CREATE UNIQUE INDEX [[$name2]] ON {{{$tableName}}} ([[C_index_2_1]], [[C_index_2_2]])",
-                static fn (QueryBuilderInterface $qb) => $qb->createIndex($name2, $tableName, 'C_index_2_1, C_index_2_2', QueryBuilder::INDEX_UNIQUE),
-            ],
-        ];
-    }
-
-    public function deleteProvider(): array
+    public function getDelete(string $driverName): array
     {
         return [
             [
@@ -834,7 +808,7 @@ final class QueryBuilderProvider
                 ],
                 DbHelper::replaceQuotes(
                     'DELETE FROM [[user]] WHERE ([[is_enabled]]=:qp0) AND ([[power]]=WRONG_POWER())',
-                    $this->db->getDriver()->getDriverName(),
+                    $driverName,
                 ),
                 [
                     ':qp0' => false,
@@ -843,7 +817,7 @@ final class QueryBuilderProvider
         ];
     }
 
-    public function updateProvider(): array
+    public function getUpdate(string $driverName): array
     {
         return [
             [
@@ -857,7 +831,7 @@ final class QueryBuilderProvider
                 ],
                 DbHelper::replaceQuotes(
                     'UPDATE [[customer]] SET [[status]]=:qp0, [[updated_at]]=now() WHERE [[id]]=:qp1',
-                    $this->db->getDriver()->getDriverName(),
+                    $driverName,
                 ),
                 [
                     ':qp0' => 1,
@@ -867,7 +841,7 @@ final class QueryBuilderProvider
         ];
     }
 
-    public function upsertProvider(): array
+    public function getUpsert(ConnectionInterface $db): array
     {
         return [
             'regular values' => [
@@ -929,11 +903,8 @@ final class QueryBuilderProvider
             ],
             'query' => [
                 'T_upsert',
-                (new Query($this->db))
-                    ->select([
-                        'email',
-                        'status' => new Expression('2'),
-                    ])
+                (new Query($db))
+                    ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
                     ->limit(1),
@@ -945,11 +916,8 @@ final class QueryBuilderProvider
             ],
             'query with update part' => [
                 'T_upsert',
-                (new Query($this->db))
-                    ->select([
-                        'email',
-                        'status' => new Expression('2'),
-                    ])
+                (new Query($db))
+                    ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
                     ->limit(1),
@@ -967,11 +935,8 @@ final class QueryBuilderProvider
             ],
             'query without update part' => [
                 'T_upsert',
-                (new Query($this->db))
-                    ->select([
-                        'email',
-                        'status' => new Expression('2'),
-                    ])
+                (new Query($db))
+                    ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
                     ->limit(1),
@@ -1021,11 +986,13 @@ final class QueryBuilderProvider
             ],
             'query, values and expressions with update part' => [
                 '{{%T_upsert}}',
-                (new Query($this->db))
-                    ->select([
-                        'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
-                        '[[time]]' => new Expression('now()'),
-                    ]),
+                (new Query($db))
+                    ->select(
+                        [
+                            'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
+                            '[[time]]' => new Expression('now()'),
+                        ],
+                    ),
                 [
                     'ts' => 0,
                     '[[orders]]' => new Expression('T_upsert.orders + 1'),
@@ -1038,11 +1005,13 @@ final class QueryBuilderProvider
             ],
             'query, values and expressions without update part' => [
                 '{{%T_upsert}}',
-                (new Query($this->db))
-                    ->select([
-                        'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
-                        '[[time]]' => new Expression('now()'),
-                    ]),
+                (new Query($db))
+                    ->select(
+                        [
+                            'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
+                            '[[time]]' => new Expression('now()'),
+                        ],
+                    ),
                 [
                     'ts' => 0,
                     '[[orders]]' => new Expression('T_upsert.orders + 1'),
