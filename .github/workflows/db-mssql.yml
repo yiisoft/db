@@ -27,4 +27,4 @@ jobs:
   tests:
     uses: yiisoft/db-mssql/.github/workflows/build.yml@big-refactoring-2
     with:
-      install: true
+      install: y
