@@ -1,3 +1,5 @@
+name: db-mssql
+
 on:
   pull_request:
     paths-ignore:
@@ -7,7 +9,6 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'infection.json.dist'
-      - 'phpunit.xml.dist'
       - 'psalm.xml'
 
   push:
@@ -18,11 +19,72 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'infection.json.dist'
-      - 'phpunit.xml.dist'
       - 'psalm.xml'
-
-name: db-mssql
 
 jobs:
   tests:
-    uses: yiisoft/db-mssql/.github/workflows/reusable/db-mssql.yml@big-refactoring-2
+    name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql }}
+
+    env:
+      extensions: pdo, pdo_sqlsrv-5.10.1
+      COMPOSER_ROOT_VERSION: big-refactoring-2
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+
+        php:
+          - 8.1
+          - 8.2
+
+        mssql:
+          - server:2017-latest
+          - server:2019-latest
+
+        exclude:
+           - php: 8.1
+             mssql: server:2017-latest
+
+    services:
+      mssql:
+          image: mcr.microsoft.com/mssql/${{ matrix.mssql }}
+          env:
+              SA_PASSWORD: YourStrong!Passw0rd
+              ACCEPT_EULA: Y
+              MSSQL_PID: Developer
+          ports:
+              - 1433:1433
+          options: --name=mssql --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Create MS SQL Database
+        run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
+
+      - name: Install PHP with extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: ${{ env.extensions }}
+          ini-values: date.timezone='UTC'
+          coverage: pcov
+          tools: composer:v2, pecl
+
+      - name: Update composer
+        run: composer self-update
+
+      - name: Install dependencies with composer
+        run: composer require yiisoft/db-mssql --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Run tests with phpunit
+        run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
