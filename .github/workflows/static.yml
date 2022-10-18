@@ -26,7 +26,6 @@ jobs:
     name: PHP ${{ matrix.php }}-${{ matrix.os }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-master
       composer_flag: "${{ matrix.php == '8.2' && '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs' || '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi' }}"
       extensions: dom, json, libxml, mbstring, pdo, pdo_mysql, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1, tokenizer
 
