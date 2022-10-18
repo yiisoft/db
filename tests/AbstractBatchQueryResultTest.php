@@ -14,7 +14,7 @@ abstract class AbstractBatchQueryResultTest extends TestCase
 {
     public function testBatchWithoutDbParameter(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $query = new Query($db);
         $query = $query->from('customer')->orderBy('id')->limit(3);
