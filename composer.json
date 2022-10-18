@@ -20,6 +20,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.1",
+        "ext-ctype": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
@@ -31,6 +32,7 @@
         "yiisoft/strings": "^2.0"
     },
     "require-dev": {
+        "maglnet/composer-require-checker": "^4.2",
         "phpunit/phpunit": "^9.5",
         "rector/rector": "^0.14",
         "roave/infection-static-analysis-plugin": "^1.16",
@@ -39,7 +41,8 @@
         "yiisoft/aliases": "^1.1|^2.0",
         "yiisoft/di": "^1.0",
         "yiisoft/event-dispatcher": "^1.0",
-        "yiisoft/json": "^1.0"
+        "yiisoft/json": "^1.0",
+        "yiisoft/var-dumper": "^1.3"
     },
     "autoload": {
         "psr-4": {
