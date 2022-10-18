@@ -25,4 +25,4 @@ name: Composer require checker
 
 jobs:
   tests:
-    uses: yiisoft/db-mssql/.github/workflows/build.yml@master
+    uses: yiisoft/db-mssql/.github/workflows/build.yml@big-refactoring-2
