@@ -21,7 +21,7 @@ on:
       - 'phpunit.xml.dist'
       - 'psalm.xml'
 
-name: Composer require checker
+name: db-mssql
 
 jobs:
   tests:
