@@ -25,6 +25,4 @@ name: db-mssql
 
 jobs:
   tests:
-    uses: yiisoft/db-mssql/.github/workflows/build.yml@big-refactoring-2
-    with:
-      install: y
+    uses: yiisoft/db-mssql/.github/workflows/reusable/db-mssql.yml@big-refactoring-2
