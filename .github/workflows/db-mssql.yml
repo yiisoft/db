@@ -61,8 +61,8 @@ jobs:
     steps:
       - name: Set env COMPOSER_ROOT_VERSION
         run: |
-          if [ "${{ GITHUB_EVENT_NAME }}" = "pull_request" ]; then
-            echo "COMPOSER_ROOT_VERSION=${{ GITHUB_BASE_REF }}" >> $GITHUB_ENV
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "COMPOSER_ROOT_VERSION=GITHUB_BASE_REF" >> $GITHUB_ENV
           else
             echo "COMPOSER_ROOT_VERSION=master" >> $GITHUB_ENV
           fi
