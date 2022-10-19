@@ -118,12 +118,3 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           files: ./coverage.xml
-
-
--name: Step 1
-id: step1
-continue-on-error: true.
-run:  'blabalbalba'
--name: Step 2
-if: steps.step1.outcome != 'success'
-run:  'bloblboblo'
