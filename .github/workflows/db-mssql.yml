@@ -59,21 +59,21 @@ jobs:
           options: --name=mssql --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - name: Set env COMPOSER_ROOT_VERSION event pull_request
+      - name: Set env COMPOSER_ROOT_VERSION event `pull_request`.
         if: github.event_name == 'pull_request'
         run: echo "COMPOSER_ROOT_VERSION=dev-${GITHUB_HEAD_REF}" >> $GITHUB_ENV
 
-      - name: Set env COMPOSER_ROOT_VERSION event push
+      - name: Set env COMPOSER_ROOT_VERSION `event push`.
         if: github.event_name == 'push'
         run: echo "COMPOSER_ROOT_VERSION=dev-${GITHUB_REF_NAME}" >> $GITHUB_ENV
 
-      - name: Checkout
+      - name: Checkout.
         uses: actions/checkout@v3
 
-      - name: Create MS SQL Database
+      - name: Create MS SQL Database.
         run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
 
-      - name: Install PHP with extensions
+      - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
@@ -82,16 +82,22 @@ jobs:
           coverage: pcov
           tools: composer:v2, pecl
 
-      - name: Update composer
+      - name: Update composer.
         run: composer self-update
 
-      - name: Install dependencies with composer
+      - name: Install dev dependencies with composer.
         run: composer require yiisoft/db-mssql:dev-big-refactoring-2 --no-interaction --no-progress --optimize-autoloader --ansi
 
-      - name: Run tests with phpunit
+      - name: Run tests with phpunit.
+        if: matrix.php != '8.1'
+        run: vendor/bin/phpunit --testsuite Mssql --colors=always
+
+      - name: Run tests with phpunit with code coverage.
+        if: matrix.php == '8.1'
         run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always
 
-      - name: Upload coverage to Codecov
+      - name: Upload code coverage to Codecov.
+        if: matrix.php == '8.1'
         uses: codecov/codecov-action@v3
         with:
           files: ./coverage.xml
