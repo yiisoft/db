@@ -7,6 +7,7 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'infection.json.dist'
+      - 'phpunit.xml.dist'
       - 'psalm.xml'
 
   push:
@@ -17,13 +18,14 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - 'infection.json.dist'
+      - 'phpunit.xml.dist'
       - 'psalm.xml'
 
-name: rector
+name: Composer require checker
 
 jobs:
-  rector:
-    uses: yiisoft/actions/.github/workflows/rector.yml@master
+  composer-require-checker:
+    uses: yiisoft/actions/.github/workflows/composer-require-checker.yml@master
     with:
       os: >-
         ['ubuntu-latest']

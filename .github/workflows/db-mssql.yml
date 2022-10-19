@@ -1,3 +1,5 @@
+name: db-mssql
+
 on:
   pull_request:
     paths-ignore:
@@ -19,14 +21,11 @@ on:
       - 'infection.json.dist'
       - 'psalm.xml'
 
-name: db-mssql
-
 jobs:
   tests:
     name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-master
       composer_flag: "${{ matrix.php == '8.2' && '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs' || '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi' }}"
       extensions: pdo, pdo_sqlsrv-5.10.1
 
@@ -38,13 +37,16 @@ jobs:
           - ubuntu-latest
 
         php:
-          - 8.0
           - 8.1
           - 8.2
 
         mssql:
           - server:2017-latest
           - server:2019-latest
+
+        exclude:
+           - php: 8.1
+             mssql: server:2017-latest
 
     services:
       mssql:
@@ -58,6 +60,14 @@ jobs:
           options: --name=mssql --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
+      - name: Set env COMPOSER_ROOT_VERSION.
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            echo "COMPOSER_ROOT_VERSION=${GITHUB_BASE_REF}" >> $GITHUB_ENV
+          else
+            echo "COMPOSER_ROOT_VERSION=master" >> $GITHUB_ENV
+          fi
+
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -72,21 +82,23 @@ jobs:
           ini-values: date.timezone='UTC'
           coverage: pcov
           tools: composer:v2, pecl
-        env:
-          update: true
 
       - name: Update composer
         run: composer self-update
 
-      - name: Install db-mssql
-        run: composer require yiisoft/db-mssql ${{ env.composer_flag }}
+      - name: Install dependencies with composer
+        run: composer require yiisoft/db-mssql:dev-big-refactoring-2 --no-interaction --no-progress --optimize-autoloader --ansi
 
-      - name: Run mssql tests with phpunit
+      - name: Run tests with phpunit.
+        if: matrix.php != '8.1'
+        run: vendor/bin/phpunit --testsuite Mssql --colors=always
+
+      - name: Run tests with phpunit with code coverage.
+        if: matrix.php == '8.1'
         run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always
 
       - name: Upload coverage to Codecov
-        if: matrix.php == '8.0'
+        if: matrix.php == '8.1'
         uses: codecov/codecov-action@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml

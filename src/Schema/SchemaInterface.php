@@ -165,6 +165,13 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function refreshTableSchema(string $name): void;
 
     /**
+     * Allows you to enable and disable the schema cache.
+     *
+     * @param bool $value whether to enable or disable the schema cache.
+     */
+    public function schemaCacheEnable(bool $value): void;
+
+    /**
      * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
      */
     public function supportsSavepoint(): bool;

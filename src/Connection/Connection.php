@@ -57,8 +57,10 @@ abstract class Connection implements ConnectionInterface
         $this->queryCache->setInfo(
             [$duration ?? $this->queryCache->getDuration(), $dependency]
         );
+
         /** @var mixed */
         $result = $closure($this);
+
         $this->queryCache->removeLastInfo();
 
         return $result;
@@ -91,11 +93,12 @@ abstract class Connection implements ConnectionInterface
 
     public function noCache(Closure $closure): mixed
     {
-        $queryCache = $this->queryCache;
-        $queryCache->setInfo(false);
+        $this->queryCache->setInfo(false);
+
         /** @var mixed */
         $result = $closure($this);
-        $queryCache->removeLastInfo();
+
+        $this->queryCache->removeLastInfo();
 
         return $result;
     }
@@ -103,6 +106,11 @@ abstract class Connection implements ConnectionInterface
     public function notProfiler(): void
     {
         $this->profiler = null;
+    }
+
+    public function queryCacheEnable(bool $value): void
+    {
+        $this->queryCache->setEnable($value);
     }
 
     public function setEnableSavepoint(bool $value): void
