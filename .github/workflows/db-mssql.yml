@@ -27,7 +27,6 @@ jobs:
 
     env:
       extensions: pdo, pdo_sqlsrv-5.10.1
-      COMPOSER_ROOT_VERSION: dev-master
 
     runs-on: ${{ matrix.os }}
 
@@ -60,14 +59,9 @@ jobs:
           options: --name=mssql --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-
-      - name: Set env COMPOSER_ROOT_VERSION
-        if: github.event_name == 'pull_request'
-        run: echo "COMPOSER_ROOT_VERSION=GITHUB_BASE_REF" >> $GITHUB_ENV
+    steps:
+      - name: Set env COMPOSER_ROOT_VERSION.
+        run: echo "COMPOSER_ROOT_VERSION=dev-${GITHUB_REF_NAME}" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@v3
