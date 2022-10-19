@@ -27,7 +27,6 @@ jobs:
 
     env:
       extensions: pdo, pdo_sqlsrv-5.10.1
-      COMPOSER_ROOT_VERSION: dev-big-refactoring-2
 
     runs-on: ${{ matrix.os }}
 
@@ -60,6 +59,14 @@ jobs:
           options: --name=mssql --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
+      - name: Set env COMPOSER_ROOT_VERSION
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            echo "COMPOSER_ROOT_VERSION=${GITHUB_BASE_REF}" >> $GITHUB_ENV
+          else
+            echo "COMPOSER_ROOT_VERSION=master" >> $GITHUB_ENV
+          fi
+
       - name: Checkout
         uses: actions/checkout@v3
 
