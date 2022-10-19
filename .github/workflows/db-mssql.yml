@@ -59,7 +59,6 @@ jobs:
           options: --name=mssql --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-    steps:
       - name: Set env COMPOSER_ROOT_VERSION.
         run: echo "COMPOSER_ROOT_VERSION=dev-${GITHUB_REF_NAME}" >> $GITHUB_ENV
 
