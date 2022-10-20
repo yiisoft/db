@@ -85,25 +85,21 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
-      - name: Composer 1
+      - name: Check branch exist yiisoft/db-mssql in `pull-request`
         if: github.event_name == 'pull_request'
-        continue-on-error: true
-        run: composer require yiisoft/db-mssql:"dev-${GITHUB_HEAD_REF}" --no-interaction --no-progress --optimize-autoloader --ansi
+        run: echo "BRANCH=$(git ls-remote https://github.com/yiisoft/db-mssql.git ${GITHUB_HEAD_REF})" >> $GITHUB_ENV
 
-      - name: Composer 2
-        if: steps.composer-1.outcome != 'success' && github.event_name == 'pull_request'
-        continue-on-error: true
-        run: composer require yiisoft/db-mssql --no-interaction --no-progress --optimize-autoloader --ansi
-
-      - name: Composer 3
+      - name: Check branch exist yiisoft/db-mssql in `push
         if: github.event_name == 'push'
-        continue-on-error: true
-        run: composer require yiisoft/db-mssql:"dev-${GITHUB_REF_NAME}" --no-interaction --no-progress --optimize-autoloader --ansi
+        run: echo "BRANCH=$(git ls-remote https://github.com/yiisoft/db-mssql.git ${GITHUB_REF_NAME})" >> $GITHUB_ENV
 
-      - name: Composer 4
-        if: steps.composer-3.outcome != 'success' && github.event_name == 'push'
-        continue-on-error: true
-        run: composer require yiisoft/db-mssql --no-interaction --no-progress --optimize-autoloader --ansi
+      - name: Install yiisoft/db-mssql specific branch.
+        if: ${{ env.BRANCH != '' }}
+        run: composer require yiisoft/db-mssql:${{ env.COMPOSER_ROOT_VERSION }} --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install yiisoft/db-mssql latest version.
+        if: ${{ env.BRANCH == '' }}
+        run: composer require yiisoft/db-mssql --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run tests with phpunit.
         if: matrix.php != '8.1'
