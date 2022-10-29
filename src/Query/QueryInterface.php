@@ -149,7 +149,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     public function getDistinct(): bool|null;
 
-    public function getFrom(): array|null;
+    public function getFrom(): array;
 
     public function getGroupBy(): array;
 
