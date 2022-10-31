@@ -70,7 +70,7 @@ class Query implements QueryInterface
     protected array $select = [];
     protected string|null $selectOption = null;
     protected bool|null $distinct = null;
-    protected array|null $from = null;
+    protected array $from = [];
     protected array $groupBy = [];
     protected array|ExpressionInterface|string|null $having = null;
     protected array $join = [];
@@ -389,7 +389,7 @@ class Query implements QueryInterface
         return $this->distinct;
     }
 
-    public function getFrom(): array|null
+    public function getFrom(): array
     {
         return $this->from;
     }
@@ -446,10 +446,7 @@ class Query implements QueryInterface
 
     public function getTablesUsedInFrom(): array
     {
-        return empty($this->from) ? [] : $this->createQueryHelper()->cleanUpTableNames(
-            $this->from,
-            $this->db->getQuoter(),
-        );
+        return $this->createQueryHelper()->cleanUpTableNames($this->from, $this->db->getQuoter());
     }
 
     public function getUnion(): array
