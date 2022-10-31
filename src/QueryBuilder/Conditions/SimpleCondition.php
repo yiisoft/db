@@ -9,8 +9,6 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\QueryBuilder\Conditions\Interface\SimpleConditionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
-use function count;
-
 /**
  * Class SimpleCondition represents a simple condition like `"column" operator value`.
  */
