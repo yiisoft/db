@@ -21,7 +21,7 @@ final class SimpleCondition implements SimpleConditionInterface
     public function __construct(
         private string|Expression|QueryInterface $column,
         private string $operator,
-        private array|int|string|Iterator|ExpressionInterface|null $value
+        private array|int|bool|string|Iterator|ExpressionInterface|null $value
     ) {
     }
 
@@ -35,7 +35,7 @@ final class SimpleCondition implements SimpleConditionInterface
         return $this->operator;
     }
 
-    public function getValue(): array|int|string|Iterator|ExpressionInterface|null
+    public function getValue(): array|int|bool|string|Iterator|ExpressionInterface|null
     {
         return $this->value;
     }
