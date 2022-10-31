@@ -43,16 +43,18 @@ final class SimpleCondition implements SimpleConditionInterface
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
-        if (count($operands) !== 2) {
+        if (!isset($operands[0], $operands[1])) {
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
-        if (isset($operands[0]) && (is_string($operands[0]) || $operands[0] instanceof Expression || $operands[0] instanceof QueryInterface)) {
-            $column = $operands[0];
-        } else {
+        if (
+            !is_string($operands[0]) &&
+            !($operands[0] instanceof Expression) &&
+            !($operands[0] instanceof QueryInterface)
+        ) {
             throw new InvalidArgumentException("Operator '$operator' requires column name as first operand.");
         }
 
-        return new self($column, $operator, $operands[1]);
+        return new self($operands[0], $operator, $operands[1]);
     }
 }
