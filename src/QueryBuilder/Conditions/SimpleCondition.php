@@ -47,6 +47,12 @@ final class SimpleCondition implements SimpleConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
-        return new self($operands[0], $operator, $operands[1]);
+        if (isset($operands[0]) && (is_string($operands[0]) || $operands[0] instanceof Expression || $operands[0] instanceof QueryInterface)) {
+            $column = $operands[0];
+        } else {
+            throw new InvalidArgumentException("Operator '$operator' requires column name as first operand.");
+        }
+
+        return new self($column, $operator, $operands[1]);
     }
 }
