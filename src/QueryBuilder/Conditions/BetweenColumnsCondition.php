@@ -80,7 +80,9 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
             !($operands[0] instanceof Iterator) &&
             !($operands[0] instanceof ExpressionInterface)
         ) {
-            throw new InvalidArgumentException("Operator '$operator' requires value as first operand.");
+            throw new InvalidArgumentException(
+                "Operator '$operator' requires value to be array, int, string, Iterator or ExpressionInterface."
+            );
         }
 
         if (
@@ -88,7 +90,7 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
             !($operands[1] instanceof ExpressionInterface)
         ) {
             throw new InvalidArgumentException(
-                "Operator '$operator' requires interval start column as second operand."
+                "Operator '$operator' requires interval start column to be string or ExpressionInterface."
             );
         }
 
@@ -97,7 +99,7 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
             !($operands[2] instanceof ExpressionInterface)
         ) {
             throw new InvalidArgumentException(
-                "Operator '$operator' requires interval end column as third operand."
+                "Operator '$operator' requires interval end column to be string or ExpressionInterface."
             );
         }
 
