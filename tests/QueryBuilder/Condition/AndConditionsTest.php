@@ -14,13 +14,13 @@ final class AndConditionsTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $condition = new AndCondition(['a' => 1, 'b' => 2]);
-        $this->assertSame(['a' => 1, 'b' => 2], $condition->getExpressions());
+        $andCondition = new AndCondition(['a' => 1, 'b' => 2]);
+        $this->assertSame(['a' => 1, 'b' => 2], $andCondition->getExpressions());
     }
 
     public function testGetOperator(): void
     {
-        $condition = new AndCondition(['a' => 1, 'b' => 2]);
-        $this->assertSame('AND', $condition->getOperator());
+        $andCondition = new AndCondition(['a' => 1, 'b' => 2]);
+        $this->assertSame('AND', $andCondition->getOperator());
     }
 }
