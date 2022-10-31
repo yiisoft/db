@@ -15,9 +15,9 @@ final class BetweenColumnsConditionTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $condition = new BetweenColumnsCondition(42, 'between', 'min_value', 'max_value');
+        $condition = new BetweenColumnsCondition(42, 'BETWEEN', 'min_value', 'max_value');
         $this->assertSame(42, $condition->getValue());
-        $this->assertSame('between', $condition->getOperator());
+        $this->assertSame('BETWEEN', $condition->getOperator());
         $this->assertSame('min_value', $condition->getIntervalStartColumn());
         $this->assertSame('max_value', $condition->getIntervalEndColumn());
     }
