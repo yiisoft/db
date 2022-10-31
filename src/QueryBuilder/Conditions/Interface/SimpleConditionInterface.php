@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Conditions\Interface;
 
-use Iterator;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 interface SimpleConditionInterface extends ConditionInterface
@@ -23,7 +21,7 @@ interface SimpleConditionInterface extends ConditionInterface
     public function getOperator(): string;
 
     /**
-     * @return array|ExpressionInterface|int|Iterator|string|null The value to the right of the {@see operator}.
+     * @return mixed The value to the right of the {@see operator}.
      */
-    public function getValue(): array|int|string|Iterator|ExpressionInterface|null;
+    public function getValue(): mixed;
 }
