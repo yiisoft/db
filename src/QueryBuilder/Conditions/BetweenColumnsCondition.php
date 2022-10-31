@@ -66,13 +66,39 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
 
     /**
      * @throws InvalidArgumentException
-     *
-     * @psalm-suppress MixedArgument
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         if (!isset($operands[0], $operands[1], $operands[2])) {
             throw new InvalidArgumentException("Operator '$operator' requires three operands.");
+        }
+
+        if (
+            !is_array($operands[0]) &&
+            !is_int($operands[0]) &&
+            !is_string($operands[0]) &&
+            !($operands[0] instanceof Iterator) &&
+            !($operands[0] instanceof ExpressionInterface)
+        ) {
+            throw new InvalidArgumentException("Operator '$operator' requires value as first operand.");
+        }
+
+        if (
+            !is_string($operands[1]) &&
+            !($operands[1] instanceof ExpressionInterface)
+        ) {
+            throw new InvalidArgumentException(
+                "Operator '$operator' requires interval start column as second operand."
+            );
+        }
+
+        if (
+            !is_string($operands[2]) &&
+            !($operands[2] instanceof ExpressionInterface)
+        ) {
+            throw new InvalidArgumentException(
+                "Operator '$operator' requires interval end column as third operand."
+            );
         }
 
         return new self($operands[0], $operator, $operands[1], $operands[2]);
