@@ -38,8 +38,6 @@ final class InCondition implements InConditionInterface
 
     /**
      * @throws InvalidArgumentException
-     *
-     * @psalm-suppress MixedArgument
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -47,6 +45,30 @@ final class InCondition implements InConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
-        return new self($operands[0], $operator, $operands[1]);
+        return new self(
+            self::validateColumn($operator, $operands[0]),
+            $operator,
+            self::validateValues($operator, $operands[1]),
+        );
+    }
+
+    private static function validateColumn(string $operator, mixed $operand): array|string|Iterator
+    {
+        if (!is_string($operand) && !is_array($operand) && !$operand instanceof Iterator) {
+            throw new InvalidArgumentException("Operator '$operator' requires column to be string, array or Iterator.");
+        }
+
+        return $operand;
+    }
+
+    public static function validateValues(string $operator, mixed $operand): int|iterable|Iterator|QueryInterface
+    {
+        if (!is_array($operand) && !$operand instanceof Iterator && !is_int($operand) && !$operand instanceof QueryInterface) {
+            throw new InvalidArgumentException(
+                "Operator '$operator' requires values to be array, Iterator, int or QueryInterface."
+            );
+        }
+
+        return $operand;
     }
 }
