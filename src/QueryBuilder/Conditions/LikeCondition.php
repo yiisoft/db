@@ -51,8 +51,6 @@ final class LikeCondition implements LikeConditionInterface
 
     /**
      * @throws InvalidArgumentException
-     *
-     * @psalm-suppress MixedArgument
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -60,12 +58,38 @@ final class LikeCondition implements LikeConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
-        $condition = new self($operands[0], $operator, $operands[1]);
+        $condition = new self(
+            self::validateColumn($operator, $operands[0]),
+            $operator,
+            self::validateValue($operator, $operands[1]),
+        );
 
-        if (array_key_exists(2, $operands)) {
+        if (array_key_exists(2, $operands) && is_array($operands[2])) {
             $condition->setEscapingReplacements($operands[2]);
         }
 
         return $condition;
+    }
+
+    public static function validateColumn(string $operator, mixed $operand): string|Expression
+    {
+        if (!is_string($operand) && !$operand instanceof Expression) {
+            throw new InvalidArgumentException("Operator '$operator' requires column to be string or Expression.");
+        }
+
+        return $operand;
+    }
+
+    public static function validateValue(
+        string $operator,
+        mixed $operand
+    ): array|int|string|Iterator|ExpressionInterface|null {
+        if (!is_string($operand) && !is_array($operand) && !$operand instanceof Iterator && !$operand instanceof ExpressionInterface) {
+            throw new InvalidArgumentException(
+                "Operator '$operator' requires value to be string, array, Iterator or ExpressionInterface."
+            );
+        }
+
+        return $operand;
     }
 }
