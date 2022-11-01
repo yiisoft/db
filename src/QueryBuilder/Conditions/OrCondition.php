@@ -11,8 +11,6 @@ final class OrCondition extends ConjunctionCondition
 {
     /**
      * Returns the operator that is represented by this condition class, e.g. `AND`, `OR`.
-     *
-     * @psalm-return 'OR'
      */
     public function getOperator(): string
     {
