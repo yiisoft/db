@@ -42,7 +42,7 @@ final class ExistsConditionTest extends TestCase
     public function testFromArrayDefinitionExceptionQuery(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Sub query for EXISTS operator must be a Query object.");
+        $this->expectExceptionMessage('Sub query for EXISTS operator must be a Query object.');
         ExistsCondition::fromArrayDefinition('EXISTS', []);
     }
 }
