@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\QueryBuilder\Conditions;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Conditions\HashCondition;
 
 /**
