@@ -73,15 +73,18 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires three operands.");
         }
 
-        self::validateValue($operator, $operands[0]);
-        self::validateIntervalStartColumn($operator, $operands[1]);
-        self::validateIntervalEndColumn($operator, $operands[2]);
-
-        return new self($operands[0], $operator, $operands[1], $operands[2]);
+        return new self(
+            self::validateValue($operator, $operands[0]),
+            $operator,
+            self::validateIntervalStartColumn($operator, $operands[1]),
+            self::validateIntervalEndColumn($operator, $operands[2]),
+        );
     }
 
-    private static function validateValue(string $operator, mixed $operand): void
-    {
+    private static function validateValue(
+        string $operator,
+        mixed $operand
+    ): array|int|string|Iterator|ExpressionInterface {
         if (
             !is_array($operand) &&
             !is_int($operand) &&
@@ -93,9 +96,11 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
                 "Operator '$operator' requires value to be array, int, string, Iterator or ExpressionInterface."
             );
         }
+
+        return $operand;
     }
 
-    private static function validateIntervalStartColumn(string $operator, mixed $operand): void
+    private static function validateIntervalStartColumn(string $operator, mixed $operand): string|ExpressionInterface
     {
         if (
             !is_string($operand) &&
@@ -105,9 +110,11 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
                 "Operator '$operator' requires interval start column to be string or ExpressionInterface."
             );
         }
+
+        return $operand;
     }
 
-    private static function validateIntervalEndColumn(string $operator, mixed $operand): void
+    private static function validateIntervalEndColumn(string $operator, mixed $operand): string|ExpressionInterface
     {
         if (
             !is_string($operand) &&
@@ -117,5 +124,7 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
                 "Operator '$operator' requires interval end column to be string or ExpressionInterface."
             );
         }
+
+        return $operand;
     }
 }

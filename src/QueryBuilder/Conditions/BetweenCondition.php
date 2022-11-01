@@ -50,17 +50,17 @@ final class BetweenCondition implements BetweenConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires three operands.");
         }
 
-        self::validateColumn($operator, $operands[0]);
-
-        return new self($operands[0], $operator, $operands[1], $operands[2]);
+        return new self(self::validateColumn($operator, $operands[0]), $operator, $operands[1], $operands[2]);
     }
 
-    private static function validateColumn(string $operator, mixed $operand): void
+    private static function validateColumn(string $operator, mixed $operand): string|Expression
     {
         if (!is_string($operand) && !($operand instanceof Expression)) {
             throw new InvalidArgumentException(
                 "Operator '$operator' requires column to be string or ExpressionInterface."
             );
         }
+
+        return $operand;
     }
 }
