@@ -73,7 +73,7 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires three operands.");
         }
 
-        self::validateOperandValue($operator, $operands[0]);
+        self::validateValue($operator, $operands[0]);
         self::validateIntervalStartColumn($operator, $operands[1]);
         self::validateIntervalEndColumn($operator, $operands[2]);
 

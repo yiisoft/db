@@ -25,7 +25,10 @@ final class BetweenColumnsConditionTest extends TestCase
 
     public function testFromArrayDefinition(): void
     {
-        $betweenColumnsCondition = BetweenColumnsCondition::fromArrayDefinition('BETWEEN', [42, 'min_value', 'max_value']);
+        $betweenColumnsCondition = BetweenColumnsCondition::fromArrayDefinition(
+            'BETWEEN',
+            [42, 'min_value', 'max_value']
+        );
 
         $this->assertSame(42, $betweenColumnsCondition->getValue());
         $this->assertSame('BETWEEN', $betweenColumnsCondition->getOperator());
