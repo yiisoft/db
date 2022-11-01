@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\QueryBuilder\Conditions;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\Conditions\BetweenCondition;
 
 /**
@@ -14,10 +15,35 @@ final class BetweenConditionTest extends TestCase
 {
     public function testConstructor(): void
     {
-        $condition = new BetweenCondition('date', 'BETWEEN', 1, 2);
-        $this->assertSame('date', $condition->getColumn());
-        $this->assertSame('BETWEEN', $condition->getOperator());
-        $this->assertSame(1, $condition->getIntervalStart());
-        $this->assertSame(2, $condition->getIntervalEnd());
+        $betweenCondition = new BetweenCondition('date', 'BETWEEN', 1, 2);
+
+        $this->assertSame('date', $betweenCondition->getColumn());
+        $this->assertSame('BETWEEN', $betweenCondition->getOperator());
+        $this->assertSame(1, $betweenCondition->getIntervalStart());
+        $this->assertSame(2, $betweenCondition->getIntervalEnd());
+    }
+
+    public function testFromArrayDefinition(): void
+    {
+        $betweenCondition = BetweenCondition::fromArrayDefinition('BETWEEN', ['date', 1, 2]);
+
+        $this->assertSame('date', $betweenCondition->getColumn());
+        $this->assertSame('BETWEEN', $betweenCondition->getOperator());
+        $this->assertSame(1, $betweenCondition->getIntervalStart());
+        $this->assertSame(2, $betweenCondition->getIntervalEnd());
+    }
+
+    public function testFromArrayDefinitionExceptionWithoutOperands(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Operator 'between' requires three operands.");
+        BetweenCondition::fromArrayDefinition('between', []);
+    }
+
+    public function testFromArrayDefinitionExceptionOperandsColumns(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Operator 'between' requires column to be string or ExpressionInterface.");
+        BetweenCondition::fromArrayDefinition('between', [1, 'min_value', 'max_value']);
     }
 }
