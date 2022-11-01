@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Conditions;
 
-use Iterator;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Conditions\Interface\SimpleConditionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -21,7 +19,7 @@ final class SimpleCondition implements SimpleConditionInterface
     public function __construct(
         private string|Expression|QueryInterface $column,
         private string $operator,
-        private array|int|bool|string|Iterator|ExpressionInterface|null $value
+        private mixed $value
     ) {
     }
 
@@ -35,7 +33,7 @@ final class SimpleCondition implements SimpleConditionInterface
         return $this->operator;
     }
 
-    public function getValue(): array|int|bool|string|Iterator|ExpressionInterface|null
+    public function getValue(): mixed
     {
         return $this->value;
     }
