@@ -73,36 +73,49 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires three operands.");
         }
 
+        self::validateOperandValue($operator, $operands[0]);
+        self::validateIntervalStartColumn($operator, $operands[1]);
+        self::validateIntervalEndColumn($operator, $operands[2]);
+
+        return new self($operands[0], $operator, $operands[1], $operands[2]);
+    }
+
+    private static function validateOperandValue(string $operator, mixed $operand): void
+    {
         if (
-            !is_array($operands[0]) &&
-            !is_int($operands[0]) &&
-            !is_string($operands[0]) &&
-            !($operands[0] instanceof Iterator) &&
-            !($operands[0] instanceof ExpressionInterface)
+            !is_array($operand) &&
+            !is_int($operand) &&
+            !is_string($operand) &&
+            !($operand instanceof Iterator) &&
+            !($operand instanceof ExpressionInterface)
         ) {
             throw new InvalidArgumentException(
                 "Operator '$operator' requires value to be array, int, string, Iterator or ExpressionInterface."
             );
         }
+    }
 
+    private static function validateIntervalStartColumn(string $operator, mixed $operand): void
+    {
         if (
-            !is_string($operands[1]) &&
-            !($operands[1] instanceof ExpressionInterface)
+            !is_string($operand) &&
+            !($operand instanceof ExpressionInterface)
         ) {
             throw new InvalidArgumentException(
                 "Operator '$operator' requires interval start column to be string or ExpressionInterface."
             );
         }
+    }
 
+    private static function validateIntervalEndColumn(string $operator, mixed $operand): void
+    {
         if (
-            !is_string($operands[2]) &&
-            !($operands[2] instanceof ExpressionInterface)
+            !is_string($operand) &&
+            !($operand instanceof ExpressionInterface)
         ) {
             throw new InvalidArgumentException(
                 "Operator '$operator' requires interval end column to be string or ExpressionInterface."
             );
         }
-
-        return new self($operands[0], $operator, $operands[1], $operands[2]);
     }
 }
