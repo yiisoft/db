@@ -71,7 +71,7 @@ final class LikeCondition implements LikeConditionInterface
         return $condition;
     }
 
-    public static function validateColumn(string $operator, mixed $operand): string|Expression
+    private static function validateColumn(string $operator, mixed $operand): string|Expression
     {
         if (!is_string($operand) && !$operand instanceof Expression) {
             throw new InvalidArgumentException("Operator '$operator' requires column to be string or Expression.");
@@ -80,11 +80,17 @@ final class LikeCondition implements LikeConditionInterface
         return $operand;
     }
 
-    public static function validateValue(
+    private static function validateValue(
         string $operator,
         mixed $operand
     ): array|int|string|Iterator|ExpressionInterface|null {
-        if (!is_string($operand) && !is_array($operand) && !$operand instanceof Iterator && !$operand instanceof ExpressionInterface) {
+        if (
+            !is_string($operand) &&
+            !is_array($operand) &&
+            !$operand instanceof Iterator &&
+            !$operand instanceof ExpressionInterface &&
+            $operand !== null
+        ) {
             throw new InvalidArgumentException(
                 "Operator '$operator' requires value to be string, array, Iterator or ExpressionInterface."
             );

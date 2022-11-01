@@ -61,7 +61,7 @@ final class InCondition implements InConditionInterface
         return $operand;
     }
 
-    public static function validateValues(string $operator, mixed $operand): int|iterable|Iterator|QueryInterface
+    private static function validateValues(string $operator, mixed $operand): int|iterable|Iterator|QueryInterface
     {
         if (!is_array($operand) && !$operand instanceof Iterator && !is_int($operand) && !$operand instanceof QueryInterface) {
             throw new InvalidArgumentException(
