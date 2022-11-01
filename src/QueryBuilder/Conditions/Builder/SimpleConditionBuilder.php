@@ -31,6 +31,7 @@ class SimpleConditionBuilder implements ExpressionBuilderInterface
     {
         $operator = $expression->getOperator();
         $column = $expression->getColumn();
+        /** @var mixed $value */
         $value = $expression->getValue();
 
         if ($column instanceof ExpressionInterface) {
