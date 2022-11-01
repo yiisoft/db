@@ -45,14 +45,21 @@ final class SimpleCondition implements SimpleConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
+        return new self(self::validateColumn($operator, $operands[0]), $operator, $operands[1]);
+    }
+
+    private static function validateColumn(string $operator, mixed $operands): string|Expression|QueryInterface
+    {
         if (
-            !is_string($operands[0]) &&
-            !($operands[0] instanceof Expression) &&
-            !($operands[0] instanceof QueryInterface)
+            !is_string($operands) &&
+            !($operands instanceof Expression) &&
+            !($operands instanceof QueryInterface)
         ) {
-            throw new InvalidArgumentException("Operator '$operator' requires column name as first operand.");
+            throw new InvalidArgumentException(
+                "Operator '$operator' requires column to be string, ExpressionInterface or QueryInterface."
+            );
         }
 
-        return new self($operands[0], $operator, $operands[1]);
+        return $operands;
     }
 }
