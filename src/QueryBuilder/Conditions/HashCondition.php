@@ -20,9 +20,6 @@ final class HashCondition implements HashConditionInterface
         return $this->hash;
     }
 
-    /**
-     * @psalm-suppress MixedArgument
-     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         return new self($operands);
