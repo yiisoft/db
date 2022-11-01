@@ -80,7 +80,7 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
         return new self($operands[0], $operator, $operands[1], $operands[2]);
     }
 
-    private static function validateOperandValue(string $operator, mixed $operand): void
+    private static function validateValue(string $operator, mixed $operand): void
     {
         if (
             !is_array($operand) &&
