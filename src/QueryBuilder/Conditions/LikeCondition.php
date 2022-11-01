@@ -64,7 +64,7 @@ final class LikeCondition implements LikeConditionInterface
             self::validateValue($operator, $operands[1]),
         );
 
-        if (array_key_exists(2, $operands) && is_array($operands[2])) {
+        if (array_key_exists(2, $operands) && (is_array($operands[2]) || $operands[2] === null)) {
             $condition->setEscapingReplacements($operands[2]);
         }
 
@@ -87,6 +87,7 @@ final class LikeCondition implements LikeConditionInterface
         if (
             !is_string($operand) &&
             !is_array($operand) &&
+            !is_int($operand) &&
             !$operand instanceof Iterator &&
             !$operand instanceof ExpressionInterface &&
             $operand !== null
