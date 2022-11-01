@@ -40,7 +40,7 @@ final class BetweenConditionTest extends TestCase
         BetweenCondition::fromArrayDefinition('between', []);
     }
 
-    public function testFromArrayDefinitionExceptionOperandsColumns(): void
+    public function testFromArrayDefinitionExceptionColumns(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'between' requires column to be string or ExpressionInterface.");
