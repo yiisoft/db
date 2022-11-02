@@ -23,6 +23,7 @@ class ColumnSchema implements ColumnSchemaInterface
     private int|null $scale = null;
     private bool $isPrimaryKey = false;
     private bool $autoIncrement = false;
+    private bool $computed = false;
     private bool $unsigned = false;
     private string|null $comment = null;
     private string|null $extra = null;
@@ -106,6 +107,11 @@ class ColumnSchema implements ColumnSchemaInterface
         return $this->autoIncrement;
     }
 
+    public function isComputed(): bool
+    {
+        return $this->computed;
+    }
+
     public function isUnsigned(): bool
     {
         return $this->unsigned;
@@ -179,6 +185,11 @@ class ColumnSchema implements ColumnSchemaInterface
     public function autoIncrement(bool $value): void
     {
         $this->autoIncrement = $value;
+    }
+
+    public function computed(bool $value): void
+    {
+        $this->computed = $value;
     }
 
     public function unsigned(bool $value): void
