@@ -105,6 +105,16 @@ abstract class QueryBuilderProvider
                 'NOW() NOT BETWEEN (SELECT [[min_date]] FROM [[some_table]]) AND [[max_date]]',
                 [],
             ],
+            [
+                new BetweenColumnsCondition(
+                    new Expression('NOW()'),
+                    'NOT BETWEEN',
+                    new Expression('min_date'),
+                    $mock->query()->select('max_date')->from('some_table'),
+                ),
+                'NOW() NOT BETWEEN min_date AND (SELECT [[max_date]] FROM [[some_table]])',
+                [],
+            ],
 
             /* in */
             [
