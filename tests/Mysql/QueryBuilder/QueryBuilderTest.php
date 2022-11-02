@@ -36,7 +36,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
      * @dataProvider \Yiisoft\Db\Tests\Mysql\Provider\QueryBuilderProvider::buildConditions()
      *
      * @param array $condition
-     * @param string $expected
      * @param array $params
      */
     public function testBuild(
