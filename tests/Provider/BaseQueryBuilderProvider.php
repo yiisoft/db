@@ -17,6 +17,96 @@ final class BaseQueryBuilderProvider
     {
     }
 
+    public function batchInsert(): array
+    {
+        return [
+            'simple' => [
+                'customer',
+                ['email', 'name', 'address'],
+                [['test@example.com', 'silverfire', 'Kyiv {{city}}, Ukraine']],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES (:qp0, :qp1, :qp2)
+                    SQL,
+                    $this->mock->getDriverName(),
+                ),
+                [
+                    ':qp0' => 'test@example.com',
+                    ':qp1' => 'silverfire',
+                    ':qp2' => 'Kyiv {{city}}, Ukraine',
+                ],
+            ],
+            'escape-danger-chars' => [
+                'customer',
+                ['address'],
+                [["SQL-danger chars are escaped: '); --"]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[customer]] ([[address]]) VALUES (:qp0)
+                    SQL,
+                    $this->mock->getDriverName(),
+                ),
+                [
+                    ':qp0' => "SQL-danger chars are escaped: '); --",
+                ],
+            ],
+            'customer2' => [
+                'customer',
+                ['address'],
+                [],
+                '',
+            ],
+            'customer3' => [
+                'customer',
+                [],
+                [['no columns passed']],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[customer]] () VALUES (:qp0)
+                    SQL,
+                    $this->mock->getDriverName(),
+                ),
+                [
+                    ':qp0' => 'no columns passed',
+                ],
+            ],
+            'bool-false, bool2-null' => [
+                'type',
+                ['bool_col', 'bool_col2'],
+                [[false, null]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
+                    SQL,
+                    $this->mock->getDriverName(),
+                ),
+                [
+                    ':qp0' => false,
+                    ':qp1' => null,
+                ],
+            ],
+            'wrong' => [
+                '{{%type}}',
+                ['{{%type}}.[[float_col]]', '[[time]]'],
+                [[null, new Expression('now()')], [null, new Expression('now()')]],
+                'expected' => 'INSERT INTO {{%type}} ({{%type}}.[[float_col]], [[time]]) VALUES (:qp0, now()), (:qp1, now())',
+                [
+                    ':qp0' => null,
+                    ':qp1' => null,
+                ],
+            ],
+            'bool-false, time-now()' => [
+                '{{%type}}',
+                ['{{%type}}.[[bool_col]]', '[[time]]'],
+                [[false, new Expression('now()')]],
+                'expected' => 'INSERT INTO {{%type}} ({{%type}}.[[bool_col]], [[time]]) VALUES (:qp0, now())',
+                [
+                    ':qp0' => false,
+                ],
+            ],
+        ];
+    }
+
     public function buildConditions(): array
     {
         $conditions = [

@@ -23,7 +23,7 @@ final class QueryBuilderTest extends TestCase
     {
         parent::setUp();
 
-        $this->mock = new Mock('sqlite');
+        $this->mock = new Mock();
         $this->queryBuilder = $this->mock->queryBuilder('`', '`');
     }
 
@@ -33,6 +33,24 @@ final class QueryBuilderTest extends TestCase
 
         unset($this->queryBuilder, $this->mock);
     }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert()
+     */
+    public function testBatchInsert(
+        string $table,
+        array $columns,
+        array $value,
+        string|null $expected,
+        array $expectedParams = []
+    ): void {
+        $params = [];
+        $sql = $this->queryBuilder->batchInsert($table, $columns, $value, $params);
+
+        $this->assertSame($expected, $sql);
+        $this->assertSame($expectedParams, $params);
+    }
+
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildConditions()

@@ -8,23 +8,30 @@ use Yiisoft\Db\Tests\Support\Mock;
 
 final class QueryBuilderProvider
 {
+    public function batchInsert(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
+
+        return $baseQueryBuilderProvider->batchInsert();
+    }
+
     public function buildConditions(): array
     {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock('sqlite'));
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
 
         return $baseQueryBuilderProvider->buildConditions();
     }
 
     public function buildFilterCondition(): array
     {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock('sqlite'));
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
 
         return $baseQueryBuilderProvider->buildFilterCondition();
     }
 
     public function buildWhereExists(): array
     {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock('sqlite'));
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
 
         return $baseQueryBuilderProvider->buildWhereExists();
     }
