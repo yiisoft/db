@@ -34,9 +34,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Pgsql\Provider\QueryBuilderProvider::buildConditions()
-     *
-     * @param array $condition
-     * @param array $params
      */
     public function testBuild(
         array|ExpressionInterface|string $conditions,
