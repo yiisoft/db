@@ -266,6 +266,7 @@ abstract class QueryBuilderProvider
                 '([[a]]=CONCAT(col1, col2)) AND ([[b]]=:qp0)',
                 [':qp0' => 2],
             ],
+            [['a' => null], '[[a]] IS NULL', []],
 
             /* direct conditions */
             ['a = CONCAT(col1, col2)', 'a = CONCAT(col1, col2)', []],
