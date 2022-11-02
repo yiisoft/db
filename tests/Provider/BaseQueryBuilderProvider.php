@@ -395,7 +395,6 @@ final class BaseQueryBuilderProvider
         ];
     }
 
-
     private function replaceQuotes(array $conditions): array
     {
         /* adjust dbms specific escaping */

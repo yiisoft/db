@@ -5,17 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\TestSupport;
 
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Schema\Schema;
-use Yiisoft\Db\Schema\SchemaBuilderTrait;
-
-use function array_key_exists;
-use function array_values;
-use function is_array;
-use function str_replace;
-use function strncmp;
-use function substr;
 
 trait TestQueryBuilderTrait
 {
