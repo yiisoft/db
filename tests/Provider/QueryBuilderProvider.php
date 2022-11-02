@@ -305,6 +305,15 @@ abstract class QueryBuilderProvider
                 'NOT (any_expression(:a))', [':a' => 1],
             ],
             [new Expression('NOT (any_expression(:a))', [':a' => 1]), 'NOT (any_expression(:a))', [':a' => 1]],
+
+            /* like */
+            [['like', 'a', 'b'], '[[a]] LIKE :qp0', [':qp0' => '%b%']],
+            [
+                ['like', 'a', new Expression(':qp0', [':qp0' => '%b%'])],
+                '[[a]] LIKE :qp0',
+                [':qp0' => '%b%'],
+            ],
+            [['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => '%b%']],
         ];
     }
 }

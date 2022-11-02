@@ -95,7 +95,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     protected function parseOperator(string $operator): array
     {
         if (!preg_match('/^(AND |OR |)((NOT |)I?LIKE)/', $operator, $matches)) {
-            throw new InvalidArgumentException("Invalid operator '$operator'.");
+            throw new InvalidArgumentException("Invalid operator in like condition: \"{$operator}\"");
         }
 
         $andor = ' ' . (!empty($matches[1]) ? $matches[1] : 'AND ');
