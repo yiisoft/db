@@ -24,6 +24,7 @@ abstract class QueryBuilderProvider
             [['or not like', 'name', []], '', []],
 
             /* not */
+            [['not', ''], '', []],
             [['not', 'name'], 'NOT (name)', []],
             [
                 [
