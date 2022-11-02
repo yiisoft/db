@@ -97,6 +97,11 @@ interface ColumnSchemaInterface
     public function isAutoIncrement(): bool;
 
     /**
+     * @return bool whether this column is computed
+     */
+    public function isComputed(): bool;
+
+    /**
      * @return bool whether this column is unsigned. This is only meaningful when {@see type} is `smallint`, `integer`
      * or `bigint`.
      */
@@ -135,6 +140,8 @@ interface ColumnSchemaInterface
     public function primaryKey(bool $value): void;
 
     public function autoIncrement(bool $value): void;
+
+    public function computed(bool $value): void;
 
     public function unsigned(bool $value): void;
 
