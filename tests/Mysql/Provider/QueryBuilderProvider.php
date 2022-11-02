@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Mysql\Provider;
 
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\TraversableObject;
 
 final class QueryBuilderProvider extends \Yiisoft\Db\Tests\Provider\QueryBuilderProvider
 {
