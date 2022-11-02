@@ -270,6 +270,7 @@ abstract class QueryBuilderProvider
                 '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]]=:qp0)',
                 [':qp0' => 5],
             ],
+            [['=', 'a', null], '[[a]] = NULL', []],
 
             /* operand1 is Expression */
             [
