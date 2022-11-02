@@ -75,7 +75,7 @@ final class Schema extends \Yiisoft\Db\Schema\Schema implements SchemaInterface
 
     protected function loadTableSchema(string $name): TableSchemaInterface|null
     {
-        return [];
+        return null;
     }
 
     public function supportsSavepoint(): bool
