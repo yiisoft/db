@@ -51,7 +51,6 @@ final class QueryBuilderTest extends TestCase
         $this->assertSame($expectedParams, $params);
     }
 
-
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildConditions()
      */
