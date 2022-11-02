@@ -1067,4 +1067,3 @@ final class QueryBuilderProvider
         ];
     }
 }
-
