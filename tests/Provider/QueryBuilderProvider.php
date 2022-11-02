@@ -208,6 +208,29 @@ abstract class QueryBuilderProvider
             [new InCondition('id', 'not in', [1]), '[[id]]<>:qp0', [':qp0' => 1]],
             [new InCondition('id', 'in', [1, 2]), '[[id]] IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
             [new InCondition('id', 'not in', [1, 2]), '[[id]] NOT IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
+            [new InCondition([], 'in', 1), '0=1', []],
+            [new InCondition([], 'in', [1]), '0=1', []],
+            [new InCondition(['id', 'name'], 'in', []), '0=1', []],
+            [
+                new InCondition(['id'], 'in', $mock->query()->select('id')->from('users')->where(['active' => 1])),
+                '([[id]]) IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
+                [':qp0' => 1],
+            ],
+            [
+                new InCondition(['id', 'name'], 'in', [['id' => 1]]),
+                '([[id]], [[name]]) IN ((:qp0, NULL))',
+                [':qp0' => 1],
+            ],
+            [
+                new InCondition(['id', 'name'], 'in', [['name' => 'oy']]),
+                '([[id]], [[name]]) IN ((NULL, :qp0))',
+                [':qp0' => 'oy'],
+            ],
+            [
+                new InCondition(['id', 'name'], 'in', [['id' => 1, 'name' => 'oy']]),
+                '([[id]], [[name]]) IN ((:qp0, :qp1))',
+                [':qp0' => 1, ':qp1' => 'oy'],
+            ],
 
             /* exists */
             [
