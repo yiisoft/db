@@ -586,54 +586,6 @@ final class QueryBuilderProvider
         ];
     }
 
-    public function buildFilterConditionProvider(): array
-    {
-        $conditions = [
-            /* like */
-            [['like', 'name', []], '', []],
-            [['not like', 'name', []], '', []],
-            [['or like', 'name', []], '', []],
-            [['or not like', 'name', []], '', []],
-
-            /* not */
-            [['not', ''], '', []],
-
-            /* and */
-            [['and', '', ''], '', []],
-            [['and', '', 'id=2'], 'id=2', []],
-            [['and', 'id=1', ''], 'id=1', []],
-            [['and', 'type=1', ['or', '', 'id=2']], '(type=1) AND (id=2)', []],
-
-            /* or */
-            [['or', 'id=1', ''], 'id=1', []],
-            [['or', 'type=1', ['or', '', 'id=2']], '(type=1) OR (id=2)', []],
-
-            /* between */
-            [['between', 'id', 1, null], '', []],
-            [['not between', 'id', null, 10], '', []],
-
-            /* in */
-            [['in', 'id', []], '', []],
-            [['not in', 'id', []], '', []],
-
-            /* simple conditions */
-            [['=', 'a', ''], '', []],
-            [['>', 'a', ''], '', []],
-            [['>=', 'a', ''], '', []],
-            [['<', 'a', ''], '', []],
-            [['<=', 'a', ''], '', []],
-            [['<>', 'a', ''], '', []],
-            [['!=', 'a', ''], '', []],
-        ];
-
-        /* adjust dbms specific escaping */
-        foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->db->getDriver()->getDriverName());
-        }
-
-        return $conditions;
-    }
-
     public function buildFromDataProvider(): array
     {
         return [
