@@ -5,7 +5,7 @@
       <directory>./</directory>
     </include>
     <exclude>
-        <directory>./src/TestSupport</directory>
+      <directory>./src/TestSupport</directory>
       <directory>./tests</directory>
       <directory>./vendor</directory>
     </exclude>
@@ -14,6 +14,9 @@
     <ini name="error_reporting" value="-1"/>
   </php>
   <testsuites>
+    <testsuite name="db">
+      <directory>./tests</directory>
+    </testsuite>
     <testsuite name="ActiveRecord">
       <directory>./vendor/yiisoft/active-record/tests</directory>
     </testsuite>

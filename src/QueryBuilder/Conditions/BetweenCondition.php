@@ -43,8 +43,6 @@ final class BetweenCondition implements BetweenConditionInterface
 
     /**
      * @throws InvalidArgumentException
-     *
-     * @psalm-suppress MixedArgument
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -52,6 +50,17 @@ final class BetweenCondition implements BetweenConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires three operands.");
         }
 
-        return new self($operands[0], $operator, $operands[1], $operands[2]);
+        return new self(self::validateColumn($operator, $operands[0]), $operator, $operands[1], $operands[2]);
+    }
+
+    private static function validateColumn(string $operator, mixed $operand): string|Expression
+    {
+        if (!is_string($operand) && !($operand instanceof Expression)) {
+            throw new InvalidArgumentException(
+                "Operator '$operator' requires column to be string or ExpressionInterface."
+            );
+        }
+
+        return $operand;
     }
 }
