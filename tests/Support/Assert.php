@@ -12,6 +12,17 @@ use ReflectionObject;
 final class Assert extends TestCase
 {
     /**
+     * Asserting two strings equality ignoring line endings.
+     */
+    public static function equalsWithoutLE(string $expected, string $actual, string $message = ''): void
+    {
+        $expected = str_replace("\r\n", "\n", $expected);
+        $actual = str_replace("\r\n", "\n", $actual);
+
+        self::assertEquals($expected, $actual, $message);
+    }
+
+    /**
      * Gets an inaccessible object property.
      *
      * @param bool $revoke whether to make property inaccessible after getting.

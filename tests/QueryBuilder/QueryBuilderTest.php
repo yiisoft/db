@@ -7,9 +7,12 @@ namespace Yiisoft\Db\Tests\QueryBuilder;
 use Closure;
 use PHPUnit\Framework\TestCase;
 use stdClass;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\ColumnSchemaBuilder;
+use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Mock;
@@ -19,6 +22,9 @@ use Yiisoft\Db\Tests\Support\Mock;
  */
 final class QueryBuilderTest extends TestCase
 {
+    use SchemaBuilderTrait;
+
+    private ConnectionInterface $db;
     private QueryBuilderInterface $queryBuilder;
     private Mock $mock;
 
@@ -27,6 +33,7 @@ final class QueryBuilderTest extends TestCase
         parent::setUp();
 
         $this->mock = new Mock();
+        $this->db = $this->mock->connection();
         $this->queryBuilder = $this->mock->queryBuilder();
     }
 
@@ -41,6 +48,30 @@ final class QueryBuilderTest extends TestCase
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addDropChecks()
      */
     public function testAddDropCheck(string $sql, Closure $builder): void
+    {
+        $this->assertSame($this->mock->quoter()->quoteSql($sql), $builder($this->queryBuilder));
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addDropForeignKeys()
+     */
+    public function testAddDropForeignKey(string $sql, Closure $builder): void
+    {
+        $this->assertSame($this->mock->quoter()->quoteSql($sql), $builder($this->queryBuilder));
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addDropPrimaryKeys()
+     */
+    public function testAddDropPrimaryKey(string $sql, Closure $builder): void
+    {
+        $this->assertSame($this->mock->quoter()->quoteSql($sql), $builder($this->queryBuilder));
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addDropUniques()
+     */
+    public function testAddDropUnique(string $sql, Closure $builder): void
     {
         $this->assertSame($this->mock->quoter()->quoteSql($sql), $builder($this->queryBuilder));
     }
@@ -73,6 +104,19 @@ final class QueryBuilderTest extends TestCase
             SQL,
             $this->queryBuilder->addCommentOnTable('user', 'This is a comment')
         );
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::alterColumn()
+     */
+    public function testAlterColumn(
+        string $table,
+        string $column,
+        ColumnSchemaBuilder|string $type,
+        string $expected
+    ): void {
+        $sql = $this->queryBuilder->alterColumn($table, $column, $type);
+        $this->assertSame($expected, $sql);
     }
 
     /**
@@ -409,6 +453,42 @@ final class QueryBuilderTest extends TestCase
     public function testCreateDropIndex(string $sql, Closure $builder): void
     {
         $this->assertSame($this->mock->quoter()->quoteSql($sql), $builder($this->queryBuilder));
+    }
+
+    public function testsCreateTable(): void
+    {
+        $expected = DbHelper::replaceQuotes(
+            <<<SQL
+            CREATE TABLE [[test_table]] (
+            \t[[id]] pk,
+            \t[[name]] string(255) NOT NULL,
+            \t[[email]] string(255) NOT NULL,
+            \t[[address]] string(255) NOT NULL,
+            \t[[status]] integer NOT NULL,
+            \t[[profile_id]] integer NOT NULL,
+            \t[[created_at]] timestamp NOT NULL,
+            \t[[updated_at]] timestamp NOT NULL
+            ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
+            SQL,
+            $this->mock->getDriverName(),
+        );
+
+        $columns = [
+            'id' => $this->primaryKey(5),
+            'name' => $this->string(255)->notNull(),
+            'email' => $this->string(255)->notNull(),
+            'address' => $this->string(255)->notNull(),
+            'status' => $this->integer()->notNull(),
+            'profile_id' => $this->integer()->notNull(),
+            'created_at' => $this->timestamp()->notNull(),
+            'updated_at' => $this->timestamp()->notNull(),
+        ];
+
+        $options = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+
+        $sql = $this->queryBuilder->createTable('test_table', $columns, $options);
+
+        Assert::equalsWithoutLE($expected, $sql);
     }
 
     public function testComplexSelect(): void

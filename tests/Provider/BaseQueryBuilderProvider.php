@@ -9,14 +9,18 @@ use Yiisoft\Db\QueryBuilder\Conditions\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Conditions\InCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Mock;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
 final class BaseQueryBuilderProvider
 {
+    use SchemaBuilderTrait;
+
     public function __construct(private Mock $mock)
     {
+        $this->db = $this->mock->connection();
     }
 
     public function addDropChecks(): array
@@ -32,6 +36,216 @@ final class BaseQueryBuilderProvider
             'add' => [
                 "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] CHECK ([[C_not_null]] > 100)",
                 static fn (QueryBuilderInterface $qb) => $qb->addCheck($name, $tableName, '[[C_not_null]] > 100'),
+            ],
+        ];
+    }
+
+    public function addDropForeignKeys(): array
+    {
+        $name = 'CN_constraints_3';
+        $pkTableName = 'T_constraints_2';
+        $tableName = 'T_constraints_3';
+
+        return [
+            'drop' => [
+                "ALTER TABLE {{{$tableName}}} DROP CONSTRAINT [[$name]]",
+                static fn (QueryBuilderInterface $qb) => $qb->dropForeignKey($name, $tableName),
+            ],
+            'add' => [
+                "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]])"
+                . " REFERENCES {{{$pkTableName}}} ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE",
+                static fn (QueryBuilderInterface $qb) => $qb->addForeignKey(
+                    $name,
+                    $tableName,
+                    'C_fk_id_1',
+                    $pkTableName,
+                    'C_id_1',
+                    'CASCADE',
+                    'CASCADE'
+                ),
+            ],
+            'add (2 columns)' => [
+                "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]])"
+                . " REFERENCES {{{$pkTableName}}} ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE",
+                static fn (QueryBuilderInterface $qb) => $qb->addForeignKey(
+                    $name,
+                    $tableName,
+                    'C_fk_id_1, C_fk_id_2',
+                    $pkTableName,
+                    'C_id_1, C_id_2',
+                    'CASCADE',
+                    'CASCADE'
+                ),
+            ],
+        ];
+    }
+
+    public function addDropPrimaryKeys(): array
+    {
+        $tableName = 'T_constraints_1';
+        $name = 'CN_pk';
+
+        return [
+            'drop' => [
+                "ALTER TABLE {{{$tableName}}} DROP CONSTRAINT [[$name]]",
+                static fn (QueryBuilderInterface $qb) => $qb->dropPrimaryKey($name, $tableName),
+            ],
+            'add' => [
+                "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]])",
+                static fn (QueryBuilderInterface $qb) => $qb->addPrimaryKey($name, $tableName, 'C_id_1'),
+            ],
+            'add (2 columns)' => [
+                "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]], [[C_id_2]])",
+                static fn (QueryBuilderInterface $qb) => $qb->addPrimaryKey($name, $tableName, 'C_id_1, C_id_2'),
+            ],
+        ];
+    }
+
+    public function addDropUniques(): array
+    {
+        $tableName1 = 'T_constraints_1';
+        $name1 = 'CN_unique';
+        $tableName2 = 'T_constraints_2';
+        $name2 = 'CN_constraints_2_multi';
+
+        return [
+            'drop' => [
+                "ALTER TABLE {{{$tableName1}}} DROP CONSTRAINT [[$name1]]",
+                static fn (QueryBuilderInterface $qb) => $qb->dropUnique($name1, $tableName1),
+            ],
+            'add' => [
+                "ALTER TABLE {{{$tableName1}}} ADD CONSTRAINT [[$name1]] UNIQUE ([[C_unique]])",
+                static fn (QueryBuilderInterface $qb) => $qb->addUnique($name1, $tableName1, 'C_unique'),
+            ],
+            'add (2 columns)' => [
+                "ALTER TABLE {{{$tableName2}}} ADD CONSTRAINT [[$name2]] UNIQUE ([[C_index_2_1]], [[C_index_2_2]])",
+                static fn (QueryBuilderInterface $qb) => $qb->addUnique($name2, $tableName2, 'C_index_2_1, C_index_2_2'),
+            ],
+        ];
+    }
+
+    public function alterColumn(): array
+    {
+        return [
+            [
+                'foo1',
+                'bar',
+                'varchar(255)',
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` varchar(255)
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                'SET NOT null',
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` SET NOT null
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                'drop default',
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` drop default
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                'reset xyz',
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` reset xyz
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                $this->string(255),
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` string(255)
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                'varchar(255) USING bar::varchar',
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` varchar(255) USING bar::varchar
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                'varchar(255) using cast("bar" as varchar)',
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` varchar(255) using cast("bar" as varchar)
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                $this->string(255)->notNull(),
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` string(255) NOT NULL
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                $this->string(255)->null(),
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` string(255) NULL DEFAULT NULL
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                $this->string(255)->null()->defaultValue('xxx'),
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` string(255) NULL DEFAULT 'xxx'
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                $this->string(255)->check('char_length(bar) > 5'),
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` string(255) CHECK (char_length(bar) > 5)
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                $this->string(255)->defaultValue(''),
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` string(255) DEFAULT ''
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                $this->string(255)->defaultValue('AbCdE'),
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` string(255) DEFAULT 'AbCdE'
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` timestamp DEFAULT CURRENT_TIMESTAMP
+                SQL,
+            ],
+            [
+                'foo1',
+                'bar',
+                $this->string(30)->unique(),
+                <<<SQL
+                ALTER TABLE `foo1` CHANGE `bar` `bar` string(30) UNIQUE
+                SQL,
             ],
         ];
     }

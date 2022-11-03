@@ -181,6 +181,7 @@ abstract class DDLQueryBuilder implements DDLQueryBuilderInterface
                     . $this->quoter->quoteColumnName($name)
                     . ' '
                     . $this->queryBuilder->getColumnType($type);
+            // TODO review cases when name is not a string
             } else {
                 $cols[] = "\t" . $type;
             }

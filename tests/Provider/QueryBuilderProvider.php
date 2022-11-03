@@ -15,6 +15,34 @@ final class QueryBuilderProvider
         return $baseQueryBuilderProvider->addDropChecks();
     }
 
+    public function addDropForeignKeys(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
+
+        return $baseQueryBuilderProvider->addDropForeignKeys();
+    }
+
+    public function addDropPrimaryKeys(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
+
+        return $baseQueryBuilderProvider->addDropPrimaryKeys();
+    }
+
+    public function addDropUniques(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
+
+        return $baseQueryBuilderProvider->addDropUniques();
+    }
+
+    public function alterColumn(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
+
+        return $baseQueryBuilderProvider->alterColumn();
+    }
+
     public function batchInsert(): array
     {
         $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());

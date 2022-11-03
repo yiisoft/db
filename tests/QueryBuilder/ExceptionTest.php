@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\Mock;
 use Yiisoft\Db\Tests\Support\Stubs\ExpressionStub;
 
@@ -62,6 +63,16 @@ final class ExceptionTest extends TestCase
 
         $params = [];
         $this->queryBuilder->buildJoin([1], $params);
+    }
+
+    public function testCheckIntegrityException(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\Tests\Support\Stubs\DDLQueryBuilder does not support enabling/disabling integrity check.'
+        );
+
+        $this->queryBuilder->checkIntegrity('schema', 'table', true);
     }
 
     public function testGetExpressionBuilderException(): void
