@@ -135,11 +135,6 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
         throw new NotSupportedException(static::class . ' does not support resetting sequence.');
     }
 
-    public function truncateTable(string $table): string
-    {
-        return 'TRUNCATE TABLE ' . $this->quoter->quoteTableName($table);
-    }
-
     /**
      * @psalm-suppress MixedArgument
      */

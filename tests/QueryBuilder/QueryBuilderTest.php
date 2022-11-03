@@ -1061,6 +1061,12 @@ final class QueryBuilderTest extends TestCase
 
     public function testTruncateTable(): void
     {
-        $this->assertSame('TRUNCATE TABLE `table`', $this->queryBuilder->truncateTable('table'));
+        $sql = $this->queryBuilder->truncateTable('table');
+
+        $this->assertSame('TRUNCATE TABLE `table`', $sql);
+
+        $sql = $this->queryBuilder->truncateTable('table2');
+
+        $this->assertSame('TRUNCATE TABLE `table2`', $sql);
     }
 }
