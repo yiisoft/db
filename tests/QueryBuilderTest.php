@@ -96,6 +96,19 @@ final class QueryBuilderTest extends TestCase
     }
 
     /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildFrom()
+     */
+    public function testBuildFrom(string $table, string $expected): void
+    {
+        $params = [];
+        $sql = $this->queryBuilder->buildFrom([$table], $params);
+        $replacedQuotes = DbHelper::replaceQuotes($expected, $this->mock->getDriverName());
+
+        $this->assertIsString($replacedQuotes);
+        $this->assertSame('FROM ' . $replacedQuotes, $sql);
+    }
+
+    /**
      * This test contains three select queries connected with UNION and UNION ALL constructions.
      * It could be useful to use "phpunit --group=db --filter testBuildUnion" command for run it.
      */

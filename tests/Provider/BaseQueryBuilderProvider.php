@@ -461,6 +461,16 @@ final class BaseQueryBuilderProvider
         return $this->replaceQuotes($conditions);
     }
 
+    public function buildFrom(): array
+    {
+        return [
+            ['test t1', '[[test]] [[t1]]'],
+            ['test as t1', '[[test]] [[t1]]'],
+            ['test AS t1', '[[test]] [[t1]]'],
+            ['test', '[[test]]'],
+        ];
+    }
+
     public function buildWhereExists(): array
     {
         return [

@@ -29,6 +29,13 @@ final class QueryBuilderProvider
         return $baseQueryBuilderProvider->buildFilterCondition();
     }
 
+    public function buildFrom(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
+
+        return $baseQueryBuilderProvider->buildFrom();
+    }
+
     public function buildWhereExists(): array
     {
         $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
