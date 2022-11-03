@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests;
+namespace Yiisoft\Db\Tests\QueryBuilder;
 
 use Closure;
 use PHPUnit\Framework\TestCase;
