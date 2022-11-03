@@ -63,21 +63,18 @@ final class Mock extends TestCase
         return new Query($this->connection());
     }
 
-    public function queryBuilder(
-        array|string $columnQuoteCharacter = '',
-        array|string $tableQuoteCharacter = ''
-    ): QueryBuilderInterface {
-        return new QueryBuilder($this->quoter($columnQuoteCharacter, $tableQuoteCharacter), $this->schema());
+    public function queryBuilder(): QueryBuilderInterface {
+        return $this->connection()->getQueryBuilder();
     }
 
-    public function quoter(array|string $columnQuoteCharacter, array|string $tableQuoteCharacter): QuoterInterface
+    public function quoter(): QuoterInterface
     {
-        return new Quoter($columnQuoteCharacter, $tableQuoteCharacter);
+        return $this->connection()->getQuoter();
     }
 
     public function schema(): SchemaInterface
     {
-        return new Schema($this->connection(), $this->schemaCache());
+        return $this->connection()->getSchema();
     }
 
     private function cache(): CacheInterface

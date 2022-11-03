@@ -46,8 +46,7 @@ final class QueryBuilderTest extends TestCase
         array $expectedParams = []
     ): void {
         $params = [];
-        $db = $this->mock->connection(true);
-        $sql = $db->getQueryBuilder()->batchInsert($table, $columns, $value, $params);
+        $sql = $this->queryBuilder->batchInsert($table, $columns, $value, $params);
 
         $this->assertSame($expected, $sql);
         $this->assertSame($expectedParams, $params);
@@ -296,8 +295,7 @@ final class QueryBuilderTest extends TestCase
      */
     public function testCreateDropIndex(string $sql, Closure $builder): void
     {
-        $db = $this->mock->connection();
-        $this->assertSame($db->getQuoter()->quoteSql($sql), $builder($db->getQueryBuilder()));
+        $this->assertSame($this->mock->quoter()->quoteSql($sql), $builder($this->queryBuilder));
     }
 
     public function testComplexSelect(): void
@@ -343,9 +341,9 @@ final class QueryBuilderTest extends TestCase
      */
     public function testDelete(string $table, array|string $condition, string $expectedSQL, array $expectedParams): void
     {
-        $db = $this->mock->connection();
         $actualParams = [];
-        $actualSQL = $db->getQueryBuilder()->delete($table, $condition, $actualParams);
+        $actualSQL = $this->queryBuilder->delete($table, $condition, $actualParams);
+
         $this->assertSame($expectedSQL, $actualSQL);
         $this->assertSame($expectedParams, $actualParams);
     }
@@ -629,6 +627,7 @@ final class QueryBuilderTest extends TestCase
     public function testRenameTable(): void
     {
         $sql = $this->queryBuilder->renameTable('table_from', 'table_to');
+
         $this->assertSame(
             <<<SQL
             RENAME TABLE `table_from` TO `table_to`
