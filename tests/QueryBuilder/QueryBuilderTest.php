@@ -631,7 +631,6 @@ final class QueryBuilderTest extends TestCase
         $this->assertSame($expected, $sql);
     }
 
-
     public function testDropView(): void
     {
         $expected = DbHelper::replaceQuotes(
