@@ -25,7 +25,7 @@ final class QueryBuilderTest extends TestCase
         parent::setUp();
 
         $this->mock = new Mock();
-        $this->queryBuilder = $this->mock->queryBuilder('`', '`');
+        $this->queryBuilder = $this->mock->queryBuilder();
     }
 
     public function tearDown(): void
