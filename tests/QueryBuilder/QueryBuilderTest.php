@@ -54,6 +54,44 @@ final class QueryBuilderTest extends TestCase
         $this->assertSame($expectedParams, $params);
     }
 
+    public function testBuildColumnsWithString(): void
+    {
+        $columns = '(id)';
+
+        $this->assertSame($columns, $this->queryBuilder->buildColumns($columns));
+    }
+
+    public function testBuildColumnsWithArray(): void
+    {
+        $columns = [
+            'id',
+            'name',
+            'email',
+            'address',
+            'status',
+        ];
+
+        $expected = "`id`, `name`, `email`, `address`, `status`";
+
+        $this->assertSame($expected, $this->queryBuilder->buildColumns($columns));
+    }
+
+    public function testBuildColumnsWithExpression(): void
+    {
+        $columns = [
+            'id',
+            'name',
+            'email',
+            'address',
+            'status',
+            new Expression('COUNT(*)'),
+        ];
+
+        $expected = "`id`, `name`, `email`, `address`, `status`, COUNT(*)";
+
+        $this->assertSame($expected, $this->queryBuilder->buildColumns($columns));
+    }
+
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildConditions()
      */
@@ -108,6 +146,41 @@ final class QueryBuilderTest extends TestCase
 
         $this->assertIsString($replacedQuotes);
         $this->assertSame('FROM ' . $replacedQuotes, $sql);
+    }
+
+    public function testBuildLimit(): void
+    {
+        $query = $this->mock->query()->limit(10);
+        [$sql, $params] = $this->queryBuilder->build($query);
+
+        $this->assertSame('SELECT * LIMIT 10', $sql);
+        $this->assertSame([], $params);
+    }
+
+    public function testBuildOffset(): void
+    {
+        $query = $this->mock->query()->offset(10);
+        [$sql, $params] = $this->queryBuilder->build($query);
+
+        $this->assertSame('SELECT * OFFSET 10', $sql);
+        $this->assertSame([], $params);
+    }
+
+    public function testBuildSelectColumnWithoutParentheses(): void
+    {
+        $params = [];
+        $sql = $this->queryBuilder->buildSelect(['1'], $params);
+
+        $this->assertSame('SELECT `1`', $sql);
+    }
+
+    public function testBuildSelectOptions(): void
+    {
+        $query = $this->mock->query()->selectOption('DISTINCT');
+        [$sql, $params] = $this->queryBuilder->build($query);
+
+        $this->assertSame('SELECT DISTINCT *', $sql);
+        $this->assertSame([], $params);
     }
 
     /**
