@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Tests\QueryBuilder;
 use Closure;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;

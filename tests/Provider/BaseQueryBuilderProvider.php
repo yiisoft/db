@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Conditions\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Conditions\InCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
