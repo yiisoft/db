@@ -15,12 +15,9 @@ use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Quoter;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Stubs\Connection;
-use Yiisoft\Db\Tests\Support\Stubs\QueryBuilder;
-use Yiisoft\Db\Tests\Support\Stubs\Schema;
 
 final class Mock extends TestCase
 {
@@ -63,7 +60,8 @@ final class Mock extends TestCase
         return new Query($this->connection());
     }
 
-    public function queryBuilder(): QueryBuilderInterface {
+    public function queryBuilder(): QueryBuilderInterface
+    {
         return $this->connection()->getQueryBuilder();
     }
 
