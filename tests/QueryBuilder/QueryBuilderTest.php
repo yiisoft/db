@@ -71,7 +71,7 @@ final class QueryBuilderTest extends TestCase
             'status',
         ];
 
-        $expected = "`id`, `name`, `email`, `address`, `status`";
+        $expected = '`id`, `name`, `email`, `address`, `status`';
 
         $this->assertSame($expected, $this->queryBuilder->buildColumns($columns));
     }
@@ -87,7 +87,7 @@ final class QueryBuilderTest extends TestCase
             new Expression('COUNT(*)'),
         ];
 
-        $expected = "`id`, `name`, `email`, `address`, `status`, COUNT(*)";
+        $expected = '`id`, `name`, `email`, `address`, `status`, COUNT(*)';
 
         $this->assertSame($expected, $this->queryBuilder->buildColumns($columns));
     }
