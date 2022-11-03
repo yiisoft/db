@@ -49,4 +49,11 @@ final class QueryBuilderProvider
 
         return $baseQueryBuilderProvider->createDropIndex();
     }
+
+    public function delete(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
+
+        return $baseQueryBuilderProvider->delete();
+    }
 }

@@ -553,6 +553,28 @@ final class BaseQueryBuilderProvider
         ];
     }
 
+    public function delete(): array
+    {
+        return [
+            [
+                'user',
+                [
+                    'is_enabled' => false,
+                    'power' => new Expression('WRONG_POWER()'),
+                ],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    DELETE FROM [[user]] WHERE ([[is_enabled]]=:qp0) AND ([[power]]=WRONG_POWER())
+                    SQL,
+                    $this->mock->getDriverName(),
+                ),
+                [
+                    ':qp0' => false,
+                ],
+            ],
+        ];
+    }
+
     private function replaceQuotes(array $conditions): array
     {
         /* adjust dbms specific escaping */

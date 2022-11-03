@@ -296,7 +296,7 @@ final class QueryBuilderTest extends TestCase
      */
     public function testCreateDropIndex(string $sql, Closure $builder): void
     {
-        $db = $this->mock->connection(true);
+        $db = $this->mock->connection();
         $this->assertSame($db->getQuoter()->quoteSql($sql), $builder($db->getQueryBuilder()));
     }
 
@@ -336,6 +336,18 @@ final class QueryBuilderTest extends TestCase
 
         $this->assertSame($expected, $sql);
         $this->assertEmpty($params);
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::delete()
+     */
+    public function testDelete(string $table, array|string $condition, string $expectedSQL, array $expectedParams): void
+    {
+        $db = $this->mock->connection();
+        $actualParams = [];
+        $actualSQL = $db->getQueryBuilder()->delete($table, $condition, $actualParams);
+        $this->assertSame($expectedSQL, $actualSQL);
+        $this->assertSame($expectedParams, $actualParams);
     }
 
     /**
