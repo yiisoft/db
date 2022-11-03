@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
-use Closure;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\QueryBuilder\Conditions\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Conditions\InCondition;
