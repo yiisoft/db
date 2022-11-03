@@ -89,7 +89,7 @@ final class Mock extends TestCase
         return $this->cache;
     }
 
-    public function prepareDatabase(ConnectionPDOInterface $db, string $fixture = __DIR__ . '/Fixture/sqlite.sql'): void
+    private function prepareDatabase(ConnectionPDOInterface $db, string $fixture = __DIR__ . '/Fixture/sqlite.sql'): void
     {
         $db->open();
         $lines = explode(';', file_get_contents($fixture));
