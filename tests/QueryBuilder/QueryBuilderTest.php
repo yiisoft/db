@@ -529,6 +529,40 @@ final class QueryBuilderTest extends TestCase
         $this->assertEmpty($params);
     }
 
+    public function testCreateView(): void
+    {
+        $expected = DbHelper::replaceQuotes(
+            <<<SQL
+            CREATE VIEW [[test_view]] AS SELECT [[id]], [[name]] FROM [[test_table]]
+            SQL,
+            $this->mock->getDriverName(),
+        );
+
+        $sql = $this->queryBuilder->createView(
+            'test_view',
+            $this->mock->query()->select(['id', 'name'])->from('test_table'),
+        );
+
+        $this->assertSame($expected, $sql);
+    }
+
+    public function testCreateViewWithParams(): void
+    {
+        $expected = DbHelper::replaceQuotes(
+            <<<SQL
+            CREATE VIEW `test_view` AS SELECT `id`, `name` FROM `test_table` WHERE `id`=1
+            SQL,
+            $this->mock->getDriverName(),
+        );
+
+        $sql = $this->queryBuilder->createView(
+            'test_view',
+            $this->mock->query()->select(['id', 'name'])->from('test_table')->where(['id' => 1]),
+        );
+
+        $this->assertSame($expected, $sql);
+    }
+
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::delete()
      */
@@ -539,6 +573,77 @@ final class QueryBuilderTest extends TestCase
 
         $this->assertSame($expectedSQL, $actualSQL);
         $this->assertSame($expectedParams, $actualParams);
+    }
+
+    public function testDropColumn(): void
+    {
+        $expected = DbHelper::replaceQuotes(
+            <<<SQL
+            ALTER TABLE [[test_table]] DROP COLUMN [[test_column]]
+            SQL,
+            $this->mock->getDriverName(),
+        );
+
+        $sql = $this->queryBuilder->dropColumn('test_table', 'test_column');
+
+        $this->assertSame($expected, $sql);
+    }
+
+    public function testdropCommentFromColumn(): void
+    {
+        $expected = DbHelper::replaceQuotes(
+            <<<SQL
+            COMMENT ON COLUMN `test_table`.`test_column` IS NULL
+            SQL,
+            $this->mock->getDriverName(),
+        );
+
+        $sql = $this->queryBuilder->dropCommentFromColumn('test_table', 'test_column');
+
+        $this->assertSame($expected, $sql);
+    }
+
+    public function testsdropCommentFromTable(): void
+    {
+        $expected = DbHelper::replaceQuotes(
+            <<<SQL
+            COMMENT ON TABLE `test_table` IS NULL
+            SQL,
+            $this->mock->getDriverName(),
+        );
+
+        $sql = $this->queryBuilder->dropCommentFromTable('test_table');
+
+        $this->assertSame($expected, $sql);
+    }
+
+    public function testDropTable(): void
+    {
+        $expected = DbHelper::replaceQuotes(
+            <<<SQL
+            DROP TABLE [[test_table]]
+            SQL,
+            $this->mock->getDriverName(),
+        );
+
+        $sql = $this->queryBuilder->dropTable('test_table');
+
+        $this->assertSame($expected, $sql);
+    }
+
+
+    public function testDropView(): void
+    {
+        $expected = DbHelper::replaceQuotes(
+            <<<SQL
+            DROP VIEW [[test_view]]
+            SQL,
+            $this->mock->getDriverName(),
+        );
+
+        $sql = $this->queryBuilder->dropView('test_view');
+
+        $this->assertSame($expected, $sql);
     }
 
     /**
@@ -953,5 +1058,10 @@ final class QueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertEmpty($params);
+    }
+
+    public function testTruncateTable(): void
+    {
+        $this->assertSame('TRUNCATE TABLE `table`', $this->queryBuilder->truncateTable('table'));
     }
 }

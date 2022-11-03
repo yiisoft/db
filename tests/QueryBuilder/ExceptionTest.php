@@ -34,7 +34,7 @@ final class ExceptionTest extends TestCase
         unset($this->queryBuilder, $this->mock);
     }
 
-    public function testaddDefaultValue(): void
+    public function testAddDefaultValue(): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage(
@@ -72,6 +72,16 @@ final class ExceptionTest extends TestCase
         );
 
         $this->queryBuilder->checkIntegrity('schema', 'table', true);
+    }
+
+    public function testDropDefaultValueException(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\Tests\Support\Stubs\DDLQueryBuilder does not support dropping default value constraints.'
+        );
+
+        $this->queryBuilder->dropDefaultValue('name', 'table', 'column');
     }
 
     public function testGetExpressionBuilderException(): void
