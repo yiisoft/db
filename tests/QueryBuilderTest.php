@@ -607,6 +607,36 @@ final class QueryBuilderTest extends TestCase
         $this->assertSame([':to' => 4], $params);
     }
 
+    public function testRenameColumn(): void
+    {
+        $sql = $this->queryBuilder->renameColumn('alpha', 'string_identifier', 'string_identifier_test');
+        $this->assertSame(
+            <<<SQL
+            ALTER TABLE `alpha` RENAME COLUMN `string_identifier` TO `string_identifier_test`
+            SQL,
+            $sql,
+        );
+
+        $sql = $this->queryBuilder->renameColumn('alpha', 'string_identifier_test', 'string_identifier');
+        $this->assertSame(
+            <<<SQL
+            ALTER TABLE `alpha` RENAME COLUMN `string_identifier_test` TO `string_identifier`
+            SQL,
+            $sql,
+        );
+    }
+
+    public function testRenameTable(): void
+    {
+        $sql = $this->queryBuilder->renameTable('table_from', 'table_to');
+        $this->assertSame(
+            <<<SQL
+            RENAME TABLE `table_from` TO `table_to`
+            SQL,
+            $sql,
+        );
+    }
+
     public function testSelectExpression(): void
     {
         $query = $this->mock->query()->select(new Expression('1 AS ab'))->from('tablename');
