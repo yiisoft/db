@@ -93,4 +93,14 @@ final class ExceptionTest extends TestCase
 
         $this->queryBuilder->getExpressionBuilder(new ExpressionStub());
     }
+
+    public function testResetSequenceException(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\Tests\Support\Stubs\DMLQueryBuilder does not support resetting sequence.'
+        );
+
+        $this->queryBuilder->resetSequence('table', 'column');
+    }
 }

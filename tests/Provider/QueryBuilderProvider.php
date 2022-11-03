@@ -91,4 +91,25 @@ final class QueryBuilderProvider
 
         return $baseQueryBuilderProvider->delete();
     }
+
+    public function insert(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
+
+        return $baseQueryBuilderProvider->insert();
+    }
+
+    public function insertEx(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
+
+        return $baseQueryBuilderProvider->insertEx();
+    }
+
+    public function update(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
+
+        return $baseQueryBuilderProvider->update();
+    }
 }

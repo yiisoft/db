@@ -7,9 +7,11 @@ namespace Yiisoft\Db\Tests\QueryBuilder;
 use Closure;
 use PHPUnit\Framework\TestCase;
 use stdClass;
+use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 use Yiisoft\Db\Schema\SchemaBuilderTrait;
@@ -809,6 +811,34 @@ final class QueryBuilderTest extends TestCase
     }
 
     /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insert()
+     */
+    public function testInsert(
+        string $table,
+        array|QueryInterface $columns,
+        array $params,
+        string $expectedSQL,
+        array $expectedParams
+    ): void {
+        $this->assertSame($expectedSQL, $this->queryBuilder->insert($table, $columns, $params));
+        $this->assertSame($expectedParams, $params);
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insertEx()
+     */
+    public function testInsertEx(
+        string $table,
+        array|QueryInterface $columns,
+        array $params,
+        string $expectedSQL,
+        array $expectedParams
+    ): void {
+        $this->assertSame($expectedSQL, $this->queryBuilder->insertEx($table, $columns, $params));
+        $this->assertSame($expectedParams, $params);
+    }
+
+    /**
      * {@see https://github.com/yiisoft/yii2/issues/15653}
      */
     public function testIssue15653(): void
@@ -1068,5 +1098,20 @@ final class QueryBuilderTest extends TestCase
         $sql = $this->queryBuilder->truncateTable('table2');
 
         $this->assertSame('TRUNCATE TABLE `table2`', $sql);
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::update()
+     */
+    public function testUpdate(
+        string $table,
+        array $columns,
+        array|string $condition,
+        string $expectedSQL,
+        array $expectedParams
+    ): void {
+        $actualParams = [];
+        $this->assertSame($expectedSQL, $this->queryBuilder->update($table, $columns, $condition, $actualParams));
+        $this->assertSame($expectedParams, $actualParams);
     }
 }
