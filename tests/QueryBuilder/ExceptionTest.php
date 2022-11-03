@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\Mock;
 use Yiisoft\Db\Tests\Support\Stubs\ExpressionStub;
 
