@@ -60,7 +60,7 @@ jobs:
         run: composer self-update
 
       - name: Install db-sqlite
-        run: composer require yiisoft/db-sqlite ${{ env.composer_flag }}
+        run: composer require yiisoft/db-sqlite:dev-fix-truncate-table ${{ env.composer_flag }}
 
       - name: Run sqlite tests with phpunit
         run: vendor/bin/phpunit --testsuite Sqlite --coverage-clover=coverage.xml --colors=always
