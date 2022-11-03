@@ -45,7 +45,8 @@ final class QueryBuilderTest extends TestCase
         array $expectedParams = []
     ): void {
         $params = [];
-        $sql = $this->queryBuilder->batchInsert($table, $columns, $value, $params);
+        $db = $this->mock->connection(true);
+        $sql = $db->getQueryBuilder()->batchInsert($table, $columns, $value, $params);
 
         $this->assertSame($expected, $sql);
         $this->assertSame($expectedParams, $params);

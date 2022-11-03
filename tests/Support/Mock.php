@@ -32,9 +32,15 @@ final class Mock extends TestCase
     {
     }
 
-    public function connection(): ConnectionInterface
+    public function connection(bool $prepareDatabase = false): ConnectionInterface
     {
-        return new Connection();
+        $db = new Connection();
+
+        if ($prepareDatabase) {
+            $this->prepareDatabase($db);
+        }
+
+        return $db;
     }
 
     public function getDriverName(): string
