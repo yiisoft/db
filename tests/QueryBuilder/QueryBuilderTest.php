@@ -743,7 +743,6 @@ final class QueryBuilderTest extends TestCase
         $this->assertSame(stdClass::class, $expressionBuilders['stdClass']);
     }
 
-
     public function testSetSeparator(): void
     {
         $this->queryBuilder->setSeparator(' ');
