@@ -147,6 +147,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
             $rawColumns = $columns;
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
 
+            // TODO How to make the tests fail.
             if ($columns === false) {
                 throw new InvalidArgumentException("$rawColumns is not valid columns.");
             }
@@ -154,6 +155,12 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
 
         /** @psalm-var array<array-key, ExpressionInterface|string> $columns */
         foreach ($columns as $i => $column) {
+            if (!is_string($column) && !$column instanceof ExpressionInterface) {
+                throw new InvalidArgumentException(
+                    'Column name must be a string or an instance of ExpressionInterface.'
+                );
+            }
+
             if ($column instanceof ExpressionInterface) {
                 $columns[$i] = $this->buildExpression($column);
             } elseif (!str_contains($column, '(')) {
@@ -357,6 +364,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
                     $columns[$i] = $this->buildExpression($column, $params) . ' AS '
                         . $this->quoter->quoteColumnName($i);
                 }
+            /** TODO code is dead Query its ExpressionInterface */
             } elseif ($column instanceof QueryInterface) {
                 [$sql, $params] = $this->build($column, $params);
                 $columns[$i] = "($sql) AS " . $this->quoter->quoteColumnName((string) $i);
@@ -365,6 +373,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
                     $column = $this->quoter->quoteColumnName($column);
                 }
                 $columns[$i] = "$column AS " . $this->quoter->quoteColumnName($i);
+            // TODO review code.
             } elseif (!str_contains($column, '(')) {
                 if (preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $column, $matches)) {
                     $columns[$i] = $this->quoter->quoteColumnName($matches[1])
@@ -456,7 +465,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
 
         if (!isset($this->expressionBuilders[$className])) {
             throw new InvalidArgumentException(
-                'Expression of class ' . $className . ' can not be built in ' . static::class
+                'Expression of class ' . $className . ' can not be built in ' . self::class
             );
         }
 
