@@ -6,9 +6,11 @@ namespace Yiisoft\Db\Tests\QueryBuilder;
 
 use Closure;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Mock;
 
@@ -722,6 +724,25 @@ final class QueryBuilderTest extends TestCase
         $this->assertSame($expected, $sql);
         $this->assertEmpty($params);
     }
+
+    public function testSetConditionClasses(): void
+    {
+        $this->queryBuilder->setConditionClasses(['stdClass' => stdClass::class]);
+        $dqlBuilder = Assert::getInaccessibleProperty($this->queryBuilder, 'dqlBuilder');
+        $conditionClasses = Assert::getInaccessibleProperty($dqlBuilder, 'conditionClasses');
+
+        $this->assertSame(stdClass::class, $conditionClasses['stdClass']);
+    }
+
+    public function testSelectExpressionBuilder(): void
+    {
+        $this->queryBuilder->setExpressionBuilders(['stdClass' => stdClass::class]);
+        $dqlBuilder = Assert::getInaccessibleProperty($this->queryBuilder, 'dqlBuilder');
+        $expressionBuilders = Assert::getInaccessibleProperty($dqlBuilder, 'expressionBuilders');
+
+        $this->assertSame(stdClass::class, $expressionBuilders['stdClass']);
+    }
+
 
     public function testSetSeparator(): void
     {
