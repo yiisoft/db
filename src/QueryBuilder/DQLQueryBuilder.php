@@ -364,7 +364,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
                     $columns[$i] = $this->buildExpression($column, $params) . ' AS '
                         . $this->quoter->quoteColumnName($i);
                 }
-                /** TODO code is dead Query its ExpressionInterface */
+            // TODO code is dead Query its ExpressionInterface
             } elseif ($column instanceof QueryInterface) {
                 [$sql, $params] = $this->build($column, $params);
                 $columns[$i] = "($sql) AS " . $this->quoter->quoteColumnName((string) $i);
