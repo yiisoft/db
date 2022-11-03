@@ -45,7 +45,6 @@ final class QueryBuilderTest extends TestCase
         $this->assertSame($this->mock->quoter()->quoteSql($sql), $builder($this->queryBuilder));
     }
 
-
     public function testAddColumn(): void
     {
         $this->assertSame(
