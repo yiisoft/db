@@ -465,7 +465,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
 
         if (!isset($this->expressionBuilders[$className])) {
             throw new InvalidArgumentException(
-                'Expression of class ' . $className . ' can not be built in ' . self::class
+                'Expression of class ' . $className . ' can not be built in ' . static::class
             );
         }
 

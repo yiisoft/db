@@ -34,6 +34,15 @@ final class ExceptionTest extends TestCase
         unset($this->queryBuilder, $this->mock);
     }
 
+    public function testaddDefaultValue(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\Tests\Support\Stubs\DDLQueryBuilder does not support adding default value constraints.'
+        );
+        $this->queryBuilder->addDefaultValue('name', 'table', 'column', 'value');
+    }
+
     public function testBuilColumnStringException(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -59,7 +68,7 @@ final class ExceptionTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            'Expression of class Yiisoft\Db\Tests\Support\Stubs\ExpressionStub can not be built in Yiisoft\Db\QueryBuilder\DQLQueryBuilder'
+            'Expression of class Yiisoft\Db\Tests\Support\Stubs\ExpressionStub can not be built in Yiisoft\Db\Tests\Support\Stubs\DQLQueryBuilder'
         );
 
         $this->queryBuilder->getExpressionBuilder(new ExpressionStub());
