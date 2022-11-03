@@ -103,4 +103,15 @@ final class ExceptionTest extends TestCase
 
         $this->queryBuilder->resetSequence('table', 'column');
     }
+
+    public function testUpsertException(): void
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\Tests\Support\Stubs\DMLQueryBuilder does not support upsert.'
+        );
+
+        $params = [];
+        $this->queryBuilder->upsert('table', ['column' => 'value'], [], $params);
+    }
 }
