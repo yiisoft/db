@@ -19,6 +19,23 @@ final class BaseQueryBuilderProvider
     {
     }
 
+    public function addDropChecks(): array
+    {
+        $tableName = 'T_constraints_1';
+        $name = 'CN_check';
+
+        return [
+            'drop' => [
+                "ALTER TABLE {{{$tableName}}} DROP CONSTRAINT [[$name]]",
+                static fn (QueryBuilderInterface $qb) => $qb->dropCheck($name, $tableName),
+            ],
+            'add' => [
+                "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] CHECK ([[C_not_null]] > 100)",
+                static fn (QueryBuilderInterface $qb) => $qb->addCheck($name, $tableName, '[[C_not_null]] > 100'),
+            ],
+        ];
+    }
+
     public function batchInsert(): array
     {
         return [

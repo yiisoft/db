@@ -8,6 +8,13 @@ use Yiisoft\Db\Tests\Support\Mock;
 
 final class QueryBuilderProvider
 {
+    public function addDropChecks(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
+
+        return $baseQueryBuilderProvider->addDropChecks();
+    }
+
     public function batchInsert(): array
     {
         $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());

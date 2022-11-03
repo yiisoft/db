@@ -38,6 +38,45 @@ final class QueryBuilderTest extends TestCase
     }
 
     /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addDropChecks()
+     */
+    public function testAddDropCheck(string $sql, Closure $builder): void
+    {
+        $this->assertSame($this->mock->quoter()->quoteSql($sql), $builder($this->queryBuilder));
+    }
+
+
+    public function testAddColumn(): void
+    {
+        $this->assertSame(
+            <<<SQL
+            ALTER TABLE `user` ADD `age` integer
+            SQL,
+            $this->queryBuilder->addColumn('user', 'age', 'integer')
+        );
+    }
+
+    public function testsAddCommentOnColumn(): void
+    {
+        $this->assertSame(
+            <<<SQL
+            COMMENT ON COLUMN `user`.`name` IS 'This is a comment'
+            SQL,
+            $this->queryBuilder->addCommentOnColumn('user', 'name', 'This is a comment')
+        );
+    }
+
+    public function testsAddCommentOnTable(): void
+    {
+        $this->assertSame(
+            <<<SQL
+            COMMENT ON TABLE `user` IS 'This is a comment'
+            SQL,
+            $this->queryBuilder->addCommentOnTable('user', 'This is a comment')
+        );
+    }
+
+    /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert()
      */
     public function testBatchInsert(
