@@ -689,6 +689,13 @@ final class QueryBuilderTest extends TestCase
         $this->assertSame([':len' => 4], $params);
     }
 
+    public function testSelectExists(): void
+    {
+        $sql = $this->queryBuilder->selectExists('SELECT 1 FROM `table` WHERE `id` = 1');
+
+        $this->assertSame('SELECT EXISTS(SELECT 1 FROM `table` WHERE `id` = 1)', $sql);
+    }
+
     public function testSelectSubquery(): void
     {
         $expected = DbHelper::replaceQuotes(
@@ -713,6 +720,27 @@ final class QueryBuilderTest extends TestCase
         [$sql, $params] = $this->queryBuilder->build($query);
 
         $this->assertSame($expected, $sql);
+        $this->assertEmpty($params);
+    }
+
+    public function testSetSeparator(): void
+    {
+        $this->queryBuilder->setSeparator(' ');
+        [$sql, $params] = $this->queryBuilder->build($this->mock->query()->select('*')->from('table'));
+
+        $this->assertSame('SELECT * FROM `table`', $sql);
+        $this->assertEmpty($params);
+
+        $this->queryBuilder->setSeparator("\n");
+        [$sql, $params] = $this->queryBuilder->build($this->mock->query()->select('*')->from('table'));
+
+        $this->assertSame(
+            <<<SQL
+            SELECT *
+            FROM `table`
+            SQL,
+            $sql,
+        );
         $this->assertEmpty($params);
     }
 }
