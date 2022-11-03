@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
+use Closure;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -288,6 +289,15 @@ final class QueryBuilderTest extends TestCase
 
         $this->assertSame($expectedQuerySql, $actualQuerySql);
         $this->assertSame($expectedQueryParams, $queryParams);
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::createDropIndex()
+     */
+    public function testCreateDropIndex(string $sql, Closure $builder): void
+    {
+        $db = $this->mock->connection(true);
+        $this->assertSame($db->getQuoter()->quoteSql($sql), $builder($db->getQueryBuilder()));
     }
 
     public function testComplexSelect(): void

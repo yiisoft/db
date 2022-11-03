@@ -42,4 +42,11 @@ final class QueryBuilderProvider
 
         return $baseQueryBuilderProvider->buildWhereExists();
     }
+
+    public function createDropIndex(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider(new Mock());
+
+        return $baseQueryBuilderProvider->createDropIndex();
+    }
 }

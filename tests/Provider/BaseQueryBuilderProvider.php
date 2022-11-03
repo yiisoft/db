@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use Closure;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\QueryBuilder\Conditions\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Conditions\InCondition;
+use Yiisoft\Db\QueryBuilder\QueryBuilder;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Mock;
 use Yiisoft\Db\Tests\Support\TraversableObject;
@@ -490,6 +493,62 @@ final class BaseQueryBuilderProvider
                     SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])
                     SQL,
                     $this->mock->getDriverName(),
+                ),
+            ],
+        ];
+    }
+
+    public function createDropIndex(): array
+    {
+        $tableName = 'T_constraints_2';
+        $name1 = 'CN_constraints_2_single';
+        $name2 = 'CN_constraints_2_multi';
+
+        return [
+            'drop' => [
+                <<<SQL
+                DROP INDEX [[$name1]] ON {{{$tableName}}}
+                SQL,
+                static fn (QueryBuilderInterface $qb) => $qb->dropIndex($name1, $tableName),
+            ],
+            'create' => [
+                <<<SQL
+                CREATE INDEX [[$name1]] ON {{{$tableName}}} ([[C_index_1]])
+                SQL,
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex($name1, $tableName, 'C_index_1'),
+            ],
+            'create (2 columns)' => [
+                <<<SQL
+                CREATE INDEX [[$name2]] ON {{{$tableName}}} ([[C_index_2_1]], [[C_index_2_2]])
+                SQL,
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex(
+                    $name2,
+                    $tableName,
+                    'C_index_2_1,
+                    C_index_2_2',
+                ),
+            ],
+            'create unique' => [
+                <<<SQL
+                CREATE UNIQUE INDEX [[$name1]] ON {{{$tableName}}} ([[C_index_1]])
+                SQL,
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex(
+                    $name1,
+                    $tableName,
+                    'C_index_1',
+                    QueryBuilder::INDEX_UNIQUE,
+                ),
+            ],
+            'create unique (2 columns)' => [
+                <<<SQL
+                CREATE UNIQUE INDEX [[$name2]] ON {{{$tableName}}} ([[C_index_2_1]], [[C_index_2_2]])
+                SQL,
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex(
+                    $name2,
+                    $tableName,
+                    'C_index_2_1,
+                    C_index_2_2',
+                    QueryBuilder::INDEX_UNIQUE,
                 ),
             ],
         ];
