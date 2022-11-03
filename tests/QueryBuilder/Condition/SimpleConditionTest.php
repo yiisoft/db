@@ -31,11 +31,18 @@ final class SimpleConditionTest extends TestCase
         $this->assertSame(1, $simpleCondition->getValue());
     }
 
-    public function testFromArrayDefinitionException(): void
+    public function testFromArrayDefinitionColumnException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Operator '=' requires two operands.");
+        $this->expectExceptionMessage("Operator '=' requires column.");
         SimpleCondition::fromArrayDefinition('=', []);
+    }
+
+    public function testFromArrayDefinitionValueException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Operator 'IN' requires value as second operand.");
+        SimpleCondition::fromArrayDefinition('IN', ['column']);
     }
 
     public function testFromArrayDefinitionExceptionColumn(): void
@@ -45,5 +52,15 @@ final class SimpleConditionTest extends TestCase
             "Operator '=' requires column to be string, ExpressionInterface or QueryInterface."
         );
         SimpleCondition::fromArrayDefinition('=', [1, 1]);
+    }
+
+    public function testNullSecondOperand(): void
+    {
+        $condition = SimpleCondition::fromArrayDefinition('=', ['id', null]);
+        $this->assertNull($condition->getValue());
+
+        $condition2 = new SimpleCondition('name', 'IS NOT', null);
+        $this->assertSame('IS NOT', $condition2->getOperator());
+        $this->assertNull($condition2->getValue());
     }
 }

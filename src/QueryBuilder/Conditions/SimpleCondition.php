@@ -41,25 +41,29 @@ final class SimpleCondition implements SimpleConditionInterface
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
-        if (!isset($operands[0], $operands[1])) {
-            throw new InvalidArgumentException("Operator '$operator' requires two operands.");
+        if (!isset($operands[0])) {
+            throw new InvalidArgumentException("Operator '$operator' requires column.");
+        }
+
+        if (!array_key_exists(1, $operands)) {
+            throw new InvalidArgumentException("Operator '$operator' requires value as second operand.");
         }
 
         return new self(self::validateColumn($operator, $operands[0]), $operator, $operands[1]);
     }
 
-    private static function validateColumn(string $operator, mixed $operands): string|Expression|QueryInterface
+    private static function validateColumn(string $operator, mixed $column): string|Expression|QueryInterface
     {
         if (
-            !is_string($operands) &&
-            !($operands instanceof Expression) &&
-            !($operands instanceof QueryInterface)
+            !is_string($column) &&
+            !($column instanceof Expression) &&
+            !($column instanceof QueryInterface)
         ) {
             throw new InvalidArgumentException(
                 "Operator '$operator' requires column to be string, ExpressionInterface or QueryInterface."
             );
         }
 
-        return $operands;
+        return $column;
     }
 }
