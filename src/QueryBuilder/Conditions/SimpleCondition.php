@@ -41,7 +41,7 @@ final class SimpleCondition implements SimpleConditionInterface
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
-        if (count($operands) !== 2) {
+        if (!isset($operands[0]) || !array_key_exists(1, $operands)) {
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
