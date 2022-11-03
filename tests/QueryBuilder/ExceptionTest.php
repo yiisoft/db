@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\QueryBuilder;
 
 use PHPUnit\Framework\TestCase;
-use stdClass;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Support\Mock;
 use Yiisoft\Db\Tests\Support\Stubs\ExpressionStub;
