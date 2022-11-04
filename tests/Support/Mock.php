@@ -18,10 +18,15 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Stubs\Connection;
+use Yiisoft\Log\Logger;
+use Yiisoft\Profiler\Profiler;
+use Yiisoft\Profiler\ProfilerInterface;
 
 final class Mock extends TestCase
 {
     private Cache|null $cache = null;
+    private Logger|null $logger = null;
+    private Profiler|null $profiler = null;
     private QueryCache|null $queryCache = null;
     private SchemaCache|null $schemaCache = null;
 
@@ -43,6 +48,16 @@ final class Mock extends TestCase
     public function getDriverName(): string
     {
         return $this->connection()->getDriver()->getDriverName();
+    }
+
+    public function getLogger(): Logger
+    {
+        return $this->logger();
+    }
+
+    public function getProfiler(): ProfilerInterface
+    {
+        return $this->profiler();
     }
 
     public function getQueryCache(): QueryCache
@@ -84,6 +99,15 @@ final class Mock extends TestCase
         return $this->cache;
     }
 
+    private function logger(): LoggerInterface
+    {
+        if ($this->logger === null) {
+            $this->logger = new Logger();
+        }
+
+        return $this->logger;
+    }
+
     private function prepareDatabase(ConnectionPDOInterface $db, string $fixture = __DIR__ . '/Fixture/sqlite.sql'): void
     {
         $db->open();
@@ -96,11 +120,22 @@ final class Mock extends TestCase
         }
     }
 
+    private function profiler(): ProfilerInterface
+    {
+        if ($this->profiler === null) {
+            $this->profiler = new Profiler($this->createLogger());
+        }
+
+        return $this->profiler;
+    }
+
+
     private function queryCache(): QueryCache
     {
         if ($this->queryCache === null) {
             $this->queryCache = new QueryCache($this->cache());
         }
+
         return $this->queryCache;
     }
 
