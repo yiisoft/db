@@ -40,7 +40,7 @@ final class Mock extends TestCase
         $db = new Connection();
 
         if ($prepareDatabase) {
-            $this->prepareDatabase($db);
+            $this->prepareDatabase($db, __DIR__ . '/Fixture/sqlite.sql');
         }
 
         return $db;
@@ -69,6 +69,18 @@ final class Mock extends TestCase
     public function getSchemaCache(): SchemaCache
     {
         return $this->schemaCache();
+    }
+
+    public function prepareDatabase(ConnectionPDOInterface $db, string $fixture): void
+    {
+        $db->open();
+        $lines = explode(';', file_get_contents($fixture));
+
+        foreach ($lines as $line) {
+            if (trim($line) !== '') {
+                $db->getPDO()?->exec($line);
+            }
+        }
     }
 
     public function query(): QueryInterface
@@ -107,18 +119,6 @@ final class Mock extends TestCase
         }
 
         return $this->logger;
-    }
-
-    private function prepareDatabase(ConnectionPDOInterface $db, string $fixture = __DIR__ . '/Fixture/sqlite.sql'): void
-    {
-        $db->open();
-        $lines = explode(';', file_get_contents($fixture));
-
-        foreach ($lines as $line) {
-            if (trim($line) !== '') {
-                $db->getPDO()?->exec($line);
-            }
-        }
     }
 
     private function profiler(): ProfilerInterface
