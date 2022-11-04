@@ -34,14 +34,14 @@ final class SimpleConditionTest extends TestCase
     public function testFromArrayDefinitionColumnException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Operator '=' requires column.");
+        $this->expectExceptionMessage("Operator '=' requires two operands.");
         SimpleCondition::fromArrayDefinition('=', []);
     }
 
     public function testFromArrayDefinitionValueException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Operator 'IN' requires value as second operand.");
+        $this->expectExceptionMessage("Operator 'IN' requires two operands.");
         SimpleCondition::fromArrayDefinition('IN', ['column']);
     }
 
