@@ -124,7 +124,7 @@ final class Mock extends TestCase
     private function profiler(): ProfilerInterface
     {
         if ($this->profiler === null) {
-            $this->profiler = new Profiler($this->createLogger());
+            $this->profiler = new Profiler($this->logger());
         }
 
         return $this->profiler;
