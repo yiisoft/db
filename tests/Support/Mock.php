@@ -129,7 +129,6 @@ final class Mock extends TestCase
         return $this->profiler;
     }
 
-
     private function queryCache(): QueryCache
     {
         if ($this->queryCache === null) {
