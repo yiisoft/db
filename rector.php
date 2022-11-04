@@ -7,6 +7,8 @@ use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\LevelSetList;
 
 return static function (RectorConfig $rectorConfig): void {
+    $rectorConfig->disableParallel();
+
     $rectorConfig->paths([
         __DIR__ . '/src',
         __DIR__ . '/tests',
