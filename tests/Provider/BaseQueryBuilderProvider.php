@@ -30,11 +30,15 @@ final class BaseQueryBuilderProvider
 
         return [
             'drop' => [
-                "ALTER TABLE {{{$tableName}}} DROP CONSTRAINT [[$name]]",
+                <<<SQL
+                ALTER TABLE {{{$tableName}}} DROP CONSTRAINT [[$name]]
+                SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->dropCheck($name, $tableName),
             ],
             'add' => [
-                "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] CHECK ([[C_not_null]] > 100)",
+                <<<SQL
+                ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] CHECK ([[C_not_null]] > 100)
+                SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->addCheck($name, $tableName, '[[C_not_null]] > 100'),
             ],
         ];
@@ -48,12 +52,15 @@ final class BaseQueryBuilderProvider
 
         return [
             'drop' => [
-                "ALTER TABLE {{{$tableName}}} DROP CONSTRAINT [[$name]]",
+                <<<SQL
+                ALTER TABLE {{{$tableName}}} DROP CONSTRAINT [[$name]]
+                SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->dropForeignKey($name, $tableName),
             ],
             'add' => [
-                "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]])"
-                . " REFERENCES {{{$pkTableName}}} ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE",
+                <<<SQL
+                ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]]) REFERENCES {{{$pkTableName}}} ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE
+                SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->addForeignKey(
                     $name,
                     $tableName,
@@ -65,8 +72,9 @@ final class BaseQueryBuilderProvider
                 ),
             ],
             'add (2 columns)' => [
-                "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]])"
-                . " REFERENCES {{{$pkTableName}}} ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE",
+                <<<SQL
+                ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]]) REFERENCES {{{$pkTableName}}} ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE
+                SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->addForeignKey(
                     $name,
                     $tableName,
@@ -87,11 +95,15 @@ final class BaseQueryBuilderProvider
 
         return [
             'drop' => [
-                "ALTER TABLE {{{$tableName}}} DROP CONSTRAINT [[$name]]",
+                <<<SQL
+                ALTER TABLE {{{$tableName}}} DROP CONSTRAINT [[$name]]
+                SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->dropPrimaryKey($name, $tableName),
             ],
             'add' => [
-                "ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]])",
+                <<<SQL
+                ALTER TABLE {{{$tableName}}} ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]])
+                SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->addPrimaryKey($name, $tableName, 'C_id_1'),
             ],
             'add (2 columns)' => [
@@ -110,15 +122,21 @@ final class BaseQueryBuilderProvider
 
         return [
             'drop' => [
-                "ALTER TABLE {{{$tableName1}}} DROP CONSTRAINT [[$name1]]",
+                <<<SQL
+                ALTER TABLE {{{$tableName1}}} DROP CONSTRAINT [[$name1]]
+                SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->dropUnique($name1, $tableName1),
             ],
             'add' => [
-                "ALTER TABLE {{{$tableName1}}} ADD CONSTRAINT [[$name1]] UNIQUE ([[C_unique]])",
+                <<<SQL
+                ALTER TABLE {{{$tableName1}}} ADD CONSTRAINT [[$name1]] UNIQUE ([[C_unique]])
+                SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->addUnique($name1, $tableName1, 'C_unique'),
             ],
             'add (2 columns)' => [
-                "ALTER TABLE {{{$tableName2}}} ADD CONSTRAINT [[$name2]] UNIQUE ([[C_index_2_1]], [[C_index_2_2]])",
+                <<<SQL
+                ALTER TABLE {{{$tableName2}}} ADD CONSTRAINT [[$name2]] UNIQUE ([[C_index_2_1]], [[C_index_2_2]])
+                SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->addUnique($name2, $tableName2, 'C_index_2_1, C_index_2_2'),
             ],
         ];
