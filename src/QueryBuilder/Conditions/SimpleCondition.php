@@ -41,12 +41,8 @@ final class SimpleCondition implements SimpleConditionInterface
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
-        if (!isset($operands[0])) {
-            throw new InvalidArgumentException("Operator '$operator' requires column.");
-        }
-
-        if (!array_key_exists(1, $operands)) {
-            throw new InvalidArgumentException("Operator '$operator' requires value as second operand.");
+        if (!isset($operands[0]) || !array_key_exists(1, $operands)) {
+            throw new InvalidArgumentException("Operator '$operator' requires two operands.");
         }
 
         return new self(self::validateColumn($operator, $operands[0]), $operator, $operands[1]);
