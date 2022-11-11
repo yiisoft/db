@@ -760,7 +760,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL
         )->queryOne();
 
-        $this->assertSame(['created_at' => date('Y')], $record);
+        $this->assertEquals(['created_at' => date('Y')], $record);
     }
 
     /**
