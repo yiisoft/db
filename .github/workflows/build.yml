@@ -44,10 +44,10 @@ jobs:
           - 8.2
 
     steps:
-      - name: Checkout
+      - name: Checkout.
         uses: actions/checkout@v3
 
-      - name: Install PHP with extensions
+      - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
@@ -56,13 +56,16 @@ jobs:
           coverage: pcov
           tools: composer:v2, pecl
 
-      - name: Update composer
+      - name: Update composer.
         run: composer self-update
 
-      - name: Run db tests with phpunit
+      - name: Install dependencies.
+        run: composer install ${{ env.composer_flag }}
+
+      - name: Run db tests with phpunit.
         run: vendor/bin/phpunit --testsuite Db --coverage-clover=coverage.xml --colors=always
 
-      - name: Upload coverage to Codecov
+      - name: Upload coverage to Codecov.
         if: matrix.os == 'ubuntu-latest' && matrix.php == '8.0'
         uses: codecov/codecov-action@v3
         with:
