@@ -913,7 +913,7 @@ abstract class AbstractCommandTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Sqlite\Tests\Provider\CommandProvider::upsert()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::upsert()
      *
      * @throws Exception
      * @throws InvalidConfigException
