@@ -213,18 +213,18 @@ abstract class CommonCommandTest extends AbstractCommandTest
             )->queryAll();
 
             $this->assertCount(3, $data);
-            $this->assertSame(1, $data[0]['int_col']);
-            $this->assertSame(2, $data[1]['int_col']);
-            $this->assertSame(3, $data[2]['int_col']);
+            $this->assertEquals(1, $data[0]['int_col']);
+            $this->assertEquals(2, $data[1]['int_col']);
+            $this->assertEquals(3, $data[2]['int_col']);
 
             /* rtrim because Postgres padds the column with whitespace */
             $this->assertSame('A', rtrim($data[0]['char_col']));
             $this->assertSame('B', rtrim($data[1]['char_col']));
             $this->assertSame('C', rtrim($data[2]['char_col']));
-            $this->assertSame(9.735, $data[0]['float_col']);
-            $this->assertSame(-2.123, $data[1]['float_col']);
-            $this->assertSame(2.123, $data[2]['float_col']);
-            $this->assertSame(1, $data[0]['bool_col']);
+            $this->assertEquals(9.735, $data[0]['float_col']);
+            $this->assertEquals(-2.123, $data[1]['float_col']);
+            $this->assertEquals(2.123, $data[2]['float_col']);
+            $this->assertEquals(1, $data[0]['bool_col']);
             Assert::isOneOf($data[1]['bool_col'], ['0', false]);
             Assert::isOneOf($data[2]['bool_col'], ['0', false]);
         } catch (Exception | Throwable $e) {
@@ -334,7 +334,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL,
             $command->getSql()
         );
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'id' => 1,
                 'email' => 'user1@example.com',
@@ -359,7 +359,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL,
             $command->getSql()
         );
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'id' => 1,
                 'email' => 'user1@example.com',
@@ -384,7 +384,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL,
             $command->getSql()
         );
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'id' => 1,
                 'email' => 'user1@example.com',
@@ -409,7 +409,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL,
             $command->getSql()
         );
-        $this->assertSame(
+        $this->assertEquals(
             [
                 'id' => 1,
                 'email' => 'user1@example.com',
@@ -566,7 +566,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL
         )->queryAll();
 
-        $this->assertSame([['id' => 1, 'bar' => 1]], $records);
+        $this->assertEquals([['id' => 1, 'bar' => 1]], $records);
     }
 
     /**
@@ -600,7 +600,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL
         )->queryAll();
 
-        $this->assertSame([['bar' => 6]], $records);
+        $this->assertEquals([['bar' => 6]], $records);
     }
 
     public function testDataReaderRewindException(): void
@@ -676,7 +676,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         SQL;
         $command = $db->createCommand($sql);
 
-        $this->assertSame(1, $command->queryScalar());
+        $this->assertEquals(1, $command->queryScalar());
 
         $command = $db->createCommand('bad SQL');
 
@@ -705,7 +705,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ->insert('{{customer}}', ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'])
             ->execute();
 
-        $this->assertSame(
+        $this->assertEquals(
             1,
             $db->createCommand(
                 <<<SQL
@@ -748,7 +748,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ->insert('{{order_with_null_fk}}', ['created_at' => new Expression($expression), 'total' => 1])
             ->execute();
 
-        $this->assertSame(1, $command->setSql(
+        $this->assertEquals(1, $command->setSql(
             <<<SQL
             SELECT COUNT(*) FROM {{order_with_null_fk}}
             SQL
@@ -760,7 +760,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL
         )->queryOne();
 
-        $this->assertSame(['created_at' => (int) date('Y')], $record);
+        $this->assertSame(['created_at' => date('Y')], $record);
     }
 
     /**
@@ -796,7 +796,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             )
             ->execute();
 
-        $this->assertSame(
+        $this->assertEquals(
             $time,
             $command->setSql(
                 <<<SQL
@@ -844,7 +844,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ->where(['and', ['<>', 'name', 'foo'], ['status' => [0, 1, 2, 3]]]);
         $command->insert('{{customer}}', $query)->execute();
 
-        $this->assertSame(
+        $this->assertEquals(
             2,
             $command->setSql(
                 <<<SQL
@@ -899,7 +899,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ->where(['and', ['<>', 'name', 'foo'], ['status' => [0, 1, 2, 3]]]);
         $command->insert('{{customer}}', $query)->execute();
 
-        $this->assertSame(
+        $this->assertEquals(
             2,
             $command->setSql(
                 <<<SQL
@@ -1282,7 +1282,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertIsArray($rows);
         $this->assertCount(3, $rows);
-        $this->assertIsInt($rows[0]);
+        $this->assertEquals('1', $rows[0]);
 
         $command = $db->createCommand('bad SQL');
 
@@ -1314,7 +1314,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         SELECT * FROM {{customer}} ORDER BY [[id]]
         SQL;
 
-        $this->assertSame($db->createCommand($sql)->queryScalar(), 1);
+        $this->assertEquals(1, $db->createCommand($sql)->queryScalar());
 
         $sql = <<<SQL
         SELECT [[id]] FROM {{customer}} ORDER BY [[id]]
@@ -1322,7 +1322,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $db->createCommand($sql);
         $command->prepare();
 
-        $this->assertSame(1, $command->queryScalar());
+        $this->assertEquals(1, $command->queryScalar());
 
         $command = $db->createCommand(
             <<<SQL
@@ -1466,7 +1466,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->execute();
 
         $this->assertNull($db->getTransaction());
-        $this->assertSame(
+        $this->assertEquals(
             1,
             $command->setSql(
                 <<<SQL

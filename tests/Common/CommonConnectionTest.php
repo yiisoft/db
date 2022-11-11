@@ -38,7 +38,7 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
         SQL;
         $command = $db->createCommand($sql);
 
-        $this->assertSame(1, $command->queryScalar());
+        $this->assertEquals(1, $command->queryScalar());
 
         $command = $db->createCommand('bad SQL');
 
@@ -226,7 +226,7 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
         $this->assertSame(0, $transaction->getLevel());
         $this->assertFalse($transaction->isActive());
         $this->assertNull($db->getTransaction());
-        $this->assertSame(
+        $this->assertEquals(
             1,
             $db->createCommand(
                 <<<SQL
@@ -234,7 +234,7 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
                 SQL
             )->queryScalar(),
         );
-        $this->assertSame(
+        $this->assertEquals(
             0,
             $db->createCommand(
                 <<<SQL
@@ -242,7 +242,7 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
                 SQL
             )->queryScalar()
         );
-        $this->assertSame(
+        $this->assertEquals(
             1,
             $db->createCommand(
                 <<<SQL
@@ -278,7 +278,7 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
         $this->assertSame(0, $transaction->getLevel());
         $this->assertFalse($transaction->isActive());
         $this->assertNull($db->getTransaction());
-        $this->assertSame(
+        $this->assertEquals(
             0,
             $db->createCommand(
                 <<<SQL
@@ -306,7 +306,7 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
 
         $this->assertFalse($transaction->isActive());
         $this->assertNull($db->getTransaction());
-        $this->assertSame(
+        $this->assertEquals(
             0,
             $db->createCommand(
                 <<<SQL
@@ -321,7 +321,7 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
 
         $this->assertFalse($transaction->isActive());
         $this->assertNull($db->getTransaction());
-        $this->assertSame(
+        $this->assertEquals(
             1,
             $db->createCommand(
                 <<<SQL
