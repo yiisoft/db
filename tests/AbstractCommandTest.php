@@ -888,9 +888,7 @@ abstract class AbstractCommandTest extends TestCase
 
         $command = $db->createCommand();
 
-        $handler = static function (): bool {
-            return true;
-        };
+        $handler = static fn(): bool => true;
 
         Assert::invokeMethod($command, 'setRetryHandler', [$handler]);
 
