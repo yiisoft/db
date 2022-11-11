@@ -9,7 +9,6 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\AbstractQueryTest;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @group mssql

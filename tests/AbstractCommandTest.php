@@ -632,6 +632,7 @@ abstract class AbstractCommandTest extends TestCase
 
         $command->execute();
     }
+
     public function testExecuteResetSequence(): void
     {
         $db = $this->getConnection();

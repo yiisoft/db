@@ -40,7 +40,7 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         $db = $this->getConnection();
 
         $query = new Query($db);
-        $subQuery =  new Query($db);
+        $subQuery = new Query($db);
         $subQuery->from('user');
         $query->from(['x' => $subQuery]);
         $expected = ['{{x}}' => $subQuery];

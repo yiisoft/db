@@ -20,7 +20,7 @@ abstract class AbstractColumnSchemaBuilderProvider
                 'timestamp() WITH TIME ZONE DEFAULT NOW()',
                 'timestamp() WITH TIME ZONE',
                 null,
-                [['defaultValue', new Expression('NOW()')]]
+                [['defaultValue', new Expression('NOW()')]],
             ],
         ];
     }

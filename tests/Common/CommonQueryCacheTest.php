@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\AbstractQueryCacheTest;
 use Yiisoft\Db\Tests\Support\TestTrait;
 

@@ -35,7 +35,7 @@ abstract class AbstractQueryCacheTest extends TestCase
 
     public function testIsEnabled(): void
     {
-        $queryCache =  new QueryCache($this->getCache());
+        $queryCache = new QueryCache($this->getCache());
 
         $this->assertTrue($queryCache->isEnabled());
     }
@@ -58,7 +58,7 @@ abstract class AbstractQueryCacheTest extends TestCase
 
     public function testSetDuration(): void
     {
-        $queryCache =  new QueryCache($this->getCache());
+        $queryCache = new QueryCache($this->getCache());
 
         $queryCache->setDuration(10);
 
@@ -67,7 +67,7 @@ abstract class AbstractQueryCacheTest extends TestCase
 
     public function testSetEnable(): void
     {
-        $queryCache =  new QueryCache($this->getCache());
+        $queryCache = new QueryCache($this->getCache());
 
         $queryCache->setEnable(false);
 

@@ -37,5 +37,4 @@ final class CommandProvider
 
         return $commandProvider->upsert($this->getConnection());
     }
-
 }

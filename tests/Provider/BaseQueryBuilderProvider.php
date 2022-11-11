@@ -657,7 +657,7 @@ final class BaseQueryBuilderProvider
                 [':qp0' => '%b%'],
             ],
             'like-custom-3' => [
-                ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => '%b%']
+                ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => '%b%'],
             ],
         ];
 
@@ -896,7 +896,6 @@ final class BaseQueryBuilderProvider
 
         return $conditions;
     }
-
 
     public function buildWhereExists(ConnectionPDOInterface $db): array
     {

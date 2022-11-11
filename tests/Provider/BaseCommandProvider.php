@@ -210,10 +210,10 @@ final class BaseCommandProvider
             ],
             'regular values with update part' => [
                 ['params' => [
-                        'T_upsert',
-                        ['email' => 'foo@example.com', 'address' => 'Earth', 'status' => 3],
-                        ['address' => 'Moon', 'status' => 2],
-                    ],
+                    'T_upsert',
+                    ['email' => 'foo@example.com', 'address' => 'Earth', 'status' => 3],
+                    ['address' => 'Moon', 'status' => 2],
+                ],
                 ],
                 [
                     'params' => [
