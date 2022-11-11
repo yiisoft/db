@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Tests\Support\Stubs;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
@@ -25,12 +26,12 @@ final class Schema extends \Yiisoft\Db\Schema\Schema implements SchemaInterface
 
     public function findUniqueIndexes(TableSchemaInterface $table): array
     {
-        return [];
+        return $this->getException(self::class . '::findUniqueIndexes()' . ' is not supported by core-db.');
     }
 
     public function getLastInsertID(string $sequenceName = null): string
     {
-        return '';
+        $this->getException(self::class . '::getLastInsertID() is not supported by core-db.');
     }
 
     protected function getCacheKey(string $name): array
@@ -45,41 +46,41 @@ final class Schema extends \Yiisoft\Db\Schema\Schema implements SchemaInterface
 
     protected function loadTableChecks(string $tableName): array
     {
-        return [];
+        $this->getException(self::class . '::loadTableChecks() is not supported by core-db.');
     }
 
     protected function loadTableDefaultValues(string $tableName): array
     {
-        return [];
+        $this->getException(self::class . '::loadTableDefaultValues() is not supported by core-db.');
     }
 
     protected function loadTableForeignKeys(string $tableName): array
     {
-        return [];
+        $this->getException(self::class . '::loadTableForeignKeys() is not supported by core-db.');
     }
 
     protected function loadTableIndexes(string $tableName): array
     {
-        return [];
+        $this->getException();
     }
 
     protected function loadTablePrimaryKey(string $tableName): Constraint|null
     {
-        return [];
+        $this->getException(self::class . '::loadTablePrimaryKey() is not supported by core-db.');
     }
 
     protected function loadTableUniques(string $tableName): array
     {
-        return [];
+        $this->getException(self::class . '::loadTableUniques() is not supported by core-db.');
     }
 
     protected function loadTableSchema(string $name): TableSchemaInterface|null
     {
-        return null;
+        $this->getException(self::class . '::loadTableSchema() is not supported by core-db.');
     }
 
-    public function supportsSavepoint(): bool
+    private function getException(string $message): void
     {
-        return false;
+        throw new NotSupportedException($message);
     }
 }

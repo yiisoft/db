@@ -24,11 +24,11 @@
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "psr/log": "^2.0|^3.0",
-        "yiisoft/arrays": "^2.0",
+        "yiisoft/arrays": "^2.1",
         "yiisoft/cache": "^2.0",
         "yiisoft/log": "^2.0",
         "yiisoft/profiler": "^2.0",
-        "yiisoft/strings": "^2.0"
+        "yiisoft/strings": "^2.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
@@ -36,8 +36,8 @@
         "roave/infection-static-analysis-plugin": "^1.16",
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^4.18",
-        "yiisoft/aliases": "^1.1|^2.0",
-        "yiisoft/di": "^1.0",
+        "yiisoft/aliases": "^2.0",
+        "yiisoft/di": "^1.2",
         "yiisoft/event-dispatcher": "^1.0",
         "yiisoft/json": "^1.0"
     },
@@ -49,11 +49,6 @@
     "autoload-dev": {
         "psr-4": {
             "Yiisoft\\Db\\Tests\\": "tests",
-            "Yiisoft\\ActiveRecord\\Tests\\": "vendor/yiisoft/active-record/tests",
-            "Yiisoft\\Db\\Mssql\\Tests\\": "vendor/yiisoft/db-mssql/tests",
-            "Yiisoft\\Db\\Mysql\\Tests\\": "vendor/yiisoft/db-mysql/tests",
-            "Yiisoft\\Db\\Oracle\\Tests\\": "vendor/yiisoft/db-oracle/tests",
-            "Yiisoft\\Db\\Pgsql\\Tests\\": "vendor/yiisoft/db-pgsql/tests",
             "Yiisoft\\Db\\Sqlite\\Tests\\": "vendor/yiisoft/db-sqlite/tests"
         }
     },

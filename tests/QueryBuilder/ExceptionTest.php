@@ -17,21 +17,19 @@ use Yiisoft\Db\Tests\Support\Stubs\ExpressionStub;
 final class ExceptionTest extends TestCase
 {
     private QueryBuilderInterface $queryBuilder;
-    private Mock $mock;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->mock = new Mock();
-        $this->queryBuilder = $this->mock->queryBuilder();
+        $this->queryBuilder = Mock::getConnection()->getQueryBuilder();
     }
 
     public function tearDown(): void
     {
         parent::tearDown();
 
-        unset($this->queryBuilder, $this->mock);
+        unset($this->queryBuilder);
     }
 
     public function testAddDefaultValue(): void
@@ -40,6 +38,7 @@ final class ExceptionTest extends TestCase
         $this->expectExceptionMessage(
             'Yiisoft\Db\Tests\Support\Stubs\DDLQueryBuilder does not support adding default value constraints.'
         );
+
         $this->queryBuilder->addDefaultValue('name', 'table', 'column', 'value');
     }
 

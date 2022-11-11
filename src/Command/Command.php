@@ -328,7 +328,8 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      */
     public function executeResetSequence(string $table, int|string $value = null): static
     {
-        return $this->resetSequence($table, $value);
+        $sql = $this->queryBuilder()->resetSequence($table, $value);
+        return $this->setSql($sql);
     }
 
     public function getParams(bool $asValues = true): array
@@ -464,11 +465,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         /** @psalm-var array<array-key, array<mixed>>|null */
         $results = $this->queryInternal((int) static::QUERY_MODE_ALL);
 
-        if (is_array($results)) {
-            return $results;
-        }
-
-        return [];
+        return $results ?? [];
     }
 
     public function queryColumn(): array

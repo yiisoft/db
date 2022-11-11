@@ -4,23 +4,28 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Conditions\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Conditions\InCondition;
+use Yiisoft\Db\QueryBuilder\Conditions\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\Mock;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
 final class BaseQueryBuilderProvider
 {
     use SchemaBuilderTrait;
 
-    public function __construct(private Mock $mock)
-    {
-        $this->db = $this->mock->connection();
+    protected ConnectionPDOInterface $db;
+
+    public function __construct(
+        private string $likeEscapeCharSql = '',
+        private array $likeParameterReplacements = [],
+    ) {
     }
 
     public function addDropChecks(): array
@@ -137,13 +142,20 @@ final class BaseQueryBuilderProvider
                 <<<SQL
                 ALTER TABLE {{{$tableName2}}} ADD CONSTRAINT [[$name2]] UNIQUE ([[C_index_2_1]], [[C_index_2_2]])
                 SQL,
-                static fn (QueryBuilderInterface $qb) => $qb->addUnique($name2, $tableName2, 'C_index_2_1, C_index_2_2'),
+                static fn (QueryBuilderInterface $qb) => $qb->addUnique(
+                    $name2,
+                    $tableName2,
+                    'C_index_2_1,
+                    C_index_2_2',
+                ),
             ],
         ];
     }
 
-    public function alterColumn(): array
+    public function alterColumn(ConnectionPDOInterface $db): array
     {
+        $this->db = $db;
+
         return [
             [
                 'foo1',
@@ -268,7 +280,7 @@ final class BaseQueryBuilderProvider
         ];
     }
 
-    public function batchInsert(): array
+    public function batchInsert(ConnectionPDOInterface $db): array
     {
         return [
             'simple' => [
@@ -279,13 +291,9 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES (:qp0, :qp1, :qp2)
                     SQL,
-                    $this->mock->getDriverName(),
+                    $db->getName(),
                 ),
-                [
-                    ':qp0' => 'test@example.com',
-                    ':qp1' => 'silverfire',
-                    ':qp2' => 'Kyiv {{city}}, Ukraine',
-                ],
+                [':qp0' => 'test@example.com', ':qp1' => 'silverfire', ':qp2' => 'Kyiv {{city}}, Ukraine'],
             ],
             'escape-danger-chars' => [
                 'customer',
@@ -295,18 +303,13 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] ([[address]]) VALUES (:qp0)
                     SQL,
-                    $this->mock->getDriverName(),
+                    $db->getName(),
                 ),
                 [
                     ':qp0' => "SQL-danger chars are escaped: '); --",
                 ],
             ],
-            'customer2' => [
-                'customer',
-                ['address'],
-                [],
-                '',
-            ],
+            'customer2' => ['customer', ['address'], [], ''],
             'customer3' => [
                 'customer',
                 [],
@@ -315,11 +318,9 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] () VALUES (:qp0)
                     SQL,
-                    $this->mock->getDriverName(),
+                    $db->getName(),
                 ),
-                [
-                    ':qp0' => 'no columns passed',
-                ],
+                [':qp0' => 'no columns passed'],
             ],
             'bool-false, bool2-null' => [
                 'type',
@@ -329,36 +330,28 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
                     SQL,
-                    $this->mock->getDriverName(),
+                    $db->getName(),
                 ),
-                [
-                    ':qp0' => false,
-                    ':qp1' => null,
-                ],
+                [':qp0' => false, ':qp1' => null],
             ],
             'wrong' => [
                 '{{%type}}',
                 ['{{%type}}.[[float_col]]', '[[time]]'],
                 [[null, new Expression('now()')], [null, new Expression('now()')]],
                 'expected' => 'INSERT INTO {{%type}} ({{%type}}.[[float_col]], [[time]]) VALUES (:qp0, now()), (:qp1, now())',
-                [
-                    ':qp0' => null,
-                    ':qp1' => null,
-                ],
+                [':qp0' => null, ':qp1' => null],
             ],
             'bool-false, time-now()' => [
                 '{{%type}}',
                 ['{{%type}}.[[bool_col]]', '[[time]]'],
                 [[false, new Expression('now()')]],
                 'expected' => 'INSERT INTO {{%type}} ({{%type}}.[[bool_col]], [[time]]) VALUES (:qp0, now())',
-                [
-                    ':qp0' => false,
-                ],
+                [':qp0' => false],
             ],
         ];
     }
 
-    public function buildConditions(): array
+    public function buildConditions(ConnectionPDOInterface $db): array
     {
         $conditions = [
             /* empty values */
@@ -373,7 +366,7 @@ final class BaseQueryBuilderProvider
             [
                 [
                     'not',
-                    $this->mock->query()->select('exists')->from('some_table'),
+                    (new query($db))->select('exists')->from('some_table'),
                 ],
                 'NOT ((SELECT [[exists]] FROM [[some_table]]))', [],
             ],
@@ -388,7 +381,7 @@ final class BaseQueryBuilderProvider
                 [
                     'and',
                     ['expired' => false],
-                    $this->mock->query()->select('count(*) > 1')->from('queue'),
+                    (new query($db))->select('count(*) > 1')->from('queue'),
                 ],
                 '([[expired]]=:qp0) AND ((SELECT count(*) > 1 FROM [[queue]]))',
                 [':qp0' => false],
@@ -446,7 +439,7 @@ final class BaseQueryBuilderProvider
                 new BetweenColumnsCondition(
                     new Expression('NOW()'),
                     'NOT BETWEEN',
-                    $this->mock->query()->select('min_date')->from('some_table'),
+                    (new query($db))->select('min_date')->from('some_table'),
                     'max_date'
                 ),
                 'NOW() NOT BETWEEN (SELECT [[min_date]] FROM [[some_table]]) AND [[max_date]]',
@@ -457,7 +450,7 @@ final class BaseQueryBuilderProvider
                     new Expression('NOW()'),
                     'NOT BETWEEN',
                     new Expression('min_date'),
-                    $this->mock->query()->select('max_date')->from('some_table'),
+                    (new query($db))->select('max_date')->from('some_table'),
                 ),
                 'NOW() NOT BETWEEN min_date AND (SELECT [[max_date]] FROM [[some_table]])',
                 [],
@@ -465,7 +458,7 @@ final class BaseQueryBuilderProvider
 
             /* in */
             [
-                ['in', 'id', [1, 2, $this->mock->query()->select('three')->from('digits')]],
+                ['in', 'id', [1, 2, (new query($db))->select('three')->from('digits')]],
                 '[[id]] IN (:qp0, :qp1, (SELECT [[three]] FROM [[digits]]))',
                 [':qp0' => 1, ':qp1' => 2],
             ],
@@ -475,12 +468,12 @@ final class BaseQueryBuilderProvider
                 [':qp0' => 1, ':qp1' => 2, ':qp2' => 3],
             ],
             [
-                ['in', 'id', $this->mock->query()->select('id')->from('users')->where(['active' => 1])],
+                ['in', 'id', (new query($db))->select('id')->from('users')->where(['active' => 1])],
                 '[[id]] IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
             ],
             [
-                ['not in', 'id', $this->mock->query()->select('id')->from('users')->where(['active' => 1])],
+                ['not in', 'id', (new query($db))->select('id')->from('users')->where(['active' => 1])],
                 '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
             ],
@@ -555,27 +548,27 @@ final class BaseQueryBuilderProvider
             [new InCondition('id', 'not in', [1, 2]), '[[id]] NOT IN (:qp0, :qp1)', [':qp0' => 1, ':qp1' => 2]],
             [new InCondition([], 'in', 1), '0=1', []],
             [new InCondition([], 'in', [1]), '0=1', []],
-            [new InCondition(['id', 'name'], 'in', []), '0=1', []],
-            [
+            'inCondition-custom-1' => [new InCondition(['id', 'name'], 'in', []), '0=1', []],
+            'inCondition-custom-2' => [
                 new InCondition(
                     ['id'],
                     'in',
-                    $this->mock->query()->select('id')->from('users')->where(['active' => 1]),
+                    (new query($db))->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '([[id]]) IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
             ],
-            [
+            'inCondition-custom-3' => [
                 new InCondition(['id', 'name'], 'in', [['id' => 1]]),
                 '([[id]], [[name]]) IN ((:qp0, NULL))',
                 [':qp0' => 1],
             ],
-            [
+            'inCondition-custom-4' => [
                 new InCondition(['id', 'name'], 'in', [['name' => 'oy']]),
                 '([[id]], [[name]]) IN ((NULL, :qp0))',
                 [':qp0' => 'oy'],
             ],
-            [
+            'inCondition-custom-5' => [
                 new InCondition(['id', 'name'], 'in', [['id' => 1, 'name' => 'oy']]),
                 '([[id]], [[name]]) IN ((:qp0, :qp1))',
                 [':qp0' => 1, ':qp1' => 'oy'],
@@ -585,13 +578,13 @@ final class BaseQueryBuilderProvider
             [
                 [
                     'exists',
-                    $this->mock->query()->select('id')->from('users')->where(['active' => 1]),
+                    (new query($db))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
             ],
             [
-                ['not exists', $this->mock->query()->select('id')->from('users')->where(['active' => 1])],
+                ['not exists', (new query($db))->select('id')->from('users')->where(['active' => 1])],
                 'NOT EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1],
             ],
 
@@ -614,7 +607,7 @@ final class BaseQueryBuilderProvider
                 [':month' => 2],
             ],
             [
-                ['=', 'date', $this->mock->query()->select('max(date)')->from('test')->where(['id' => 5])],
+                ['=', 'date', (new query($db))->select('max(date)')->from('test')->where(['id' => 5])],
                 '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]]=:qp0)',
                 [':qp0' => 5],
             ],
@@ -627,7 +620,7 @@ final class BaseQueryBuilderProvider
                 [':qp0' => '2019-08-01'],
             ],
             [
-                ['=', $this->mock->query()->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
+                ['=', (new query($db))->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
                 '(SELECT COUNT(*) FROM [[test]] WHERE [[id]]=:qp0) = :qp1',
                 [':qp0' => 6, ':qp1' => 0],
             ],
@@ -657,19 +650,50 @@ final class BaseQueryBuilderProvider
             [new Expression('NOT (any_expression(:a))', [':a' => 1]), 'NOT (any_expression(:a))', [':a' => 1]],
 
             /* like */
-            [['like', 'a', 'b'], '[[a]] LIKE :qp0', [':qp0' => '%b%']],
-            [
+            'like-custom-1' => [['like', 'a', 'b'], '[[a]] LIKE :qp0', [':qp0' => '%b%']],
+            'like-custom-2' => [
                 ['like', 'a', new Expression(':qp0', [':qp0' => '%b%'])],
                 '[[a]] LIKE :qp0',
                 [':qp0' => '%b%'],
             ],
-            [['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => '%b%']],
+            'like-custom-3' => [
+                ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => '%b%']
+            ],
         ];
 
-        return $this->replaceQuotes($conditions);
+        /* adjust dbms specific escaping */
+        foreach ($conditions as $i => $condition) {
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $db->getName());
+        }
+
+        return $conditions;
     }
 
-    public function buildFilterCondition(): array
+    public function buildExistsParams(ConnectionPDOInterface $db): array
+    {
+        return [
+            [
+                'exists',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'not exists',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+        ];
+    }
+
+    public function buildFilterConditions(ConnectionPDOInterface $db): array
     {
         $conditions = [
             /* like */
@@ -709,7 +733,12 @@ final class BaseQueryBuilderProvider
             [['!=', 'a', ''], '', []],
         ];
 
-        return $this->replaceQuotes($conditions);
+        /* adjust dbms specific escaping */
+        foreach ($conditions as $i => $condition) {
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $db->getName());
+        }
+
+        return $conditions;
     }
 
     public function buildFrom(): array
@@ -722,7 +751,154 @@ final class BaseQueryBuilderProvider
         ];
     }
 
-    public function buildWhereExists(): array
+    public function buildLikeConditions(ConnectionPDOInterface $db): array
+    {
+        $conditions = [
+            /* simple like */
+            [['like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => '%foo\%%']],
+            [['not like', 'name', 'foo%'], '[[name]] NOT LIKE :qp0', [':qp0' => '%foo\%%']],
+            [['or like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => '%foo\%%']],
+            [['or not like', 'name', 'foo%'], '[[name]] NOT LIKE :qp0', [':qp0' => '%foo\%%']],
+
+            /* like for many values */
+            [
+                ['like', 'name', ['foo%', '[abc]']],
+                '[[name]] LIKE :qp0 AND [[name]] LIKE :qp1',
+                [':qp0' => '%foo\%%', ':qp1' => '%[abc]%'],
+            ],
+            [
+                ['not like', 'name', ['foo%', '[abc]']],
+                '[[name]] NOT LIKE :qp0 AND [[name]] NOT LIKE :qp1',
+                [':qp0' => '%foo\%%', ':qp1' => '%[abc]%'],
+            ],
+            [
+                ['or like', 'name', ['foo%', '[abc]']],
+                '[[name]] LIKE :qp0 OR [[name]] LIKE :qp1',
+                [':qp0' => '%foo\%%', ':qp1' => '%[abc]%'],
+            ],
+            [
+                ['or not like', 'name', ['foo%', '[abc]']],
+                '[[name]] NOT LIKE :qp0 OR [[name]] NOT LIKE :qp1',
+                [':qp0' => '%foo\%%', ':qp1' => '%[abc]%'],
+            ],
+
+            /* like with Expression */
+            [
+                ['like', 'name', new Expression('CONCAT("test", name, "%")')],
+                '[[name]] LIKE CONCAT("test", name, "%")',
+                [],
+            ],
+            [
+                ['not like', 'name', new Expression('CONCAT("test", name, "%")')],
+                '[[name]] NOT LIKE CONCAT("test", name, "%")',
+                [],
+            ],
+            [
+                ['or like', 'name', new Expression('CONCAT("test", name, "%")')],
+                '[[name]] LIKE CONCAT("test", name, "%")',
+                [],
+            ],
+            [
+                ['or not like', 'name', new Expression('CONCAT("test", name, "%")')],
+                '[[name]] NOT LIKE CONCAT("test", name, "%")',
+                [],
+            ],
+            [
+                ['like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
+                '[[name]] LIKE CONCAT("test", name, "%") AND [[name]] LIKE :qp0',
+                [':qp0' => '%\\\ab\_c%'],
+            ],
+            [
+                ['not like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
+                '[[name]] NOT LIKE CONCAT("test", name, "%") AND [[name]] NOT LIKE :qp0',
+                [':qp0' => '%\\\ab\_c%'],
+            ],
+            [
+                ['or like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
+                '[[name]] LIKE CONCAT("test", name, "%") OR [[name]] LIKE :qp0',
+                [':qp0' => '%\\\ab\_c%'],
+            ],
+            [
+                ['or not like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
+                '[[name]] NOT LIKE CONCAT("test", name, "%") OR [[name]] NOT LIKE :qp0',
+                [':qp0' => '%\\\ab\_c%'],
+            ],
+
+            /**
+             * {@see https://github.com/yiisoft/yii2/issues/15630}
+             */
+            [['like', 'location.title_ru', 'vi%', null], '[[location]].[[title_ru]] LIKE :qp0', [':qp0' => 'vi%']],
+
+            /* like object conditions */
+            [
+                new LikeCondition('name', 'like', new Expression('CONCAT("test", name, "%")')),
+                '[[name]] LIKE CONCAT("test", name, "%")',
+                [],
+            ],
+            [
+                new LikeCondition('name', 'not like', new Expression('CONCAT("test", name, "%")')),
+                '[[name]] NOT LIKE CONCAT("test", name, "%")',
+                [],
+            ],
+            [
+                new LikeCondition('name', 'or like', new Expression('CONCAT("test", name, "%")')),
+                '[[name]] LIKE CONCAT("test", name, "%")',
+                [],
+            ],
+            [
+                new LikeCondition('name', 'or not like', new Expression('CONCAT("test", name, "%")')),
+                '[[name]] NOT LIKE CONCAT("test", name, "%")',
+                [],
+            ],
+            [
+                new LikeCondition('name', 'like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                '[[name]] LIKE CONCAT("test", name, "%") AND [[name]] LIKE :qp0',
+                [':qp0' => '%\\\ab\_c%'],
+            ],
+            [
+                new LikeCondition('name', 'not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                '[[name]] NOT LIKE CONCAT("test", name, "%") AND [[name]] NOT LIKE :qp0',
+                [':qp0' => '%\\\ab\_c%'],
+            ],
+            [
+                new LikeCondition('name', 'or like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                '[[name]] LIKE CONCAT("test", name, "%") OR [[name]] LIKE :qp0', [':qp0' => '%\\\ab\_c%'],
+            ],
+            [
+                new LikeCondition('name', 'or not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                '[[name]] NOT LIKE CONCAT("test", name, "%") OR [[name]] NOT LIKE :qp0', [':qp0' => '%\\\ab\_c%'],
+            ],
+
+            /* like with expression as columnName */
+            [['like', new Expression('name'), 'teststring'], 'name LIKE :qp0', [':qp0' => '%teststring%']],
+        ];
+
+        /* adjust dbms specific escaping */
+        foreach ($conditions as $i => $condition) {
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $db->getName());
+
+            if ($this->likeEscapeCharSql !== '') {
+                preg_match_all('/(?P<condition>LIKE.+?)( AND| OR|$)/', $conditions[$i][1], $matches, PREG_SET_ORDER);
+
+                foreach ($matches as $match) {
+                    $conditions[$i][1] = str_replace(
+                        $match['condition'],
+                        $match['condition'] . $this->likeEscapeCharSql,
+                        $conditions[$i][1]
+                    );
+                }
+            }
+
+            foreach ($conditions[$i][2] as $name => $value) {
+                $conditions[$i][2][$name] = strtr($conditions[$i][2][$name], $this->likeParameterReplacements);
+            }
+        }
+
+        return $conditions;
+    }
+
+
+    public function buildWhereExists(ConnectionPDOInterface $db): array
     {
         return [
             [
@@ -731,7 +907,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])
                     SQL,
-                    $this->mock->getDriverName(),
+                    $db->getName(),
                 ),
             ],
             [
@@ -740,7 +916,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])
                     SQL,
-                    $this->mock->getDriverName(),
+                    $db->getName(),
                 ),
             ],
         ];
@@ -802,29 +978,24 @@ final class BaseQueryBuilderProvider
         ];
     }
 
-    public function delete(): array
+    public function delete(ConnectionPDOInterface $db): array
     {
         return [
             [
                 'user',
-                [
-                    'is_enabled' => false,
-                    'power' => new Expression('WRONG_POWER()'),
-                ],
+                ['is_enabled' => false, 'power' => new Expression('WRONG_POWER()')],
                 DbHelper::replaceQuotes(
                     <<<SQL
                     DELETE FROM [[user]] WHERE ([[is_enabled]]=:qp0) AND ([[power]]=WRONG_POWER())
                     SQL,
-                    $this->mock->getDriverName(),
+                    $db->getName(),
                 ),
-                [
-                    ':qp0' => false,
-                ],
+                [':qp0' => false],
             ],
         ];
     }
 
-    public function insert(): array
+    public function insert(ConnectionPDOInterface $db): array
     {
         return [
             'regular-values' => [
@@ -850,17 +1021,12 @@ final class BaseQueryBuilderProvider
             ],
             'params-and-expressions' => [
                 '{{%type}}',
-                [
-                    '{{%type}}.[[related_id]]' => null,
-                    '[[time]]' => new Expression('now()'),
-                ],
+                ['{{%type}}.[[related_id]]' => null, '[[time]]' => new Expression('now()')],
                 [],
                 <<<SQL
                 INSERT INTO {{%type}} ({{%type}}.[[related_id]], [[time]]) VALUES (:qp0, now())
                 SQL,
-                [
-                    ':qp0' => null,
-                ],
+                [':qp0' => null],
             ],
             'carry passed params' => [
                 'customer',
@@ -888,24 +1054,19 @@ final class BaseQueryBuilderProvider
             ],
             'carry passed params (query)' => [
                 'customer',
-                $this->mock
-                    ->query()
-                    ->select([
-                        'email',
-                        'name',
-                        'address',
-                        'is_active',
-                        'related_id',
-                    ])
+                (new Query($db))
+                    ->select(['email', 'name', 'address', 'is_active', 'related_id'])
                     ->from('customer')
-                    ->where([
-                        'email' => 'test@example.com',
-                        'name' => 'sergeymakinen',
-                        'address' => '{{city}}',
-                        'is_active' => false,
-                        'related_id' => null,
-                        'col' => new Expression('CONCAT(:phFoo, :phBar)', [':phFoo' => 'foo']),
-                    ]),
+                    ->where(
+                        [
+                            'email' => 'test@example.com',
+                            'name' => 'sergeymakinen',
+                            'address' => '{{city}}',
+                            'is_active' => false,
+                            'related_id' => null,
+                            'col' => new Expression('CONCAT(:phFoo, :phBar)', [':phFoo' => 'foo']),
+                        ],
+                    ),
                 [':phBar' => 'bar'],
                 <<<SQL
                 INSERT INTO `customer` (`email`, `name`, `address`, `is_active`, `related_id`) SELECT `email`, `name`, `address`, `is_active`, `related_id` FROM `customer` WHERE (`email`=:qp1) AND (`name`=:qp2) AND (`address`=:qp3) AND (`is_active`=:qp4) AND (`related_id` IS NULL) AND (`col`=CONCAT(:phFoo, :phBar))
@@ -922,7 +1083,7 @@ final class BaseQueryBuilderProvider
         ];
     }
 
-    public function insertEx(): array
+    public function insertEx(ConnectionPDOInterface $db): array
     {
         return [
             'regular-values' => [
@@ -939,7 +1100,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     INSERT INTO `customer` (`email`, `name`, `address`, `is_active`, `related_id`) VALUES (:qp0, :qp1, :qp2, :qp3, :qp4)
                     SQL,
-                    $this->mock->getDriverName(),
+                    $db->getName(),
                 ),
                 [
                     ':qp0' => 'test@example.com',
@@ -951,17 +1112,12 @@ final class BaseQueryBuilderProvider
             ],
             'params-and-expressions' => [
                 '{{%type}}',
-                [
-                    '{{%type}}.[[related_id]]' => null,
-                    '[[time]]' => new Expression('now()'),
-                ],
+                ['{{%type}}.[[related_id]]' => null, '[[time]]' => new Expression('now()')],
                 [],
                 <<<SQL
                 INSERT INTO {{%type}} ({{%type}}.[[related_id]], [[time]]) VALUES (:qp0, now())
                 SQL,
-                [
-                    ':qp0' => null,
-                ],
+                [':qp0' => null],
             ],
             'carry passed params' => [
                 'customer',
@@ -978,7 +1134,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     INSERT INTO `customer` (`email`, `name`, `address`, `is_active`, `related_id`, `col`) VALUES (:qp1, :qp2, :qp3, :qp4, :qp5, CONCAT(:phFoo, :phBar))
                     SQL,
-                    $this->mock->getDriverName(),
+                    $db->getName(),
                 ),
                 [
                     ':phBar' => 'bar',
@@ -992,29 +1148,25 @@ final class BaseQueryBuilderProvider
             ],
             'carry passed params (query)' => [
                 'customer',
-                $this->mock->query()
-                    ->select([
-                        'email',
-                        'name',
-                        'address',
-                        'is_active',
-                        'related_id',
-                    ])
+                (new Query($db))
+                    ->select(['email', 'name', 'address', 'is_active', 'related_id'])
                     ->from('customer')
-                    ->where([
-                        'email' => 'test@example.com',
-                        'name' => 'sergeymakinen',
-                        'address' => '{{city}}',
-                        'is_active' => false,
-                        'related_id' => null,
-                        'col' => new Expression('CONCAT(:phFoo, :phBar)', [':phFoo' => 'foo']),
-                    ]),
+                    ->where(
+                        [
+                            'email' => 'test@example.com',
+                            'name' => 'sergeymakinen',
+                            'address' => '{{city}}',
+                            'is_active' => false,
+                            'related_id' => null,
+                            'col' => new Expression('CONCAT(:phFoo, :phBar)', [':phFoo' => 'foo']),
+                        ],
+                    ),
                 [':phBar' => 'bar'],
                 DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO `customer` (`email`, `name`, `address`, `is_active`, `related_id`) SELECT `email`, `name`, `address`, `is_active`, `related_id` FROM `customer` WHERE (`email`=:qp1) AND (`name`=:qp2) AND (`address`=:qp3) AND (`is_active`=:qp4) AND (`related_id` IS NULL) AND (`col`=CONCAT(:phFoo, :phBar))
                     SQL,
-                    $this->mock->getDriverName(),
+                    $db->getName(),
                 ),
                 [
                     ':phBar' => 'bar',
@@ -1028,39 +1180,136 @@ final class BaseQueryBuilderProvider
         ];
     }
 
-    public function update(): array
+    public function update(ConnectionPDOInterface $db): array
     {
         return [
             [
                 'customer',
-                [
-                    'status' => 1,
-                    'updated_at' => new Expression('now()'),
-                ],
-                [
-                    'id' => 100,
-                ],
+                ['status' => 1, 'updated_at' => new Expression('now()')],
+                ['id' => 100],
                 DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[customer]] SET [[status]]=:qp0, [[updated_at]]=now() WHERE [[id]]=:qp1
                     SQL,
-                    $this->mock->getDriverName(),
+                    $db->getName(),
                 ),
-                [
-                    ':qp0' => 1,
-                    ':qp1' => 100,
-                ],
+                [':qp0' => 1, ':qp1' => 100],
             ],
         ];
     }
 
-    private function replaceQuotes(array $conditions): array
+    public function upsert(ConnectionPDOInterface $db): array
     {
-        /* adjust dbms specific escaping */
-        foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->mock->getDriverName());
-        }
-
-        return $conditions;
+        return [
+            'regular values' => [
+                'T_upsert',
+                ['email' => 'test@example.com', 'address' => 'bar {{city}}', 'status' => 1, 'profile_id' => null],
+                true,
+                null,
+                [':qp0' => 'test@example.com', ':qp1' => 'bar {{city}}', ':qp2' => 1, ':qp3' => null],
+            ],
+            'regular values with update part' => [
+                'T_upsert',
+                ['email' => 'test@example.com', 'address' => 'bar {{city}}', 'status' => 1, 'profile_id' => null],
+                ['address' => 'foo {{city}}', 'status' => 2, 'orders' => new Expression('T_upsert.orders + 1')],
+                null,
+                [
+                    ':qp0' => 'test@example.com',
+                    ':qp1' => 'bar {{city}}',
+                    ':qp2' => 1,
+                    ':qp3' => null,
+                    ':qp4' => 'foo {{city}}',
+                    ':qp5' => 2,
+                ],
+            ],
+            'regular values without update part' => [
+                'T_upsert',
+                ['email' => 'test@example.com', 'address' => 'bar {{city}}', 'status' => 1, 'profile_id' => null],
+                false,
+                null,
+                [':qp0' => 'test@example.com', ':qp1' => 'bar {{city}}', ':qp2' => 1, ':qp3' => null],
+            ],
+            'query' => [
+                'T_upsert',
+                (new Query($db))
+                    ->select(['email', 'status' => new Expression('2')])
+                    ->from('customer')
+                    ->where(['name' => 'user1'])
+                    ->limit(1),
+                true,
+                null,
+                [':qp0' => 'user1'],
+            ],
+            'query with update part' => [
+                'T_upsert',
+                (new Query($db))
+                    ->select(['email', 'status' => new Expression('2')])
+                    ->from('customer')
+                    ->where(['name' => 'user1'])
+                    ->limit(1),
+                ['address' => 'foo {{city}}', 'status' => 2, 'orders' => new Expression('T_upsert.orders + 1')],
+                null,
+                [':qp0' => 'user1', ':qp1' => 'foo {{city}}', ':qp2' => 2],
+            ],
+            'query without update part' => [
+                'T_upsert',
+                (new Query($db))
+                    ->select(['email', 'status' => new Expression('2')])
+                    ->from('customer')
+                    ->where(['name' => 'user1'])
+                    ->limit(1),
+                false,
+                null,
+                [':qp0' => 'user1'],
+            ],
+            'values and expressions' => [
+                '{{%T_upsert}}',
+                ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('now()')],
+                true,
+                null,
+                [':qp0' => 'dynamic@example.com'],
+            ],
+            'values and expressions with update part' => [
+                '{{%T_upsert}}',
+                ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('now()')],
+                ['[[orders]]' => new Expression('T_upsert.orders + 1')],
+                null,
+                [':qp0' => 'dynamic@example.com'],
+            ],
+            'values and expressions without update part' => [
+                '{{%T_upsert}}',
+                ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('now()')],
+                false,
+                null,
+                [':qp0' => 'dynamic@example.com'],
+            ],
+            'query, values and expressions with update part' => [
+                '{{%T_upsert}}',
+                (new Query($db))
+                    ->select(
+                        [
+                            'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
+                            '[[time]]' => new Expression('now()'),
+                        ],
+                    ),
+                ['ts' => 0, '[[orders]]' => new Expression('T_upsert.orders + 1')],
+                null,
+                [':phEmail' => 'dynamic@example.com', ':qp1' => 0],
+            ],
+            'query, values and expressions without update part' => [
+                '{{%T_upsert}}',
+                (new Query($db))
+                    ->select(
+                        [
+                            'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
+                            '[[time]]' => new Expression('now()'),
+                        ],
+                    ),
+                ['ts' => 0, '[[orders]]' => new Expression('T_upsert.orders + 1')],
+                null,
+                [':phEmail' => 'dynamic@example.com', ':qp1' => 0],
+            ],
+            'no columns to update' => ['T_upsert_1', ['a' => 1], false, null, [':qp0' => 1]],
+        ];
     }
 }

@@ -5,18 +5,17 @@
   colors="true"
   verbose="true"
   bootstrap="vendor/autoload.php"
-  executionOrder="default"
+  executionOrder="random"
   failOnRisky="true"
   failOnWarning="true"
   xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
 >
   <coverage>
     <include>
-      <directory>./</directory>
+      <directory>./src</directory>
     </include>
     <exclude>
       <directory>./src/TestSupport</directory>
-      <directory>./tests</directory>
       <directory>./vendor</directory>
     </exclude>
   </coverage>
@@ -24,23 +23,8 @@
     <ini name="error_reporting" value="-1"/>
   </php>
   <testsuites>
-    <testsuite name="db">
+    <testsuite name="Db">
       <directory>./tests</directory>
-    </testsuite>
-    <testsuite name="ActiveRecord">
-      <directory>./vendor/yiisoft/active-record/tests</directory>
-    </testsuite>
-    <testsuite name="Mssql">
-      <directory>./vendor/yiisoft/db-mssql/tests</directory>
-    </testsuite>
-    <testsuite name="Mysql">
-      <directory>./vendor/yiisoft/db-mysql/tests</directory>
-    </testsuite>
-    <testsuite name="Oracle">
-      <directory>./vendor/yiisoft/db-oracle/tests</directory>
-    </testsuite>
-    <testsuite name="Pgsql">
-      <directory>./vendor/yiisoft/db-pgsql/tests</directory>
     </testsuite>
     <testsuite name="Sqlite">
       <directory>./vendor/yiisoft/db-sqlite/tests</directory>

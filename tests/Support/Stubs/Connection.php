@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support\Stubs;
 
-use Yiisoft\Db\Driver\PDO\CommandPDO;
-use Yiisoft\Db\Driver\PDO\CommandPDOInterface;
+use PDO;
+use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Driver\PDO\ConnectionPDO;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
-use Yiisoft\Db\Driver\PDO\PDODriver;
-use Yiisoft\Db\Driver\PDO\PDODriverInterface;
-use Yiisoft\Db\Driver\PDO\TransactionPDO;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Quoter;
 use Yiisoft\Db\Schema\QuoterInterface;
@@ -22,21 +19,16 @@ final class Connection extends ConnectionPDO implements ConnectionPDOInterface
 {
     protected QueryBuilderInterface|null $queryBuilder = null;
     protected SchemaInterface|null $schema = null;
+    private Mock|null $mock = null;
 
-    public function __construct()
+    public function __construct(string $dsn)
     {
-        $this->mock = new Mock();
-
-        parent::__construct($this->pdoDriver(), $this->mock->getQueryCache(), $this->mock->getSchemaCache());
+        parent::__construct(new PDODriver($dsn), $this->getMock()->getQueryCache(), $this->getMock()->getSchemaCache());
     }
 
-    protected function initConnection(): void
+    public function createCommand(string $sql = null, array $params = []): CommandInterface
     {
-    }
-
-    public function createCommand(string $sql = null, array $params = []): CommandPDOInterface
-    {
-        $command = new CommandPDO($this, $this->mock->getQueryCache());
+        $command = new Command($this, $this->getMock()->getQueryCache());
 
         if ($sql !== null) {
             $command->setSql($sql);
@@ -55,7 +47,16 @@ final class Connection extends ConnectionPDO implements ConnectionPDOInterface
 
     public function createTransaction(): TransactionInterface
     {
-        return new TransactionPDO($this);
+        return new Transaction($this);
+    }
+
+    public function getMock(): Mock
+    {
+        if ($this->mock === null) {
+            $this->mock = new Mock();
+        }
+
+        return $this->mock;
     }
 
     public function getQueryBuilder(): QueryBuilderInterface
@@ -82,24 +83,18 @@ final class Connection extends ConnectionPDO implements ConnectionPDOInterface
     public function getSchema(): SchemaInterface
     {
         if ($this->schema === null) {
-            $this->schema = new Schema($this, $this->mock->getSchemaCache());
+            $this->schema = new Schema($this, $this->getMock()->getSchemaCache());
         }
 
         return $this->schema;
     }
 
-    private function pdoDriver(): PDODriverInterface
+    protected function initConnection(): void
     {
-        return new class ('sqlite::memory:') extends PDODriver implements PDODriverInterface {
-            public function __construct(string $dsn)
-            {
-                parent::__construct($dsn);
-            }
+        if ($this->getEmulatePrepare() !== null) {
+            $this->driver->attributes([PDO::ATTR_EMULATE_PREPARES => $this->getEmulatePrepare()]);
+        }
 
-            public function getDriverName(): string
-            {
-                return 'sqlite';
-            }
-        };
+        $this->pdo = $this->driver->createConnection();
     }
 }

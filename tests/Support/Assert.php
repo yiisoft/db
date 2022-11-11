@@ -12,6 +12,14 @@ use ReflectionObject;
 final class Assert extends TestCase
 {
     /**
+     * Asserts that value is one of expected values.
+     */
+    public static function isOneOf(mixed $actual, array $expected, string $message = ''): void
+    {
+        self::assertThat($actual, new IsOneOfAssert($expected), $message);
+    }
+
+    /**
      * Asserting two strings equality ignoring line endings.
      */
     public static function equalsWithoutLE(string $expected, string $actual, string $message = ''): void

@@ -8,19 +8,24 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\Conditions\Builder\LikeConditionBuilder;
 use Yiisoft\Db\QueryBuilder\Conditions\LikeCondition;
-use Yiisoft\Db\Tests\Support\Mock;
+use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @group db
  */
 final class LikeConditionBuilderTest extends TestCase
 {
+    use TestTrait;
+
     public function testOperatorException(): void
     {
-        $mock = new Mock();
+        $db = $this->getConnection();
+
         $likeCondition = new LikeCondition('column', 'invalid', 'value');
+
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid operator in like condition: "INVALID"');
-        (new LikeConditionBuilder($mock->queryBuilder()))->build($likeCondition);
+
+        (new LikeConditionBuilder($db->getQueryBuilder()))->build($likeCondition);
     }
 }

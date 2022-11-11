@@ -11,67 +11,68 @@ use Yiisoft\Cache\Cache;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
-use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\QuoterInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Tests\Support\Stubs\Connection;
 use Yiisoft\Log\Logger;
 use Yiisoft\Profiler\Profiler;
 use Yiisoft\Profiler\ProfilerInterface;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 final class Mock extends TestCase
 {
-    private Cache|null $cache = null;
-    private Logger|null $logger = null;
-    private Profiler|null $profiler = null;
-    private QueryCache|null $queryCache = null;
-    private SchemaCache|null $schemaCache = null;
+    private static Cache|null $cache = null;
+    private static Logger|null $logger = null;
+    private static Profiler|null $profiler = null;
+    private static QueryCache|null $queryCache = null;
+    private static SchemaCache|null $schemaCache = null;
 
-    public function __construct()
-    {
-    }
-
-    public function connection(bool $prepareDatabase = false): ConnectionInterface
-    {
-        $db = new Connection();
+    public static function getConnection(
+        bool $prepareDatabase = false,
+        string $dsn = 'sqlite::memory:'
+    ): ConnectionPDOInterface {
+        $db = new Connection($dsn);
 
         if ($prepareDatabase) {
-            $this->prepareDatabase($db, __DIR__ . '/Fixture/sqlite.sql');
+            self::prepareDatabase($db, __DIR__ . '/Fixture/sqlite.sql');
         }
 
         return $db;
     }
 
-    public function getDriverName(): string
+    public static function getCache(): CacheInterface
     {
-        return $this->connection()->getDriver()->getDriverName();
+        return self::cache();
     }
 
-    public function getLogger(): Logger
+    public static function getLogger(): LoggerInterface
     {
-        return $this->logger();
+        return self::logger();
     }
 
-    public function getProfiler(): ProfilerInterface
+    public static function getProfiler(): ProfilerInterface
     {
-        return $this->profiler();
+        return self::profiler();
     }
 
-    public function getQueryCache(): QueryCache
+    public static function getQueryCache(): QueryCache
     {
-        return $this->queryCache();
+        return self::queryCache();
     }
 
-    public function getSchemaCache(): SchemaCache
+    public static function getSchemaCache(): SchemaCache
     {
-        return $this->schemaCache();
+        return self::schemaCache();
     }
 
-    public function prepareDatabase(ConnectionPDOInterface $db, string $fixture): void
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
+    public static function prepareDatabase(ConnectionPDOInterface $db, string $fixture): void
     {
         $db->open();
         $lines = explode(';', file_get_contents($fixture));
@@ -83,68 +84,48 @@ final class Mock extends TestCase
         }
     }
 
-    public function query(): QueryInterface
+    private static function cache(): CacheInterface
     {
-        return new Query($this->connection());
-    }
-
-    public function queryBuilder(): QueryBuilderInterface
-    {
-        return $this->connection()->getQueryBuilder();
-    }
-
-    public function quoter(): QuoterInterface
-    {
-        return $this->connection()->getQuoter();
-    }
-
-    public function schema(): SchemaInterface
-    {
-        return $this->connection()->getSchema();
-    }
-
-    private function cache(): CacheInterface
-    {
-        if ($this->cache === null) {
-            $this->cache = new Cache(new ArrayCache());
+        if (self::$cache === null) {
+            self::$cache = new Cache(new ArrayCache());
         }
 
-        return $this->cache;
+        return self::$cache;
     }
 
-    private function logger(): LoggerInterface
+    private static function logger(): LoggerInterface
     {
-        if ($this->logger === null) {
-            $this->logger = new Logger();
+        if (self::$logger === null) {
+            self::$logger = new Logger();
         }
 
-        return $this->logger;
+        return self::$logger;
     }
 
-    private function profiler(): ProfilerInterface
+    private static function profiler(): ProfilerInterface
     {
-        if ($this->profiler === null) {
-            $this->profiler = new Profiler($this->logger());
+        if (self::$profiler === null) {
+            self::$profiler = new Profiler(self::logger());
         }
 
-        return $this->profiler;
+        return self::$profiler;
     }
 
-    private function queryCache(): QueryCache
+    private static function queryCache(): QueryCache
     {
-        if ($this->queryCache === null) {
-            $this->queryCache = new QueryCache($this->cache());
+        if (self::$queryCache === null) {
+            self::$queryCache = new QueryCache(self::cache());
         }
 
-        return $this->queryCache;
+        return self::$queryCache;
     }
 
-    private function schemaCache(): SchemaCache
+    private static function schemaCache(): SchemaCache
     {
-        if ($this->schemaCache === null) {
-            $this->schemaCache = new SchemaCache($this->cache());
+        if (self::$schemaCache === null) {
+            self::$schemaCache = new SchemaCache(self::cache());
         }
 
-        return $this->schemaCache;
+        return self::$schemaCache;
     }
 }
