@@ -41,7 +41,7 @@ final class FromTest extends TestCase
             [['alias' => 'table3'], 'SELECT * FROM "table3" "alias"'],
             [['alias' => new Expression('table4')], 'SELECT * FROM table4 "alias"'],
             [
-                ['alias' => new Expression('func(:param1, :param2)',  ['param1' => 'A', 'param2' => 'B'])],
+                ['alias' => new Expression('func(:param1, :param2)', ['param1' => 'A', 'param2' => 'B'])],
                 'SELECT * FROM func(:param1, :param2) "alias"',
                 ['param1' => 'A', 'param2' => 'B'],
             ],
@@ -51,8 +51,8 @@ final class FromTest extends TestCase
     private function build(Query $query): array
     {
         $cm = \Closure::fromCallable([$this, 'createMock']);
-        $qb = new class ($cm,) extends QueryBuilder {
-            public function __construct( \Closure $cm)
+        $qb = new class ($cm, ) extends QueryBuilder {
+            public function __construct(\Closure $cm)
             {
                 $quoter = new Quoter('"', '"');
                 /** @var Schema $schema */
@@ -66,7 +66,8 @@ final class FromTest extends TestCase
                     $this,
                     $quoter,
                     $schema,
-                ) extends DQLQueryBuilder {};
+                ) extends DQLQueryBuilder {
+                };
 
                 parent::__construct($quoter, $schema, $ddlBuilder, $dmlBuilder, $dqlBuilder);
             }
@@ -77,6 +78,6 @@ final class FromTest extends TestCase
 
     private function createQuery(): Query
     {
-        return (new Query($this->createMock(Connection::class)));
+        return new Query($this->createMock(Connection::class));
     }
 }
