@@ -108,6 +108,13 @@ final class QueryBuilderProvider
         return $baseQueryBuilderProvider->delete($this->getConnection());
     }
 
+    public function fromCases(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
+
+        return $baseQueryBuilderProvider->fromCases();
+    }
+
     public function insert(): array
     {
         $baseQueryBuilderProvider = new BaseQueryBuilderProvider();

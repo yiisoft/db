@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\QueryBuilder;
 
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -106,6 +107,22 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
             SQL,
             $sql,
         );
+    }
+
+    /**
+     *  @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::fromCases()
+     */
+    public function testBasic(mixed $table, string $expectedSql, array $expectedParams = []): void
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+        $query = (new Query($db))->from($table);
+
+        [$sql, $params] = $qb->build($query);
+
+        $this->assertSame($expectedSql, $sql);
+        $this->assertSame($expectedParams, $params);
     }
 
     public function testRenameTable(): void

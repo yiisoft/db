@@ -1008,6 +1008,23 @@ final class BaseQueryBuilderProvider
         ];
     }
 
+    public function fromCases(): array
+    {
+        return [
+            ['table1', 'SELECT * FROM `table1`'],
+            [['table1'], 'SELECT * FROM `table1`'],
+            [new Expression('table2'), 'SELECT * FROM table2'],
+            [[new Expression('table2')], 'SELECT * FROM table2'],
+            [['alias' => 'table3'], 'SELECT * FROM `table3` `alias`'],
+            [['alias' => new Expression('table4')], 'SELECT * FROM table4 `alias`'],
+            [
+                ['alias' => new Expression('func(:param1, :param2)', ['param1' => 'A', 'param2' => 'B'])],
+                'SELECT * FROM func(:param1, :param2) `alias`',
+                ['param1' => 'A', 'param2' => 'B'],
+            ],
+        ];
+    }
+
     public function insert(ConnectionPDOInterface $db): array
     {
         return [
