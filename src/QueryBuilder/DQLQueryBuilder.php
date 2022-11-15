@@ -605,6 +605,9 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
                     $table = $this->quoter->quoteTableName($table);
                 }
                 $tables[$i] = "$table " . $this->quoter->quoteTableName($i);
+            } elseif ($table instanceof ExpressionInterface && is_string($i)) {
+                $table = $this->buildExpression($table, $params);
+                $tables[$i] = "$table " . $this->quoter->quoteTableName($i);
             } elseif (is_string($table) && !str_contains($table, '(')) {
                 $tableWithAlias = $this->extractAlias($table);
                 if (is_array($tableWithAlias)) { // with alias
