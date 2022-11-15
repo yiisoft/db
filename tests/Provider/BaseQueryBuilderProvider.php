@@ -29,7 +29,7 @@ final class BaseQueryBuilderProvider
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]] integer
                 SQL,
-            ]
+            ],
         ];
     }
 
