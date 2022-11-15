@@ -17,7 +17,6 @@ use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Data\DataReader;
-use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -39,11 +38,15 @@ abstract class AbstractCommandTest extends TestCase
         $command = $db->createCommand();
         $sql = $command->addCheck('name', 'table', 'id > 0')->getSql();
 
+
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` ADD CONSTRAINT `name` CHECK (id > 0)
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] ADD CONSTRAINT [[name]] CHECK (id > 0)
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -58,22 +61,25 @@ abstract class AbstractCommandTest extends TestCase
             <<<SQL
             ALTER TABLE `table` ADD `column` integer
             SQL,
-            $sql
+            $sql,
         );
     }
 
     public function testAddCommentOnColumn(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnectionWithData();
 
         $command = $db->createCommand();
-        $sql = $command->addCommentOnColumn('table', 'column', 'comment')->getSql();
+        $sql = $command->addCommentOnColumn('customer', 'id', 'Primary key.')->getSql();
 
-        $this->assertSame(
-            <<<SQL
-            COMMENT ON COLUMN `table`.`column` IS 'comment'
-            SQL,
-            $sql
+        $this->assertStringContainsString(
+            DbHelper::replaceQuotes(
+                <<<SQL
+                COMMENT ON COLUMN [[customer]].[[id]] IS 'Primary key.'
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -85,25 +91,14 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->addCommentOnTable('table', 'comment')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            COMMENT ON TABLE `table` IS 'comment'
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                COMMENT ON TABLE [[table]] IS 'comment'
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
-    }
-
-    public function testAddDefaultValue(): void
-    {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand();
-
-        $this->expectException(NotsupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\DDLQueryBuilder does not support adding default value constraints.'
-        );
-
-        $command->addDefaultValue('name', 'table', 'column', 'value')->getSql();
     }
 
     public function testAddForeignKey(): void
@@ -114,19 +109,25 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->addForeignKey('name', 'table', 'column', 'ref_table', 'ref_column')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` ADD CONSTRAINT `name` FOREIGN KEY (`column`) REFERENCES `ref_table` (`ref_column`)
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] ADD CONSTRAINT [[name]] FOREIGN KEY ([[column]]) REFERENCES [[ref_table]] ([[ref_column]])
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
 
         $sql = $command->addForeignKey('name', 'table', 'column', 'ref_table', 'ref_column', 'CASCADE')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` ADD CONSTRAINT `name` FOREIGN KEY (`column`) REFERENCES `ref_table` (`ref_column`) ON DELETE CASCADE
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] ADD CONSTRAINT [[name]] FOREIGN KEY ([[column]]) REFERENCES [[ref_table]] ([[ref_column]]) ON DELETE CASCADE
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
 
         $sql = $command
@@ -134,10 +135,13 @@ abstract class AbstractCommandTest extends TestCase
             ->getSql();
 
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` ADD CONSTRAINT `name` FOREIGN KEY (`column`) REFERENCES `ref_table` (`ref_column`) ON DELETE CASCADE ON UPDATE CASCADE
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] ADD CONSTRAINT [[name]] FOREIGN KEY ([[column]]) REFERENCES [[ref_table]] ([[ref_column]]) ON DELETE CASCADE ON UPDATE CASCADE
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -148,20 +152,28 @@ abstract class AbstractCommandTest extends TestCase
         $command = $db->createCommand();
         $sql = $command->addPrimaryKey('name', 'table', 'column')->getSql();
 
+
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` ADD CONSTRAINT `name` PRIMARY KEY (`column`)
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] ADD CONSTRAINT [[name]] PRIMARY KEY ([[column]])
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
 
         $sql = $command->addPrimaryKey('name', 'table', ['column1', 'column2'])->getSql();
 
+
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` ADD CONSTRAINT `name` PRIMARY KEY (`column1`, `column2`)
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] ADD CONSTRAINT [[name]] PRIMARY KEY ([[column1]], [[column2]])
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -173,19 +185,25 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->addUnique('name', 'table', 'column')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` ADD CONSTRAINT `name` UNIQUE (`column`)
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] ADD CONSTRAINT [[name]] UNIQUE ([[column]])
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
 
         $sql = $command->addUnique('name', 'table', ['column1', 'column2'])->getSql();
 
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` ADD CONSTRAINT `name` UNIQUE (`column1`, `column2`)
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] ADD CONSTRAINT [[name]] UNIQUE ([[column1]], [[column2]])
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -200,29 +218,8 @@ abstract class AbstractCommandTest extends TestCase
             <<<SQL
             ALTER TABLE `table` CHANGE `column` `column` integer
             SQL,
-            $sql
+            $sql,
         );
-    }
-
-    public function testBatchInsert(): void
-    {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand();
-
-        $this->expectException(NotsupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\Schema::loadTableSchema() is not supported by core-db.'
-        );
-
-        $command->batchInsert(
-            'table',
-            ['column1', 'column2'],
-            [
-                ['value1', 'value2'],
-                ['value3', 'value4'],
-            ]
-        )->getSql();
     }
 
     public function testBindValues(): void
@@ -272,20 +269,6 @@ abstract class AbstractCommandTest extends TestCase
         $this->assertSame($tagDependency, Assert::getInaccessibleProperty($command, 'queryCacheDependency'));
     }
 
-    public function testCheckIntegrity(): void
-    {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand();
-
-        $this->expectException(NotsupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\DDLQueryBuilder does not support enabling/disabling integrity check.'
-        );
-
-        $command->checkIntegrity('schema', 'table')->getSql();
-    }
-
     public function testConstruct(): void
     {
         $db = $this->getConnection();
@@ -303,102 +286,24 @@ abstract class AbstractCommandTest extends TestCase
         $this->assertSame([':name' => 'John'], $command->getParams());
     }
 
-    public function testCreateIndex(): void
-    {
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::createIndex()
+     */
+    public function testCreateIndex(
+        string $name,
+        string $table,
+        array|string $column,
+        string $indexType,
+        string $indexMethod,
+        string $expected,
+    ): void {
         $db = $this->getConnection();
 
         $command = $db->createCommand();
 
-        $sql = $command->createIndex('name', 'table', 'column')->getSql();
+        $sql = $command->createIndex($name, $table, $column, $indexType, $indexMethod)->getSql();
 
-        $this->assertSame(
-            <<<SQL
-            CREATE INDEX `name` ON `table` (`column`)
-            SQL,
-            $sql
-        );
-
-        $sql = $command->createIndex('name', 'table', ['column1', 'column2'])->getSql();
-
-        $this->assertSame(
-            <<<SQL
-            CREATE INDEX `name` ON `table` (`column1`, `column2`)
-            SQL,
-            $sql
-        );
-
-        $sql = $command->createIndex('name', 'table', ['column1', 'column2'], QueryBuilder::INDEX_UNIQUE)->getSql();
-
-        $this->assertSame(
-            <<<SQL
-            CREATE UNIQUE INDEX `name` ON `table` (`column1`, `column2`)
-            SQL,
-            $sql
-        );
-
-        $sql = $command->createIndex('name', 'table', ['column1', 'column2'], 'FULLTEXT')->getSql();
-
-        $this->assertSame(
-            <<<SQL
-            CREATE FULLTEXT INDEX `name` ON `table` (`column1`, `column2`)
-            SQL,
-            $sql
-        );
-
-        $sql = $command->createIndex('name', 'table', ['column1', 'column2'], 'SPATIAL')->getSql();
-
-        $this->assertSame(
-            <<<SQL
-            CREATE SPATIAL INDEX `name` ON `table` (`column1`, `column2`)
-            SQL,
-            $sql
-        );
-
-        $sql = $command->createIndex('name', 'table', ['column1', 'column2'], 'BITMAP')->getSql();
-
-        $this->assertSame(
-            <<<SQL
-            CREATE BITMAP INDEX `name` ON `table` (`column1`, `column2`)
-            SQL,
-            $sql
-        );
-    }
-
-    public function testCreateTable(): void
-    {
-        $this->db = $this->getConnectionWithData();
-
-        $command = $this->db->createCommand();
-
-        $expected = DbHelper::replaceQuotes(
-            <<<SQL
-            CREATE TABLE [[test_table]] (
-            \t[[id]] pk,
-            \t[[name]] string(255) NOT NULL,
-            \t[[email]] string(255) NOT NULL,
-            \t[[address]] string(255) NOT NULL,
-            \t[[status]] integer NOT NULL,
-            \t[[profile_id]] integer NOT NULL,
-            \t[[created_at]] timestamp NOT NULL,
-            \t[[updated_at]] timestamp NOT NULL
-            ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
-            SQL,
-            $this->db->getName(),
-        );
-        $columns = [
-            'id' => $this->primaryKey(5),
-            'name' => $this->string(255)->notNull(),
-            'email' => $this->string(255)->notNull(),
-            'address' => $this->string(255)->notNull(),
-            'status' => $this->integer()->notNull(),
-            'profile_id' => $this->integer()->notNull(),
-            'created_at' => $this->timestamp()->notNull(),
-            'updated_at' => $this->timestamp()->notNull(),
-        ];
-        $options = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
-        $sql = $command->createTable('test_table', $columns, $options)->getSql();
-
-        Assert::equalsWithoutLE($expected, $sql);
+        $this->assertSame($expected, $sql);
     }
 
     public function testCreateView(): void
@@ -415,10 +320,13 @@ abstract class AbstractCommandTest extends TestCase
         )->getSql();
 
         $this->assertSame(
-            <<<SQL
-            CREATE VIEW `view` AS SELECT * FROM table
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                CREATE VIEW [[view]] AS SELECT * FROM table
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -441,10 +349,13 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->delete('table', ['column' => 'value'])->getSql();
 
         $this->assertSame(
-            <<<SQL
-            DELETE FROM `table` WHERE `column`=:qp0
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                DELETE FROM [[table]] WHERE [[column]]=:qp0
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -456,10 +367,13 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->dropCheck('name', 'table')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` DROP CONSTRAINT `name`
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -471,10 +385,13 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->dropColumn('table', 'column')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` DROP COLUMN `column`
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] DROP COLUMN [[column]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -486,10 +403,13 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->dropCommentFromColumn('table', 'column')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            COMMENT ON COLUMN `table`.`column` IS NULL
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                COMMENT ON COLUMN [[table]].[[column]] IS NULL
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -501,25 +421,14 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->dropCommentFromTable('table')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            COMMENT ON TABLE `table` IS NULL
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                COMMENT ON TABLE [[table]] IS NULL
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
-    }
-
-    public function testDropDefaultValue(): void
-    {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand();
-
-        $this->expectException(NotsupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\DDLQueryBuilder does not support dropping default value constraints.'
-        );
-
-        $command->dropDefaultValue('table', 'column')->getSql();
     }
 
     public function testDropForeingKey(): void
@@ -530,10 +439,13 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->dropForeignKey('name', 'table')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` DROP CONSTRAINT `name`
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -545,10 +457,13 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->dropIndex('name', 'table')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            DROP INDEX `name` ON `table`
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                DROP INDEX [[name]] ON [[table]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -560,10 +475,13 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->dropPrimaryKey('name', 'table')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` DROP CONSTRAINT `name`
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -575,10 +493,13 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->dropTable('table')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            DROP TABLE `table`
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                DROP TABLE [[table]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -590,10 +511,13 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->dropView('view')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            DROP VIEW `view`
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                DROP VIEW [[view]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -605,46 +529,14 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $command->dropUnique('name', 'table')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` DROP CONSTRAINT `name`
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
-    }
-
-    public function testExecute(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $command = $db->createCommand(
-            <<<SQL
-            SELECT * FROM {{customer}} WHERE id=:id
-            SQL,
-            [
-                ':id' => 1,
-            ]
-        );
-
-        $this->expectException(NotsupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\Command does not support internalExecute() by core-db.'
-        );
-
-        $command->execute();
-    }
-
-    public function testExecuteResetSequence(): void
-    {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand();
-
-        $this->expectException(NotsupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\DMLQueryBuilder does not support resetting sequence.'
-        );
-
-        $command->executeResetSequence('table')->getSql();
     }
 
     public function testExecuteWithSqlEmtpy(): void
@@ -729,21 +621,6 @@ abstract class AbstractCommandTest extends TestCase
         $this->assertSame($sql2, $command->getSql());
     }
 
-    public function testInsert(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $this->expectException(NotsupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\Schema::loadTableSchema() is not supported by core-db.'
-        );
-
-        $command = $db->createCommand();
-        $command
-            ->insert('{{customer}}', ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'])
-            ->execute();
-    }
-
     public function testLastInsertIdException(): void
     {
         $db = $this->getConnection();
@@ -763,48 +640,6 @@ abstract class AbstractCommandTest extends TestCase
 
         $this->assertSame(-1, Assert::getInaccessibleProperty($command, 'queryCacheDuration'));
         $this->assertInstanceOf(CommandInterface::class, $command);
-    }
-
-    public function testQuery(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $command = $db->createCommand(
-            <<<SQL
-            SELECT * FROM {{customer}} WHERE id=:id
-            SQL,
-            [
-                ':id' => 1,
-            ]
-        );
-
-        $this->expectException(NotsupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\Command does not support internalExecute() by core-db.'
-        );
-
-        $command->query();
-    }
-
-    public function testQueryAll(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $command = $db->createCommand(
-            <<<SQL
-            SELECT * FROM {{customer}} WHERE id=:id
-            SQL,
-            [
-                ':id' => 1,
-            ]
-        );
-
-        $this->expectException(NotsupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\Command does not support internalExecute() by core-db.'
-        );
-
-        $command->queryAll();
     }
 
     public function testPrepareCancel(): void
@@ -840,32 +675,6 @@ abstract class AbstractCommandTest extends TestCase
             SQL,
             $sql,
         );
-    }
-
-    public function testRenameTable(): void
-    {
-        $db = $this->getConnection();
-
-        $sql = $db->createCommand()->renameTable('table', 'newname')->getSql();
-
-        $this->assertSame(
-            <<<SQL
-            RENAME TABLE `table` TO `newname`
-            SQL,
-            $sql,
-        );
-    }
-
-    public function testResetSequence(): void
-    {
-        $db = $this->getConnection();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\DMLQueryBuilder does not support resetting sequence.'
-        );
-
-        $db->createCommand()->resetSequence('table', 5)->getSql();
     }
 
     public function testSetRawSql(): void
@@ -908,27 +717,6 @@ abstract class AbstractCommandTest extends TestCase
             SQL,
             $sql,
         );
-    }
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::upsert()
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
-    public function testUpsert(array $firstData, array $secondData): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $command = $db->createCommand();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\DMLQueryBuilder does not support upsert.'
-        );
-
-        $command->upsert('table', $firstData)->getSql();
     }
 
     protected function performAndCompareUpsertResult(ConnectionPDOInterface $db, array $data): void

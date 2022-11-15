@@ -5,12 +5,21 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use Closure;
+use JsonException;
+use Throwable;
+use Yiisoft\Arrays\ArrayHelper;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\IntegrityException;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\ColumnTypesProvider;
+use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -29,6 +38,32 @@ use function strncmp;
 abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
 {
     use TestTrait;
+
+    public function testAddCommentOnColumn(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $qb = $db->getQueryBuilder();
+        $sql = $qb->addCommentOnColumn('customer', 'id', 'Primary key.');
+        $command->setSql($sql)->execute();
+        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
+
+        $this->assertSame('Primary key.', $commentOnColumn);
+    }
+
+    public function testAddCommentOnTable(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $qb = $db->getQueryBuilder();
+        $sql = $qb->addCommentOnTable('customer', 'Customer table.');
+        $command->setSql($sql)->execute();
+        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
+
+        $this->assertSame('Customer table.', $commentOnTable);
+    }
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addDropChecks()
@@ -105,14 +140,14 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         string|null $expected,
         array $expectedParams = []
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getConnectionWithData();
 
         $qb = $db->getQueryBuilder();
         $params = [];
         $sql = $qb->batchInsert($table, $columns, $value, $params);
 
         $this->assertSame($expected, $sql);
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**
@@ -177,6 +212,32 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
     }
 
     /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildLikeConditions()
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     */
+    public function testBuildLikeCondition(
+        array|ExpressionInterface $condition,
+        string $expected,
+        array $expectedParams
+    ): void {
+        $db = $this->getConnection();
+
+        $query = $this->getQuery($db)->where($condition);
+
+        [$sql, $params] = $db->getQueryBuilder()->build($query);
+
+        $replacedQuotes = DbHelper::replaceQuotes($expected, $db->getName());
+
+        $this->assertIsString($replacedQuotes);
+        $this->assertEquals('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $replacedQuotes), $sql);
+        $this->assertEquals($expectedParams, $params);
+    }
+
+    /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildWhereExists()
      */
     public function testBuildWhereExists(string $cond, string $expectedQuerySql): void
@@ -194,6 +255,42 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $this->assertSame($expectedQueryParams, $actualQueryParams);
     }
 
+    public function testCheckIntegrity(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $qb = $db->getQueryBuilder();
+        $sql = $qb->checkIntegrity('schema', 'table');
+
+        $this->assertSame(0, $command->setSql($sql)->execute());
+    }
+
+    public function testCheckIntegrityExecuteException(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $qb = $db->getQueryBuilder();
+        $schemaName = 'dbo';
+        $tableName = 'T_constraints_3';
+        $command->setSql($qb->checkIntegrity($schemaName, $tableName, false))->execute();
+        $command->setSql(
+            <<<SQL
+            INSERT INTO {{{$tableName}}} ([[C_id]], [[C_fk_id_1]], [[C_fk_id_2]]) VALUES (1, 2, 3)
+            SQL
+        )->execute();
+        $command->setSql($qb->checkIntegrity($schemaName, $tableName))->execute();
+
+        $this->expectException(IntegrityException::class);
+
+        $command->setSql(
+            <<<SQL
+            INSERT INTO {{{$tableName}}} ([[C_id]], [[C_fk_id_1]], [[C_fk_id_2]]) VALUES (1, 2, 3)
+            SQL
+        )->execute();
+    }
+
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::createDropIndex()
      */
@@ -204,6 +301,34 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($db->getQuoter()->quoteSql($sql), $builder($qb));
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
+    public function testCreateTable(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $qb = $db->getQueryBuilder();
+
+        if ($db->getSchema()->getTableSchema('testCreateTable', true) !== null) {
+            $command->dropTable('testCreateTable')->execute();
+        }
+
+        $sql = $qb->createTable('testCreateTable', ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER]);
+        $command->setSql($sql)->execute();
+        $command->insert('testCreateTable', ['bar' => 1])->execute();
+        $records = $command->setSql(
+            <<<SQL
+            SELECT [[id]], [[bar]] FROM {{testCreateTable}};
+            SQL
+        )->queryAll();
+
+        $this->assertEquals([['id' => 1, 'bar' => 1]], $records);
     }
 
     public function testCreateTableColumnTypes(): void
@@ -252,6 +377,44 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->assertSame($expectedSQL, $actualSQL);
         $this->assertSame($expectedParams, $actualParams);
+    }
+
+    public function testDropCommentFromColumn(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $qb = $db->getQueryBuilder();
+        $sql = $qb->addCommentOnColumn('customer', 'id', 'Primary key.');
+        $command->setSql($sql)->execute();
+        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
+
+        $this->assertSame('Primary key.', $commentOnColumn);
+
+        $sql = $qb->dropCommentFromColumn('customer', 'id');
+        $command->setSql($sql)->execute();
+        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
+
+        $this->assertSame([], $commentOnColumn);
+    }
+
+    public function testDropCommentFromTable(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $qb = $db->getQueryBuilder();
+        $sql = $qb->addCommentOnTable('customer', 'Customer table.');
+        $command->setSql($sql)->execute();
+        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
+
+        $this->assertSame('Customer table.', $commentOnTable);
+
+        $sql = $qb->dropCommentFromTable('customer');
+        $command->setSql($sql)->execute();
+        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
+
+        $this->assertSame([], $commentOnTable);
     }
 
     public function testGetColumnType(): void
@@ -317,6 +480,34 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
     }
 
     /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
+    public function testRenameTable(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $fromTableName = 'type';
+        $toTableName = 'new_type';
+        $command = $db->createCommand();
+        $qb = $db->getQueryBuilder();
+
+        if ($db->getSchema()->getTableSchema($toTableName) !== null) {
+            $command->dropTable($toTableName)->execute();
+        }
+
+        $this->assertNotNull($db->getSchema()->getTableSchema($fromTableName));
+        $this->assertNull($db->getSchema()->getTableSchema($toTableName));
+
+        $sql = $qb->renameTable($fromTableName, $toTableName);
+        $command->setSql($sql)->execute();
+
+        $this->assertNull($db->getSchema()->getTableSchema($fromTableName, true));
+        $this->assertNotNull($db->getSchema()->getTableSchema($toTableName, true));
+    }
+
+    /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::update()
      */
     public function testUpdate(
@@ -333,5 +524,37 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->assertSame($expectedSQL, $qb->update($table, $columns, $condition, $actualParams));
         $this->assertSame($expectedParams, $actualParams);
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert()
+     *
+     * @throws Exception
+     * @throws JsonException
+     * @throws NotSupportedException
+     */
+    public function testUpsert(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns,
+        string|array $expectedSQL,
+        array $expectedParams
+    ): void {
+        $db = $this->getConnectionWithData();
+
+        $actualParams = [];
+        $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
+
+        if (is_string($expectedSQL)) {
+            $this->assertSame($expectedSQL, $actualSQL);
+        } else {
+            $this->assertContains($actualSQL, $expectedSQL);
+        }
+
+        if (ArrayHelper::isAssociative($expectedParams)) {
+            $this->assertSame($expectedParams, $actualParams);
+        } else {
+            Assert::isOneOf($actualParams, $expectedParams);
+        }
     }
 }

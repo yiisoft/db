@@ -18,6 +18,9 @@ abstract class CommonQuoterTest extends AbstractQuoterTest
 {
     use TestTrait;
 
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::columnName()
+     */
     public function testQuoteColumnNameWithDbGetQuoter(string $columnName, string $expected): void
     {
         $db = $this->getConnection();
@@ -28,6 +31,9 @@ abstract class CommonQuoterTest extends AbstractQuoterTest
         $this->assertSame($expected, $quoted);
     }
 
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::simpleColumnName()
+     */
     public function testQuoteSimpleColumnNameWithDbGetQuoter(string $columnName, string $expected): void
     {
         $db = $this->getConnection();
@@ -38,6 +44,9 @@ abstract class CommonQuoterTest extends AbstractQuoterTest
         $this->assertSame($expected, $quoted);
     }
 
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::simpleTableName()
+     */
     public function testQuoteSimpleTableNameWithDbGetQuoter(string $tableName, string $expected): void
     {
         $db = $this->getConnection();
@@ -48,6 +57,9 @@ abstract class CommonQuoterTest extends AbstractQuoterTest
         $this->assertSame($expected, $quoted);
     }
 
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::unquoteSimpleColumnName
+     */
     public function testUnquoteSimpleColumnNameWithDbGetQuoter(string $tableName, string $expected): void
     {
         $db = $this->getConnection();
@@ -58,6 +70,9 @@ abstract class CommonQuoterTest extends AbstractQuoterTest
         $this->assertSame($expected, $quoted);
     }
 
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::unquoteSimpleTableName()
+     */
     public function testUnquoteSimpleTableNameWithDbGetQuoter(string $tableName, string $expected): void
     {
         $db = $this->getConnection();

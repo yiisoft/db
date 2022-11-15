@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
@@ -55,30 +54,6 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame($condition, $query->getWhere());
     }
 
-    public function testColumn(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\Command does not support internalExecute() by core-db.'
-        );
-
-        (new Query($db))->select('name')->from('customer')->orderBy(['id' => SORT_DESC])->column();
-    }
-
-    public function testCount(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\Command does not support internalExecute() by core-db.'
-        );
-
-        (new Query($db))->from('customer')->count();
-    }
-
     public function testEmulateExecution(): void
     {
         $db = $this->getConnectionWithData();
@@ -121,18 +96,6 @@ abstract class AbstractQueryTest extends TestCase
 
         $column = (new Query($db))->select(['id'])->from('customer')->emulateExecution()->column();
         $this->assertSame([], $column);
-    }
-
-    public function testExists(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\Command does not support internalExecute() by core-db.'
-        );
-
-        (new Query($db))->from('customer')->where(['status' => 2])->exists();
     }
 
     public function testFilterHavingWithHashFormat(): void
@@ -346,33 +309,6 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame(10, $query->getLimit());
         $this->assertSame(5, $query->getOffset());
-    }
-
-    public function testLimitOffsetWithExpression(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $query = (new Query($db))->from('customer')->select('id')->orderBy('id');
-        $query->limit(new Expression('1 + 1'))->offset(new Expression('1 + 0'));
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\Command does not support internalExecute() by core-db.'
-        );
-
-        $query->column();
-    }
-
-    public function testOne(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\Command does not support internalExecute() by core-db.'
-        );
-
-        (new Query($db))->from('customer')->where(['status' => 2])->one();
     }
 
     public function testOrder(): void

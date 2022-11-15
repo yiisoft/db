@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -64,36 +62,6 @@ abstract class AbstractConnectionTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertSame('sqlite', $db->getName());
-    }
-
-    public function testGetTableSchema(): void
-    {
-        $db = $this->getConnection();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\Schema::loadTableSchema() is not supported by core-db.'
-        );
-
-        $db->getTableSchema('non_existing_table');
-    }
-
-    public function testNestedTransactionNotSupported(): void
-    {
-        $db = $this->getConnection();
-
-        $db->setEnableSavepoint(false);
-
-        $this->assertFalse($db->isSavepointEnabled());
-
-        $db->transaction(
-            function (ConnectionInterface $db) {
-                $this->assertNotNull($db->getTransaction());
-                $this->expectException(NotSupportedException::class);
-
-                $db->beginTransaction();
-            }
-        );
     }
 
     public function testNotProfiler(): void

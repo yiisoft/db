@@ -10,6 +10,10 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\DefaultValueConstraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Support\AnyCaseValue;
@@ -38,11 +42,10 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 {
     use TestTrait;
 
-    public function testColumnSchema(): void
+    public function testColumnSchema(array $columns): void
     {
         $db = $this->getConnectionWithData();
 
-        $columns = $this->getExpectedColumns();
         $table = $db->getTableSchema('type', true);
 
         $this->assertNotNull($table);
@@ -150,6 +153,18 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         }
     }
 
+    public function testFindUniquesIndex(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $schema = $db->getSchema();
+        $tUpsert = $schema->getTableSchema('T_upsert');
+
+        $this->assertInstanceOf(TableSchemaInterface::class, $tUpsert);
+        $this->assertContains([0 => 'email', 1 => 'recovery_email'], $schema->findUniqueIndexes($tUpsert));
+        $this->assertContains([0 => 'email'], $schema->findUniqueIndexes($tUpsert));
+    }
+
     public function testGetColumnNoExist(): void
     {
         $db = $this->getConnectionWithData();
@@ -161,6 +176,15 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertNull($table->getColumn('no_exist'));
     }
 
+    public function testGetDefaultSchema(): void
+    {
+        $db = $this->getConnection();
+
+        $schema = $db->getSchema();
+
+        $this->assertNull($schema->getDefaultSchema());
+    }
+
     public function testGetNonExistingTableSchema(): void
     {
         $db = $this->getConnection();
@@ -168,6 +192,25 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $schema = $db->getSchema();
 
         $this->assertNull($schema->getTableSchema('nonexisting_table'));
+    }
+
+    public function testGetPrimaryKey(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+
+        if ($db->getSchema()->getTableSchema('testPKTable') !== null) {
+            $command->dropTable('testPKTable')->execute();
+        }
+
+        $command->createTable('testPKTable', ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER])->execute();
+        $insertResult = $command->insertEx('testPKTable', ['bar' => 1]);
+        $selectResult = $command->setSql('select [id] from [testPKTable] where [bar]=1')->queryOne();
+
+        $this->assertIsArray($insertResult);
+        $this->assertIsArray($selectResult);
+        $this->assertEquals($selectResult['id'], $insertResult['id']);
     }
 
     public function testGetSchemaChecks(): void
@@ -256,6 +299,51 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         }
     }
 
+    public function testGetStringFieldsSize(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $schema = $db->getSchema();
+        $tableSchema = $schema->getTableSchema('type');
+
+        $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema);
+
+        $columns = $tableSchema->getColumns();
+        $expectedType = null;
+        $expectedSize = null;
+        $expectedDbType = null;
+
+        foreach ($columns as $name => $column) {
+            $type = $column->getType();
+            $size = $column->getSize();
+            $dbType = $column->getDbType();
+
+            if (str_starts_with($name, 'char_')) {
+                switch ($name) {
+                    case 'char_col':
+                        $expectedType = 'char';
+                        $expectedSize = 100;
+                        $expectedDbType = 'char(100)';
+                        break;
+                    case 'char_col2':
+                        $expectedType = 'string';
+                        $expectedSize = 100;
+                        $expectedDbType = 'varchar(100)';
+                        break;
+                    case 'char_col3':
+                        $expectedType = 'text';
+                        $expectedSize = null;
+                        $expectedDbType = 'text';
+                        break;
+                }
+
+                $this->assertSame($expectedType, $type);
+                $this->assertSame($expectedSize, $size);
+                $this->assertSame($expectedDbType, $dbType);
+            }
+        }
+    }
+
     public function testGetTableChecks(): void
     {
         $db = $this->getConnectionWithData();
@@ -265,6 +353,117 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->assertIsArray($tableChecks);
         $this->assertContainsOnlyInstancesOf(CheckConstraint::class, $tableChecks);
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::pdoAttributes()
+     */
+    public function testGetTableNames(array $pdoAttributes): void
+    {
+        $db = $this->getConnectionWithData();
+
+        foreach ($pdoAttributes as $name => $value) {
+            if ($name === PDO::ATTR_EMULATE_PREPARES) {
+                continue;
+            }
+
+            $db->getPDO()?->setAttribute($name, $value);
+        }
+
+        $schema = $db->getSchema();
+        $tablesNames = $schema->getTableNames();
+        $tablesNames = array_map(static fn ($item) => trim($item, '[]'), $tablesNames);
+
+        $this->assertContains('customer', $tablesNames);
+        $this->assertContains('category', $tablesNames);
+        $this->assertContains('item', $tablesNames);
+        $this->assertContains('order', $tablesNames);
+        $this->assertContains('order_item', $tablesNames);
+        $this->assertContains('type', $tablesNames);
+        $this->assertContains('animal', $tablesNames);
+        $this->assertContains('animal_view', $tablesNames);
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchema()
+     */
+    public function testGetTableSchema(string $name, string $expectedName): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $tableSchema = $db->getSchema()->getTableSchema($name);
+
+        $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema);
+        $this->assertEquals($expectedName, $tableSchema->getName());
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::pdoAttributes()
+     */
+    public function testGetTableSchemas(array $pdoAttributes): void
+    {
+        $db = $this->getConnectionWithData();
+
+        foreach ($pdoAttributes as $name => $value) {
+            if ($name === PDO::ATTR_EMULATE_PREPARES) {
+                continue;
+            }
+
+            $db->getPDO()?->setAttribute($name, $value);
+        }
+
+        $schema = $db->getSchema();
+        $tables = $schema->getTableSchemas();
+        $this->assertCount(count($schema->getTableNames()), $tables);
+
+        foreach ($tables as $table) {
+            $this->assertInstanceOf(TableSchemaInterface::class, $table);
+        }
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchemaCachePrefixes()
+     */
+    public function testTableSchemaCacheWithTablePrefixes(
+        string $tablePrefix,
+        string $tableName,
+        string $testTablePrefix,
+        string $testTableName
+    ): void {
+        $db = $this->getConnectionWithData();
+
+        $schema = $db->getSchema();
+        $schemaCache = $this->getSchemaCache();
+
+        $this->assertNotNull($schemaCache);
+
+        $schema->schemaCacheEnable(true);
+        $db->setTablePrefix($tablePrefix);
+        $noCacheTable = $schema->getTableSchema($tableName, true);
+
+        $this->assertInstanceOf(TableSchemaInterface::class, $noCacheTable);
+
+        /* Compare */
+        $db->setTablePrefix($testTablePrefix);
+        $testNoCacheTable = $schema->getTableSchema($testTableName);
+
+        $this->assertSame($noCacheTable, $testNoCacheTable);
+
+        $db->setTablePrefix($tablePrefix);
+        $schema->refreshTableSchema($tableName);
+        $refreshedTable = $schema->getTableSchema($tableName);
+
+        $this->assertInstanceOf(TableSchemaInterface::class, $refreshedTable);
+        $this->assertNotSame($noCacheTable, $refreshedTable);
+
+        /* Compare */
+        $db->setTablePrefix($testTablePrefix);
+        $schema->refreshTableSchema($testTablePrefix);
+        $testRefreshedTable = $schema->getTableSchema($testTableName);
+
+        $this->assertInstanceOf(TableSchemaInterface::class, $testRefreshedTable);
+        $this->assertEquals($refreshedTable, $testRefreshedTable);
+        $this->assertNotSame($testNoCacheTable, $testRefreshedTable);
     }
 
     public function testGetTableSchemasWithAttrCase(): void
@@ -368,6 +567,66 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertNotSame($noCacheTable, $cachedTable);
 
         $db->createCommand()->renameTable('type_test', 'type');
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints()
+     *
+     * @throws Exception
+     */
+    public function testTableSchemaConstraints(string $tableName, string $type, mixed $expected): void
+    {
+        if ($expected === false) {
+            $this->expectException(NotSupportedException::class);
+        }
+
+        $db = $this->getConnectionWithData();
+        $schema = $db->getSchema();
+        $constraints = $schema->{'getTable' . ucfirst($type)}($tableName);
+
+        $this->assertMetadataEquals($expected, $constraints);
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints()
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
+    public function testTableSchemaConstraintsWithPdoLowercase(string $tableName, string $type, mixed $expected): void
+    {
+        if ($expected === false) {
+            $this->expectException(NotSupportedException::class);
+        }
+
+        $db = $this->getConnectionWithData();
+
+        $schema = $db->getSchema();
+        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $constraints = $schema->{'getTable' . ucfirst($type)}($tableName, true);
+
+        $this->assertMetadataEquals($expected, $constraints);
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints()
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
+    public function testTableSchemaConstraintsWithPdoUppercase(string $tableName, string $type, mixed $expected): void
+    {
+        if ($expected === false) {
+            $this->expectException(NotSupportedException::class);
+        }
+
+        $db = $this->getConnectionWithData();
+
+        $schema = $db->getSchema();
+        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+        $constraints = $schema->{'getTable' . ucfirst($type)}($tableName, true);
+
+        $this->assertMetadataEquals($expected, $constraints);
     }
 
     private function generateQuoterEscapingValues(): array

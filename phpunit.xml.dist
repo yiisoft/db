@@ -15,7 +15,7 @@
       <directory>./src</directory>
     </include>
     <exclude>
-      <directory>./src/TestSupport</directory>
+      <directory>./tests</directory>
       <directory>./vendor</directory>
     </exclude>
   </coverage>
@@ -25,6 +25,9 @@
   <testsuites>
     <testsuite name="Db">
       <directory>./tests</directory>
+    </testsuite>
+    <testsuite name="Mssql">
+      <directory>./vendor/yiisoft/db-mssql/tests</directory>
     </testsuite>
     <testsuite name="Sqlite">
       <directory>./vendor/yiisoft/db-sqlite/tests</directory>

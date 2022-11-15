@@ -22,10 +22,15 @@ final class BaseQueryBuilderProvider
 
     protected ConnectionPDOInterface $db;
 
-    public function __construct(
-        private string $likeEscapeCharSql = '',
-        private array $likeParameterReplacements = [],
-    ) {
+    public function addColumn(): array
+    {
+        return [
+            [
+                <<<SQL
+                ALTER TABLE [[table]] ADD [[column]] integer
+                SQL,
+            ]
+        ];
     }
 
     public function addDropChecks(): array
@@ -161,17 +166,23 @@ final class BaseQueryBuilderProvider
                 'foo1',
                 'bar',
                 'varchar(255)',
-                <<<SQL
-                ALTER TABLE `foo1` CHANGE `bar` `bar` varchar(255)
-                SQL,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[foo1]] CHANGE [[bar]] [[bar]] varchar(255)
+                    SQL,
+                    $db->getName(),
+                ),
             ],
             [
                 'foo1',
                 'bar',
                 'SET NOT null',
-                <<<SQL
-                ALTER TABLE `foo1` CHANGE `bar` `bar` SET NOT null
-                SQL,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[foo1]] CHANGE [[bar]] [[bar]] SET NOT null
+                    SQL,
+                    $db->getName(),
+                ),
             ],
             [
                 'foo1',
@@ -751,8 +762,11 @@ final class BaseQueryBuilderProvider
         ];
     }
 
-    public function buildLikeConditions(ConnectionPDOInterface $db): array
-    {
+    public function buildLikeConditions(
+        ConnectionPDOInterface $db,
+        string $likeEscapeCharSql = '',
+        array $likeParameterReplacements = []
+    ): array {
         $conditions = [
             /* simple like */
             [['like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => '%foo\%%']],
@@ -877,20 +891,20 @@ final class BaseQueryBuilderProvider
         foreach ($conditions as $i => $condition) {
             $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $db->getName());
 
-            if ($this->likeEscapeCharSql !== '') {
+            if ($likeEscapeCharSql !== '') {
                 preg_match_all('/(?P<condition>LIKE.+?)( AND| OR|$)/', $conditions[$i][1], $matches, PREG_SET_ORDER);
 
                 foreach ($matches as $match) {
                     $conditions[$i][1] = str_replace(
                         $match['condition'],
-                        $match['condition'] . $this->likeEscapeCharSql,
+                        $match['condition'] . $likeEscapeCharSql,
                         $conditions[$i][1]
                     );
                 }
             }
 
             foreach ($conditions[$i][2] as $name => $value) {
-                $conditions[$i][2][$name] = strtr($conditions[$i][2][$name], $this->likeParameterReplacements);
+                $conditions[$i][2][$name] = strtr($conditions[$i][2][$name], $likeParameterReplacements);
             }
         }
 
@@ -1175,6 +1189,20 @@ final class BaseQueryBuilderProvider
                     ':qp4' => false,
                     ':phFoo' => 'foo',
                 ],
+            ],
+        ];
+    }
+
+    public function selectExist(): array
+    {
+        return [
+            [
+                <<<SQL
+                SELECT 1 FROM `table` WHERE `id` = 1
+                SQL,
+                <<<SQL
+                SELECT EXISTS(SELECT 1 FROM `table` WHERE `id` = 1)
+                SQL,
             ],
         ];
     }

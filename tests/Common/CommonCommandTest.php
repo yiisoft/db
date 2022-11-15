@@ -15,11 +15,14 @@ use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function is_resource;
@@ -38,6 +41,46 @@ use function time;
 abstract class CommonCommandTest extends AbstractCommandTest
 {
     use TestTrait;
+
+    public function testAddCommentOnColumn(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $command->addCommentOnColumn('customer', 'id', 'Primary key.')->execute();
+        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
+
+        $this->assertSame('Primary key.', $commentOnColumn);
+    }
+
+    public function testAddCommentOnTable(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $command->addCommentOnTable('customer', 'Customer table.')->execute();
+        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
+
+        $this->assertSame('Customer table.', $commentOnTable);
+    }
+
+    public function testAddDefaultValue(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $sql = $command->addDefaultValue('', 'customer', 'id', '1')->getSql();
+
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[customer]] ADD CONSTRAINT [] DEFAULT '1' FOR [[id]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
+        );
+    }
 
     /**
      * @throws Exception
@@ -165,10 +208,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
         )->getSql();
 
         $this->assertSame(
-            <<<SQL
-            INSERT INTO `table` (`column1`, `column2`) VALUES (:qp0, :qp1), (:qp2, :qp3)
-            SQL,
-            $sql
+            DbHelper::replaceQuotes(
+                <<<SQL
+                INSERT INTO [[table]] ([[column1]], [[column2]]) VALUES (:qp0, :qp1), (:qp2, :qp3)
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
         );
     }
 
@@ -265,6 +311,40 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
+     * Make sure that `{{something}}` in values will not be encoded.
+     *
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::batchInsertSql()
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
+     *
+     * {@see https://github.com/yiisoft/yii2/issues/11242}
+     */
+    public function testBatchInsertSQL(
+        string $table,
+        array $columns,
+        array $values,
+        string $expected,
+        array $expectedParams = [],
+        int $insertedRow = 1
+    ): void {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $command->batchInsert($table, $columns, $values);
+        $command->prepare(false);
+
+        $this->assertSame($expected, $command->getSql());
+        $this->assertSame($expectedParams, $command->getParams());
+
+        $command->execute();
+
+        $this->assertEquals($insertedRow, (new Query($db))->from($table)->count());
+    }
+
+    /**
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
@@ -320,20 +400,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnectionWithData();
 
         $params = 1;
+        $sql = <<<SQL
+        SELECT * FROM customer WHERE id = :id
+        SQL;
         $command = $db->createCommand();
-        $command->setSql(
-            <<<SQL
-            SELECT * FROM `customer` WHERE `id` = :id
-            SQL
-        );
+        $command->setSql($sql);
         $command->bindParam(':id', $params);
 
-        $this->assertSame(
-            <<<SQL
-            SELECT * FROM `customer` WHERE `id` = :id
-            SQL,
-            $command->getSql()
-        );
+        $this->assertSame($sql, $command->getSql());
         $this->assertEquals(
             [
                 'id' => 1,
@@ -346,19 +420,10 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->queryOne(),
         );
 
-        $command->setSql(
-            <<<SQL
-            SELECT * FROM `customer` WHERE `id` = :id
-            SQL
-        );
+        $command->setSql($sql);
         $command->bindParam(':id', $params, PDO::PARAM_INT);
 
-        $this->assertSame(
-            <<<SQL
-            SELECT * FROM `customer` WHERE `id` = :id
-            SQL,
-            $command->getSql()
-        );
+        $this->assertSame($sql, $command->getSql());
         $this->assertEquals(
             [
                 'id' => 1,
@@ -371,19 +436,10 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->queryOne(),
         );
 
-        $command->setSql(
-            <<<SQL
-            SELECT * FROM `customer` WHERE `id` = :id
-            SQL
-        );
-        $command->bindParam(':id', $params, PDO::PARAM_INT, 10);
+        $command->setSql($sql);
+        $command->bindParam(':id', $params, PDO::PARAM_INT);
 
-        $this->assertSame(
-            <<<SQL
-            SELECT * FROM `customer` WHERE `id` = :id
-            SQL,
-            $command->getSql()
-        );
+        $this->assertSame($sql, $command->getSql());
         $this->assertEquals(
             [
                 'id' => 1,
@@ -396,19 +452,10 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->queryOne(),
         );
 
-        $command->setSql(
-            <<<SQL
-            SELECT * FROM `customer` WHERE `id` = :id
-            SQL
-        );
-        $command->bindParam(':id', $params, PDO::PARAM_INT, 10, [PDO::ATTR_STRINGIFY_FETCHES => true]);
+        $command->setSql($sql);
+        $command->bindParam(':id', $params, PDO::PARAM_INT, null, [PDO::ATTR_STRINGIFY_FETCHES => true]);
 
-        $this->assertSame(
-            <<<SQL
-            SELECT * FROM `customer` WHERE `id` = :id
-            SQL,
-            $command->getSql()
-        );
+        $this->assertSame($sql, $command->getSql());
         $this->assertEquals(
             [
                 'id' => 1,
@@ -449,6 +496,81 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $db->createCommand($sql, $params);
 
         $this->assertSame('Params', $command->queryScalar());
+    }
+
+    public function testBindParamValue(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+
+        // bindParam
+        $command = $command->setSql(
+            <<<SQL
+            INSERT INTO customer(email, name, address) VALUES (:email, :name, :address)
+            SQL
+        );
+        $email = 'user4@example.com';
+        $name = 'user4';
+        $address = 'address4';
+        $command->bindParam(':email', $email);
+        $command->bindParam(':name', $name);
+        $command->bindParam(':address', $address);
+        $command->execute();
+        $command = $command->setSql(
+            <<<SQL
+            SELECT name FROM customer WHERE email=:email
+            SQL,
+        );
+        $command->bindParam(':email', $email);
+
+        $this->assertSame($name, $command->queryScalar());
+
+        // bindValue
+        $command = $command->setSql(
+            <<<SQL
+            INSERT INTO customer(email, name, address) VALUES (:email, 'user5', 'address5')
+            SQL
+        );
+        $command->bindValue(':email', 'user5@example.com');
+        $command->execute();
+        $command = $command->setSql(
+            <<<SQL
+            SELECT email FROM customer WHERE name=:name
+            SQL
+        );
+
+        $command->bindValue(':name', 'user5');
+
+        $this->assertSame('user5@example.com', $command->queryScalar());
+    }
+
+    public function testCheckIntegrity(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+
+        $this->assertSame(0, $command->checkIntegrity('schema', 'table')->execute());
+    }
+
+    public function testCheckIntegrityExecuteException(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $schemaName = 'dbo';
+        $tableName = 'T_constraints_3';
+        $command->checkIntegrity($schemaName, $tableName, false)->execute();
+        $sql = <<<SQL
+        INSERT INTO {{{$tableName}}} ([[C_id]], [[C_fk_id_1]], [[C_fk_id_2]]) VALUES (1, 2, 3)
+        SQL;
+        $command->setSql($sql)->execute();
+        $db->createCommand()->checkIntegrity($schemaName, $tableName)->execute();
+
+        $this->expectException(IntegrityException::class);
+
+        $command->setSql($sql)->execute();
     }
 
     /**
@@ -610,12 +732,64 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->expectException(InvalidCallException::class);
         $this->expectExceptionMessage('DataReader cannot rewind. It is a forward-only reader.');
 
-        $sql = <<<SQL
-        SELECT * FROM {{customer}}
-        SQL;
-        $reader = $db->createCommand($sql)->query();
+        $command = $db->createCommand();
+        $reader = $command->setSql(
+            <<<SQL
+            SELECT * FROM {{customer}}
+            SQL
+        )->query();
         $reader->next();
         $reader->rewind();
+    }
+
+    public function testDropCommentFromColumn(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $command->addCommentOnColumn('customer', 'id', 'Primary key.')->execute();
+        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
+
+        $this->assertSame('Primary key.', $commentOnColumn);
+
+        $command->dropCommentFromColumn('customer', 'id')->execute();
+        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
+
+        $this->assertSame([], $commentOnColumn);
+    }
+
+    public function testDropCommentFromTable(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $command->addCommentOnTable('customer', 'Customer table.')->execute();
+        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
+
+        $this->assertSame('Customer table.', $commentOnTable);
+
+        $command->dropCommentFromTable('customer')->execute();
+        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
+
+        $this->assertSame([], $commentOnTable);
+    }
+
+    public function testDropDefaultValue(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $sql = $command->dropDefaultValue('char_col2', 'type')->getSql();
+
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[type]] DROP CONSTRAINT [[char_col2]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
+        );
     }
 
     /**
@@ -664,24 +838,31 @@ abstract class CommonCommandTest extends AbstractCommandTest
     {
         $db = $this->getConnectionWithData();
 
-        $sql = <<<SQL
-        INSERT INTO {{customer}}([[email]], [[name]], [[address]]) VALUES ('user4@example.com', 'user4', 'address4')
-        SQL;
-        $command = $db->createCommand($sql);
+        $command = $db->createCommand();
+        $command->setSql(
+            <<<SQL
+            INSERT INTO {{customer}}([[email]], [[name]], [[address]]) VALUES ('user4@example.com', 'user4', 'address4')
+            SQL
+        );
 
         $this->assertSame(1, $command->execute());
 
-        $sql = <<<SQL
-        SELECT COUNT(*) FROM {{customer}} WHERE [[name]] = 'user4'
-        SQL;
-        $command = $db->createCommand($sql);
+        $command = $command->setSql(
+            <<<SQL
+            SELECT COUNT(*) FROM {{customer}} WHERE [[name]] = 'user4'
+            SQL
+        );
 
         $this->assertEquals(1, $command->queryScalar());
 
-        $command = $db->createCommand('bad SQL');
+        $command->setSql('bad SQL');
+        $message = match ($db->getName()) {
+            'sqlite' => 'SQLSTATE[HY000]: General error: 1 near "bad": syntax error',
+            'sqlsrv' => "SQLSTATE[42000]: [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Could not find stored procedure 'bad'",
+        };
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('SQLSTATE[HY000]: General error: 1 near "bad": syntax error');
+        $this->expectExceptionMessage($message);
 
         $command->execute();
     }
@@ -924,6 +1105,28 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
+     * Test INSERT INTO ... SELECT SQL statement with wrong query object.
+     *
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::invalidSelectColumns()
+     *
+     * @throws Exception
+     * @throws Throwable
+     */
+    public function testInsertSelectFailed(array|ExpressionInterface|string $invalidSelectColumns): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $query->select($invalidSelectColumns)->from('{{customer}}');
+        $command = $db->createCommand();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected select query object with enumerated (named) parameters');
+
+        $command->insert('{{customer}}', $query)->execute();
+    }
+
+    /**
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
@@ -964,14 +1167,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
     {
         $db = $this->getConnectionWithData();
 
-        $sql = <<<SQL
-        INSERT INTO {{profile}}([[id]], [[description]]) VALUES (123, 'duplicate')
-        SQL;
-        $command = $db->createCommand($sql);
-        $command->execute();
-
         $this->expectException(IntegrityException::class);
 
+        $command = $db->createCommand(
+            <<<SQL
+            INSERT INTO {{profile}}([[id]], [[description]]) VALUES (123, 'duplicate')
+            SQL
+        );
+        $command->execute();
         $command->execute();
     }
 
@@ -1053,6 +1256,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
+     *
+     * @todo check if this test is correct
      */
     public function testQuery(): void
     {
@@ -1068,7 +1273,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $reader = $command->query();
 
-        if ($db->getName() !== 'sqlite' && $db->getName() !== 'pgsql') {
+        // check tests that the reader is a valid iterator
+        if ($db->getName() !== 'sqlite' && $db->getName() !== 'pgsql' && $db->getName() !== 'sqlsrv') {
             $this->assertEquals(3, $reader->count());
         }
 
@@ -1505,66 +1711,39 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::update()
+     *
      * @throws Exception
      * @throws InvalidConfigException
      */
-    public function testUpdate(): void
-    {
+    public function testUpdate(
+        string $table,
+        array $columns,
+        array|string $conditions,
+        array $params,
+        string $expected
+    ): void {
         $db = $this->getConnectionWithData();
 
         $command = $db->createCommand();
-        $sql = $command->update('table', ['name' => 'test'])->getSql();
+        $sql = $command->update($table, $columns, $conditions, $params)->getSql();
 
-        $this->assertSame(
-            <<<SQL
-            UPDATE `table` SET `name`=:qp0
-            SQL,
-            $sql,
-        );
+        $this->assertSame($expected, $sql);
+    }
 
-        $sql = $command->update('table', ['name' => 'test'], ['id' => 1])->getSql();
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::upsert()
+     *
+     * @throws Exception
+     * @throws Throwable
+     */
+    public function testUpsert(array $firstData, array $secondData): void
+    {
+        $db = $this->getConnectionWithData();
 
-        $this->assertSame(
-            <<<SQL
-            UPDATE `table` SET `name`=:qp0 WHERE `id`=:qp1
-            SQL,
-            $sql,
-        );
-
-        $sql = $command->update('table', ['name' => 'test'], ['id' => 1], ['id' => 'integer'])->getSql();
-
-        $this->assertSame(
-            <<<SQL
-            UPDATE `table` SET `name`=:qp1 WHERE `id`=:qp2
-            SQL,
-            $sql,
-        );
-
-        $sql = $command->update('table', ['name' => 'test'], ['id' => 1], ['id' => 'string'])->getSql();
-
-        $this->assertSame(
-            <<<SQL
-            UPDATE `table` SET `name`=:qp1 WHERE `id`=:qp2
-            SQL,
-            $sql,
-        );
-
-        $sql = $command->update('table', ['name' => 'test'], ['id' => 1], ['id' => 'boolean'])->getSql();
-
-        $this->assertSame(
-            <<<SQL
-            UPDATE `table` SET `name`=:qp1 WHERE `id`=:qp2
-            SQL,
-            $sql,
-        );
-
-        $sql = $command->update('table', ['name' => 'test'], ['id' => 1], ['id' => 'float'])->getSql();
-
-        $this->assertSame(
-            <<<SQL
-            UPDATE `table` SET `name`=:qp1 WHERE `id`=:qp2
-            SQL,
-            $sql,
-        );
+        $this->assertEquals(0, $db->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')->queryScalar());
+        $this->performAndCompareUpsertResult($db, $firstData);
+        $this->assertEquals(1, $db->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')->queryScalar());
+        $this->performAndCompareUpsertResult($db, $secondData);
     }
 }

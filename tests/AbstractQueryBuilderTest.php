@@ -34,34 +34,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    public function testAddCommentOnColumn(): void
-    {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
-
-        $this->assertSame(
-            <<<SQL
-            COMMENT ON COLUMN `user`.`name` IS 'This is a comment'
-            SQL,
-            $qb->addCommentOnColumn('user', 'name', 'This is a comment')
-        );
-    }
-
-    public function testAddCommentOnTable(): void
-    {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
-
-        $this->assertSame(
-            <<<SQL
-            COMMENT ON TABLE `user` IS 'This is a comment'
-            SQL,
-            $qb->addCommentOnTable('user', 'This is a comment')
-        );
-    }
-
     public function testBuildColumnsWithString(): void
     {
         $db = $this->getConnection();
@@ -78,7 +50,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
         $columns = ['id', 'name', 'email', 'address', 'status'];
-        $expected = '`id`, `name`, `email`, `address`, `status`';
+        $expected = DbHelper::replaceQuotes('[[id]], [[name]], [[email]], [[address]], [[status]]', $db->getName());
 
         $this->assertSame($expected, $qb->buildColumns($columns));
     }
@@ -87,9 +59,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
     {
         $db = $this->getConnection();
 
-        $qb = $db->getQueryBuilder();
         $columns = ['id', 'name', 'email', 'address', 'status', new Expression('COUNT(*)')];
-        $expected = '`id`, `name`, `email`, `address`, `status`, COUNT(*)';
+        $expected = DbHelper::replaceQuotes(
+            '[[id]], [[name]], [[email]], [[address]], [[status]], COUNT(*)',
+            $db->getName(),
+        );
+        $qb = $db->getQueryBuilder();
 
         $this->assertSame($expected, $qb->buildColumns($columns));
     }
@@ -139,9 +114,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->buildSelect(['1'], $params);
 
         $this->assertSame(
-            <<<SQL
-            SELECT `1`
-            SQL,
+            DbHelper::replaceQuotes(
+                <<<SQL
+                SELECT [[1]]
+                SQL,
+                $db->getName(),
+            ),
             $sql,
         );
     }
@@ -344,42 +322,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEmpty($params);
     }
 
-    public function testCreateTable(): void
-    {
-        $this->db = $this->getConnection();
-
-        $qb = $this->db->getQueryBuilder();
-        $expected = DbHelper::replaceQuotes(
-            <<<SQL
-            CREATE TABLE [[test_table]] (
-            \t[[id]] pk,
-            \t[[name]] string(255) NOT NULL,
-            \t[[email]] string(255) NOT NULL,
-            \t[[address]] string(255) NOT NULL,
-            \t[[status]] integer NOT NULL,
-            \t[[profile_id]] integer NOT NULL,
-            \t[[created_at]] timestamp NOT NULL,
-            \t[[updated_at]] timestamp NOT NULL
-            ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
-            SQL,
-            $this->db->getName(),
-        );
-        $columns = [
-            'id' => $this->primaryKey(5),
-            'name' => $this->string(255)->notNull(),
-            'email' => $this->string(255)->notNull(),
-            'address' => $this->string(255)->notNull(),
-            'status' => $this->integer()->notNull(),
-            'profile_id' => $this->integer()->notNull(),
-            'created_at' => $this->timestamp()->notNull(),
-            'updated_at' => $this->timestamp()->notNull(),
-        ];
-        $options = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
-        $sql = $qb->createTable('test_table', $columns, $options);
-
-        Assert::equalsWithoutLE($expected, $sql);
-    }
-
     public function testCreateView(): void
     {
         $db = $this->getConnection();
@@ -406,7 +348,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
         $expected = DbHelper::replaceQuotes(
             <<<SQL
-            CREATE VIEW `test_view` AS SELECT `id`, `name` FROM `test_table` WHERE `id`=1
+            CREATE VIEW [[test_view]] AS SELECT [[id]], [[name]] FROM [[test_table]] WHERE [[id]]=1
             SQL,
             $db->getName(),
         );
@@ -418,39 +360,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($expected, $sql);
     }
 
-    public function testDropColumn(): void
-    {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
-        $expected = DbHelper::replaceQuotes(
-            <<<SQL
-            ALTER TABLE [[test_table]] DROP COLUMN [[test_column]]
-            SQL,
-            $db->getName(),
-        );
-        $sql = $qb->dropColumn('test_table', 'test_column');
-
-        $this->assertSame($expected, $sql);
-    }
-
-    public function testdropCommentFromColumn(): void
-    {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
-        $expected = DbHelper::replaceQuotes(
-            <<<SQL
-            COMMENT ON COLUMN `test_table`.`test_column` IS NULL
-            SQL,
-            $db->getName(),
-        );
-        $sql = $qb->dropCommentFromColumn('test_table', 'test_column');
-
-        $this->assertSame($expected, $sql);
-    }
-
-    public function testsDropCommentFromTable(): void
+    public function testDropCommentFromTable(): void
     {
         $db = $this->getConnection();
 
@@ -488,9 +398,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $expected = <<<SQL
-        DROP VIEW `test_view`
-        SQL;
+        $expected = DbHelper::replaceQuotes(
+            <<<SQL
+            DROP VIEW [[test_view]]
+            SQL,
+            $db->getName(),
+        );
         $sql = $qb->dropView('test_view');
 
         $this->assertSame($expected, $sql);
@@ -790,21 +703,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    public function testRenameTable(): void
-    {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
-        $sql = $qb->renameTable('table_from', 'table_to');
-
-        $this->assertSame(
-            <<<SQL
-            RENAME TABLE `table_from` TO `table_to`
-            SQL,
-            $sql,
-        );
-    }
-
     public function testSelectExpression(): void
     {
         $db = $this->getConnection();
@@ -859,14 +757,17 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([':len' => 4], $params);
     }
 
-    public function testSelectExists(): void
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::selectExist()
+     */
+    public function testSelectExists(string $sql, string $expected): void
     {
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->selectExists('SELECT 1 FROM `table` WHERE `id` = 1');
+        $sqlSelectExist = $qb->selectExists($sql);
 
-        $this->assertSame('SELECT EXISTS(SELECT 1 FROM `table` WHERE `id` = 1)', $sql);
+        $this->assertSame($expected, $sqlSelectExist);
     }
 
     public function testSelectSubquery(): void
@@ -921,17 +822,28 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb->setSeparator(' ');
         [$sql, $params] = $qb->build($this->getQuery($db)->select('*')->from('table'));
 
-        $this->assertSame('SELECT * FROM `table`', $sql);
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                <<<SQL
+                SELECT * FROM [[table]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql
+        );
         $this->assertEmpty($params);
 
         $qb->setSeparator("\n");
         [$sql, $params] = $qb->build($this->getQuery($db)->select('*')->from('table'));
 
         $this->assertSame(
-            <<<SQL
-            SELECT *
-            FROM `table`
-            SQL,
+            DbHelper::replaceQuotes(
+                <<<SQL
+                SELECT *
+                FROM [[table]]
+                SQL,
+                $db->getName(),
+            ),
             $sql,
         );
         $this->assertEmpty($params);
@@ -944,10 +856,26 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
         $sql = $qb->truncateTable('table');
 
-        $this->assertSame('TRUNCATE TABLE `table`', $sql);
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                <<<SQL
+                TRUNCATE TABLE [[table]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
+        );
 
         $sql = $qb->truncateTable('table2');
 
-        $this->assertSame('TRUNCATE TABLE `table2`', $sql);
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                <<<SQL
+                TRUNCATE TABLE [[table2]]
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
+        );
     }
 }

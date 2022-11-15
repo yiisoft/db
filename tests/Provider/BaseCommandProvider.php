@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Tests\Provider;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\QueryBuilder\Querybuilder;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
 final class BaseCommandProvider
@@ -130,6 +131,90 @@ final class BaseCommandProvider
         ];
     }
 
+    public function createIndex(ConnectionPDOInterface $db): array
+    {
+        return [
+            [
+                'name',
+                'table',
+                'column',
+                '',
+                '',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    CREATE INDEX [[name]] ON [[table]] ([[column]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'name',
+                'table',
+                ['column1', 'column2'],
+                '',
+                '',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    CREATE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'name',
+                'table',
+                ['column1', 'column2'],
+                QueryBuilder::INDEX_UNIQUE,
+                '',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    CREATE UNIQUE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'name',
+                'table',
+                ['column1', 'column2'],
+                'FULLTEXT',
+                '',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    CREATE FULLTEXT INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'name',
+                'table',
+                ['column1', 'column2'],
+                'SPATIAL',
+                '',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    CREATE SPATIAL INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'name',
+                'table',
+                ['column1', 'column2'],
+                'BITMAP',
+                '',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    CREATE BITMAP INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+        ];
+    }
+
     public function invalidSelectColumns(): array
     {
         return [[[]], ['*'], [['*']]];
@@ -197,6 +282,84 @@ final class BaseCommandProvider
                 <<<SQL
                 SELECT * FROM customer WHERE id IN (1, 2)
                 SQL,
+            ],
+        ];
+    }
+
+    public function update(ConnectionPDOInterface $db): array
+    {
+        return [
+            [
+                'table',
+                ['name' => 'test'],
+                [],
+                [],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp0
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'table',
+                ['name' => 'test'],
+                ['id' => 1],
+                [],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]]=:qp1
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'table',
+                ['name' => 'test'],
+                ['id' => 1],
+                ['id' => 'integer'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'table',
+                ['name' => 'test'],
+                ['id' => 1],
+                ['id' => 'string'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'table',
+                ['name' => 'test'],
+                ['id' => 1],
+                ['id' => 'boolean'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'table',
+                ['name' => 'test'],
+                ['id' => 1],
+                ['id' => 'float'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
+                    SQL,
+                    $db->getName(),
+                ),
             ],
         ];
     }

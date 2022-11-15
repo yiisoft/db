@@ -138,6 +138,14 @@ final class BaseSchemaProvider
         return [[[PDO::ATTR_EMULATE_PREPARES => true]], [[PDO::ATTR_EMULATE_PREPARES => false]]];
     }
 
+    public function tableSchema(): array
+    {
+        return [
+            ['negative_default_values', 'negative_default_values'],
+            ['profile', 'profile'],
+        ];
+    }
+
     public function tableSchemaCachePrefixes(): array
     {
         $configs = [

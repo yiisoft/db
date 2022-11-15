@@ -22,7 +22,10 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
 {
     use TestTrait;
 
-    public function testExecute(): void
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\ConnectionProvider::execute()
+     */
+    public function testExecute(string $expected): void
     {
         $db = $this->getConnectionWithData();
 
@@ -43,7 +46,7 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
         $command = $db->createCommand('bad SQL');
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage('SQLSTATE[HY000]: General error: 1 near "bad": syntax error');
+        $this->expectExceptionMessage($expected);
 
         $command->execute();
     }
@@ -52,8 +55,14 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
     {
         $db = $this->getConnection();
 
+        $command = $db->createCommand();
+
+        if ($db->getTableSchema('qlog1', true) !== null) {
+            $command->dropTable('qlog1')->execute();
+        }
+
         /* profiling and logging */
-        $db->createCommand()->createTable('qlog1', ['id' => 'pk'])->execute();
+        $command->createTable('qlog1', ['id' => 'pk'])->execute();
         $db->setEmulatePrepare(true);
         $logger = $this->getLogger();
         $profiler = $this->getProfiler();
@@ -352,21 +361,21 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
     private function runExceptionTest(ConnectionInterface $db): void
     {
         $thrown = false;
+        $command = $db->createCommand();
 
         try {
-            $db->createCommand(
+            $command->setSql(
                 <<<SQL
-                INSERT INTO qlog1(a) VALUES(:a)
-                SQL,
-                [':a' => 1]
-            )->execute();
+                INSERT INTO qlog1(a) VALUES(1)
+                SQL
+            )->bindValues([':a' => 1])->execute();
         } catch (Exception $e) {
             $this->assertStringContainsString(
                 <<<SQL
-                INSERT INTO qlog1(a) VALUES(:a)
+                INSERT INTO qlog1(a) VALUES(1)
                 SQL,
                 $e->getMessage(),
-                'Exceptions message should contain raw SQL query: ' . $e
+                'Exceptions message should contain raw SQL query: ' . $e,
             );
 
             $thrown = true;
@@ -376,18 +385,24 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
 
         $thrown = false;
 
+        $expected = match ($db->getName()) {
+            'sqlite' => <<<SQL
+            SELECT * FROM qlog1 WHERE id=:a ORDER BY nonexistingcolumn
+            SQL,
+            'sqlsrv' => <<<SQL
+            SELECT * FROM qlog1 WHERE id=1 ORDER BY nonexistingcolumn
+            SQL,
+        };
+
         try {
-            $db->createCommand(
+            $command->setSql(
                 <<<SQL
                 SELECT * FROM qlog1 WHERE id=:a ORDER BY nonexistingcolumn
-                SQL,
-                [':a' => 1]
-            )->queryAll();
+                SQL
+            )->bindValues([':a' => 1])->queryAll();
         } catch (Exception $e) {
             $this->assertStringContainsString(
-                <<<SQL
-                SELECT * FROM qlog1 WHERE id=:a ORDER BY nonexistingcolumn
-                SQL,
+                $expected,
                 $e->getMessage(),
                 'Exceptions message should contain raw SQL query: ' . $e
             );

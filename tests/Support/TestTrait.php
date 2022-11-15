@@ -10,6 +10,8 @@ use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Schema\Quoter;
+use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Profiler\ProfilerInterface;
 
 trait TestTrait
@@ -37,6 +39,11 @@ trait TestTrait
     protected function getQuery(ConnectionPDOInterface $db): Query
     {
         return new Query($db);
+    }
+
+    protected function getQuoter(): QuoterInterface
+    {
+        return new Quoter('`', '`', '');
     }
 
     protected function getLogger(): LoggerInterface

@@ -10,6 +10,13 @@ final class QueryBuilderProvider
 {
     use TestTrait;
 
+    public function addColumn(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
+
+        return $baseQueryBuilderProvider->addColumn();
+    }
+
     public function addDropChecks(): array
     {
         $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
@@ -73,6 +80,13 @@ final class QueryBuilderProvider
         return $baseQueryBuilderProvider->buildFrom();
     }
 
+    public function buildLikeConditions(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
+
+        return $baseQueryBuilderProvider->buildLikeConditions($this->getConnection());
+    }
+
     public function buildWhereExists(): array
     {
         $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
@@ -108,10 +122,24 @@ final class QueryBuilderProvider
         return $baseQueryBuilderProvider->insertEx($this->getConnection());
     }
 
+    public function selectExist(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
+
+        return $baseQueryBuilderProvider->selectExist();
+    }
+
     public function update(): array
     {
         $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
 
         return $baseQueryBuilderProvider->update($this->getConnection());
+    }
+
+    public function upsert(): array
+    {
+        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
+
+        return $baseQueryBuilderProvider->upsert($this->getConnection());
     }
 }
