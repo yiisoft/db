@@ -471,7 +471,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         string $expectedSQL,
         array $expectedParams
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getConnectionWithData();
 
         $qb = $db->getQueryBuilder();
 
