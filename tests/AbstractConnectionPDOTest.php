@@ -38,7 +38,14 @@ abstract class AbstractConnectionPDOTest extends TestCase
     {
         $db = $this->getConnectionWithData();
 
-        $this->assertSame('2', $db->getLastInsertID());
+        $command = $db->createCommand();
+        $command->insert(
+            'customer',
+            ['name' => 'test1', 'email' => 'test1@example.com', 'address' => 'address1', 'status' => 1],
+        )->execute();
+
+        $this->assertSame('4', $db->getLastInsertID());
+        $this->assertSame('4', $db->getLastInsertID('customer'));
     }
 
     public function testGetServerVersion(): void
@@ -46,7 +53,6 @@ abstract class AbstractConnectionPDOTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertIsString($db->getServerVersion());
-        $this->assertGreaterThan(3.30, $db->getServerVersion());
     }
 
     public function testOpenClose(): void
