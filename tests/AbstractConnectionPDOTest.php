@@ -38,14 +38,7 @@ abstract class AbstractConnectionPDOTest extends TestCase
     {
         $db = $this->getConnectionWithData();
 
-        $command = $db->createCommand();
-        $command->insert(
-            'customer',
-            ['name' => 'test1', 'email' => 'test1@example.com', 'address' => 'address1', 'status' => 1],
-        )->execute();
-
-        $this->assertSame('4', $db->getLastInsertID());
-        $this->assertSame('4', $db->getLastInsertID('customer'));
+        $this->assertSame('2', $db->getLastInsertID());
     }
 
     public function testGetServerVersion(): void

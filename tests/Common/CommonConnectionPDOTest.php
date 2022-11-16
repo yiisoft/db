@@ -64,6 +64,20 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
         $this->assertNull($conn3->getPDO());
     }
 
+    public function testGetLastInsertID(): void
+    {
+        $db = $this->getConnectionWithData();
+
+        $command = $db->createCommand();
+        $command->insert(
+            'customer',
+            ['name' => 'test1', 'email' => 'test1@example.com', 'address' => 'address1', 'status' => 1],
+        )->execute();
+
+        $this->assertSame('4', $db->getLastInsertID());
+        $this->assertSame('4', $db->getLastInsertID('customer'));
+    }
+
     public function testInsertEx(): void
     {
         $db = $this->getConnectionWithData();
