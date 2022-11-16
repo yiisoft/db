@@ -1689,7 +1689,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
      */
     public function testTruncateTable(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnectionWithData();
 
         $command = $db->createCommand();
         $rows = $command->setSql(
