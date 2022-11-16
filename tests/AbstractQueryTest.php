@@ -15,6 +15,38 @@ abstract class AbstractQueryTest extends TestCase
 {
     use TestTrait;
 
+    public function testAddGroupByExpression(): void
+    {
+        $db = $this->getConnection();
+
+        $expression = new Expression('[[id]] + 1');
+        $query = new Query($db);
+        $query->addGroupBy($expression);
+
+        $this->assertSame([$expression], $query->getGroupBy());
+    }
+
+    public function testAddOrderByEmpty(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $query->addOrderBy([]);
+
+        $this->assertSame([], $query->getOrderBy());
+    }
+
+    public function testAddParamsWithNameInt(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $query->params([1 => 'value']);
+        $query->addParams([2 => 'test']);
+
+        $this->assertSame([1 => 'value', 2 => 'test'], $query->getParams());
+    }
+
     /**
      * @depends testFilterWhereWithHashFormat
      * @depends testFilterWhereWithOperatorFormat
@@ -52,6 +84,32 @@ abstract class AbstractQueryTest extends TestCase
         $query->andFilterCompare('value', '<=100');
 
         $this->assertSame($condition, $query->getWhere());
+    }
+
+    public function testAndFilterHaving(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $result = $query->andFilterHaving(['>', 'id', 1]);
+
+        $this->assertInstanceOf(QueryInterface::class, $result);
+        $this->assertSame(['>', 'id', 1], $query->getHaving());
+
+        $query->andFilterHaving(['>', 'id', 2]);
+
+        $this->assertSame(['and', ['>', 'id', 1], ['>', 'id', 2]], $query->getHaving());
+    }
+
+    public function testAndFilterHavingWithHashFormat(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $result = $query->andFilterHaving(['status' => 1]);
+
+        $this->assertInstanceOf(QueryInterface::class, $result);
+        $this->assertSame(['status' => 1], $query->getHaving());
     }
 
     public function testEmulateExecution(): void
@@ -103,7 +161,7 @@ abstract class AbstractQueryTest extends TestCase
         $db = $this->getConnection();
 
         $query = new Query($db);
-        $query->filterHaving(['id' => 0, 'title' => '   ', 'author_ids' => [],]);
+        $query->filterHaving(['id' => 0, 'title' => '   ', 'author_ids' => []]);
 
         $this->assertSame(['id' => 0], $query->getHaving());
 
@@ -300,6 +358,23 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame([':id' => 1, ':name' => 'something', ':age' => '30'], $query->getParams());
     }
 
+    public function testJoin(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $query->join('INNER JOIN', 'profile', 'user.id = profile.user_id');
+
+        $this->assertSame([['INNER JOIN', 'profile', 'user.id = profile.user_id']], $query->getJoin());
+
+        $query->join('LEFT JOIN', 'order', 'user.id = order.user_id');
+
+        $this->assertSame(
+            [['INNER JOIN', 'profile', 'user.id = profile.user_id'], ['LEFT JOIN', 'order', 'user.id = order.user_id']],
+            $query->getJoin()
+        );
+    }
+
     public function testLimitOffset(): void
     {
         $db = $this->getConnection();
@@ -309,6 +384,26 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame(10, $query->getLimit());
         $this->assertSame(5, $query->getOffset());
+    }
+
+    public function testOrFilterHavingHashFormat(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $query->orFilterHaving(['status' => 1]);
+
+        $this->assertSame(['status' => 1], $query->getHaving());
+    }
+
+    public function testOrFilterWhereHashFormat(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $query->orFilterWhere(['status' => 1]);
+
+        $this->assertSame(['status' => 1], $query->getWhere());
     }
 
     public function testOrder(): void
@@ -347,6 +442,16 @@ abstract class AbstractQueryTest extends TestCase
         $query->addOrderBy($expression2);
 
         $this->assertSame([$expression1, $expression2], $query->getOrderBy());
+    }
+
+    public function testRightJoin(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $query->rightJoin('profile', 'user.id = profile.user_id');
+
+        $this->assertSame([['RIGHT JOIN', 'profile', 'user.id = profile.user_id']], $query->getJoin());
     }
 
     public function testSelect(): void
@@ -485,6 +590,49 @@ abstract class AbstractQueryTest extends TestCase
         );
     }
 
+    public function testSetJoin(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $query->setJoin(['INNER JOIN', 'table1', 'table1.id = table2.id']);
+
+        $this->assertSame(['INNER JOIN', 'table1', 'table1.id = table2.id'], $query->getJoin());
+    }
+
+    public function testSetUnion(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $query->setUnion(['SELECT * FROM table1', 'SELECT * FROM table2']);
+
+        $this->assertSame(['SELECT * FROM table1', 'SELECT * FROM table2'], $query->getUnion());
+    }
+
+    public function testShouldEmulateExecution(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $this->assertFalse($query->shouldEmulateExecution());
+
+        $query = new Query($db);
+        $query->emulateExecution(true);
+
+        $this->assertTrue($query->shouldEmulateExecution());
+    }
+
+    public function testToString(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $query->select('id')->from('user')->where(['id' => 1]);
+
+        $this->assertSame(serialize($query), (string) $query);
+    }
+
     public function testWhere(): void
     {
         $db = $this->getConnection();
@@ -504,5 +652,15 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame(['or', ['and', 'id = :id', 'name = :name'], 'age = :age'], $query->getWhere());
         $this->assertSame([':id' => 1, ':name' => 'something', ':age' => '30'], $query->getParams());
+    }
+
+    public function testWithQueries(): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $query->withQueries(['query1', 'query2']);
+
+        $this->assertSame(['query1', 'query2'], $query->getWithQueries());
     }
 }

@@ -6,8 +6,10 @@ namespace Yiisoft\Db\Tests;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\ColumnSchema;
 use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function fclose;
@@ -62,5 +64,28 @@ abstract class AbstractSchemaTest extends TestCase
         }
 
         fclose($fp);
+    }
+
+    public function testIsReadQuery(): void
+    {
+        $db = $this->getConnection();
+
+        $schema = $db->getSchema();
+
+        $this->assertTrue($schema->isReadQuery('SELECT * FROM tbl'));
+        $this->assertTrue($schema->isReadQuery('SELECT * FROM tbl WHERE id=1'));
+        $this->assertTrue($schema->isReadQuery('SELECT * FROM tbl WHERE id=1 LIMIT 1'));
+        $this->assertTrue($schema->isReadQuery('SELECT * FROM tbl WHERE id=1 LIMIT 1 OFFSET 1'));
+    }
+
+    public function testRefresh(): void
+    {
+        $db = $this->getConnection();
+
+        $schema = $db->getSchema();
+        $schema->refresh();
+
+        $this->assertSame([], Assert::getInaccessibleProperty($schema, 'tableMetadata'));
+        $this->assertSame([], Assert::getInaccessibleProperty($schema, 'tableNames'));
     }
 }

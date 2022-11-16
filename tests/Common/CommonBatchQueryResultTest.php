@@ -23,7 +23,7 @@ abstract class CommonBatchQueryResultTest extends TestCase
 
     public function testBatchQueryResult(): void
     {
-        /* initialize property test */
+        // initialize property test
         $db = $this->getConnectionWithData();
 
         $query = $this->getQuery($db);
@@ -34,7 +34,7 @@ abstract class CommonBatchQueryResultTest extends TestCase
         $this->assertSame(2, $result->getBatchSize());
         $this->assertSame($result->getQuery(), $query);
 
-        /* normal query */
+        // normal query
         $query = $this->getQuery($db);
         $query->from('customer')->orderBy('id');
         $allRows = [];
@@ -52,7 +52,7 @@ abstract class CommonBatchQueryResultTest extends TestCase
         $this->assertSame('user2', $allRows[1]['name']);
         $this->assertSame('user3', $allRows[2]['name']);
 
-        /* rewind */
+        // rewind
         $allRows = [];
         $step = 0;
 
@@ -66,7 +66,7 @@ abstract class CommonBatchQueryResultTest extends TestCase
 
         $batch->reset();
 
-        /* empty query */
+        // empty query
         $query = $this->getQuery($db);
         $query->from('customer')->where(['id' => 100]);
         $allRows = [];
@@ -78,7 +78,7 @@ abstract class CommonBatchQueryResultTest extends TestCase
 
         $this->assertCount(0, $allRows);
 
-        /* query with index */
+        // query with index
         $query = $this->getQuery($db);
         $query->from('customer')->indexBy('name');
         $allRows = [];
@@ -92,29 +92,20 @@ abstract class CommonBatchQueryResultTest extends TestCase
         $this->assertSame('address2', $allRows['user2']['address']);
         $this->assertSame('address3', $allRows['user3']['address']);
 
-        /* each */
+        // each
         $query = $this->getQuery($db);
         $query->from('customer')->orderBy('id');
-        $allRows = [];
-
-        foreach ($query->each(2) as $index => $row) {
-            /** @psalm-suppress PossiblyNullArrayOffset */
-            $allRows[$index] = $row;
-        }
+        $allRows = $this->getAllRowsFromEach($query->each(2));
 
         $this->assertCount(3, $allRows);
         $this->assertSame('user1', $allRows[0]['name']);
         $this->assertSame('user2', $allRows[1]['name']);
         $this->assertSame('user3', $allRows[2]['name']);
 
-        /* each with key */
+        // each with key
         $query = $this->getQuery($db);
         $query->from('customer')->orderBy('id')->indexBy('name');
-        $allRows = [];
-
-        foreach ($query->each() as $key => $row) {
-            $allRows[$key] = $row;
-        }
+        $allRows = $this->getAllRowsFromEach($query->each(100));
 
         $this->assertCount(3, $allRows);
         $this->assertSame('address1', $allRows['user1']['address']);

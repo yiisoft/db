@@ -18,11 +18,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function getDefaultSchema(): string|null;
 
     /**
-     * @inheritDoc
-     */
-    public function getLastInsertID(string $sequenceName = null): string;
-
-    /**
      * Determines the PDO type for the given PHP data value.
      *
      * @param mixed $data The data whose PDO type is to be determined

@@ -421,51 +421,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         }
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchemaCachePrefixes()
-     */
-    public function testTableSchemaCacheWithTablePrefixes(
-        string $tablePrefix,
-        string $tableName,
-        string $testTablePrefix,
-        string $testTableName
-    ): void {
-        $db = $this->getConnectionWithData();
-
-        $schema = $db->getSchema();
-        $schemaCache = $this->getSchemaCache();
-
-        $this->assertNotNull($schemaCache);
-
-        $schema->schemaCacheEnable(true);
-        $db->setTablePrefix($tablePrefix);
-        $noCacheTable = $schema->getTableSchema($tableName, true);
-
-        $this->assertInstanceOf(TableSchemaInterface::class, $noCacheTable);
-
-        /* Compare */
-        $db->setTablePrefix($testTablePrefix);
-        $testNoCacheTable = $schema->getTableSchema($testTableName);
-
-        $this->assertSame($noCacheTable, $testNoCacheTable);
-
-        $db->setTablePrefix($tablePrefix);
-        $schema->refreshTableSchema($tableName);
-        $refreshedTable = $schema->getTableSchema($tableName);
-
-        $this->assertInstanceOf(TableSchemaInterface::class, $refreshedTable);
-        $this->assertNotSame($noCacheTable, $refreshedTable);
-
-        /* Compare */
-        $db->setTablePrefix($testTablePrefix);
-        $schema->refreshTableSchema($testTablePrefix);
-        $testRefreshedTable = $schema->getTableSchema($testTableName);
-
-        $this->assertInstanceOf(TableSchemaInterface::class, $testRefreshedTable);
-        $this->assertEquals($refreshedTable, $testRefreshedTable);
-        $this->assertNotSame($testNoCacheTable, $testRefreshedTable);
-    }
-
     public function testGetTableSchemasWithAttrCase(): void
     {
         $db = $this->getConnectionWithData();
@@ -567,6 +522,51 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertNotSame($noCacheTable, $cachedTable);
 
         $db->createCommand()->renameTable('type_test', 'type');
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchemaCachePrefixes()
+     */
+    public function testTableSchemaCacheWithTablePrefixes(
+        string $tablePrefix,
+        string $tableName,
+        string $testTablePrefix,
+        string $testTableName
+    ): void {
+        $db = $this->getConnectionWithData();
+
+        $schema = $db->getSchema();
+        $schemaCache = $this->getSchemaCache();
+
+        $this->assertNotNull($schemaCache);
+
+        $schema->schemaCacheEnable(true);
+        $db->setTablePrefix($tablePrefix);
+        $noCacheTable = $schema->getTableSchema($tableName, true);
+
+        $this->assertInstanceOf(TableSchemaInterface::class, $noCacheTable);
+
+        /* Compare */
+        $db->setTablePrefix($testTablePrefix);
+        $testNoCacheTable = $schema->getTableSchema($testTableName);
+
+        $this->assertSame($noCacheTable, $testNoCacheTable);
+
+        $db->setTablePrefix($tablePrefix);
+        $schema->refreshTableSchema($tableName);
+        $refreshedTable = $schema->getTableSchema($tableName);
+
+        $this->assertInstanceOf(TableSchemaInterface::class, $refreshedTable);
+        $this->assertNotSame($noCacheTable, $refreshedTable);
+
+        /* Compare */
+        $db->setTablePrefix($testTablePrefix);
+        $schema->refreshTableSchema($testTablePrefix);
+        $testRefreshedTable = $schema->getTableSchema($testTableName);
+
+        $this->assertInstanceOf(TableSchemaInterface::class, $testRefreshedTable);
+        $this->assertEquals($refreshedTable, $testRefreshedTable);
+        $this->assertNotSame($testNoCacheTable, $testRefreshedTable);
     }
 
     /**

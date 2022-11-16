@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests\Schema;
 
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
+use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -16,6 +17,15 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 final class SchemaTest extends AbstractSchemaTest
 {
     use TestTrait;
+
+    public function testFindViewNames(): void
+    {
+        $db = $this->getConnection();
+
+        $schema = $db->getSchema();
+
+        $this->assertSame([], Assert::invokeMethod($schema, 'findViewNames', ['dbo']));
+    }
 
     public function testGetSchemaChecks(): void
     {
@@ -155,5 +165,17 @@ final class SchemaTest extends AbstractSchemaTest
         );
 
         $schema->getTableForeignKeys('customer');
+    }
+
+    public function testResolveTableName(): void
+    {
+        $db = $this->getConnection();
+
+        $schema = $db->getSchema();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Tests\Support\Stubs\Schema does not support resolving table names.');
+
+        Assert::invokeMethod($schema, 'resolveTableName', ['customer']);
     }
 }
