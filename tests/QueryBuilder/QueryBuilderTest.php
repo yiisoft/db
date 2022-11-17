@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\QueryBuilder;
 
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
@@ -61,25 +60,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->assertSame($expectedSql, $sql);
         $this->assertSame($expectedParams, $params);
-    }
-
-    public function testFromWithAliasesNoExist(): void
-    {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
-        $query = (new Query($db))->from('no_exist_table');
-
-
-        [$sql, $params] = $qb->build($query);
-
-        $this->assertSame(
-            <<<SQL
-            SELECT * FROM `no_exist_table`
-            SQL,
-            $sql,
-        );
-        $this->assertSame([], $params);
     }
 
     public function testCreateTable(): void

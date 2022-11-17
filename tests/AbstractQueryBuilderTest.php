@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -67,6 +68,25 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expected, $qb->buildColumns($columns));
+    }
+
+    public function testFromWithAliasesNoExist(): void
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+        $query = (new Query($db))->from('no_exist_table');
+
+
+        [$sql, $params] = $qb->build($query);
+
+        $this->assertSame(
+            <<<SQL
+            SELECT * FROM `no_exist_table`
+            SQL,
+            $sql,
+        );
+        $this->assertSame([], $params);
     }
 
     public function testBuildLimit(): void
