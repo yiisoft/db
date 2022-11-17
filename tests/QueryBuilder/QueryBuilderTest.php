@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\QueryBuilder;
 
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
