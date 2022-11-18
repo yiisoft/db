@@ -490,22 +490,6 @@ interface CommandInterface
     public function execute(): int;
 
     /**
-     * Executes a db command resetting the sequence value of a table's primary key.
-     *
-     * Reason for execute is that some databases (Oracle) need several queries to do so.
-     *
-     * The sequence is reset such that the primary key of the next new row inserted will have the specified value or the
-     * maximum existing value +1.
-     *
-     * @param string $table The name of the table whose primary key sequence is reset.
-     * @param int|string|null $value The value for the primary key of the next new row inserted. If this is not set, the
-     * next new row's primary key will have the maximum existing value +1.
-     *
-     * @return static
-     */
-    public function executeResetSequence(string $table, int|string $value = null): static;
-
-    /**
      * Return the params used in the last query.
      *
      * @param bool $asParams - by default - returned array of pair name => value
@@ -673,14 +657,16 @@ interface CommandInterface
     public function renameTable(string $table, string $newName): static;
 
     /**
-     * Creates a SQL command for resetting the sequence value of a table's primary key.
+     * Executes a db command resetting the sequence value of a table's primary key.
      *
-     * The sequence will be reset such that the primary key of the next new row inserted will have the specified value
-     * or 1.
+     * Reason for execute is that some databases (Oracle) need several queries to do so.
      *
-     * @param string $table The name of the table whose primary key sequence will be reset.
-     * @param int|string|null $value The value for the primary key of the next new row inserted. If this is not
-     * set, the next new row's primary key will have a value 1.
+     * The sequence is reset such that the primary key of the next new row inserted will have the specified value or the
+     * maximum existing value +1.
+     *
+     * @param string $table The name of the table whose primary key sequence is reset.
+     * @param int|string|null $value The value for the primary key of the next new row inserted. If this is not set, the
+     * next new row's primary key will have the maximum existing value +1.
      *
      * @return static
      */

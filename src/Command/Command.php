@@ -323,15 +323,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
     }
 
-    /**
-     * @throws Exception|NotSupportedException
-     */
-    public function executeResetSequence(string $table, int|string $value = null): static
-    {
-        $sql = $this->queryBuilder()->resetSequence($table, $value);
-        return $this->setSql($sql);
-    }
-
     public function getParams(bool $asValues = true): array
     {
         if (!$asValues) {

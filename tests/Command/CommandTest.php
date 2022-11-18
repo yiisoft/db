@@ -131,20 +131,6 @@ final class CommandTest extends AbstractCommandTest
         $command->execute();
     }
 
-    public function testExecuteResetSequence(): void
-    {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stubs\DMLQueryBuilder does not support resetting sequence.'
-        );
-
-        $command->executeResetSequence('table');
-    }
-
     public function testInsert(): void
     {
         $db = $this->getConnectionWithData();
