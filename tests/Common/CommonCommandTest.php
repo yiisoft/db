@@ -858,7 +858,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql('bad SQL');
         $message = match ($db->getName()) {
             'sqlite' => 'SQLSTATE[HY000]: General error: 1 near "bad": syntax error',
-            'sqlsrv' => "SQLSTATE[42000]: [Microsoft]",
+            'sqlsrv' => 'SQLSTATE[42000]: [Microsoft]',
         };
 
         $this->expectException(Exception::class);
