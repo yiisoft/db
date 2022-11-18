@@ -744,7 +744,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropCommentFromColumn(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnectionwithData();
 
         $command = $db->createCommand();
         $command->addCommentOnColumn('customer', 'id', 'Primary key.')->execute();
