@@ -464,11 +464,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         /** @psalm-var array<array-key, array<mixed>>|null */
         $results = $this->queryInternal((int) static::QUERY_MODE_ALL);
 
-        if (is_array($results)) {
-            return $results;
-        }
-
-        return [];
+        return $results ?? [];
     }
 
     public function queryColumn(): array
