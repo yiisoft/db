@@ -56,9 +56,9 @@ final class ArrayExpressionTest extends TestCase
     {
         $expression = new ArrayExpression(['a', 'b', 'c'], 'string', 1);
 
-        unset($expression[0]);
-        unset($expression[1]);
-        unset($expression[2]);
+        unset($expression[0], $expression[1], $expression[2]);
+
+
 
         $this->assertFalse(isset($expression[0]));
         $this->assertFalse(isset($expression[1]));
@@ -69,7 +69,7 @@ final class ArrayExpressionTest extends TestCase
     {
         $expression = new ArrayExpression(['a', 'b', 'c'], 'string', 1);
 
-        $this->assertSame(3, count($expression));
+        $this->assertCount(3, $expression);
     }
 
     public function testGetIterator(): void
