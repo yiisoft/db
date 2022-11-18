@@ -81,9 +81,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            <<<SQL
-            SELECT * FROM `no_exist_table`
-            SQL,
+            DbHelper::replaceQuotes(
+                <<<SQL
+                SELECT * FROM [[no_exist_table]]
+                SQL,
+                $db->getName(),
+            ),
             $sql,
         );
         $this->assertSame([], $params);

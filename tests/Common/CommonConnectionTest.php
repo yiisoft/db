@@ -22,10 +22,7 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
 {
     use TestTrait;
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\ConnectionProvider::execute()
-     */
-    public function testExecute(string $expected): void
+    public function testExecute(): void
     {
         $db = $this->getConnectionWithData();
 
@@ -44,9 +41,13 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
         $this->assertEquals(1, $command->queryScalar());
 
         $command = $db->createCommand('bad SQL');
+        $message = match ($db->getName()) {
+            'sqlite' => 'SQLSTATE[HY000]: General error: 1 near "bad": syntax error',
+            'sqlsrv' => "SQLSTATE[42000]: [Microsoft]",
+        };
 
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage($expected);
+        $this->expectExceptionMessage($message);
 
         $command->execute();
     }
