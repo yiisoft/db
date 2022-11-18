@@ -38,7 +38,7 @@ final class JsonExpressionTest extends TestCase
     {
         $expression = new JsonExpression(['a', 'b', 'c'], 'string');
 
-        $this->assertSame('["a","b","c"]', json_encode($expression->jsonSerialize()));
+        $this->assertSame('["a","b","c"]', json_encode($expression->jsonSerialize(), JSON_THROW_ON_ERROR));
     }
 
     public function testJsonSerializeQueryInterfaceException(): void
