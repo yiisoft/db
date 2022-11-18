@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Connection;
 
 use Closure;
+use Psr\Log\LoggerAwareInterface;
 use Throwable;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Command\CommandInterface;
@@ -19,10 +20,11 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
+use Yiisoft\Profiler\ProfilerAwareInterface;
 
 use function version_compare;
 
-interface ConnectionInterface
+interface ConnectionInterface extends LoggerAwareInterface, ProfilerAwareInterface
 {
     /**
      * Starts a transaction.
@@ -230,6 +232,13 @@ interface ConnectionInterface
      * @throws Exception|InvalidConfigException If connection fails
      */
     public function open(): void;
+
+    /**
+     * Allows you to enable and disable the query cache.
+     *
+     * @param bool $value whether to enable or disable the query cache.
+     */
+    public function queryCacheEnable(bool $value): void;
 
     /**
      * Quotes a value for use in a query.

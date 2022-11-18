@@ -956,12 +956,14 @@ trait TestCommandTrait
         $db = $this->getConnection(true);
 
         /** @psalm-suppress PossiblyNullReference */
-        $this->queryCache->setEnable(true);
+        $db->queryCacheEnable(true);
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id');
+
         $this->assertEquals('user1', $command->bindValue(':id', 1)->queryScalar());
 
         $update = $db->createCommand('UPDATE {{customer}} SET [[name]] = :name WHERE [[id]] = :id');
         $update->bindValues([':id' => 1, ':name' => 'user11'])->execute();
+
         $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
 
         $db->cache(function (ConnectionInterface $db) use ($command, $update) {
@@ -979,7 +981,7 @@ trait TestCommandTrait
         }, 10);
 
         /** @psalm-suppress PossiblyNullReference */
-        $this->queryCache->setEnable(false);
+        $db->queryCacheEnable(false);
 
         $db->cache(function () use ($command, $update) {
             $this->assertEquals('user22', $command->bindValue(':id', 2)->queryScalar());
@@ -988,11 +990,13 @@ trait TestCommandTrait
         }, 10);
 
         /** @psalm-suppress PossiblyNullReference */
-        $this->queryCache->setEnable(true);
+        $db->queryCacheEnable(true);
         $command = $db->createCommand('SELECT [[name]] FROM {{customer}} WHERE [[id]] = :id')->cache();
+
         $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
 
         $update->bindValues([':id' => 1, ':name' => 'user1'])->execute();
+
         $this->assertEquals('user11', $command->bindValue(':id', 1)->queryScalar());
         $this->assertEquals('user1', $command->noCache()->bindValue(':id', 1)->queryScalar());
 

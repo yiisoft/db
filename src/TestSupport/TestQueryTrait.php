@@ -785,12 +785,8 @@ trait TestQueryTrait
         $db = $this->getConnection();
 
         /** @psalm-suppress PossiblyNullReference */
-        $this->queryCache->setEnable(true);
-
-        $query = (new Query($db))
-            ->select(['name'])
-            ->from('customer');
-
+        $db->queryCacheEnable(true);
+        $query = (new Query($db))->select(['name'])->from('customer');
         $update = $db->createCommand('UPDATE {{customer}} SET [[name]] = :name WHERE [[id]] = :id');
 
         $this->assertEquals('user1', $query->where(['id' => 1])->scalar(), 'Asserting initial value');
@@ -835,7 +831,7 @@ trait TestQueryTrait
             );
         }, 10);
 
-        $this->queryCache->setEnable(false);
+        $db->queryCacheEnable(false);
 
         $db->cache(function () use ($query, $update) {
             $this->assertEquals(
@@ -849,7 +845,7 @@ trait TestQueryTrait
             $this->assertEquals('user2', $query->where(['id' => 2])->scalar());
         }, 10);
 
-        $this->queryCache->setEnable(true);
+        $db->queryCacheEnable(true);
 
         $query->cache();
 

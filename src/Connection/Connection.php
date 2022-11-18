@@ -105,6 +105,11 @@ abstract class Connection implements ConnectionInterface
         $this->profiler = null;
     }
 
+    public function queryCacheEnable(bool $value): void
+    {
+        $this->queryCache->setEnable($value);
+    }
+
     public function setEnableSavepoint(bool $value): void
     {
         $this->enableSavepoint = $value;
