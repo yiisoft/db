@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Connection;
 
 use Closure;
-use Psr\Log\LoggerAwareInterface;
 use Throwable;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Command\CommandInterface;
@@ -20,11 +19,10 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
-use Yiisoft\Profiler\ProfilerAwareInterface;
 
 use function version_compare;
 
-interface ConnectionInterface extends LoggerAwareInterface, ProfilerAwareInterface
+interface ConnectionInterface
 {
     /**
      * Starts a transaction.
