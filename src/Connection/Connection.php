@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Connection;
 
 use Closure;
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
@@ -15,12 +16,13 @@ use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
+use Yiisoft\Profiler\ProfilerAwareInterface;
 use Yiisoft\Profiler\ProfilerAwareTrait;
 
 /**
  * Connection is the base class for all database connection classes.
  */
-abstract class Connection implements ConnectionInterface
+abstract class Connection implements ConnectionInterface, LoggerAwareInterface, ProfilerAwareInterface
 {
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
