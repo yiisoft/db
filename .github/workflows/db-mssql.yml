@@ -27,7 +27,6 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      composer_flag: "${{ matrix.php == '8.2' && '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs' || '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi' }}"
       extensions: pdo, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
@@ -45,6 +44,7 @@ jobs:
         mssql:
           - server:2017-latest
           - server:2019-latest
+          - server:2022-latest
 
     services:
       mssql:
@@ -58,13 +58,13 @@ jobs:
           options: --name=mssql --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - name: Checkout
+      - name: Checkout.
         uses: actions/checkout@v3
 
-      - name: Create MS SQL Database
+      - name: Create MS SQL Database.
         run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
 
-      - name: Install PHP with extensions
+      - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
@@ -72,19 +72,17 @@ jobs:
           ini-values: date.timezone='UTC'
           coverage: pcov
           tools: composer:v2, pecl
-        env:
-          update: true
 
-      - name: Update composer
+      - name: Update composer.
         run: composer self-update
 
-      - name: Install db-mssql
-        run: composer require yiisoft/db-mssql ${{ env.composer_flag }}
+      - name: Install db-mssql.
+        run: composer require yiisoft/db-mssql:dev-temp --prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi
 
-      - name: Run mssql tests with phpunit
+      - name: Run mssql tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always
 
-      - name: Upload coverage to Codecov
+      - name: Upload coverage to Codecov.
         if: matrix.php == '8.0'
         uses: codecov/codecov-action@v3
         with:
