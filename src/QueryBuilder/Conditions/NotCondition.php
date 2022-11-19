@@ -33,26 +33,26 @@ final class NotCondition implements NotConditionInterface
         return new self(self::validateCondition($operator, $operands));
     }
 
-    private static function validateCondition(string $operator, array $operands): ExpressionInterface|array|null|string
+    private static function validateCondition(string $operator, array $condition): ExpressionInterface|array|null|string
     {
-        if (count($operands) !== 1) {
+        if (count($condition) !== 1) {
             throw new InvalidArgumentException("Operator '$operator' requires exactly one operand.");
         }
 
-        /** @var mixed $operands */
-        $operands = array_shift($operands);
+        /** @var mixed $condition */
+        $condition = array_shift($condition);
 
         if (
-            !is_array($operands) &&
-            !($operands instanceof ExpressionInterface) &&
-            !is_string($operands) &&
-            $operands !== null
+            !is_array($condition) &&
+            !($condition instanceof ExpressionInterface) &&
+            !is_string($condition) &&
+            $condition !== null
         ) {
             throw new InvalidArgumentException(
                 "Operator '$operator' requires condition to be array, string, null or ExpressionInterface."
             );
         }
 
-        return $operands;
+        return $condition;
     }
 }
