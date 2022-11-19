@@ -52,23 +52,23 @@ final class InCondition implements InConditionInterface
         );
     }
 
-    private static function validateColumn(string $operator, mixed $operand): array|string|Iterator
+    private static function validateColumn(string $operator, mixed $column): array|string|Iterator
     {
-        if (!is_string($operand) && !is_array($operand) && !$operand instanceof Iterator) {
+        if (!is_string($column) && !is_array($column) && !$column instanceof Iterator) {
             throw new InvalidArgumentException("Operator '$operator' requires column to be string, array or Iterator.");
         }
 
-        return $operand;
+        return $column;
     }
 
-    private static function validateValues(string $operator, mixed $operand): int|iterable|Iterator|QueryInterface
+    private static function validateValues(string $operator, mixed $values): int|iterable|Iterator|QueryInterface
     {
-        if (!is_array($operand) && !$operand instanceof Iterator && !is_int($operand) && !$operand instanceof QueryInterface) {
+        if (!is_array($values) && !$values instanceof Iterator && !is_int($values) && !$values instanceof QueryInterface) {
             throw new InvalidArgumentException(
                 "Operator '$operator' requires values to be array, Iterator, int or QueryInterface."
             );
         }
 
-        return $operand;
+        return $values;
     }
 }
