@@ -185,6 +185,9 @@ interface ConnectionInterface
      */
     public function isActive(): bool;
 
+    /**
+     * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
+     */
     public function isSavepointEnabled(): bool;
 
     /**
