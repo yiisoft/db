@@ -362,11 +362,6 @@ abstract class Schema implements SchemaInterface
         $this->schemaCache->setEnable($value);
     }
 
-    public function supportsSavepoint(): bool
-    {
-        return $this->db->isSavepointEnabled();
-    }
-
     /**
      * Returns all schema names in the database, including the default one but not system schemas.
      *
