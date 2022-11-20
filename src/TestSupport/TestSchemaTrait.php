@@ -139,8 +139,8 @@ trait TestSchemaTrait
         $schema = $db->getSchema();
 
         $this->assertNotNull($this->schemaCache);
-        $this->schemaCache->setEnable(true);
 
+        $schema->schemaCacheEnable(true);
         $noCacheTable = $schema->getTableSchema('type', true);
         $cachedTable = $schema->getTableSchema('type', false);
 
@@ -164,12 +164,9 @@ trait TestSchemaTrait
 
         $this->assertNotNull($this->schemaCache);
 
-        $this->schemaCache->setEnable(true);
-
+        $schema->schemaCacheEnable(true);
         $noCacheTable = $schema->getTableSchema('type', true);
-
         $schema->refreshTableSchema('type');
-
         $refreshedTable = $schema->getTableSchema('type', false);
 
         $this->assertNotSame($noCacheTable, $refreshedTable);

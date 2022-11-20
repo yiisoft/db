@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Throwable;
-use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -45,11 +44,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @return string The real name of the given table name.
      */
     public function getRawTableName(string $name): string;
-
-    /**
-     * Return schema cache instance.
-     */
-    public function getSchemaCache(): SchemaCache;
 
     /**
      * Returns all schema names in the database, except system schemas.
@@ -163,6 +157,13 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param string $name Table name.
      */
     public function refreshTableSchema(string $name): void;
+
+    /**
+     * Allows you to enable and disable the schema cache.
+     *
+     * @param bool $value whether to enable or disable the schema cache.
+     */
+    public function schemaCacheEnable(bool $value): void;
 
     /**
      * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).

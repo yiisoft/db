@@ -191,11 +191,6 @@ abstract class Schema implements SchemaInterface
         return $name;
     }
 
-    public function getSchemaCache(): SchemaCache
-    {
-        return $this->schemaCache;
-    }
-
     /**
      * @throws NotSupportedException
      */
@@ -360,6 +355,11 @@ abstract class Schema implements SchemaInterface
         if ($this->schemaCache->isEnabled()) {
             $this->schemaCache->remove($this->getCacheKey($rawName));
         }
+    }
+
+    public function schemaCacheEnable(bool $value): void
+    {
+        $this->schemaCache->setEnable($value);
     }
 
     /**
