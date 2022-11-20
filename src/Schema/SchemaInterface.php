@@ -47,11 +47,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function getRawTableName(string $name): string;
 
     /**
-     * Return schema cache instance.
-     */
-    public function getSchemaCache(): SchemaCache;
-
-    /**
      * Returns all schema names in the database, except system schemas.
      *
      * @param bool $refresh Whether to fetch the latest available schema names. If this is false, schema names fetched
@@ -163,6 +158,13 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param string $name Table name.
      */
     public function refreshTableSchema(string $name): void;
+
+    /**
+     * Allows you to enable and disable the schema cache.
+     *
+     * @param bool $value whether to enable or disable the schema cache.
+     */
+    public function schemaCacheEnable(bool $value): void;
 
     /**
      * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
