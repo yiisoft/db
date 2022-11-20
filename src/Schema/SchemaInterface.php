@@ -161,11 +161,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function schemaCacheEnable(bool $value): void;
 
     /**
-     * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
-     */
-    public function supportsSavepoint(): bool;
-
-    /**
      * Returns all view names in the database.
      *
      * @param string $schema the schema of the views. Defaults to empty string, meaning the current or default schema
