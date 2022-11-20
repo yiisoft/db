@@ -73,9 +73,7 @@ abstract class TransactionPDO implements TransactionInterface
             return;
         }
 
-        $schema = $this->db->getSchema();
-
-        if ($schema->supportsSavepoint()) {
+        if ($this->db->isSavepointEnabled()) {
             $this->logger?->log(LogLevel::DEBUG, 'Set savepoint ' . $this->level . ' ' . __METHOD__);
 
             $this->createSavepoint('LEVEL' . $this->level);
@@ -108,9 +106,7 @@ abstract class TransactionPDO implements TransactionInterface
             return;
         }
 
-        $schema = $this->db->getSchema();
-
-        if ($schema->supportsSavepoint()) {
+        if ($this->db->isSavepointEnabled()) {
             $this->logger?->log(LogLevel::DEBUG, 'Release savepoint ' . $this->level . ' ' . __METHOD__);
             $this->releaseSavepoint('LEVEL' . $this->level);
         } else {
@@ -160,8 +156,7 @@ abstract class TransactionPDO implements TransactionInterface
             return;
         }
 
-        $schema = $this->db->getSchema();
-        if ($schema->supportsSavepoint()) {
+        if ($this->db->isSavepointEnabled()) {
             $this->logger?->log(LogLevel::DEBUG, 'Roll back to savepoint ' . $this->level . ' ' . __METHOD__);
             $this->rollBackSavepoint('LEVEL' . $this->level);
         } else {

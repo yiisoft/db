@@ -18,11 +18,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function getDefaultSchema(): string|null;
 
     /**
-     * @inheritDoc
-     */
-    public function getLastInsertID(string $sequenceName = null): string;
-
-    /**
      * Determines the PDO type for the given PHP data value.
      *
      * @param mixed $data The data whose PDO type is to be determined
@@ -164,11 +159,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param bool $value whether to enable or disable the schema cache.
      */
     public function schemaCacheEnable(bool $value): void;
-
-    /**
-     * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
-     */
-    public function supportsSavepoint(): bool;
 
     /**
      * Returns all view names in the database.
