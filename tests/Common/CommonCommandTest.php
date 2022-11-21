@@ -692,38 +692,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $reader->rewind();
     }
 
-    public function testDropCommentFromColumn(): void
-    {
-        $db = $this->getConnectionwithData();
-
-        $command = $db->createCommand();
-        $command->addCommentOnColumn('customer', 'id', 'Primary key.')->execute();
-        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
-
-        $this->assertSame('Primary key.', $commentOnColumn);
-
-        $command->dropCommentFromColumn('customer', 'id')->execute();
-        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
-
-        $this->assertSame([], $commentOnColumn);
-    }
-
-    public function testDropCommentFromTable(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $command = $db->createCommand();
-        $command->addCommentOnTable('customer', 'Customer table.')->execute();
-        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
-
-        $this->assertSame('Customer table.', $commentOnTable);
-
-        $command->dropCommentFromTable('customer')->execute();
-        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
-
-        $this->assertSame([], $commentOnTable);
-    }
-
     public function testDropDefaultValue(): void
     {
         $db = $this->getConnectionWithData();

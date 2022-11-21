@@ -353,44 +353,6 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $this->assertSame($expectedParams, $actualParams);
     }
 
-    public function testDropCommentFromColumn(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $command = $db->createCommand();
-        $qb = $db->getQueryBuilder();
-        $sql = $qb->addCommentOnColumn('customer', 'id', 'Primary key.');
-        $command->setSql($sql)->execute();
-        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
-
-        $this->assertSame('Primary key.', $commentOnColumn);
-
-        $sql = $qb->dropCommentFromColumn('customer', 'id');
-        $command->setSql($sql)->execute();
-        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
-
-        $this->assertSame([], $commentOnColumn);
-    }
-
-    public function testDropCommentFromTable(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $command = $db->createCommand();
-        $qb = $db->getQueryBuilder();
-        $sql = $qb->addCommentOnTable('customer', 'Customer table.');
-        $command->setSql($sql)->execute();
-        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
-
-        $this->assertSame('Customer table.', $commentOnTable);
-
-        $sql = $qb->dropCommentFromTable('customer');
-        $command->setSql($sql)->execute();
-        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
-
-        $this->assertSame([], $commentOnTable);
-    }
-
     public function testGetColumnType(): void
     {
         $db = $this->getConnection();

@@ -12,7 +12,7 @@ final class DbHelper
         string $table,
         string $column,
         ConnectionPDOInterface $db
-    ): array|string {
+    ): array|null {
         return match ($db->getName()) {
             'pgsql' => $db->createCommand(
                 <<<SQL
@@ -44,7 +44,7 @@ final class DbHelper
     public static function getCommmentsFromTable(
         string $table,
         ConnectionPDOInterface $db
-    ): array|string {
+    ): array|null {
         return match ($db->getName()) {
             'pgsql' => $db->createCommand(
                 <<<SQL
