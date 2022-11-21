@@ -405,7 +405,7 @@ abstract class QueryBuilder implements QueryBuilderInterface
 
     public function truncateTable(string $table): string
     {
-        return $this->dmlBuilder->truncateTable($table);
+        return $this->ddlBuilder->truncateTable($table);
     }
 
     public function update(string $table, array $columns, array|string $condition, array &$params = []): string
