@@ -13,7 +13,7 @@ final class DbHelper
         string $column,
         ConnectionPDOInterface $db
     ): array|string {
-        $result = match ($db->getName()) {
+        return match ($db->getName()) {
             'pgsql' => $db->createCommand(
                 <<<SQL
                 SELECT
@@ -39,15 +39,13 @@ final class DbHelper
                 ['table' => $table, 'column' => $column]
             )->queryOne(),
         };
-
-        return $result;
     }
 
     public static function getCommmentsFromTable(
         string $table,
         ConnectionPDOInterface $db
     ): array|string {
-        $result = match ($db->getName()) {
+        return match ($db->getName()) {
             'pgsql' => $db->createCommand(
                 <<<SQL
                 SELECT obj_description(oid, 'pg_class') as description FROM pg_class WHERE relname= :table
@@ -66,8 +64,6 @@ final class DbHelper
                 ['table' => $table]
             )->queryOne(),
         };
-
-        return $result;
     }
 
     /**
