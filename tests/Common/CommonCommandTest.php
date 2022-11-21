@@ -42,28 +42,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
 {
     use TestTrait;
 
-    public function testAddCommentOnColumn(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $command = $db->createCommand();
-        $command->addCommentOnColumn('customer', 'id', 'Primary key.')->execute();
-        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
-
-        $this->assertSame('Primary key.', $commentOnColumn);
-    }
-
-    public function testAddCommentOnTable(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $command = $db->createCommand();
-        $command->addCommentOnTable('customer', 'Customer table.')->execute();
-        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
-
-        $this->assertSame('Customer table.', $commentOnTable);
-    }
-
     public function testAddDefaultValue(): void
     {
         $db = $this->getConnectionWithData();
@@ -543,34 +521,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->bindValue(':name', 'user5');
 
         $this->assertSame('user5@example.com', $command->queryScalar());
-    }
-
-    public function testCheckIntegrity(): void
-    {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand();
-
-        $this->assertSame(0, $command->checkIntegrity('schema', 'table')->execute());
-    }
-
-    public function testCheckIntegrityExecuteException(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $command = $db->createCommand();
-        $schemaName = 'dbo';
-        $tableName = 'T_constraints_3';
-        $command->checkIntegrity($schemaName, $tableName, false)->execute();
-        $sql = <<<SQL
-        INSERT INTO {{{$tableName}}} ([[C_id]], [[C_fk_id_1]], [[C_fk_id_2]]) VALUES (1, 2, 3)
-        SQL;
-        $command->setSql($sql)->execute();
-        $db->createCommand()->checkIntegrity($schemaName, $tableName)->execute();
-
-        $this->expectException(IntegrityException::class);
-
-        $command->setSql($sql)->execute();
     }
 
     /**

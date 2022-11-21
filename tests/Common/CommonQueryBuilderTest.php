@@ -39,32 +39,6 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
 {
     use TestTrait;
 
-    public function testAddCommentOnColumn(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $command = $db->createCommand();
-        $qb = $db->getQueryBuilder();
-        $sql = $qb->addCommentOnColumn('customer', 'id', 'Primary key.');
-        $command->setSql($sql)->execute();
-        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
-
-        $this->assertSame('Primary key.', $commentOnColumn);
-    }
-
-    public function testAddCommentOnTable(): void
-    {
-        $db = $this->getConnectionWithData();
-
-        $command = $db->createCommand();
-        $qb = $db->getQueryBuilder();
-        $sql = $qb->addCommentOnTable('customer', 'Customer table.');
-        $command->setSql($sql)->execute();
-        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
-
-        $this->assertSame('Customer table.', $commentOnTable);
-    }
-
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addDropChecks()
      */

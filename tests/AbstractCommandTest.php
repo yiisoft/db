@@ -670,9 +670,12 @@ abstract class AbstractCommandTest extends TestCase
         $sql = $db->createCommand()->renameColumn('table', 'oldname', 'newname')->getSql();
 
         $this->assertSame(
-            <<<SQL
-            ALTER TABLE `table` RENAME COLUMN `oldname` TO `newname`
-            SQL,
+            DbHelper::replaceQuotes(
+                <<<SQL
+                ALTER TABLE [[table]] RENAME COLUMN [[oldname]] TO [[newname]]
+                SQL,
+                $db->getName(),
+            ),
             $sql,
         );
     }
