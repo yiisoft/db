@@ -23,8 +23,10 @@ use function strtoupper;
  */
 class LikeConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
-    {
+    public function __construct(
+        private QueryBuilderInterface $queryBuilder,
+        private string|null $escapeSql = null
+    ) {
     }
 
     /**
@@ -36,7 +38,6 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         '_' => '\_',
         '\\' => '\\\\',
     ];
-    protected string|null $escapeCharacter = null;
 
     /**
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
@@ -68,7 +69,6 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
             $column = $this->queryBuilder->quoter()->quoteColumnName($column);
         }
 
-        $escapeSql = $this->getEscapeSql();
         $parts = [];
 
         /** @psalm-var string[] $values */
@@ -81,7 +81,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
                     $params
                 );
             }
-            $parts[] = "{$column} {$operator} {$phName}{$escapeSql}";
+            $parts[] = "{$column} {$operator} {$phName}{$this->escapeSql}";
         }
 
         return implode($andor, $parts);
@@ -95,7 +95,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     protected function parseOperator(string $operator): array
     {
         if (!preg_match('/^(AND |OR |)((NOT |)I?LIKE)/', $operator, $matches)) {
-            throw new InvalidArgumentException("Invalid operator '$operator'.");
+            throw new InvalidArgumentException("Invalid operator in like condition: \"{$operator}\"");
         }
 
         $andor = ' ' . (!empty($matches[1]) ? $matches[1] : 'AND ');
@@ -103,18 +103,5 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         $operator = $matches[2];
 
         return [$andor, $not, $operator];
-    }
-
-    /**
-     * @return string character used to escape special characters in LIKE conditions. By default,
-     * it's assumed to be `\`.
-     */
-    private function getEscapeSql(): string
-    {
-        if ($this->escapeCharacter !== null) {
-            return " ESCAPE '{$this->escapeCharacter}'";
-        }
-
-        return '';
     }
 }
