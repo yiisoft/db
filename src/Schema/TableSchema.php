@@ -208,6 +208,6 @@ abstract class TableSchema implements TableSchemaInterface
 
     public function compositeFK(int $id, string $from, string $to): void
     {
-        throw new NotSupportedException('Composite foreign key not supported');
+        throw new NotSupportedException(static::class . ' does not support composite FK.');
     }
 }
