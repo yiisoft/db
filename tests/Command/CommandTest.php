@@ -179,9 +179,8 @@ final class CommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
-            SELECT * FROM {{customer}} WHERE id=:id
+            SELECT * FROM {{customer}}
             SQL,
-            [':id' => 1],
         );
 
         $this->expectException(NotSupportedException::class);
