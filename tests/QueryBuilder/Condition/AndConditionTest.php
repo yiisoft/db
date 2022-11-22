@@ -10,7 +10,7 @@ use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
 /**
  * @group db
  */
-final class AndConditionsTest extends TestCase
+final class AndConditionTest extends TestCase
 {
     public function testConstructor(): void
     {
