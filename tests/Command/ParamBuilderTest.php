@@ -10,6 +10,8 @@ use Yiisoft\Db\Expression\Expression;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class ParamBuilderTest extends TestCase
 {

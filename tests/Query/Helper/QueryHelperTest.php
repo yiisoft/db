@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Query\Helper;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Helper\QueryHelper;
 use Yiisoft\Db\Schema\Quoter;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 final class QueryHelperTest extends TestCase
 {
     public function tablesNameDataProvider(): array
@@ -32,8 +34,6 @@ final class QueryHelperTest extends TestCase
      */
     public function testCleanUpTableNames(array $tables, string $prefixDatabase, array $expected): void
     {
-        $connection = $this->createConnectionMock();
-
         $this->assertEquals(
             $expected,
             $this->createQueryHelper()->cleanUpTableNames($tables, new Quoter('"', '"'))
@@ -42,8 +42,6 @@ final class QueryHelperTest extends TestCase
 
     public function testCleanUpTableNamesException(): void
     {
-        $connection = $this->createConnectionMock();
-
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('To use Expression in from() method, pass it in array format with alias.');
         $this->createQueryHelper()->cleanUpTableNames(
@@ -144,10 +142,5 @@ final class QueryHelperTest extends TestCase
     private function createQueryHelper(): QueryHelper
     {
         return new QueryHelper();
-    }
-
-    private function createConnectionMock(): ConnectionInterface
-    {
-        return $this->createMock(ConnectionInterface::class);
     }
 }

@@ -10,6 +10,11 @@ use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
+/**
+ * @psalm-suppress InvalidReturnType
+ * @psalm-suppress InvalidNullableReturnType
+ * @psalm-suppress NullableReturnStatement
+ */
 final class Schema extends \Yiisoft\Db\Schema\Schema implements SchemaInterface
 {
     public function createColumnSchemaBuilder(string $type, array|int|string $length = null): ColumnSchemaBuilder

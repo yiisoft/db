@@ -10,32 +10,11 @@ final class CommandProvider
 {
     use TestTrait;
 
-    public function batchInsertSql(): array
-    {
-        $baseCommandProvider = new BaseCommandProvider();
-
-        return $baseCommandProvider->batchInsertSql($this->getConnection());
-    }
-
-    public function bindParamsNonWhere(): array
-    {
-        $baseCommandProvider = new BaseCommandProvider();
-
-        return $baseCommandProvider->bindParamsNonWhere();
-    }
-
     public function createIndex(): array
     {
         $baseCommandProvider = new BaseCommandProvider();
 
         return $baseCommandProvider->createIndex($this->getConnection());
-    }
-
-    public function invalidSelectColumns(): array
-    {
-        $baseCommandProvider = new BaseCommandProvider();
-
-        return $baseCommandProvider->invalidSelectColumns();
     }
 
     public function rawSql(): array

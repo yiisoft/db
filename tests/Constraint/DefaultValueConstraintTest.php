@@ -10,6 +10,8 @@ use Yiisoft\Db\Constraint\DefaultValueConstraint;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class DefaultValueConstraintTest extends TestCase
 {

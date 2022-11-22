@@ -17,11 +17,14 @@ use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Data\DataReader;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
+
+use function call_user_func_array;
 
 abstract class AbstractCommandTest extends TestCase
 {
@@ -745,10 +748,12 @@ abstract class AbstractCommandTest extends TestCase
         $expected = $data['expected'] ?? $params[1];
 
         $command = $db->createCommand();
+
         call_user_func_array([$command, 'upsert'], $params);
+
         $command->execute();
 
-        $actual = $this->getQuery($db)
+        $actual = (new Query($db))
             ->select(['email', 'address' => new Expression($this->upsertTestCharCast), 'status'])
             ->from('T_upsert')
             ->one();

@@ -9,6 +9,8 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class ForeignKeyConstraintTest extends TestCase
 {

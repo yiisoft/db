@@ -110,27 +110,6 @@ final class BaseCommandProvider
         ];
     }
 
-    public function bindParamsNonWhere(): array
-    {
-        return [
-            [
-                <<<SQL
-                SELECT SUBSTR(name, :len) FROM {{customer}} WHERE [[email]] = :email GROUP BY SUBSTR(name, :len)
-                SQL,
-            ],
-            [
-                <<<SQL
-                SELECT SUBSTR(name, :len) FROM {{customer}} WHERE [[email]] = :email ORDER BY SUBSTR(name, :len)
-                SQL,
-            ],
-            [
-                <<<SQL
-                SELECT SUBSTR(name, :len) FROM {{customer}} WHERE [[email]] = :email
-                SQL,
-            ],
-        ];
-    }
-
     public function createIndex(ConnectionPDOInterface $db): array
     {
         return [
@@ -213,11 +192,6 @@ final class BaseCommandProvider
                 ),
             ],
         ];
-    }
-
-    public function invalidSelectColumns(): array
-    {
-        return [[[]], ['*'], [['*']]];
     }
 
     public function rawSql(): array

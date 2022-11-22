@@ -10,6 +10,8 @@ use Yiisoft\Db\Constraint\Constraint;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class ConstraintTest extends TestCase
 {

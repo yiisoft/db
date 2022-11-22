@@ -10,8 +10,12 @@ use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
+use function json_encode;
+
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class JsonExpressionTest extends TestCase
 {

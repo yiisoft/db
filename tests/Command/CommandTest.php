@@ -145,7 +145,7 @@ final class CommandTest extends AbstractCommandTest
 
         $db->open();
         $pdo = $db->getPdo();
-        $pdo->exec(
+        $pdo?->exec(
             <<<SQL
             CREATE TABLE customer (id integer PRIMARY KEY)
             SQL
@@ -171,7 +171,7 @@ final class CommandTest extends AbstractCommandTest
 
         $db->open();
         $pdo = $db->getPdo();
-        $pdo->exec(
+        $pdo?->exec(
             <<<SQL
             CREATE TABLE customer (id integer PRIMARY KEY)
             SQL

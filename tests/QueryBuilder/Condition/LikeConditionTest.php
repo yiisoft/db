@@ -10,6 +10,8 @@ use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class LikeConditionTest extends TestCase
 {
@@ -35,6 +37,7 @@ final class LikeConditionTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'LIKE' requires two operands.");
+
         LikeCondition::fromArrayDefinition('LIKE', []);
     }
 
@@ -42,6 +45,7 @@ final class LikeConditionTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'LIKE' requires column to be string or Expression.");
+
         LikeCondition::fromArrayDefinition('LIKE', [false, 'test']);
     }
 
@@ -51,6 +55,7 @@ final class LikeConditionTest extends TestCase
         $this->expectExceptionMessage(
             "Operator 'LIKE' requires value to be string, array, Iterator or ExpressionInterface."
         );
+
         LikeCondition::fromArrayDefinition('LIKE', ['id', false]);
     }
 

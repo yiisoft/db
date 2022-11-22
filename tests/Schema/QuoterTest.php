@@ -7,6 +7,8 @@ namespace Yiisoft\Db\Tests\Schema;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
+use function array_reverse;
+
 /**
  * @group db
  *

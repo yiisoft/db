@@ -9,6 +9,9 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionObject;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 final class Assert extends TestCase
 {
     /**
@@ -47,6 +50,7 @@ final class Assert extends TestCase
 
         $property->setAccessible(true);
 
+        /** @psalm-var mixed $result */
         $result = $property->getValue($object);
 
         if ($revoke) {
