@@ -378,4 +378,13 @@ interface DDLQueryBuilderInterface
      * @return string the SQL statement for renaming a DB table.
      */
     public function renameTable(string $oldName, string $newName): string;
+
+    /**
+     * Builds a SQL statement for truncating a DB table.
+     *
+     * @param string $table the table to be truncated. The name will be properly quoted by the method.
+     *
+     * @return string the SQL statement for truncating a DB table.
+     */
+    public function truncateTable(string $table): string;
 }

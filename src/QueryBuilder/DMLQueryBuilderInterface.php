@@ -119,15 +119,6 @@ interface DMLQueryBuilderInterface
     public function resetSequence(string $tableName, int|string|null $value = null): string;
 
     /**
-     * Builds a SQL statement for truncating a DB table.
-     *
-     * @param string $table the table to be truncated. The name will be properly quoted by the method.
-     *
-     * @return string the SQL statement for truncating a DB table.
-     */
-    public function truncateTable(string $table): string;
-
-    /**
      * Creates an UPDATE SQL statement.
      *
      * For example,
