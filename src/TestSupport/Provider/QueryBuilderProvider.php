@@ -6,9 +6,9 @@ namespace Yiisoft\Db\TestSupport\Provider;
 
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\QueryBuilder\Conditions\BetweenColumnsCondition;
-use Yiisoft\Db\QueryBuilder\Conditions\InCondition;
-use Yiisoft\Db\QueryBuilder\Conditions\LikeCondition;
+use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\InCondition;
+use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\Query;

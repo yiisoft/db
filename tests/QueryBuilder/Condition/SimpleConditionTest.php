@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\QueryBuilder\Condition;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\QueryBuilder\Conditions\SimpleCondition;
+use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 
 /**
  * @group db

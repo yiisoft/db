@@ -14,9 +14,9 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilder;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Conditions\HashCondition;
-use Yiisoft\Db\QueryBuilder\Conditions\Interface\ConditionInterface;
-use Yiisoft\Db\QueryBuilder\Conditions\SimpleCondition;
+use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryExpressionBuilder;
 use Yiisoft\Db\Query\QueryInterface;
@@ -497,19 +497,19 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
     protected function defaultConditionClasses(): array
     {
         return [
-            'NOT' => Conditions\NotCondition::class,
-            'AND' => Conditions\AndCondition::class,
-            'OR' => Conditions\OrCondition::class,
-            'BETWEEN' => Conditions\BetweenCondition::class,
-            'NOT BETWEEN' => Conditions\BetweenCondition::class,
-            'IN' => Conditions\InCondition::class,
-            'NOT IN' => Conditions\InCondition::class,
-            'LIKE' => Conditions\LikeCondition::class,
-            'NOT LIKE' => Conditions\LikeCondition::class,
-            'OR LIKE' => Conditions\LikeCondition::class,
-            'OR NOT LIKE' => Conditions\LikeCondition::class,
-            'EXISTS' => Conditions\ExistsCondition::class,
-            'NOT EXISTS' => Conditions\ExistsCondition::class,
+            'NOT' => Condition\NotCondition::class,
+            'AND' => Condition\AndCondition::class,
+            'OR' => Condition\OrCondition::class,
+            'BETWEEN' => Condition\BetweenCondition::class,
+            'NOT BETWEEN' => Condition\BetweenCondition::class,
+            'IN' => Condition\InCondition::class,
+            'NOT IN' => Condition\InCondition::class,
+            'LIKE' => Condition\LikeCondition::class,
+            'NOT LIKE' => Condition\LikeCondition::class,
+            'OR LIKE' => Condition\LikeCondition::class,
+            'OR NOT LIKE' => Condition\LikeCondition::class,
+            'EXISTS' => Condition\ExistsCondition::class,
+            'NOT EXISTS' => Condition\ExistsCondition::class,
         ];
     }
 
@@ -527,17 +527,17 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
             Query::class => QueryExpressionBuilder::class,
             Param::class => ParamBuilder::class,
             Expression::class => ExpressionBuilder::class,
-            Conditions\ConjunctionCondition::class => Conditions\Builder\ConjunctionConditionBuilder::class,
-            Conditions\NotCondition::class => Conditions\Builder\NotConditionBuilder::class,
-            Conditions\AndCondition::class => Conditions\Builder\ConjunctionConditionBuilder::class,
-            Conditions\OrCondition::class => Conditions\Builder\ConjunctionConditionBuilder::class,
-            Conditions\BetweenCondition::class => Conditions\Builder\BetweenConditionBuilder::class,
-            Conditions\InCondition::class => Conditions\Builder\InConditionBuilder::class,
-            Conditions\LikeCondition::class => Conditions\Builder\LikeConditionBuilder::class,
-            Conditions\ExistsCondition::class => Conditions\Builder\ExistsConditionBuilder::class,
-            Conditions\SimpleCondition::class => Conditions\Builder\SimpleConditionBuilder::class,
-            Conditions\HashCondition::class => Conditions\Builder\HashConditionBuilder::class,
-            Conditions\BetweenColumnsCondition::class => Conditions\Builder\BetweenColumnsConditionBuilder::class,
+            Condition\ConjunctionCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
+            Condition\NotCondition::class => Condition\Builder\NotConditionBuilder::class,
+            Condition\AndCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
+            Condition\OrCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
+            Condition\BetweenCondition::class => Condition\Builder\BetweenConditionBuilder::class,
+            Condition\InCondition::class => Condition\Builder\InConditionBuilder::class,
+            Condition\LikeCondition::class => Condition\Builder\LikeConditionBuilder::class,
+            Condition\ExistsCondition::class => Condition\Builder\ExistsConditionBuilder::class,
+            Condition\SimpleCondition::class => Condition\Builder\SimpleConditionBuilder::class,
+            Condition\HashCondition::class => Condition\Builder\HashConditionBuilder::class,
+            Condition\BetweenColumnsCondition::class => Condition\Builder\BetweenColumnsConditionBuilder::class,
         ];
     }
 
