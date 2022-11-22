@@ -8,7 +8,7 @@ use Yiisoft\Db\Expression\Expression;
 
 final class QueryBuilderProvider
 {
-    private function buildFrom(): array
+    public function buildFrom(): array
     {
         return [
             [
