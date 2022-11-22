@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\QueryBuilder\Conditions\ExistsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\ExistsCondition;
 
 /**
  * @group db
