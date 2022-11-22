@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\QueryBuilder\Condition;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\QueryBuilder\Conditions\InCondition;
+use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 
 /**
  * @group db

@@ -14,7 +14,7 @@
     <ini name="error_reporting" value="-1"/>
   </php>
   <testsuites>
-    <testsuite name="db">
+    <testsuite name="Db">
       <directory>./tests</directory>
     </testsuite>
     <testsuite name="ActiveRecord">
