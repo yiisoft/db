@@ -12,6 +12,8 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class LikeConditionBuilderTest extends TestCase
 {

@@ -9,6 +9,8 @@ use Yiisoft\Db\Connection\Dsn;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class DsnTest extends TestCase
 {

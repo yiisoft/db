@@ -12,57 +12,9 @@ final class QuoterProvider
     public function columnName(): array
     {
         return [
-            ['column', 'column'],
-            ['`column`', '`column`'],
-            ['[[column]]', '[[column]]'],
-            ['{{column}}', '{{column}}'],
-        ];
-    }
-
-    /**
-     * @return string[][]
-     */
-    public function ensureColumnName(): array
-    {
-        return [
+            ['test', '[test]'],
+            ['[test]', '[test]'],
             ['*', '*'],
-            ['`*`', '`*`'],
-            ['[[*]]', '[*]'],
-            ['{{*}}', '{*}'],
-            ['table.column', 'column'],
-            ['`table`.`column`', '`column`'],
-            ['[[table]].[[column]]', 'column'],
-            ['{{table}}.{{column}}', '{column}'],
-        ];
-    }
-
-    /**
-     * @return string[][]
-     */
-    public function ensureNameQuoted(): array
-    {
-        return [
-            ['name', '{name}'],
-            ['`name`', '{name}'],
-            ['[[name]]', '{name}'],
-            ['{{name}}', '{name}'],
-            ['table.name', '{table.name}'],
-            ['`table`.`name`', '{table.name}'],
-            ['[[table]].[[name]]', '{table.name}'],
-            ['{{table}}.{{name}}', '{table}.{name}'],
-        ];
-    }
-
-    /**
-     * @return string[][]
-     */
-    public function simpleColumnName(): array
-    {
-        return [
-            ['column', 'column'],
-            ['`column`', '`column`'],
-            ['[[column]]', '[[column]]'],
-            ['{{column}}', '{{column}}'],
         ];
     }
 
@@ -72,10 +24,12 @@ final class QuoterProvider
     public function simpleTableName(): array
     {
         return [
-            ['table', 'table'],
-            ['`table`', '`table`'],
-            ['[[table]]', '[[table]]'],
-            ['{{table}}', '{{table}}'],
+            ['test', '[test]', ],
+            ['te`st', '[te`st]', ],
+            ['te\'st', '[te\'st]', ],
+            ['te"st', '[te"st]', ],
+            ['current-table-name', '[current-table-name]'],
+            ['[current-table-name]', '[current-table-name]'],
         ];
     }
 
@@ -85,11 +39,10 @@ final class QuoterProvider
     public function tableName(): array
     {
         return [
-            ['table', 'table'],
-            ['`table`', '`table`'],
-            ['(table)', '(table)'],
-            ['[[table]]', '[[table]]'],
-            ['{{table}}', '{{table}}'],
+            ['test', '[test]'],
+            ['test.test', '[test].[test]'],
+            ['[test]', '[test]'],
+            ['[test].[test]', '[test].[test]'],
         ];
     }
 
@@ -99,7 +52,12 @@ final class QuoterProvider
     public function tableNameParts(): array
     {
         return [
-            ['`schema`.`table`', ['schema', 'table']],
+            ['animal', 'animal',],
+            ['dbo.animal', 'animal', 'dbo'],
+            ['[dbo].[animal]', 'animal', 'dbo'],
+            ['[other].[animal2]', 'animal2', 'other'],
+            ['other.[animal2]', 'animal2', 'other'],
+            ['other.animal2', 'animal2', 'other'],
         ];
     }
 
@@ -109,9 +67,9 @@ final class QuoterProvider
     public function unquoteSimpleColumnName(): array
     {
         return [
-            ['`column`', 'column'],
-            ['[[column]]', '[column]'],
-            ['{{column}}', '{column}'],
+            ['test', 'test'],
+            ['[test]', 'test'],
+            ['*', '*'],
         ];
     }
 
@@ -121,9 +79,12 @@ final class QuoterProvider
     public function unquoteSimpleTableName(): array
     {
         return [
-            ['`table`', 'table'],
-            ['[[table]]', '[table]'],
-            ['{{table}}', '{table}'],
+            ['[test]', 'test'],
+            ['[te`st]', 'te`st'],
+            ['[te\'st]', 'te\'st'],
+            ['[te"st]', 'te"st'],
+            ['[current-table-name]', 'current-table-name'],
+            ['[current-table-name]', 'current-table-name'],
         ];
     }
 }

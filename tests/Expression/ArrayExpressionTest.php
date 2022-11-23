@@ -10,6 +10,8 @@ use Yiisoft\Db\Expression\ArrayExpression;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class ArrayExpressionTest extends TestCase
 {

@@ -10,6 +10,8 @@ use Yiisoft\Db\QueryBuilder\Condition\BetweenCondition;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class BetweenConditionTest extends TestCase
 {
@@ -37,6 +39,7 @@ final class BetweenConditionTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'between' requires three operands.");
+
         BetweenCondition::fromArrayDefinition('between', []);
     }
 
@@ -44,6 +47,7 @@ final class BetweenConditionTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'between' requires column to be string or ExpressionInterface.");
+
         BetweenCondition::fromArrayDefinition('between', [1, 'min_value', 'max_value']);
     }
 }

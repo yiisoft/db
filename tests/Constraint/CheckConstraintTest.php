@@ -9,6 +9,8 @@ use Yiisoft\Db\Constraint\CheckConstraint;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class CheckConstraintTest extends TestCase
 {

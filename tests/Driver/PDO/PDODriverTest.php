@@ -11,6 +11,8 @@ use Yiisoft\Db\Tests\Support\Stub\PDODriver;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class PDODriverTest extends TestCase
 {

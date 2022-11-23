@@ -12,6 +12,8 @@ use Yiisoft\Db\QueryBuilder\Condition\ExistsCondition;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class ExistsConditionTest extends TestCase
 {
@@ -43,6 +45,7 @@ final class ExistsConditionTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Sub query for EXISTS operator must be a Query object.');
+
         ExistsCondition::fromArrayDefinition('EXISTS', []);
     }
 }

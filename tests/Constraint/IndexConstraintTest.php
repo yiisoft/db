@@ -9,6 +9,8 @@ use Yiisoft\Db\Constraint\IndexConstraint;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class IndexConstraintTest extends TestCase
 {

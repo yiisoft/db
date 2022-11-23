@@ -9,6 +9,8 @@ use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class HashConditionTest extends TestCase
 {

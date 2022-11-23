@@ -7,6 +7,8 @@ namespace Yiisoft\Db\Tests\Schema;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
+use function array_reverse;
+
 /**
  * @group db
  *
@@ -19,11 +21,11 @@ final class QuoterTest extends TestCase
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::tableNameParts()
      */
-    public function testGetTableNameParts(string $tableName, array $expected): void
+    public function testGetTableNameParts(string $tableName, string ...$expected): void
     {
         $db = $this->getConnection();
 
-        $this->assertSame($expected, $db->getQuoter()->getTableNameParts($tableName));
+        $this->assertSame($expected, array_reverse($db->getQuoter()->getTableNameParts($tableName)));
     }
 
     /**
@@ -37,7 +39,7 @@ final class QuoterTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::simpleColumnName()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::columnName()
      */
     public function testQuoteSimpleColumnName(string $columnName, string $expected): void
     {

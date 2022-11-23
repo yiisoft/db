@@ -10,6 +10,8 @@ use Yiisoft\Db\QueryBuilder\Condition\NotCondition;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class NotConditionTest extends TestCase
 {
@@ -31,6 +33,7 @@ final class NotConditionTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'NOT' requires exactly one operand.");
+
         NotCondition::fromArrayDefinition('NOT', []);
     }
 
@@ -40,6 +43,7 @@ final class NotConditionTest extends TestCase
         $this->expectExceptionMessage(
             "Operator 'NOT' requires condition to be array, string, null or ExpressionInterface."
         );
+
         NotCondition::fromArrayDefinition('NOT', [false]);
     }
 }

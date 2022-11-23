@@ -10,6 +10,8 @@ use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class SimpleConditionTest extends TestCase
 {
@@ -35,6 +37,7 @@ final class SimpleConditionTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator '=' requires two operands.");
+
         SimpleCondition::fromArrayDefinition('=', []);
     }
 
@@ -42,6 +45,7 @@ final class SimpleConditionTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Operator 'IN' requires two operands.");
+
         SimpleCondition::fromArrayDefinition('IN', ['column']);
     }
 
@@ -51,15 +55,18 @@ final class SimpleConditionTest extends TestCase
         $this->expectExceptionMessage(
             "Operator '=' requires column to be string, ExpressionInterface or QueryInterface."
         );
+
         SimpleCondition::fromArrayDefinition('=', [1, 1]);
     }
 
     public function testNullSecondOperand(): void
     {
         $condition = SimpleCondition::fromArrayDefinition('=', ['id', null]);
+
         $this->assertNull($condition->getValue());
 
         $condition2 = new SimpleCondition('name', 'IS NOT', null);
+
         $this->assertSame('IS NOT', $condition2->getOperator());
         $this->assertNull($condition2->getValue());
     }
