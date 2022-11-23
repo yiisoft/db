@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Support;
 
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\PDODriver;
 
 trait TestTrait
