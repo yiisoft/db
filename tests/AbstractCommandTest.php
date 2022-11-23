@@ -653,15 +653,8 @@ abstract class AbstractCommandTest extends TestCase
 
     public function testPrepareCancel(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection('customer');
 
-        $db->open();
-        $pdo = $db->getPdo();
-        $pdo->exec(
-            <<<SQL
-            CREATE TABLE customer (id integer PRIMARY KEY)
-            SQL
-        );
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL

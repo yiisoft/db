@@ -10,6 +10,8 @@ use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Tests\Support\Stub\PDODriver;
 
 trait TestTrait
@@ -18,9 +20,15 @@ trait TestTrait
     private QueryCache|null $queryCache = null;
     private SchemaCache|null $schemaCache = null;
 
-    protected function getConnection(string $dsn = 'sqlite::memory:'): ConnectionPDOInterface
+    protected function getConnection(string $fixture = '', string $dsn = 'sqlite::memory:'): ConnectionPDOInterface
     {
-        return new Stub\Connection(new PDODriver($dsn), $this->getQueryCache(), $this->getSchemaCache());
+        $db = new Stub\Connection(new PDODriver($dsn), $this->getQueryCache(), $this->getSchemaCache());
+
+        if ($fixture !== '') {
+            $this->loadFixture($db, __DIR__ . "/Fixture/$fixture.sql");
+        }
+
+        return $db;
     }
 
     private function getCache(): CacheInterface
@@ -48,5 +56,21 @@ trait TestTrait
         }
 
         return $this->schemaCache;
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
+    public function loadFixture(ConnectionPDOInterface $db, string $fixture): void
+    {
+        $db->open();
+        $lines = explode(';', file_get_contents($fixture));
+
+        foreach ($lines as $line) {
+            if (trim($line) !== '') {
+                $db->getPDO()?->exec($line);
+            }
+        }
     }
 }

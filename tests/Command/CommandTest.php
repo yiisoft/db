@@ -141,15 +141,8 @@ final class CommandTest extends AbstractCommandTest
 
     public function testQuery(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection('customer');
 
-        $db->open();
-        $pdo = $db->getPdo();
-        $pdo?->exec(
-            <<<SQL
-            CREATE TABLE customer (id integer PRIMARY KEY)
-            SQL
-        );
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
@@ -167,15 +160,8 @@ final class CommandTest extends AbstractCommandTest
 
     public function testQueryAll(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection('customer');
 
-        $db->open();
-        $pdo = $db->getPdo();
-        $pdo?->exec(
-            <<<SQL
-            CREATE TABLE customer (id integer PRIMARY KEY)
-            SQL
-        );
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
