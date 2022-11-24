@@ -68,7 +68,7 @@ abstract class DDLQueryBuilder implements DDLQueryBuilderInterface
      */
     public function addDefaultValue(string $name, string $table, string $column, mixed $value): string
     {
-        throw new NotSupportedException(static::class . ' does not support adding default value constraints.');
+        throw new NotSupportedException(__METHOD__ . '()' . ' does not support adding default value constraints.');
     }
 
     /**
@@ -249,7 +249,7 @@ abstract class DDLQueryBuilder implements DDLQueryBuilderInterface
      */
     public function dropDefaultValue(string $name, string $table): string
     {
-        throw new NotSupportedException(static::class . ' does not support dropping default value constraints.');
+        throw new NotSupportedException(__METHOD__ . '()' . ' does not support dropping default value constraints.');
     }
 
     public function dropForeignKey(string $name, string $table): string

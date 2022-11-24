@@ -9,6 +9,7 @@ use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
+use Yiisoft\Db\Driver\PDO\CommandPDOInterface;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -105,6 +106,20 @@ abstract class AbstractCommandTest extends TestCase
             ),
             $sql,
         );
+    }
+
+    public function testAddDefaultValue(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\QueryBuilder\DDLQueryBuilder::addDefaultValue() does not support adding default value constraints.'
+        );
+
+        $command->addDefaultValue('name', 'table', 'column', 'value');
     }
 
     public function testAddForeignKey(): void
@@ -315,39 +330,19 @@ abstract class AbstractCommandTest extends TestCase
         $this->assertSame($expected, $sql);
     }
 
-    public function testCreateView(): void
-    {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand();
-
-        $sql = $command->createView(
-            'view',
-            <<<SQL
-            SELECT * FROM table
-            SQL,
-        )->getSql();
-
-        $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                CREATE VIEW [[view]] AS SELECT * FROM table
-                SQL,
-                $db->getName(),
-            ),
-            $sql,
-        );
-    }
-
     public function testDataReaderCreationException(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection('customer');
+
+        /** @var CommandPDOInterface $command */
+        $command = $db->createCommand();
 
         $this->expectException(InvalidParamException::class);
         $this->expectExceptionMessage('The PDOStatement cannot be null.');
 
         $sql = 'SELECT * FROM {{customer}}';
-        new DataReader($db->createCommand($sql));
+
+        new DataReader($command->setSql($sql));
     }
 
     public function testDelete(): void
@@ -438,6 +433,20 @@ abstract class AbstractCommandTest extends TestCase
             ),
             $sql,
         );
+    }
+
+    public function testDropDefaultValue(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\QueryBuilder\DDLQueryBuilder::dropDefaultValue() does not support dropping default value constraints.'
+        );
+
+        $command->dropDefaultValue('column', 'table');
     }
 
     public function testDropForeingKey(): void

@@ -26,6 +26,64 @@ final class DbHelper
         return new Cache(new ArrayCache());
     }
 
+    public static function getCommmentsFromColumn(
+        string $table,
+        string $column,
+        ConnectionPDOInterface $db
+    ): array|null {
+        return match ($db->getName()) {
+            'pgsql' => $db->createCommand(
+                <<<SQL
+                SELECT
+                    pgd.description
+                FROM
+                    pg_catalog.pg_statio_all_tables as st
+                INNER JOIN pg_catalog.pg_description pgd ON (pgd.objoid=st.relid)
+                INNER JOIN pg_catalog.pg_attribute pga ON (pga.attrelid=st.relid AND pga.attnum=pgd.objsubid)
+                WHERE
+                    st.relname=:table AND pga.attname=:column
+                SQL,
+                ['table' => $table, 'column' => $column]
+            )->queryOne(),
+            'sqlsrv' => $db->createCommand(
+                <<<SQL
+                SELECT
+                    value
+                FROM
+                    sys.extended_properties
+                WHERE
+                    major_id = OBJECT_ID(:table) AND minor_id = COLUMNPROPERTY(major_id, :column, 'ColumnId')
+                SQL,
+                ['table' => $table, 'column' => $column]
+            )->queryOne(),
+        };
+    }
+
+    public static function getCommmentsFromTable(
+        string $table,
+        ConnectionPDOInterface $db
+    ): array|null {
+        return match ($db->getName()) {
+            'pgsql' => $db->createCommand(
+                <<<SQL
+                SELECT obj_description(oid, 'pg_class') as description FROM pg_class WHERE relname= :table
+                SQL,
+                ['table' => $table]
+            )->queryOne(),
+            'sqlsrv' => $db->createCommand(
+                <<<SQL
+                SELECT
+                    value
+                FROM
+                    sys.extended_properties
+                WHERE
+                    major_id = OBJECT_ID(:table) AND minor_id = 0
+                SQL,
+                ['table' => $table]
+            )->queryOne(),
+        };
+    }
+
     public static function getQueryCache(): QueryCache
     {
         return new QueryCache(self::getCache());

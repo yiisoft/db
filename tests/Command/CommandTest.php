@@ -21,20 +21,6 @@ final class CommandTest extends AbstractCommandTest
 {
     use TestTrait;
 
-    public function testAddDefaultValue(): void
-    {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\DDLQueryBuilder does not support adding default value constraints.'
-        );
-
-        $command->addDefaultValue('name', 'table', 'column', 'value');
-    }
-
     public function testBatchInsert(): void
     {
         $db = $this->getConnection();
@@ -97,18 +83,28 @@ final class CommandTest extends AbstractCommandTest
         Assert::equalsWithoutLE($expected, $sql);
     }
 
-    public function testDropDefaultValue(): void
+    public function testCreateView(): void
     {
         $db = $this->getConnection();
 
         $command = $db->createCommand();
 
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\DDLQueryBuilder does not support dropping default value constraints.'
-        );
+        $sql = $command->createView(
+            'view',
+            <<<SQL
+            SELECT * FROM table
+            SQL,
+        )->getSql();
 
-        $command->dropDefaultValue('column', 'table');
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                <<<SQL
+                CREATE VIEW [[view]] AS SELECT * FROM table
+                SQL,
+                $db->getName(),
+            ),
+            $sql,
+        );
     }
 
     public function testExecute(): void
