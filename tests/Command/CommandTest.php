@@ -6,8 +6,6 @@ namespace Yiisoft\Db\Tests\Command;
 
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\AbstractCommandTest;
@@ -703,7 +701,8 @@ final class CommandTest extends AbstractCommandTest
         );
     }
 
-    public function testUpdate(): void {
+    public function testUpdate(): void
+    {
         $db = $this->getConnection();
 
         $command = $db->createCommand();

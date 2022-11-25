@@ -8,23 +8,14 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
-use Yiisoft\Db\Driver\PDO\CommandPDOInterface;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Query\Data\DataReader;
-use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
-
-use function call_user_func_array;
 
 abstract class AbstractCommandTest extends TestCase
 {
