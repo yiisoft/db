@@ -12,7 +12,242 @@ use Yiisoft\Db\Tests\Support\DbHelper;
 
 final class BaseCommandProvider
 {
-    public function batchInsertSql(ConnectionPDOInterface $db): array
+    public function addForeignKey(): array
+    {
+        return [
+            ['test_fk_constraint_1', 'test_fk', 'int1', 'int3'],
+            ['test_fk_constraint_2', 'test_fk', ['int1'], 'int3'],
+            ['test_fk_constraint_3', 'test_fk', ['int1'], ['int3']],
+            ['test_fk_constraint_4', 'test_fk', ['int1', 'int2'], ['int3', 'int4']],
+        ];
+    }
+
+    public function addForeignKeySql(ConnectionPDOInterface $db): array
+    {
+        return [
+            [
+                'test_fk_constraint_1',
+                'test_fk',
+                'int1',
+                'int3',
+                null,
+                null,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_1] FOREIGN KEY ([int1]) REFERENCES [test_fk] ([int3])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'test_fk_constraint_2',
+                'test_fk',
+                ['int1'],
+                'int3',
+                null,
+                null,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_2] FOREIGN KEY ([int1]) REFERENCES [test_fk] ([int3])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'test_fk_constraint_3',
+                'test_fk',
+                ['int1'],
+                ['int3'],
+                null,
+                null,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_3] FOREIGN KEY ([int1]) REFERENCES [test_fk] ([int3])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'test_fk_constraint_4',
+                'test_fk',
+                ['int1'],
+                ['int3'],
+                'CASCADE',
+                null,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_4] FOREIGN KEY ([int1]) REFERENCES [test_fk] ([int3]) ON DELETE CASCADE
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'test_fk_constraint_5',
+                'test_fk',
+                ['int1'],
+                ['int3'],
+                'CASCADE',
+                'CASCADE',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_5] FOREIGN KEY ([int1]) REFERENCES [test_fk] ([int3]) ON DELETE CASCADE ON UPDATE CASCADE
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'test_fk_constraint_6',
+                'test_fk',
+                ['int1', 'int2'],
+                ['int3', 'int4'],
+                null,
+                null,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_6] FOREIGN KEY ([int1], [int2]) REFERENCES [test_fk] ([int3], [int4])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'test_fk_constraint_7',
+                'test_fk',
+                ['int1', 'int2'],
+                ['int3', 'int4'],
+                'CASCADE',
+                null,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_7] FOREIGN KEY ([int1], [int2]) REFERENCES [test_fk] ([int3], [int4]) ON DELETE CASCADE
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'test_fk_constraint_8',
+                'test_fk',
+                ['int1', 'int2'],
+                ['int3', 'int4'],
+                'CASCADE',
+                'CASCADE',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_8] FOREIGN KEY ([int1], [int2]) REFERENCES [test_fk] ([int3], [int4]) ON DELETE CASCADE ON UPDATE CASCADE
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+        ];
+    }
+
+    public function addPrimaryKey(): array
+    {
+        return [
+            ['test_pk_constraint_1', 'test_pk', 'int1'],
+            ['test_pk_constraint_2', 'test_pk', ['int1']],
+            ['test_pk_constraint_3', 'test_pk', ['int1', 'int2']],
+        ];
+    }
+
+    public function addPrimaryKeySql(ConnectionPDOInterface $db): array
+    {
+        return [
+            [
+                'test_fk_constraint_1',
+                'test_fk',
+                'int1',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_1] PRIMARY KEY ([int1])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'test_fk_constraint_2',
+                'test_fk',
+                ['int1'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_2] PRIMARY KEY ([int1])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'test_fk_constraint_3',
+                'test_fk',
+                ['int3', 'int4'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_3] PRIMARY KEY ([int3], [int4])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+        ];
+    }
+
+    public function addUnique(): array
+    {
+        return [
+            ['test_unique_constraint_1', 'test_unique', 'int1'],
+            ['test_unique_constraint_2', 'test_unique', ['int1']],
+            ['test_unique_constraint_3', 'test_unique', ['int1', 'int2']],
+        ];
+    }
+
+    public function addUniqueSql(ConnectionPDOInterface $db): array
+    {
+        return [
+            [
+                'test_fk_constraint_1',
+                'test_fk',
+                'int1',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_1] UNIQUE ([int1])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'test_fk_constraint_2',
+                'test_fk',
+                ['int1'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_2] UNIQUE ([int1])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'test_fk_constraint_3',
+                'test_fk',
+                ['int3', 'int4'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_3] UNIQUE ([int3], [int4])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                'test_fk_constraint_3',
+                'test_fk',
+                ['int1', 'int2'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [test_fk] ADD CONSTRAINT [test_fk_constraint_3] UNIQUE ([int1], [int2])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+        ];
+    }
+
+    public function batchInsert(ConnectionPDOInterface $db): array
     {
         return [
             'multirow' => [
@@ -110,7 +345,16 @@ final class BaseCommandProvider
         ];
     }
 
-    public function createIndex(ConnectionPDOInterface $db): array
+    public function createIndex(): array
+    {
+        return [
+            ['test_idx_constraint_1', 'test_idx', 'int1'],
+            ['test_idx_constraint_2', 'test_idx', ['int1']],
+            ['test_idx_constraint_3', 'test_idx', ['int1', 'int2']],
+        ];
+    }
+
+    public function createIndexSql(ConnectionPDOInterface $db): array
     {
         return [
             [
@@ -192,6 +436,11 @@ final class BaseCommandProvider
                 ),
             ],
         ];
+    }
+
+    public function invalidSelectColumns(): array
+    {
+        return [[[]], ['*'], [['*']]];
     }
 
     public function rawSql(): array

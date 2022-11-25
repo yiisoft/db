@@ -8,56 +8,231 @@ use Throwable;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\DbHelper;
 
 use function setlocale;
 
 abstract class CommonCommandTest extends AbstractCommandTest
 {
-    public function testAlterTable(): void
+    public function testAddCheck(): void
     {
         $db = $this->getConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
 
-        if ($schema->getTableSchema('testAlterTable', true) !== null) {
-            $command->dropTable('testAlterTable')->execute();
+        if ($schema->getTableSchema('{{test_ck}}') !== null) {
+            $command->dropTable('{{test_ck}}')->execute();
         }
 
-        $command->createTable('testAlterTable', ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER])->execute();
-        $command->insert('testAlterTable', ['bar' => 1])->execute();
-        $command->alterColumn('testAlterTable', 'bar', Schema::TYPE_STRING)->execute();
-        $command->insert('testAlterTable', ['bar' => 'hello'])->execute();
-        $records = $command->setSql(
-            <<<SQL
-            SELECT [[id]], [[bar]] FROM {{testAlterTable}}
-            SQL
-        )->queryAll();
+        $command->createTable('{{test_ck}}', ['int1' => 'integer'])->execute();
 
-        $this->assertSame([['id' => 1, 'bar' => 1], ['id' => 2, 'bar' => 'hello']], $records);
+        $this->assertEmpty($schema->getTableChecks('{{test_ck}}', true));
+
+        $command->addCheck('{{test_ck_constraint}}', '{{test_ck}}', 'int1 > 1')->execute();
+
+        $this->assertMatchesRegularExpression(
+            '/^.*int1.*>.*1.*$/',
+            $schema->getTableChecks('{{test_ck}}', true)[0]->getExpression()
+        );
+    }
+
+    public function testAddColumn(): void
+    {
+        $db = $this->getConnection('customer');
+
+        $command = $db->createCommand();
+        $command->addColumn('{{customer}}', 'city', Schema::TYPE_STRING)->execute();
+
+        $this->assertTrue($db->getTableSchema('{{customer}}')->getColumn('city') !== null);
+        $this->assertSame(Schema::TYPE_STRING, $db->getTableSchema('{{customer}}')->getColumn('city')->getType());
+    }
+
+    public function testAddCommentOnColumn(): void
+    {
+        $db = $this->getConnection('customer');
+
+        $command = $db->createCommand();
+        $command->addCommentOnColumn('{{customer}}', 'id', 'Primary key.')->execute();
+        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
+
+        $this->assertSame(['value' => 'Primary key.'], $commentOnColumn);
+    }
+
+    public function testAddCommentOnTable(): void
+    {
+        $db = $this->getConnection('customer');
+
+        $command = $db->createCommand();
+        $command->addCommentOnTable('{{customer}}', 'Customer table.')->execute();
+        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
+
+        $this->assertSame(['value' => 'Customer table.'], $commentOnTable);
+    }
+
+    public function testAddDefaultValue()
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{test_def}}') !== null) {
+            $command->dropTable('{{test_def}}')->execute();
+        }
+
+        $command->createTable('{{test_def}}', ['int1' => Schema::TYPE_INTEGER])->execute();
+
+        $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}', true));
+
+        $command->addDefaultValue('{{test_def_constraint}}', '{{test_def}}', 'int1', 41)->execute();
+
+        $this->assertMatchesRegularExpression(
+            '/^.*41.*$/',
+            $schema->getTableDefaultValues('{{test_def}}', true)[0]->getValue(),
+        );
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addForeignKey()
+     */
+    public function testAddForeignKey(
+        string $name,
+        string $tableName,
+        array|string $column1,
+        array|string $column2
+    ): void {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema($tableName) !== null) {
+            $command->dropTable($tableName)->execute();
+        }
+
+        $command->createTable(
+            $tableName,
+            [
+                'int1' => 'integer not null unique',
+                'int2' => 'integer not null unique',
+                'int3' => 'integer not null unique',
+                'int4' => 'integer not null unique',
+                'unique ([[int1]], [[int2]])',
+                'unique ([[int3]], [[int4]])',
+            ],
+        )->execute();
+
+        $this->assertEmpty($schema->getTableForeignKeys($tableName, true));
+
+        $command->addForeignKey($name, $tableName, $column1, $tableName, $column2)->execute();
+
+        $this->assertSame($name, $schema->getTableForeignKeys($tableName, true)[0]->getName());
+
+        if (is_string($column1)) {
+            $column1 = [$column1];
+        }
+
+        $this->assertSame($column1, $schema->getTableForeignKeys($tableName, true)[0]->getColumnNames());
+
+        if (is_string($column2)) {
+            $column2 = [$column2];
+        }
+
+        $this->assertSame($column2, $schema->getTableForeignKeys($tableName, true)[0]->getForeignColumnNames());
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addPrimaryKey()
+     */
+    public function testAddPrimaryKey(string $name, string $tableName, array|string $column): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema($tableName) !== null) {
+            $command->dropTable($tableName)->execute();
+        }
+
+        $command->createTable($tableName, ['int1' => 'integer not null', 'int2' => 'integer not null'])->execute();
+
+        $this->assertNull($schema->getTablePrimaryKey($tableName, true));
+
+        $db->createCommand()->addPrimaryKey($name, $tableName, $column)->execute();
+
+        if (is_string($column)) {
+            $column = [$column];
+        }
+
+        $this->assertSame($column, $schema->getTablePrimaryKey($tableName, true)->getColumnNames());
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addUnique()
+     */
+    public function testAddUnique(string $name, string $tableName, array|string $column): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema($tableName) !== null) {
+            $command->dropTable($tableName)->execute();
+        }
+
+        $command->createTable($tableName, ['int1' => 'integer not null', 'int2' => 'integer not null'])->execute();
+
+        $this->assertEmpty($schema->getTableUniques($tableName, true));
+
+        $command->addUnique($name, $tableName, $column)->execute();
+
+        if (is_string($column)) {
+            $column = [$column];
+        }
+
+        $this->assertSame($column, $schema->getTableUniques($tableName, true)[0]->getColumnNames());
+    }
+
+    public function testAlterColumn(): void
+    {
+        $db = $this->getConnection('customer');
+
+        $command = $db->createCommand();
+        $command->alterColumn('{{customer}}', 'email', 'ntext')->execute();
+        $schema = $db->getSchema();
+        $columns = $schema->getTableSchema('{{customer}}')->getColumns();
+
+        $this->assertArrayHasKey('email', $columns);
+        $this->assertSame('ntext', $columns['email']->getDbType());
     }
 
     /**
      * Make sure that `{{something}}` in values will not be encoded.
      *
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::batchInsert()
+     *
      * {@see https://github.com/yiisoft/yii2/issues/11242}
      */
-    public function testBatchInsertSQL(
+    public function testBatchInsert(
         string $table,
         array $columns,
         array $values,
         string $expected,
         array $expectedParams = [],
-        int $insertedRow = 1,
-        string $fixture = 'type'
+        int $insertedRow = 1
     ): void {
-        $db = $this->getConnection($fixture);
+        $db = $this->getConnection('type');
 
         $command = $db->createCommand();
         $command->batchInsert($table, $columns, $values);
@@ -98,7 +273,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $data = [[1, 'A', 9.735, true], [2, 'B', -2.123, false], [3, 'C', 2.123, false]];
 
             /* clear data in "type" table */
-            $command->delete('type')->execute();
+            $command->delete('{{type}}')->execute();
 
             /* change, for point oracle. */
             if ($db->getName() === 'oci') {
@@ -110,7 +285,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             }
 
             /* batch insert on "type" table */
-            $command->batchInsert('type', $cols, $data)->execute();
+            $command->batchInsert('{{type}}', $cols, $data)->execute();
             $data = $command->setSql(
                 <<<SQL
                 SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]
@@ -200,6 +375,33 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame(1, $command->execute());
     }
 
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::createIndex()
+     */
+    public function testCreateIndex(string $name, string $tableName, array|string $column): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema($tableName) !== null) {
+            $command->dropTable($tableName)->execute();
+        }
+        $command->createTable($tableName, ['int1' => 'integer not null', 'int2' => 'integer not null'])->execute();
+
+        $this->assertEmpty($schema->getTableIndexes($tableName, true));
+
+        $command->createIndex($name, $tableName, $column)->execute();
+
+        if (is_string($column)) {
+            $column = [$column];
+        }
+
+        $this->assertSame($column, $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
+        $this->assertFalse($schema->getTableIndexes($tableName, true)[0]->isUnique());
+    }
+
     public function testCreateTable(): void
     {
         $db = $this->getConnection();
@@ -207,12 +409,15 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $schema = $db->getSchema();
 
-        if ($schema->getTableSchema('testCreateTable', true) !== null) {
-            $command->dropTable('testCreateTable')->execute();
+        if ($schema->getTableSchema('{{testCreateTable}}', true) !== null) {
+            $command->dropTable('{{testCreateTable}}')->execute();
         }
 
-        $command->createTable('testCreateTable', ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER])->execute();
-        $command->insert('testCreateTable', ['bar' => 1])->execute();
+        $command->createTable(
+            '{{testCreateTable}}',
+            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER],
+        )->execute();
+        $command->insert('{{testCreateTable}}', ['bar' => 1])->execute();
         $records = $command->setSql(
             <<<SQL
             SELECT [[id]], [[bar]] FROM {{testCreateTable}};
@@ -228,23 +433,23 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
-        $subQuery = (new Query($db))->select('bar')->from('testCreateViewTable')->where(['>', 'bar', '5']);
+        $subQuery = (new Query($db))->select('[[bar]]')->from('{{testCreateViewTable}}')->where(['>', 'bar', '5']);
 
-        if ($schema->getTableSchema('testCreateView') !== null) {
-            $command->dropView('testCreateView')->execute();
+        if ($schema->getTableSchema('{{testCreateView}}') !== null) {
+            $command->dropView('{{testCreateView}}')->execute();
         }
 
-        if ($schema->getTableSchema('testCreateViewTable')) {
-            $command->dropTable('testCreateViewTable')->execute();
+        if ($schema->getTableSchema('{{testCreateViewTable}}')) {
+            $command->dropTable('{{testCreateViewTable}}')->execute();
         }
 
         $command->createTable(
-            'testCreateViewTable',
+            '{{testCreateViewTable}}',
             ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER],
         )->execute();
-        $command->insert('testCreateViewTable', ['bar' => 1])->execute();
-        $command->insert('testCreateViewTable', ['bar' => 6])->execute();
-        $command->createView('testCreateView', $subQuery)->execute();
+        $command->insert('{{testCreateViewTable}}', ['bar' => 1])->execute();
+        $command->insert('{{testCreateViewTable}}', ['bar' => 6])->execute();
+        $command->createView('{{testCreateView}}', $subQuery)->execute();
         $records = $command->setSql(
             <<<SQL
             SELECT [[bar]] FROM {{testCreateView}};
@@ -271,12 +476,255 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $reader->rewind();
     }
 
+    public function testDelete(): void
+    {
+        $db = $this->getConnection('customer');
+
+        $command = $db->createCommand();
+        $command->delete('{{customer}}', ['id' => 2])->execute();
+        $chekSql = <<<SQL
+        SELECT COUNT([[id]]) FROM [[customer]]
+        SQL;
+        $command->setSql($chekSql);
+
+        $this->assertSame('2', $command->queryScalar());
+
+        $command->delete('{{customer}}', ['id' => 3])->execute();
+        $command->setSql($chekSql);
+
+        $this->assertSame('1', $command->queryScalar());
+    }
+
+    public function testDropCheck()
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{test_ck}}') !== null) {
+            $command->dropTable('{{test_ck}}')->execute();
+        }
+
+        $command->createTable('{{test_ck}}', ['int1' => 'integer'])->execute();
+
+        $this->assertEmpty($schema->getTableChecks('{{test_ck}}', true));
+
+        $command->addCheck('{{test_ck_constraint}}', '{{test_ck}}', 'int1 > 1')->execute();
+
+        $this->assertMatchesRegularExpression(
+            '/^.*int1.*>.*1.*$/',
+            $schema->getTableChecks('{{test_ck}}', true)[0]->getExpression(),
+        );
+
+        $command->dropCheck('{{test_ck_constraint}}', '{{test_ck}}')->execute();
+
+        $this->assertEmpty($schema->getTableChecks('{{test_ck}}', true));
+    }
+
+    public function testDropColumn(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{testDropColumn}}', true) !== null) {
+            $command->dropTable('{{testDropColumn}}')->execute();
+        }
+
+        $command->createTable(
+            '{{testDropColumn}}',
+            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER, 'baz' => Schema::TYPE_INTEGER],
+        )->execute();
+        $command->dropColumn('{{testDropColumn}}', 'bar')->execute();
+
+        $this->assertArrayNotHasKey('bar', $schema->getTableSchema('{{testDropColumn}}')->getColumns());
+        $this->assertArrayHasKey('baz', $schema->getTableSchema('{{testDropColumn}}')->getColumns());
+    }
+
+    public function testDropCommentFromColumn(): void
+    {
+        $db = $this->getConnection('customer');
+
+        $command = $db->createCommand();
+        $command->addCommentOnColumn('{{customer}}', 'id', 'Primary key.')->execute();
+        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
+
+        $this->assertSame(['value' => 'Primary key.'], $commentOnColumn);
+
+        $command->dropCommentFromColumn('{{customer}}', 'id')->execute();
+        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
+
+        $this->assertNull($commentOnColumn);
+    }
+
+    public function testDropCommentFromTable(): void
+    {
+        $db = $this->getConnection('customer');
+
+        $command = $db->createCommand();
+        $command->addCommentOnTable('{{customer}}', 'Customer table.')->execute();
+        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
+
+        $this->assertSame(['value' => 'Customer table.'], $commentOnTable);
+
+        $command->dropCommentFromTable('{{customer}}')->execute();
+        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
+
+        $this->assertNull($commentOnTable);
+    }
+
+    public function testDropDefaultValue(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{test_def}}') !== null) {
+            $command->dropTable('{{test_def}}')->execute();
+        }
+
+        $command->createTable('{{test_def}}', ['int1' => 'integer'])->execute();
+
+        $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}', true));
+
+        $command->addDefaultValue('{{test_def_constraint}}', '{{test_def}}', 'int1', 41)->execute();
+
+        $this->assertMatchesRegularExpression(
+            '/^.*41.*$/',
+            $schema->getTableDefaultValues('{{test_def}}', true)[0]->getValue(),
+        );
+
+        $command->dropDefaultValue('{{test_def_constraint}}', '{{test_def}}')->execute();
+
+        $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}', true));
+    }
+
+    public function testDropForeignKey(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{test_fk}}') !== null) {
+            $command->dropTable('{{test_fk}}')->execute();
+        }
+
+        $command->createTable('{{test_fk}}', ['id' => Schema::TYPE_PK, 'int1' => 'integer'])->execute();
+
+        $this->assertEmpty($schema->getTableForeignKeys('{{test_fk}}', true));
+
+        $command->addForeignKey('{{test_fk_constraint}}', '{{test_fk}}', 'int1', '{{test_fk}}', 'id')->execute();
+
+        $this->assertNotEmpty($schema->getTableForeignKeys('{{test_fk}}', true));
+
+        $command->dropForeignKey('{{test_fk_constraint}}', '{{test_fk}}')->execute();
+
+        $this->assertEmpty($schema->getTableForeignKeys('{{test_fk}}', true));
+    }
+
+    public function testDropIndex(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{test_idx}}') !== null) {
+            $command->dropTable('{{test_idx}}')->execute();
+        }
+
+        $command->createTable('{{test_idx}}', ['int1' => 'integer not null', 'int2' => 'integer not null'])->execute();
+
+        $this->assertEmpty($schema->getTableIndexes('{[test_idx}}', true));
+
+        $command->createIndex('{{test_idx_constraint}}', '{{test_idx}}', ['int1', 'int2'], 'UNIQUE')->execute();
+
+        $this->assertSame(['int1', 'int2'], $schema->getTableIndexes('{{test_idx}}', true)[0]->getColumnNames());
+        $this->assertTrue($schema->getTableIndexes('{{test_idx}}', true)[0]->isUnique());
+
+        $command->dropIndex('{{test_idx_constraint}}', '{{test_idx}}')->execute();
+
+        $this->assertEmpty($schema->getTableIndexes('{{test_idx}}', true));
+    }
+
+    public function testDropPrimaryKey(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{test_pk}}') !== null) {
+            $command->dropTable('{{test_pk}}')->execute();
+        }
+
+        $command->createTable('{{test_pk}}', ['int1' => 'integer not null', 'int2' => 'integer not null'])->execute();
+
+        $this->assertEmpty($schema->getTableSchema('{{test_pk}}', true)->getPrimaryKey());
+
+        $command->addPrimaryKey('{{test_pk_constraint}}', '{{test_pk}}', ['int1', 'int2'])->execute();
+
+        $this->assertSame(['int1', 'int2'], $schema->getTableSchema('{{test_pk}}', true)->getColumnNames());
+
+        $command->dropPrimaryKey('{{test_pk_constraint}}', '{{test_pk}}')->execute();
+
+        $this->assertEmpty($schema->getTableSchema('{{test_pk}}', true)->getPrimaryKey());
+    }
+
+    public function testDropTable(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{testDropTable}]') !== null) {
+            $command->dropTable('{{testDropTable}}')->execute();
+        }
+
+        $command->createTable('{{testDropTable}}', ['id' => Schema::TYPE_PK, 'foo' => 'integer'])->execute();
+
+        $this->assertNotNull($schema->getTableSchema('{{testDropTable}}', true));
+
+        $command->dropTable('{{testDropTable}}')->execute();
+
+        $this->assertNull($schema->getTableSchema('{{testDropTable}}', true));
+    }
+
+    public function testDropUnique(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{test_uq}}') !== null) {
+            $command->dropTable('{{test_uq}}')->execute();
+        }
+
+        $command->createTable('{{test_uq}}', ['int1' => 'integer not null', 'int2' => 'integer not null'])->execute();
+
+        $this->assertEmpty($schema->getTableUniques('{{test_uq}}', true));
+
+        $command->addUnique('{{test_uq_constraint}}', '{{test_uq}}', ['int1'])->execute();
+
+        $this->assertSame(['int1'], $schema->getTableUniques('{{test_uq}}', true)[0]->getColumnNames());
+
+        $command->dropUnique('{{test_uq_constraint}}', '{{test_uq}}')->execute();
+
+        $this->assertEmpty($schema->getTableUniques('{{test_uq}}', true));
+    }
+
     public function testDropView(): void
     {
         $db = $this->getConnection('animal');
 
         /* since it already exists in the fixtures */
-        $viewName = 'animal_view';
+        $viewName = '{{animal_view}}';
 
         $schema = $db->getSchema();
 
@@ -320,6 +768,274 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->execute();
     }
 
+    public function testExecuteWithoutSql(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $result = $command->setSql('')->execute();
+
+        $this->assertSame(0, $result);
+    }
+
+    public function testInsert(): void
+    {
+        $db = $this->getConnection('customer');
+
+        $db->createCommand(
+            <<<SQL
+            DELETE FROM {{customer}}
+            SQL
+        )->execute();
+        $command = $db->createCommand();
+        $command
+            ->insert('{{customer}}', ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'])
+            ->execute();
+
+        $this->assertEquals(
+            1,
+            $db->createCommand(
+                <<<SQL
+                SELECT COUNT(*) FROM {{customer}};
+                SQL
+            )->queryScalar(),
+        );
+
+        $record = $db->createCommand(
+            <<<SQL
+            SELECT [[email]], [[name]], [[address]] FROM {{customer}}
+            SQL
+        )->queryOne();
+
+        $this->assertSame(['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'], $record);
+    }
+
+    public function testInsertExpression(): void
+    {
+        $db = $this->getConnection('order_with_null');
+
+        $command = $db->createCommand();
+        $command->setSql(
+            <<<SQL
+            DELETE FROM {{order_with_null_fk}}
+            SQL
+        )->execute();
+        $expression = match ($db->getName()) {
+            'mysql' => 'YEAR(NOW())',
+            'pgsql' => "EXTRACT(YEAR FROM TIMESTAMP 'now')",
+            'sqlite' => "strftime('%Y')",
+            'sqlsrv' => 'YEAR(GETDATE())',
+        };
+        $command->insert(
+            '{{order_with_null_fk}}',
+            ['created_at' => new Expression($expression), 'total' => 1],
+        )->execute();
+
+        $this->assertEquals(
+            1,
+            $command->setSql(
+                <<<SQL
+                SELECT COUNT(*) FROM {{order_with_null_fk}}
+                SQL
+            )->queryScalar(),
+        );
+
+        $record = $command->setSql(
+            <<<SQL
+            SELECT [[created_at]] FROM {{order_with_null_fk}}
+            SQL
+        )->queryOne();
+
+        $this->assertEquals(['created_at' => date('Y')], $record);
+    }
+
+    public function testsInsertQueryAsColumnValue(): void
+    {
+        $db = $this->getConnection('order', 'order_with_null');
+
+        $command = $db->createCommand();
+        $time = time();
+        $command->setSql(
+            <<<SQL
+            DELETE FROM {{order_with_null_fk}}
+            SQL
+        )->execute();
+        $command->insert('{{order}}', ['customer_id' => 1, 'created_at' => $time, 'total' => 42])->execute();
+
+        if ($db->getName() === 'pgsql') {
+            $orderId = $db->getLastInsertID('public.order_id_seq');
+        } else {
+            $orderId = $db->getLastInsertID();
+        }
+
+        $columnValueQuery = (new Query($db))->select('[[created_at]]')->from('{{order}}')->where(['id' => $orderId]);
+        $command->insert(
+            '{{order_with_null_fk}}',
+            ['customer_id' => $orderId, 'created_at' => $columnValueQuery, 'total' => 42],
+        )->execute();
+
+        $this->assertEquals(
+            $time,
+            $command->setSql(
+                <<<SQL
+                SELECT [[created_at]] FROM {{order_with_null_fk}} WHERE [[customer_id]] = :id
+                SQL
+            )->bindValues([':id' => $orderId])->queryScalar(),
+        );
+
+        $command->setSql(
+            <<<SQL
+            DELETE FROM {{order_with_null_fk}}
+            SQL
+        )->execute();
+        $command->setSql(
+            <<<SQL
+            DELETE FROM {{order}}
+            SQL
+        )->execute();
+    }
+
+    public function testInsertSelect(): void
+    {
+        $db = $this->getConnection('customer');
+
+        $command = $db->createCommand();
+        $command->setSql(
+            <<<SQL
+            DELETE FROM {{customer}}
+            SQL
+        )->execute();
+        $command->insert(
+            '{{customer}}',
+            ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address']
+        )->execute();
+        $query = (new Query($db))
+            ->select(['{{customer}}.[[email]] as name', '[[name]] as email', '[[address]]'])
+            ->from('{{customer}}')
+            ->where(['and', ['<>', 'name', 'foo'], ['status' => [0, 1, 2, 3]]]);
+        $command->insert('{{customer}}', $query)->execute();
+
+        $this->assertEquals(
+            2,
+            $command->setSql(
+                <<<SQL
+                SELECT COUNT(*) FROM {{customer}}
+                SQL
+            )->queryScalar(),
+        );
+
+        $record = $command->setSql(
+            <<<SQL
+            SELECT [[email]], [[name]], [[address]] FROM {{customer}}
+            SQL
+        )->queryAll();
+
+        $this->assertSame(
+            [
+                ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'],
+                ['email' => 'test', 'name' => 't1@example.com', 'address' => 'test address'],
+            ],
+            $record,
+        );
+    }
+
+    public function testInsertSelectAlias(): void
+    {
+        $db = $this->getConnection('customer');
+
+        $command = $db->createCommand();
+        $command->setSql(
+            <<<SQL
+            DELETE FROM {{customer}}
+            SQL
+        )->execute();
+        $command->insert(
+            '{{customer}}',
+            [
+                'email' => 't1@example.com',
+                'name' => 'test',
+                'address' => 'test address',
+            ]
+        )->execute();
+        $query = (new Query($db))
+            ->select(['email' => '{{customer}}.[[email]]', 'address' => 'name', 'name' => 'address'])
+            ->from('{{customer}}')
+            ->where(['and', ['<>', 'name', 'foo'], ['status' => [0, 1, 2, 3]]]);
+        $command->insert('{{customer}}', $query)->execute();
+
+        $this->assertEquals(
+            2,
+            $command->setSql(
+                <<<SQL
+                SELECT COUNT(*) FROM {{customer}}
+                SQL
+            )->queryScalar(),
+        );
+
+        $record = $command->setSql(
+            <<<SQL
+            SELECT [[email]], [[name]], [[address]] FROM {{customer}}
+            SQL
+        )->queryAll();
+
+        $this->assertSame(
+            [
+                ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'],
+                ['email' => 't1@example.com', 'name' => 'test address', 'address' => 'test'],
+            ],
+            $record,
+        );
+    }
+
+    /**
+     * Test INSERT INTO ... SELECT SQL statement with wrong query object.
+     *
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::invalidSelectColumns()
+     *
+     * @throws Exception
+     * @throws Throwable
+     */
+    public function testInsertSelectFailed(array|ExpressionInterface|string $invalidSelectColumns): void
+    {
+        $db = $this->getConnection();
+
+        $query = new Query($db);
+        $query->select($invalidSelectColumns)->from('{{customer}}');
+        $command = $db->createCommand();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Expected select query object with enumerated (named) parameters');
+
+        $command->insert('{{customer}}', $query)->execute();
+    }
+
+    public function testInsertToBlob(): void
+    {
+        $db = $this->getConnection('type');
+
+        $command = $db->createCommand();
+        $command->delete('{{type}}')->execute();
+        $columns = [
+            'int_col' => 1,
+            'char_col' => 'test',
+            'float_col' => 3.14,
+            'bool_col' => true,
+            'blob_col' => serialize(['test' => 'data', 'num' => 222]),
+        ];
+        $command->insert('{{type}}', $columns)->execute();
+        $result = $command->setSql(
+            <<<SQL
+            SELECT [[blob_col]] FROM {{type}}
+            SQL
+        )->queryOne();
+
+        $this->assertIsArray($result);
+
+        $resultBlob = is_resource($result['blob_col']) ? stream_get_contents($result['blob_col']) : $result['blob_col'];
+
+        $this->assertSame($columns['blob_col'], $resultBlob);
+    }
+
     public function testIntegrityViolation(): void
     {
         $db = $this->getConnection('profile');
@@ -333,20 +1049,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         );
         $command->execute();
         $command->execute();
-    }
-
-    public function testLastInsertId(): void
-    {
-        $db = $this->getConnection('profile');
-
-        $command = $db->createCommand();
-
-        $sql = <<<SQL
-        INSERT INTO {{profile}}([[description]]) VALUES ('non duplicate')
-        SQL;
-        $command->setSql($sql)->execute();
-
-        $this->assertSame('3', $db->getLastInsertID());
     }
 
     public function testNoTablenameReplacement(): void
@@ -461,35 +1163,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertIsArray($rows);
         $this->assertCount(0, $rows);
         $this->assertSame([], $rows);
-    }
-
-    public function testQueryOne(): void
-    {
-        $db = $this->getConnection('customer');
-
-        $command = $db->createCommand();
-        $sql = <<<SQL
-        SELECT * FROM {{customer}} ORDER BY [[id]]
-        SQL;
-        $row = $command->setSql($sql)->queryOne();
-
-        $this->assertIsArray($row);
-        $this->assertEquals(1, $row['id']);
-        $this->assertEquals('user1', $row['name']);
-
-        $command->setSql($sql)->prepare();
-        $row = $command->queryOne();
-
-        $this->assertIsArray($row);
-        $this->assertEquals(1, $row['id']);
-        $this->assertEquals('user1', $row['name']);
-
-        $sql = <<<SQL
-        SELECT * FROM {{customer}} WHERE [[id]] = 10
-        SQL;
-        $command = $command->setSql($sql);
-
-        $this->assertNull($command->queryOne());
     }
 
     public function testQueryCache(): void
@@ -624,6 +1297,35 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame([], $rows);
     }
 
+    public function testQueryOne(): void
+    {
+        $db = $this->getConnection('customer');
+
+        $command = $db->createCommand();
+        $sql = <<<SQL
+        SELECT * FROM {{customer}} ORDER BY [[id]]
+        SQL;
+        $row = $command->setSql($sql)->queryOne();
+
+        $this->assertIsArray($row);
+        $this->assertEquals(1, $row['id']);
+        $this->assertEquals('user1', $row['name']);
+
+        $command->setSql($sql)->prepare();
+        $row = $command->queryOne();
+
+        $this->assertIsArray($row);
+        $this->assertEquals(1, $row['id']);
+        $this->assertEquals('user1', $row['name']);
+
+        $sql = <<<SQL
+        SELECT * FROM {{customer}} WHERE [[id]] = 10
+        SQL;
+        $command = $command->setSql($sql);
+
+        $this->assertNull($command->queryOne());
+    }
+
     public function testQueryScalar(): void
     {
         $db = $this->getConnection('customer');
@@ -651,7 +1353,40 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertFalse($command->queryScalar());
     }
 
-    public function testRetryHandler(): void
+    public function testRenameColumn(): void
+    {
+        $db = $this->getConnection('customer');
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        $command->renameColumn('{{customer}}', 'address', 'address_city')->execute();
+
+        $this->assertContains('address_city', $schema->getTableSchema('{{customer}}')->getColumnNames());
+        $this->assertNotContains('address', $schema->getTableSchema('{{customer}}')->getColumnNames());
+    }
+
+    public function testRenameTable(): void
+    {
+        $db = $this->getConnection('type');
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{new_type}}') !== null) {
+            $command->dropTable('{{new_type}}')->execute();
+        }
+
+        $this->assertNotNull($schema->getTableSchema('{{type}}'));
+        $this->assertNull($schema->getTableSchema('{{new_type}}'));
+
+        $command->renameTable('{{type}}', '{{new_type}}')->execute();
+
+        $this->assertNull($schema->getTableSchema('{{type}}', true));
+        $this->assertNotNull($schema->getTableSchema('{{new_type}}', true));
+    }
+
+    public function testSetRetryHandler(): void
     {
         $db = $this->getConnection('profile');
 
@@ -737,6 +1472,32 @@ abstract class CommonCommandTest extends AbstractCommandTest
         );
     }
 
+    public function testTruncateTable(): void
+    {
+        $db = $this->getConnection('animal');
+
+        $command = $db->createCommand();
+        $rows = $command->setSql(
+            <<<SQL
+            SELECT * FROM {{animal}}
+            SQL
+        )->queryAll();
+
+        $this->assertCount(2, $rows);
+
+        $command->truncateTable('animal')->execute();
+        $rows = $command->setSql(
+            <<<SQL
+            SELECT * FROM {{animal}}
+            SQL
+        )->queryAll();
+
+        $this->assertCount(0, $rows);
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::update()
+     */
     public function testUpdate(
         string $table,
         array $columns,
@@ -752,13 +1513,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame($expected, $sql);
     }
 
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::upsert()
+     */
     public function testUpsert(array $firstData, array $secondData): void
     {
         $db = $this->getConnection('customer', 't_upsert');
-
-        if (version_compare($db->getServerVersion(), '3.8.3', '<')) {
-            $this->markTestSkipped('SQLite < 3.8.3 does not support "WITH" keyword.');
-        }
 
         $this->assertEquals(0, $db->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')->queryScalar());
 
@@ -767,5 +1527,23 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertEquals(1, $db->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')->queryScalar());
 
         $this->performAndCompareUpsertResult($db, $secondData);
+    }
+
+    protected function performAndCompareUpsertResult(ConnectionPDOInterface $db, array $data): void
+    {
+        $params = $data['params'];
+        $expected = $data['expected'] ?? $params[1];
+
+        $command = $db->createCommand();
+
+        call_user_func_array([$command, 'upsert'], $params);
+
+        $command->execute();
+
+        $actual = (new Query($db))
+            ->select(['email', 'address' => new Expression($this->upsertTestCharCast), 'status'])
+            ->from('T_upsert')
+            ->one();
+        $this->assertEquals($expected, $actual, $this->upsertTestCharCast);
     }
 }

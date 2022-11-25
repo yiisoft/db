@@ -132,7 +132,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
      */
     public function resetSequence(string $tableName, int|string|null $value = null): string
     {
-        throw new NotSupportedException(static::class . ' does not support resetting sequence.');
+        throw new NotSupportedException(static::class . '::resetSequence()' . ' does not support resetting sequence.');
     }
 
     /**
