@@ -14,7 +14,7 @@ It is used in [Yii Framework] but is supposed to be usable separately.
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db/v/stable.png)](https://packagist.org/packages/yiisoft/db)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db/downloads.png)](https://packagist.org/packages/yiisoft/db)
 [![Build status](https://github.com/yiisoft/db/workflows/build/badge.svg)](https://github.com/yiisoft/db/actions?query=workflow%3Abuild)
-[![codecov](https://codecov.io/gh/yiisoft/db/branch/dev/graph/badge.svg?token=pRr4gci2qj)](https://codecov.io/gh/yiisoft/db)
+[![codecov](https://codecov.io/gh/yiisoft/db/branch/master/graph/badge.svg?token=pRr4gci2qj)](https://codecov.io/gh/yiisoft/db)
 [![static analysis](https://github.com/yiisoft/db/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db/actions/workflows/static.yml)
 [![type-coverage](https://shepherd.dev/github/yiisoft/db/coverage.svg)](https://shepherd.dev/github/yiisoft/db)
 
@@ -26,12 +26,39 @@ The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
 ./vendor/bin/phpunit
 ```
 
+### Mutation testing
+
+The package tests are checked with [Infection](https://infection.github.io/) mutation framework. To run it:
+
+```shell
+./vendor/bin/infection
+```
+
 ### Static analysis
 
 The code is statically analyzed with [Psalm](https://psalm.dev/). To run static analysis:
 
 ```shell
 ./vendor/bin/psalm
+```
+
+### Rector
+
+Use [Rector](https://github.com/rectorphp/rector) to make codebase follow some specific rules or 
+use either newest or any specific version of PHP: 
+
+```shell
+./vendor/bin/rector
+```
+
+### Composer require checker
+
+This package uses [composer-require-checker](https://github.com/maglnet/ComposerRequireChecker) to check if all dependencies are correctly defined in `composer.json`.
+
+To run the checker, execute the following command:
+
+```shell
+./vendor/bin/composer-require-checker
 ```
 
 ### Support the project
