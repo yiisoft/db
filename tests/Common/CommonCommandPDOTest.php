@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 
-abstract class CommonCommandPDOtest extends TestCase
+abstract class CommonCommandPDOTest extends TestCase
 {
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\CommandPDOProvider::bindParam()
