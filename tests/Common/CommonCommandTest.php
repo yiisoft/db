@@ -116,7 +116,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         string $name,
         string $tableName,
         array|string $column1,
-        array|string $column2
+        array|string $column2,
+        string $expectedName,
     ): void {
         $db = $this->getConnection();
 
@@ -143,7 +144,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->addForeignKey($name, $tableName, $column1, $tableName, $column2)->execute();
 
-        $this->assertSame($name, $schema->getTableForeignKeys($tableName, true)[0]->getName());
+        $this->assertSame($expectedName, $schema->getTableForeignKeys($tableName, true)[0]->getName());
 
         if (is_string($column1)) {
             $column1 = [$column1];

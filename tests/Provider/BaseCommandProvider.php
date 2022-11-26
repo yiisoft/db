@@ -15,10 +15,10 @@ final class BaseCommandProvider
     public function addForeignKey(): array
     {
         return [
-            ['{{test_fk_constraint_1}}', '{{test_fk}}', 'int1', 'int3'],
-            ['{{test_fk_constraint_2}}', '{{test_fk}}', ['int1'], 'int3'],
-            ['{{test_fk_constraint_3}}', '{{test_fk}}', ['int1'], ['int3']],
-            ['{{test_fk_constraint_4}}', '{{test_fk}}', ['int1', 'int2'], ['int3', 'int4']],
+            ['{{test_fk_constraint_1}}', '{{test_fk}}', 'int1', 'int3', 'test_fk_constraint_1'],
+            ['{{test_fk_constraint_2}}', '{{test_fk}}', ['int1'], 'int3', 'test_fk_constraint_2'],
+            ['{{test_fk_constraint_3}}', '{{test_fk}}', ['int1'], ['int3'], 'test_fk_constraint_3'],
+            ['{{test_fk_constraint_4}}', '{{test_fk}}', ['int1', 'int2'], ['int3', 'int4'], 'test_fk_constraint_4'],
         ];
     }
 
