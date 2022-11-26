@@ -348,9 +348,9 @@ final class BaseCommandProvider
     public function createIndex(): array
     {
         return [
-            ['{{test_idx_constraint_1}}', '{{test_idx}}', 'int1', '', ''],
-            ['{{test_idx_constraint_2}}', '{{test_idx}}', ['int1'], QueryBuilder::INDEX_UNIQUE, ''],
-            ['{{test_idx_constraint_3}}', '{{test_idx}}', ['int1', 'int2'], '', ''],
+            ['{{test_idx_constraint_1}}', '{{test_idx}}', 'int1', null, null],
+            ['{{test_idx_constraint_2}}', '{{test_idx}}', ['int1'], QueryBuilder::INDEX_UNIQUE, null],
+            ['{{test_idx_constraint_3}}', '{{test_idx}}', ['int1', 'int2'], null, null],
         ];
     }
 

@@ -378,8 +378,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         string $name,
         string $tableName,
         array|string $column,
-        string $indexType,
-        string $indexMethod,
+        string|null $indexType,
+        string|null $indexMethod,
     ): void {
         $db = $this->getConnection();
 
@@ -389,6 +389,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         if ($schema->getTableSchema($tableName) !== null) {
             $command->dropTable($tableName)->execute();
         }
+
         $command->createTable($tableName, ['int1' => 'integer not null', 'int2' => 'integer not null'])->execute();
 
         $this->assertEmpty($schema->getTableIndexes($tableName, true));
