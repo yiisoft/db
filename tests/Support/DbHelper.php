@@ -48,7 +48,7 @@ final class DbHelper
             'sqlsrv' => $db->createCommand(
                 <<<SQL
                 SELECT
-                    value
+                    value as comment
                 FROM
                     sys.extended_properties
                 WHERE
@@ -61,9 +61,21 @@ final class DbHelper
 
     public static function getCommmentsFromTable(
         string $table,
-        ConnectionPDOInterface $db
+        ConnectionPDOInterface $db,
+        string $schema = 'yiitest'
     ): array|null {
         return match ($db->getName()) {
+            'mysql' => $db->createCommand(
+                <<<SQL
+                SELECT
+                    TABLE_COMMENT as comment
+                FROM
+                    information_schema.TABLES
+                WHERE
+                    TABLE_SCHEMA = :schema AND TABLE_NAME = :table AND TABLE_COMMENT != ''
+                SQL,
+                ['schema' => $schema, 'table' => $table]
+            )->queryOne(),
             'pgsql' => $db->createCommand(
                 <<<SQL
                 SELECT obj_description(oid, 'pg_class') as description FROM pg_class WHERE relname= :table
@@ -73,7 +85,7 @@ final class DbHelper
             'sqlsrv' => $db->createCommand(
                 <<<SQL
                 SELECT
-                    value
+                    value as comment
                 FROM
                     sys.extended_properties
                 WHERE

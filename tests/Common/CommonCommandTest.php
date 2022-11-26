@@ -11,6 +11,7 @@ use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Schema;
@@ -18,6 +19,8 @@ use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
+use function call_user_func_array;
+use function is_string;
 use function setlocale;
 
 abstract class CommonCommandTest extends AbstractCommandTest
@@ -47,7 +50,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testAddColumn(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->addColumn('{{customer}}', 'city', Schema::TYPE_STRING)->execute();
@@ -58,24 +61,29 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testAddCommentOnColumn(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
+        $schema = $db->getSchema();
         $command->addCommentOnColumn('{{customer}}', 'id', 'Primary key.')->execute();
-        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
 
-        $this->assertSame(['value' => 'Primary key.'], $commentOnColumn);
+        $commentOnColumn = match ($db->getName()) {
+            'mysql' => ['comment' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment()],
+            'sqlsrv' => DbHelper::getCommmentsFromColumn('customer', 'id', $db),
+        };
+
+        $this->assertSame(['comment' => 'Primary key.'], $commentOnColumn);
     }
 
     public function testAddCommentOnTable(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->addCommentOnTable('{{customer}}', 'Customer table.')->execute();
         $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
 
-        $this->assertSame(['value' => 'Customer table.'], $commentOnTable);
+        $this->assertSame(['comment' => 'Customer table.'], $commentOnTable);
     }
 
     public function testAddDefaultValue()
@@ -204,19 +212,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame($column, $schema->getTableUniques($tableName, true)[0]->getColumnNames());
     }
 
-    public function testAlterColumn(): void
-    {
-        $db = $this->getConnection('customer');
-
-        $command = $db->createCommand();
-        $command->alterColumn('{{customer}}', 'email', 'ntext')->execute();
-        $schema = $db->getSchema();
-        $columns = $schema->getTableSchema('{{customer}}')->getColumns();
-
-        $this->assertArrayHasKey('email', $columns);
-        $this->assertSame('ntext', $columns['email']->getDbType());
-    }
-
     /**
      * Make sure that `{{something}}` in values will not be encoded.
      *
@@ -232,7 +227,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         array $expectedParams = [],
         int $insertedRow = 1
     ): void {
-        $db = $this->getConnection('type');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->batchInsert($table, $columns, $values);
@@ -261,7 +256,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $this->markTestSkipped('Your platform does not support locales.');
         }
 
-        $db = $this->getConnection('type');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
 
@@ -318,7 +313,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testBatchInsertFailsOld(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->batchInsert(
@@ -332,7 +327,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $result = (new Query($db))
             ->select(['email', 'name', 'address'])
             ->from('{{customer}}')
-            ->where(['=', '[[email]]', 't1@example.com'])
+            ->where(['=', '{{email}}', 't1@example.com'])
             ->one();
 
         $this->assertCount(3, $result);
@@ -341,7 +336,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testBatchInsertWithManyData(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $values = [];
         $attemptsInsertRows = 200;
@@ -362,7 +357,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testBatchInsertWithYield(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $rows = (
             static function () {
@@ -378,8 +373,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::createIndex()
      */
-    public function testCreateIndex(string $name, string $tableName, array|string $column): void
-    {
+    public function testCreateIndex(
+        string $name,
+        string $tableName,
+        array|string $column,
+        string $indexType,
+        string $indexMethod,
+    ): void {
         $db = $this->getConnection();
 
         $command = $db->createCommand();
@@ -392,14 +392,19 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableIndexes($tableName, true));
 
-        $command->createIndex($name, $tableName, $column)->execute();
+        $command->createIndex($name, $tableName, $column, $indexType, $indexMethod)->execute();
 
         if (is_string($column)) {
             $column = [$column];
         }
 
         $this->assertSame($column, $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
-        $this->assertFalse($schema->getTableIndexes($tableName, true)[0]->isUnique());
+
+        if ($indexType === 'UNIQUE') {
+            $this->assertTrue($schema->getTableIndexes($tableName, true)[0]->isUnique());
+        } else {
+            $this->assertFalse($schema->getTableIndexes($tableName, true)[0]->isUnique());
+        }
     }
 
     public function testCreateTable(): void
@@ -420,7 +425,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->insert('{{testCreateTable}}', ['bar' => 1])->execute();
         $records = $command->setSql(
             <<<SQL
-            SELECT [[id]], [[bar]] FROM {{testCreateTable}};
+            SELECT [[id]], [[bar]] FROM [[testCreateTable]];
             SQL
         )->queryAll();
 
@@ -433,7 +438,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
-        $subQuery = (new Query($db))->select('[[bar]]')->from('{{testCreateViewTable}}')->where(['>', 'bar', '5']);
+        $subQuery = (new Query($db))->select('{{bar}}')->from('{{testCreateViewTable}}')->where(['>', 'bar', '5']);
 
         if ($schema->getTableSchema('{{testCreateView}}') !== null) {
             $command->dropView('{{testCreateView}}')->execute();
@@ -461,7 +466,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDataReaderRewindException(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $this->expectException(InvalidCallException::class);
         $this->expectExceptionMessage('DataReader cannot rewind. It is a forward-only reader.');
@@ -478,7 +483,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDelete(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->delete('{{customer}}', ['id' => 2])->execute();
@@ -545,29 +550,36 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropCommentFromColumn(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
+        $schema = $db->getSchema();
         $command->addCommentOnColumn('{{customer}}', 'id', 'Primary key.')->execute();
-        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
+        $commentOnColumn = match ($db->getName()) {
+            'mysql' => ['comment' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment()],
+            'sqlsrv' => DbHelper::getCommmentsFromColumn('customer', 'id', $db),
+        };
 
-        $this->assertSame(['value' => 'Primary key.'], $commentOnColumn);
+        $this->assertSame(['comment' => 'Primary key.'], $commentOnColumn);
 
         $command->dropCommentFromColumn('{{customer}}', 'id')->execute();
-        $commentOnColumn = DbHelper::getCommmentsFromColumn('customer', 'id', $db);
+        $commentOnColumn = match ($db->getName()) {
+            'mysql' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment(),
+            'sqlsrv' => DbHelper::getCommmentsFromColumn('customer', 'id', $db),
+        };
 
-        $this->assertNull($commentOnColumn);
+        $this->assertEmpty($commentOnColumn);
     }
 
     public function testDropCommentFromTable(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->addCommentOnTable('{{customer}}', 'Customer table.')->execute();
         $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
 
-        $this->assertSame(['value' => 'Customer table.'], $commentOnTable);
+        $this->assertSame(['comment' => 'Customer table.'], $commentOnTable);
 
         $command->dropCommentFromTable('{{customer}}')->execute();
         $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
@@ -682,7 +694,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $schema = $db->getSchema();
 
-        if ($schema->getTableSchema('{{testDropTable}]') !== null) {
+        if ($schema->getTableSchema('{{testDropTable}}') !== null) {
             $command->dropTable('{{testDropTable}}')->execute();
         }
 
@@ -721,7 +733,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testDropView(): void
     {
-        $db = $this->getConnection('animal');
+        $db = $this->getConnection(true);
 
         /* since it already exists in the fixtures */
         $viewName = '{{animal_view}}';
@@ -737,12 +749,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testExecute(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
-            INSERT INTO {{customer}}([[email]], [[name]], [[address]]) VALUES ('user4@example.com', 'user4', 'address4')
+            INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES ('user4@example.com', 'user4', 'address4')
             SQL
         );
 
@@ -750,7 +762,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $command->setSql(
             <<<SQL
-            SELECT COUNT(*) FROM {{customer}} WHERE [[name]] = 'user4'
+            SELECT COUNT(*) FROM [[customer]] WHERE [[name]] = 'user4'
             SQL
         );
 
@@ -758,8 +770,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->setSql('bad SQL');
         $message = match ($db->getName()) {
-            'sqlite' => 'SQLSTATE[HY000]: General error: 1 near "bad": syntax error',
-            'sqlsrv' => 'SQLSTATE[42000]: [Microsoft]',
+            'sqlite' => 'SQLSTATE[HY000]',
+            'mysql', 'sqlsrv' => 'SQLSTATE[42000]',
         };
 
         $this->expectException(Exception::class);
@@ -780,7 +792,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testInsert(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $db->createCommand(
             <<<SQL
@@ -812,12 +824,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testInsertExpression(): void
     {
-        $db = $this->getConnection('order_with_null');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
-            DELETE FROM {{order_with_null_fk}}
+            DELETE FROM [[order_with_null_fk]]
             SQL
         )->execute();
         $expression = match ($db->getName()) {
@@ -851,13 +863,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testsInsertQueryAsColumnValue(): void
     {
-        $db = $this->getConnection('order', 'order_with_null');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $time = time();
         $command->setSql(
             <<<SQL
-            DELETE FROM {{order_with_null_fk}}
+            DELETE FROM [[order_with_null_fk]]
             SQL
         )->execute();
         $command->insert('{{order}}', ['customer_id' => 1, 'created_at' => $time, 'total' => 42])->execute();
@@ -868,7 +880,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $orderId = $db->getLastInsertID();
         }
 
-        $columnValueQuery = (new Query($db))->select('[[created_at]]')->from('{{order}}')->where(['id' => $orderId]);
+        $columnValueQuery = (new Query($db))->select('{{created_at}}')->from('{{order}}')->where(['id' => $orderId]);
         $command->insert(
             '{{order_with_null_fk}}',
             ['customer_id' => $orderId, 'created_at' => $columnValueQuery, 'total' => 42],
@@ -878,26 +890,26 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $time,
             $command->setSql(
                 <<<SQL
-                SELECT [[created_at]] FROM {{order_with_null_fk}} WHERE [[customer_id]] = :id
+                SELECT [[created_at]] FROM [[order_with_null_fk]] WHERE [[customer_id]] = :id
                 SQL
             )->bindValues([':id' => $orderId])->queryScalar(),
         );
 
         $command->setSql(
             <<<SQL
-            DELETE FROM {{order_with_null_fk}}
+            DELETE FROM [[order_with_null_fk]]
             SQL
         )->execute();
         $command->setSql(
             <<<SQL
-            DELETE FROM {{order}}
+            DELETE FROM [[order]]
             SQL
         )->execute();
     }
 
     public function testInsertSelect(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->setSql(
@@ -910,7 +922,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address']
         )->execute();
         $query = (new Query($db))
-            ->select(['{{customer}}.[[email]] as name', '[[name]] as email', '[[address]]'])
+            ->select(['{{customer}}.{{email}} as name', '{{name}} as email', '{{address}}'])
             ->from('{{customer}}')
             ->where(['and', ['<>', 'name', 'foo'], ['status' => [0, 1, 2, 3]]]);
         $command->insert('{{customer}}', $query)->execute();
@@ -941,12 +953,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testInsertSelectAlias(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
-            DELETE FROM {{customer}}
+            DELETE FROM [[customer]]
             SQL
         )->execute();
         $command->insert(
@@ -958,7 +970,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ]
         )->execute();
         $query = (new Query($db))
-            ->select(['email' => '{{customer}}.[[email]]', 'address' => 'name', 'name' => 'address'])
+            ->select(['email' => '{{customer}}.{{email}}', 'address' => 'name', 'name' => 'address'])
             ->from('{{customer}}')
             ->where(['and', ['<>', 'name', 'foo'], ['status' => [0, 1, 2, 3]]]);
         $command->insert('{{customer}}', $query)->execute();
@@ -967,14 +979,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
             2,
             $command->setSql(
                 <<<SQL
-                SELECT COUNT(*) FROM {{customer}}
+                SELECT COUNT(*) FROM [[customer]]
                 SQL
             )->queryScalar(),
         );
 
         $record = $command->setSql(
             <<<SQL
-            SELECT [[email]], [[name]], [[address]] FROM {{customer}}
+            SELECT [[email]], [[name]], [[address]] FROM [[customer]]
             SQL
         )->queryAll();
 
@@ -1011,7 +1023,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testInsertToBlob(): void
     {
-        $db = $this->getConnection('type');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->delete('{{type}}')->execute();
@@ -1038,13 +1050,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testIntegrityViolation(): void
     {
-        $db = $this->getConnection('profile');
+        $db = $this->getConnection(true);
 
         $this->expectException(IntegrityException::class);
 
         $command = $db->createCommand(
             <<<SQL
-            INSERT INTO {{profile}}([[id]], [[description]]) VALUES (123, 'duplicate')
+            INSERT INTO [[profile]] ([[id]], [[description]]) VALUES (123, 'duplicate')
             SQL
         );
         $command->execute();
@@ -1053,7 +1065,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testNoTablenameReplacement(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->insert(
@@ -1095,13 +1107,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testQuery(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
 
         $command->setSql(
             <<<SQL
-            SELECT * FROM {{customer}}
+            SELECT * FROM [[customer]]
             SQL
         );
 
@@ -1132,7 +1144,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testQueryAll(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
 
@@ -1167,13 +1179,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testQueryCache(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
-        $query = (new Query($db))->select(['name'])->from('customer');
+        $query = (new Query($db))->select(['{{name}}'])->from('{{customer}}');
         $command = $db->createCommand();
         $update = $command->setSql(
             <<<SQL
-            UPDATE {{customer}} SET [[name]] = :name WHERE [[id]] = :id
+            UPDATE [[customer]] SET [[name]] = :name WHERE [[id]] = :id
             SQL
         );
 
@@ -1266,12 +1278,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testQueryColumn(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
-            SELECT * FROM {{customer}}
+            SELECT * FROM [[customer]]
             SQL
         );
         $rows = $command->queryColumn();
@@ -1287,7 +1299,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->queryColumn();
         $command->setSql(
             <<<SQL
-            SELECT * FROM {{customer}} where id = 100
+            SELECT * FROM [[customer]] where id = 100
             SQL
         );
         $rows = $command->queryColumn();
@@ -1299,11 +1311,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testQueryOne(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $sql = <<<SQL
-        SELECT * FROM {{customer}} ORDER BY [[id]]
+        SELECT * FROM [[customer]] ORDER BY [[id]]
         SQL;
         $row = $command->setSql($sql)->queryOne();
 
@@ -1319,7 +1331,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertEquals('user1', $row['name']);
 
         $sql = <<<SQL
-        SELECT * FROM {{customer}} WHERE [[id]] = 10
+        SELECT * FROM [[customer]] WHERE [[id]] = 10
         SQL;
         $command = $command->setSql($sql);
 
@@ -1328,17 +1340,17 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testQueryScalar(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $sql = <<<SQL
-        SELECT * FROM {{customer}} ORDER BY [[id]]
+        SELECT * FROM [[customer]] ORDER BY [[id]]
         SQL;
 
         $this->assertEquals(1, $command->setSql($sql)->queryScalar());
 
         $sql = <<<SQL
-        SELECT [[id]] FROM {{customer}} ORDER BY [[id]]
+        SELECT [[id]] FROM [[customer]] ORDER BY [[id]]
         SQL;
         $command->setSql($sql)->prepare();
 
@@ -1346,7 +1358,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $command->setSql(
             <<<SQL
-            SELECT [[id]] FROM {{customer}} WHERE [[id]] = 10
+            SELECT [[id]] FROM [[customer]] WHERE [[id]] = 10
             SQL
         );
 
@@ -1355,7 +1367,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testRenameColumn(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -1368,7 +1380,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testRenameTable(): void
     {
-        $db = $this->getConnection('type');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
@@ -1388,7 +1400,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testSetRetryHandler(): void
     {
-        $db = $this->getConnection('profile');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
 
@@ -1396,7 +1408,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->setSql(
             <<<SQL
-            INSERT INTO {{profile}}([[description]]) VALUES('command retry')
+            INSERT INTO [[profile]] ([[description]]) VALUES('command retry')
             SQL
         )->execute();
 
@@ -1405,7 +1417,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             1,
             $command->setSql(
                 <<<SQL
-                SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command retry'
+                SELECT COUNT(*) FROM [[profile]] WHERE [[description]] = 'command retry'
                 SQL
             )->queryScalar()
         );
@@ -1415,7 +1427,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $hitCatch = false;
         $command->setSql(
             <<<SQL
-            INSERT INTO {{profile}}([[id]], [[description]]) VALUES(1, 'command retry')
+            INSERT INTO [[profile]] ([[id]], [[description]]) VALUES(1, 'command retry')
             SQL
         );
 
@@ -1446,14 +1458,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testTransaction(): void
     {
-        $db = $this->getConnection('profile');
+        $db = $this->getConnection(true);
 
         $this->assertNull($db->getTransaction());
 
         $command = $db->createCommand();
         $command = $command->setSql(
             <<<SQL
-            INSERT INTO {{profile}}([[description]]) VALUES('command transaction')
+            INSERT INTO [[profile]] ([[description]]) VALUES('command transaction')
             SQL
         );
 
@@ -1466,7 +1478,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             1,
             $command->setSql(
                 <<<SQL
-                SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction'
+                SELECT COUNT(*) FROM [[profile]] WHERE [[description]] = 'command transaction'
                 SQL
             )->queryScalar(),
         );
@@ -1474,18 +1486,18 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testTruncateTable(): void
     {
-        $db = $this->getConnection('animal');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $rows = $command->setSql(
             <<<SQL
-            SELECT * FROM {{animal}}
+            SELECT * FROM [[animal]]
             SQL
         )->queryAll();
 
         $this->assertCount(2, $rows);
 
-        $command->truncateTable('animal')->execute();
+        $command->truncateTable('{{animal}}')->execute();
         $rows = $command->setSql(
             <<<SQL
             SELECT * FROM {{animal}}
@@ -1518,13 +1530,29 @@ abstract class CommonCommandTest extends AbstractCommandTest
      */
     public function testUpsert(array $firstData, array $secondData): void
     {
-        $db = $this->getConnection('customer', 't_upsert');
+        $db = $this->getConnection(true);
 
-        $this->assertEquals(0, $db->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')->queryScalar());
+        $command = $db->createCommand();
+
+        $this->assertEquals(
+            0,
+            $command->setSql(
+                <<<SQL
+                SELECT COUNT(*) FROM [[T_upsert]]
+                SQL,
+            )->queryScalar()
+        );
 
         $this->performAndCompareUpsertResult($db, $firstData);
 
-        $this->assertEquals(1, $db->createCommand('SELECT COUNT(*) FROM {{T_upsert}}')->queryScalar());
+        $this->assertEquals(
+            1,
+            $command->setSql(
+                <<<SQL
+                SELECT COUNT(*) FROM [[T_upsert]]
+                SQL,
+            )->queryScalar()
+        );
 
         $this->performAndCompareUpsertResult($db, $secondData);
     }
@@ -1542,7 +1570,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $actual = (new Query($db))
             ->select(['email', 'address' => new Expression($this->upsertTestCharCast), 'status'])
-            ->from('T_upsert')
+            ->from('{{T_upsert}}')
             ->one();
         $this->assertEquals($expected, $actual, $this->upsertTestCharCast);
     }

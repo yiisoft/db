@@ -8,9 +8,13 @@ use PDO;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
+use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class CommonCommandPDOTest extends TestCase
 {
+    use TestTrait;
+
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\CommandPDOProvider::bindParam()
      */
@@ -23,9 +27,14 @@ abstract class CommonCommandPDOTest extends TestCase
         mixed $driverOptions,
         array $expected,
     ): void {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
-        $sql = "SELECT * FROM customer WHERE $field = $name";
+        $sql = DbHelper::replaceQuotes(
+            <<<SQL
+            SELECT * FROM [[customer]] WHERE $field = $name
+            SQL,
+            $db->getName(),
+        );
         $command = $db->createCommand();
         $command->setSql($sql);
         $command->bindParam($name, $value, $dataType, $length, $driverOptions);
@@ -41,10 +50,10 @@ abstract class CommonCommandPDOTest extends TestCase
      */
     public function testBindParamsNonWhere(string $sql): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $db->createCommand()->insert(
-            'customer',
+            '{{customer}}',
             [
                 'name' => 'testParams',
                 'email' => 'testParams@example.com',
@@ -59,14 +68,14 @@ abstract class CommonCommandPDOTest extends TestCase
 
     public function testBindParamValue(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
 
         // bindParam
         $command = $command->setSql(
             <<<SQL
-            INSERT INTO customer(email, name, address) VALUES (:email, :name, :address)
+            INSERT INTO [[customer]] ([[name]], [[email]], [[address]]) VALUES (:name, :email, :address)
             SQL
         );
         $email = 'user4@example.com';
@@ -140,9 +149,9 @@ abstract class CommonCommandPDOTest extends TestCase
 
     public function testColumnCase(): void
     {
-        $db = $this->getConnection('order');
+        $db = $this->getConnection(true);
 
-        $this->assertSame(PDO::CASE_NATURAL, $db->getActivePDO()->getAttribute(PDO::ATTR_CASE));
+        $this->assertSame(PDO::CASE_NATURAL, $db->getActivePDO()?->getAttribute(PDO::ATTR_CASE));
 
         $command = $db->createCommand();
         $sql = <<<SQL
@@ -154,14 +163,14 @@ abstract class CommonCommandPDOTest extends TestCase
         $this->assertTrue(isset($rows[0]['customer_id']));
         $this->assertTrue(isset($rows[0]['total']));
 
-        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $db->getActivePDO()?->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
         $rows = $command->setSql($sql)->queryAll();
 
         $this->assertTrue(isset($rows[0]));
         $this->assertTrue(isset($rows[0]['customer_id']));
         $this->assertTrue(isset($rows[0]['total']));
 
-        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+        $db->getActivePDO()?->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
         $rows = $command->setSql($sql)->queryAll();
 
         $this->assertTrue(isset($rows[0]));

@@ -278,14 +278,14 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->createView(
             'view',
             <<<SQL
-            SELECT * FROM table
+            SELECT * FROM [[table]]
             SQL,
         )->getSql();
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                CREATE VIEW [[view]] AS SELECT * FROM table
+                CREATE VIEW [[view]] AS SELECT * FROM [[table]]
                 SQL,
                 $db->getName(),
             ),
@@ -535,12 +535,12 @@ final class CommandTest extends AbstractCommandTest
 
     public function testQuery(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
-            SELECT * FROM customer
+            SELECT * FROM [[customer]]
             SQL
         );
 
@@ -554,12 +554,12 @@ final class CommandTest extends AbstractCommandTest
 
     public function testQueryAll(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
-            SELECT * FROM {{customer}}
+            SELECT * FROM [[customer]]
             SQL,
         );
 
@@ -573,12 +573,12 @@ final class CommandTest extends AbstractCommandTest
 
     public function testQueryColumn(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
-            SELECT * FROM {{customer}}
+            SELECT * FROM [[customer]]
             SQL
         );
 
@@ -587,16 +587,16 @@ final class CommandTest extends AbstractCommandTest
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute() is not supported by core-db.'
         );
 
-        $rows = $command->queryColumn();
+        $command->queryColumn();
     }
 
     public function testQueryOne(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $sql = <<<SQL
-        SELECT * FROM {{customer}} ORDER BY [[id]]
+        SELECT * FROM [[customer]] ORDER BY [[id]]
         SQL;
 
         $this->expectException(NotSupportedException::class);
@@ -604,16 +604,16 @@ final class CommandTest extends AbstractCommandTest
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute() is not supported by core-db.'
         );
 
-        $row = $command->setSql($sql)->queryOne();
+        $command->setSql($sql)->queryOne();
     }
 
     public function testQueryScalar(): void
     {
-        $db = $this->getConnection('customer');
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
         $sql = <<<SQL
-        SELECT * FROM {{customer}} ORDER BY [[id]]
+        SELECT * FROM [[customer]] ORDER BY [[id]]
         SQL;
 
         $this->expectException(NotSupportedException::class);
@@ -688,7 +688,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->truncateTable('table')->getSql();
+        $sql = $command->truncateTable('{{table}}')->getSql();
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -712,7 +712,7 @@ final class CommandTest extends AbstractCommandTest
             'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema() is not supported by core-db.'
         );
 
-        $command->update('table', [], [], []);
+        $command->update('{{table}}', [], [], []);
     }
 
     public function testUpsert(): void
@@ -726,6 +726,6 @@ final class CommandTest extends AbstractCommandTest
             'Yiisoft\Db\Tests\Support\Stub\DMLQueryBuilder does not support upsert.'
         );
 
-        $command->upsert('table', []);
+        $command->upsert('{{table}}', []);
     }
 }

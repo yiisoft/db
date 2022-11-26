@@ -84,7 +84,7 @@ final class CommandProvider
     {
         $commandProvider = new BaseCommandProvider();
 
-        return $commandProvider->rawSql();
+        return $commandProvider->rawSql($this->getConnection());
     }
 
     public function update(): array

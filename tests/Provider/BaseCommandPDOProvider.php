@@ -35,17 +35,17 @@ final class BaseCommandPDOProvider
         return [
             [
                 <<<SQL
-                SELECT SUBSTR(name, :len) FROM {{customer}} WHERE [[email]] = :email GROUP BY SUBSTR(name, :len)
+                SELECT SUBSTR(name, :len) FROM [[customer]] WHERE [[email]] = :email GROUP BY SUBSTR(name, :len)
                 SQL,
             ],
             [
                 <<<SQL
-                SELECT SUBSTR(name, :len) FROM {{customer}} WHERE [[email]] = :email ORDER BY SUBSTR(name, :len)
+                SELECT SUBSTR(name, :len) FROM [[customer]] WHERE [[email]] = :email ORDER BY SUBSTR(name, :len)
                 SQL,
             ],
             [
                 <<<SQL
-                SELECT SUBSTR(name, :len) FROM {{customer}} WHERE [[email]] = :email
+                SELECT SUBSTR(name, :len) FROM [[customer]] WHERE [[email]] = :email
                 SQL,
             ],
         ];
