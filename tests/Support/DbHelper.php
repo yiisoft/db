@@ -32,19 +32,6 @@ final class DbHelper
         ConnectionPDOInterface $db
     ): array|null {
         return match ($db->getName()) {
-            'pgsql' => $db->createCommand(
-                <<<SQL
-                SELECT
-                    pgd.description
-                FROM
-                    pg_catalog.pg_statio_all_tables as st
-                INNER JOIN pg_catalog.pg_description pgd ON (pgd.objoid=st.relid)
-                INNER JOIN pg_catalog.pg_attribute pga ON (pga.attrelid=st.relid AND pga.attnum=pgd.objsubid)
-                WHERE
-                    st.relname=:table AND pga.attname=:column
-                SQL,
-                ['table' => $table, 'column' => $column]
-            )->queryOne(),
             'sqlsrv' => $db->createCommand(
                 <<<SQL
                 SELECT
@@ -78,7 +65,12 @@ final class DbHelper
             )->queryOne(),
             'pgsql' => $db->createCommand(
                 <<<SQL
-                SELECT obj_description(oid, 'pg_class') as description FROM pg_class WHERE relname= :table
+                SELECT
+                    obj_description(oid, 'pg_class') as comment
+                FROM
+                    pg_class
+                WHERE
+                    relname= :table AND obj_description(oid, 'pg_class') != ''
                 SQL,
                 ['table' => $table]
             )->queryOne(),

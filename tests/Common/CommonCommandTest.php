@@ -18,6 +18,7 @@ use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function call_user_func_array;
 use function is_string;
@@ -68,7 +69,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->addCommentOnColumn('{{customer}}', 'id', 'Primary key.')->execute();
 
         $commentOnColumn = match ($db->getName()) {
-            'mysql' => ['comment' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment()],
+            'mysql', 'pgsql' => ['comment' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment()],
             'sqlsrv' => DbHelper::getCommmentsFromColumn('customer', 'id', $db),
         };
 
@@ -558,7 +559,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $schema = $db->getSchema();
         $command->addCommentOnColumn('{{customer}}', 'id', 'Primary key.')->execute();
         $commentOnColumn = match ($db->getName()) {
-            'mysql' => ['comment' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment()],
+            'mysql', 'pgsql' => ['comment' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment()],
             'sqlsrv' => DbHelper::getCommmentsFromColumn('customer', 'id', $db),
         };
 
@@ -566,7 +567,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->dropCommentFromColumn('{{customer}}', 'id')->execute();
         $commentOnColumn = match ($db->getName()) {
-            'mysql' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment(),
+            'mysql', 'pgsql' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment(),
             'sqlsrv' => DbHelper::getCommmentsFromColumn('customer', 'id', $db),
         };
 
@@ -772,8 +773,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->setSql('bad SQL');
         $message = match ($db->getName()) {
+            'pgsql' => 'SQLSTATE[42601]',
             'sqlite' => 'SQLSTATE[HY000]',
-            'mysql', 'sqlsrv' => 'SQLSTATE[42000]',
+            default => 'SQLSTATE[42000]',
         };
 
         $this->expectException(Exception::class);
@@ -790,6 +792,55 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $result = $command->setSql('')->execute();
 
         $this->assertSame(0, $result);
+    }
+
+    public function testExecuteWithTransaction(): void
+    {
+        $db = $this->getConnection(true);
+
+        $this->assertNull($db->getTransaction());
+
+        $command = $db->createCommand(
+            <<<SQL
+            INSERT INTO {{profile}} ([[description]]) VALUES('command transaction 1')
+            SQL,
+        );
+
+        Assert::invokeMethod($command, 'requireTransaction');
+
+        $command->execute();
+
+        $this->assertNull($db->getTransaction());
+
+        $this->assertEquals(
+            1,
+            $db->createCommand(
+                <<<SQL
+                SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction 1'
+                SQL,
+            )->queryScalar(),
+        );
+
+        $command = $db->createCommand(
+            <<<SQL
+            INSERT INTO {{profile}} ([[description]]) VALUES('command transaction 2')
+            SQL,
+        );
+
+        Assert::invokeMethod($command, 'requireTransaction', [TransactionInterface::READ_UNCOMMITTED]);
+
+        $command->execute();
+
+        $this->assertNull($db->getTransaction());
+
+        $this->assertEquals(
+            1,
+            $db->createCommand(
+                <<<SQL
+                SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction 2'
+                SQL,
+            )->queryScalar(),
+        );
     }
 
     public function testInsert(): void
@@ -1112,7 +1163,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-
         $command->setSql(
             <<<SQL
             SELECT * FROM [[customer]]
@@ -1132,9 +1182,15 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertInstanceOf(DataReaderInterface::class, $reader);
         $this->assertIsInt($reader->count());
 
+        $expectedRow = 6;
+
+        if ($db->getName() === 'pgsql') {
+            $expectedRow = 7;
+        }
+
         foreach ($reader as $row) {
             $this->assertIsArray($row);
-            $this->assertCount(6, $row);
+            $this->assertCount($expectedRow, $row);
         }
 
         $command = $db->createCommand('bad SQL');
@@ -1149,7 +1205,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-
         $command->setSql(
             <<<SQL
             SELECT * FROM {{customer}}
@@ -1157,10 +1212,16 @@ abstract class CommonCommandTest extends AbstractCommandTest
         );
         $rows = $command->queryAll();
 
+        $expectedRow = 6;
+
+        if ($db->getName() === 'pgsql') {
+            $expectedRow = 7;
+        }
+
         $this->assertIsArray($rows);
         $this->assertCount(3, $rows);
         $this->assertIsArray($rows[0]);
-        $this->assertCount(6, $rows[0]);
+        $this->assertCount($expectedRow, $rows[0]);
 
         $command->setSql('bad SQL');
 
