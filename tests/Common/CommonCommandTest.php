@@ -41,7 +41,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableChecks('{{test_ck}}', true));
 
-        $command->addCheck('{{test_ck_constraint}}', '{{test_ck}}', 'int1 > 1')->execute();
+        $command->addCheck('{{test_ck_constraint}}', '{{test_ck}}', '{{int1}} > 1')->execute();
 
         $this->assertMatchesRegularExpression(
             '/^.*int1.*>.*1.*$/',
@@ -54,7 +54,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->addColumn('{{customer}}', 'city', Schema::TYPE_STRING)->execute();
+        $command->addColumn('{{customer}}', '{{city}}', Schema::TYPE_STRING)->execute();
 
         $this->assertTrue($db->getTableSchema('{{customer}}')->getColumn('city') !== null);
         $this->assertSame(Schema::TYPE_STRING, $db->getTableSchema('{{customer}}')->getColumn('city')->getType());
@@ -69,7 +69,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->addCommentOnColumn('{{customer}}', 'id', 'Primary key.')->execute();
 
         $commentOnColumn = match ($db->getName()) {
-            'mysql', 'pgsql' => ['comment' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment()],
+            'mysql', 'pgsql', 'oci' => [
+                'comment' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment(),
+            ],
             'sqlsrv' => DbHelper::getCommmentsFromColumn('customer', 'id', $db),
         };
 
@@ -423,9 +425,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable(
             '{{testCreateTable}}',
-            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER],
+            ['[[id]]' => Schema::TYPE_PK, '[[bar]]' => Schema::TYPE_INTEGER],
         )->execute();
-        $command->insert('{{testCreateTable}}', ['bar' => 1])->execute();
+        $command->insert('{{testCreateTable}}', ['[[bar]]' => 1])->execute();
         $records = $command->setSql(
             <<<SQL
             SELECT [[id]], [[bar]] FROM [[testCreateTable]];
@@ -518,7 +520,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableChecks('{{test_ck}}', true));
 
-        $command->addCheck('{{test_ck_constraint}}', '{{test_ck}}', 'int1 > 1')->execute();
+        $command->addCheck('{{test_ck_constraint}}', '{{test_ck}}', '[[int1]] > 1')->execute();
 
         $this->assertMatchesRegularExpression(
             '/^.*int1.*>.*1.*$/',
@@ -559,7 +561,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $schema = $db->getSchema();
         $command->addCommentOnColumn('{{customer}}', 'id', 'Primary key.')->execute();
         $commentOnColumn = match ($db->getName()) {
-            'mysql', 'pgsql' => ['comment' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment()],
+            'mysql', 'pgsql', 'oci' => [
+                'comment' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment(),
+            ],
             'sqlsrv' => DbHelper::getCommmentsFromColumn('customer', 'id', $db),
         };
 
@@ -567,7 +571,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->dropCommentFromColumn('{{customer}}', 'id')->execute();
         $commentOnColumn = match ($db->getName()) {
-            'mysql', 'pgsql' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment(),
+            'mysql', 'pgsql', 'oci' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment(),
             'sqlsrv' => DbHelper::getCommmentsFromColumn('customer', 'id', $db),
         };
 
@@ -774,7 +778,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql('bad SQL');
         $message = match ($db->getName()) {
             'pgsql' => 'SQLSTATE[42601]',
-            'sqlite' => 'SQLSTATE[HY000]',
+            'sqlite', 'oci' => 'SQLSTATE[HY000]',
             default => 'SQLSTATE[42000]',
         };
 
@@ -827,7 +831,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL,
         );
 
-        Assert::invokeMethod($command, 'requireTransaction', [TransactionInterface::READ_UNCOMMITTED]);
+        Assert::invokeMethod($command, 'requireTransaction', [TransactionInterface::READ_COMMITTED]);
 
         $command->execute();
 
@@ -847,26 +851,23 @@ abstract class CommonCommandTest extends AbstractCommandTest
     {
         $db = $this->getConnection(true);
 
-        $db->createCommand(
-            <<<SQL
-            DELETE FROM {{customer}}
-            SQL
-        )->execute();
         $command = $db->createCommand();
-        $command
-            ->insert('{{customer}}', ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'])
-            ->execute();
+        $command->delete('{{customer}}')->execute();
+        $command->insert(
+            '{{customer}}',
+            ['[[email]]' => 't1@example.com', '[[name]]' => 'test', '[[address]]' => 'test address']
+        )->execute();
 
         $this->assertEquals(
             1,
-            $db->createCommand(
+            $command->setSql(
                 <<<SQL
-                SELECT COUNT(*) FROM {{customer}};
+                SELECT COUNT(*) FROM {{customer}}
                 SQL
             )->queryScalar(),
         );
 
-        $record = $db->createCommand(
+        $record = $command->setSql(
             <<<SQL
             SELECT [[email]], [[name]], [[address]] FROM {{customer}}
             SQL
@@ -875,18 +876,32 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame(['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'], $record);
     }
 
+    public function testInsertEx(): void
+    {
+        $db = $this->getConnection(true);
+
+        $command = $db->createCommand();
+
+        $expected = match ($db->getName()) {
+            'pgsql' => ['id' => 4],
+            default => ['id' => '4'],
+        };
+
+        $this->assertSame(
+            $expected,
+            $command->insertEx('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']),
+        );
+    }
+
     public function testInsertExpression(): void
     {
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->setSql(
-            <<<SQL
-            DELETE FROM [[order_with_null_fk]]
-            SQL
-        )->execute();
+        $command->delete('{{order_with_null_fk}}')->execute();
         $expression = match ($db->getName()) {
             'mysql' => 'YEAR(NOW())',
+            'oci' => "TO_CHAR(SYSDATE, 'YYYY')",
             'pgsql' => "EXTRACT(YEAR FROM TIMESTAMP 'now')",
             'sqlite' => "strftime('%Y')",
             'sqlsrv' => 'YEAR(GETDATE())',
@@ -1009,11 +1024,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->setSql(
-            <<<SQL
-            DELETE FROM [[customer]]
-            SQL
-        )->execute();
+        $command->delete('{{customer}}')->execute();
         $command->insert(
             '{{customer}}',
             [
@@ -1173,18 +1184,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $reader = $command->query();
 
-        // check tests that the reader is a valid iterator
-        if ($db->getName() !== 'sqlite' && $db->getName() !== 'pgsql' && $db->getName() !== 'sqlsrv') {
-            $this->assertEquals(3, $reader->count());
-        }
-
         $this->assertNotNull($command->getPdoStatement());
         $this->assertInstanceOf(DataReaderInterface::class, $reader);
         $this->assertIsInt($reader->count());
 
         $expectedRow = 6;
 
-        if ($db->getName() === 'pgsql') {
+        if ($db->getName() === 'oci' || $db->getName() === 'pgsql') {
             $expectedRow = 7;
         }
 
@@ -1211,10 +1217,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL
         );
         $rows = $command->queryAll();
-
         $expectedRow = 6;
 
-        if ($db->getName() === 'pgsql') {
+        if ($db->getName() === 'oci' || $db->getName() === 'pgsql') {
             $expectedRow = 7;
         }
 

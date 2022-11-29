@@ -73,7 +73,7 @@ abstract class CommonCommandPDOTest extends TestCase
         $command = $db->createCommand();
 
         // bindParam
-        $command = $command->setSql(
+        $command->setSql(
             <<<SQL
             INSERT INTO [[customer]] ([[name]], [[email]], [[address]]) VALUES (:name, :email, :address)
             SQL
@@ -87,7 +87,7 @@ abstract class CommonCommandPDOTest extends TestCase
         $command->execute();
         $command = $command->setSql(
             <<<SQL
-            SELECT name FROM customer WHERE email=:email
+            SELECT [[name]] FROM [[customer]] WHERE [[email]] = :email
             SQL,
         );
         $command->bindParam(':email', $email);
@@ -95,19 +95,18 @@ abstract class CommonCommandPDOTest extends TestCase
         $this->assertSame($name, $command->queryScalar());
 
         // bindValue
-        $command = $command->setSql(
+        $command->setSql(
             <<<SQL
-            INSERT INTO customer(email, name, address) VALUES (:email, 'user5', 'address5')
+            INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES (:email, 'user5', 'address5')
             SQL
         );
         $command->bindValue(':email', 'user5@example.com');
         $command->execute();
-        $command = $command->setSql(
+        $command->setSql(
             <<<SQL
-            SELECT email FROM customer WHERE name=:name
+            SELECT [[email]] FROM [[customer]] WHERE [[name]] = :name
             SQL
         );
-
         $command->bindValue(':name', 'user5');
 
         $this->assertSame('user5@example.com', $command->queryScalar());
@@ -155,7 +154,7 @@ abstract class CommonCommandPDOTest extends TestCase
 
         $command = $db->createCommand();
         $sql = <<<SQL
-        SELECT [[customer_id]], [[total]] FROM {{order}}
+        SELECT [[customer_id]], [[total]] FROM [[order]]
         SQL;
         $rows = $command->setSql($sql)->queryAll();
 
@@ -164,6 +163,9 @@ abstract class CommonCommandPDOTest extends TestCase
         $this->assertTrue(isset($rows[0]['total']));
 
         $db->getActivePDO()?->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+
+        $this->assertSame(PDO::CASE_LOWER, $db->getActivePDO()?->getAttribute(PDO::ATTR_CASE));
+
         $rows = $command->setSql($sql)->queryAll();
 
         $this->assertTrue(isset($rows[0]));
@@ -171,6 +173,9 @@ abstract class CommonCommandPDOTest extends TestCase
         $this->assertTrue(isset($rows[0]['total']));
 
         $db->getActivePDO()?->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+
+        $this->assertSame(PDO::CASE_UPPER, $db->getActivePDO()?->getAttribute(PDO::ATTR_CASE));
+
         $rows = $command->setSql($sql)->queryAll();
 
         $this->assertTrue(isset($rows[0]));
