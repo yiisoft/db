@@ -133,7 +133,9 @@ final class DbHelper
             }
         }
 
-        $db->close();
+        if ($db->getName() !== 'sqlite') {
+            $db->close();
+        }
     }
 
     /**

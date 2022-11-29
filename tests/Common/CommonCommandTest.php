@@ -831,7 +831,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL,
         );
 
-        Assert::invokeMethod($command, 'requireTransaction', [TransactionInterface::READ_COMMITTED]);
+        Assert::invokeMethod($command, 'requireTransaction', [TransactionInterface::READ_UNCOMMITTED]);
 
         $command->execute();
 
