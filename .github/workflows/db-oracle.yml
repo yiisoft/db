@@ -26,8 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-${{ matrix.oracle }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-master
-      composer_flag: "${{ matrix.php == '8.2' && '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs' || '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi' }}"
+      COMPOSER_ROOT_VERSION: dev-remove-test-command-trait
       extensions: pdo, pdo_oci
 
     runs-on: ${{ matrix.os }}
@@ -53,10 +52,10 @@ jobs:
           options: --name=oci
 
     steps:
-      - name: Checkout
+      - name: Checkout.
         uses: actions/checkout@v3
 
-      - name: Install PHP with extensions
+      - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
@@ -65,16 +64,16 @@ jobs:
           coverage: pcov
           tools: composer:v2, pecl
 
-      - name: Update composer
+      - name: Update composer.
         run: composer self-update
 
-      - name: Install db-oracle
-        run: composer require yiisoft/db-oracle ${{ env.composer_flag }}
+      - name: Install db-oracle.
+        run: composer config preferred-install.yiisoft/db-oracle source && composer require yiisoft/db-oracle:dev-remove-test-command-trait --no-interaction --no-progress --optimize-autoloader --ansi
 
-      - name: Run oracle tests with phpunit
+      - name: Run oracle tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Oracle --coverage-clover=coverage.xml --colors=always
 
-      - name: Upload coverage to Codecov
+      - name: Upload coverage to Codecov.
         if: matrix.php == '8.0'
         uses: codecov/codecov-action@v3
         with:

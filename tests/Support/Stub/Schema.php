@@ -24,12 +24,12 @@ final class Schema extends \Yiisoft\Db\Schema\Schema implements SchemaInterface
 
     public function findUniqueIndexes(TableSchemaInterface $table): array
     {
-        return $this->getException(__METHOD__ . '()' . ' is not supported by core-db.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     public function getLastInsertID(string $sequenceName = null): string
     {
-        $this->getException(__METHOD__ . '()' . ' is not supported by core-db.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     protected function getCacheKey(string $name): array
@@ -44,41 +44,36 @@ final class Schema extends \Yiisoft\Db\Schema\Schema implements SchemaInterface
 
     protected function loadTableChecks(string $tableName): array
     {
-        $this->getException(__METHOD__ . '()' . ' is not supported by core-db.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     protected function loadTableDefaultValues(string $tableName): array
     {
-        $this->getException(__METHOD__ . '()' . ' is not supported by core-db.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     protected function loadTableForeignKeys(string $tableName): array
     {
-        $this->getException(__METHOD__ . '()' . ' is not supported by core-db.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     protected function loadTableIndexes(string $tableName): array
     {
-        $this->getException(__METHOD__ . '()' . ' is not supported by core-db.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     protected function loadTablePrimaryKey(string $tableName): Constraint|null
     {
-        $this->getException(__METHOD__ . '()' . ' is not supported by core-db.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     protected function loadTableUniques(string $tableName): array
     {
-        $this->getException(__METHOD__ . '()' . ' is not supported by core-db.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     protected function loadTableSchema(string $name): TableSchemaInterface|null
     {
-        $this->getException(__METHOD__ . '()' . ' is not supported by core-db.');
-    }
-
-    private function getException(string $message): void
-    {
-        throw new NotSupportedException($message);
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 }

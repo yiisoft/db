@@ -12,7 +12,9 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
@@ -101,9 +103,6 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
         return $where === '' ? $sql : $sql . ' ' . $where;
     }
 
-    /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
-     */
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         /**
@@ -132,7 +131,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
      */
     public function resetSequence(string $tableName, int|string|null $value = null): string
     {
-        throw new NotSupportedException(static::class . ' does not support resetting sequence.');
+        throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
     }
 
     /**
@@ -181,7 +180,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
 
         $names = [];
         $values = ' ' . $values;
-        /** @psalm-var string[] */
+        /** @psalm-var string[] $select */
         $select = $columns->getSelect();
 
         foreach ($select as $title => $field) {
@@ -217,9 +216,9 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
                 /** @var mixed $value */
                 $value = $this->getTypecastValue($value, $columnSchemas[$name] ?? null);
 
-                if ($value instanceof ExpressionInterface) {
+                if ($value instanceof Expression) {
                     $placeholders[] = $this->queryBuilder->buildExpression($value, $params);
-                } elseif ($value instanceof QueryInterface) {
+                } elseif ($value instanceof Query) {
                     [$sql, $params] = $this->queryBuilder->build($value, $params);
                     $placeholders[] = "($sql)";
                 } else {
@@ -244,7 +243,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
          * @psalm-var mixed $value
          */
         foreach ($columns as $name => $value) {
-            /** @var mixed */
+            /** @psalm-var mixed $value */
             $value = isset($columnSchemas[$name]) ? $columnSchemas[$name]->dbTypecast($value) : $value;
             if ($value instanceof ExpressionInterface) {
                 $placeholder = $this->queryBuilder->buildExpression($value, $params);
@@ -281,7 +280,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
             }
         }
 
-        /** @psalm-var string[] */
+        /** @psalm-var string[] $uniqueNames */
         $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
 
         foreach ($uniqueNames as $key => $name) {
@@ -320,7 +319,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
             $constraints[] = $primaryKey;
         }
 
-        /** @psalm-var IndexConstraint[] */
+        /** @psalm-var IndexConstraint[] $tableIndexes */
         $tableIndexes = $this->schema->getTableIndexes($name);
 
         foreach ($tableIndexes as $constraint) {
@@ -353,7 +352,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
             array_filter(
                 $constraints,
                 static function (Constraint $constraint) use ($quoter, $columns, &$columnNames) {
-                    /** @psalm-var string[]|string */
+                    /** @psalm-var string[]|string $getColumnNames */
                     $getColumnNames = $constraint->getColumnNames() ?? [];
                     $constraintColumnNames = [];
 
