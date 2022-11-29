@@ -66,11 +66,11 @@ final class DbHelper
             'pgsql' => $db->createCommand(
                 <<<SQL
                 SELECT
-                    [[obj_description(oid, 'pg_class')]] as comment
+                    obj_description(oid, 'pg_class') as comment
                 FROM
                     [[pg_class]]
                 WHERE
-                    [[relname]] = :table AND [[obj_description(oid, 'pg_class')]] != ''
+                    [[relname]] = :table AND obj_description(oid, 'pg_class') != ''
                 SQL,
                 ['table' => $table]
             )->queryOne(),
