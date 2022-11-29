@@ -18,6 +18,7 @@ abstract class TableSchema implements TableSchemaInterface
     private string|null $schemaName = null;
     private string $name = '';
     private string|null $fullName = null;
+    private string|null $comment = null;
     private string|null $sequenceName = null;
     /** @psalm-var string[] */
     private array $primaryKey = [];
@@ -109,6 +110,11 @@ abstract class TableSchema implements TableSchemaInterface
         return $this->columns;
     }
 
+    public function getComment(): string|null
+    {
+        return $this->comment;
+    }
+
     public function schemaName(string|null $value): void
     {
         $this->schemaName = $value;
@@ -122,6 +128,11 @@ abstract class TableSchema implements TableSchemaInterface
     public function fullName(string|null $value): void
     {
         $this->fullName = $value;
+    }
+
+    public function comment(string|null $value): void
+    {
+        $this->comment = $value;
     }
 
     public function sequenceName(string|null $value): void
