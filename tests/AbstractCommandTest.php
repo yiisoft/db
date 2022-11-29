@@ -149,7 +149,7 @@ abstract class AbstractCommandTest extends TestCase
         $command = $db->createCommand();
         $command->setSql(
             <<<SQL
-            SELECT * FROM {{customer}}
+            SELECT * FROM [[customer]]
             SQL
         );
 
