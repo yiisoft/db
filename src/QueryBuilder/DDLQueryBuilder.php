@@ -68,11 +68,12 @@ abstract class DDLQueryBuilder implements DDLQueryBuilderInterface
      */
     public function addDefaultValue(string $name, string $table, string $column, mixed $value): string
     {
-        throw new NotSupportedException(static::class . ' does not support adding default value constraints.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     /**
-     * @throws Exception|InvalidArgumentException
+     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function addForeignKey(
         string $name,
@@ -151,11 +152,12 @@ abstract class DDLQueryBuilder implements DDLQueryBuilderInterface
      */
     public function checkIntegrity(string $schema = '', string $table = '', bool $check = true): string
     {
-        throw new NotSupportedException(static::class . ' does not support enabling/disabling integrity check.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     /**
-     * @throws Exception|InvalidArgumentException
+     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function createIndex(
         string $name,
@@ -193,16 +195,19 @@ abstract class DDLQueryBuilder implements DDLQueryBuilderInterface
     }
 
     /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function createView(string $viewName, QueryInterface|string $subQuery): string
     {
         if ($subQuery instanceof QueryInterface) {
             [$rawQuery, $params] = $this->queryBuilder->build($subQuery);
 
-            /** @var mixed $value */
+            /** @psalm-var mixed $value */
             foreach ($params as $key => $value) {
-                /** @var mixed */
+                /** @psalm-var mixed */
                 $params[$key] = $this->quoter->quoteValue($value);
             }
 
@@ -249,7 +254,7 @@ abstract class DDLQueryBuilder implements DDLQueryBuilderInterface
      */
     public function dropDefaultValue(string $name, string $table): string
     {
-        throw new NotSupportedException(static::class . ' does not support dropping default value constraints.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     public function dropForeignKey(string $name, string $table): string

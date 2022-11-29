@@ -12,7 +12,242 @@ use Yiisoft\Db\Tests\Support\DbHelper;
 
 final class BaseCommandProvider
 {
-    public function batchInsertSql(ConnectionPDOInterface $db): array
+    public function addForeignKey(): array
+    {
+        return [
+            ['{{test_fk_constraint_1}}', '{{test_fk}}', 'int1', 'int3', 'test_fk_constraint_1'],
+            ['{{test_fk_constraint_2}}', '{{test_fk}}', ['int1'], 'int3', 'test_fk_constraint_2'],
+            ['{{test_fk_constraint_3}}', '{{test_fk}}', ['int1'], ['int3'], 'test_fk_constraint_3'],
+            ['{{test_fk_constraint_4}}', '{{test_fk}}', ['int1', 'int2'], ['int3', 'int4'], 'test_fk_constraint_4'],
+        ];
+    }
+
+    public function addForeignKeySql(ConnectionPDOInterface $db): array
+    {
+        return [
+            [
+                '{{test_fk_constraint_1}}',
+                '{{test_fk}}',
+                'int1',
+                'int3',
+                null,
+                null,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                '{{test_fk_constraint_2}}',
+                '{{test_fk}}',
+                ['int1'],
+                'int3',
+                null,
+                null,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                '{{test_fk_constraint_3}}',
+                '{{test_fk}}',
+                ['int1'],
+                ['int3'],
+                null,
+                null,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                '{{test_fk_constraint_4}}',
+                '{{test_fk}}',
+                ['int1'],
+                ['int3'],
+                'CASCADE',
+                null,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_4]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]]) ON DELETE CASCADE
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                '{{test_fk_constraint_5}}',
+                '{{test_fk}}',
+                ['int1'],
+                ['int3'],
+                'CASCADE',
+                'CASCADE',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_5]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]]) ON DELETE CASCADE ON UPDATE CASCADE
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                '{{test_fk_constraint_6}}',
+                '{{test_fk}}',
+                ['int1', 'int2'],
+                ['int3', 'int4'],
+                null,
+                null,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_6]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[test_fk]] ([[int3]], [[int4]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                '{{test_fk_constraint_7}}',
+                '{{test_fk}}',
+                ['int1', 'int2'],
+                ['int3', 'int4'],
+                'CASCADE',
+                null,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_7]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[test_fk]] ([[int3]], [[int4]]) ON DELETE CASCADE
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                '{{test_fk_constraint_8}}',
+                '{{test_fk}}',
+                ['int1', 'int2'],
+                ['int3', 'int4'],
+                'CASCADE',
+                'CASCADE',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_8]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[test_fk]] ([[int3]], [[int4]]) ON DELETE CASCADE ON UPDATE CASCADE
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+        ];
+    }
+
+    public function addPrimaryKey(): array
+    {
+        return [
+            ['{{test_pk_constraint_1}}', '{{test_pk}}', 'int1'],
+            ['{{test_pk_constraint_2}}', '{{test_pk}}', ['int1']],
+            ['{{test_pk_constraint_3}}', 'test_pk', ['int1', 'int2']],
+        ];
+    }
+
+    public function addPrimaryKeySql(ConnectionPDOInterface $db): array
+    {
+        return [
+            [
+                '{{test_fk_constraint_1}}',
+                '{{test_fk}}',
+                'int1',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] PRIMARY KEY ([[int1]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                '{{test_fk_constraint_2}}',
+                '{{test_fk}}',
+                ['int1'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] PRIMARY KEY ([[int1]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                '{{test_fk_constraint_3}}',
+                '{{test_fk}}',
+                ['int3', 'int4'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] PRIMARY KEY ([[int3]], [[int4]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+        ];
+    }
+
+    public function addUnique(): array
+    {
+        return [
+            ['{{test_unique_constraint_1}}', '{{test_unique}}', 'int1'],
+            ['{{test_unique_constraint_2}}', '{{test_unique}}', ['int1']],
+            ['{{test_unique_constraint_3}}', '{{test_unique}}', ['int1', 'int2']],
+        ];
+    }
+
+    public function addUniqueSql(ConnectionPDOInterface $db): array
+    {
+        return [
+            [
+                '{{test_fk_constraint_1}}',
+                '{{test_fk}}',
+                'int1',
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] UNIQUE ([[int1]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                '{{test_fk_constraint_2}}',
+                '{{test_fk}}',
+                ['int1'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] UNIQUE ([[int1]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                '{{test_fk_constraint_3}}',
+                '{{test_fk}}',
+                ['int3', 'int4'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int3]], [[int4]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+            [
+                '{{test_fk_constraint_3}}',
+                '{{test_fk}}',
+                ['int1', 'int2'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int1]], [[int2]])
+                    SQL,
+                    $db->getName(),
+                ),
+            ],
+        ];
+    }
+
+    public function batchInsert(ConnectionPDOInterface $db): array
     {
         return [
             'multirow' => [
@@ -110,12 +345,21 @@ final class BaseCommandProvider
         ];
     }
 
-    public function createIndex(ConnectionPDOInterface $db): array
+    public function createIndex(): array
+    {
+        return [
+            ['{{test_idx_constraint_1}}', '{{test_idx}}', 'int1', null, null],
+            ['{{test_idx_constraint_2}}', '{{test_idx}}', ['int1'], QueryBuilder::INDEX_UNIQUE, null],
+            ['{{test_idx_constraint_3}}', '{{test_idx}}', ['int1', 'int2'], null, null],
+        ];
+    }
+
+    public function createIndexSql(ConnectionPDOInterface $db): array
     {
         return [
             [
-                'name',
-                'table',
+                '{{name}}',
+                '{{table}}',
                 'column',
                 '',
                 '',
@@ -127,8 +371,8 @@ final class BaseCommandProvider
                 ),
             ],
             [
-                'name',
-                'table',
+                '{{name}}',
+                '{{table}}',
                 ['column1', 'column2'],
                 '',
                 '',
@@ -140,8 +384,8 @@ final class BaseCommandProvider
                 ),
             ],
             [
-                'name',
-                'table',
+                '{{name}}',
+                '{{table}}',
                 ['column1', 'column2'],
                 QueryBuilder::INDEX_UNIQUE,
                 '',
@@ -153,8 +397,8 @@ final class BaseCommandProvider
                 ),
             ],
             [
-                'name',
-                'table',
+                '{{name}}',
+                '{{table}}',
                 ['column1', 'column2'],
                 'FULLTEXT',
                 '',
@@ -166,8 +410,8 @@ final class BaseCommandProvider
                 ),
             ],
             [
-                'name',
-                'table',
+                '{{name}}',
+                '{{table}}',
                 ['column1', 'column2'],
                 'SPATIAL',
                 '',
@@ -179,8 +423,8 @@ final class BaseCommandProvider
                 ),
             ],
             [
-                'name',
-                'table',
+                '{{name}}',
+                '{{table}}',
                 ['column1', 'column2'],
                 'BITMAP',
                 '',
@@ -194,68 +438,91 @@ final class BaseCommandProvider
         ];
     }
 
-    public function rawSql(): array
+    public function invalidSelectColumns(): array
+    {
+        return [[[]], ['*'], [['*']]];
+    }
+
+    public function rawSql(ConnectionPDOInterface $db): array
     {
         return [
             [
                 <<<SQL
-                SELECT * FROM customer WHERE id = :id
+                SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 [':id' => 1],
-                <<<SQL
-                SELECT * FROM customer WHERE id = 1
-                SQL,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[id]] = 1
+                    SQL,
+                    $db->getName()
+                ),
             ],
             [
                 <<<SQL
-                SELECT * FROM customer WHERE id = :id
+                SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 ['id' => 1],
-                <<<SQL
-                SELECT * FROM customer WHERE id = 1
-                SQL,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[id]] = 1
+                    SQL,
+                    $db->getName(),
+                ),
             ],
             [
                 <<<SQL
-                SELECT * FROM customer WHERE id = :id
+                SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 ['id' => null],
-                <<<SQL
-                SELECT * FROM customer WHERE id = NULL
-                SQL,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[id]] = NULL
+                    SQL,
+                    $db->getName(),
+                ),
             ],
             [
                 <<<SQL
-                SELECT * FROM customer WHERE id = :base OR id = :basePrefix
+                SELECT * FROM [[customer]] WHERE [[id]] = :base OR [[id]] = :basePrefix
                 SQL,
                 ['base' => 1, 'basePrefix' => 2],
-                <<<SQL
-                SELECT * FROM customer WHERE id = 1 OR id = 2
-                SQL,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2
+                    SQL,
+                    $db->getName(),
+                ),
             ],
             /**
              * {@see https://github.com/yiisoft/yii2/issues/9268}
              */
             [
                 <<<SQL
-                SELECT * FROM customer WHERE active = :active
+                SELECT * FROM [[customer]] WHERE [[active]] = :active
                 SQL,
                 [':active' => false],
-                <<<SQL
-                SELECT * FROM customer WHERE active = FALSE
-                SQL,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[active]] = FALSE
+                    SQL,
+                    $db->getName(),
+                ),
             ],
             /**
              * {@see https://github.com/yiisoft/yii2/issues/15122}
              */
             [
                 <<<SQL
-                SELECT * FROM customer WHERE id IN (:ids)
+                SELECT * FROM [[customer]] WHERE [[id]] IN (:ids)
                 SQL,
                 [':ids' => new Expression(implode(', ', [1, 2]))],
-                <<<SQL
-                SELECT * FROM customer WHERE id IN (1, 2)
-                SQL,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[id]] IN (1, 2)
+                    SQL,
+                    $db->getName(),
+                ),
             ],
         ];
     }
@@ -264,8 +531,8 @@ final class BaseCommandProvider
     {
         return [
             [
-                'table',
-                ['name' => 'test'],
+                '{{table}}',
+                ['name' => '{{test}}'],
                 [],
                 [],
                 DbHelper::replaceQuotes(
@@ -276,8 +543,8 @@ final class BaseCommandProvider
                 ),
             ],
             [
-                'table',
-                ['name' => 'test'],
+                '{{table}}',
+                ['name' => '{{test}}'],
                 ['id' => 1],
                 [],
                 DbHelper::replaceQuotes(
@@ -288,8 +555,8 @@ final class BaseCommandProvider
                 ),
             ],
             [
-                'table',
-                ['name' => 'test'],
+                '{{table}}',
+                ['name' => '{{test}}'],
                 ['id' => 1],
                 ['id' => 'integer'],
                 DbHelper::replaceQuotes(
@@ -300,8 +567,8 @@ final class BaseCommandProvider
                 ),
             ],
             [
-                'table',
-                ['name' => 'test'],
+                '{{table}}',
+                ['name' => '{{test}}'],
                 ['id' => 1],
                 ['id' => 'string'],
                 DbHelper::replaceQuotes(
@@ -312,8 +579,8 @@ final class BaseCommandProvider
                 ),
             ],
             [
-                'table',
-                ['name' => 'test'],
+                '{{table}}',
+                ['name' => '{{test}}'],
                 ['id' => 1],
                 ['id' => 'boolean'],
                 DbHelper::replaceQuotes(
@@ -324,8 +591,8 @@ final class BaseCommandProvider
                 ),
             ],
             [
-                'table',
-                ['name' => 'test'],
+                '{{table}}',
+                ['name' => '{{test}}'],
                 ['id' => 1],
                 ['id' => 'float'],
                 DbHelper::replaceQuotes(
@@ -378,7 +645,7 @@ final class BaseCommandProvider
                         'T_upsert',
                         (new query($db))
                             ->select(['email', 'address', 'status' => new Expression('1')])
-                            ->from('customer')
+                            ->from('{{customer}}')
                             ->where(['name' => 'user1'])
                             ->limit(1),
                     ],
@@ -389,7 +656,7 @@ final class BaseCommandProvider
                         'T_upsert',
                         (new query($db))
                             ->select(['email', 'address', 'status' => new Expression('2')])
-                            ->from('customer')
+                            ->from('{{customer}}')
                             ->where(['name' => 'user1'])
                             ->limit(1),
                     ],
@@ -402,7 +669,7 @@ final class BaseCommandProvider
                         'T_upsert',
                         (new query($db))
                             ->select(['email', 'address', 'status' => new Expression('1')])
-                            ->from('customer')
+                            ->from('{{customer}}')
                             ->where(['name' => 'user1'])
                             ->limit(1),
                         ['address' => 'Moon', 'status' => 2],
@@ -414,7 +681,7 @@ final class BaseCommandProvider
                         'T_upsert',
                         (new query($db))
                             ->select(['email', 'address', 'status' => new Expression('3')])
-                            ->from('customer')
+                            ->from('{{customer}}')
                             ->where(['name' => 'user1'])
                             ->limit(1),
                         ['address' => 'Moon', 'status' => 2],
@@ -428,7 +695,7 @@ final class BaseCommandProvider
                         'T_upsert',
                         (new query($db))
                             ->select(['email', 'address', 'status' => new Expression('1')])
-                            ->from('customer')
+                            ->from('{{customer}}')
                             ->where(['name' => 'user1'])
                             ->limit(1),
                         false,
@@ -440,7 +707,7 @@ final class BaseCommandProvider
                         'T_upsert',
                         (new query($db))
                             ->select(['email', 'address', 'status' => new Expression('2')])
-                            ->from('customer')
+                            ->from('{{customer}}')
                             ->where(['name' => 'user1'])
                             ->limit(1),
                         false,

@@ -21,6 +21,40 @@ final class QuoterProvider
     /**
      * @return string[][]
      */
+    public function ensureColumnName(): array
+    {
+        return [
+            ['*', '*'],
+            ['`*`', '`*`'],
+            ['[[*]]', '[[*]]'],
+            ['{{*}}', '{{*}}'],
+            ['table.column', 'column'],
+            ['`table`.`column`', '`column`'],
+            ['[[table]].[[column]]', 'column'],
+            ['{{table}}.{{column}}', '{{column}}'],
+        ];
+    }
+
+    /**
+     * @return string[][]
+     */
+    public function ensureNameQuoted(): array
+    {
+        return [
+            ['name', '{{name}}'],
+            ['`name`', '{{name}}'],
+            ['[[name]]', '{{name}}'],
+            ['{{name}}', '{{name}}'],
+            ['table.name', '{{table.name}}'],
+            ['`table`.`name`', '{{table.name}}'],
+            ['[[table]].[[name]]', '{{table.name}}'],
+            ['{{table}}.{{name}}', '{{table}}.{{name}}'],
+        ];
+    }
+
+    /**
+     * @return string[][]
+     */
     public function simpleTableName(): array
     {
         return [
