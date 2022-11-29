@@ -12,9 +12,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
@@ -216,9 +214,9 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
                 /** @var mixed $value */
                 $value = $this->getTypecastValue($value, $columnSchemas[$name] ?? null);
 
-                if ($value instanceof Expression) {
+                if ($value instanceof ExpressionInterface) {
                     $placeholders[] = $this->queryBuilder->buildExpression($value, $params);
-                } elseif ($value instanceof Query) {
+                } elseif ($value instanceof QueryInterface) {
                     [$sql, $params] = $this->queryBuilder->build($value, $params);
                     $placeholders[] = "($sql)";
                 } else {
