@@ -59,7 +59,7 @@ jobs:
         run: composer self-update
 
       - name: Install db-sqlite.
-        run: composer config preferred-install.yiisoft/db-sqlite source && composer require yiisoft/db-sqlite --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/db-sqlite --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run sqlite tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Sqlite --coverage-clover=coverage.xml --colors=always
