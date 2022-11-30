@@ -26,7 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql }}
 
     env:
-      COMPOSER_ROOT_VERSION: table_comments
+      COMPOSER_ROOT_VERSION: dev-master
       extensions: pdo, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
