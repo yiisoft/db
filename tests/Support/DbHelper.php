@@ -26,6 +26,74 @@ final class DbHelper
         return new Cache(new ArrayCache());
     }
 
+    public static function getCommmentsFromColumn(
+        string $table,
+        string $column,
+        ConnectionPDOInterface $db
+    ): array|null {
+        return match ($db->getName()) {
+            'sqlsrv' => $db->createCommand(
+                <<<SQL
+                SELECT
+                    value as comment
+                FROM
+                    sys.extended_properties
+                WHERE
+                    major_id = OBJECT_ID(:table) AND minor_id = COLUMNPROPERTY(major_id, :column, 'ColumnId')
+                SQL,
+                ['table' => $table, 'column' => $column]
+            )->queryOne(),
+        };
+    }
+
+    public static function getCommmentsFromTable(
+        string $table,
+        ConnectionPDOInterface $db,
+        string $schema = 'yiitest'
+    ): array|null {
+        return match ($db->getName()) {
+            'mysql' => $db->createCommand(
+                <<<SQL
+                SELECT
+                    [[TABLE_COMMENT]] as comment
+                FROM
+                    [[information_schema.TABLES]]
+                WHERE
+                    [[TABLE_SCHEMA]] = :schema AND [[TABLE_NAME]] = :table AND [[TABLE_COMMENT]] != ''
+                SQL,
+                ['schema' => $schema, 'table' => $table]
+            )->queryOne(),
+            'pgsql' => $db->createCommand(
+                <<<SQL
+                SELECT
+                    obj_description(oid, 'pg_class') as comment
+                FROM
+                    [[pg_class]]
+                WHERE
+                    [[relname]] = :table AND obj_description(oid, 'pg_class') != ''
+                SQL,
+                ['table' => $table]
+            )->queryOne(),
+            'sqlsrv' => $db->createCommand(
+                <<<SQL
+                SELECT
+                    [[value]] as comment
+                FROM
+                    [[sys.extended_properties]]
+                WHERE
+                    [[major_id]] = OBJECT_ID(:table) AND [[minor_id]] = 0
+                SQL,
+                ['table' => $table]
+            )->queryOne(),
+            'oci' => $db->createCommand(
+                <<<SQL
+                SELECT [[COMMENTS]] AS "comment" FROM [[DBA_TAB_COMMENTS]] WHERE [[TABLE_NAME]] = :tables AND [[COMMENTS]] IS NOT NULL
+                SQL,
+                ['tables' => $table]
+            )->queryOne(),
+        };
+    }
+
     public static function getQueryCache(): QueryCache
     {
         return new QueryCache(self::getCache());
@@ -45,7 +113,19 @@ final class DbHelper
     public static function loadFixture(ConnectionPDOInterface $db, string $fixture): void
     {
         $db->open();
-        $lines = explode(';', file_get_contents($fixture));
+
+        if ($db->getName() === 'oci') {
+            [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($fixture), 2);
+            [$statements, $triggers, $data] = explode('/* TRIGGERS */', $creates, 3);
+            $lines = array_merge(
+                explode('--', $drops),
+                explode(';', $statements),
+                explode('/', $triggers),
+                explode(';', $data)
+            );
+        } else {
+            $lines = explode(';', file_get_contents($fixture));
+        }
 
         foreach ($lines as $line) {
             if (trim($line) !== '') {

@@ -13,7 +13,7 @@ final class Command extends CommandPDO implements CommandPDOInterface
 {
     public function insertEx(string $table, array $columns): bool|array
     {
-        throw new NotSupportedException(__METHOD__ . '()' . ' is not supported by core-db.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     public function queryBuilder(): QueryBuilderInterface
@@ -23,6 +23,6 @@ final class Command extends CommandPDO implements CommandPDOInterface
 
     protected function internalExecute(string|null $rawSql): void
     {
-        throw new NotSupportedException(__METHOD__ . '()' . ' is not supported by core-db.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 }
