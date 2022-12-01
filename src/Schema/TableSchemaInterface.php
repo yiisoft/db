@@ -25,6 +25,11 @@ interface TableSchemaInterface
     public function getColumnNames(): array;
 
     /**
+     * @return string|null comment of this table. Not all DBMS support this.
+     */
+    public function getComment(): string|null;
+
+    /**
      * @return string|null the name of the schema that this table belongs to.
      */
     public function getSchemaName(): string|null;
@@ -76,6 +81,8 @@ interface TableSchemaInterface
      * Set the full name of this table, which includes the schema name prefix, if any.
      */
     public function fullName(string|null $value): void;
+
+    public function comment(string|null $value): void;
 
     /**
      * Set sequence name for the primary key

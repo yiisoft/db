@@ -700,4 +700,59 @@ trait TestSchemaTrait
     {
         return $this->constraintsProvider();
     }
+
+    /**
+     * @dataProvider columnCommentsDataProvider
+     */
+    public function testColumnComment(string $columnName, string $columnComment): void
+    {
+        $tableName = 'testCommentTable';
+
+        $db = $this->getConnection();
+
+        if ($db->getSchema()->getTableSchema($tableName) !== null) {
+            $db->createCommand()->dropTable($tableName)->execute();
+        }
+
+        $db->createCommand()->createTable($tableName, [$columnName => Schema::TYPE_INTEGER,])->execute();
+        $db->createCommand()->addCommentOnColumn($tableName, $columnName, $columnComment)->execute();
+
+        $this->assertEquals($columnComment, $db->getSchema()->getTableSchema($tableName)->getColumn($columnName)->getComment());
+    }
+
+    public function columnCommentsDataProvider(): array
+    {
+        return [
+            ['bar', 'test comment for column'],
+            ['bar', ''],
+        ];
+    }
+
+    /**
+     * @dataProvider tableCommentsDataProvider
+     */
+    public function testTableComment(string $tableName, string $tableComment): void
+    {
+        $db = $this->getConnection();
+
+        if ($db->getSchema()->getTableSchema($tableName) !== null) {
+            $db->createCommand()->dropTable($tableName)->execute();
+        }
+
+        $db->createCommand()->createTable($tableName, ['bar' => Schema::TYPE_INTEGER,])->execute();
+        $db->createCommand()->addCommentOnTable($tableName, $tableComment)->execute();
+
+        $db->getSchema()->refreshTableSchema($tableName);
+
+        $tableSchema = $db->getSchema()->getTableSchema($tableName);
+        $this->assertEquals($tableComment, $tableSchema?->getComment());
+    }
+
+    public function tableCommentsDataProvider(): array
+    {
+        return [
+            ['testCommentTable', 'test comment for table'],
+            ['testCommentTable', ''],
+        ];
+    }
 }
