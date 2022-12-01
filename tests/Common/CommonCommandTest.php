@@ -17,7 +17,6 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function call_user_func_array;
@@ -64,29 +63,29 @@ abstract class CommonCommandTest extends AbstractCommandTest
     {
         $db = $this->getConnection(true);
 
+        $tableName = '{{customer}}';
+        $tableComment = 'Primary key.';
+
         $command = $db->createCommand();
         $schema = $db->getSchema();
-        $command->addCommentOnColumn('{{customer}}', 'id', 'Primary key.')->execute();
+        $command->addCommentOnColumn($tableName, 'id', $tableComment)->execute();
+        $commentOnColumn = $schema->getTableSchema($tableName)->getColumn('id')->getComment();
 
-        $commentOnColumn = match ($db->getName()) {
-            'mysql', 'pgsql', 'oci' => [
-                'comment' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment(),
-            ],
-            'sqlsrv' => DbHelper::getCommmentsFromColumn('customer', 'id', $db),
-        };
-
-        $this->assertSame(['comment' => 'Primary key.'], $commentOnColumn);
+        $this->assertSame($tableComment, $commentOnColumn);
     }
 
     public function testAddCommentOnTable(): void
     {
         $db = $this->getConnection(true);
 
-        $command = $db->createCommand();
-        $command->addCommentOnTable('{{customer}}', 'Customer table.')->execute();
-        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
+        $tableName = '{{customer}}';
+        $commentText = 'Customer table.';
 
-        $this->assertSame(['comment' => 'Customer table.'], $commentOnTable);
+        $command = $db->createCommand();
+        $command->addCommentOnTable($tableName, $commentText)->execute();
+        $commentOnTable = $db->getSchema()->getTableSchema($tableName, true)->getComment();
+
+        $this->assertSame($commentText, $commentOnTable);
     }
 
     public function testAddDefaultValue()
@@ -557,23 +556,18 @@ abstract class CommonCommandTest extends AbstractCommandTest
     {
         $db = $this->getConnection(true);
 
+        $tableName = '{{customer}}';
+        $tableComment = 'Primary key.';
+
         $command = $db->createCommand();
         $schema = $db->getSchema();
-        $command->addCommentOnColumn('{{customer}}', 'id', 'Primary key.')->execute();
-        $commentOnColumn = match ($db->getName()) {
-            'mysql', 'pgsql', 'oci' => [
-                'comment' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment(),
-            ],
-            'sqlsrv' => DbHelper::getCommmentsFromColumn('customer', 'id', $db),
-        };
+        $command->addCommentOnColumn($tableName, 'id', $tableComment)->execute();
+        $commentOnColumn = $schema->getTableSchema($tableName)->getColumn('id')->getComment();
 
-        $this->assertSame(['comment' => 'Primary key.'], $commentOnColumn);
+        $this->assertSame($tableComment, $commentOnColumn);
 
-        $command->dropCommentFromColumn('{{customer}}', 'id')->execute();
-        $commentOnColumn = match ($db->getName()) {
-            'mysql', 'pgsql', 'oci' => $schema->getTableSchema('{{customer}}')->getColumn('id')->getComment(),
-            'sqlsrv' => DbHelper::getCommmentsFromColumn('customer', 'id', $db),
-        };
+        $command->dropCommentFromColumn($tableName, 'id')->execute();
+        $commentOnColumn = $schema->getTableSchema($tableName)->getColumn('id')->getComment();
 
         $this->assertEmpty($commentOnColumn);
     }
@@ -582,16 +576,19 @@ abstract class CommonCommandTest extends AbstractCommandTest
     {
         $db = $this->getConnection(true);
 
+        $tableName = '{{customer}}';
+        $commentText = 'Customer table.';
+
         $command = $db->createCommand();
-        $command->addCommentOnTable('{{customer}}', 'Customer table.')->execute();
-        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
+        $command->addCommentOnTable($tableName, $commentText)->execute();
+        $commentOnTable = $db->getSchema()->getTableSchema($tableName, true)->getComment();
 
-        $this->assertSame(['comment' => 'Customer table.'], $commentOnTable);
+        $this->assertSame($commentText, $commentOnTable);
 
-        $command->dropCommentFromTable('{{customer}}')->execute();
-        $commentOnTable = DbHelper::getCommmentsFromTable('customer', $db);
+        $command->dropCommentFromTable($tableName)->execute();
+        $commentOnTable = $db->getSchema()->getTableSchema($tableName, true)->getComment();
 
-        $this->assertNull($commentOnTable);
+        $this->assertEmpty($commentOnTable);
     }
 
     public function testDropDefaultValue(): void
