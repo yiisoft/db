@@ -348,7 +348,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
             return $select . ' *';
         }
 
-        /** @psalm-var array<array-key, ExpressionInterface|Query|string> $columns */
+        /** @psalm-var array<array-key, ExpressionInterface|string> $columns */
         foreach ($columns as $i => $column) {
             if ($column instanceof ExpressionInterface) {
                 if (is_int($i)) {
@@ -357,9 +357,6 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
                     $columns[$i] = $this->buildExpression($column, $params) . ' AS '
                         . $this->quoter->quoteColumnName($i);
                 }
-            } elseif ($column instanceof QueryInterface) {
-                [$sql, $params] = $this->build($column, $params);
-                $columns[$i] = "($sql) AS " . $this->quoter->quoteColumnName((string) $i);
             } elseif (is_string($i) && $i !== $column) {
                 if (!str_contains($column, '(')) {
                     $column = $this->quoter->quoteColumnName($column);

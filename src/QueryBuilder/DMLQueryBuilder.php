@@ -216,9 +216,6 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
 
                 if ($value instanceof ExpressionInterface) {
                     $placeholders[] = $this->queryBuilder->buildExpression($value, $params);
-                } elseif ($value instanceof QueryInterface) {
-                    [$sql, $params] = $this->queryBuilder->build($value, $params);
-                    $placeholders[] = "($sql)";
                 } else {
                     $placeholders[] = $this->queryBuilder->bindParam($value, $params);
                 }
