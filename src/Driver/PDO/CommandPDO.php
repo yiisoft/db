@@ -191,7 +191,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
      */
     abstract protected function internalExecute(string|null $rawSql): void;
 
-        /**
+    /**
      * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
      */
     protected function refreshTableSchema(): void
@@ -200,5 +200,4 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
             $this->db->getschema()->refreshTableSchema($this->refreshTableName);
         }
     }
-
 }
