@@ -358,11 +358,6 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->insertEx($table, $columns, $params);
     }
 
-    public function quoter(): QuoterInterface
-    {
-        return $this->quoter;
-    }
-
     public function renameColumn(string $table, string $oldName, string $newName): string
     {
         return $this->ddlBuilder->renameColumn($table, $oldName, $newName);
@@ -376,11 +371,6 @@ abstract class QueryBuilder implements QueryBuilderInterface
     public function resetSequence(string $tableName, int|string|null $value = null): string
     {
         return $this->dmlBuilder->resetSequence($tableName, $value);
-    }
-
-    public function schema(): SchemaInterface
-    {
-        return $this->schema;
     }
 
     public function selectExists(string $rawSql): string

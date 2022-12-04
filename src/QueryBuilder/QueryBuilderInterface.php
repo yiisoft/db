@@ -82,14 +82,4 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * {@see expressionBuilders}
      */
     public function getExpressionBuilder(ExpressionInterface $expression): object;
-
-    /**
-     * Return quoter interface instance.
-     */
-    public function quoter(): QuoterInterface;
-
-    /**
-     * Return schema interface instance.
-     */
-    public function schema(): SchemaInterface;
 }

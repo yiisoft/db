@@ -16,6 +16,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Query\Data\DataReader;
+use Yiisoft\Db\Schema\QuoterInterface;
 
 abstract class CommandPDO extends Command implements CommandPDOInterface
 {
@@ -145,6 +146,11 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         return array_merge([static::class , $queryMode], $this->db->getCacheKey(), [$rawSql]);
     }
 
+    protected function getQuoter(): QuoterInterface
+    {
+        return $this->db->getQuoter();
+    }
+
     /**
      * @throws InvalidParamException
      */
@@ -184,4 +190,15 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
      * @throws Exception|Throwable
      */
     abstract protected function internalExecute(string|null $rawSql): void;
+
+        /**
+     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
+     */
+    protected function refreshTableSchema(): void
+    {
+        if ($this->refreshTableName !== null) {
+            $this->db->getschema()->refreshTableSchema($this->refreshTableName);
+        }
+    }
+
 }

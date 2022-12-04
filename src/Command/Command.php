@@ -179,11 +179,11 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
      */
     public function batchInsert(string $table, array $columns, iterable $rows): static
     {
-        $table = $this->queryBuilder()->quoter()->quoteSql($table);
+        $table = $this->getQuoter()->quoteSql($table);
 
         /** @psalm-var string[] $columns */
         foreach ($columns as &$column) {
-            $column = $this->queryBuilder()->quoter()->quoteSql($column);
+            $column = $this->getQuoter()->quoteSql($column);
         }
 
         unset($column);
@@ -369,7 +369,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
 
             if (is_string($value)) {
                 /** @var mixed */
-                $params[$name] = $this->queryBuilder()->quoter()->quoteValue($value);
+                $params[$name] = $this->getQuoter()->quoteValue($value);
             } elseif (is_bool($value)) {
                 /** @var string */
                 $params[$name] = $value ? 'TRUE' : 'FALSE';
@@ -533,7 +533,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     {
         $this->cancel();
         $this->reset();
-        $this->sql = $this->queryBuilder()->quoter()->quoteSql($sql);
+        $this->sql = $this->getQuoter()->quoteSql($sql);
 
         return $this;
     }
@@ -669,16 +669,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     protected function logQuery(string $rawSql, string $category): void
     {
         $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
-    }
-
-    /**
-     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
-     */
-    protected function refreshTableSchema(): void
-    {
-        if ($this->refreshTableName !== null) {
-            $this->queryBuilder()->schema()->refreshTableSchema($this->refreshTableName);
-        }
     }
 
     /**
