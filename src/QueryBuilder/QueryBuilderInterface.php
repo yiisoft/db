@@ -87,9 +87,4 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * Return quoter interface instance.
      */
     public function quoter(): QuoterInterface;
-
-    /**
-     * Return schema interface instance.
-     */
-    public function schema(): SchemaInterface;
 }

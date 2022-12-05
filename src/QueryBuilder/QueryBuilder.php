@@ -378,11 +378,6 @@ abstract class QueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->resetSequence($tableName, $value);
     }
 
-    public function schema(): SchemaInterface
-    {
-        return $this->schema;
-    }
-
     public function selectExists(string $rawSql): string
     {
         return $this->dqlBuilder->selectExists($rawSql);

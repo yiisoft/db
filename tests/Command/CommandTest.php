@@ -728,7 +728,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\DMLQueryBuilder does not support upsert.'
+            'Yiisoft\Db\QueryBuilder\DMLQueryBuilder::upsert is not supported by this DBMS.'
         );
 
         $command->upsert('{{table}}', []);

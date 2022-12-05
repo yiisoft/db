@@ -578,6 +578,22 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     abstract protected function getCacheKey(int $queryMode, string $rawSql): array;
 
     /**
+     * Executes a prepared statement.
+     *
+     * @param string|null $rawSql the rawSql if it has been created.
+     *
+     * @throws Exception|Throwable
+     */
+    abstract protected function internalExecute(string|null $rawSql): void;
+
+    abstract protected function internalGetQueryResult(int $queryMode): mixed;
+
+    /**
+     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
+     */
+    abstract protected function refreshTableSchema(): void;
+
+    /**
      * @param int $queryMode - one from modes QUERY_MODE_*
      *
      * @throws Exception|Throwable
@@ -652,33 +668,12 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
     }
 
     /**
-     * Executes a prepared statement.
-     *
-     * @param string|null $rawSql the rawSql if it has been created.
-     *
-     * @throws Exception|Throwable
-     */
-    abstract protected function internalExecute(string|null $rawSql): void;
-
-    abstract protected function internalGetQueryResult(int $queryMode): mixed;
-
-    /**
      * Logs the current database query if query logging is enabled and returns the profiling token if profiling is
      * enabled.
      */
     protected function logQuery(string $rawSql, string $category): void
     {
         $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
-    }
-
-    /**
-     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
-     */
-    protected function refreshTableSchema(): void
-    {
-        if ($this->refreshTableName !== null) {
-            $this->queryBuilder()->schema()->refreshTableSchema($this->refreshTableName);
-        }
     }
 
     /**
