@@ -61,7 +61,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->checkIntegrity('schema', 'table');
     }
 
-    public function testDropDefaulValue(): void
+    public function testDropDefaultValue(): void
     {
         $db = $this->getConnection(true);
 

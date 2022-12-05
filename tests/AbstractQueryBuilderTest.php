@@ -102,12 +102,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->addDefaultValue('name', 'table', 'column', 'value');
+        $sql = $qb->addDefaultValue('CN_pk', 'T_constraints_1', 'C_default', 1);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                ALTER TABLE [[table]] ALTER COLUMN [[column]] SET DEFAULT 'value'
+                ALTER TABLE [[T_constraints_1]] ALTER COLUMN [[C_default]] SET DEFAULT 1
                 SQL,
                 $db->getName(),
             ),
@@ -168,12 +168,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
         $schema = $db->getSchema();
-        $sql = $qb->alterColumn('table', 'column', $schema::TYPE_STRING);
+        $sql = $qb->alterColumn('customer', 'email', $schema::TYPE_STRING);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                ALTER TABLE [[table]] CHANGE [[column]] [[column]]
+                ALTER TABLE [[customer]] CHANGE [[email]] [[email]]
                 SQL . ' ' . $qb->getColumnType($schema::TYPE_STRING),
                 $db->getName(),
             ),
@@ -1498,11 +1498,11 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                ALTER TABLE [[test_uq]] ADD CONSTRAINT [[test_uq_constraint]] UNIQUE ([[int1]])
+                DROP INDEX `test_uq_constraint` ON `test_uq`
                 SQL,
                 $db->getName(),
             ),
-            $qb->addUnique('test_uq_constraint', 'test_uq', ['int1']),
+            $qb->dropUnique('test_uq_constraint', 'test_uq', ['int1']),
         );
     }
 
