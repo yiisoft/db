@@ -1523,7 +1523,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-
     public function testGetColumnType(): void
     {
         $db = $this->getConnection();
