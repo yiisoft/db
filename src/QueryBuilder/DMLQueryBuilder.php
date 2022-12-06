@@ -154,7 +154,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
         bool|array $updateColumns,
         array &$params
     ): string {
-        throw new NotSupportedException(static::class . ' does not support upsert.');
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     /**

@@ -175,6 +175,16 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
     }
 
     /**
+     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
+     */
+    protected function refreshTableSchema(): void
+    {
+        if ($this->refreshTableName !== null) {
+            $this->db->getSchema()->refreshTableSchema($this->refreshTableName);
+        }
+    }
+
+    /**
      * Executes a prepared statement.
      *
      * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.

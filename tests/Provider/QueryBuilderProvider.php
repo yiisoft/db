@@ -6,14 +6,7 @@ namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Tests\Support\TestTrait;
 
-final class QueryBuilderProvider
+final class QueryBuilderProvider extends AbstractQueryBuilderProvider
 {
     use TestTrait;
-
-    public function buildFrom(): array
-    {
-        $baseQueryBuilderProvider = new BaseQueryBuilderProvider();
-
-        return $baseQueryBuilderProvider->buildFrom($this->getConnection());
-    }
 }
