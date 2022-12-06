@@ -8,6 +8,8 @@ use Closure;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Yiisoft\Arrays\ArrayHelper;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -1667,6 +1669,56 @@ abstract class AbstractQueryBuilderTest extends TestCase
             SQL,
             $qb->resetSequence('item', 3),
         );
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     */
+    public function testResetSequenceNoAssociatedException(): void
+    {
+        $db = $this->getConnection(true);
+
+        $qb = $db->getQueryBuilder();
+
+        if ($db->getName() === 'db') {
+            $this->expectException(NotSupportedException::class);
+            $this->expectExceptionMessage(
+                'Yiisoft\Db\QueryBuilder\DMLQueryBuilder::resetSequence() is not supported by this DBMS.'
+            );
+        } else {
+            $this->expectException(InvalidArgumentException::class);
+            $this->expectExceptionMessage(
+                "There is not sequence associated with table 'type'."
+            );
+        }
+
+        $qb->resetSequence('type');
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     */
+    public function testResetSequenceTableNoExistException(): void
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+
+        if ($db->getName() === 'db') {
+            $this->expectException(NotSupportedException::class);
+            $this->expectExceptionMessage(
+                'Yiisoft\Db\QueryBuilder\DMLQueryBuilder::resetSequence() is not supported by this DBMS.'
+            );
+        } else {
+            $this->expectException(InvalidArgumentException::class);
+            $this->expectExceptionMessage("Table not found: 'noExist'.");
+        }
+
+        $qb->resetSequence('noExist', 1);
     }
 
     /**
