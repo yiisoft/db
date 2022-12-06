@@ -1498,7 +1498,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                ALTER TABLE [test_uq] DROP CONSTRAINT [test_uq_constraint]
+                ALTER TABLE [[test_uq]] DROP CONSTRAINT [[test_uq_constraint]]
                 SQL,
                 $db->getName(),
             ),

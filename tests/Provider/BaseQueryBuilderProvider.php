@@ -958,6 +958,18 @@ final class BaseQueryBuilderProvider
                     ':phFoo' => 'foo',
                 ],
             ],
+            'empty columns' => [
+                'customer',
+                [],
+                [],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[customer]] ([[id]]) VALUES (DEFAULT)
+                    SQL,
+                    $db->getName(),
+                ),
+                [],
+            ],
         ];
     }
 
