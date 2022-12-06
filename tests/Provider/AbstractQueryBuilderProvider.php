@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
-use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
@@ -14,10 +13,16 @@ use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TraversableObject;
+use Yiisoft\Db\Tests\Support\TestTrait;
 
-final class BaseQueryBuilderProvider
+abstract class AbstractQueryBuilderProvider
 {
-    public function addForeignKey(string $driverName = 'db'): array
+    use TestTrait;
+
+    protected string $likeEscapeCharSql = '';
+    protected array $likeParameterReplacements = [];
+
+    public function addForeignKey(): array
     {
         $name = 'CN_constraints_3';
         $pkTableName = 'T_constraints_2';
@@ -36,7 +41,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]]) REFERENCES [[$pkTableName]] ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
             'add (2 columns)' => [
@@ -51,13 +56,13 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]]) REFERENCES [[$pkTableName]] ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
         ];
     }
 
-    public function addPrimaryKey(string $driverName = 'db'): array
+    public function addPrimaryKey(): array
     {
         $tableName = 'T_constraints_1';
         $name = 'CN_pk';
@@ -71,7 +76,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]])
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
             'add (2 columns)' => [
@@ -82,13 +87,13 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]], [[C_id_2]])
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
         ];
     }
 
-    public function addUnique(string $driverName = 'db'): array
+    public function addUnique(): array
     {
         $name1 = 'CN_unique';
         $tableName1 = 'T_constraints_1';
@@ -104,7 +109,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     ALTER TABLE [[$tableName1]] ADD CONSTRAINT [[$name1]] UNIQUE ([[C_unique_1]])
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
             'add (2 columns)' => [
@@ -115,13 +120,13 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     ALTER TABLE [[$tableName2]] ADD CONSTRAINT [[$name2]] UNIQUE ([[C_unique_1]], [[C_unique_2]])
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
         ];
     }
 
-    public function batchInsert(string $driverName = 'db'): array
+    public function batchInsert(): array
     {
         return [
             'simple' => [
@@ -132,7 +137,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES (:qp0, :qp1, :qp2)
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
                 [':qp0' => 'test@example.com', ':qp1' => 'silverfire', ':qp2' => 'Kyiv {{city}}, Ukraine'],
             ],
@@ -144,7 +149,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] ([[address]]) VALUES (:qp0)
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
                 [':qp0' => "SQL-danger chars are escaped: '); --"],
             ],
@@ -162,7 +167,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] () VALUES (:qp0)
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
                 [':qp0' => 'no columns passed'],
             ],
@@ -174,7 +179,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
                 [':qp0' => 0, ':qp1' => null],
             ],
@@ -199,8 +204,10 @@ final class BaseQueryBuilderProvider
         ];
     }
 
-    public function buildCondition(ConnectionPDOInterface $db): array
+    public function buildCondition(): array
     {
+        $db = $this->getConnection();
+
         $conditions = [
             /* empty values */
             [['like', 'name', []], '0=1', []],
@@ -517,7 +524,7 @@ final class BaseQueryBuilderProvider
         return $conditions;
     }
 
-    public function buildFilterCondition(string $driverName = 'db'): array
+    public function buildFilterCondition(): array
     {
         $conditions = [
             /* like */
@@ -559,13 +566,13 @@ final class BaseQueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $driverName);
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->getDriverName());
         }
 
         return $conditions;
     }
 
-    public function buildFrom(string $driverName = 'db'): array
+    public function buildFrom(): array
     {
         return [
             [
@@ -574,7 +581,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     SELECT * FROM [[table1]]
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -583,7 +590,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     SELECT * FROM [[table1]]
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -604,7 +611,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     SELECT * FROM [[table3]] [[alias]]
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -613,7 +620,7 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     SELECT * FROM table4 [[alias]]
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -622,18 +629,15 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     SELECT * FROM func(:param1, :param2) [[alias]]
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
                 ['param1' => 'A', 'param2' => 'B'],
             ],
         ];
     }
 
-    public function buildLikeCondition(
-        string $driverName = 'db',
-        string $likeEscapeCharSql = '',
-        array $likeParameterReplacements = []
-    ): array {
+    public function buildLikeCondition(): array
+    {
         $conditions = [
             /* simple like */
             [['like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => '%foo\%%']],
@@ -756,43 +760,43 @@ final class BaseQueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $driverName);
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->getDriverName());
 
-            if ($likeEscapeCharSql !== '') {
+            if ($this->likeEscapeCharSql !== '') {
                 preg_match_all('/(?P<condition>LIKE.+?)( AND| OR|$)/', $conditions[$i][1], $matches, PREG_SET_ORDER);
 
                 foreach ($matches as $match) {
                     $conditions[$i][1] = str_replace(
                         $match['condition'],
-                        $match['condition'] . $likeEscapeCharSql,
+                        $match['condition'] . $this->likeEscapeCharSql,
                         $conditions[$i][1]
                     );
                 }
             }
 
             foreach ($conditions[$i][2] as $name => $value) {
-                $conditions[$i][2][$name] = strtr($conditions[$i][2][$name], $likeParameterReplacements);
+                $conditions[$i][2][$name] = strtr($conditions[$i][2][$name], $this->likeParameterReplacements);
             }
         }
 
         return $conditions;
     }
 
-    public function buildWhereExists(string $driverName = 'db'): array
+    public function buildWhereExists(): array
     {
         return [
             [
                 'exists',
                 DbHelper::replaceQuotes(
                     'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
             [
                 'not exists',
                 DbHelper::replaceQuotes(
                     'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
         ];
@@ -847,7 +851,7 @@ final class BaseQueryBuilderProvider
         ];
     }
 
-    public function delete(string $driverName = 'db'): array
+    public function delete(): array
     {
         return [
             [
@@ -857,15 +861,17 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     DELETE FROM [[user]] WHERE ([[is_enabled]]=:qp0) AND ([[power]]=WRONG_POWER())
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
                 [':qp0' => false],
             ],
         ];
     }
 
-    public function insert(ConnectionPDOInterface $db): array
+    public function insert(): array
     {
+        $db = $this->getConnection();
+
         return [
             'regular-values' => [
                 'customer',
@@ -973,8 +979,10 @@ final class BaseQueryBuilderProvider
         ];
     }
 
-    public function insertEx(ConnectionPDOInterface $db): array
+    public function insertEx(): array
     {
+        $db = $this->getConnection();
+
         return [
             'regular-values' => [
                 'customer',
@@ -1070,7 +1078,7 @@ final class BaseQueryBuilderProvider
         ];
     }
 
-    public function selectExist(string $driverName = 'db'): array
+    public function selectExist(): array
     {
         return [
             [
@@ -1078,19 +1086,19 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     SELECT 1 FROM `table` WHERE `id` = 1
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
                 DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT EXISTS(SELECT 1 FROM `table` WHERE `id` = 1)
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
             ],
         ];
     }
 
-    public function update(string $driverName = 'db'): array
+    public function update(): array
     {
         return [
             [
@@ -1101,15 +1109,17 @@ final class BaseQueryBuilderProvider
                     <<<SQL
                     UPDATE [[customer]] SET [[status]]=:qp0, [[updated_at]]=now() WHERE [[id]]=:qp1
                     SQL,
-                    $driverName,
+                    $this->getDriverName(),
                 ),
                 [':qp0' => 1, ':qp1' => 100],
             ],
         ];
     }
 
-    public function upsert(ConnectionPDOInterface $db): array
+    public function upsert(): array
     {
+        $db = $this->getConnection();
+
         return [
             'regular values' => [
                 'T_upsert',
