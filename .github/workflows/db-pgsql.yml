@@ -26,7 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-pgsql-${{ matrix.pgsql }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-simplify-command-provider
+      COMPOSER_ROOT_VERSION: dev-master
       extensions: pdo, pdo_pgsql
 
     runs-on: ${{ matrix.os }}
