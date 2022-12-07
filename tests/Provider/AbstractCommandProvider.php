@@ -9,9 +9,12 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\TestTrait;
 
-final class BaseCommandProvider
+abstract class AbstractCommandProvider
 {
+    use TestTrait;
+
     public function addForeignKey(): array
     {
         return [
@@ -22,7 +25,7 @@ final class BaseCommandProvider
         ];
     }
 
-    public function addForeignKeySql(ConnectionPDOInterface $db): array
+    public function addForeignKeySql(): array
     {
         return [
             [
@@ -36,7 +39,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -50,7 +53,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -64,7 +67,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -78,7 +81,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_4]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]]) ON DELETE CASCADE
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -92,7 +95,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_5]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -106,7 +109,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_6]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[test_fk]] ([[int3]], [[int4]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -120,7 +123,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_7]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[test_fk]] ([[int3]], [[int4]]) ON DELETE CASCADE
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -134,7 +137,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_8]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[test_fk]] ([[int3]], [[int4]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
         ];
@@ -149,7 +152,7 @@ final class BaseCommandProvider
         ];
     }
 
-    public function addPrimaryKeySql(ConnectionPDOInterface $db): array
+    public function addPrimaryKeySql(): array
     {
         return [
             [
@@ -160,7 +163,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] PRIMARY KEY ([[int1]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -171,7 +174,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] PRIMARY KEY ([[int1]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -182,7 +185,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] PRIMARY KEY ([[int3]], [[int4]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
         ];
@@ -197,7 +200,7 @@ final class BaseCommandProvider
         ];
     }
 
-    public function addUniqueSql(ConnectionPDOInterface $db): array
+    public function addUniqueSql(): array
     {
         return [
             [
@@ -208,7 +211,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] UNIQUE ([[int1]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -219,7 +222,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] UNIQUE ([[int1]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -230,7 +233,7 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int3]], [[int4]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -241,13 +244,13 @@ final class BaseCommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int1]], [[int2]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
         ];
     }
 
-    public function batchInsert(ConnectionPDOInterface $db): array
+    public function batchInsert(): array
     {
         return [
             'multirow' => [
@@ -261,7 +264,7 @@ final class BaseCommandProvider
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3), (:qp4, :qp5, :qp6, :qp7)
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
                 'expectedParams' => [
                     ':qp0' => 0,
@@ -288,7 +291,7 @@ final class BaseCommandProvider
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
                 'expectedParams' => [
                     ':qp0' => 1,
@@ -312,7 +315,7 @@ final class BaseCommandProvider
                     <<<SQL
                     INSERT INTO [[type]] ([[type]].[[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
                 'expectedParams' => [
                     ':qp0' => '0',
@@ -333,7 +336,7 @@ final class BaseCommandProvider
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:exp1, :qp1, :qp2, :qp3)
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
                 'expectedParams' => [
                     ':exp1' => 42,
@@ -354,7 +357,7 @@ final class BaseCommandProvider
         ];
     }
 
-    public function createIndexSql(ConnectionPDOInterface $db): array
+    public function createIndexSql(): array
     {
         return [
             [
@@ -367,7 +370,7 @@ final class BaseCommandProvider
                     <<<SQL
                     CREATE INDEX [[name]] ON [[table]] ([[column]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -380,7 +383,7 @@ final class BaseCommandProvider
                     <<<SQL
                     CREATE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -393,7 +396,7 @@ final class BaseCommandProvider
                     <<<SQL
                     CREATE UNIQUE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -406,7 +409,7 @@ final class BaseCommandProvider
                     <<<SQL
                     CREATE FULLTEXT INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -419,7 +422,7 @@ final class BaseCommandProvider
                     <<<SQL
                     CREATE SPATIAL INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -432,7 +435,7 @@ final class BaseCommandProvider
                     <<<SQL
                     CREATE BITMAP INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
         ];
@@ -443,7 +446,7 @@ final class BaseCommandProvider
         return [[[]], ['*'], [['*']]];
     }
 
-    public function rawSql(ConnectionPDOInterface $db): array
+    public function rawSql(): array
     {
         return [
             [
@@ -455,7 +458,7 @@ final class BaseCommandProvider
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
                     SQL,
-                    $db->getName()
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -467,7 +470,7 @@ final class BaseCommandProvider
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -479,7 +482,7 @@ final class BaseCommandProvider
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = NULL
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -491,7 +494,7 @@ final class BaseCommandProvider
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             /**
@@ -506,7 +509,7 @@ final class BaseCommandProvider
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[active]] = FALSE
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             /**
@@ -521,13 +524,13 @@ final class BaseCommandProvider
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] IN (1, 2)
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
         ];
     }
 
-    public function update(ConnectionPDOInterface $db): array
+    public function update(): array
     {
         return [
             [
@@ -539,7 +542,7 @@ final class BaseCommandProvider
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp0
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -551,7 +554,7 @@ final class BaseCommandProvider
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]]=:qp1
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -563,7 +566,7 @@ final class BaseCommandProvider
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -575,7 +578,7 @@ final class BaseCommandProvider
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -587,7 +590,7 @@ final class BaseCommandProvider
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
             [
@@ -599,14 +602,16 @@ final class BaseCommandProvider
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
                     SQL,
-                    $db->getName(),
+                    $this->getDriverName(),
                 ),
             ],
         ];
     }
 
-    public function upsert(ConnectionPDOInterface $db): array
+    public function upsert(): array
     {
+        $db = $this->getConnection();
+
         return [
             'regular values' => [
                 ['params' => ['T_upsert', ['email' => 'foo@example.com', 'address' => 'Earth', 'status' => 3]]],

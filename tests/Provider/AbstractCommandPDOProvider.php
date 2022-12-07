@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Provider;
 
 use PDO;
 
-final class BaseCommandPDOProvider
+abstract class AbstractCommandPDOProvider
 {
     public function bindParam(): array
     {
