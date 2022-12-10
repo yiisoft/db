@@ -12,6 +12,8 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 
+use function array_change_key_case;
+use function array_map;
 use function gettype;
 use function is_array;
 use function preg_match;
@@ -165,7 +167,7 @@ abstract class Schema implements SchemaInterface
 
     public function getPdoType(mixed $data): int
     {
-        /** @psalm-var array<string, int> */
+        /** @psalm-var array<string, int> $typeMap */
         $typeMap = [
             // php type => PDO type
             self::PHP_TYPE_BOOLEAN => PDO::PARAM_BOOL,
@@ -250,28 +252,28 @@ abstract class Schema implements SchemaInterface
 
     public function getTableChecks(string $name, bool $refresh = false): array
     {
-        /** @var mixed */
+        /** @psalm-var mixed $tableChecks */
         $tableChecks = $this->getTableMetadata($name, self::CHECKS, $refresh);
         return is_array($tableChecks) ? $tableChecks : [];
     }
 
     public function getTableDefaultValues(string $name, bool $refresh = false): array
     {
-        /** @var mixed */
+        /** @psalm-var mixed $tableDefaultValues */
         $tableDefaultValues = $this->getTableMetadata($name, self::DEFAULT_VALUES, $refresh);
         return is_array($tableDefaultValues) ? $tableDefaultValues : [];
     }
 
     public function getTableForeignKeys(string $name, bool $refresh = false): array
     {
-        /** @var mixed */
+        /** @psalm-var mixed $tableForeignKeys */
         $tableForeignKeys = $this->getTableMetadata($name, self::FOREIGN_KEYS, $refresh);
         return is_array($tableForeignKeys) ? $tableForeignKeys : [];
     }
 
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
-        /** @var mixed */
+        /** @psalm-var mixed $tableIndexes */
         $tableIndexes = $this->getTableMetadata($name, self::INDEXES, $refresh);
         return is_array($tableIndexes) ? $tableIndexes : [];
     }
@@ -288,28 +290,29 @@ abstract class Schema implements SchemaInterface
 
     public function getTablePrimaryKey(string $name, bool $refresh = false): Constraint|null
     {
-        /** @var mixed */
+        /** @psalm-var mixed $tablePrimaryKey */
         $tablePrimaryKey = $this->getTableMetadata($name, self::PRIMARY_KEY, $refresh);
         return $tablePrimaryKey instanceof Constraint ? $tablePrimaryKey : null;
     }
 
     public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null
     {
-        /** @var mixed */
+        /** @psalm-var mixed $tableSchema */
         $tableSchema = $this->getTableMetadata($name, self::SCHEMA, $refresh);
         return $tableSchema instanceof TableSchemaInterface ? $tableSchema : null;
     }
 
     public function getTableSchemas(string $schema = '', bool $refresh = false): array
     {
-        /** @var mixed */
+        /** @psalm-var mixed $tableSchemas */
         $tableSchemas = $this->getSchemaMetadata($schema, self::SCHEMA, $refresh);
+
         return is_array($tableSchemas) ? $tableSchemas : [];
     }
 
     public function getTableUniques(string $name, bool $refresh = false): array
     {
-        /** @var mixed */
+        /** @psalm-var mixed $tableUniques */
         $tableUniques = $this->getTableMetadata($name, self::UNIQUES, $refresh);
         return is_array($tableUniques) ? $tableUniques : [];
     }
@@ -403,7 +406,7 @@ abstract class Schema implements SchemaInterface
      */
     protected function getColumnPhpType(ColumnSchemaInterface $column): string
     {
-        /** @psalm-var string[] */
+        /** @psalm-var string[] $typeMap */
         $typeMap = [
             // abstract type => php type
             self::TYPE_TINYINT => self::PHP_TYPE_INTEGER,
@@ -450,7 +453,7 @@ abstract class Schema implements SchemaInterface
     protected function getSchemaMetadata(string $schema, string $type, bool $refresh): array
     {
         $metadata = [];
-        /** @psalm-var string[] */
+        /** @psalm-var string[] $tableNames */
         $tableNames = $this->getTableNames($schema, $refresh);
 
         foreach ($tableNames as $name) {
@@ -534,6 +537,23 @@ abstract class Schema implements SchemaInterface
     }
 
     /**
+     * Changes row's array key case to lower.
+     *
+     * @param array $row row's array or an array of row's arrays.
+     * @param bool $multiple whether multiple rows or a single row passed.
+     *
+     * @return array normalized row or rows.
+     */
+    protected function normalizeRowKeyCase(array $row, bool $multiple): array
+    {
+        if ($multiple) {
+            return array_map(static fn (array $row) => array_change_key_case($row), $row);
+        }
+
+        return array_change_key_case($row);
+    }
+
+    /**
      * Resolves the table name and schema name (if any).
      *
      * @param string $name the table name.
@@ -542,7 +562,7 @@ abstract class Schema implements SchemaInterface
      *
      * @return TableSchemaInterface with resolved table, schema, etc. names.
      *
-     * {@see \Yiisoft\Db\Schema\TableSchemaInterface}
+     * {@see TableSchemaInterface}
      */
     protected function resolveTableName(string $name): TableSchemaInterface
     {
@@ -602,7 +622,7 @@ abstract class Schema implements SchemaInterface
             return;
         }
 
-        /** @psalm-var array<string, array<TableSchemaInterface|int>> */
+        /** @psalm-var array<string, array<TableSchemaInterface|int>> $metadata */
         $metadata = $this->tableMetadata[$rawName];
         /** @var int */
         $metadata[self::CACHE_VERSION] = static::SCHEMA_CACHE_VERSION;
