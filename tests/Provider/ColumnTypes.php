@@ -513,66 +513,6 @@ final class ColumnTypes
                 ],
             ],
             [
-                Schema::TYPE_PK . ' AFTER `col_before`',
-                $this->primaryKey()->after('col_before'),
-                [
-                    'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY AFTER `col_before`',
-                ],
-            ],
-            [
-                Schema::TYPE_PK . ' FIRST',
-                $this->primaryKey()->first(),
-                [
-                    'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
-                ],
-            ],
-            [
-                Schema::TYPE_PK . ' FIRST',
-                $this->primaryKey()->first()->after('col_before'),
-                [
-                    'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
-                ],
-                [
-                    'sqlite' => 'integer PRIMARY KEY AUTOINCREMENT NOT NULL',
-                ],
-            ],
-            [
-                Schema::TYPE_PK . '(8) AFTER `col_before`',
-                $this->primaryKey(8)->after('col_before'),
-                [
-                    'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY AFTER `col_before`',
-                ],
-            ],
-            [
-                Schema::TYPE_PK . '(8) FIRST',
-                $this->primaryKey(8)->first(),
-                [
-                    'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
-                ],
-            ],
-            [
-                Schema::TYPE_PK . '(8) FIRST',
-                $this->primaryKey(8)->first()->after('col_before'),
-                [
-                    'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
-                ],
-            ],
-            [
-                Schema::TYPE_PK . " COMMENT 'test' AFTER `col_before`",
-                $this->primaryKey()->comment('test')->after('col_before'),
-                [
-                    'mysql' => "int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'test' AFTER `col_before`",
-                ],
-            ],
-            [
-                Schema::TYPE_PK . " COMMENT 'testing \'quote\'' AFTER `col_before`",
-                $this->primaryKey()->comment('testing \'quote\'')->after('col_before'),
-                [
-                    'mysql' => "int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'testing \'quote\''"
-                        . ' AFTER `col_before`',
-                ],
-            ],
-            [
                 Schema::TYPE_PK . ' CHECK (value > 5)',
                 $this->primaryKey()->check('value > 5'),
                 [
@@ -916,67 +856,6 @@ final class ColumnTypes
                 ],
                 [
                     'sqlsrv' => 'pk',
-                ],
-            ],
-            [
-                Schema::TYPE_PK . ' FIRST',
-                $this->primaryKey()->first(),
-                [
-                    'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST',
-                    'sqlsrv' => 'int IDENTITY PRIMARY KEY',
-                ],
-                [
-                    'oci' => 'NUMBER(10) NOT NULL PRIMARY KEY FIRST',
-                    'sqlsrv' => 'pk',
-                ],
-            ],
-            [
-                Schema::TYPE_INTEGER . ' FIRST',
-                $this->integer()->first(),
-                [
-                    'mysql' => 'int(11) FIRST',
-                    'sqlsrv' => 'int',
-                ],
-                [
-                    'oci' => 'NUMBER(10) FIRST',
-                    'pgsql' => 'integer',
-                    'sqlsrv' => 'integer',
-                ],
-            ],
-            [
-                Schema::TYPE_STRING . ' FIRST',
-                $this->string()->first(),
-                [
-                    'mysql' => 'varchar(255) FIRST',
-                    'sqlsrv' => 'nvarchar(255)',
-                ],
-                [
-                    'oci' => 'VARCHAR2(255) FIRST',
-                    'sqlsrv' => 'string',
-                ],
-            ],
-            [
-                Schema::TYPE_INTEGER . ' NOT NULL FIRST',
-                $this->integer()->append('NOT NULL')->first(),
-                [
-                    'mysql' => 'int(11) NOT NULL FIRST',
-                    'sqlsrv' => 'int NOT NULL',
-                ],
-                [
-                    'oci' => 'NUMBER(10) NOT NULL FIRST',
-                    'sqlsrv' => 'integer NOT NULL',
-                ],
-            ],
-            [
-                Schema::TYPE_STRING . ' NOT NULL FIRST',
-                $this->string()->append('NOT NULL')->first(),
-                [
-                    'mysql' => 'varchar(255) NOT NULL FIRST',
-                    'sqlsrv' => 'nvarchar(255) NOT NULL',
-                ],
-                [
-                    'oci' => 'VARCHAR2(255) NOT NULL FIRST',
-                    'sqlsrv' => 'string NOT NULL',
                 ],
             ],
             [
