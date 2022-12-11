@@ -189,5 +189,21 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
         $this->emulatePrepare = $value;
     }
 
-    abstract protected function initConnection(): void;
+    /**
+     * Initializes the DB connection.
+     *
+     * This method is invoked right after the DB connection is established.
+     *
+     * The default implementation turns on `PDO::ATTR_EMULATE_PREPARES`.
+     *
+     * if {@see emulatePrepare} is true, and sets the database {@see charset} if it is not empty.
+     */
+    protected function initConnection(): void
+    {
+        if ($this->getEmulatePrepare() !== null) {
+            $this->driver->attributes([PDO::ATTR_EMULATE_PREPARES => $this->getEmulatePrepare()]);
+        }
+
+        $this->pdo = $this->driver->createConnection();
+    }
 }
