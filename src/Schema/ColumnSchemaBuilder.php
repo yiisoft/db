@@ -176,7 +176,7 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Adds an `AFTER` constraint to the column.
      *
-     * Note: MySQL, Oracle support only.
+     * Note: MySQL support only.
      *
      * @param string $after the column after which $this column will be added.
      *
@@ -192,7 +192,7 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Adds an `FIRST` constraint to the column.
      *
-     * Note: MySQL, Oracle support only.
+     * Note: MySQL support only.
      *
      * @return $this
      */
