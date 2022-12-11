@@ -20,7 +20,6 @@ use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Support\AnyCaseValue;
 use Yiisoft\Db\Tests\Support\AnyValue;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function array_keys;
 use function count;
