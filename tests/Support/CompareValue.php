@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\TestSupport;
+namespace Yiisoft\Db\Tests\Support;
 
 abstract class CompareValue
 {
