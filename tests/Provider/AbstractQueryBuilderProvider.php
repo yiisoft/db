@@ -982,7 +982,7 @@ abstract class AbstractQueryBuilderProvider
     public function insertEx(): array
     {
         return [
-            ['{{table}}', [], [], '', []]
+            ['{{table}}', [], [], '', []],
         ];
     }
 
