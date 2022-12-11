@@ -31,8 +31,6 @@ class ColumnSchemaBuilder implements \Stringable
     protected mixed $default = null;
     protected string|null $append = null;
     protected bool $isUnsigned = false;
-    protected string|null $after = null;
-    protected bool $isFirst = false;
     /** @psalm-var string[] */
     private array $categoryMap = [
         Schema::TYPE_PK => self::CATEGORY_PK,
@@ -174,36 +172,6 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * Adds an `AFTER` constraint to the column.
-     *
-     * Note: MySQL, Oracle support only.
-     *
-     * @param string $after the column after which $this column will be added.
-     *
-     * @return $this
-     */
-    public function after(string $after): self
-    {
-        $this->after = $after;
-
-        return $this;
-    }
-
-    /**
-     * Adds an `FIRST` constraint to the column.
-     *
-     * Note: MySQL, Oracle support only.
-     *
-     * @return $this
-     */
-    public function first(): self
-    {
-        $this->isFirst = true;
-
-        return $this;
-    }
-
-    /**
      * Specify the default SQL expression for the column.
      *
      * @param string $default the default value expression.
@@ -338,26 +306,6 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * Builds the after constraint for the column. Defaults to unsupported.
-     *
-     * @return string a string containing the AFTER constraint.
-     */
-    protected function buildAfterString(): string
-    {
-        return '';
-    }
-
-    /**
-     * Builds the first constraint for the column. Defaults to unsupported.
-     *
-     * @return string a string containing the FIRST constraint.
-     */
-    protected function buildFirstString(): string
-    {
-        return '';
-    }
-
-    /**
      * Builds the custom string that's appended to column definition.
      *
      * @return string custom string to append.
@@ -405,7 +353,6 @@ class ColumnSchemaBuilder implements \Stringable
             '{default}' => $this->buildDefaultString(),
             '{check}' => $this->buildCheckString(),
             '{comment}' => $this->buildCommentString(),
-            '{pos}' => $this->isFirst ? $this->buildFirstString() : $this->buildAfterString(),
             '{append}' => $this->buildAppendString(),
         ];
 
@@ -478,22 +425,6 @@ class ColumnSchemaBuilder implements \Stringable
     public function isUnsigned(): bool
     {
         return $this->isUnsigned;
-    }
-
-    /**
-     * @return string|null the column after which this column will be added.
-     */
-    public function getAfter(): string|null
-    {
-        return $this->after;
-    }
-
-    /**
-     * @return bool whether this column is to be inserted at the beginning of the table.
-     */
-    public function isFirst(): bool
-    {
-        return $this->isFirst;
     }
 
     /**
