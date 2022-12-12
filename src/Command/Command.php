@@ -409,8 +409,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         return $this->setSql($sql)->bindValues($params);
     }
 
-    abstract public function insertEx(string $table, array $columns): bool|array;
-
     public function noCache(): static
     {
         $this->queryCacheDuration = -1;

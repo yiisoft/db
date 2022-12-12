@@ -112,7 +112,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\DMLQueryBuilder::insertEx() is not supported by this DBMS.'
         );
 
         $qb->insertEx($table, $columns, $params);
