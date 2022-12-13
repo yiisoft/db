@@ -105,7 +105,10 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         } catch (Exception) {
         }
 
-        $command->createTable('uniqueIndex', ['somecol' => 'string', 'someCol2' => 'string'])->execute();
+        $command->createTable(
+            'uniqueIndex',
+            ['somecol' => 'string', 'someCol2' => 'string', 'someCol3' => 'string'],
+        )->execute();
         $tableSchema = $schema->getTableSchema('uniqueIndex', true);
 
         $this->assertNotNull($tableSchema);
@@ -123,7 +126,11 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->assertSame(['somecolUnique' => ['somecol']], $uniqueIndexes);
 
-        /* Create another column with upper case letter that fails postgres @link https://github.com/yiisoft/yii2/issues/10613 */
+        /**
+         * Create another column with upper case letter that fails postgres.
+         *
+         * @link https://github.com/yiisoft/yii2/issues/10613
+         */
         $command->createIndex('someCol2Unique', 'uniqueIndex', 'someCol2', QueryBuilder::INDEX_UNIQUE)->execute();
         $tableSchema = $schema->getTableSchema('uniqueIndex', true);
 
@@ -133,8 +140,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->assertSame(['someCol2Unique' => ['someCol2'], 'somecolUnique' => ['somecol']], $uniqueIndexes);
 
-        /* see https://github.com/yiisoft/yii2/issues/13814 */
-        $command->createIndex('another unique index', 'uniqueIndex', 'someCol2', QueryBuilder::INDEX_UNIQUE)->execute();
+        /** @link https://github.com/yiisoft/yii2/issues/13814 */
+        $command->createIndex('another unique index', 'uniqueIndex', 'someCol3', QueryBuilder::INDEX_UNIQUE)->execute();
         $tableSchema = $schema->getTableSchema('uniqueIndex', true);
 
         $this->assertNotNull($tableSchema);
@@ -142,7 +149,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $uniqueIndexes = $schema->findUniqueIndexes($tableSchema);
 
         $this->assertSame(
-            ['another unique index' => ['someCol2'], 'someCol2Unique' => ['someCol2'], 'somecolUnique' => ['somecol']],
+            ['another unique index' => ['someCol3'], 'someCol2Unique' => ['someCol2'], 'somecolUnique' => ['somecol']],
             $uniqueIndexes,
         );
     }
@@ -178,20 +185,15 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
     public function testGetPrimaryKey(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
 
-        if ($db->getSchema()->getTableSchema('testPKTable') !== null) {
-            $command->dropTable('testPKTable')->execute();
-        }
-
-        $command->createTable('testPKTable', ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER])->execute();
-        $insertResult = $command->insertEx('testPKTable', ['bar' => 1]);
+        $insertResult = $command->insertEx('animal', ['type' => 'cat']);
         $selectResult = $command->setSql(
             DbHelper::replaceQuotes(
                 <<<SQL
-                SELECT [[id]] FROM [[testPKTable]] WHERE [[bar]] = 1
+                SELECT [[id]] FROM [[animal]] WHERE [[type]] = 'cat'
                 SQL,
                 $db->getName(),
             )
@@ -348,7 +350,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $schema = $db->getSchema();
         $tablesNames = $schema->getTableNames();
-        $tablesNames = array_map(static fn ($item) => trim($item, '[]'), $tablesNames);
 
         $this->assertContains('customer', $tablesNames);
         $this->assertContains('category', $tablesNames);
@@ -412,6 +413,16 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertCount(count($schema->getTableNames()), $schema->getTableSchemas());
     }
 
+    public function testGetViewNames(): void
+    {
+        $db = $this->getConnection(true);
+
+        $schema = $db->getSchema();
+        $views = $schema->getViewNames();
+
+        $this->assertSame(['animal_view'], $views);
+    }
+
     public function testNegativeDefaultValues(): void
     {
         $schema = $this->getConnection(true);
@@ -428,16 +439,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertEquals(-33.22, $table->getColumn('numeric_col')?->getDefaultValue());
     }
 
-    public function testGetViewNames(): void
-    {
-        $db = $this->getConnection(true);
-
-        $schema = $db->getSchema();
-        $views = $schema->getViewNames();
-
-        $this->assertSame(['animal_view'], $views);
-    }
-
     public function testQuoterEscapingValue()
     {
         $db = $this->getConnection(true);
@@ -445,7 +446,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $quoter = $db->getQuoter();
         $db->createCommand(
             <<<SQL
-            DELETE FROM {{quoter}}
+            DELETE FROM [[quoter]]
             SQL
         )->execute();
         $data = $this->generateQuoterEscapingValues();
@@ -455,13 +456,13 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $quoteValue = $quoter->quoteValue($value);
             $db->createCommand(
                 <<<SQL
-                INSERT INTO {{quoter}} (name, description) VALUES ($quotedName, $quoteValue)
-                SQL
+                INSERT INTO [[quoter]] ([[name]], [[description]]) VALUES ($quotedName, $quoteValue)
+                SQL,
             )->execute();
             $result = $db->createCommand(
                 <<<SQL
-                SELECT * FROM {{quoter}} WHERE name=$quotedName
-                SQL
+                SELECT * FROM [[quoter]] WHERE [[name]]=$quotedName
+                SQL,
             )->queryOne();
 
             $this->assertSame($value, $result['description']);
