@@ -94,6 +94,21 @@ jobs:
       - name: Update composer
         run: composer self-update
 
+      - name: Install db-mssql
+        run: composer require yiisoft/db-mssql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install db-mysql
+        run: composer require yiisoft/db-mysql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install db-pgsql
+        run: composer require yiisoft/db-pgsql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install db-oracle
+        run: composer require yiisoft/db-oracle:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install db-sqlite
+        run: composer require yiisoft/db-sqlite:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+
       - name: Install active-record
         run: composer require yiisoft/active-record:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
