@@ -27,7 +27,6 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      composer_flag: "${{ matrix.php == '8.2' && '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi --ignore-platform-reqs' || '--prefer-dist --no-interaction --no-progress --optimize-autoloader --ansi' }}"
       extensions: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
@@ -95,28 +94,14 @@ jobs:
       - name: Update composer
         run: composer self-update
 
-      - name: Install db-mssql
-        run: composer require yiisoft/db-mssql ${{ env.composer_flag }}
-
-      - name: Install db-mysql
-        run: composer require yiisoft/db-mysql ${{ env.composer_flag }}
-
-      - name: Install db-pgsql
-        run: composer require yiisoft/db-pgsql ${{ env.composer_flag }}
-
-      - name: Install db-oracle
-        run: composer require yiisoft/db-oracle ${{ env.composer_flag }}
-
-      - name: Install db-sqlite
-        run: composer require yiisoft/db-sqlite ${{ env.composer_flag }}
-
       - name: Install active-record
-        run: composer require yiisoft/active-record ${{ env.composer_flag }}
+        run: composer require yiisoft/active-record:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run tests with phpunit with code coverage
         run: vendor/bin/phpunit --testsuite ActiveRecord --coverage-clover=coverage.xml --colors=always
 
       - name: Upload coverage to Codecov
+        if: matrix.php-version == '8.1'
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

@@ -74,7 +74,7 @@ jobs:
         run: vendor/bin/phpunit --testsuite Oracle --coverage-clover=coverage.xml --colors=always
 
       - name: Upload coverage to Codecov.
-        if: matrix.php == '8.0'
+        if: matrix.php == '8.1'
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
