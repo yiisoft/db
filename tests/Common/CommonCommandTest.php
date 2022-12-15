@@ -466,6 +466,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         )->queryAll();
 
         $this->assertEquals([['bar' => 6]], $records);
+
+        $command->dropView('{{testCreateView}}')->execute();
     }
 
     public function testDataReaderRewindException(): void
