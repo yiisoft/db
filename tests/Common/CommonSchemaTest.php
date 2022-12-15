@@ -73,11 +73,16 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $fk = $table->getForeignKeys();
 
+        $expectedKey = match ($db->getName()) {
+            'mysql' => $fk['FK_composite_fk_order_item'],
+            default => $fk['fk_composite_fk_order_item'],
+        };
+
         $this->assertCount(1, $fk);
-        $this->assertTrue(isset($fk['fk_composite_fk_order_item']));
-        $this->assertEquals('order_item', $fk['fk_composite_fk_order_item'][0]);
-        $this->assertEquals('order_id', $fk['fk_composite_fk_order_item']['order_id']);
-        $this->assertEquals('item_id', $fk['fk_composite_fk_order_item']['item_id']);
+        $this->assertTrue(isset($expectedKey));
+        $this->assertSame('order_item', $expectedKey[0]);
+        $this->assertSame('order_id', $expectedKey['order_id']);
+        $this->assertSame('item_id', $expectedKey['item_id']);
     }
 
     public function testContraintTablesExistance(): void
