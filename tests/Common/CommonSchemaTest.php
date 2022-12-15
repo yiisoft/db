@@ -74,7 +74,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $fk = $table->getForeignKeys();
 
         $expectedKey = match ($db->getName()) {
-            'mysql' => $fk['FK_composite_fk_order_item'],
+            'mysql', 'sqlsrv' => $fk['FK_composite_fk_order_item'],
             default => $fk['fk_composite_fk_order_item'],
         };
 
