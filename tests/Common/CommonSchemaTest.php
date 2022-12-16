@@ -500,9 +500,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
     public function testNegativeDefaultValues(): void
     {
-        $schema = $this->getConnection(true);
+        $db = $this->getConnection(true);
 
-        $schema = $schema->getSchema();
+        $schema = $db->getSchema();
         $table = $schema->getTableSchema('negative_default_values');
 
         $this->assertNotNull($table);
