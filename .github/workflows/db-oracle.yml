@@ -61,7 +61,7 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: ${{ env.extensions }}
           ini-values: date.timezone='UTC'
-          coverage: pcov
+          coverage: xdebug
           tools: composer:v2, pecl
 
       - name: Update composer.
