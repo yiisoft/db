@@ -42,6 +42,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
+
+        $db->close();
     }
 
     public function testAddColumn(): void
@@ -61,6 +63,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
+
+        $db->close();
     }
 
     public function testAddCommentOnColumn(): void
@@ -79,6 +83,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
+
+        $db->close();
     }
 
     public function testAddCommentOnTable(): void
@@ -97,6 +103,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
+
+        $db->close();
     }
 
     public function testAddDefaultValue(): void
@@ -115,6 +123,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
+
+        $db->close();
     }
 
     /**
@@ -136,6 +146,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete, $update);
 
         $this->assertSame($expected, $sql);
+
+        $db->close();
     }
 
     /**
@@ -149,6 +161,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->addPrimaryKey($name, $table, $columns);
 
         $this->assertSame($expected, $sql);
+
+        $db->close();
     }
 
     /**
@@ -162,6 +176,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->addUnique($name, $table, $columns);
 
         $this->assertSame($expected, $sql);
+
+        $db->close();
     }
 
     public function testAlterColumn(): void
@@ -181,6 +197,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
+
+        $db->close();
     }
 
     /**
@@ -194,6 +212,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->batchInsert($table, $columns, $rows);
 
         $this->assertSame($expected, $sql);
+
+        $db->close();
     }
 
     /**
@@ -215,6 +235,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertIsString($replacedQuotes);
         $this->assertEquals('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $replacedQuotes), $sql);
         $this->assertEquals($expectedParams, $params);
+
+        $db->close();
     }
 
     public function testBuildColumnsWithString(): void
@@ -224,6 +246,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame('(id)', $qb->buildColumns('(id)'));
+
+        $db->close();
     }
 
     public function testBuildColumnsWithArray(): void
@@ -236,6 +260,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             DbHelper::replaceQuotes('[[id]], [[name]], [[email]], [[address]], [[status]]', $db->getName()),
             $qb->buildColumns(['id', 'name', 'email', 'address', 'status']),
         );
+
+        $db->close();
     }
 
     public function testBuildColumnsWithExpression(): void
@@ -251,6 +277,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->buildColumns(['id', 'name', 'email', 'address', 'status', new Expression('COUNT(*)')]),
         );
+
+        $db->close();
     }
 
     /**
@@ -276,6 +304,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertSame([':qp0' => '1', ':qp1' => '0'], $params);
+
+        $db->close();
     }
 
     /**
@@ -297,6 +327,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertSame($expectedParams, $params);
+
+        $db->close();
     }
 
     public function testBuildFrom(): void
@@ -316,6 +348,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->buildFrom($query->getFrom(), $params),
         );
+
+        $db->close();
     }
 
     public function testBuildGroupBy(): void
@@ -335,6 +369,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->buildGroupBy($query->getGroupBy(), $params),
         );
+
+        $db->close();
     }
 
     public function testBuildHaving(): void
@@ -354,6 +390,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->buildHaving($query->getHaving(), $params),
         );
+
+        $db->close();
     }
 
     public function testBuildJoin(): void
@@ -375,6 +413,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->buildJoin($query->getJoin(), $params),
         );
+
+        $db->close();
     }
 
     /**
@@ -396,6 +436,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertIsString($replacedQuotes);
         $this->assertSame('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $replacedQuotes), $sql);
         $this->assertSame($expectedParams, $params);
+
+        $db->close();
     }
 
     public function testBuildLimit(): void
@@ -406,6 +448,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $query = (new Query($db))->from('admin_user')->limit(10);
 
         $this->assertSame('LIMIT 10', $qb->buildLimit($query->getLimit(), 0));
+
+        $db->close();
     }
 
     public function testBuildLimitOffset(): void
@@ -416,6 +460,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $query = (new Query($db))->from('admin_user')->limit(10)->offset(5);
 
         $this->assertSame('LIMIT 10 OFFSET 5', $qb->buildLimit($query->getLimit(), $query->getOffset()));
+
+        $db->close();
     }
 
     public function testBuildOrderBy(): void
@@ -435,6 +481,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->buildOrderBy($query->getOrderBy(), $params),
         );
+
+        $db->close();
     }
 
     public function testBuildOrderByAndLimit(): void
@@ -467,6 +515,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 $query->getOffset(),
             ),
         );
+
+        $db->close();
     }
 
     public function testBuildSelect(): void
@@ -486,6 +536,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->buildSelect($query->getSelect(), $params),
         );
+
+        $db->close();
     }
 
     public function testBuildSelectWithDistinct(): void
@@ -505,6 +557,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->buildSelect($query->getSelect(), $params, true),
         );
+
+        $db->close();
     }
 
     public function testBuildUnion(): void
@@ -524,6 +578,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->buildUnion($query->getUnion(), $params),
         );
+
+        $db->close();
     }
 
     public function testBuildWithQueries(): void
@@ -543,6 +599,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->buildWithQueries($query->getWithQueries(), $params),
         );
+
+        $db->close();
     }
 
     public function testBuildWithComplexSelect(): void
@@ -584,6 +642,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertEmpty($params);
+
+        $db->close();
     }
 
     /**
@@ -600,6 +660,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expectedSql, $sql);
         $this->assertSame($expectedParams, $params);
+
+        $db->close();
     }
 
     public function testBuildWithFromAliasesNoExist(): void
@@ -620,8 +682,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
-
         $this->assertSame([], $params);
+
+        $db->close();
     }
 
     /**
@@ -665,6 +728,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
 
         $this->assertEmpty($params);
+
+        $db->close();
     }
 
     public function testBuildWithFromSubquery(): void
@@ -726,6 +791,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertEmpty($params);
+
+        $db->close();
     }
 
     public function testBuildWithGroupBy(): void
@@ -804,6 +871,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertSame([':to' => 4], $params);
+
+        $db->close();
     }
 
     public function testBuildWithLimit(): void
@@ -823,6 +892,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
 
         $this->assertSame([], $params);
+
+        $db->close();
     }
 
     public function testBuildWithOffset(): void
@@ -841,6 +912,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertSame([], $params);
+
+        $db->close();
     }
 
     public function testBuildWithOrderBy(): void
@@ -919,6 +992,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertSame([':to' => 4], $params);
+
+        $db->close();
     }
 
     public function testBuildWithQuery(): void
@@ -947,6 +1022,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
 
         $this->assertSame([], $params);
+
+        $db->close();
     }
 
     public function testBuildWithQueryRecursive(): void
@@ -969,6 +1046,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertSame([], $params);
+
+        $db->close();
     }
 
     public function testBuildWithSelectExpression(): void
@@ -1026,6 +1105,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertSame([':len' => 4], $params);
+
+        $db->close();
     }
 
     public function testBuildWithSelectSubquery(): void
@@ -1048,6 +1129,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertEmpty($params);
+
+        $db->close();
     }
 
     public function testBuildWithSelectOption(): void
@@ -1066,6 +1149,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertSame([], $params);
+
+        $db->close();
     }
 
     public function testBuildWithSetSeparator(): void
@@ -1102,6 +1187,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertEmpty($params);
+
+        $db->close();
     }
 
     /**
@@ -1134,6 +1221,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertSame([], $params);
+
+        $db->close();
     }
 
     /**
@@ -1154,6 +1243,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expectedQuerySql, $actualQuerySql);
         $this->assertSame($expectedQueryParams, $actualQueryParams);
+
+        $db->close();
     }
 
     public function testBuildWithWhereExistsArrayParameters(): void
@@ -1184,6 +1275,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertSame([':qp0' => 6, ':qp1' => 210, ':qp2' => 'asd'], $params);
+
+        $db->close();
     }
 
     public function testBuildWithWhereExistsWithParameters(): void
@@ -1214,6 +1307,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertSame([':some_value' => 'asd', ':merchant_id' => 6], $params);
+
+        $db->close();
     }
 
     public function testsCreateConditionFromArray(): void
@@ -1260,6 +1355,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ['a = 1', ['or', 'b = 2', ['and', 'c = 3', ['or', 'd = 4', 'e = 5']]]],
             $condition->getExpressions(),
         );
+
+        $db->close();
     }
 
     /**
@@ -1272,6 +1369,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($db->getQuoter()->quoteSql($sql), $builder($qb));
+
+        $db->close();
     }
 
     public function testCreateTable(): void
@@ -1304,6 +1403,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 ],
             ),
         );
+
+        $db->close();
     }
 
     public function testCreateView(): void
@@ -1321,6 +1422,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->createView('animal_view', (new query($db))->select('1')),
         );
+
+        $db->close();
     }
 
     /**
@@ -1336,6 +1439,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expectedSQL, $actualSQL);
         $this->assertSame($expectedParams, $actualParams);
+
+        $db->close();
     }
 
     public function testDropCheck(): void
@@ -1353,6 +1458,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropCheck('CN_check', 'T_constraints_1'),
         );
+
+        $db->close();
     }
 
     public function testDropColumn(): void
@@ -1370,6 +1477,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropColumn('customer', 'id'),
         );
+
+        $db->close();
     }
 
     public function testDropCommentFromColumn(): void
@@ -1387,6 +1496,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropCommentFromColumn('customer', 'id'),
         );
+
+        $db->close();
     }
 
     public function testDropCommentFromTable(): void
@@ -1404,6 +1515,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropCommentFromTable('customer'),
         );
+
+        $db->close();
     }
 
     public function testDropDefaultValue(): void
@@ -1421,6 +1534,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropDefaultValue('CN_pk', 'T_constraints_1'),
         );
+
+        $db->close();
     }
 
     public function testDropForeignKey(): void
@@ -1438,6 +1553,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropForeignKey('CN_constraints_3', 'T_constraints_3'),
         );
+
+        $db->close();
     }
 
     public function testDropIndex(): void
@@ -1455,6 +1572,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropIndex('CN_constraints_2_single', 'T_constraints_2'),
         );
+
+        $db->close();
     }
 
     public function testDropPrimaryKey(): void
@@ -1472,6 +1591,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropPrimaryKey('CN_pk', 'T_constraints_1'),
         );
+
+        $db->close();
     }
 
     public function testDropTable(): void
@@ -1489,6 +1610,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropTable('customer'),
         );
+
+        $db->close();
     }
 
     public function testDropUnique(): void
@@ -1506,6 +1629,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropUnique('test_uq_constraint', 'test_uq', ['int1']),
         );
+
+        $db->close();
     }
 
     public function testDropView(): void
@@ -1523,6 +1648,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropview('animal_view'),
         );
+
+        $db->close();
     }
 
     public function testGetColumnType(): void
@@ -1553,6 +1680,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame('boolean', $qb->getColumnType(Schema::TYPE_BOOLEAN));
         $this->assertSame('money', $qb->getColumnType(Schema::TYPE_MONEY));
         $this->assertSame('json', $qb->getColumnType(Schema::TYPE_JSON));
+
+        $db->close();
     }
 
     public function testGetExpressionBuilder(): void
@@ -1567,6 +1696,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ExpressionBuilderInterface::class,
             $qb->getExpressionBuilder($simpleCondition),
         );
+
+        $db->close();
     }
 
     /**
@@ -1585,6 +1716,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
         $this->assertSame($expectedParams, $params);
+
+        $db->close();
     }
 
     /**
@@ -1603,6 +1736,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expectedSQL, $qb->insertEx($table, $columns, $params));
         $this->assertSame($expectedParams, $params);
+
+        $db->close();
     }
 
     public function testQuoter(): void
@@ -1612,6 +1747,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertInstanceOf(QuoterInterface::class, $qb->quoter());
+
+        $db->close();
     }
 
     public function testRenameColumn(): void
@@ -1630,6 +1767,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
+
+        $db->close();
     }
 
     public function testRenameTable(): void
@@ -1648,6 +1787,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
+
+        $db->close();
     }
 
     public function testResetSequence(): void
@@ -1669,6 +1810,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             SQL,
             $qb->resetSequence('item', 3),
         );
+
+        $db->close();
     }
 
     /**
@@ -1695,6 +1838,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         }
 
         $qb->resetSequence('type');
+
+        $db->close();
     }
 
     /**
@@ -1719,6 +1864,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         }
 
         $qb->resetSequence('noExist', 1);
+
+        $db->close();
     }
 
     /**
@@ -1732,6 +1879,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sqlSelectExist = $qb->selectExists($sql);
 
         $this->assertSame($expected, $sqlSelectExist);
+
+        $db->close();
     }
 
     public function testSelectExpression(): void
@@ -1786,6 +1935,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expected, $sql);
         $this->assertSame([':len' => 4], $params);
+
+        $db->close();
     }
 
     public function testSelectSubquery(): void
@@ -1806,6 +1957,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expected, $sql);
         $this->assertEmpty($params);
+
+        $db->close();
     }
 
     public function testSetConditionClasses(): void
@@ -1818,6 +1971,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $conditionClasses = Assert::getInaccessibleProperty($dqlBuilder, 'conditionClasses');
 
         $this->assertSame(stdClass::class, $conditionClasses['stdClass']);
+
+        $db->close();
     }
 
     public function testSetExpressionBuilder(): void
@@ -1830,6 +1985,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $expressionBuilders = Assert::getInaccessibleProperty($dqlBuilder, 'expressionBuilders');
 
         $this->assertSame(stdClass::class, $expressionBuilders['stdClass']);
+
+        $db->close();
     }
 
     public function testSetSeparator(): void
@@ -1865,6 +2022,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             $sql,
         );
         $this->assertEmpty($params);
+
+        $db->close();
     }
 
     public function testTruncateTable(): void
@@ -1895,6 +2054,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $sql,
         );
+
+        $db->close();
     }
 
     /**
@@ -1914,6 +2075,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expectedSQL, $qb->update($table, $columns, $condition, $actualParams));
         $this->assertSame($expectedParams, $actualParams);
+
+        $db->close();
     }
 
     /**
@@ -1942,5 +2105,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         } else {
             Assert::isOneOf($actualParams, $expectedParams);
         }
+
+        $db->close();
     }
 }

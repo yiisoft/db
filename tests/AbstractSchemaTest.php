@@ -29,6 +29,8 @@ abstract class AbstractSchemaTest extends TestCase
 
         $this->assertInstanceOf(ColumnSchemaBuilder::class, $columnSchemaBuilder);
         $this->assertSame('string', $columnSchemaBuilder->getType());
+
+        $db->close();
     }
 
     public function testColumnSchemaDbTypecastWithEmptyCharType(): void
@@ -46,6 +48,8 @@ abstract class AbstractSchemaTest extends TestCase
         $schema = $db->getSchema();
 
         $this->assertNull($schema->getDefaultSchema());
+
+        $db->close();
     }
 
     public function testGetPDOType(): void
@@ -75,6 +79,8 @@ abstract class AbstractSchemaTest extends TestCase
         }
 
         fclose($fp);
+
+        $db->close();
     }
 
     public function testIsReadQuery(): void
@@ -87,6 +93,8 @@ abstract class AbstractSchemaTest extends TestCase
         $this->assertTrue($schema->isReadQuery('SELECT * FROM tbl WHERE id=1'));
         $this->assertTrue($schema->isReadQuery('SELECT * FROM tbl WHERE id=1 LIMIT 1'));
         $this->assertTrue($schema->isReadQuery('SELECT * FROM tbl WHERE id=1 LIMIT 1 OFFSET 1'));
+
+        $db->close();
     }
 
     public function testRefresh(): void
@@ -98,5 +106,7 @@ abstract class AbstractSchemaTest extends TestCase
 
         $this->assertSame([], Assert::getInaccessibleProperty($schema, 'tableMetadata'));
         $this->assertSame([], Assert::getInaccessibleProperty($schema, 'tableNames'));
+
+        $db->close();
     }
 }

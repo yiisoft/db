@@ -19,6 +19,8 @@ abstract class AbstractQuoterTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertSame($expected, $db->getQuoter()->ensureColumnName($columnName));
+
+        $db->close();
     }
 
     /**
@@ -29,6 +31,8 @@ abstract class AbstractQuoterTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertSame($expected, $db->getQuoter()->ensureNameQuoted($name));
+
+        $db->close();
     }
 
     /**
@@ -39,6 +43,8 @@ abstract class AbstractQuoterTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertSame($expected, array_reverse($db->getQuoter()->getTableNameParts($tableName)));
+
+        $db->close();
     }
 
     /**
@@ -49,6 +55,8 @@ abstract class AbstractQuoterTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertSame($expected, $db->getQuoter()->quoteColumnName($columnName));
+
+        $db->close();
     }
 
     /**
@@ -59,6 +67,8 @@ abstract class AbstractQuoterTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertSame($expected, $db->getQuoter()->quoteSimpleColumnName($columnName));
+
+        $db->close();
     }
 
     /**
@@ -69,6 +79,8 @@ abstract class AbstractQuoterTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertSame($expected, $db->getQuoter()->quoteSimpleTableName($columnName));
+
+        $db->close();
     }
 
     /**
@@ -79,6 +91,8 @@ abstract class AbstractQuoterTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertSame($expected, $db->getQuoter()->quoteTableName($tableName));
+
+        $db->close();
     }
 
     /**
@@ -89,6 +103,8 @@ abstract class AbstractQuoterTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertSame($expected, $db->getQuoter()->unquoteSimpleColumnName($columnName));
+
+        $db->close();
     }
 
     /**
@@ -99,5 +115,7 @@ abstract class AbstractQuoterTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertSame($expected, $db->getQuoter()->unquoteSimpleTableName($tableName));
+
+        $db->close();
     }
 }

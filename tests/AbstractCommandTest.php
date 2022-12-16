@@ -39,6 +39,8 @@ abstract class AbstractCommandTest extends TestCase
             ),
             $command->getSql(),
         );
+
+        $db->close();
     }
 
     public function testConstruct(): void
@@ -56,6 +58,8 @@ abstract class AbstractCommandTest extends TestCase
 
         $this->assertSame($sql, $command->getSql());
         $this->assertSame([':name' => 'John'], $command->getParams());
+
+        $db->close();
     }
 
     public function testGetParams(): void
@@ -89,6 +93,8 @@ abstract class AbstractCommandTest extends TestCase
         $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
         $this->assertCount(3, $bindedValues);
         $this->assertEquals($param, $bindedValues['int']);
+
+        $db->close();
     }
 
     /**
@@ -109,6 +115,8 @@ abstract class AbstractCommandTest extends TestCase
         $command = $db->createCommand($sql, $params);
 
         $this->assertSame($expectedRawSql, $command->getRawSql());
+
+        $db->close();
     }
 
     public function testGetSetSql(): void
@@ -126,6 +134,8 @@ abstract class AbstractCommandTest extends TestCase
         SQL;
         $command->setSql($sql2);
         $this->assertSame($sql2, $command->getSql());
+
+        $db->close();
     }
 
     public function testNoCache(): void
@@ -136,6 +146,8 @@ abstract class AbstractCommandTest extends TestCase
 
         $this->assertSame(-1, Assert::getInaccessibleProperty($command, 'queryCacheDuration'));
         $this->assertInstanceOf(CommandInterface::class, $command);
+
+        $db->close();
     }
 
     public function testPrepareCancel(): void
@@ -158,6 +170,8 @@ abstract class AbstractCommandTest extends TestCase
         $command->cancel();
 
         $this->assertNull($command->getPdoStatement());
+
+        $db->close();
     }
 
     public function testSetRawSql(): void
@@ -172,6 +186,8 @@ abstract class AbstractCommandTest extends TestCase
         );
 
         $this->assertSame('SELECT 123', $command->getRawSql());
+
+        $db->close();
     }
 
     public function testSetSql(): void
@@ -186,5 +202,7 @@ abstract class AbstractCommandTest extends TestCase
         );
 
         $this->assertSame('SELECT 123', $command->getSql());
+
+        $db->close();
     }
 }

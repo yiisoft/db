@@ -103,6 +103,8 @@ abstract class CommonBatchQueryResultTest extends TestCase
         $this->assertSame('address1', $allRows['user1']['address']);
         $this->assertSame('address2', $allRows['user2']['address']);
         $this->assertSame('address3', $allRows['user3']['address']);
+
+        $db->close();
     }
 
     public function testBatchWithoutDbParameter(): void
@@ -117,6 +119,8 @@ abstract class CommonBatchQueryResultTest extends TestCase
         $this->assertEquals('user1', $customers[0]['name']);
         $this->assertEquals('user2', $customers[1]['name']);
         $this->assertEquals('user3', $customers[2]['name']);
+
+        $db->close();
     }
 
     public function testBatchWithIndexBy(): void
@@ -131,6 +135,8 @@ abstract class CommonBatchQueryResultTest extends TestCase
         $this->assertEquals('user1', $customers[0]['name']);
         $this->assertEquals('user2', $customers[1]['name']);
         $this->assertEquals('user3', $customers[2]['name']);
+
+        $db->close();
     }
 
     protected function getAllRowsFromBatch(BatchQueryResultInterface $batch): array
