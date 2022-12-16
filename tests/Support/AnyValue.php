@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\TestSupport;
+namespace Yiisoft\Db\Tests\Support;
 
 final class AnyValue extends CompareValue
 {
-    private static ?self $instance = null;
+    private static self|null $instance = null;
 
     public static function getInstance(): self
     {
