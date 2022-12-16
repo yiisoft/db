@@ -43,7 +43,6 @@ jobs:
 
         mysql:
           - 5.7
-          - 8.0
 
     services:
       mysql:
@@ -66,7 +65,7 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: ${{ env.extensions }}
           ini-values: date.timezone='UTC'
-          coverage: xdebug
+          coverage: none
 
       - name: Update composer.
         run: composer self-update
@@ -75,11 +74,4 @@ jobs:
         run: composer require yiisoft/db-mysql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run Mssql tests with phpunit and code coverage.
-        run: vendor/bin/phpunit --testsuite Mysql --coverage-clover=coverage.xml --colors=always
-
-      - name: Upload coverage to Codecov.
-        if: matrix.php == '8.1'
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+        run: vendor/bin/phpunit --testsuite Mysql --colors=always
