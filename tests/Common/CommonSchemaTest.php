@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use JsonException;
 use PDO;
+use Throwable;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\DefaultValueConstraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\QueryBuilder\QueryBuilder;
@@ -34,6 +37,11 @@ use function strtolower;
 
 abstract class CommonSchemaTest extends AbstractSchemaTest
 {
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
     public function testColumnComment(): void
     {
         $db = $this->getConnection();
@@ -98,6 +106,11 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         }
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
     public function testFindUniquesIndexes(): void
     {
         $db = $this->getConnection();
@@ -188,6 +201,12 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertNull($schema->getTableSchema('nonexisting_table'));
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidCallException
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
     public function testGetPrimaryKey(): void
     {
         $db = $this->getConnection(true);
@@ -340,6 +359,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::pdoAttributes()
+     *
+     * @throws NotSupportedException
      */
     public function testGetTableNames(array $pdoAttributes): void
     {
@@ -381,6 +402,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::pdoAttributes()
+     *
+     * @throws NotSupportedException
      */
     public function testGetTableSchemas(array $pdoAttributes): void
     {
@@ -404,6 +427,11 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         }
     }
 
+    /**
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Exception
+     */
     public function testGetTableSchemaWithAttrCase(): void
     {
         $db = $this->getConnection(true);
@@ -444,7 +472,12 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertEquals(-33.22, $table->getColumn('numeric_col')?->getDefaultValue());
     }
 
-    public function testQuoterEscapingValue()
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
+    public function testQuoterEscapingValue(): void
     {
         $db = $this->getConnection(true);
 
@@ -490,6 +523,10 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertNotSame($noCacheTable, $refreshedTable);
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
     public function testSchemaCache(): void
     {
         $db = $this->getConnection(true);
@@ -554,6 +591,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints()
      *
      * @throws Exception
+     * @throws JsonException
      */
     public function testTableSchemaConstraints(string $tableName, string $type, mixed $expected): void
     {
@@ -574,6 +612,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints()
      *
      * @throws Exception
+     * @throws JsonException
      * @throws InvalidConfigException
      */
     public function testTableSchemaConstraintsWithPdoLowercase(string $tableName, string $type, mixed $expected): void
@@ -597,6 +636,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints()
      *
      * @throws Exception
+     * @throws JsonException
      * @throws InvalidConfigException
      */
     public function testTableSchemaConstraintsWithPdoUppercase(string $tableName, string $type, mixed $expected): void
@@ -641,6 +681,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         return $result;
     }
 
+    /**
+     * @throws JsonException
+     */
     protected function assertMetadataEquals($expected, $actual): void
     {
         switch (strtolower(gettype($expected))) {
@@ -755,6 +798,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
+    /**
+     * @throws JsonException
+     */
     private function normalizeArrayKeys(array &$array, bool $caseSensitive): void
     {
         $newArray = [];

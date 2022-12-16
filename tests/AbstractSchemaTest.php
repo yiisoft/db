@@ -25,7 +25,7 @@ abstract class AbstractSchemaTest extends TestCase
         $db = $this->getConnection();
 
         $schema = $db->getSchema();
-        $columnSchemaBuilder = $db->getSchema()->createColumnSchemaBuilder('string');
+        $columnSchemaBuilder = $schema->createColumnSchemaBuilder('string');
 
         $this->assertInstanceOf(ColumnSchemaBuilder::class, $columnSchemaBuilder);
         $this->assertSame('string', $columnSchemaBuilder->getType());
