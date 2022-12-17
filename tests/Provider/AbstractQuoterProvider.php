@@ -13,6 +13,8 @@ abstract class AbstractQuoterProvider
     {
         return [
             ['*', '*'],
+            ['(*)', '(*)'],
+            ['[[*]]', '[[*]]'],
         ];
     }
 
