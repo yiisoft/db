@@ -42,7 +42,7 @@ abstract class AbstractQuoterTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::columnName()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::columnNames()
      */
     public function testQuoteColumnName(string $columnName, string $expected): void
     {
@@ -52,52 +52,39 @@ abstract class AbstractQuoterTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::columnName()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::simpleColumnNames()
      */
-    public function testQuoteSimpleColumnName(string $columnName, string $expected): void
-    {
+    public function testQuoteSimpleColumnName(
+        string $columnName,
+        string $expectedQuotedColumnName,
+        string $expectedUnQuotedColumnName
+    ): void {
         $db = $this->getConnection();
 
-        $this->assertSame($expected, $db->getQuoter()->quoteSimpleColumnName($columnName));
+        $quoter = $db->getQuoter();
+        $quoted = $quoter->quoteSimpleColumnName($columnName);
+
+        $this->assertSame($expectedQuotedColumnName, $quoted);
+
+        $unQuoted = $quoter->unquoteSimpleColumnName($quoted);
+
+        $this->assertSame($expectedUnQuotedColumnName, $unQuoted);
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::simpleTableName()
-     */
-    public function testQuoteSimpleTableName(string $columnName, string $expected): void
-    {
-        $db = $this->getConnection();
-
-        $this->assertSame($expected, $db->getQuoter()->quoteSimpleTableName($columnName));
-    }
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::tableName()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::simpleTableNames()
      */
     public function testQuoteTableName(string $tableName, string $expected): void
     {
         $db = $this->getConnection();
 
-        $this->assertSame($expected, $db->getQuoter()->quoteTableName($tableName));
-    }
+        $quoter = $db->getQuoter();
+        $unQuoted = $quoter->unquoteSimpleTableName($quoter->quoteSimpleTableName($tableName));
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::unquoteSimpleColumnName()
-     */
-    public function testUnquoteSimpleColumnName(string $columnName, string $expected): void
-    {
-        $db = $this->getConnection();
+        $this->assertSame($expected, $unQuoted);
 
-        $this->assertSame($expected, $db->getQuoter()->unquoteSimpleColumnName($columnName));
-    }
+        $unQuoted = $quoter->unquoteSimpleTableName($quoter->quoteTableName($tableName));
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::unquoteSimpleTableName()
-     */
-    public function testUnquoteSimpleTableName(string $tableName, string $expected): void
-    {
-        $db = $this->getConnection();
-
-        $this->assertSame($expected, $db->getQuoter()->unquoteSimpleTableName($tableName));
+        $this->assertSame($expected, $unQuoted);
     }
 }
