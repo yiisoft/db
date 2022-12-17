@@ -7,6 +7,9 @@ namespace Yiisoft\Db\Driver\PDO;
 use PDOStatement;
 use Yiisoft\Db\Command\CommandInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface CommandPDOInterface extends CommandInterface
 {
     /**

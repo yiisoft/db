@@ -7,6 +7,9 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\QueryInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface SimpleConditionInterface extends ConditionInterface
 {
     /**

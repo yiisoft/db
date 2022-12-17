@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Constraint;
 
 /**
- * ConstraintSchemaInterface defines methods for getting a table constraint information.
+ * @codeCoverageIgnore
  */
 interface ConstraintSchemaInterface
 {

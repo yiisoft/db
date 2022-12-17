@@ -14,6 +14,9 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface DQLQueryBuilderInterface
 {
     /**

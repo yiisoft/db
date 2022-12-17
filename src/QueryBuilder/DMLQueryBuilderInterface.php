@@ -12,6 +12,9 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface DMLQueryBuilderInterface
 {
     /**

@@ -14,6 +14,9 @@ use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface CommandInterface
 {
     public const QUERY_MODE_NONE = 0;

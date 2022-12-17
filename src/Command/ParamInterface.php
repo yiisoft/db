@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface ParamInterface
 {
     /**

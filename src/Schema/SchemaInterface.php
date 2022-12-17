@@ -10,6 +10,9 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface SchemaInterface extends ConstraintSchemaInterface
 {
     /**

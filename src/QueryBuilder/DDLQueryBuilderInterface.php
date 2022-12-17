@@ -11,6 +11,9 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface DDLQueryBuilderInterface
 {
     /**

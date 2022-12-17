@@ -9,6 +9,9 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface ConnectionPDOInterface extends ConnectionInterface
 {
     /**

@@ -7,6 +7,9 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 use Iterator;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface BetweenColumnsConditionInterface extends ConditionInterface
 {
     /**

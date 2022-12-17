@@ -9,6 +9,9 @@ use Yiisoft\Db\Connection\ConnectionPoolInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface ConnectionPDOPoolInterface extends ConnectionPoolInterface
 {
     /**

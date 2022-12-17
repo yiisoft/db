@@ -7,6 +7,9 @@ namespace Yiisoft\Db\Connection;
 use Closure;
 use Throwable;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface ConnectionPoolInterface
 {
     /**

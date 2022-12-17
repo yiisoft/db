@@ -6,6 +6,9 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 
 use Yiisoft\Db\Query\QueryInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface ExistConditionInterface extends ConditionInterface
 {
     /**

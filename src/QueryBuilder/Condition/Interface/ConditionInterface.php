@@ -8,7 +8,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
- * Interface ConditionInterface should be implemented by classes that represent a condition in DBAL of framework.
+ * @codeCoverageIgnore
  */
 interface ConditionInterface extends ExpressionInterface
 {

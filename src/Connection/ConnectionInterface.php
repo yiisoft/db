@@ -22,6 +22,9 @@ use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function version_compare;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface ConnectionInterface
 {
     /**

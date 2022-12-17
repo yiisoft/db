@@ -10,6 +10,9 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 use Yiisoft\Db\Schema\QuoterInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilderInterface, DQLQueryBuilderInterface
 {
     /**

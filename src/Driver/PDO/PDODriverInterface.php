@@ -7,6 +7,9 @@ namespace Yiisoft\Db\Driver\PDO;
 use PDO;
 use Yiisoft\Db\Driver\DriverInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface PDODriverInterface extends DriverInterface
 {
     /**

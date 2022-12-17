@@ -8,6 +8,9 @@ use Iterator;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 interface LikeConditionInterface extends ConditionInterface
 {
     /**
