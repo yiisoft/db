@@ -9,10 +9,12 @@ use Yiisoft\Db\Tests\Support\Stub\PDODriver;
 
 trait TestTrait
 {
+    private string $dsn = 'sqlite::memory:';
+
     protected function getConnection(bool $fixture = false): ConnectionPDOInterface
     {
         $db = new Stub\Connection(
-            new PDODriver('sqlite::memory:'),
+            new PDODriver($this->dsn),
             DbHelper::getQueryCache(),
             DbHelper::getSchemaCache(),
         );
@@ -27,5 +29,10 @@ trait TestTrait
     protected function getDriverName(): string
     {
         return 'db';
+    }
+
+    protected function setDsn(string $dsn): void
+    {
+        $this->dsn = $dsn;
     }
 }
