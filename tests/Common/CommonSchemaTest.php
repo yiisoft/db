@@ -1043,7 +1043,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $db->createCommand($qb->dropTable($tableName))->execute();
         }
 
-        $createTableSql = $qb->createTable($tableName,
+        $createTableSql = $qb->createTable(
+            $tableName,
             [
                 $columnName => $columnType ?? 'int NOT NULL',
             ],
