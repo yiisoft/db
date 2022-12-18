@@ -319,12 +319,11 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columnsTypeChar()
      */
     public function testGetStringFieldsSize(
-        string   $columnName,
-        string   $columnType,
+        string $columnName,
+        string $columnType,
         int|null $columnSize,
-        string   $columnDbType
-    ): void
-    {
+        string $columnDbType
+    ): void {
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
@@ -556,8 +555,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         string $tableName,
         string $testTablePrefix,
         string $testTableName
-    ): void
-    {
+    ): void {
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
@@ -775,8 +773,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                     "defaultValue of column $name is expected to be an object but it is not."
                 );
                 $this->assertSame(
-                    (string)$expected['defaultValue'],
-                    (string)$column->getDefaultValue(),
+                    (string) $expected['defaultValue'],
+                    (string) $column->getDefaultValue(),
                     "defaultValue of column $name does not match."
                 );
             } else {
@@ -810,7 +808,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         foreach ($array as $value) {
             if ($value instanceof Constraint) {
-                $key = (array)$value;
+                $key = (array) $value;
                 unset(
                     $key["\000Yiisoft\Db\Constraint\Constraint\000name"],
                     $key["\u0000Yiisoft\\Db\\Constraint\\ForeignKeyConstraint\u0000foreignSchemaName"]
@@ -858,7 +856,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             return;
         }
 
-        foreach (array_keys((array)$expectedConstraint) as $name) {
+        foreach (array_keys((array) $expectedConstraint) as $name) {
             if ($expectedConstraint->getName() instanceof AnyValue) {
                 $actualConstraint->name($expectedConstraint->getName());
             } elseif ($expectedConstraint->getName() instanceof AnyCaseValue) {
