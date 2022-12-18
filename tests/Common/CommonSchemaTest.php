@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Tests\Common;
 use JsonException;
 use PDO;
 use Throwable;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\DefaultValueConstraint;
@@ -866,5 +867,199 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 $actualConstraint->name(new AnyCaseValue($actualConstraintName));
             }
         }
+    }
+
+    public function testWorkWithUniqueConstraint(): void
+    {
+        $tableName = 'test_table_with';
+        $constraintName = 't_constraint';
+        $columnName = 't_field';
+
+        $db = $this->getConnection();
+
+        $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName);
+        $db->createCommand()->addUnique($constraintName, $tableName, $columnName)->execute();
+
+        /** @var Constraint[] $constraints */
+        $constraints = $db->getSchema()->getTableUniques($tableName, true);
+
+        $this->assertIsArray($constraints);
+        $this->assertCount(1, $constraints);
+        $this->assertInstanceOf(Constraint::class, $constraints[0]);
+        $this->assertEquals($constraintName, $constraints[0]->getName());
+        $this->assertEquals([$columnName], $constraints[0]->getColumnNames());
+
+        $db->createCommand()->dropUnique($constraintName, $tableName)->execute();
+
+        $constraints = $db->getSchema()->getTableUniques($tableName, true);
+
+        $this->assertIsArray($constraints);
+        $this->assertCount(0, $constraints);
+
+        $this->dropTableForIndexAndConstraintTests($db, $tableName);
+    }
+
+    public function testWorkWithCheckConstraint(): void
+    {
+        $tableName = 'test_table_with';
+        $constraintName = 't_constraint';
+        $columnName = 't_field';
+
+        $db = $this->getConnection();
+
+        $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName, 'int');
+        $db->createCommand()->addCheck($constraintName, $tableName, $db->getQuoter()->quoteColumnName($columnName) . ' > 0')->execute();
+
+        /** @var CheckConstraint[] $constraints */
+        $constraints = $db->getSchema()->getTableChecks($tableName, true);
+
+        $this->assertIsArray($constraints);
+        $this->assertCount(1, $constraints);
+        $this->assertInstanceOf(CheckConstraint::class, $constraints[0]);
+        $this->assertEquals($constraintName, $constraints[0]->getName());
+        $this->assertEquals([$columnName], $constraints[0]->getColumnNames());
+        $this->assertStringContainsString($columnName, $constraints[0]->getExpression());
+
+        $db->createCommand()->dropCheck($constraintName, $tableName)->execute();
+
+        $constraints = $db->getSchema()->getTableChecks($tableName, true);
+
+        $this->assertIsArray($constraints);
+        $this->assertCount(0, $constraints);
+
+        $this->dropTableForIndexAndConstraintTests($db, $tableName);
+    }
+
+    public function testWorkWithDefaultValueConstraint(): void
+    {
+        $tableName = 'test_table_with';
+        $constraintName = 't_constraint';
+        $columnName = 't_field';
+
+        $db = $this->getConnection();
+
+        $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName);
+        $db->createCommand()->addDefaultValue($constraintName, $tableName, $columnName, 919)->execute();
+
+        /** @var DefaultValueConstraint[] $constraints */
+        $constraints = $db->getSchema()->getTableDefaultValues($tableName, true);
+
+        $this->assertIsArray($constraints);
+        $this->assertCount(1, $constraints);
+        $this->assertInstanceOf(DefaultValueConstraint::class, $constraints[0]);
+        $this->assertEquals($constraintName, $constraints[0]->getName());
+        $this->assertEquals([$columnName], $constraints[0]->getColumnNames());
+        $this->assertStringContainsString('919', $constraints[0]->getValue());
+
+        $db->createCommand()->dropDefaultValue($constraintName, $tableName)->execute();
+
+        $constraints = $db->getSchema()->getTableDefaultValues($tableName, true);
+
+        $this->assertIsArray($constraints);
+        $this->assertCount(0, $constraints);
+
+        $this->dropTableForIndexAndConstraintTests($db, $tableName);
+    }
+
+    public function testWorkWithPrimaryKeyConstraint(): void
+    {
+        $tableName = 'test_table_with';
+        $constraintName = 't_constraint';
+        $columnName = 't_field';
+
+        $db = $this->getConnection();
+
+        $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName);
+        $db->createCommand()->addPrimaryKey($constraintName, $tableName, $columnName)->execute();
+
+        $constraints = $db->getSchema()->getTablePrimaryKey($tableName, true);
+
+        $this->assertInstanceOf(Constraint::class, $constraints);
+        $this->assertEquals($constraintName, $constraints->getName());
+        $this->assertEquals([$columnName], $constraints->getColumnNames());
+
+        $db->createCommand()->dropPrimaryKey($constraintName, $tableName)->execute();
+
+        $constraints = $db->getSchema()->getTablePrimaryKey($tableName, true);
+
+        $this->assertNull($constraints);
+
+        $this->dropTableForIndexAndConstraintTests($db, $tableName);
+    }
+
+    /**
+     * @dataProvider withIndexDataProvider
+     */
+    public function testWorkWithIndex(
+        ?string $indexType = null,
+        ?string $indexMethod = null,
+        ?string $columnType = null,
+        bool $isPrimary = false,
+        bool $isUnique = false
+    ): void {
+        $tableName = 'test_table_with';
+        $indexName = 't_index';
+        $columnName = 't_field';
+
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName, $columnType);
+
+        $indexSql = $qb->createIndex($indexName, $tableName, $columnName, $indexType, $indexMethod);
+        $db->createCommand($indexSql)->execute();
+
+        /** @var IndexConstraint[] $indexes */
+        $indexes = $db->getSchema()->getTableIndexes($tableName, true);
+        $this->assertIsArray($indexes);
+        $this->assertCount(1, $indexes);
+        $this->assertInstanceOf(IndexConstraint::class, $indexes[0]);
+        $this->assertEquals($indexName, $indexes[0]->getName());
+        $this->assertEquals([$columnName], $indexes[0]->getColumnNames());
+        $this->assertSame($isUnique, $indexes[0]->isUnique());
+        $this->assertSame($isPrimary, $indexes[0]->isPrimary());
+
+        $this->dropTableForIndexAndConstraintTests($db, $tableName);
+    }
+
+    public function withIndexDataProvider(): array
+    {
+        return [
+            [
+                'indexType' => QueryBuilder::INDEX_UNIQUE,
+                'indexMethod' => null,
+                'columnType' => null,
+                'isPrimary' => false,
+                'isUnique' => true,
+            ],
+        ];
+    }
+
+    protected function createTableForIndexAndConstraintTests(ConnectionInterface $db, string $tableName, string $columnName, ?string $columnType = null): void
+    {
+        $qb = $db->getQueryBuilder();
+
+        if ($db->getTableSchema($tableName) !== null) {
+            $db->createCommand($qb->dropTable($tableName))->execute();
+        }
+
+        $createTableSql = $qb->createTable(
+            $tableName,
+            [
+                $columnName => $columnType ?? 'int NOT NULL',
+            ],
+        );
+
+        $db->createCommand($createTableSql)->execute();
+        $tableSchema = $db->getTableSchema($tableName, true);
+        $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema);
+    }
+
+    protected function dropTableForIndexAndConstraintTests(ConnectionInterface $db, $tableName): void
+    {
+        $qb = $db->getQueryBuilder();
+
+        $db->createCommand($qb->dropTable($tableName))->execute();
+        $this->assertNull($db->getTableSchema($tableName, true));
     }
 }
