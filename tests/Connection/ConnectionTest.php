@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Connection;
 
-use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Tests\AbstractConnectionTest;
 use Yiisoft\Db\Tests\Support\TestTrait;

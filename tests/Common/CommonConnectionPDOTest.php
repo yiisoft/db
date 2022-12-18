@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Tests\AbstractConnectionPDOTest;
 
 abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
