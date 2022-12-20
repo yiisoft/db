@@ -66,9 +66,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columns()
      */
-    public function testColumnSchema(array $columns): void
+    public function testColumnSchema(array $columns, string $tableName): void
     {
-        $this->columnSchema($columns);
+        $this->columnSchema($columns, $tableName);
     }
 
     public function testCompositeFk(): void
@@ -714,7 +714,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertEquals($expected, $actual);
     }
 
-    protected function columnSchema(array $columns, string $table = 'type'): void
+    protected function columnSchema(array $columns, string $table): void
     {
         $db = $this->getConnection(true);
 
@@ -741,6 +741,11 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 $expected['phpType'],
                 $column->getPhpType(),
                 "phpType of column $name does not match. type is {$column->getType()}, dbType is {$column->getDbType()}."
+            );
+            $this->assertSame(
+                $expected['primaryKey'],
+                $column->isPrimaryKey(),
+                "primaryKey of column $name does not match."
             );
             $this->assertSame($expected['type'], $column->getType(), "type of column $name does not match.");
             $this->assertSame(
