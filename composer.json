@@ -20,6 +20,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.0",
+        "ext-ctype": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
