@@ -11,26 +11,46 @@ use Yiisoft\Strings\NumericHelper;
 
 class ColumnSchema implements ColumnSchemaInterface
 {
-    private string $name = '';
     private bool $allowNull = false;
-    private string $type = '';
-    private string|null $phpType = null;
+    private bool $autoIncrement = false;
+    private string|null $comment = null;
+    private bool $computed = false;
     private string $dbType = '';
     private mixed $defaultValue = null;
     private array|null $enumValues = null;
-    private int|null $size = null;
+    private string|null $extra = null;
+    private bool $isPrimaryKey = false;
+    private string $name = '';
+    private string|null $phpType = null;
     private int|null $precision = null;
     private int|null $scale = null;
-    private bool $isPrimaryKey = false;
-    private bool $autoIncrement = false;
-    private bool $computed = false;
+    private int|null $size = null;
+    private string $type = '';
     private bool $unsigned = false;
-    private string|null $comment = null;
-    private string|null $extra = null;
 
-    public function phpTypecast(mixed $value): mixed
+    public function allowNull(bool $value): void
     {
-        return $this->typecast($value);
+        $this->allowNull = $value;
+    }
+
+    public function autoIncrement(bool $value): void
+    {
+        $this->autoIncrement = $value;
+    }
+
+    public function comment(string|null $value): void
+    {
+        $this->comment = $value;
+    }
+
+    public function computed(bool $value): void
+    {
+        $this->computed = $value;
+    }
+
+    public function dbType(string $value): void
+    {
+        $this->dbType = $value;
     }
 
     public function dbTypecast(mixed $value): mixed
@@ -42,29 +62,24 @@ class ColumnSchema implements ColumnSchemaInterface
         return $this->typecast($value);
     }
 
-    public function setType(string $value): void
+    public function defaultValue(mixed $value): void
     {
-        $this->type = $value;
+        $this->defaultValue = $value;
     }
 
-    public function getName(): string
+    public function enumValues(array|null $value): void
     {
-        return $this->name;
+        $this->enumValues = $value;
     }
 
-    public function isAllowNull(): bool
+    public function extra(string|null $value): void
     {
-        return $this->allowNull;
+        $this->extra = $value;
     }
 
-    public function getType(): string
+    public function getComment(): string|null
     {
-        return $this->type;
-    }
-
-    public function getPhpType(): string|null
-    {
-        return $this->phpType;
+        return $this->comment;
     }
 
     public function getDbType(): string
@@ -82,9 +97,14 @@ class ColumnSchema implements ColumnSchemaInterface
         return $this->enumValues;
     }
 
-    public function getSize(): int|null
+    public function getExtra(): string|null
     {
-        return $this->size;
+        return $this->extra;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     public function getPrecision(): int|null
@@ -92,14 +112,29 @@ class ColumnSchema implements ColumnSchemaInterface
         return $this->precision;
     }
 
+    public function getPhpType(): string|null
+    {
+        return $this->phpType;
+    }
+
     public function getScale(): int|null
     {
         return $this->scale;
     }
 
-    public function isPrimaryKey(): bool
+    public function getSize(): int|null
     {
-        return $this->isPrimaryKey;
+        return $this->size;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function isAllowNull(): bool
+    {
+        return $this->allowNull;
     }
 
     public function isAutoIncrement(): bool
@@ -112,19 +147,14 @@ class ColumnSchema implements ColumnSchemaInterface
         return $this->computed;
     }
 
+    public function isPrimaryKey(): bool
+    {
+        return $this->isPrimaryKey;
+    }
+
     public function isUnsigned(): bool
     {
         return $this->unsigned;
-    }
-
-    public function getComment(): string|null
-    {
-        return $this->comment;
-    }
-
-    public function getExtra(): string|null
-    {
-        return $this->extra;
     }
 
     public function name(string $value): void
@@ -132,39 +162,14 @@ class ColumnSchema implements ColumnSchemaInterface
         $this->name = $value;
     }
 
-    public function allowNull(bool $value): void
-    {
-        $this->allowNull = $value;
-    }
-
-    public function type(string $value): void
-    {
-        $this->type = $value;
-    }
-
     public function phpType(string|null $value): void
     {
         $this->phpType = $value;
     }
 
-    public function dbType(string $value): void
+    public function phpTypecast(mixed $value): mixed
     {
-        $this->dbType = $value;
-    }
-
-    public function defaultValue(mixed $value): void
-    {
-        $this->defaultValue = $value;
-    }
-
-    public function enumValues(array|null $value): void
-    {
-        $this->enumValues = $value;
-    }
-
-    public function size(int|null $value): void
-    {
-        $this->size = $value;
+        return $this->typecast($value);
     }
 
     public function precision(int|null $value): void
@@ -172,39 +177,29 @@ class ColumnSchema implements ColumnSchemaInterface
         $this->precision = $value;
     }
 
-    public function scale(int|null $value): void
-    {
-        $this->scale = $value;
-    }
-
     public function primaryKey(bool $value): void
     {
         $this->isPrimaryKey = $value;
     }
 
-    public function autoIncrement(bool $value): void
+    public function scale(int|null $value): void
     {
-        $this->autoIncrement = $value;
+        $this->scale = $value;
     }
 
-    public function computed(bool $value): void
+    public function size(int|null $value): void
     {
-        $this->computed = $value;
+        $this->size = $value;
+    }
+
+    public function type(string $value): void
+    {
+        $this->type = $value;
     }
 
     public function unsigned(bool $value): void
     {
         $this->unsigned = $value;
-    }
-
-    public function comment(string|null $value): void
-    {
-        $this->comment = $value;
-    }
-
-    public function extra(string|null $value): void
-    {
-        $this->extra = $value;
     }
 
     /**
@@ -273,7 +268,8 @@ class ColumnSchema implements ColumnSchemaInterface
             case Schema::PHP_TYPE_BOOLEAN:
                 /**
                  * treating a 0 bit value as false too
-                 * https://github.com/yiisoft/yii2/issues/9006
+                 *
+                 * @link https://github.com/yiisoft/yii2/issues/9006
                  */
                 return (bool) $value && $value !== "\0";
             case Schema::PHP_TYPE_DOUBLE:
