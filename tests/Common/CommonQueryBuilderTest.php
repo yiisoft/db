@@ -25,7 +25,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
             $db->createCommand($qb->dropTable('column_type_table'))->execute();
         }
 
-        $columnTypes = (new ColumnTypes())->getColumnTypes($db);
+        $columnTypes = (new ColumnTypes($db))->getColumnTypes();
         $columns = [];
         $i = 0;
 
@@ -53,7 +53,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $columnTypes = (new ColumnTypes())->getColumnTypes($db);
+        $columnTypes = (new ColumnTypes($db))->getColumnTypes();
 
         foreach ($columnTypes as $item) {
             [$column, $builder, $expected] = $item;

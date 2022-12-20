@@ -9,7 +9,6 @@ use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Schema;
-use Yiisoft\Db\Schema\SchemaBuilderTrait;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -22,10 +21,7 @@ use Yiisoft\Db\Tests\Support\TestTrait;
  */
 final class CommandTest extends AbstractCommandTest
 {
-    use SchemaBuilderTrait;
     use TestTrait;
-
-    protected ConnectionPDOInterface $db;
 
     public function testAddCheck(): void
     {
@@ -242,9 +238,10 @@ final class CommandTest extends AbstractCommandTest
 
     public function testCreateTable(): void
     {
-        $this->db = $this->getConnection();
+        $db = $this->getConnection();
 
-        $command = $this->db->createCommand();
+        $command = $db->createCommand();
+        $mb = $db->getMigrationBuilder();
 
         $expected = <<<SQL
         CREATE TABLE [test_table] (
@@ -259,14 +256,14 @@ final class CommandTest extends AbstractCommandTest
         ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
         SQL;
         $columns = [
-            'id' => $this->primaryKey(5),
-            'name' => $this->string(255)->notNull(),
-            'email' => $this->string(255)->notNull(),
-            'address' => $this->string(255)->notNull(),
-            'status' => $this->integer()->notNull(),
-            'profile_id' => $this->integer()->notNull(),
-            'created_at' => $this->timestamp()->notNull(),
-            'updated_at' => $this->timestamp()->notNull(),
+            'id' => $mb->primaryKey(5),
+            'name' => $mb->string(255)->notNull(),
+            'email' => $mb->string(255)->notNull(),
+            'address' => $mb->string(255)->notNull(),
+            'status' => $mb->integer()->notNull(),
+            'profile_id' => $mb->integer()->notNull(),
+            'created_at' => $mb->timestamp()->notNull(),
+            'updated_at' => $mb->timestamp()->notNull(),
         ];
         $options = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         $sql = $command->createTable('test_table', $columns, $options)->getSql();

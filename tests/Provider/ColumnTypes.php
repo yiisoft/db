@@ -5,25 +5,25 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
+use Yiisoft\Db\Migration\AbstractMigrationBuilder;
 use Yiisoft\Db\Schema\Schema;
-use Yiisoft\Db\Schema\SchemaBuilderTrait;
 
 use function array_key_exists;
 use function array_values;
 
-final class ColumnTypes
+final class ColumnTypes extends AbstractMigrationBuilder
 {
-    use SchemaBuilderTrait;
-
-    protected ConnectionPDOInterface $db;
+    public function __construct(private ConnectionPDOInterface $db)
+    {
+        parent::__construct($this->db->getSchema());
+    }
 
     /**
      * This is not used as a dataprovider for testGetColumnType to speed up the test when used as dataprovider every
      * single line will cause a reconnect with the database which is not needed here.
      */
-    public function getColumnTypes(ConnectionPDOInterface $db): array
+    public function getColumnTypes(): array
     {
-        $this->db = $db;
         $version = $this->db->getServerVersion();
 
         $items = [
