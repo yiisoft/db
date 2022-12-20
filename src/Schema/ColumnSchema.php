@@ -268,6 +268,7 @@ class ColumnSchema implements ColumnSchemaInterface
             case Schema::PHP_TYPE_BOOLEAN:
                 /**
                  * treating a 0 bit value as false too
+                 *
                  * @link https://github.com/yiisoft/yii2/issues/9006
                  */
                 return (bool) $value && $value !== "\0";
