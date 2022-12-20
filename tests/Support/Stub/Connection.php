@@ -7,14 +7,13 @@ namespace Yiisoft\Db\Tests\Support\Stub;
 use PDO;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Driver\PDO\ConnectionPDO;
-use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Quoter;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
-final class Connection extends ConnectionPDO implements ConnectionPDOInterface
+final class Connection extends ConnectionPDO
 {
     protected QueryBuilderInterface|null $queryBuilder = null;
     protected SchemaInterface|null $schema = null;
@@ -62,6 +61,11 @@ final class Connection extends ConnectionPDO implements ConnectionPDOInterface
         }
 
         return $this->quoter;
+    }
+
+    public function getMigrationBuilder(): MigrationBuilder
+    {
+        return new MigrationBuilder($this->getSchema());
     }
 
     public function getSchema(): SchemaInterface
