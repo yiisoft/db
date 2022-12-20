@@ -24,6 +24,28 @@ abstract class AbstractTableSchemaTest extends TestCase
         $tableSchema->compositeFk(1, 'from', 'to');
     }
 
+    public function testGetCatalogName(): void
+    {
+        $tableSchema = new TableSchema();
+
+        $this->assertNull($tableSchema->getCatalogName());
+
+        $tableSchema->catalogName('test');
+
+        $this->assertSame('test', $tableSchema->getCatalogName());
+    }
+
+    public function testGetComment(): void
+    {
+        $tableSchema = new TableSchema();
+
+        $this->assertNull($tableSchema->getComment());
+
+        $tableSchema->comment('test');
+
+        $this->assertSame('test', $tableSchema->getComment());
+    }
+
     public function testGetColumn(): void
     {
         // Defined column schema.
@@ -90,6 +112,28 @@ abstract class AbstractTableSchemaTest extends TestCase
             SQL,
             $tableSchema->getCreateSql(),
         );
+    }
+
+    public function testGetForeignKeys(): void
+    {
+        $tableSchema = new TableSchema();
+
+        $this->assertSame([], $tableSchema->getForeignKeys());
+
+        $tableSchema->foreignKeys(['id']);
+
+        $this->assertSame(['id'], $tableSchema->getForeignKeys());
+    }
+
+    public function testGetForeignKeysAndForeingKey(): void
+    {
+        $tableSchema = new TableSchema();
+
+        $this->assertSame([], $tableSchema->getForeignKeys());
+
+        $tableSchema->foreignKey('id', ['test', 'id']);
+
+        $this->assertSame(['id' => ['test', 'id']], $tableSchema->getForeignKeys());
     }
 
     public function testGetFullName(): void
