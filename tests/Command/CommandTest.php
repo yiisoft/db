@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Tests\Command;
 
 use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\AbstractCommandTest;

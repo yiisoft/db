@@ -136,7 +136,6 @@ abstract class AbstractMigrationBuilder
      * First parameter passed to the column type, e.g. DECIMAL(precision, scale).
      *
      * This parameter will be ignored if not supported by the DBMS.
-     *
      * @param int|null $scale The column value scale, which is usually the number of digits after the decimal point.
      * Second parameter passed to the column type, e.g. DECIMAL(precision, scale).
      *
@@ -220,7 +219,6 @@ abstract class AbstractMigrationBuilder
      * parameter passed to the column type, e.g. DECIMAL(precision, scale).
      *
      * This parameter will be ignored if not supported by the DBMS.
-     *
      * @param int|null $scale The column value scale, which is usually the number of digits after the decimal point.
      * Second parameter passed to the column type, e.g. DECIMAL(precision, scale).
      *
