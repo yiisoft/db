@@ -59,7 +59,7 @@ class ColumnSchemaBuilder implements \Stringable
 
     public function __construct(
         protected string $type,
-        /** @psalm-var int|string|string[]|null */
+        /** @psalm-var string[]|int[]|int|string|null $length */
         protected int|string|array|null $length = null
     ) {
     }
