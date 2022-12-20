@@ -34,7 +34,7 @@ abstract class AbstractSchemaTest extends TestCase
     public function testColumnSchemaDbTypecastWithEmptyCharType(): void
     {
         $columnSchema = new ColumnSchema();
-        $columnSchema->setType(Schema::TYPE_CHAR);
+        $columnSchema->type(Schema::TYPE_CHAR);
 
         $this->assertSame('', $columnSchema->dbTypecast(''));
     }
