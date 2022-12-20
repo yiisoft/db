@@ -31,6 +31,8 @@ final class QueryHelperTest extends TestCase
 
     /**
      * @dataProvider tablesNameDataProvider
+     *
+     * @throws InvalidArgumentException
      */
     public function testCleanUpTableNames(array $tables, string $prefixDatabase, array $expected): void
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support;
 
+use Psr\Log\LoggerInterface;
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Cache\Cache;
 use Yiisoft\Cache\CacheInterface;
@@ -12,6 +13,9 @@ use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Log\Logger;
+use Yiisoft\Profiler\Profiler;
+use Yiisoft\Profiler\ProfilerInterface;
 
 use function explode;
 use function file_get_contents;
@@ -26,9 +30,19 @@ final class DbHelper
         return new Cache(new ArrayCache());
     }
 
+    public static function getLogger(): LoggerInterface
+    {
+        return new Logger();
+    }
+
     public static function getQueryCache(): QueryCache
     {
         return new QueryCache(self::getCache());
+    }
+
+    public static function getProfiler(): ProfilerInterface
+    {
+        return new Profiler(self::getLogger());
     }
 
     public static function getSchemaCache(): SchemaCache
