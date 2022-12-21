@@ -388,10 +388,6 @@ class ColumnSchemaBuilder implements Stringable
      */
     protected function buildDefaultString(): string
     {
-        if ($this->default === '') {
-            return '';
-        }
-
         if ($this->default === null) {
             return $this->isNotNull === false ? ' DEFAULT NULL' : '';
         }
