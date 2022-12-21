@@ -9,6 +9,29 @@ use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Strings\NumericHelper;
 
+/**
+ * The ColumnSchema class represents the metadata of a column in a database table. It provides information about the
+ * column's name, type, size, precision, and other details.
+ *
+ * The ColumnSchema class is used to store and retrieve metadata about a column in a database table. It is typically
+ * used in conjunction with the TableSchema class, which represents the metadata of a database table as a whole.
+ *
+ * Here is an example of how the ColumnSchema class might be used:
+ *
+ * ```php
+ * use Yiisoft\Db\Schema\ColumnSchema;
+ *
+ * $column = new ColumnSchema();
+ * $column->name('id');
+ * $column->allowNull(false);
+ * $column->dbType('int(11)');
+ * $column->phpType('integer');
+ * $column->type('integer');
+ * $column->defaultValue(0);
+ * $column->autoIncrement(true);
+ * $column->primaryKey(true);
+ * ``
+ */
 class ColumnSchema implements ColumnSchemaInterface
 {
     private bool $allowNull = false;

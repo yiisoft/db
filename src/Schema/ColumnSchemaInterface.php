@@ -5,33 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 /**
- * The ColumnSchema class represents the metadata of a column in a database table. It provides information about the
- * column's name, type, size, precision, and other details.
- *
- * The ColumnSchema class is used to store and retrieve metadata about a column in a database table. It is typically
- * used in conjunction with the TableSchema class, which represents the metadata of a database table as a whole.
- *
- * Here is an example of how the ColumnSchema class might be used:
- *
- * ```php
- * use Yiisoft\Db\Schema\ColumnSchema;
- *
- * $column = new ColumnSchema();
- * $column->name('id');
- * $column->allowNull(false);
- * $column->dbType('int(11)');
- * $column->phpType('integer');
- * $column->type('integer');
- * $column->defaultValue(0);
- * $column->autoIncrement(true);
- * $column->primaryKey(true);
- * ``
+ * The ColumnSchemaInterface class is an interface that defines a set of methods that must be implemented by a class
+ * that represents the column schema of a database table column.
  */
 interface ColumnSchemaInterface
 {
     /**
-     * The allowNull can be set to either `true` or `false`, depending on whether or not null values should be allowed
-     * in the ColumnSchema class.
+     * The allowNull can be set to either `true` or `false`, depending on whether null values should be allowed in the
+     * ColumnSchema class.
      *
      * By default, the allowNull is set to `false`, so if it is not specified when defining a ColumnSchema class,
      * null values will not be allowed in the ColumnSchema class.
@@ -92,7 +73,7 @@ interface ColumnSchemaInterface
     public function computed(bool $value): void;
 
     /**
-     * The dbType represents the data type of a column in a database table. This property is typically used when working
+     * The dbType represents the data type of column in a database table. This property is typically used when working
      * with the database layer, which provides a set of classes and methods for interacting with databases in a
      * consistent and abstracted way.
      *
@@ -134,7 +115,7 @@ interface ColumnSchemaInterface
      * database table. The default value can be a constant value, function, value derived from other columns,
      * non-computed column name, or their combinations.
      *
-     * By default value is set to `null`, so if it is not specified when defining a ColumnSchema class, the default
+     * By default, value is set to `null`, so if it is not specified when defining a ColumnSchema class, the default
      * value will not be allowed in the ColumnSchema class.
      *
      * ```php
@@ -176,56 +157,89 @@ interface ColumnSchemaInterface
     public function extra(string|null $value): void;
 
     /**
+     * @return string|null The comment of the column. `null` if no comment has been defined.
+     * By default, it returns `null`.
+     *
      * @see comment()
      */
     public function getComment(): string|null;
 
     /**
+     * @return string The dbType of the column. Empty string if no dbType has been defined.
+     * By default, it returns an empty string.
+     *
      * @see dbType()
      */
     public function getDbType(): string;
 
     /**
+     * @return mixed The default value of the column. `null` if no default value has been defined.
+     * By default, it returns `null`.
+     *
      * @see defaultValue()
      */
     public function getDefaultValue(): mixed;
 
     /**
+     * @return array|null The enum values of the column. `null` if no enum values has been defined.
+     * By default, it returns `null`.
+     *
      * @see enumValues()
      */
     public function getEnumValues(): array|null;
 
     /**
+     * @return string|null The extra of the column. `null` if no extra has been defined.
+     * By default, it returns `null`.
+     *
      * @see extra()
      */
     public function getExtra(): string|null;
 
     /**
+     * @return string The name of the column. Empty string if no name has been defined.
+     * By default, it returns an empty string.
+     *
      * @see name()
      */
     public function getName(): string;
 
     /**
+     * @return int|null The precision of the column. `null` if no precision has been defined.
+     * By default, it returns `null`.
+     *
      * @see precision()
      */
     public function getPrecision(): int|null;
 
     /**
+     * @return string|null The phpType of the column. `null` if no phpType has been defined.
+     * By default, it returns `null`.
+     *
      * @see phpType()
      */
     public function getPhpType(): string|null;
 
     /**
+     * @return int|null The scale of the column. `null` if no scale has been defined.
+     * By default, it returns `null`.
+     *
      * @see scale()
      */
     public function getScale(): int|null;
 
     /**
+     * @return int|null The size of the column. `null` if no size has been defined.
+     * By default, it returns `null`.
+     *
      * @see size()
      */
     public function getSize(): int|null;
 
     /**
+     * @return string The type of the column. Empty string if no type has been defined.
+     * By default, it returns an empty string.
+     *
      * @see type()
      */
     public function getType(): string;
@@ -320,7 +334,7 @@ interface ColumnSchemaInterface
     public function precision(int|null $value): void;
 
     /**
-     * the primary key is a column or set of columns that uniquely identifies each row in a table. The primaryKey of the
+     * The primary key is a column or set of columns that uniquely identifies each row in a table. The primaryKey of the
      * ColumnSchema class is used to specify which column or columns should be used as the primary key for a particular
      * table.
      *
@@ -367,8 +381,8 @@ interface ColumnSchemaInterface
     public function size(int|null $value): void;
 
     /**
-     * The type of the ColumnSchema class that is used to set the data type of a column in a database table. The data
-     * type of a column specifies the kind of values that can be stored in that column, such as integers, strings,
+     * The type of the ColumnSchema class that is used to set the data type of column in a database table. The data
+     * type of column specifies the kind of values that can be stored in that column, such as integers, strings,
      * dates, or floating point numbers.
      *
      * By default, the type is set to empty string. Db ColumnSchema class will generate setType automatically based
