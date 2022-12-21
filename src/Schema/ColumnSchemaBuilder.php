@@ -4,15 +4,30 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
+use Stringable;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Strings\NumericHelper;
 
+use function gettype;
+use function strtr;
+
 /**
- * ColumnSchemaBuilder helps to define database schema types using a PHP interface.
+ * The ColumnSchemaBuilder class is a utility class that provides a convenient way to create column schemas for use
+ * with Schema class @see Schema.
  *
- * See {@see SchemaBuilderTrait} for more detailed description and usage examples.
+ * It provides methods for specifying the properties of a column, such as its type, size, default value, and whether it
+ * is nullable or not. It also provides a method for creating a column schema based on the specified properties.
+ *
+ * For example, the following code creates a column schema for an integer column:
+ *
+ * ```php
+ * $column = (new ColumnSchemaBuilder(Schema::TYPE_INTEGER))->notNull()->defaultValue(0);
+ * ```
+ *
+ * The ColumnSchemaBuilder class provides a fluent interface, which means that the methods can be chained together to
+ * create a column schema with multiple properties in a single line of code.
  */
-class ColumnSchemaBuilder implements \Stringable
+class ColumnSchemaBuilder implements Stringable
 {
     /**
      * Internally used constants representing categories that abstract column types fall under.
@@ -31,6 +46,8 @@ class ColumnSchemaBuilder implements \Stringable
     protected mixed $default = null;
     protected string|null $append = null;
     protected bool $isUnsigned = false;
+    protected string|null $comment = null;
+
     /** @psalm-var string[] */
     private array $categoryMap = [
         Schema::TYPE_PK => self::CATEGORY_PK,
@@ -55,11 +72,12 @@ class ColumnSchemaBuilder implements \Stringable
         Schema::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
         Schema::TYPE_MONEY => self::CATEGORY_NUMERIC,
     ];
-    protected string|null $comment = null;
 
+    /**
+     * @psalm-param string[]|int[]|int|string|null $length
+     */
     public function __construct(
         protected string $type,
-        /** @psalm-var string[]|int[]|int|string|null $length */
         protected int|string|array|null $length = null
     ) {
     }
@@ -67,11 +85,11 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Adds a `NOT NULL` constraint to the column.
      *
-     * {@see isNotNull}
+     * @return static The column schema builder instance itself.
      *
-     * @return $this
+     * @see isNotNull
      */
-    public function notNull(): self
+    public function notNull(): static
     {
         $this->isNotNull = true;
 
@@ -81,11 +99,11 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Adds a `NULL` constraint to the column.
      *
-     * {@see isNotNull}
+     * @return static The column schema builder instance itself.
      *
-     * @return $this
+     * @see isNotNull
      */
-    public function null(): self
+    public function null(): static
     {
         $this->isNotNull = false;
 
@@ -95,11 +113,11 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Adds a `UNIQUE` constraint to the column.
      *
-     * {@see isUnique}
+     * @return static The column schema builder instance itself.
      *
-     * @return $this
+     * @see isUnique
      */
-    public function unique(): self
+    public function unique(): static
     {
         $this->isUnique = true;
 
@@ -107,13 +125,13 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * Sets a `CHECK` constraint for the column.
+     * Specify a `CHECK` constraint for the column.
      *
-     * @param string|null $check the SQL of the `CHECK` constraint to be added.
+     * @param string|null $check The SQL of the `CHECK` constraint to be added.
      *
-     * @return $this
+     * @return static The column schema builder instance itself.
      */
-    public function check(string|null $check): self
+    public function check(string|null $check): static
     {
         $this->check = $check;
 
@@ -123,11 +141,11 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Specify the default value for the column.
      *
-     * @param mixed $default the default value.
+     * @param mixed $default The default value to be used.
      *
-     * @return $this
+     * @return static The column schema builder instance itself.
      */
-    public function defaultValue(mixed $default): self
+    public function defaultValue(mixed $default): static
     {
         if ($default === null) {
             $this->null();
@@ -140,11 +158,11 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Specifies the comment for column.
      *
-     * @param string|null $comment the comment
+     * @param string|null $comment The comment to be added.
      *
-     * @return $this
+     * @return static The column schema builder instance itself.
      */
-    public function comment(string|null $comment): self
+    public function comment(string|null $comment): static
     {
         $this->comment = $comment;
 
@@ -154,9 +172,9 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Marks column as unsigned.
      *
-     * @return $this
+     * @return static The column schema builder instance itself.
      */
-    public function unsigned(): self
+    public function unsigned(): static
     {
         switch ($this->type) {
             case Schema::TYPE_PK:
@@ -174,11 +192,11 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Specify the default SQL expression for the column.
      *
-     * @param string $default the default value expression.
+     * @param string $default The SQL expression to be used as default value.
      *
-     * @return $this
+     * @return static The column schema builder instance itself.
      */
-    public function defaultExpression(string $default): self
+    public function defaultExpression(string $default): static
     {
         $this->default = new Expression($default);
 
@@ -190,11 +208,11 @@ class ColumnSchemaBuilder implements \Stringable
      *
      * Position modifiers will be appended after column definition in databases that support them.
      *
-     * @param string $sql the SQL string to be appended.
+     * @param string $sql The SQL string to be appended.
      *
-     * @return $this
+     * @return static The column schema builder instance itself.
      */
-    public function append(string $sql): self
+    public function append(string $sql): static
     {
         $this->append = $sql;
 
@@ -202,9 +220,10 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * Builds the full string for the column's schema.
+     * Builds the full string for the column's schema including type, length, default value, not null and other SQL
+     * fragment.
      *
-     * @return string
+     * @return string The SQL fragment that will be used for creating the column.
      */
     public function __toString(): string
     {
@@ -218,7 +237,9 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * Builds the length/precision part of the column.
+     * Builds the length, precision part of the column.
+     *
+     * @return string A string containing the length/precision of the column.
      */
     protected function buildLengthString(): string
     {
@@ -236,7 +257,7 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Builds the not null constraint for the column.
      *
-     * @return string returns 'NOT NULL' if {@see isNotNull} is true, 'NULL' if {@see isNotNull} is false or an empty
+     * @return string A string 'NOT NULL' if {@see isNotNull} is true, 'NULL' if {@see isNotNull} is false or an empty
      * string otherwise.
      */
     protected function buildNotNullString(): string
@@ -255,7 +276,7 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Builds the unique constraint for the column.
      *
-     * @return string returns string 'UNIQUE' if {@see isUnique} is true, otherwise it returns an empty string.
+     * @return string A string 'UNIQUE' if {@see isUnique} is true, otherwise it returns an empty string.
      */
     protected function buildUniqueString(): string
     {
@@ -265,7 +286,7 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Builds the default value specification for the column.
      *
-     * @return string string with default value of column.
+     * @return string A string containing the DEFAULT keyword and the default value.
      */
     protected function buildDefaultString(): string
     {
@@ -288,17 +309,17 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Builds the check constraint for the column.
      *
-     * @return string a string containing the CHECK constraint.
+     * @return string A string containing the CHECK constraint.
      */
     protected function buildCheckString(): string
     {
-        return $this->check !== null ? " CHECK ({$this->check})" : '';
+        return !empty($this->check) ? " CHECK ({$this->check})" : '';
     }
 
     /**
      * Builds the unsigned string for column. Defaults to unsupported.
      *
-     * @return string a string containing UNSIGNED keyword.
+     * @return string A string containing the UNSIGNED keyword.
      */
     protected function buildUnsignedString(): string
     {
@@ -308,17 +329,15 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Builds the custom string that's appended to column definition.
      *
-     * @return string custom string to append.
+     * @return string A string containing the custom SQL fragment appended to column definition.
      */
     protected function buildAppendString(): string
     {
-        return $this->append !== null ? ' ' . $this->append : '';
+        return !empty($this->append) ? ' ' . $this->append : '';
     }
 
     /**
-     * Returns the category of the column type.
-     *
-     * @return string|null a string containing the column type category name.
+     * @return string|null A string containing the column type category name.
      */
     protected function getTypeCategory(): string|null
     {
@@ -328,7 +347,7 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Builds the comment specification for the column.
      *
-     * @return string a string containing the COMMENT keyword and the comment itself
+     * @return string A string containing the COMMENT keyword and the comment itself.
      */
     protected function buildCommentString(): string
     {
@@ -338,9 +357,9 @@ class ColumnSchemaBuilder implements \Stringable
     /**
      * Returns the complete column definition from input format.
      *
-     * @param string $format the format of the definition.
+     * @param string $format The format of the definition.
      *
-     * @return string a string containing the complete column definition.
+     * @return string A string containing the complete column definition.
      */
     protected function buildCompleteString(string $format): string
     {
@@ -360,7 +379,7 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * @return string|null the column type definition such as INTEGER, VARCHAR, DATETIME, etc.
+     * @return string|null The column type definition such as INTEGER, VARCHAR, DATETIME, etc.
      */
     public function getType(): string|null
     {
@@ -368,9 +387,9 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * @return array|int|string|null column size or precision definition. This is what goes into the parenthesis after
-     * the column type. This can be either a string, an integer or an array. If it is an array, the array values will be
-     * joined into a string separated by comma.
+     * @return array|int|string|null The column size or precision definition. This is what goes into the parenthesis
+     * after the column type. This can be either a string, an integer or an array. If it is an array, the array values
+     * will be joined into a string separated by comma.
      */
     public function getLength(): array|int|string|null
     {
@@ -378,16 +397,16 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * @return bool|null whether the column is or not nullable. If this is `true`, a `NOT NULL` constraint will be
+     * @return bool|null Whether the column is or not nullable. If this is `true`, a `NOT NULL` constraint will be
      * added. If this is `false`, a `NULL` constraint will be added.
      */
-    public function getIsNotNull(): bool|null
+    public function isNotNull(): bool|null
     {
         return $this->isNotNull;
     }
 
     /**
-     * @return bool whether the column values should be unique. If this is `true`, a `UNIQUE` constraint will be added.
+     * @return bool Whether the column values should be unique. If this is `true`, a `UNIQUE` constraint will be added.
      */
     public function isUnique(): bool
     {
@@ -395,7 +414,7 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * @return string|null the `CHECK` constraint for the column.
+     * @return string|null The `CHECK` constraint for the column.
      */
     public function getCheck(): string|null
     {
@@ -403,7 +422,7 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * @return mixed default value of the column.
+     * @return mixed The default value of the column.
      */
     public function getDefault(): mixed
     {
@@ -411,7 +430,7 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * @return string|null SQL string to be appended to column schema definition.
+     * @return string|null The SQL string to be appended to column schema definition.
      */
     public function getAppend(): string|null
     {
@@ -419,7 +438,7 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * @return bool whether the column values should be unsigned. If this is `true`, an `UNSIGNED` keyword will be
+     * @return bool Whether the column values should be unsigned. If this is `true`, an `UNSIGNED` keyword will be
      * added.
      */
     public function isUnsigned(): bool
@@ -428,7 +447,7 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * @return array mapping of abstract column types (keys) to type categories (values).
+     * @return array The mapping of abstract column types (keys) to type categories (values).
      */
     public function getCategoryMap(): array
     {
@@ -436,7 +455,7 @@ class ColumnSchemaBuilder implements \Stringable
     }
 
     /**
-     * @return string|null comment value of the column.
+     * @return string|null The comment value of the column.
      */
     public function getComment(): string|null
     {
