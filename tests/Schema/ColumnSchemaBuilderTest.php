@@ -54,7 +54,7 @@ final class ColumnSchemaBuilderTest extends TestCase
         $column = new ColumnSchemaBuilder('string');
 
         $this->assertSame('string', (string) $column);
-        $this->assertSame("string", (string) $column->comment('comment'));
+        $this->assertSame('string', (string) $column->comment('comment'));
     }
 
     public function testCommentWithEmptyString(): void
@@ -62,7 +62,7 @@ final class ColumnSchemaBuilderTest extends TestCase
         $column = new ColumnSchemaBuilder('string');
 
         $this->assertSame('string', (string) $column);
-        $this->assertSame("string", (string) $column->comment(''));
+        $this->assertSame('string', (string) $column->comment(''));
     }
 
     public function testDefaultExpression(): void

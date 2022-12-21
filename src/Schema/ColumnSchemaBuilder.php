@@ -13,6 +13,7 @@ use function strtr;
 
 /**
  * The ColumnSchemaBuilder class is a utility class that provides a convenient way to create column schemas for use with
+ *
  * @see Schema.
  *
  * It provides methods for specifying the properties of a column, such as its type, size, default value, and whether it
