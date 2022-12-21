@@ -17,6 +17,14 @@ use function strpos;
 use function strrpos;
 use function substr;
 
+/**
+ * The Quoter is a class that is used to quote table and column names for use in SQL statements. It provides a set of
+ * methods for quoting different types of names, such as table names, column names, and schema names.
+ *
+ * The Quoter class is used by @see \Yiisoft\Db\QueryBuilder\QueryBuilder to quote names that need to be quoted. It is
+ * also used by @see \Yiisoft\Db\Command\Command to quote names in SQL statements before passing them to database
+ * servers.
+ */
 class Quoter implements QuoterInterface
 {
     public function __construct(
@@ -31,6 +39,7 @@ class Quoter implements QuoterInterface
     public function getTableNameParts(string $name): array
     {
         $parts = array_slice(explode('.', $name), -2, 2);
+
         return array_map(fn ($part) => $this->unquoteSimpleTableName($part), $parts);
     }
 
@@ -51,6 +60,7 @@ class Quoter implements QuoterInterface
             $parts = explode('.', $name);
             $name = $parts[count($parts) - 1];
         }
+
         return preg_replace('|^\[\[([_\w\-. ]+)\]\]$|', '\1', $name);
     }
 

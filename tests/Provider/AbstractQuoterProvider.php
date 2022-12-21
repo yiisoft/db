@@ -69,6 +69,7 @@ abstract class AbstractQuoterProvider
     {
         return [
             ['test', 'test'],
+            ['(test)', '(test)'],
         ];
     }
 
