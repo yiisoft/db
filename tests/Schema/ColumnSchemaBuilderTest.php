@@ -78,7 +78,7 @@ final class ColumnSchemaBuilderTest extends TestCase
         $column = new ColumnSchemaBuilder('string');
 
         $this->assertSame('string', (string) $column);
-        $this->assertSame('string', (string) $column->defaultExpression(''));
+        $this->assertSame("string DEFAULT ''", (string) $column->defaultExpression(''));
     }
 
     public function testDefaultValue(): void
@@ -94,7 +94,7 @@ final class ColumnSchemaBuilderTest extends TestCase
         $column = new ColumnSchemaBuilder('string');
 
         $this->assertSame('string', (string) $column);
-        $this->assertSame('string', (string) $column->defaultValue(''));
+        $this->assertSame("string DEFAULT ''", (string) $column->defaultValue(''));
     }
 
     public function testDefaultValueWithNull(): void
