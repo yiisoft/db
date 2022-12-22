@@ -1138,6 +1138,13 @@ abstract class AbstractQueryBuilderProvider
                 [':phEmail' => 'dynamic@example.com', ':qp1' => 0],
             ],
             'no columns to update' => ['T_upsert_1', ['a' => 1], false, '', [':qp0' => 1]],
+            'no columns to update with unique' => [
+                '{{%T_upsert}}',
+                ['email' => 'email'],
+                true,
+                '',
+                [':qp0' => 'email']
+            ],
         ];
     }
 }
