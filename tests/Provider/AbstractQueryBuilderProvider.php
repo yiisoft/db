@@ -1143,7 +1143,7 @@ abstract class AbstractQueryBuilderProvider
                 ['email' => 'email'],
                 true,
                 '',
-                [':qp0' => 'email']
+                [':qp0' => 'email'],
             ],
         ];
     }
