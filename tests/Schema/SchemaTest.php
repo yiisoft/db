@@ -165,7 +165,7 @@ final class SchemaTest extends AbstractSchemaTest
                 ->name('CN_constraints_3')
                 ->columnNames(['C_fk_id_1, C_fk_id_2'])
                 ->foreignTableName('T_constraints_2')
-                ->foreignColumnNames(['C_id_1', 'C_id_2'])
+                ->foreignColumnNames(['C_id_1', 'C_id_2']),
         ];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableForeignKeys'])
@@ -195,7 +195,7 @@ final class SchemaTest extends AbstractSchemaTest
                 ->name('PK__T_constr__A9FAE80AC2B18E65')
                 ->columnNames(['"C_id'])
                 ->unique(true)
-                ->primary(true)
+                ->primary(true),
         ];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableIndexes'])
