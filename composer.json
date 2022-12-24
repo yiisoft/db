@@ -33,7 +33,6 @@
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.2",
-        "phpunit/phpcov": "^8.2",
         "phpunit/phpunit": "^9.5",
         "rector/rector": "^0.14",
         "roave/infection-static-analysis-plugin": "^1.16",
