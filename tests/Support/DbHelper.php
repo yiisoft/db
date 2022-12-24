@@ -25,9 +25,15 @@ use function trim;
 
 final class DbHelper
 {
+    private static CacheInterface|null $cache = null;
+
     public static function getCache(): CacheInterface
     {
-        return new Cache(new ArrayCache());
+        if (self::$cache === null) {
+            self::$cache = new Cache(new ArrayCache());
+        }
+
+        return self::$cache;
     }
 
     public static function getLogger(): LoggerInterface
