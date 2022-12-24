@@ -1044,7 +1044,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     {
         $qb = $db->getQueryBuilder();
 
-        if ($db->getTableSchema($tableName) !== null) {
+        if ($db->getTableSchema($tableName, true) !== null) {
             $db->createCommand($qb->dropTable($tableName))->execute();
         }
 
