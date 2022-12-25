@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Support;
 
 use Psr\Log\LoggerInterface;
-use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Cache\Cache;
 use Yiisoft\Cache\CacheInterface;
+use Yiisoft\Cache\File\FileCache;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
@@ -27,7 +27,7 @@ final class DbHelper
 {
     public static function getCache(): CacheInterface
     {
-        return new Cache(new ArrayCache());
+        return new Cache(new FileCache(__DIR__ . '/runtime/cache'));
     }
 
     public static function getLogger(): LoggerInterface
@@ -58,6 +58,9 @@ final class DbHelper
      */
     public static function loadFixture(ConnectionPDOInterface $db, string $fixture): void
     {
+        // flush cache to new import data to dbms.
+        self::getCache()->psr()->clear();
+
         $db->open();
 
         if ($db->getName() === 'oci') {

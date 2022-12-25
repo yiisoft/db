@@ -539,12 +539,12 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->assertSame($noCacheTable, $cachedTable);
 
-        $db->createCommand()->renameTable('type', 'type_test');
+        $db->createCommand()->renameTable('type', 'type_test')->execute();
         $noCacheTable = $schema->getTableSchema('type', true);
 
         $this->assertNotSame($noCacheTable, $cachedTable);
 
-        $db->createCommand()->renameTable('type_test', 'type');
+        $db->createCommand()->renameTable('type_test', 'type')->execute();
     }
 
     /**
@@ -1044,7 +1044,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     {
         $qb = $db->getQueryBuilder();
 
-        if ($db->getTableSchema($tableName) !== null) {
+        if ($db->getTableSchema($tableName, true) !== null) {
             $db->createCommand($qb->dropTable($tableName))->execute();
         }
 
