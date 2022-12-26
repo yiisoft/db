@@ -10,7 +10,14 @@ use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Cache\Dependency\TagDependency;
 
 /**
- * The cache application component that is used to cache the table metadata.
+ * The SchemaCache class is used to cache database schema information.
+ *
+ * The Schema class retrieves information about the database schema from the database server and stores it in the cache
+ * for faster access. When the Schema class needs to retrieve information about the database schema, it first checks the
+ * cache using the SchemaCache class. If the information is not in the cache, the Schema class retrieves it from the
+ * database server and stores it in the cache using the SchemaCache class.
+ *
+ * SchemaCache is used by {@see \Yiisoft\Db\Schema\Schema} to cache table metadata.
  */
 final class SchemaCache
 {
@@ -57,7 +64,7 @@ final class SchemaCache
     }
 
     /**
-     * Return number of seconds that table metadata can remain valid in cache.
+     * @return int|null The number of seconds that table metadata can remain valid in cache.
      */
     public function getDuration(): int|null
     {
@@ -65,9 +72,9 @@ final class SchemaCache
     }
 
     /**
-     * Return true if the table is excluded from cache the table metadata.
-     *
      * @param string $value The table name.
+     *
+     * @return bool Whether the table is excluded from caching.
      */
     public function isExcluded(string $value): bool
     {
