@@ -12,7 +12,19 @@ use function end;
 use function is_array;
 
 /**
- * The cache application component that is used for query caching.
+ * QueryCache is a class provides a query cache feature for DB connections.
+ *
+ * The query cache allows you to cache the results of SELECT queries for a certain period of time. This can improve the
+ * performance of your application by avoiding the need to execute the same SELECT query multiple times.
+ *
+ * To use the query cache, you can configure a DB connection to use a QueryCache object as its query cache. When you
+ * execute a SELECT query using this connection, the query cache will check if the results of the query have been
+ * cached. If they have, it will return the cached results. If not, it will execute the query and cache the results
+ * before returning them.
+ *
+ * You can specify the lifetime of the cache using the {@see duration} property. You can also specify a cache
+ * dependency, which determines when the cache should be invalidated. For example, you can use a cache dependency based
+ * on the modification time of a table, so that the cache is invalidated whenever the table is updated.
  */
 final class QueryCache
 {
@@ -25,7 +37,7 @@ final class QueryCache
     }
 
     /**
-     * Return number of seconds that query results can remain valid in cache.
+     * @return int|null The number of seconds that query results can remain valid in cache.
      */
     public function getDuration(): int|null
     {
@@ -33,7 +45,7 @@ final class QueryCache
     }
 
     /**
-     * Return true if QueryCache is active.
+     * @return bool True if QueryCache is active.
      */
     public function isEnabled(): bool
     {
