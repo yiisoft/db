@@ -6,6 +6,10 @@ namespace Yiisoft\Db\Exception;
 
 use PDOException;
 
+/**
+ * The ConvertException class converts an exception into a more specific one. For example, if an exception is caused by
+ * a violation of a unique key constraint, it will be converted into an {@see IntegrityException} exception.
+ */
 final class ConvertException
 {
     private const MSG_INTEGRITY_EXCEPTION_1 = 'SQLSTATE[23';
@@ -16,6 +20,11 @@ final class ConvertException
     {
     }
 
+    /**
+     * Converts an exception into a more specific one.
+     *
+     * @return Exception The converted exception if it could be converted, otherwise the original exception.
+     */
     public function run(): Exception
     {
         $message = $this->e->getMessage() . PHP_EOL . 'The SQL being executed was: ' . $this->rawSql;

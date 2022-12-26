@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Exception;
 
 /**
- * Exceptions represents an exception that is caused by violation of DB constraints.
+ * The IntegrityException class represents an exception caused by a violation of a database integrity constraint.
  */
-class IntegrityException extends Exception
+final class IntegrityException extends Exception
 {
 }
