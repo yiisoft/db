@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Tests\Exception;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Tests\Support\Assert;
 
 /**
  * @group db
