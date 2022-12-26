@@ -26,7 +26,7 @@ final class ExceptionTest extends TestCase
         $exception = new Exception('test');
 
         $this->assertStringContainsString(
-            'Yiisoft\Db\Exception\Exception: test in D:\GitHub\db\tests\Exception\ExceptionTest.php:27',
+            'Yiisoft\Db\Exception\Exception: test in D:\GitHub\db\tests\Exception\ExceptionTest.php',
             (string) $exception,
         );
     }
