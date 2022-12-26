@@ -20,6 +20,37 @@
       <directory>./src/TestSupport</directory>
       <directory>./tests</directory>
       <directory>./vendor</directory>
+      <file>./src/Command/CommandInterface.php</file>
+      <file>./src/Command/ParamInterface.php</file>
+      <file>./src/Connection/ConnectionInterface.php</file>
+      <file>./src/Connection/ConnectionPoolInterface.php</file>
+      <file>./src/Constraint/ConstraintSchemaInterface.php</file>
+      <file>./src/Driver/DriverInterface.php</file>
+      <file>./src/Driver/PDO/CommandPDOInterface.php</file>
+      <file>./src/Driver/PDO/ConnectionPDOInterface.php</file>
+      <file>./src/Driver/PDO/PDODriverInterface.php</file>
+      <file>./src/Expression/ExpressionBuilderInterface.php</file>
+      <file>./src/Expression/ExpressionInterface.php</file>
+      <file>./src/Query/Data/DataReaderInterface.php</file>
+      <file>./src/Query/BatchQueryResultInterface.php</file>
+      <file>./src/Query/QueryFunctionsInterface.php</file>
+      <file>./src/Query/QueryInterface.php</file>
+      <file>./src/Query/QueryPartsInterface.php</file>
+      <file>./src/QueryBuilder/Condition/Interface/BetweenColumnsConditionInterface.php</file>
+      <file>./src/QueryBuilder/Condition/Interface/BetweenConditionInterface.php</file>
+      <file>./src/QueryBuilder/Condition/Interface/ConditionInterface.php</file>
+      <file>./src/QueryBuilder/Condition/Interface/ConjunctionConditionInterface.php</file>
+      <file>./src/QueryBuilder/Condition/Interface/ExistConditionInterface.php</file>
+      <file>./src/QueryBuilder/Condition/Interface/HashConditionInterface.php</file>
+      <file>./src/QueryBuilder/Condition/Interface/InConditionInterface.php</file>
+      <file>./src/QueryBuilder/Condition/Interface/LikeConditionInterface.php</file>
+      <file>./src/QueryBuilder/Condition/Interface/NotConditionInterface.php</file>
+      <file>./src/QueryBuilder/Condition/Interface/SimpleConditionInterface.php</file>
+      <file>./src/Schema/ColumnSchemaInterface.php</file>
+      <file>./src/Schema/QuoterInterface.php</file>
+      <file>./src/Schema/SchemaInterface.php</file>
+      <file>./src/Schema/TableSchemaInterface.php</file>
+      <file>./src/Transaction/TransactionInterface.php</file>
     </exclude>
   </coverage>
 
