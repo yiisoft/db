@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
+use JsonException;
 use Throwable;
 use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -61,6 +64,8 @@ interface CommandInterface
      * method.
      * @param string $comment The text of the comment to be added. The comment will be properly quoted by the method.
      *
+     * @throws \Exception
+     *
      * @return static The command object itself.
      */
     public function addCommentOnColumn(string $table, string $column, string $comment): static;
@@ -71,6 +76,8 @@ interface CommandInterface
      * @param string $table The table whose column is to be commented. The table name will be properly quoted by the
      * method.
      * @param string $comment The text of the comment to be added. The comment will be properly quoted by the method.
+     *
+     * @throws \Exception
      *
      * @return static The command object itself.
      */
@@ -85,6 +92,9 @@ interface CommandInterface
      * @param string $column The name of the column to that the constraint will be added on. The name will be properly
      * quoted by the method.
      * @param mixed $value Default value.
+     *
+     * @throws Exception
+     * @throws NotSupportedException
      *
      * @return static The command object itself.
      */
@@ -106,6 +116,9 @@ interface CommandInterface
      * SET DEFAULT, SET NULL.
      * @param string|null $update The ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION,
      * SET DEFAULT, SET NULL.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
      *
      * @return static The command object itself.
      */
@@ -185,6 +198,9 @@ interface CommandInterface
      * @param string $table The table that new rows will be inserted into.
      * @param array $columns The column names.
      * @param iterable $rows The rows to be batched inserted into the table.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
      *
      * @return static The command object itself.
      */
@@ -271,16 +287,12 @@ interface CommandInterface
      * @param string $table The table name to be checked.
      * @param bool $check Whether to turn on or off the integrity check.
      *
+     * @throws Exception
+     * @throws NotSupportedException
+     *
      * @return static The command object itself.
      */
     public function checkIntegrity(string $schema, string $table, bool $check = true): static;
-
-    /**
-     * Create query builder instance.
-     *
-     * @return QueryBuilderInterface The query builder instance.
-     */
-    public function queryBuilder(): QueryBuilderInterface;
 
     /**
      * Creates a SQL command for creating a new index.
@@ -293,6 +305,9 @@ interface CommandInterface
      * @param string|null $indexType The type of index supported DBMS - for example: `UNIQUE`, `FULLTEXT`, `SPATIAL`,
      * `BITMAP` or null as default.
      * @param string|null $indexMethod The setting index organization method (with `USING`, not all DBMS).
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
      *
      * @return static The command object itself.
      */
@@ -322,6 +337,10 @@ interface CommandInterface
      * @param array $columns The columns (name => definition) in the new table.
      * @param string|null $options Additional SQL fragments that will be appended to the generated SQL.
      *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     *
      * @return static The command object itself.
      */
     public function createTable(string $table, array $columns, string $options = null): static;
@@ -332,6 +351,9 @@ interface CommandInterface
      * @param string $viewName The name of the view to be created.
      * @param QueryInterface|string $subquery The select statement which defines the view. This can be either a string
      * or a {@see QueryInterface}.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
      *
      * @return static The command object itself.
      */
@@ -361,6 +383,9 @@ interface CommandInterface
      * @param array|string $condition The condition that will be put in the WHERE part. Please refer to
      * {@see QueryInterface::where()} on how to specify condition.
      * @param array $params The parameters to be bound to the command.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
      *
      * @return static The command object itself.
      */
@@ -417,6 +442,9 @@ interface CommandInterface
      * the method.
      * @param string $table The table whose default value constraint is to be dropped. The name will be properly quoted
      * by the method.
+     *
+     * @throws Exception
+     * @throws NotSupportedException
      *
      * @return static The command object itself.
      */
@@ -499,7 +527,7 @@ interface CommandInterface
     /**
      * Return the params used in the last query.
      *
-     * @param bool $asParams - By default - returned array of pair name => value, if true - be returned array of
+     * @param bool $asValues By default, returned array of pair name => value, if true - be returned array of
      * ParamInterface.
      *
      * @psalm-return array|ParamInterface[]
@@ -514,6 +542,8 @@ interface CommandInterface
      * Note that the return value of this method should mainly be used for logging purpose.
      *
      * It is likely that this method returns an invalid SQL due to improper replacement of parameter placeholders.
+     *
+     * @throws \Exception
      *
      * @return string The raw SQL with parameter values inserted into the corresponding placeholders in {@see sql}.
      */
@@ -548,6 +578,11 @@ interface CommandInterface
      * @param string $table The table that new rows will be inserted into.
      * @param array|QueryInterface $columns The column data (name => value) to be inserted into the table or instance of
      * {@see QueryInterface} to perform INSERT INTO ... SELECT SQL statement.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      *
      * @return static The command object itself
      */
@@ -610,6 +645,13 @@ interface CommandInterface
      * Empty array is returned if the query results in nothing.
      */
     public function queryAll(): array;
+
+    /**
+     * Create query builder instance.
+     *
+     * @return QueryBuilderInterface The query builder instance.
+     */
+    public function queryBuilder(): QueryBuilderInterface;
 
     /**
      * Executes the SQL statement and returns the first column of the result.
@@ -682,6 +724,9 @@ interface CommandInterface
      * @param string $table The name of the table whose primary key sequence is reset.
      * @param int|string|null $value The value for the primary key of the next new row inserted. If this is not set, the
      * next new row's primary key will have the maximum existing value +1.
+     *
+     * @throws Exception
+     * @throws NotSupportedException
      *
      * @return static The command object itself.
      */
@@ -758,6 +803,9 @@ interface CommandInterface
      * {@see QueryInterface::where()} on how to specify condition.
      * @param array $params The parameters to be bound to the command.
      *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     *
      * @return static The command object itself.
      */
     public function update(string $table, array $columns, array|string $condition = '', array $params = []): static;
@@ -792,6 +840,11 @@ interface CommandInterface
      * If `true` is passed, the column data will be updated to match the insert column data.
      * If `false` is passed, no update will be performed if the column data already exists.
      * @param array $params The parameters to be bound to the command.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws JsonException
+     * @throws NotSupportedException
      *
      * @return static The command object itself.
      */
