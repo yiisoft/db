@@ -1142,7 +1142,7 @@ abstract class AbstractQueryBuilderProvider
                 ['a' => 1],
                 false,
                 '',
-                [':qp0' => 1]
+                [':qp0' => 1],
             ],
             'no columns to update with unique' => [
                 '{{%T_upsert}}',

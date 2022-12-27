@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Tests;
 use Closure;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;

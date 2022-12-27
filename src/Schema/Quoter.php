@@ -179,6 +179,7 @@ class Quoter implements QuoterInterface
     /**
      * @param array $parts
      * @param bool $withColumn
+     *
      * @return string[]
      */
     protected function unquoteParts(array $parts, bool $withColumn): array
