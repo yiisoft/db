@@ -385,6 +385,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
 
         // restore original column names
         $originalColumnNames = [];
+        /** @psalm-var string[] $columnNames */
         foreach ($columnNames as $columnName) {
             $originalColumnNames[] = $unquotedColumns[$columnName] ?? $columnName;
         }

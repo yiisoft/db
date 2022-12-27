@@ -177,7 +177,7 @@ class Quoter implements QuoterInterface
     }
 
     /**
-     * @param array $parts
+     * @param string[] $parts
      * @param bool $withColumn
      *
      * @return string[]
