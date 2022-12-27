@@ -34,7 +34,7 @@ interface CommandInterface
      * the method.
      * @param string $expression The SQL of the `CHECK` constraint.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function addCheck(string $name, string $table, string $expression): static;
 
@@ -48,7 +48,7 @@ interface CommandInterface
      * column type to the physical one. For example, `string` will be converted as `varchar(255)`, and `string not null`
      * becomes `varchar(255) not null`.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function addColumn(string $table, string $column, string $type): static;
 
@@ -61,7 +61,7 @@ interface CommandInterface
      * method.
      * @param string $comment The text of the comment to be added. The comment will be properly quoted by the method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function addCommentOnColumn(string $table, string $column, string $comment): static;
 
@@ -72,7 +72,7 @@ interface CommandInterface
      * method.
      * @param string $comment The text of the comment to be added. The comment will be properly quoted by the method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function addCommentOnTable(string $table, string $comment): static;
 
@@ -86,7 +86,7 @@ interface CommandInterface
      * quoted by the method.
      * @param mixed $value Default value.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function addDefaultValue(string $name, string $table, string $column, mixed $value): static;
 
@@ -107,7 +107,7 @@ interface CommandInterface
      * @param string|null $update The ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION,
      * SET DEFAULT, SET NULL.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function addForeignKey(
         string $name,
@@ -126,9 +126,9 @@ interface CommandInterface
      *
      * @param string $name The name of the primary key constraint.
      * @param string $table The table that the primary key constraint will be added to.
-     * @param array|string $columns Comma separated string or array of columns that the primary key will consist of.
+     * @param array|string $columns The comma separated string or array of columns that the primary key will consist of.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function addPrimaryKey(string $name, string $table, array|string $columns): static;
 
@@ -141,7 +141,7 @@ interface CommandInterface
      * @param array|string $columns The name of the column to that the constraint will be added on. If there are
      * multiple columns, separate them with commas. The name will be properly quoted by the method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function addUnique(string $name, string $table, array|string $columns): static;
 
@@ -155,7 +155,7 @@ interface CommandInterface
      * column type to the physical one. For example, `string` will be converted as `varchar(255)`, and `string not null`
      * becomes `varchar(255) not null`.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function alterColumn(string $table, string $column, string $type): static;
 
@@ -186,20 +186,20 @@ interface CommandInterface
      * @param array $columns The column names.
      * @param iterable $rows The rows to be batched inserted into the table.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function batchInsert(string $table, array $columns, iterable $rows): static;
 
     /**
      * Binds a parameter to the SQL statement to be executed.
      *
-     * @param int|string $name Parameter identifier. For a prepared statement using named placeholders, this will be a
-     * parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
+     * @param int|string $name The parameter identifier. For a prepared statement using named placeholders, this will be
+     * a parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
      * @param mixed $value The PHP variable to bind to the SQL statement parameter (passed by reference).
-     * @param int|null $dataType SQL data type of the parameter. If null, the type is determined by the PHP type of the
-     * value.
-     * @param int|null $length Length of the data type.
+     * @param int|null $dataType The SQL data type of the parameter. If null, the type is determined by the PHP type of
+     * the value.
+     * @param int|null $length The length of the data type.
      * @param mixed|null $driverOptions The driver-specific options.
      *
      * @throws Exception
@@ -221,8 +221,8 @@ interface CommandInterface
      * parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
      * @param mixed $value The value to bind to the parameter.
-     * @param int|null $dataType SQL data type of the parameter. If null, the type is determined by the PHP type of the
-     * value.
+     * @param int|null $dataType The SQL data type of the parameter. If null, the type is determined by the PHP type of
+     * the value.
      *
      * @return static The current command being executed.
      */
@@ -254,7 +254,7 @@ interface CommandInterface
      * Use 0 to indicate that the cached data will never expire.
      * @param Dependency|null $dependency The cache dependency associated with the cached query result.
      *
-     * @return static
+     * @return static The current command being executed.
      */
     public function cache(int $duration = null, Dependency $dependency = null): static;
 
@@ -268,15 +268,17 @@ interface CommandInterface
      *
      * @param string $schema The schema name of the tables. Defaults to empty string, meaning the current or default
      * schema.
-     * @param string $table The table name.
+     * @param string $table The table name to be checked.
      * @param bool $check Whether to turn on or off the integrity check.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function checkIntegrity(string $schema, string $table, bool $check = true): static;
 
     /**
      * Create query builder instance.
+     *
+     * @return QueryBuilderInterface The query builder instance.
      */
     public function queryBuilder(): QueryBuilderInterface;
 
@@ -288,11 +290,11 @@ interface CommandInterface
      * the method.
      * @param array|string $columns The column(s) that should be included in the index. If there are multiple columns,
      * please separate them by commas. The column names will be properly quoted by the method.
-     * @param string|null $indexType type of index supported DBMS - for example: UNIQUE, FULLTEXT, SPATIAL, BITMAP or
-     * null as default
-     * @param string|null $indexMethod for setting index organization method (with 'USING', not all DBMS)
+     * @param string|null $indexType The type of index supported DBMS - for example: `UNIQUE`, `FULLTEXT`, `SPATIAL`,
+     * `BITMAP` or null as default.
+     * @param string|null $indexMethod The setting index organization method (with `USING`, not all DBMS).
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function createIndex(
         string $name,
@@ -320,7 +322,7 @@ interface CommandInterface
      * @param array $columns The columns (name => definition) in the new table.
      * @param string|null $options Additional SQL fragments that will be appended to the generated SQL.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function createTable(string $table, array $columns, string $options = null): static;
 
@@ -331,7 +333,7 @@ interface CommandInterface
      * @param QueryInterface|string $subquery The select statement which defines the view. This can be either a string
      * or a {@see QueryInterface}.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function createView(string $viewName, QueryInterface|string $subquery): static;
 
@@ -360,7 +362,7 @@ interface CommandInterface
      * {@see QueryInterface::where()} on how to specify condition.
      * @param array $params The parameters to be bound to the command.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function delete(string $table, array|string $condition = '', array $params = []): static;
 
@@ -372,7 +374,7 @@ interface CommandInterface
      * @param string $table The table whose check constraint is to be dropped. The name will be properly quoted by the
      * method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function dropCheck(string $name, string $table): static;
 
@@ -382,7 +384,7 @@ interface CommandInterface
      * @param string $table The table whose column is to be dropped. The name will be properly quoted by the method.
      * @param string $column The name of the column to be dropped. The name will be properly quoted by the method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function dropColumn(string $table, string $column): static;
 
@@ -394,7 +396,7 @@ interface CommandInterface
      * @param string $column The name of the column to be commented. The column name will be properly quoted by the
      * method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function dropCommentFromColumn(string $table, string $column): static;
 
@@ -404,7 +406,7 @@ interface CommandInterface
      * @param string $table The table whose column is to be commented. The table name will be properly quoted by the
      * method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function dropCommentFromTable(string $table): static;
 
@@ -416,7 +418,7 @@ interface CommandInterface
      * @param string $table The table whose default value constraint is to be dropped. The name will be properly quoted
      * by the method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function dropDefaultValue(string $name, string $table): static;
 
@@ -427,7 +429,7 @@ interface CommandInterface
      * the method.
      * @param string $table The table whose foreign is to be dropped. The name will be properly quoted by the method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function dropForeignKey(string $name, string $table): static;
 
@@ -437,7 +439,7 @@ interface CommandInterface
      * @param string $name The name of the index to be dropped. The name will be properly quoted by the method.
      * @param string $table The table whose index is to be dropped. The name will be properly quoted by the method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function dropIndex(string $name, string $table): static;
 
@@ -447,7 +449,7 @@ interface CommandInterface
      * @param string $name The name of the primary key constraint to be removed.
      * @param string $table The table that the primary key constraint will be removed from.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function dropPrimaryKey(string $name, string $table): static;
 
@@ -456,7 +458,7 @@ interface CommandInterface
      *
      * @param string $table The table to be dropped. The name will be properly quoted by the method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function dropTable(string $table): static;
 
@@ -468,7 +470,7 @@ interface CommandInterface
      * @param string $table The table whose unique constraint is to be dropped. The name will be properly quoted by
      * the method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function dropUnique(string $name, string $table): static;
 
@@ -477,7 +479,7 @@ interface CommandInterface
      *
      * @param string $viewName The name of the view to be dropped.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function dropView(string $viewName): static;
 
@@ -487,16 +489,17 @@ interface CommandInterface
      * This method should only be used for executing non-query SQL statement, such as `INSERT`, `DELETE`, `UPDATE` SQLs.
      * No result set will be returned.
      *
-     * @throws Exception|Throwable execution failed.
+     * @throws Exception
+     * @throws Throwable If execution failed.
      *
-     * @return int Number of rows affected by the execution.
+     * @return int The number of rows affected by the execution.
      */
     public function execute(): int;
 
     /**
      * Return the params used in the last query.
      *
-     * @param bool $asParams - by default - returned array of pair name => value, if true - be returned array of
+     * @param bool $asParams - By default - returned array of pair name => value, if true - be returned array of
      * ParamInterface.
      *
      * @psalm-return array|ParamInterface[]
@@ -519,7 +522,7 @@ interface CommandInterface
     /**
      * Returns the SQL statement for this command.
      *
-     * @return string the SQL statement to be executed.
+     * @return string The SQL statement to be executed.
      */
     public function getSql(): string;
 
@@ -546,26 +549,29 @@ interface CommandInterface
      * @param array|QueryInterface $columns The column data (name => value) to be inserted into the table or instance of
      * {@see QueryInterface} to perform INSERT INTO ... SELECT SQL statement.
      *
-     * @return static
+     * @return static The command object itself
      */
     public function insert(string $table, QueryInterface|array $columns): static;
 
     /**
      * Executes the INSERT command, returning primary key inserted values.
      *
-     * @param string $table the table that new rows will be inserted into.
-     * @param array $columns the column data (name => value) to be inserted into the table.
+     * @param string $table The table that new rows will be inserted into.
+     * @param array $columns The column data (name => value) to be inserted into the table.
      *
-     * @throws Exception|InvalidCallException|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidCallException
+     * @throws InvalidConfigException
+     * @throws Throwable
      *
-     * @return array|false primary key values or false if the command fails.
+     * @return array|false The primary key values or false if the command fails.
      */
     public function insertEx(string $table, array $columns): bool|array;
 
     /**
      * Disables query cache for this command.
      *
-     * @return static
+     * @return static The command object itself
      */
     public function noCache(): static;
 
@@ -587,7 +593,8 @@ interface CommandInterface
      *
      * This method is for executing a SQL query that returns result set, such as `SELECT`.
      *
-     * @throws Exception|Throwable execution failed.
+     * @throws Exception
+     * @throws Throwable If execution failed.
      *
      * @return DataReaderInterface The reader object for fetching the query result.
      */
@@ -596,7 +603,8 @@ interface CommandInterface
     /**
      * Executes the SQL statement and returns ALL rows at once.
      *
-     * @throws Exception|Throwable Execution failed.
+     * @throws Exception
+     * @throws Throwable If execution failed.
      *
      * @return array All rows of the query result. Each array element is an array representing a row of data.
      * Empty array is returned if the query results in nothing.
@@ -609,7 +617,8 @@ interface CommandInterface
      * This method is best used when only the first column of result (i.e. the first element in each row) is needed for
      * a query.
      *
-     * @throws Exception|Throwable Execution failed.
+     * @throws Exception
+     * @throws Throwable If execution failed.
      *
      * @return array The first column of the query result. Empty array is returned if the query results in nothing.
      */
@@ -620,7 +629,8 @@ interface CommandInterface
      *
      * This method is best used when only the first row of result is needed for a query.
      *
-     * @throws Exception|Throwable Execution failed.
+     * @throws Exception
+     * @throws Throwable If execution failed.
      *
      * @return array|null The first row (in terms of an array) of the query result. Null is returned if the query
      * results in nothing.
@@ -632,7 +642,8 @@ interface CommandInterface
      *
      * This method is best used when only a single value is needed for a query.
      *
-     * @throws Exception|Throwable Execution failed.
+     * @throws Exception
+     * @throws Throwable If execution failed.
      *
      * @return false|float|int|string|null The value of the first column in the first row of the query result.
      * False is returned if there is no value.
@@ -646,7 +657,7 @@ interface CommandInterface
      * @param string $oldName The old name of the column. The name will be properly quoted by the method.
      * @param string $newName The new name of the column. The name will be properly quoted by the method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function renameColumn(string $table, string $oldName, string $newName): static;
 
@@ -656,7 +667,7 @@ interface CommandInterface
      * @param string $table The table to be renamed. The name will be properly quoted by the method.
      * @param string $newName The new table name. The name will be properly quoted by the method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function renameTable(string $table, string $newName): static;
 
@@ -672,7 +683,7 @@ interface CommandInterface
      * @param int|string|null $value The value for the primary key of the next new row inserted. If this is not set, the
      * next new row's primary key will have the maximum existing value +1.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function resetSequence(string $table, int|string $value = null): static;
 
@@ -684,7 +695,7 @@ interface CommandInterface
      *
      * @param string $sql The SQL statement to be set.
      *
-     * @return static
+     * @return static The command object itself.
      *
      * {@see reset()}
      * {@see cancel()}
@@ -700,7 +711,7 @@ interface CommandInterface
      *
      * @param string $sql The SQL statement to be set.
      *
-     * @return static
+     * @return static The command object itself.
      *
      * {@see reset()}
      * {@see cancel()}
@@ -712,7 +723,7 @@ interface CommandInterface
      *
      * @param string $table The table to be truncated. The name will be properly quoted by the method.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function truncateTable(string $table): static;
 
@@ -747,7 +758,7 @@ interface CommandInterface
      * {@see QueryInterface::where()} on how to specify condition.
      * @param array $params The parameters to be bound to the command.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function update(string $table, array $columns, array|string $condition = '', array $params = []): static;
 
@@ -782,7 +793,7 @@ interface CommandInterface
      * If `false` is passed, no update will be performed if the column data already exists.
      * @param array $params The parameters to be bound to the command.
      *
-     * @return static
+     * @return static The command object itself.
      */
     public function upsert(
         string $table,
