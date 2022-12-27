@@ -36,11 +36,11 @@ class Quoter implements QuoterInterface
     ) {
     }
 
-    public function getTableNameParts(string $name): array
+    public function getTableNameParts(string $name, bool $withColumn = false): array
     {
         $parts = array_slice(explode('.', $name), -2, 2);
 
-        return array_map(fn ($part) => $this->unquoteSimpleTableName($part), $parts);
+        return $this->unquoteParts($parts, $withColumn);
     }
 
     public function ensureNameQuoted(string $name): string
@@ -174,5 +174,23 @@ class Quoter implements QuoterInterface
         }
 
         return !str_contains($name, $startingCharacter) ? $name : substr($name, 1, -1);
+    }
+
+    /**
+     * @param array $parts
+     * @param bool $withColumn
+     * @return string[]
+     */
+    protected function unquoteParts(array $parts, bool $withColumn): array
+    {
+        $lastKey = count($parts) - 1;
+
+        foreach ($parts as $k => &$part) {
+            $part = ($withColumn || $lastKey === $k) ?
+                $this->unquoteSimpleColumnName($part) :
+                $this->unquoteSimpleTableName($part);
+        }
+
+        return $parts;
     }
 }

@@ -342,11 +342,26 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
         $columnNames = [];
         $quoter = $this->quoter;
 
+        // Need get filtered column names. Without name of table. And remove columns from other tables
+        $unquotedColumns = $simpleColumns = [];
+        $rawTableName = $this->schema->getRawTableName($name);
+        foreach ($columns as $column) {
+            $parts = $quoter->getTableNameParts($column, true);
+
+            // Skip columns from other tables
+            if (count($parts) === 2 && $this->schema->getRawTableName($parts[0]) !== $rawTableName) {
+                continue;
+            }
+
+            $columnName = $quoter->ensureColumnName($parts[count($parts)-1]);
+            $unquotedColumns[$column] = $simpleColumns[] = $quoter->quoteColumnName($columnName);
+        }
+
         // Remove all constraints which do not cover the specified column list.
         $constraints = array_values(
             array_filter(
                 $constraints,
-                static function (Constraint $constraint) use ($quoter, $columns, &$columnNames) {
+                static function (Constraint $constraint) use ($quoter, $simpleColumns, &$columnNames) {
                     /** @psalm-var string[]|string $getColumnNames */
                     $getColumnNames = $constraint->getColumnNames() ?? [];
                     $constraintColumnNames = [];
@@ -357,7 +372,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
                         }
                     }
 
-                    $result = !array_diff($constraintColumnNames, $columns);
+                    $result = !array_diff($constraintColumnNames, $simpleColumns);
 
                     if ($result) {
                         $columnNames = array_merge((array) $columnNames, $constraintColumnNames);
@@ -368,8 +383,13 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
             )
         );
 
-        /** @psalm-var array $columnNames */
-        return array_unique($columnNames);
+        // restore original column names
+        $originalColumnNames = [];
+        foreach ($columnNames as $columnName) {
+            $originalColumnNames[] = $unquotedColumns[$columnName] ?? $columnName;
+        }
+
+        return array_unique($originalColumnNames);
     }
 
     protected function getTypecastValue(mixed $value, ColumnSchemaInterface $columnSchema = null): mixed

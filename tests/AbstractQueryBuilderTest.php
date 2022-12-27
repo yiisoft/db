@@ -1923,7 +1923,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
-        string|array $expectedSQL,
+        string $expectedSQL,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
@@ -1931,16 +1931,36 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $actualParams = [];
         $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
 
-        if (is_string($expectedSQL)) {
-            $this->assertSame($expectedSQL, $actualSQL);
-        } else {
-            $this->assertContains($actualSQL, $expectedSQL);
-        }
+        $this->assertSame($expectedSQL, $actualSQL);
 
-        if (ArrayHelper::isAssociative($expectedParams)) {
-            $this->assertSame($expectedParams, $actualParams);
-        } else {
-            Assert::isOneOf($actualParams, $expectedParams);
-        }
+        $this->assertSame($expectedParams, $actualParams);
+    }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert()
+     */
+    public function testUpsertExecute(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns
+    ): void {
+        $db = $this->getConnection(true);
+
+        $actualParams = [];
+        $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
+
+        $countQuery = (new Query($db))->from($table)->select('count(*)');
+
+        $rowCountBefore = (int) $countQuery->createCommand()->queryScalar();
+
+        $command = $db->createCommand($actualSQL, $actualParams);
+        $this->assertEquals(1, $command->execute());
+
+        $rowCountAfter = (int) $countQuery->createCommand()->queryScalar();
+
+        $this->assertEquals(1, $rowCountAfter - $rowCountBefore);
+
+        $command = $db->createCommand($actualSQL, $actualParams);
+        $command->execute();
     }
 }
