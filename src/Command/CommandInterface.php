@@ -14,6 +14,10 @@ use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
+/**
+ * The CommandInterface is an interface represents a database command, such as a SELECT, INSERT, UPDATE, or DELETE
+ * statement.
+ */
 interface CommandInterface
 {
     public const QUERY_MODE_NONE = 0;

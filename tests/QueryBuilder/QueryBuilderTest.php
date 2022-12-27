@@ -4,18 +4,32 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\QueryBuilder;
 
+use JsonException;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
+use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stub\QueryBuilder;
+use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @group db
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class QueryBuilderTest extends AbstractQueryBuilderTest
 {
     use TestTrait;
 
+    /**
+     * @throws Exception
+     */
     public function testAddDefaultValue(): void
     {
         $db = $this->getConnection();
@@ -31,22 +45,39 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     }
 
     /**
-     * @dataProvider Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert()
      */
     public function testBatchInsert(string $table, array $columns, array $rows, string $expected): void
     {
         $db = $this->getConnection();
 
-        $qb = $db->getQueryBuilder();
+        $schemaMock = $this->createMock(Schema::class);
+        $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
 
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
-        );
-
-        $qb->batchInsert('table', ['column1', 'column2'], [['value1', 'value2'], ['value3', 'value4']]);
+        try {
+            $this->assertSame($expected, $qb->batchInsert($table, $columns, $rows));
+        } catch (InvalidArgumentException $e) {
+        } catch (Exception $e) {
+        }
     }
 
+    public function testBuildJoinException(): void
+    {
+        $db = $this->getConnection();
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(
+            'A join clause must be specified as an array of join type, join table, and optionally join condition.',
+        );
+
+        $qb = $db->getQueryBuilder();
+        $params = [];
+        $qb->buildJoin(['admin_profile', 'admin_user.id = admin_profile.user_id'], $params);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testCheckIntegrity(): void
     {
         $db = $this->getConnection();
@@ -60,6 +91,64 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->checkIntegrity('schema', 'table');
     }
 
+    public function testCreateTable(): void
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                <<<SQL
+                CREATE TABLE [[test]] (
+                \t[[id]] pk,
+                \t[[name]] string(255) NOT NULL,
+                \t[[email]] string(255) NOT NULL,
+                \t[[status]] integer NOT NULL,
+                \t[[created_at]] datetime NOT NULL,
+                \tUNIQUE test_email_unique (email)
+                )
+                SQL,
+                $db->getName(),
+            ),
+            $qb->createTable(
+                'test',
+                [
+                    'id' => 'pk',
+                    'name' => 'string(255) NOT NULL',
+                    'email' => 'string(255) NOT NULL',
+                    'status' => 'integer NOT NULL',
+                    'created_at' => 'datetime NOT NULL',
+                    'UNIQUE test_email_unique (email)',
+                ],
+            ),
+        );
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     */
+    public function testCreateView(): void
+    {
+        $db = $this->getConnection();
+
+        $schemaMock = $this->createMock(Schema::class);
+        $subQuery = (new Query($db))->select('{{bar}}')->from('{{testCreateViewTable}}')->where(['>', 'bar', '5']);
+        $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
+
+        $this->assertSame(
+            <<<SQL
+            CREATE VIEW [testCreateView] AS SELECT {{bar}} FROM {{testCreateViewTable}} WHERE [bar] > '5'
+            SQL,
+            $qb->createView('testCreateView', $subQuery)
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testDropDefaultValue(): void
     {
         $db = $this->getConnection(true);
@@ -75,7 +164,24 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     }
 
     /**
+     * @throws InvalidArgumentException
+     */
+    public function testGetExpressionBuilderException(): void
+    {
+        $db = $this->getConnection();
+
+        $this->expectException(Exception::class);
+
+        $expression = new class () implements ExpressionInterface {
+        };
+        $qb = $db->getQueryBuilder();
+        $qb->getExpressionBuilder($expression);
+    }
+
+    /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insert()
+     *
+     * @throws Exception
      */
     public function testInsert(
         string $table,
@@ -86,14 +192,11 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     ): void {
         $db = $this->getConnection();
 
-        $qb = $db->getQueryBuilder();
+        $schemaMock = $this->createMock(Schema::class);
+        $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
 
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
-        );
-
-        $qb->insert($table, $columns, $params);
+        $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
+        $this->assertSame($expectedParams, $params);
     }
 
     /**
@@ -118,6 +221,9 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->insertEx($table, $columns, $params);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testResetSequence(): void
     {
         $db = $this->getConnection();
@@ -134,6 +240,8 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::update()
+     *
+     * @throws Exception
      */
     public function testUpdate(
         string $table,
@@ -144,15 +252,12 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     ): void {
         $db = $this->getConnection();
 
-        $qb = $db->getQueryBuilder();
+        $schemaMock = $this->createMock(Schema::class);
+        $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
         $actualParams = [];
 
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
-        );
-
-        $qb->update($table, $columns, $condition, $actualParams);
+        $this->assertSame($expectedSQL, $qb->update($table, $columns, $condition, $actualParams));
+        $this->assertSame($expectedParams, $actualParams);
     }
 
     /**

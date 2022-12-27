@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
+/**
+ * The ParamInterface is an interface represents a parameter to be bound to a SQL statement.
+ */
 interface ParamInterface
 {
     /**
