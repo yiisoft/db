@@ -496,12 +496,12 @@ interface CommandInterface
     /**
      * Return the params used in the last query.
      *
-     * @param bool $asParams - by default - returned array of pair name => value
-     * if true - be returned array of ParamInterface
+     * @param bool $asParams - by default - returned array of pair name => value, if true - be returned array of
+     * ParamInterface.
      *
      * @psalm-return array|ParamInterface[]
      *
-     * @return array
+     * @return array The params used in the last query.
      */
     public function getParams(bool $asValues = true): array;
 
