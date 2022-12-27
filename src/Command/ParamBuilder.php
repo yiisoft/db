@@ -8,7 +8,8 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
- * Class ParamBuilder builds object of the {@see Param} expression class.
+ * The ParamBuilder class, which implements the {@see ExpressionBuilderInterface} interface, is used to build
+ * {@see ParamInterface} objects.
  */
 final class ParamBuilder implements ExpressionBuilderInterface
 {
