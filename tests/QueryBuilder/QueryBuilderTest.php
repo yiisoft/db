@@ -56,7 +56,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         try {
             $this->assertSame($expected, $qb->batchInsert($table, $columns, $rows));
-        } catch (InvalidArgumentException|Exception $e) {
+        } catch (InvalidArgumentException|Exception) {
         }
     }
 
