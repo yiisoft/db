@@ -638,7 +638,7 @@ class Query implements QueryInterface
         return $result;
     }
 
-    public function prepare(QueryBuilderInterface $builder): self
+    public function prepare(QueryBuilderInterface $builder): QueryInterface
     {
         return $this;
     }
