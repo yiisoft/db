@@ -180,4 +180,23 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
     }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert()
+     */
+    public function testUpsertExecute(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns
+    ): void {
+        $db = $this->getConnection(true);
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\QueryBuilder\DMLQueryBuilder::upsert is not supported by this DBMS.'
+        );
+
+        $actualParams = [];
+        $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
+    }
 }
