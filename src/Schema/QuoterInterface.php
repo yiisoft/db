@@ -14,10 +14,11 @@ interface QuoterInterface
      * Splits full table name into parts.
      *
      * @param string $name The full name of the table.
+     * @param bool $withColumn For cases when full name contain as last prat name of column.
      *
      * @return string[] The table name parts.
      */
-    public function getTableNameParts(string $name): array;
+    public function getTableNameParts(string $name, bool $withColumn = false): array;
 
     /**
      * Ensures name is wrapped with {{ and }}.

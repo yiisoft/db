@@ -1092,21 +1092,21 @@ abstract class AbstractQueryBuilderProvider
             ],
             'values and expressions' => [
                 '{{%T_upsert}}',
-                ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('now()')],
+                ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('CURRENT_TIMESTAMP')],
                 true,
                 '',
                 [':qp0' => 'dynamic@example.com'],
             ],
             'values and expressions with update part' => [
                 '{{%T_upsert}}',
-                ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('now()')],
+                ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('CURRENT_TIMESTAMP')],
                 ['[[orders]]' => new Expression('T_upsert.orders + 1')],
                 '',
                 [':qp0' => 'dynamic@example.com'],
             ],
             'values and expressions without update part' => [
                 '{{%T_upsert}}',
-                ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('now()')],
+                ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('CURRENT_TIMESTAMP')],
                 false,
                 '',
                 [':qp0' => 'dynamic@example.com'],
@@ -1117,7 +1117,7 @@ abstract class AbstractQueryBuilderProvider
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
-                            '[[time]]' => new Expression('now()'),
+                            '[[ts]]' => new Expression('CURRENT_TIMESTAMP'),
                         ],
                     ),
                 ['ts' => 0, '[[orders]]' => new Expression('T_upsert.orders + 1')],
@@ -1130,20 +1130,33 @@ abstract class AbstractQueryBuilderProvider
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
-                            '[[time]]' => new Expression('now()'),
+                            '[[ts]]' => new Expression('CURRENT_TIMESTAMP'),
                         ],
                     ),
-                ['ts' => 0, '[[orders]]' => new Expression('T_upsert.orders + 1')],
+                false,
                 '',
-                [':phEmail' => 'dynamic@example.com', ':qp1' => 0],
+                [':phEmail' => 'dynamic@example.com'],
             ],
-            'no columns to update' => ['T_upsert_1', ['a' => 1], false, '', [':qp0' => 1]],
+            'no columns to update' => [
+                'T_upsert_1',
+                ['a' => 1],
+                false,
+                '',
+                [':qp0' => 1],
+            ],
             'no columns to update with unique' => [
                 '{{%T_upsert}}',
                 ['email' => 'email'],
                 true,
                 '',
                 [':qp0' => 'email'],
+            ],
+            'no unique columns in table - simple insert' => [
+                '{{%animal}}',
+                ['type' => 'test'],
+                false,
+                '',
+                [':qp0' => 'test'],
             ],
         ];
     }
