@@ -180,4 +180,15 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
     }
+
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert()
+     */
+    public function testUpsertExecute(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns
+    ): void {
+        $this->markTestSkipped('Execute check needed only on real db');
+    }
 }
