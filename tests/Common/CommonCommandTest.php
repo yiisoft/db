@@ -1750,15 +1750,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL
         );
 
-        Assert::invokeMethod(
-            $command,
-            'setRetryHandler',
-            [static function ($exception, $attempt) use (&$attempts, &$hitHandler) {
+        $command->setRetryHandler(
+            static function ($exception, $attempt) use (&$attempts, &$hitHandler) {
                 $attempts = $attempt;
                 $hitHandler = true;
 
                 return $attempt <= 2;
-            }]
+            }
         );
 
         try {
