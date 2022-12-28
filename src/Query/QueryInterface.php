@@ -95,7 +95,6 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * If this parameter is not given, the `db` application component will be used.
      *
      * @throws Exception|InvalidConfigException|Throwable
-     *
      * @throws Exception
      * @throws InvalidConfigException
      * @throws NotSupportedException

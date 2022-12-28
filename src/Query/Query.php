@@ -742,7 +742,7 @@ final class Query implements QueryInterface
      * @throws NotSupportedException
      * @throws Throwable
      *
-     * @return bool|int|string|float|null
+     * @return bool|float|int|string|null
      *
      * @psalm-suppress PossiblyUndefinedVariable
      */
