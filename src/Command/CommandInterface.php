@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
+use Closure;
 use JsonException;
 use Throwable;
 use Yiisoft\Cache\Dependency\Dependency;
@@ -746,6 +747,26 @@ interface CommandInterface
      * {@see cancel()}
      */
     public function setRawSql(string $sql): static;
+
+    /**
+     * Sets a Closure (e.g. anonymous function) that is called when {@see Exception} is thrown when executing the
+     * command. The signature of the Closure should be:.
+     *
+     * ```php
+     * function (Exceptions $e, $attempt)
+     * {
+     *     // return true or false (whether to retry the command or rethrow $e)
+     * }
+     * ```
+     *
+     * The Closure will receive a database exception thrown and a current attempt (to execute the command) number
+     * starting from 1.
+     *
+     * @param Closure|null $handler A PHP callback to handle database exceptions.
+     *
+     * @return static The command object itself.
+     */
+    public function setRetryHandler(Closure|null $handler): static;
 
     /**
      * Specifies the SQL statement to be executed. The SQL statement will be quoted using

@@ -676,10 +676,8 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-
         $handler = static fn (): bool => true;
-
-        Assert::invokeMethod($command, 'setRetryHandler', [$handler]);
+        $command->setRetryHandler($handler);
 
         $this->assertSame($handler, Assert::getInaccessibleProperty($command, 'retryHandler'));
     }
