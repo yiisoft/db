@@ -23,30 +23,6 @@ final class QueryTest extends AbstractQueryTest
     use TestTrait;
 
     /**
-     * Ensure no ambiguous column error occurs on indexBy with JOIN.
-     *
-     * @link https://github.com/yiisoft/yii2/issues/13859
-     */
-    public function testAmbiguousColumnIndexBy()
-    {
-        $db = $this->getConnection(true);
-
-        $selectExpression = "(customer.name || ' in ' || p.description) AS name";
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.',
-        );
-
-        (new Query($db))
-            ->select([$selectExpression])
-            ->from('customer')
-            ->innerJoin('profile p', '{{customer}}.[[profile_id]] = {{p}}.[[id]]')
-            ->indexBy('id')
-            ->column();
-    }
-
-    /**
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
