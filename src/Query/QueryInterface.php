@@ -12,17 +12,20 @@ use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * The `QueryInterface` defines the minimum set of methods to be implemented by a database query.
- *
- * The default implementation of this interface is provided by {@see QueryTrait}.
+ * The QueryInterface defines several methods for building and executing database queries, including methods for
+ * selecting data, inserting data, updating data, and deleting data. It also defines methods for specifying the
+ * conditions for a query, as well as methods for pagination and sorting.
  *
  * It has support for getting {@see one} instance or {@see all}.
+ *
  * Allows pagination via {@see limit} and {@see offset}.
+ *
  * Sorting is supported via {@see orderBy} and items can be limited to match some conditions using {@see where}.
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface, Stringable
@@ -30,10 +33,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     /**
      * Adds additional parameters to be bound to the query.
      *
-     * @param array $params list of query parameter values indexed by parameter placeholders.
-     * For example, `[':name' => 'Dan', ':age' => 31]`.
+     * @param array $params The list of query parameter values indexed by parameter placeholders. For example,
+     * `[':name' => 'Dan', ':age' => 31]`.
      *
-     * @return $this the query object itself.
+     * @return self The query object itself.
      *
      * {@see params()}
      */
@@ -82,7 +85,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * Use a negative number to indicate that query cache should not be used.
      * @param Dependency|null $dependency the cache dependency associated with the cached result.
      *
-     * @return $this the Query object itself.
+     * @return self the Query object itself.
      */
     public function cache(int|null $duration = 3600, Dependency $dependency = null): self;
 
@@ -92,6 +95,11 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * If this parameter is not given, the `db` application component will be used.
      *
      * @throws Exception|InvalidConfigException|Throwable
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      *
      * @return array The first column of the query result. An empty array is returned if the query results in nothing.
      */
@@ -197,7 +205,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     /**
      * Disables query cache for this Query.
      *
-     * @return $this the Query object itself.
+     * @return self the Query object itself.
      */
     public function noCache(): self;
 
@@ -219,7 +227,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @param array $params list of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
      *
-     * @return $this the query object itself.
+     * @return self the query object itself.
      *
      * {@see addParams()}
      */
