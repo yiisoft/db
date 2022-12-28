@@ -64,7 +64,7 @@ abstract class AbstractQueryTest extends TestCase
             'mysql' => "concat(customer.name,' in ', p.description) name",
             'oci' => "[[customer]].[[name]] || ' in ' || [[p]].[[description]] name",
             'pgsql', 'sqlite' => "(customer.name || ' in ' || p.description) AS name",
-            'sqlsrv'=> 'CONCAT(customer.name, \' in \', p.description) name',
+            'sqlsrv' => 'CONCAT(customer.name, \' in \', p.description) name',
         };
 
         $result = (new Query($db))
