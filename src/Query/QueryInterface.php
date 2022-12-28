@@ -254,7 +254,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @return QueryInterface A prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
      */
-    public function prepare(QueryBuilderInterface $builder): QueryInterface;
+    public function prepare(QueryBuilderInterface $builder): self;
 
     /**
      * Returns the query result as a scalar value.
