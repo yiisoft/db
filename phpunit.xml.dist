@@ -46,6 +46,10 @@
       <file>./src/QueryBuilder/Condition/Interface/LikeConditionInterface.php</file>
       <file>./src/QueryBuilder/Condition/Interface/NotConditionInterface.php</file>
       <file>./src/QueryBuilder/Condition/Interface/SimpleConditionInterface.php</file>
+      <file>./src/QueryBuilder/DDLQueryBuilderInterface.php</file>
+      <file>./src/QueryBuilder/DMLQueryBuilderInterface.php</file>
+      <file>./src/QueryBuilder/DQLQueryBuilderInterface.php</file>
+      <file>./src/QueryBuilder/QueryBuilderInterface.php</file>
       <file>./src/Schema/ColumnSchemaInterface.php</file>
       <file>./src/Schema/QuoterInterface.php</file>
       <file>./src/Schema/SchemaInterface.php</file>

@@ -1273,38 +1273,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($db->getQuoter()->quoteSql($sql), $builder($qb));
     }
 
-    public function testCreateTable(): void
-    {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
-
-        $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                CREATE TABLE [[test]] (
-                \t[[id]] pk,
-                \t[[name]] string(255) NOT NULL,
-                \t[[email]] string(255) NOT NULL,
-                \t[[status]] integer NOT NULL,
-                \t[[created_at]] datetime NOT NULL
-                )
-                SQL,
-                $db->getName(),
-            ),
-            $qb->createTable(
-                'test',
-                [
-                    'id' => 'pk',
-                    'name' => 'string(255) NOT NULL',
-                    'email' => 'string(255) NOT NULL',
-                    'status' => 'integer NOT NULL',
-                    'created_at' => 'datetime NOT NULL',
-                ],
-            ),
-        );
-    }
-
     public function testCreateView(): void
     {
         $db = $this->getConnection();
