@@ -62,7 +62,7 @@ use function trim;
  *
  * Query internally uses the {@see QueryBuilder} class to generate the SQL statement.
  */
-final class Query implements QueryInterface
+class Query implements QueryInterface
 {
     protected array $select = [];
     protected string|null $selectOption = null;
