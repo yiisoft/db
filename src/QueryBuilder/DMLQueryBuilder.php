@@ -422,6 +422,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
 
     /**
      * Get map of normalized columns
+     *
      * @param string $table
      * @param string[] $columns
      *
