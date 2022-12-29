@@ -34,4 +34,17 @@ abstract class CommonQueryTest extends AbstractQueryTest
 
         $this->assertSame([1 => 'user1 in profile customer 1', 3 => 'user3 in profile customer 3'], $result);
     }
+
+    public function testColumnIndexByWithClosure()
+    {
+        $db = $this->getConnection(true);
+
+        $result = (new Query($db))
+            ->select(['id', 'name'])
+            ->from('customer')
+            ->indexBy(fn ($row) => $row['id'] * 2)
+            ->column();
+
+        $this->assertEquals([2 => '1', 4 => '2', 6 => '3'], $result);
+    }
 }
