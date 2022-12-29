@@ -484,6 +484,12 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         return $this;
     }
 
+    public function setRetryHandler(Closure|null $handler): static
+    {
+        $this->retryHandler = $handler;
+        return $this;
+    }
+
     public function truncateTable(string $table): static
     {
         $sql = $this->queryBuilder()->truncateTable($table);
@@ -678,30 +684,6 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         $this->refreshTableName = null;
         $this->isolationLevel = null;
         $this->retryHandler = null;
-    }
-
-    /**
-     * Sets a Closure (e.g. anonymous function) that is called when {@see Exception} is thrown when executing the
-     * command. The signature of the Closure should be:.
-     *
-     * ```php
-     * function (Exceptions $e, $attempt)
-     * {
-     *     // return true or false (whether to retry the command or rethrow $e)
-     * }
-     * ```
-     *
-     * The Closure will receive a database exception thrown and a current attempt (to execute the command) number
-     * starting from 1.
-     *
-     * @param Closure|null $handler A PHP callback to handle database exceptions.
-     *
-     * @return static The command object itself.
-     */
-    protected function setRetryHandler(Closure|null $handler): static
-    {
-        $this->retryHandler = $handler;
-        return $this;
     }
 
     /**
