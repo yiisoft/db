@@ -308,7 +308,6 @@ abstract class AbstractCommandProvider
                  *
                  * In case table name or table column is passed with curly or square bracelets, QueryBuilder can not
                  * determine the table schema and typecast values properly.
-                 * TODO: make it work. Impossible without BC breaking for public methods.
                  */
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
