@@ -12,7 +12,7 @@ use Stringable;
  *
  * It also allows you to access individual components of the DSN, such as the driver or the database name.
  */
-final class Dsn implements Stringable
+abstract class AbstractDsn implements Stringable
 {
     /**
      * @psalm-param string[] $options

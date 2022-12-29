@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Connection;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Connection\Dsn;
+use Yiisoft\Db\Tests\Support\Stub\Dsn;
 
 /**
  * @group db
