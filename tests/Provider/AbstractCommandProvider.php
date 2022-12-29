@@ -312,7 +312,7 @@ abstract class AbstractCommandProvider
                  */
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
-                    INSERT INTO [[type]] ([[type]].[[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
                     SQL,
                     $this->getDriverName(),
                 ),
