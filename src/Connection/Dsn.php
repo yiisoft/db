@@ -14,6 +14,9 @@ use Stringable;
  */
 final class Dsn implements Stringable
 {
+    /**
+     * @psalm-param string[] $options
+     */
     public function __construct(
         private string $driver,
         private string $host,
@@ -48,10 +51,7 @@ final class Dsn implements Stringable
 
         $parts = [];
 
-        /** @psalm-var string[] */
-        $options = $this->options;
-
-        foreach ($options as $key => $value) {
+        foreach ($this->options as $key => $value) {
             $parts[] = "$key=$value";
         }
 
@@ -87,7 +87,7 @@ final class Dsn implements Stringable
     }
 
     /**
-     * @return array The database host name or IP address.
+     * @return string The database host name or IP address.
      */
     public function getHost(): string
     {
@@ -103,7 +103,7 @@ final class Dsn implements Stringable
     }
 
     /**
-     * @return array The database port. Null if not set.
+     * @return string|null The database port. Null if not set.
      */
     public function getPort(): string|null
     {
