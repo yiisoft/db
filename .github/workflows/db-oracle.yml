@@ -42,7 +42,7 @@ jobs:
           - 8.2
 
         oracle:
-          - 11
+          - 18
           - 21
 
     services:
