@@ -278,11 +278,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $db->createCommand();
         $command->batchInsert($table, $columns, $values);
-        $command->prepare(false);
 
         $this->assertSame($expected, $command->getSql());
         $this->assertSame($expectedParams, $command->getParams());
 
+        $command->prepare(false);
         $command->execute();
 
         $this->assertEquals($insertedRow, (new Query($db))->from($table)->count());
