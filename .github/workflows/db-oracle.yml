@@ -42,11 +42,12 @@ jobs:
           - 8.2
 
         oracle:
-          - oracle-xe-11g-r2:latest
+          - 11
+          - 21
 
     services:
       oci:
-        image: gvenzl/oracle-xe:21
+        image: gvenzl/oracle-xe:${{ matrix.oracle }}
         ports:
           - 1521:1521
         env:
