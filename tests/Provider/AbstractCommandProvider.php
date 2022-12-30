@@ -308,11 +308,10 @@ abstract class AbstractCommandProvider
                  *
                  * In case table name or table column is passed with curly or square bracelets, QueryBuilder can not
                  * determine the table schema and typecast values properly.
-                 * TODO: make it work. Impossible without BC breaking for public methods.
                  */
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
-                    INSERT INTO [[type]] ([[type]].[[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
                     SQL,
                     $this->getDriverName(),
                 ),
