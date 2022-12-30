@@ -4,11 +4,19 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Connection;
 
+use Stringable;
+
 /**
- * Dns represents the data source name that specifies how to connect to the database.
+ * The Dsn class is typically used to parse a DSN string, which is a string that contains all the necessary information
+ * to connect to a database, such as the database driver, hostname, database name, port and options.
+ *
+ * It also allows you to access individual components of the DSN, such as the driver or the database name.
  */
-final class Dsn implements \Stringable
+abstract class AbstractDsn implements Stringable
 {
+    /**
+     * @psalm-param string[] $options
+     */
     public function __construct(
         private string $driver,
         private string $host,
@@ -27,11 +35,12 @@ final class Dsn implements \Stringable
      * `key=value` and concatenated by `;`. For example:
      *
      * ```php
-     * $dsn = new Dsn('mysql', '127.0.0.1', 'yiitest', '3306');
-     * $connection = new Connection($this->cache, $this->logger, $this->profiler, $dsn->getDsn());
+     * $dsn = new Dsn('mysql', '127.0.0.1', 'yiitest', '3306', ['charset' => 'utf8mb4']);
+     * $pdoDriver = new PDODriver($dsn->asString(), 'username', 'password');
+     * $connection = new Connection($pdoDriver, $queryCache, $schemaCache);
      * ```
      *
-     * Will result in the DSN string `mysql:host=127.0.0.1;dbname=yiitest;port=3306`.
+     * Will result in the DSN string `mysql:host=127.0.0.1;dbname=yiitest;port=3306;charset=utf8mb4`.
      */
     public function asString(): string
     {
@@ -43,10 +52,7 @@ final class Dsn implements \Stringable
 
         $parts = [];
 
-        /** @psalm-var string[] */
-        $options = $this->options;
-
-        foreach ($options as $key => $value) {
+        foreach ($this->options as $key => $value) {
             $parts[] = "$key=$value";
         }
 
@@ -57,26 +63,49 @@ final class Dsn implements \Stringable
         return $dsn;
     }
 
+    /**
+     * @return string The Data Source Name, or DSN, contains the information required to connect to the database.
+     */
     public function __toString(): string
     {
         return $this->asString();
     }
 
+    /**
+     * @return string The database name to connect to.
+     */
     public function getDatabaseName(): string
     {
         return $this->databaseName;
     }
 
+    /**
+     * @return string The database driver name.
+     */
     public function getDriver(): string
     {
         return $this->driver;
     }
 
+    /**
+     * @return string The database host name or IP address.
+     */
     public function getHost(): string
     {
         return $this->host;
     }
 
+    /**
+     * @return array The database connection options. Default value to an empty array.
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * @return string|null The database port. Null if not set.
+     */
     public function getPort(): string|null
     {
         return $this->port;
