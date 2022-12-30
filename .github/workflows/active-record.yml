@@ -52,10 +52,17 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
       oci:
-          image: wnameless/oracle-xe-11g-r2:latest
-          ports:
-              - 1521:1521
-          options: --name=oci
+        image: wnameless/oracle-xe-11g-r2:latest
+        ports:
+          - 1521:1521
+        env:
+          ORACLE_PASSWORD : root
+        options: >-
+          --name=oci
+          --health-cmd healthcheck.sh
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
       postgres:
         image: postgres:14
         env:
