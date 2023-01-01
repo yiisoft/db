@@ -32,7 +32,7 @@ interface DMLQueryBuilderInterface
      * The method will properly escape the column names, and quote the values to be inserted.
      *
      * @param string $table the table that new rows will be inserted into.
-     * @param array $columns the column names.
+     * @param string[] $columns the column names.
      * @param Generator|iterable $rows the rows to be batched inserted into the table.
      * @param array $params the binding parameters. This parameter exists.
      *

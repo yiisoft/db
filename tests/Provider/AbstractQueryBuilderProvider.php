@@ -187,18 +187,24 @@ abstract class AbstractQueryBuilderProvider
                 '{{%type}}',
                 ['{{%type}}.[[float_col]]', '[[time]]'],
                 [[null, new Expression('now()')], [null, new Expression('now()')]],
-                'expected' => <<<SQL
-                INSERT INTO {{%type}} ({{%type}}.[[float_col]], [[time]]) VALUES (:qp0, now()), (:qp1, now())
-                SQL,
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO {{%type}} ([[float_col]], [[time]]) VALUES (:qp0, now()), (:qp1, now())
+                    SQL,
+                    $this->getDriverName()
+                ),
                 [':qp0' => null, ':qp1' => null],
             ],
             'bool-false, time-now()' => [
                 '{{%type}}',
                 ['{{%type}}.[[bool_col]]', '[[time]]'],
                 [[false, new Expression('now()')]],
-                'expected' => <<<SQL
-                INSERT INTO {{%type}} ({{%type}}.[[bool_col]], [[time]]) VALUES (:qp0, now())
-                SQL,
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO {{%type}} ([[bool_col]], [[time]]) VALUES (:qp0, now())
+                    SQL,
+                    $this->getDriverName()
+                ),
                 [':qp0' => null],
             ],
         ];
@@ -899,11 +905,14 @@ abstract class AbstractQueryBuilderProvider
             ],
             'params-and-expressions' => [
                 '{{%type}}',
-                ['{{%type}}.[[related_id]]' => null, '[[time]]' => new Expression('now()')],
+                ['{{%type}}.[[related_id]]' => null, 'time' => new Expression('now()')],
                 [],
-                <<<SQL
-                INSERT INTO {{%type}} ({{%type}}.[[related_id]], [[time]]) VALUES (:qp0, now())
-                SQL,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO {{%type}} ([[related_id]], [[time]]) VALUES (:qp0, now())
+                    SQL,
+                    $db->getName(),
+                ),
                 [':qp0' => null],
             ],
             'carry passed params' => [
