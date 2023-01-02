@@ -131,6 +131,13 @@ abstract class QueryBuilder implements QueryBuilderInterface
     public function bindParam(mixed $value, array &$params = []): string
     {
         $phName = self::PARAM_PREFIX . count($params);
+
+        $additionalCount = 0;
+        while (isset($params[$phName])) {
+            $phName = self::PARAM_PREFIX . count($params) . '_' . $additionalCount;
+            ++$additionalCount;
+        }
+
         /** @psalm-var mixed */
         $params[$phName] = $value;
 

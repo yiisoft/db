@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Tests;
 use Closure;
 use PHPUnit\Framework\TestCase;
 use stdClass;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
@@ -1929,5 +1930,57 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $command = $db->createCommand($actualSQL, $actualParams);
         $command->execute();
+    }
+
+    public function testOverrideParameters1()
+    {
+        $db = $this->getConnection();
+
+        $params = [':id' => 1, ':pv2' => new Expression('(select type from {{%animal}}) where id=1')];
+        $expression = new Expression('id = :id AND type = :pv2', $params);
+
+        $query = new Query($db);
+        $query->select('*')
+            ->from('{{%animal}}')
+            ->andWhere($expression)
+            ->andWhere(['type' => new Param('test1', \PDO::PARAM_STR)])
+        ;
+
+        $command = $query->createCommand();
+        $this->assertCount(3, $command->getParams());
+        $this->assertEquals([':id', ':pv2', ':pv2_0',], array_keys($command->getParams()));
+        $this->assertEquals(
+            DbHelper::replaceQuotes(
+                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = (select type from {{%animal}}) where id=1) AND ([[type]]=\'test1\')',
+                $db->getName()
+            ),
+            $command->getRawSql()
+        );
+    }
+
+    public function testOverrideParameters2()
+    {
+        $db = $this->getConnection();
+
+        $expression = new Expression('id = :qp1', [':qp1' => 1]);
+
+        $query = new Query($db);
+        $query->select('*')
+            ->from('{{%animal}}')
+            ->andWhere($expression)
+            ->andWhere(['type' => 'test2'])
+        ;
+
+        $command = $query->createCommand();
+
+        $this->assertCount(2, $command->getParams());
+        $this->assertEquals([':qp1', ':qp1_0',], array_keys($command->getParams()));
+        $this->assertEquals(
+            DbHelper::replaceQuotes(
+                'SELECT * FROM [[animal]] WHERE (id = 1) AND ([[type]]=\'test2\')',
+                $db->getName()
+            ),
+            $command->getRawSql()
+        );
     }
 }
