@@ -1932,7 +1932,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $command->execute();
     }
 
-    public function testOverrideParmeters()
+    public function testOverrideParameters1()
     {
         $db = $this->getConnection();
 
@@ -1952,6 +1952,32 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals(
             DbHelper::replaceQuotes(
                 'SELECT * FROM [[animal]] WHERE (id = 1 AND type = (select type from {{%animal}}) where id=1) AND ([[type]]=\'test1\')',
+                $db->getName()
+            ),
+            $command->getRawSql()
+        );
+    }
+
+    public function testOverrideParameters2()
+    {
+        $db = $this->getConnection();
+
+        $expression = new Expression('id = :qp1', [':qp1' => 1]);
+
+        $query = new Query($db);
+        $query->select('*')
+            ->from('{{%animal}}')
+            ->andWhere($expression)
+            ->andWhere(['type' => 'test2'])
+        ;
+
+        $command = $query->createCommand();
+
+        $this->assertCount(2, $command->getParams());
+        $this->assertEquals([':qp1', ':qp1_0',], array_keys($command->getParams()));
+        $this->assertEquals(
+            DbHelper::replaceQuotes(
+                'SELECT * FROM [[animal]] WHERE (id = 1) AND ([[type]]=\'test2\')',
                 $db->getName()
             ),
             $command->getRawSql()
