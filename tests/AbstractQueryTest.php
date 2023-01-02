@@ -701,4 +701,20 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame(['query1', 'query2'], $query->getWithQueries());
     }
+
+    public function testColumnWithIndexBy(): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))
+            ->select('customer.name')
+            ->from('customer')
+            ->indexBy('customer.id');
+
+        $this->assertSame([
+            1 => 'user1',
+            2 => 'user2',
+            3 => 'user3',
+        ], $query->column());
+    }
 }
