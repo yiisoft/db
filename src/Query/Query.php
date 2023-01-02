@@ -295,7 +295,7 @@ class Query implements QueryInterface
             if ($this->indexBy instanceof Closure) {
                 $results[($this->indexBy)($row)] = $value;
             } else {
-                $results[$row[$column]] = $value;
+                $results[$row[$column] ?? $row[$this->indexBy]] = $value;
             }
         }
 
