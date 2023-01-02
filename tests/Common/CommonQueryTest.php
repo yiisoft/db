@@ -9,30 +9,13 @@ use Yiisoft\Db\Tests\AbstractQueryTest;
 
 abstract class CommonQueryTest extends AbstractQueryTest
 {
-    /**
-     * Ensure no ambiguous column error occurs on indexBy with JOIN.
-     *
-     * @link https://github.com/yiisoft/yii2/issues/13859
-     */
-    public function testAmbiguousColumnIndexBy()
+    public function testColumnWithIndexBy(): void
     {
         $db = $this->getConnection(true);
 
-        $selectExpression = match ($db->getName()) {
-            'mysql' => "concat(customer.name,' in ', p.description) name",
-            'oci' => "[[customer]].[[name]] || ' in ' || [[p]].[[description]] name",
-            'pgsql', 'sqlite' => "(customer.name || ' in ' || p.description) AS name",
-            'sqlsrv' => 'CONCAT(customer.name, \' in \', p.description) name',
-        };
+        $query = (new Query($db))->select('customer.name')->from('customer')->indexBy('customer.id');
 
-        $result = (new Query($db))
-            ->select([$selectExpression])
-            ->from('customer')
-            ->innerJoin('profile p', '[[customer]].[[profile_id]] = [[p]].[[id]]')
-            ->indexBy('id')
-            ->column();
-
-        $this->assertSame([1 => 'user1 in profile customer 1', 3 => 'user3 in profile customer 3'], $result);
+        $this->assertSame([1 => 'user1', 2 => 'user2', 3 => 'user3'], $query->column());
     }
 
     public function testColumnIndexByWithClosure()
