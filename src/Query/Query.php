@@ -12,7 +12,9 @@ use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Helper\QueryHelper;
@@ -59,11 +61,6 @@ use function trim;
  * ```
  *
  * Query internally uses the {@see QueryBuilder} class to generate the SQL statement.
- *
- * A more detailed usage guide on how to work with Query can be found in the
- * [guide article on Query Builder](guide:db-query-builder).
- *
- * @property string[] $tablesUsedInFrom Table names indexed by aliases. This property is read-only.
  */
 class Query implements QueryInterface
 {
@@ -101,7 +98,7 @@ class Query implements QueryInterface
         return serialize($this);
     }
 
-    public function addGroupBy(array|string|ExpressionInterface $columns): QueryInterface
+    public function addGroupBy(array|string|ExpressionInterface $columns): self
     {
         if ($columns instanceof ExpressionInterface) {
             $columns = [$columns];
@@ -118,7 +115,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function addOrderBy(array|string|ExpressionInterface $columns): QueryInterface
+    public function addOrderBy(array|string|ExpressionInterface $columns): self
     {
         $columns = $this->createQueryHelper()->normalizeOrderBy($columns);
 
@@ -131,7 +128,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function addParams(array $params): QueryInterface
+    public function addParams(array $params): self
     {
         if (!empty($params)) {
             if (empty($this->params)) {
@@ -154,7 +151,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function andFilterHaving(array $condition): QueryInterface
+    public function andFilterHaving(array $condition): self
     {
         $condition = $this->filterCondition($condition);
 
@@ -165,7 +162,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function andFilterWhere(array $condition): QueryInterface
+    public function andFilterWhere(array $condition): self
     {
         $condition = $this->filterCondition($condition);
 
@@ -176,7 +173,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function andHaving(array|string|ExpressionInterface $condition, array $params = []): QueryInterface
+    public function andHaving(array|string|ExpressionInterface $condition, array $params = []): self
     {
         if ($this->having === null) {
             $this->having = $condition;
@@ -189,7 +186,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function addSelect(array|string|ExpressionInterface $columns): QueryInterface
+    public function addSelect(array|string|ExpressionInterface $columns): self
     {
         if ($this->select === []) {
             return $this->select($columns);
@@ -200,7 +197,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function andFilterCompare(string $name, string|null $value, string $defaultOperator = '='): QueryInterface
+    public function andFilterCompare(string $name, string|null $value, string $defaultOperator = '='): self
     {
         $operator = $defaultOperator;
 
@@ -212,7 +209,7 @@ class Query implements QueryInterface
         return $this->andFilterWhere([$operator, $name, $value]);
     }
 
-    public function andWhere($condition, array $params = []): QueryInterface
+    public function andWhere($condition, array $params = []): self
     {
         if ($this->where === null) {
             $this->where = $condition;
@@ -248,7 +245,7 @@ class Query implements QueryInterface
         return $this->db->createBatchQueryResult($this)->batchSize($batchSize);
     }
 
-    public function cache(int|null $duration = 3600, Dependency $dependency = null): QueryInterface
+    public function cache(int|null $duration = 3600, Dependency $dependency = null): self
     {
         $this->queryCacheDuration = $duration;
         $this->queryCacheDependency = $dependency;
@@ -258,6 +255,11 @@ class Query implements QueryInterface
 
     /**
      * @psalm-suppress MixedArrayOffset
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      */
     public function column(): array
     {
@@ -319,7 +321,7 @@ class Query implements QueryInterface
         return $command;
     }
 
-    public function distinct(bool|null $value = true): QueryInterface
+    public function distinct(bool|null $value = true): self
     {
         $this->distinct = $value;
 
@@ -348,14 +350,14 @@ class Query implements QueryInterface
         return (bool) $command->queryScalar();
     }
 
-    public function emulateExecution(bool $value = true): QueryInterface
+    public function emulateExecution(bool $value = true): self
     {
         $this->emulateExecution = $value;
 
         return $this;
     }
 
-    public function filterHaving(array $condition): QueryInterface
+    public function filterHaving(array $condition): self
     {
         $condition = $this->filterCondition($condition);
 
@@ -366,7 +368,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function filterWhere(array $condition): QueryInterface
+    public function filterWhere(array $condition): self
     {
         $condition = $this->filterCondition($condition);
 
@@ -377,7 +379,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function from(array|ExpressionInterface|string $tables): QueryInterface
+    public function from(array|ExpressionInterface|string $tables): self
     {
         if ($tables instanceof ExpressionInterface) {
             $tables = [$tables];
@@ -472,7 +474,7 @@ class Query implements QueryInterface
         return $this->withQueries;
     }
 
-    public function groupBy(array|string|ExpressionInterface $columns): QueryInterface
+    public function groupBy(array|string|ExpressionInterface $columns): self
     {
         if ($columns instanceof ExpressionInterface) {
             $columns = [$columns];
@@ -484,7 +486,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function having(array|ExpressionInterface|string|null $condition, array $params = []): QueryInterface
+    public function having(array|ExpressionInterface|string|null $condition, array $params = []): self
     {
         $this->having = $condition;
         $this->addParams($params);
@@ -492,35 +494,35 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function indexBy(Closure|string|null $column): QueryInterface
+    public function indexBy(Closure|string|null $column): self
     {
         $this->indexBy = $column;
 
         return $this;
     }
 
-    public function innerJoin(array|string $table, array|string $on = '', array $params = []): QueryInterface
+    public function innerJoin(array|string $table, array|string $on = '', array $params = []): self
     {
         $this->join[] = ['INNER JOIN', $table, $on];
 
         return $this->addParams($params);
     }
 
-    public function join(string $type, array|string $table, array|string $on = '', array $params = []): QueryInterface
+    public function join(string $type, array|string $table, array|string $on = '', array $params = []): self
     {
         $this->join[] = [$type, $table, $on];
 
         return $this->addParams($params);
     }
 
-    public function leftJoin(array|string $table, array|string $on = '', array $params = []): QueryInterface
+    public function leftJoin(array|string $table, array|string $on = '', array $params = []): self
     {
         $this->join[] = ['LEFT JOIN', $table, $on];
 
         return $this->addParams($params);
     }
 
-    public function limit(Expression|int|null $limit): QueryInterface
+    public function limit(Expression|int|null $limit): self
     {
         $this->limit = $limit;
 
@@ -541,14 +543,14 @@ class Query implements QueryInterface
         return is_numeric($min) ? $min : null;
     }
 
-    public function noCache(): QueryInterface
+    public function noCache(): self
     {
         $this->queryCacheDuration = -1;
 
         return $this;
     }
 
-    public function offset(Expression|int|null $offset): QueryInterface
+    public function offset(Expression|int|null $offset): self
     {
         $this->offset = $offset;
 
@@ -563,14 +565,14 @@ class Query implements QueryInterface
         };
     }
 
-    public function orderBy(array|string|ExpressionInterface $columns): QueryInterface
+    public function orderBy(array|string|ExpressionInterface $columns): self
     {
         $this->orderBy = $this->createQueryHelper()->normalizeOrderBy($columns);
 
         return $this;
     }
 
-    public function orFilterHaving(array $condition): QueryInterface
+    public function orFilterHaving(array $condition): self
     {
         $condition = $this->filterCondition($condition);
 
@@ -581,7 +583,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function orFilterWhere(array $condition): QueryInterface
+    public function orFilterWhere(array $condition): self
     {
         $condition = $this->filterCondition($condition);
 
@@ -592,7 +594,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function orHaving(array|string|ExpressionInterface $condition, array $params = []): QueryInterface
+    public function orHaving(array|string|ExpressionInterface $condition, array $params = []): self
     {
         if ($this->having === null) {
             $this->having = $condition;
@@ -605,7 +607,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function orWhere(array|string|ExpressionInterface $condition, array $params = []): QueryInterface
+    public function orWhere(array|string|ExpressionInterface $condition, array $params = []): self
     {
         if ($this->where === null) {
             $this->where = $condition;
@@ -618,7 +620,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function params(array $params): QueryInterface
+    public function params(array $params): self
     {
         $this->params = $params;
 
@@ -636,7 +638,7 @@ class Query implements QueryInterface
 
         $result = [];
 
-        /** @psalm-var array[][] */
+        /** @psalm-var array[][] $row */
         foreach ($rows as $row) {
             $result[ArrayHelper::getValueByPath($row, $this->indexBy)] = $row;
         }
@@ -649,7 +651,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function rightJoin(array|string $table, array|string $on = '', array $params = []): QueryInterface
+    public function rightJoin(array|string $table, array|string $on = '', array $params = []): self
     {
         $this->join[] = ['RIGHT JOIN', $table, $on];
 
@@ -664,7 +666,7 @@ class Query implements QueryInterface
         };
     }
 
-    public function select(array|string|ExpressionInterface $columns, string $option = null): QueryInterface
+    public function select(array|string|ExpressionInterface $columns, string $option = null): self
     {
         $this->select = $this->createQueryHelper()->normalizeSelect($columns);
         $this->selectOption = $option;
@@ -672,21 +674,21 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function selectOption(?string $value): QueryInterface
+    public function selectOption(string|null $value): self
     {
         $this->selectOption = $value;
 
         return $this;
     }
 
-    public function setJoin(array $value): QueryInterface
+    public function setJoin(array $value): self
     {
         $this->join = $value;
 
         return $this;
     }
 
-    public function setUnion(array $value): QueryInterface
+    public function setUnion(array $value): self
     {
         $this->union = $value;
 
@@ -706,14 +708,14 @@ class Query implements QueryInterface
         };
     }
 
-    public function union(QueryInterface|string $sql, bool $all = false): QueryInterface
+    public function union(QueryInterface|string $sql, bool $all = false): self
     {
         $this->union[] = ['query' => $sql, 'all' => $all];
 
         return $this;
     }
 
-    public function where(array|string|ExpressionInterface|null $condition, array $params = []): QueryInterface
+    public function where(array|string|ExpressionInterface|null $condition, array $params = []): self
     {
         $this->where = $condition;
         $this->addParams($params);
@@ -721,16 +723,16 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function withQuery(QueryInterface|string $query, string $alias, bool $recursive = false): QueryInterface
+    public function withQuery(QueryInterface|string $query, string $alias, bool $recursive = false): self
     {
         $this->withQueries[] = ['query' => $query, 'alias' => $alias, 'recursive' => $recursive];
 
         return $this;
     }
 
-    public function withQueries(array $value): QueryInterface
+    public function withQueries(array $withQueries): self
     {
-        $this->withQueries = $value;
+        $this->withQueries = $withQueries;
 
         return $this;
     }
@@ -742,14 +744,18 @@ class Query implements QueryInterface
      *
      * @param ExpressionInterface|string $selectExpression
      *
-     *@throws Exception|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
+     *
+     * @return bool|float|int|string|null
      *
      * @psalm-suppress PossiblyUndefinedVariable
      */
     protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|null|string|float
     {
-        $command = null;
-
         if ($this->emulateExecution) {
             return null;
         }
@@ -771,20 +777,12 @@ class Query implements QueryInterface
             $this->limit = null;
             $this->offset = null;
 
-            try {
-                $command = $this->createCommand();
-            } catch (Throwable $e) {
-                /** throw it later */
-            }
+            $command = $this->createCommand();
 
             $this->select = $select;
             $this->orderBy = $order;
             $this->limit = $limit;
             $this->offset = $offset;
-
-            if (isset($e) || $command === null) {
-                throw $e;
-            }
 
             return $command->queryScalar();
         }
@@ -792,6 +790,7 @@ class Query implements QueryInterface
         $query = (new self($this->db))->select($selectExpression)->from(['c' => $this]);
         [$sql, $params] = $this->db->getQueryBuilder()->build($query);
         $command = $this->db->createCommand($sql, $params);
+
         $this->setCommandCache($command);
 
         return $command->queryScalar();

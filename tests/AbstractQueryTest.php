@@ -129,6 +129,41 @@ abstract class AbstractQueryTest extends TestCase
      * @throws InvalidConfigException
      * @throws Throwable
      */
+    public function testCount(): void
+    {
+        $db = $this->getConnection(true);
+
+        $count = (new Query($db))->from('customer')->count();
+
+        $this->assertEquals(3, $count);
+
+        $count = (new Query($db))->from('customer')->where(['status' => 2])->count();
+
+        $this->assertEquals(1, $count);
+
+        $count = (new Query($db))
+            ->select('[[status]], COUNT([[id]]) cnt')
+            ->from('customer')
+            ->groupBy('status')
+            ->count();
+
+        $this->assertEquals(2, $count);
+
+        // Testing that orderBy() should be ignored here as it does not affect the count anyway.
+        $count = (new Query($db))->from('customer')->orderBy('status')->count();
+
+        $this->assertEquals(3, $count);
+
+        $count = (new Query($db))->from('customer')->orderBy('id')->limit(1)->count();
+
+        $this->assertEquals(3, $count);
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     */
     public function testEmulateExecution(): void
     {
         $db = $this->getConnection(true);
