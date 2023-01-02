@@ -107,6 +107,7 @@ interface QuoterInterface
      * Quotes a string value for use in a query.
      *
      * Note that if the parameter is not a string, it will be returned without change.
+     * Attention: The usage of this method is not safe. Use prepared statements.
      *
      * @param mixed $value The value to be quoted.
      *
