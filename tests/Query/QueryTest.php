@@ -104,4 +104,14 @@ final class QueryTest extends AbstractQueryTest
 
         (new Query($db))->from('customer')->where(['status' => 2])->one();
     }
+
+    public function testColumnWithIndexBy(): void
+    {
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+        );
+
+        parent::testColumnWithIndexBy();
+    }
 }

@@ -281,6 +281,14 @@ class Query implements QueryInterface
 
         $rows = $this->createCommand()->queryAll();
         $results = [];
+        $column = null;
+        if (is_string($this->indexBy)) {
+            if (($dotPos = strpos($this->indexBy, '.')) === false) {
+                $column = $this->indexBy;
+            } else {
+                $column = substr($this->indexBy, $dotPos + 1);
+            }
+        }
 
         /** @psalm-var array<array-key, array<string, string>> $rows */
         foreach ($rows as $row) {
@@ -289,7 +297,7 @@ class Query implements QueryInterface
             if ($this->indexBy instanceof Closure) {
                 $results[($this->indexBy)($row)] = $value;
             } else {
-                $results[$row[$this->indexBy]] = $value;
+                $results[$row[$column] ?? $row[$this->indexBy]] = $value;
             }
         }
 
