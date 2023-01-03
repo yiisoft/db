@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Closure;
+use Generator;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Yiisoft\Db\Command\Param;
@@ -186,7 +187,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert()
      */
-    public function testBatchInsert(string $table, array $columns, array $rows, string $expected): void
+    public function testBatchInsert(string $table, array $columns, iterable|Generator $rows, string $expected): void
     {
         $db = $this->getConnection();
 
