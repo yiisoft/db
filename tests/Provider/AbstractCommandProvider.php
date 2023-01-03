@@ -593,6 +593,18 @@ abstract class AbstractCommandProvider
             ],
             [
                 '{{table}}',
+                ['{{table}}.name' => '{{test}}'],
+                ['id' => 1],
+                ['id' => 'boolean'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
+                    SQL,
+                    $this->getDriverName(),
+                ),
+            ],
+            [
+                '{{table}}',
                 ['name' => '{{test}}'],
                 ['id' => 1],
                 ['id' => 'float'],
