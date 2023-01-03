@@ -104,10 +104,6 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
 
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
     {
-        if (!$columns instanceof QueryInterface) {
-            $columns = $this->normalizeColumnNames($table, $columns);
-        }
-
         /**
          * @psalm-var string[] $names
          * @psalm-var string[] $placeholders
@@ -142,8 +138,6 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
      */
     public function update(string $table, array $columns, array|string $condition, array &$params = []): string
     {
-        $columns = $this->normalizeColumnNames($table, $columns);
-
         /** @psalm-var string[] $lines */
         [$lines, $params] = $this->prepareUpdateSets($table, $columns, $params);
         $sql = 'UPDATE ' . $this->quoter->quoteTableName($table) . ' SET ' . implode(', ', $lines);
@@ -212,6 +206,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
         if ($columns instanceof QueryInterface) {
             [$names, $values, $params] = $this->prepareInsertSelectSubQuery($columns, $params);
         } else {
+            $columns = $this->normalizeColumnNames($table, $columns);
             /**
              * @var mixed $value
              * @psalm-var array<string, mixed> $columns
@@ -239,6 +234,8 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
         $columnSchemas = $tableSchema !== null ? $tableSchema->getColumns() : [];
 
         $sets = [];
+
+        $columns = $this->normalizeColumnNames($table, $columns);
 
         /**
          * @psalm-var array<string, mixed> $columns
@@ -271,6 +268,14 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
         array &$constraints = []
     ): array {
         $insertNames = [];
+
+        if (!$insertColumns instanceof QueryInterface) {
+            $insertColumns = $this->normalizeColumnNames($table, $insertColumns);
+        }
+
+        if (is_array($updateColumns)) {
+            $updateColumns = $this->normalizeColumnNames($table, $updateColumns);
+        }
 
         if ($insertColumns instanceof QueryInterface) {
             /** @psalm-var list<string> $insertNames */
