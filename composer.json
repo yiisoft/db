@@ -27,6 +27,8 @@
         "psr/log": "^2.0|^3.0",
         "yiisoft/arrays": "^2.0",
         "yiisoft/cache": "^2.0",
+        "yiisoft/db-mssql": "dev-master",
+        "yiisoft/db-oracle": "dev-default_value as dev-master",
         "yiisoft/log": "^2.0",
         "yiisoft/profiler": "^2.0",
         "yiisoft/strings": "^2.0"
@@ -75,5 +77,11 @@
     "scripts": {
         "test": "phpunit --testdox --no-interaction",
         "test-watch": "phpunit-watcher watch"
+    },
+    "repositories": {
+        "repo": {
+            "type": "vcs",
+            "url": "https://github.com/darkdef/db-oracle"
+        }
     }
 }

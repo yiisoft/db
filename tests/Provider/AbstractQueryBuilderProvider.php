@@ -207,6 +207,16 @@ abstract class AbstractQueryBuilderProvider
                 ),
                 [':qp0' => null],
             ],
+            'empty-sql' => [
+                '{{%type}}',
+                [],
+                (static function () {
+                    if (false) {
+                        yield [];
+                    }
+                })(),
+                '',
+            ]
         ];
     }
 
