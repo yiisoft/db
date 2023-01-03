@@ -216,7 +216,7 @@ abstract class AbstractQueryBuilderProvider
                     }
                 })(),
                 '',
-            ]
+            ],
         ];
     }
 
