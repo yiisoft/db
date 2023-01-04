@@ -104,6 +104,10 @@ abstract class AbstractConnectionTest extends TestCase
         $db->setProfiler($profiler);
 
         $this->assertSame($profiler, Assert::getInaccessibleProperty($db, 'profiler'));
+
+        $db->notProfiler();
+
+        $this->assertNull(Assert::getInaccessibleProperty($db, 'profiler'));
     }
 
     public function testSetTablePrefix(): void

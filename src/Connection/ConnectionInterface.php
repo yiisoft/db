@@ -22,6 +22,13 @@ use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function version_compare;
 
+/**
+ * The ConnectionInterface provides methods for establishing a connection to a database, executing SQL statements, and
+ * performing other tasks related to interacting with a database.
+ *
+ * It allows you to access and manipulate databases in a database-agnostic way, so you can write code that works with
+ * different database systems without having to worry about the specific details of each one.
+ */
 interface ConnectionInterface
 {
     /**
@@ -31,9 +38,12 @@ interface ConnectionInterface
      *
      * {@see TransactionInterface::begin()} for details.
      *
-     * @throws Exception|InvalidConfigException|NotSupportedException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @throws Throwable
      *
-     * @return TransactionInterface The transaction initiated
+     * @return TransactionInterface The transaction initiated.
      */
     public function beginTransaction(string $isolationLevel = null): TransactionInterface;
 
@@ -73,6 +83,14 @@ interface ConnectionInterface
      */
     public function cache(Closure $closure, int $duration = null, Dependency $dependency = null): mixed;
 
+    /**
+     * Create a batch query result instance.
+     *
+     * @param QueryInterface $query The query to be executed.
+     * @param bool $each Whether to return each row of the result set one at a time.
+     *
+     * @return BatchQueryResultInterface The batch query result instance.
+     */
     public function createBatchQueryResult(QueryInterface $query, bool $each = false): BatchQueryResultInterface;
 
     /**
@@ -81,14 +99,17 @@ interface ConnectionInterface
      * @param string|null $sql The SQL statement to be executed
      * @param array $params The parameters to be bound to the SQL statement
      *
-     * @throws Exception|InvalidConfigException
+     * @throws Exception
+     * @throws InvalidConfigException
      *
-     * @return CommandInterface
+     * @return CommandInterface The database command instance.
      */
     public function createCommand(string $sql = null, array $params = []): CommandInterface;
 
     /**
      * Create a transaction instance.
+     *
+     * @return TransactionInterface The transaction instance.
      */
     public function createTransaction(): TransactionInterface;
 
@@ -104,7 +125,7 @@ interface ConnectionInterface
      *
      * For example in PDO implementation: [$dsn, $username]
      *
-     * @return array
+     * @return array The cache key as array.
      */
     public function getCacheKey(): array;
 
@@ -113,16 +134,17 @@ interface ConnectionInterface
      *
      * Use this method for informational purposes only.
      *
-     * @return string
+     * @return string The name of the DB driver for the current `dsn`.
      */
     public function getName(): string;
 
     /**
      * Returns the ID of the last inserted row or sequence value.
      *
-     * @param string|null $sequenceName name of the sequence object (required by some DBMS)
+     * @param string|null $sequenceName The name of the sequence object (required by some DBMS).
      *
-     * @throws Exception|InvalidCallException
+     * @throws Exception
+     * @throws InvalidCallException
      *
      * @return string The row ID of the last row inserted, or the last value retrieved from the sequence object
      *
@@ -133,31 +155,35 @@ interface ConnectionInterface
     /**
      * Returns the query builder for the current DB connection.
      *
-     * @return QueryBuilderInterface the query builder for the current DB connection.
+     * @return QueryBuilderInterface The query builder for the current DB connection.
      */
     public function getQueryBuilder(): QueryBuilderInterface;
 
     /**
      * Return quoter helper for current DB connection.
+     *
+     * @return QuoterInterface The quoter helper for the current DB connection.
      */
     public function getQuoter(): QuoterInterface;
 
     /**
      * Returns the schema information for the database opened by this connection.
      *
-     * @return SchemaInterface the schema information for the database opened by this connection.
+     * @return SchemaInterface The schema information for the database opened by this connection.
      */
     public function getSchema(): SchemaInterface;
 
     /**
      * Returns a server version as a string comparable by {@see version_compare()}.
      *
-     * @return string server version as a string.
+     * @return string The server version as a string.
      */
     public function getServerVersion(): string;
 
     /**
      * Return table prefix for current DB connection.
+     *
+     * @return string The table prefix for the current DB connection.
      */
     public function getTablePrefix(): string;
 
@@ -167,7 +193,8 @@ interface ConnectionInterface
      * @param string $name The table name.
      * @param bool $refresh Whether to reload the table schema even if it is found in the cache.
      *
-     * @return TableSchemaInterface|null
+     * @return TableSchemaInterface|null The schema information for the named table. Null if the named table does not
+     * exist.
      */
     public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null;
 
@@ -181,12 +208,12 @@ interface ConnectionInterface
     /**
      * Returns a value indicating whether the DB connection is established.
      *
-     * @return bool whether the DB connection is established.
+     * @return bool Whether the DB connection is established.
      */
     public function isActive(): bool;
 
     /**
-     * @return bool whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
+     * @return bool Whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
      */
     public function isSavepointEnabled(): bool;
 
@@ -230,14 +257,15 @@ interface ConnectionInterface
      *
      * It does nothing if a DB connection has already been established.
      *
-     * @throws Exception|InvalidConfigException If connection fails
+     * @throws Exception
+     * @throws InvalidConfigException If connection fails.
      */
     public function open(): void;
 
     /**
      * Allows you to enable and disable the query cache.
      *
-     * @param bool $value whether to enable or disable the query cache.
+     * @param bool $value Whether to enable or disable the query cache.
      */
     public function queryCacheEnable(bool $value): void;
 
@@ -271,7 +299,7 @@ interface ConnectionInterface
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      * {@see TransactionInterface::begin()} for details.
      *
-     *@throws Throwable If there is any exception during query. In this case the transaction will be rolled back.
+     * @throws Throwable If there is any exception during query. In this case the transaction will be rolled back.
      *
      * @return mixed Result of callback function.
      */
