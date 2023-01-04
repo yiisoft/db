@@ -299,7 +299,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         $buildParams = [];
 
         foreach ($this->params as $name => $value) {
-                $buildParams[$name] = $value->getValue();
+            $buildParams[$name] = $value->getValue();
         }
 
         return $buildParams;
@@ -346,7 +346,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         $sql = '';
 
         foreach (explode('?', $this->sql) as $i => $part) {
-            $sql .= $part . (string) (isset($params[$i]) ? $params[$i] : '');
+            $sql .= $part . (string) ($params[$i] ?? '');
         }
 
         return $sql;
