@@ -298,15 +298,9 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
 
         $buildParams = [];
 
-        /** @psalm-var ParamInterface|array $value */
         foreach ($this->params as $name => $value) {
-            if ($value instanceof ParamInterface) {
-                /** @psalm-var mixed */
-                $buildParams[$name] = $value->getValue();
-            } else {
-                /** @psalm-var mixed */
-                $buildParams[$name] = $value;
-            }
+            /** @psalm-var mixed */
+            $buildParams[$name] = $value->getValue();
         }
 
         return $buildParams;
@@ -345,14 +339,15 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
             }
         }
 
-        if (!isset($params[1])) {
+        if (!isset($params[0])) {
             return strtr($this->sql, $params);
         }
 
+        // Support unnamed placeholders should be dropped
         $sql = '';
 
         foreach (explode('?', $this->sql) as $i => $part) {
-            $sql .= (string) $params[$i] . $part;
+            $sql .= $part . (string) ($params[$i] ?? '');
         }
 
         return $sql;
