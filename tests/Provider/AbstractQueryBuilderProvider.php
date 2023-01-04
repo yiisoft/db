@@ -995,6 +995,27 @@ abstract class AbstractQueryBuilderProvider
                 ),
                 [],
             ],
+            'query' => [
+                'customer',
+                (new Query($db))
+                    ->select([new Expression('email as email'), new Expression('name')])
+                    ->from('customer')
+                    ->where(
+                        [
+                            'email' => 'test@example.com',
+                        ],
+                    ),
+                [],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[customer]] ([[email]], [[name]]) SELECT email as email, name FROM [[customer]] WHERE [[email]]=:qp0
+                    SQL,
+                    $db->getName(),
+                ),
+                [
+                    ':qp0' => 'test@example.com',
+                ],
+            ],
         ];
     }
 

@@ -185,10 +185,16 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
         foreach ($select as $title => $field) {
             if (is_string($title)) {
                 $names[] = $this->quoter->quoteColumnName($title);
-            } elseif (preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $field, $matches)) {
-                $names[] = $this->quoter->quoteColumnName($matches[2]);
             } else {
-                $names[] = $this->quoter->quoteColumnName($field);
+                if ($field instanceof ExpressionInterface) {
+                    $field = $this->queryBuilder->buildExpression($field, $params);
+                }
+
+                if (preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $field, $matches)) {
+                    $names[] = $this->quoter->quoteColumnName($matches[2]);
+                } else {
+                    $names[] = $this->quoter->quoteColumnName($field);
+                }
             }
         }
 
