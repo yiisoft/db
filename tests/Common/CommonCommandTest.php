@@ -1669,6 +1669,24 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
+     * @throws Exception
+     * @throws Throwable
+     */
+    public function testQueryScalarWithBlob(): void
+    {
+        $db = $this->getConnection(true);
+
+        $value = json_encode(['test']);
+        $db->createCommand()->insert('{{%T_upsert_varbinary}}', ['id' => 1, 'blob_col' => $value])->execute();
+
+        $scalarValue = $db->createCommand('SELECT [[blob_col]] FROM {{%T_upsert_varbinary}}')->queryScalar();
+        $this->assertEquals($value, $scalarValue);
+    }
+
+        /**
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
