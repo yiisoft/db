@@ -111,6 +111,17 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame($commentText, $commentOnTable);
     }
 
+    public function testResetSequenceSql(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+
+        $this->assertEmpty($command->getRawSql());
+        $command->resetSequence('{{%order}}');
+        $this->assertNotEmpty($command->getRawSql());
+    }
+
     /**
      * @throws Exception
      * @throws InvalidConfigException
