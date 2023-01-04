@@ -9,6 +9,10 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
+/**
+ * The ConnectionPDOInterface class defines a set of methods that must be implemented by a class to be used as a
+ * connection to a database using PDO (PHP Data Objects).
+ */
 interface ConnectionPDOInterface extends ConnectionInterface
 {
     /**
@@ -16,7 +20,7 @@ interface ConnectionPDOInterface extends ConnectionInterface
      * {@see close()} methods. When a DB connection is active, this property will represent a PDO instance; otherwise,
      * it will be null.
      *
-     * @return PDO|null
+     * @return PDO|null The PHP PDO instance associated with this DB connection.
      *
      * {@see pdoClass}
      */
@@ -27,16 +31,17 @@ interface ConnectionPDOInterface extends ConnectionInterface
      *
      * This method will open the DB connection and then return {@see pdo}.
      *
-     * @throws Exception|InvalidConfigException
+     * @throws Exception
+     * @throws InvalidConfigException
      *
-     * @return PDO|null the PDO instance for the current connection.
+     * @return PDO|null The PDO instance for the current connection.
      */
     public function getActivePDO(string $sql = '', bool $forRead = null): PDO|null;
 
     /**
      * Returns current DB driver.
      *
-     * @return PDODriverInterface - DB driver used to create current connection
+     * @return PDODriverInterface - The driver used to create current connection.
      */
     public function getDriver(): PDODriverInterface;
 
@@ -51,7 +56,7 @@ interface ConnectionPDOInterface extends ConnectionInterface
      * support to bypass the buggy native prepare support. The default value is null, which means the PDO
      * ATTR_EMULATE_PREPARES value will not be changed.
      *
-     * @param bool $value whether to turn on prepare emulation.
+     * @param bool $value Whether to turn on prepare emulation.
      */
     public function setEmulatePrepare(bool $value): void;
 }

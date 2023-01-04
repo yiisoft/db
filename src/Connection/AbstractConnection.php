@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Connection;
 
 use Closure;
+use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
@@ -20,9 +21,10 @@ use Yiisoft\Profiler\ProfilerAwareInterface;
 use Yiisoft\Profiler\ProfilerAwareTrait;
 
 /**
- * Connection is the base class for all database connection classes.
+ * The AbstractConnection class represents a connection to a database. It provides methods for interacting with the
+ * database, such as executing SQL queries and performing data manipulation.
  */
-abstract class Connection implements ConnectionInterface, LoggerAwareInterface, ProfilerAwareInterface
+abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInterface, ProfilerAwareInterface
 {
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
@@ -59,7 +61,8 @@ abstract class Connection implements ConnectionInterface, LoggerAwareInterface, 
         $this->queryCache->setInfo(
             [$duration ?? $this->queryCache->getDuration(), $dependency]
         );
-        /** @var mixed */
+
+        /** @psalm-var mixed $result */
         $result = $closure($this);
         $this->queryCache->removeLastInfo();
 
@@ -95,7 +98,7 @@ abstract class Connection implements ConnectionInterface, LoggerAwareInterface, 
     {
         $queryCache = $this->queryCache;
         $queryCache->setInfo(false);
-        /** @var mixed */
+        /** @psalm-var mixed $result */
         $result = $closure($this);
         $queryCache->removeLastInfo();
 
@@ -125,11 +128,10 @@ abstract class Connection implements ConnectionInterface, LoggerAwareInterface, 
     public function transaction(Closure $closure, string $isolationLevel = null): mixed
     {
         $transaction = $this->beginTransaction($isolationLevel);
-
         $level = $transaction->getLevel();
 
         try {
-            /** @var mixed */
+            /** @psalm-var mixed $result */
             $result = $closure($this);
 
             if ($transaction->isActive() && $transaction->getLevel() === $level) {
@@ -156,11 +158,11 @@ abstract class Connection implements ConnectionInterface, LoggerAwareInterface, 
     {
         if ($transaction->isActive() && $transaction->getLevel() === $level) {
             /**
-             * {@see https://github.com/yiisoft/yii2/pull/13347}
+             * @link https://github.com/yiisoft/yii2/pull/13347
              */
             try {
                 $transaction->rollBack();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logger?->log(LogLevel::ERROR, (string) $e, [__METHOD__]);
                 /** hide this exception to be able to continue throwing original exception outside */
             }

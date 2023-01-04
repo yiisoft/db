@@ -9,7 +9,7 @@ use PDOException;
 use Psr\Log\LogLevel;
 use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\AbstractConnection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -20,7 +20,16 @@ use Yiisoft\Db\Schema\SchemaInterface;
 use function array_keys;
 use function is_string;
 
-abstract class ConnectionPDO extends Connection implements ConnectionPDOInterface
+/**
+ * The AbstractConnectionPDO class represents a connection to a database using the PDO (PHP Data Objects) extension. It
+ * provides a set of methods for interacting with a database using PDO, such as executing SQL statements, preparing and
+ * executing statements, and managing transactions.
+ *
+ * The ConnectionPDO class extends from the AbstractConnection class, which is a base class for representing a
+ * connection to a database. It implements the ConnectionInterface, which defines the interface for interacting with a
+ * database connection.
+ */
+abstract class AbstractConnectionPDO extends AbstractConnection implements ConnectionPDOInterface
 {
     protected PDO|null $pdo = null;
     protected string $serverVersion = '';
@@ -48,8 +57,6 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
 
     /**
      * Close the connection before serializing.
-     *
-     * @return array
      */
     public function __sleep(): array
     {
@@ -66,11 +73,11 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
 
     public function open(): void
     {
-        if (!empty($this->pdo)) {
+        if ($this->pdo instanceof PDO) {
             return;
         }
 
-        if (empty($this->driver->getDsn())) {
+        if ($this->driver->getDsn() === '') {
             throw new InvalidConfigException('Connection::dsn cannot be empty.');
         }
 
@@ -122,12 +129,6 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
         return $this->pdo;
     }
 
-    /**
-     * Input variables $sql and $forRead needs for future implementation of Connection + Pool
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function getActivePDO(string|null $sql = '', bool|null $forRead = null): PDO
     {
         $this->open();
@@ -156,11 +157,12 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
 
     /**
      * @throws Exception
+     * @throws InvalidConfigException
      */
     public function getServerVersion(): string
     {
         if ($this->serverVersion === '') {
-            /** @var mixed */
+            /** @psalm-var mixed $version */
             $version = $this->getActivePDO()->getAttribute(PDO::ATTR_SERVER_VERSION);
             $this->serverVersion = is_string($version) ? $version : 'Version could not be determined.';
         }
@@ -173,9 +175,13 @@ abstract class ConnectionPDO extends Connection implements ConnectionPDOInterfac
         return $this->pdo !== null;
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
     public function quoteValue(mixed $value): mixed
     {
-        if (!is_string($value)) {
+        if (is_string($value) === false) {
             return $value;
         }
 

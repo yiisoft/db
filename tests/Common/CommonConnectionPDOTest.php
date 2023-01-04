@@ -39,6 +39,7 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
     {
         $db = $this->getConnection(true);
 
+        $db->setLogger(DbHelper::getLogger());
         $command = $db->createCommand();
         $transaction = $db->beginTransaction();
 
