@@ -76,7 +76,10 @@ final class QueryHelperTest extends TestCase
 
             /* between */
             [['between', 'id', 1, null], []],
+            [['between', 'id'], []],
+            [['between', 'id', 1], []],
             [['not between', 'id', null, 10], []],
+            [['between', 'id', 1, 2], ['between', 'id', 1, 2]],
 
             /* in */
             [['in', 'id', []], []],

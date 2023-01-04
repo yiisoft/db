@@ -128,6 +128,8 @@ final class QueryHelper
                     if ($this->isEmpty($condition[1]) || $this->isEmpty($condition[2])) {
                         return [];
                     }
+                } else {
+                    return [];
                 }
 
                 break;
