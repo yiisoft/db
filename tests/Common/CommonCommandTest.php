@@ -1686,7 +1686,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertEquals($value, $scalarValue);
     }
 
-        /**
+    /**
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
