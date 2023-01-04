@@ -525,6 +525,30 @@ abstract class AbstractCommandProvider
                     $this->getDriverName(),
                 ),
             ],
+            [
+                <<<SQL
+                SELECT * FROM [[customer]] WHERE [[id]] = ?
+                SQL,
+                [1],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[id]] = 1
+                    SQL,
+                    $this->getDriverName(),
+                ),
+            ],
+            [
+                <<<SQL
+                SELECT * FROM [[customer]] WHERE [[id]] = ? OR [[id]] = ?
+                SQL,
+                [1, 2],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2
+                    SQL,
+                    $this->getDriverName(),
+                ),
+            ],
         ];
     }
 
