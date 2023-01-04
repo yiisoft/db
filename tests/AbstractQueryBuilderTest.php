@@ -489,6 +489,24 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
+    public function testBuildSelectWithAlias(): void
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+        $params = [];
+
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                <<<SQL
+                SELECT [[id]] AS [[a]]
+                SQL,
+                $db->getName(),
+            ),
+            $qb->buildSelect(['id as a'], $params),
+        );
+    }
+
     public function testBuildSelectWithDistinct(): void
     {
         $db = $this->getConnection();

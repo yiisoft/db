@@ -12,9 +12,11 @@ use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Schema;
@@ -567,9 +569,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
     {
         $db = $this->getConnection(true);
 
-        $this->expectException(InvalidCallException::class);
-        $this->expectExceptionMessage('DataReader cannot rewind. It is a forward-only reader.');
-
         $command = $db->createCommand();
         $reader = $command->setSql(
             <<<SQL
@@ -577,7 +576,21 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL
         )->query();
         $reader->next();
+        $this->assertIsInt($reader->key());
+
+        $this->expectException(InvalidCallException::class);
+        $this->expectExceptionMessage('DataReader cannot rewind. It is a forward-only reader.');
+
         $reader->rewind();
+    }
+
+    public function testDataReaderInvalidParamException(): void
+    {
+        $db = $this->getConnection(true);
+
+        $this->expectException(InvalidParamException::class);
+        $this->expectExceptionMessage('The PDOStatement cannot be null.');
+        new DataReader($db->createCommand());
     }
 
     /**
