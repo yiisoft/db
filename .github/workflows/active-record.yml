@@ -26,7 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-active-record-${{ matrix.os }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-master
+      COMPOSER_ROOT_VERSION: dev-abstract-connection
       extensions: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
