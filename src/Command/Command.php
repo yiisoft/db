@@ -299,6 +299,7 @@ abstract class Command implements CommandInterface, ProfilerAwareInterface
         $buildParams = [];
 
         foreach ($this->params as $name => $value) {
+            /** @psalm-var mixed */
             $buildParams[$name] = $value->getValue();
         }
 
