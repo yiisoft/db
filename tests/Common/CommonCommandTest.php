@@ -113,12 +113,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testResetSequenceSql(): void
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
 
         $this->assertEmpty($command->getRawSql());
-        $command->resetSequence('{{%order}}');
+        $command->resetSequence('{{%customer}}');
         $this->assertNotEmpty($command->getRawSql());
     }
 
