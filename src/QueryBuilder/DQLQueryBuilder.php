@@ -148,9 +148,7 @@ abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
 
             if ($columns === false) {
-                // codecov:ignore:start
                 throw new InvalidArgumentException("$rawColumns is not valid columns.");
-                // codecov:ignore:end
             }
         }
 
