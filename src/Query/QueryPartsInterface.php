@@ -27,11 +27,11 @@ interface QueryPartsInterface
      * {@see Expression} Object can be passed to specify the GROUP BY part explicitly in plain SQL.
      * {@see ExpressionInterface} Object can be passed as well.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see groupBy()}
      */
-    public function addGroupBy(array|string|ExpressionInterface $columns): self;
+    public function addGroupBy(array|string|ExpressionInterface $columns): static;
 
     /**
      * Adds additional ORDER BY columns to the query.
@@ -50,11 +50,11 @@ interface QueryPartsInterface
      *
      * Since {@see ExpressionInterface} object can be passed to specify the ORDER BY part explicitly in plain SQL.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see orderBy()}
      */
-    public function addOrderBy(array|string|ExpressionInterface $columns): self;
+    public function addOrderBy(array|string|ExpressionInterface $columns): static;
 
     /**
      * Add more columns to the SELECT part of the query.
@@ -69,11 +69,11 @@ interface QueryPartsInterface
      * @param array|ExpressionInterface|string $columns The columns to add to the select. See {@see select()} for more
      * details about the format of this parameter.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see select()}
      */
-    public function addSelect(array|string|ExpressionInterface $columns): self;
+    public function addSelect(array|string|ExpressionInterface $columns): static;
 
     /**
      * Adds a filtering condition for a specific column and allow the user to choose a filter operator.
@@ -102,9 +102,9 @@ interface QueryPartsInterface
      *
      * @throws NotSupportedException
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function andFilterCompare(string $name, string|null $value, string $defaultOperator = '='): self;
+    public function andFilterCompare(string $name, string|null $value, string $defaultOperator = '='): static;
 
     /**
      * Adds HAVING condition to the existing one but ignores {@see isEmpty()|empty operands}.
@@ -120,12 +120,12 @@ interface QueryPartsInterface
      *
      * @throws NotSupportedException
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see filterHaving()}
      * {@see orFilterHaving()}
      */
-    public function andFilterHaving(array $condition): self;
+    public function andFilterHaving(array $condition): static;
 
     /**
      * Adds HAVING condition to the existing one.
@@ -136,12 +136,12 @@ interface QueryPartsInterface
      * on how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see having()}
      * {@see orHaving()}
      */
-    public function andHaving(array|string|ExpressionInterface $condition, array $params = []): self;
+    public function andHaving(array|string|ExpressionInterface $condition, array $params = []): static;
 
     /**
      * Adds WHERE condition to the existing one but ignores {@see isEmpty()|empty operands}.
@@ -156,12 +156,12 @@ interface QueryPartsInterface
      *
      * @throws NotSupportedException
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see filterWhere()}
      * {@see orFilterWhere()}
      */
-    public function andFilterWhere(array $condition): self;
+    public function andFilterWhere(array $condition): static;
 
     /**
      * Adds WHERE condition to the existing one.
@@ -172,21 +172,21 @@ interface QueryPartsInterface
      * to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see where()}
      * {@see orWhere()}
      */
-    public function andWhere(array|ExpressionInterface|string $condition, array $params = []): self;
+    public function andWhere(array|ExpressionInterface|string $condition, array $params = []): static;
 
     /**
      * Sets the value indicating whether to SELECT DISTINCT or not.
      *
      * @param bool $value Whether to SELECT DISTINCT or not.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function distinct(bool|null $value = true): self;
+    public function distinct(bool|null $value = true): static;
 
     /**
      * Sets the HAVING part of the query but ignores {@see isEmpty()|empty operands}.
@@ -214,13 +214,13 @@ interface QueryPartsInterface
      *
      * @throws NotSupportedException
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see having()}
      * {@see andFilterHaving()}
      * {@see orFilterHaving()}
      */
-    public function filterHaving(array $condition): self;
+    public function filterHaving(array $condition): static;
 
     /**
      * Sets the WHERE part of the query but ignores [[isEmpty()|empty operands]].
@@ -248,13 +248,13 @@ interface QueryPartsInterface
      *
      * @throws NotSupportedException
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see where()}
      * {@see andFilterWhere()}
      * {@see orFilterWhere()}
      */
-    public function filterWhere(array $condition): self;
+    public function filterWhere(array $condition): static;
 
     /**
      * Sets the FROM part of the query.
@@ -291,9 +291,9 @@ interface QueryPartsInterface
      * $query = (new \Yiisoft\Db\Query\Query)->from(['activeusers' => $subquery]);
      * ```
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function from(array|ExpressionInterface|string $tables): self;
+    public function from(array|ExpressionInterface|string $tables): static;
 
     /**
      * Sets the GROUP BY part of the query.
@@ -311,11 +311,11 @@ interface QueryPartsInterface
      * {@see ExpressionInterface} Object can be passed to specify the GROUP BY part explicitly in plain SQL.
      * {@see ExpressionInterface} Object can be passed as well.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see addGroupBy()}
      */
-    public function groupBy(array|string|ExpressionInterface $columns): self;
+    public function groupBy(array|string|ExpressionInterface $columns): static;
 
     /**
      * Sets the HAVING part of the query.
@@ -324,12 +324,12 @@ interface QueryPartsInterface
      * {@see where()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see andHaving()}
      * {@see orHaving()}
      */
-    public function having(array|ExpressionInterface|string|null $condition, array $params = []): self;
+    public function having(array|ExpressionInterface|string|null $condition, array $params = []): static;
 
     /**
      * Sets the {@see indexBy} property.
@@ -346,9 +346,9 @@ interface QueryPartsInterface
      * }
      * ```
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function indexBy(string|Closure|null $column): self;
+    public function indexBy(string|Closure|null $column): static;
 
     /**
      * Appends an INNER JOIN part to the query.
@@ -365,9 +365,9 @@ interface QueryPartsInterface
      * how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function innerJoin(array|string $table, array|string $on = '', array $params = []): self;
+    public function innerJoin(array|string $table, array|string $on = '', array $params = []): static;
 
     /**
      * Appends a JOIN part to the query.
@@ -397,9 +397,9 @@ interface QueryPartsInterface
      * ```
      * @param array $params The parameters (name => value) to be bound to the query.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function join(string $type, array|string $table, array|string $on = '', array $params = []): self;
+    public function join(string $type, array|string $table, array|string $on = '', array $params = []): static;
 
     /**
      * Appends a LEFT OUTER JOIN part to the query.
@@ -416,27 +416,27 @@ interface QueryPartsInterface
      * how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function leftJoin(array|string $table, array|string $on = '', array $params = []): self;
+    public function leftJoin(array|string $table, array|string $on = '', array $params = []): static;
 
     /**
      * Sets the LIMIT part of the query.
      *
      * @param Expression|int|null $limit The limit. Use null or negative value to disable limit.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function limit(Expression|int|null $limit): self;
+    public function limit(Expression|int|null $limit): static;
 
     /**
      * Sets the OFFSET part of the query.
      *
      * @param Expression|int|null $offset $offset The offset. Use null or negative value to disable offset.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function offset(Expression|int|null $offset): self;
+    public function offset(Expression|int|null $offset): static;
 
     /**
      * Sets the ORDER BY part of the query.
@@ -454,11 +454,11 @@ interface QueryPartsInterface
      *
      * Since {@see ExpressionInterface} object can be passed to specify the ORDER BY part explicitly in plain SQL.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see addOrderBy()}
      */
-    public function orderBy(array|string|ExpressionInterface $columns): self;
+    public function orderBy(array|string|ExpressionInterface $columns): static;
 
     /**
      * Adds WHERE condition to the existing one but ignores {@see isEmpty()|empty operands}.
@@ -473,12 +473,12 @@ interface QueryPartsInterface
      *
      * @throws NotSupportedException
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see filterWhere()}
      * {@see andFilterWhere()}
      */
-    public function orFilterWhere(array $condition): self;
+    public function orFilterWhere(array $condition): static;
 
     /**
      * Adds HAVING condition to the existing one but ignores {@see isEmpty()|empty operands}.
@@ -494,12 +494,12 @@ interface QueryPartsInterface
      *
      * @throws NotSupportedException
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see filterHaving()}
      * {@see andFilterHaving()}
      */
-    public function orFilterHaving(array $condition): self;
+    public function orFilterHaving(array $condition): static;
 
     /**
      * Adds HAVING condition to the existing one.
@@ -510,12 +510,12 @@ interface QueryPartsInterface
      * how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see having()}
      * {@see andHaving()}
      */
-    public function orHaving(array|string|ExpressionInterface $condition, array $params = []): self;
+    public function orHaving(array|string|ExpressionInterface $condition, array $params = []): static;
 
     /**
      * Adds WHERE condition to the existing one.
@@ -526,12 +526,12 @@ interface QueryPartsInterface
      * to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see where()}
      * {@see andWhere()}
      */
-    public function orWhere(array|string|ExpressionInterface $condition, array $params = []): self;
+    public function orWhere(array|string|ExpressionInterface $condition, array $params = []): static;
 
     /**
      * Appends a RIGHT OUTER JOIN part to the query.
@@ -548,9 +548,9 @@ interface QueryPartsInterface
      * how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function rightJoin(array|string $table, array|string $on = '', array $params = []): self;
+    public function rightJoin(array|string $table, array|string $on = '', array $params = []): static;
 
     /**
      * Sets the SELECT part of the query.
@@ -572,9 +572,9 @@ interface QueryPartsInterface
      * @param string|null $option Additional option that should be appended to the 'SELECT' keyword. For example,
      * in MySQL, the option 'SQL_CALC_FOUND_ROWS' can be used.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function select(array|string|ExpressionInterface $columns, string $option = null): self;
+    public function select(array|string|ExpressionInterface $columns, string $option = null): static;
 
     /**
      * It allows you to specify additional options for the SELECT clause of a SQL statement.
@@ -582,9 +582,9 @@ interface QueryPartsInterface
      * @param string|null $value Additional option that should be appended to the 'SELECT' keyword. For example,
      * in MySQL, the option 'SQL_CALC_FOUND_ROWS' can be used.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function selectOption(string|null $value): self;
+    public function selectOption(string|null $value): static;
 
     /**
      * Specify the joins for a SELECT statement in a database query.
@@ -592,9 +592,9 @@ interface QueryPartsInterface
      * @param array $value The joins to be performed in the query. Please refer to {@see join()} on how to specify this
      * parameter.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function setJoin(array $value): self;
+    public function setJoin(array $value): static;
 
     /**
      * Specify the unions for a SELECT statement in a database query.
@@ -602,9 +602,9 @@ interface QueryPartsInterface
      * @param array $value The unions to be performed in the query. Please refer to {@see union()} on how to specify
      * this parameter.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function setUnion(array $value): self;
+    public function setUnion(array $value): static;
 
     /**
      * Appends a SQL statement using UNION operator.
@@ -612,9 +612,9 @@ interface QueryPartsInterface
      * @param QueryInterface|string $sql $sql The SQL statement to be appended using UNION.
      * @param bool $all `TRUE` if using UNION ALL and `FALSE` if using UNION.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function union(QueryInterface|string $sql, bool $all = false): self;
+    public function union(QueryInterface|string $sql, bool $all = false): static;
 
     /**
      * Sets the WHERE part of the query.
@@ -706,12 +706,12 @@ interface QueryPartsInterface
      * @param array|ExpressionInterface|string|null $condition The conditions that should be put in the WHERE part.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see andWhere()}
      * {@see orWhere()}
      */
-    public function where(array|string|ExpressionInterface|null $condition, array $params = []): self;
+    public function where(array|string|ExpressionInterface|null $condition, array $params = []): static;
 
     /**
      * Prepends a SQL statement using WITH syntax.
@@ -720,16 +720,16 @@ interface QueryPartsInterface
      * @param string $alias The query alias in WITH construction.
      * @param bool $recursive `TRUE` if using WITH RECURSIVE and FALSE if using WITH.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function withQuery(QueryInterface|string $query, string $alias, bool $recursive = false): self;
+    public function withQuery(QueryInterface|string $query, string $alias, bool $recursive = false): static;
 
     /**
      * Specifies the with queries clause for the query.
      *
      * @param array $withQueries The with queries to be appended to the query.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      */
-    public function withQueries(array $withQueries): self;
+    public function withQueries(array $withQueries): static;
 }
