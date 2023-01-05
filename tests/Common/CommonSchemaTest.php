@@ -214,7 +214,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $command = $db->createCommand();
 
-        $insertResult = $command->insertEx('animal', ['type' => 'cat']);
+        $insertResult = $command->insertWithReturningPks('animal', ['type' => 'cat']);
         $selectResult = $command->setSql(
             DbHelper::replaceQuotes(
                 <<<SQL

@@ -100,7 +100,7 @@ interface DMLQueryBuilderInterface
      *
      * @return string
      */
-    public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string;
+    public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string;
 
     /**
      * Creates a SQL statement for resetting the sequence value of a table's primary key.
