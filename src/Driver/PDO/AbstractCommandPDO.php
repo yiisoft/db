@@ -9,7 +9,7 @@ use PDOException;
 use PDOStatement;
 use Throwable;
 use Yiisoft\Db\Cache\QueryCache;
-use Yiisoft\Db\Command\Command;
+use Yiisoft\Db\Command\AbstractCommand;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\Exception;
@@ -17,7 +17,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Query\Data\DataReader;
 
-abstract class AbstractCommandPDO extends Command implements CommandPDOInterface
+abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOInterface
 {
     protected PDOStatement|null $pdoStatement = null;
 
