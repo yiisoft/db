@@ -215,7 +215,7 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
             ->method('log')
             ->with(
                 LogLevel::INFO,
-                'Transaction not committed: nested transaction not supported Yiisoft\Db\Driver\PDO\TransactionPDO::commit'
+                'Transaction not committed: nested transaction not supported Yiisoft\Db\Driver\PDO\AbstractTransactionPDO::commit'
             );
 
         $db->beginTransaction();
@@ -251,7 +251,7 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
             ->method('log')
             ->with(
                 LogLevel::INFO,
-                'Transaction not rolled back: nested transaction not supported Yiisoft\Db\Driver\PDO\TransactionPDO::rollBack'
+                'Transaction not rolled back: nested transaction not supported Yiisoft\Db\Driver\PDO\AbstractTransactionPDO::rollBack'
             );
 
         $db->beginTransaction();
