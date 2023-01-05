@@ -1085,6 +1085,19 @@ abstract class CommonCommandTest extends AbstractCommandTest
         );
     }
 
+    public function testInsertExWithCompositePK(): void
+    {
+        $db = $this->getConnection(true);
+
+        $command = $db->createCommand();
+
+        $params = ['id_1' => 99, 'id_2' => 100, 'type' => 'test'];
+        $result = $command->insertEx('{{%notauto_pk}}', $params);
+
+        $this->assertEquals($params['id_1'], $result['id_1']);
+        $this->assertEquals($params['id_2'], $result['id_2']);
+    }
+
     /**
      * @throws Exception
      * @throws InvalidConfigException
