@@ -120,7 +120,7 @@ abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      */
-    public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string
+    public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
     }

@@ -1019,7 +1019,7 @@ abstract class AbstractQueryBuilderProvider
         ];
     }
 
-    public function insertEx(): array
+    public function insertWithReturningPks(): array
     {
         return [
             ['{{table}}', [], [], '', []],

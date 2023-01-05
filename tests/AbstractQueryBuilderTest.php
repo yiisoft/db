@@ -1575,9 +1575,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insertEx()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insertWithReturningPks()
      */
-    public function testInsertEx(
+    public function testInsertWithReturningPks(
         string $table,
         array|QueryInterface $columns,
         array $params,
@@ -1588,7 +1588,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
 
-        $this->assertSame($expectedSQL, $qb->insertEx($table, $columns, $params));
+        $this->assertSame($expectedSQL, $qb->insertWithReturningPks($table, $columns, $params));
         $this->assertSame($expectedParams, $params);
     }
 

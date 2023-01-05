@@ -200,9 +200,9 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insertEx()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insertWithReturningPks()
      */
-    public function testInsertEx(
+    public function testInsertWithReturningPks(
         string $table,
         array|QueryInterface $columns,
         array $params,
@@ -215,10 +215,10 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\DMLQueryBuilder::insertEx() is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\DMLQueryBuilder::insertWithReturningPks() is not supported by this DBMS.'
         );
 
-        $qb->insertEx($table, $columns, $params);
+        $qb->insertWithReturningPks($table, $columns, $params);
     }
 
     /**

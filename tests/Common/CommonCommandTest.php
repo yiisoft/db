@@ -1068,7 +1068,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
      * @throws InvalidConfigException
      * @throws Throwable
      */
-    public function testInsertEx(): void
+    public function testInsertWithReturningPks(): void
     {
         $db = $this->getConnection(true);
 
@@ -1085,7 +1085,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         );
     }
 
-    public function testInsertExWithCompositePK(): void
+    public function testInsertWithReturningPksWithCompositePK(): void
     {
         $db = $this->getConnection(true);
 
