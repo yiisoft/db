@@ -101,7 +101,7 @@ abstract class CommandPDO extends Command implements CommandPDOInterface
         return $this;
     }
 
-    public function insertEx(string $table, array $columns): bool|array
+    public function insertWithReturningPks(string $table, array $columns): bool|array
     {
         $params = [];
         $sql = $this->db->getQueryBuilder()->insert($table, $columns, $params);

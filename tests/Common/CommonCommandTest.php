@@ -1081,7 +1081,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertSame(
             $expected,
-            $command->insertEx('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']),
+            $command->insertWithReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']),
         );
     }
 
@@ -1092,7 +1092,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $db->createCommand();
 
         $params = ['id_1' => 99, 'id_2' => 100, 'type' => 'test'];
-        $result = $command->insertEx('{{%notauto_pk}}', $params);
+        $result = $command->insertWithReturningPks('{{%notauto_pk}}', $params);
 
         $this->assertEquals($params['id_1'], $result['id_1']);
         $this->assertEquals($params['id_2'], $result['id_2']);

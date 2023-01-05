@@ -602,7 +602,7 @@ interface CommandInterface
      *
      * @return array|false The primary key values or false if the command fails.
      */
-    public function insertEx(string $table, array $columns): bool|array;
+    public function insertWithReturningPks(string $table, array $columns): bool|array;
 
     /**
      * Disables query cache for this command.

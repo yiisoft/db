@@ -11,7 +11,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 final class Command extends CommandPDO implements CommandPDOInterface
 {
-    public function insertEx(string $table, array $columns): bool|array
+    public function insertWithReturningPks(string $table, array $columns): bool|array
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
