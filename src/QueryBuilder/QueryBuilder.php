@@ -360,9 +360,9 @@ abstract class QueryBuilder implements QueryBuilderInterface
     /**
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      */
-    public function insertEx(string $table, QueryInterface|array $columns, array &$params = []): string
+    public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string
     {
-        return $this->dmlBuilder->insertEx($table, $columns, $params);
+        return $this->dmlBuilder->insertWithReturningPks($table, $columns, $params);
     }
 
     public function quoter(): QuoterInterface
