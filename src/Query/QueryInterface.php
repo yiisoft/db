@@ -252,9 +252,9 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @param QueryBuilderInterface $builder
      *
-     * @return static A prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
+     * @return QueryInterface A prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
      */
-    public function prepare(QueryBuilderInterface $builder): static;
+    public function prepare(QueryBuilderInterface $builder): self;
 
     /**
      * Returns the query result as a scalar value.
