@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Tests\AbstractConnectionPDOTest;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Transaction\TransactionInterface;
 
 abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
 {
@@ -187,5 +190,91 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
                 SQL,
             )->queryScalar()
         );
+    }
+
+    public function testTransactionCommitNotActiveTransaction(): void
+    {
+        $db = $this->getConnection();
+
+        $transaction = $db->beginTransaction();
+        $db->close();
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Failed to commit transaction: transaction was inactive.');
+
+        $transaction->commit();
+    }
+
+    public function testTransactionCommitSavepoint(): void
+    {
+        $db = $this->getConnection();
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger
+            ->expects($this->once())
+            ->method('log')
+            ->with(
+                LogLevel::INFO,
+                'Transaction not committed: nested transaction not supported Yiisoft\Db\Driver\PDO\TransactionPDO::commit'
+            );
+
+        $db->beginTransaction();
+        $transaction = $db->beginTransaction();
+        $transaction->setLogger($logger);
+
+        $db->setEnableSavepoint(false);
+
+        $this->assertEquals(2, $transaction->getLevel());
+        $transaction->commit();
+        $this->assertEquals(1, $transaction->getLevel());
+    }
+
+    public function testTransactionRollbackNotActiveTransaction(): void
+    {
+        $db = $this->getConnection();
+
+        $transaction = $db->beginTransaction();
+        $db->close();
+
+        $level = $transaction->getLevel();
+        $transaction->rollBack();
+        $this->assertEquals($level, $transaction->getLevel());
+    }
+
+    public function testTransactionRollbackSavepoint(): void
+    {
+        $db = $this->getConnection();
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger
+            ->expects($this->once())
+            ->method('log')
+            ->with(
+                LogLevel::INFO,
+                'Transaction not rolled back: nested transaction not supported Yiisoft\Db\Driver\PDO\TransactionPDO::rollBack'
+            );
+
+        $db->beginTransaction();
+        $transaction = $db->beginTransaction();
+        $transaction->setLogger($logger);
+
+        $db->setEnableSavepoint(false);
+
+        $this->assertEquals(2, $transaction->getLevel());
+        $transaction->rollBack();
+        $this->assertEquals(1, $transaction->getLevel());
+    }
+
+    public function testTransactionSetIsolationLevel(): void
+    {
+        $db = $this->getConnection();
+
+        $transaction = $db->beginTransaction();
+        $db->close();
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('Failed to set isolation level: transaction was inactive.');
+
+        $transaction->setIsolationLevel(TransactionInterface::SERIALIZABLE);
     }
 }
