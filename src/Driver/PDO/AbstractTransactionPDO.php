@@ -39,7 +39,7 @@ use Yiisoft\Db\Transaction\TransactionInterface;
  * containing DBMS specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`. This property is write-only.
  * @property int $level The current nesting level of the transaction. This property is read-only.
  */
-abstract class TransactionPDO implements TransactionInterface
+abstract class AbstractTransactionPDO implements TransactionInterface
 {
     use LoggerAwareTrait;
 

@@ -17,7 +17,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Query\Data\DataReader;
 
-abstract class CommandPDO extends Command implements CommandPDOInterface
+abstract class AbstractCommandPDO extends Command implements CommandPDOInterface
 {
     protected PDOStatement|null $pdoStatement = null;
 
