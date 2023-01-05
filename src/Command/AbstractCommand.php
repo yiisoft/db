@@ -71,7 +71,7 @@ use function strtr;
  *
  * To build SELECT SQL statements, please use {@see QueryInterface} instead.
  */
-abstract class Command implements CommandInterface, ProfilerAwareInterface
+abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterface
 {
     use LoggerAwareTrait;
     use ProfilerAwareTrait;

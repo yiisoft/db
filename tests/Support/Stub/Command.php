@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support\Stub;
 
-use Yiisoft\Db\Driver\PDO\CommandPDO;
+use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
 use Yiisoft\Db\Driver\PDO\CommandPDOInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
-final class Command extends CommandPDO implements CommandPDOInterface
+final class Command extends AbstractCommandPDO implements CommandPDOInterface
 {
     public function insertEx(string $table, array $columns): bool|array
     {
