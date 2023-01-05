@@ -36,11 +36,11 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @param array $params The list of query parameter values indexed by parameter placeholders. For example,
      * `[':name' => 'Dan', ':age' => 31]`.
      *
-     * @return self The query object itself.
+     * @return static The query object itself.
      *
      * {@see params()}
      */
-    public function addParams(array $params): self;
+    public function addParams(array $params): static;
 
     /**
      * Executes the query and returns all results as an array.
@@ -85,9 +85,9 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * Use a negative number to indicate that query cache should not be used.
      * @param Dependency|null $dependency the cache dependency associated with the cached result.
      *
-     * @return self the Query object itself.
+     * @return static the Query object itself.
      */
-    public function cache(int|null $duration = 3600, Dependency $dependency = null): self;
+    public function cache(int|null $duration = 3600, Dependency $dependency = null): static;
 
     /**
      * Executes the query and returns the first column of the result.
@@ -143,9 +143,9 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @param bool $value whether to prevent query execution.
      *
-     * @return QueryInterface the query object itself.
+     * @return static the query object itself.
      */
-    public function emulateExecution(bool $value = true): self;
+    public function emulateExecution(bool $value = true): static;
 
     /**
      * Returns a value indicating whether the query result contains any row of data.
@@ -204,9 +204,9 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     /**
      * Disables query cache for this Query.
      *
-     * @return self the Query object itself.
+     * @return static the Query object itself.
      */
-    public function noCache(): self;
+    public function noCache(): static;
 
     /**
      * Executes the query and returns a single row of result.
@@ -226,11 +226,11 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @param array $params list of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
      *
-     * @return self the query object itself.
+     * @return static the query object itself.
      *
      * {@see addParams()}
      */
-    public function params(array $params): self;
+    public function params(array $params): static;
 
     /**
      * Converts the raw query results into the format as specified by this query.
@@ -252,9 +252,9 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @param QueryBuilderInterface $builder
      *
-     * @return QueryInterface A prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
+     * @return static A prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
      */
-    public function prepare(QueryBuilderInterface $builder): self;
+    public function prepare(QueryBuilderInterface $builder): static;
 
     /**
      * Returns the query result as a scalar value.
