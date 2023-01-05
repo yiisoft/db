@@ -45,6 +45,6 @@ final class ConnectionPDOTest extends AbstractConnectionPDOTest
 
         $string = 'test string';
 
-        $this->assertStringContainsString($string ,$db->quoteValue($string));
+        $this->assertStringContainsString($string, $db->quoteValue($string));
     }
 }
