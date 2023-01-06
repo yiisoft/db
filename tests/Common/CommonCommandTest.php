@@ -2033,7 +2033,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->performAndCompareUpsertResult($db, $secondData);
 
-        $db->closer();
+        $db->close();
     }
 
     /**
