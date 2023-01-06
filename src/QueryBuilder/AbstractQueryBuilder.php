@@ -44,11 +44,6 @@ use function preg_replace;
 abstract class AbstractQueryBuilder implements QueryBuilderInterface
 {
     /**
-     * Defines a UNIQUE index type for {@see createIndex()}.
-     */
-    public const INDEX_UNIQUE = 'UNIQUE';
-
-    /**
      * The prefix for automatically generated query binding parameters.
      */
     public const PARAM_PREFIX = ':qp';

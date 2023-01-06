@@ -374,7 +374,7 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
         $this->setSql($sql)->bindValues($params);
 
         /** @psalm-var array|bool $result */
-        $result = $this->queryOne();
+        $result = $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
 
         return is_array($result) ? $result : false;
     }
@@ -397,7 +397,7 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
             return 0;
         }
 
-        return $this->queryInternal((int) static::QUERY_MODE_NONE);
+        return $this->queryInternal(self::QUERY_MODE_EXECUTE);
     }
 
     /**
@@ -406,13 +406,13 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
      */
     public function query(): DataReaderInterface
     {
-        return $this->queryInternal((int) static::QUERY_MODE_CURSOR);
+        return $this->queryInternal(self::QUERY_MODE_CURSOR);
     }
 
     public function queryAll(): array
     {
         /** @psalm-var array<array-key, array>|null $results */
-        $results = $this->queryInternal((int) static::QUERY_MODE_ALL);
+        $results = $this->queryInternal(self::QUERY_MODE_ALL);
 
         return $results ?? [];
     }
@@ -439,7 +439,7 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
      */
     public function queryScalar(): bool|string|null|int|float
     {
-        $firstRow = $this->queryInternal((int) static::QUERY_MODE_ROW);
+        $firstRow = $this->queryInternal(self::QUERY_MODE_ROW);
 
         if (!is_array($firstRow)) {
             return false;
@@ -542,6 +542,11 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
      */
     abstract protected function internalExecute(string|null $rawSql): void;
 
+    protected function is(int $value, int $flag): bool
+    {
+        return ($value & $flag) === $flag;
+    }
+
     /**
      * Returns the query result.
      *
@@ -567,7 +572,7 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
      */
     protected function queryInternal(int $queryMode): mixed
     {
-        if ($queryMode === static::QUERY_MODE_NONE || $queryMode === static::QUERY_MODE_CURSOR) {
+        if ($this->is($queryMode, self::QUERY_MODE_EXECUTE) || $this->is($queryMode, self::QUERY_MODE_CURSOR)) {
             return $this->queryWithoutCache($this->getRawSql(), $queryMode);
         }
 
@@ -744,6 +749,6 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
 
     private function isReadMode(int $queryMode): bool
     {
-        return $queryMode !== static::QUERY_MODE_NONE;
+        return !$this->is($queryMode, self::QUERY_MODE_EXECUTE);
     }
 }

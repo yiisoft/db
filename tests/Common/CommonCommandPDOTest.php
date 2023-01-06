@@ -6,8 +6,13 @@ namespace Yiisoft\Db\Tests\Common;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Cache\CacheInterface;
+use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
+use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
+use Yiisoft\Db\Exception\InvalidParamException;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -192,5 +197,36 @@ abstract class CommonCommandPDOTest extends TestCase
         $this->assertTrue(isset($rows[0]['TOTAL']));
 
         $db->close();
+    }
+
+    public function testIncorrectQueryMode(): void
+    {
+        $db = $this->getConnection(true);
+
+        $command = new class ($db, $this->createQueryCache()) extends AbstractCommandPDO {
+            public function testExecute(): void
+            {
+                $this->internalGetQueryResult(1024);
+            }
+
+            protected function internalExecute(?string $rawSql): void
+            {
+            }
+
+            public function queryBuilder(): QueryBuilderInterface
+            {
+            }
+        };
+
+        $this->expectException(InvalidParamException::class);
+        $this->expectExceptionMessage("Unknown query mode '1024'");
+        $command->testExecute();
+
+        $db->close();
+    }
+
+    private function createQueryCache(): QueryCache
+    {
+        return new QueryCache($this->createMock(CacheInterface::class));
     }
 }
