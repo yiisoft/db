@@ -35,5 +35,7 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
         }
 
         $this->assertSame($expected, $builder->__toString());
+
+        $db->close();
     }
 }

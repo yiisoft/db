@@ -56,6 +56,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             '/^.*int1.*>.*1.*$/',
             $schema->getTableChecks('{{test_ck}}', true)[0]->getExpression()
         );
+
+        $db->close();
     }
 
     /**
@@ -72,6 +74,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertTrue($db->getTableSchema('{{customer}}')->getColumn('city') !== null);
         $this->assertSame(Schema::TYPE_STRING, $db->getTableSchema('{{customer}}')->getColumn('city')->getType());
+
+        $db->close();
     }
 
     /**
@@ -92,6 +96,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $commentOnColumn = $schema->getTableSchema($tableName)->getColumn('id')->getComment();
 
         $this->assertSame($tableComment, $commentOnColumn);
+
+        $db->close();
     }
 
     /**
@@ -111,6 +117,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $commentOnTable = $db->getSchema()->getTableSchema($tableName, true)->getComment();
 
         $this->assertSame($commentText, $commentOnTable);
+
+        $db->close();
     }
 
     public function testResetSequenceSql(): void
@@ -122,6 +130,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertEmpty($command->getRawSql());
         $command->resetSequence('{{%customer}}');
         $this->assertNotEmpty($command->getRawSql());
+
+        $db->close();
     }
 
     /**
@@ -150,6 +160,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             '/^.*41.*$/',
             $schema->getTableDefaultValues('{{test_def}}', true)[0]->getValue(),
         );
+
+        $db->close();
     }
 
     /**
@@ -204,6 +216,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         }
 
         $this->assertSame($column2, $schema->getTableForeignKeys($tableName, true)[0]->getForeignColumnNames());
+
+        $db->close();
     }
 
     /**
@@ -235,6 +249,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         }
 
         $this->assertSame($column, $schema->getTablePrimaryKey($tableName, true)->getColumnNames());
+
+        $db->close();
     }
 
     /**
@@ -266,6 +282,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         }
 
         $this->assertSame($column, $schema->getTableUniques($tableName, true)[0]->getColumnNames());
+
+        $db->close();
     }
 
     /**
@@ -299,6 +317,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->execute();
 
         $this->assertEquals($insertedRow, (new Query($db))->from($table)->count());
+
+        $db->close();
     }
 
     /**
@@ -373,6 +393,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         }
 
         setlocale(LC_NUMERIC, $locale);
+
+        $db->close();
     }
 
     /**
@@ -401,6 +423,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertCount(3, $result);
         $this->assertSame(['email' => 't1@example.com', 'name' => 'test_name', 'address' => 'test_address'], $result);
+
+        $db->close();
     }
 
     /**
@@ -427,6 +451,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $insertedRowsCount = (new Query($db))->from('{{customer}}')->count();
 
         $this->assertGreaterThanOrEqual($attemptsInsertRows, $insertedRowsCount);
+
+        $db->close();
     }
 
     /**
@@ -447,6 +473,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->batchInsert('{{customer}}', ['email', 'name', 'address'], $rows);
 
         $this->assertSame(1, $command->execute());
+
+        $db->close();
     }
 
     /**
@@ -489,6 +517,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         } else {
             $this->assertFalse($schema->getTableIndexes($tableName, true)[0]->isUnique());
         }
+
+        $db->close();
     }
 
     /**
@@ -519,6 +549,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         )->queryAll();
 
         $this->assertEquals([['id' => 1, 'bar' => 1]], $records);
+
+        $db->close();
     }
 
     /**
@@ -558,6 +590,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertEquals([['bar' => 6]], $records);
 
         $command->dropView('{{testCreateView}}')->execute();
+
+        $db->close();
     }
 
     /**
@@ -582,6 +616,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->expectExceptionMessage('DataReader cannot rewind. It is a forward-only reader.');
 
         $reader->rewind();
+
+        $db->close();
     }
 
     public function testDataReaderInvalidParamException(): void
@@ -615,6 +651,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->setSql($chekSql);
 
         $this->assertSame('1', $command->queryScalar());
+
+        $db->close();
     }
 
     /**
@@ -647,6 +685,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->dropCheck('{{test_ck_constraint}}', '{{test_ck}}')->execute();
 
         $this->assertEmpty($schema->getTableChecks('{{test_ck}}', true));
+
+        $db->close();
     }
 
     /**
@@ -673,6 +713,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertArrayNotHasKey('bar', $schema->getTableSchema('{{testDropColumn}}')->getColumns());
         $this->assertArrayHasKey('baz', $schema->getTableSchema('{{testDropColumn}}')->getColumns());
+
+        $db->close();
     }
 
     /**
@@ -698,6 +740,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $commentOnColumn = $schema->getTableSchema($tableName)->getColumn('id')->getComment();
 
         $this->assertEmpty($commentOnColumn);
+
+        $db->close();
     }
 
     /**
@@ -722,6 +766,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $commentOnTable = $db->getSchema()->getTableSchema($tableName, true)->getComment();
 
         $this->assertEmpty($commentOnTable);
+
+        $db->close();
     }
 
     /**
@@ -754,6 +800,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->dropDefaultValue('{{test_def_constraint}}', '{{test_def}}')->execute();
 
         $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}', true));
+
+        $db->close();
     }
 
     /**
@@ -783,6 +831,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->dropForeignKey('{{test_fk_constraint}}', '{{test_fk}}')->execute();
 
         $this->assertEmpty($schema->getTableForeignKeys('{{test_fk}}', true));
+
+        $db->close();
     }
 
     /**
@@ -813,6 +863,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->dropIndex('{{test_idx_constraint}}', '{{test_idx}}')->execute();
 
         $this->assertEmpty($schema->getTableIndexes('{{test_idx}}', true));
+
+        $db->close();
     }
 
     /**
@@ -842,6 +894,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->dropPrimaryKey('{{test_pk_constraint}}', '{{test_pk}}')->execute();
 
         $this->assertEmpty($schema->getTableSchema('{{test_pk}}', true)->getPrimaryKey());
+
+        $db->close();
     }
 
     /**
@@ -867,6 +921,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->dropTable('{{testDropTable}}')->execute();
 
         $this->assertNull($schema->getTableSchema('{{testDropTable}}', true));
+
+        $db->close();
     }
 
     /**
@@ -896,6 +952,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->dropUnique('{{test_uq_constraint}}', '{{test_uq}}')->execute();
 
         $this->assertEmpty($schema->getTableUniques('{{test_uq}}', true));
+
+        $db->close();
     }
 
     /**
@@ -917,6 +975,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->createCommand()->dropView($viewName)->execute();
 
         $this->assertNull($schema->getTableSchema($viewName));
+
+        $db->close();
     }
 
     /**
@@ -971,6 +1031,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $result = $command->setSql('')->execute();
 
         $this->assertSame(0, $result);
+
+        $db->close();
     }
 
     /**
@@ -1026,6 +1088,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 SQL,
             )->queryScalar(),
         );
+
+        $db->close();
     }
 
     /**
@@ -1060,6 +1124,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         )->queryOne();
 
         $this->assertSame(['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address'], $record);
+
+        $db->close();
     }
 
     /**
@@ -1083,6 +1149,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $expected,
             $command->insertWithReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']),
         );
+
+        $db->close();
     }
 
     public function testInsertWithReturningPksWithCompositePK(): void
@@ -1096,6 +1164,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEquals($params['id_1'], $result['id_1']);
         $this->assertEquals($params['id_2'], $result['id_2']);
+
+        $db->close();
     }
 
     /**
@@ -1137,6 +1207,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         )->queryOne();
 
         $this->assertEquals(['created_at' => date('Y')], $record);
+
+        $db->close();
     }
 
     /**
@@ -1189,6 +1261,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             DELETE FROM [[order]]
             SQL
         )->execute();
+
+        $db->close();
     }
 
     /**
@@ -1238,6 +1312,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ],
             $record,
         );
+
+        $db->close();
     }
 
     /**
@@ -1287,6 +1363,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ],
             $record,
         );
+
+        $db->close();
     }
 
     /**
@@ -1341,6 +1419,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $resultBlob = is_resource($result['blob_col']) ? stream_get_contents($result['blob_col']) : $result['blob_col'];
 
         $this->assertSame($columns['blob_col'], $resultBlob);
+
+        $db->close();
     }
 
     /**
@@ -1409,6 +1489,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertIsArray($customer);
         $this->assertSame('Some {{updated}} name', $customer['name']);
         $this->assertSame('Some {{%updated}} address', $customer['address']);
+
+        $db->close();
     }
 
     /**
@@ -1495,6 +1577,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertIsArray($rows);
         $this->assertCount(0, $rows);
         $this->assertSame([], $rows);
+
+        $db->close();
     }
 
     /**
@@ -1599,6 +1683,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             },
             10,
         );
+
+        $db->close();
     }
 
     /**
@@ -1637,6 +1723,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertIsArray($rows);
         $this->assertCount(0, $rows);
         $this->assertSame([], $rows);
+
+        $db->close();
     }
 
     /**
@@ -1671,6 +1759,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $command->setSql($sql);
 
         $this->assertNull($command->queryOne());
+
+        $db->close();
     }
 
     /**
@@ -1703,6 +1793,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         );
 
         $this->assertFalse($command->queryScalar());
+
+        $db->close();
     }
 
     /**
@@ -1721,6 +1813,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertContains('address_city', $schema->getTableSchema('{{customer}}')->getColumnNames());
         $this->assertNotContains('address', $schema->getTableSchema('{{customer}}')->getColumnNames());
+
+        $db->close();
     }
 
     /**
@@ -1746,6 +1840,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertNull($schema->getTableSchema('{{type}}', true));
         $this->assertNotNull($schema->getTableSchema('{{new_type}}', true));
+
+        $db->close();
     }
 
     /**
@@ -1808,6 +1904,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame(3, $attempts);
         $this->assertTrue($hitHandler);
         $this->assertTrue($hitCatch);
+
+        $db->close();
     }
 
     /**
@@ -1842,6 +1940,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 SQL
             )->queryScalar(),
         );
+
+        $db->close();
     }
 
     /**
@@ -1870,6 +1970,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         )->queryAll();
 
         $this->assertCount(0, $rows);
+
+        $db->close();
     }
 
     /**
@@ -1891,6 +1993,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $sql = $command->update($table, $columns, $conditions, $params)->getSql();
 
         $this->assertSame($expected, $sql);
+
+        $db->close();
     }
 
     /**
@@ -1928,6 +2032,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         );
 
         $this->performAndCompareUpsertResult($db, $secondData);
+
+        $db->close();
     }
 
     /**

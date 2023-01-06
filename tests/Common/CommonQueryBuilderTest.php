@@ -46,6 +46,8 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $db->createCommand($qb->createTable('column_type_table', $columns))->execute();
 
         $this->assertNotEmpty($db->getTableSchema('column_type_table', true));
+
+        $db->close();
     }
 
     public function testGetColumnType(): void
@@ -71,5 +73,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
             $this->assertEquals($expected, $qb->getColumnType($column));
             $this->assertEquals($expected, $qb->getColumnType($builder));
         }
+
+        $db->close();
     }
 }

@@ -16,6 +16,8 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $query = (new Query($db))->select('customer.name')->from('customer')->indexBy('customer.id');
 
         $this->assertSame([1 => 'user1', 2 => 'user2', 3 => 'user3'], $query->column());
+
+        $db->close();
     }
 
     public function testColumnIndexByWithClosure()
@@ -29,5 +31,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->column();
 
         $this->assertEquals([2 => '1', 4 => '2', 6 => '3'], $result);
+
+        $db->close();
     }
 }
