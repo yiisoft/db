@@ -9,6 +9,7 @@ use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
+use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\Support\AnyValue;
 
@@ -193,5 +194,18 @@ abstract class AbstractSchemaProvider
         }
 
         return $data;
+    }
+
+    public function withIndexDataProvider(): array
+    {
+        return [
+            [
+                'indexType' => AbstractQueryBuilder::INDEX_UNIQUE,
+                'indexMethod' => null,
+                'columnType' => null,
+                'isPrimary' => false,
+                'isUnique' => true,
+            ],
+        ];
     }
 }

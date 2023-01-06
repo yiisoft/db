@@ -1008,12 +1008,12 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @dataProvider withIndexDataProvider
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::withIndexDataProvider()
      */
     public function testWorkWithIndex(
-        ?string $indexType = null,
-        ?string $indexMethod = null,
-        ?string $columnType = null,
+        string $indexType = null,
+        string $indexMethod = null,
+        string $columnType = null,
         bool $isPrimary = false,
         bool $isUnique = false
     ): void {
@@ -1040,19 +1040,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertSame($isPrimary, $indexes[0]->isPrimary());
 
         $this->dropTableForIndexAndConstraintTests($db, $tableName);
-    }
-
-    public function withIndexDataProvider(): array
-    {
-        return [
-            [
-                'indexType' => QueryBuilder::INDEX_UNIQUE,
-                'indexMethod' => null,
-                'columnType' => null,
-                'isPrimary' => false,
-                'isUnique' => true,
-            ],
-        ];
     }
 
     protected function createTableForIndexAndConstraintTests(ConnectionInterface $db, string $tableName, string $columnName, ?string $columnType = null): void
