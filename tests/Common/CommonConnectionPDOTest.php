@@ -30,6 +30,8 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
 
         $this->assertSame('SELECT 1', $command->getSql());
         $this->assertSame([], $command->getParams());
+
+        $db->close();
     }
 
     /**
@@ -88,6 +90,8 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
                 SQL,
             )->queryScalar()
         );
+
+        $db->close();
     }
 
     /**
@@ -147,6 +151,8 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
                 SQL,
             )->queryScalar(),
         );
+
+        $db->close();
     }
 
     /**
@@ -190,6 +196,8 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
                 SQL,
             )->queryScalar()
         );
+
+        $db->close();
     }
 
     public function testTransactionCommitNotActiveTransaction(): void
@@ -227,6 +235,8 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
         $this->assertEquals(2, $transaction->getLevel());
         $transaction->commit();
         $this->assertEquals(1, $transaction->getLevel());
+
+        $db->close();
     }
 
     public function testTransactionRollbackNotActiveTransaction(): void
@@ -263,6 +273,8 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
         $this->assertEquals(2, $transaction->getLevel());
         $transaction->rollBack();
         $this->assertEquals(1, $transaction->getLevel());
+
+        $db->close();
     }
 
     public function testTransactionSetIsolationLevel(): void

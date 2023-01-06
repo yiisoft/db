@@ -917,6 +917,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertCount(0, $constraints);
 
         $this->dropTableForIndexAndConstraintTests($db, $tableName);
+
+        $db->close();
     }
 
     public function testWorkWithCheckConstraint(): void
@@ -948,6 +950,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertCount(0, $constraints);
 
         $this->dropTableForIndexAndConstraintTests($db, $tableName);
+
+        $db->close();
     }
 
     public function testWorkWithDefaultValueConstraint(): void
@@ -979,6 +983,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertCount(0, $constraints);
 
         $this->dropTableForIndexAndConstraintTests($db, $tableName);
+
+        $db->close();
     }
 
     public function testWorkWithPrimaryKeyConstraint(): void
@@ -1005,6 +1011,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertNull($constraints);
 
         $this->dropTableForIndexAndConstraintTests($db, $tableName);
+
+        $db->close();
     }
 
     /**
@@ -1040,6 +1048,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertSame($isPrimary, $indexes[0]->isPrimary());
 
         $this->dropTableForIndexAndConstraintTests($db, $tableName);
+
+        $db->close();
     }
 
     protected function createTableForIndexAndConstraintTests(ConnectionInterface $db, string $tableName, string $columnName, ?string $columnType = null): void

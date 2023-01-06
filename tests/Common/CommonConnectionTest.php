@@ -35,5 +35,7 @@ abstract class CommonConnectionTest extends AbstractConnectionTest
         )->queryScalar();
 
         $this->assertSame(0, $profilesCount, 'profile should not be inserted in transaction shortcut');
+
+        $db->close();
     }
 }

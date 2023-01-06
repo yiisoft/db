@@ -42,6 +42,8 @@ abstract class CommonCommandPDOTest extends TestCase
 
         $this->assertSame($sql, $command->getSql());
         $this->assertSame($expected, $command->queryOne());
+
+        $db->close();
     }
 
     /**
@@ -65,6 +67,8 @@ abstract class CommonCommandPDOTest extends TestCase
         $command = $db->createCommand($sql, $params);
 
         $this->assertSame('Params', $command->queryScalar());
+
+        $db->close();
     }
 
     public function testBindParamValue(): void
@@ -111,6 +115,8 @@ abstract class CommonCommandPDOTest extends TestCase
         $command->bindValue(':name', 'user5');
 
         $this->assertSame('user5@example.com', $command->queryScalar());
+
+        $db->close();
     }
 
     public function testBindValues(): void
@@ -145,6 +151,8 @@ abstract class CommonCommandPDOTest extends TestCase
         $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
         $this->assertCount(3, $bindedValues);
         $this->assertSame($param, $bindedValues['int']);
+
+        $db->close();
     }
 
     public function testColumnCase(): void
@@ -182,5 +190,7 @@ abstract class CommonCommandPDOTest extends TestCase
         $this->assertTrue(isset($rows[0]));
         $this->assertTrue(isset($rows[0]['CUSTOMER_ID']));
         $this->assertTrue(isset($rows[0]['TOTAL']));
+
+        $db->close();
     }
 }
