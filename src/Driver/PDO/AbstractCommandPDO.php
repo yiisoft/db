@@ -101,33 +101,6 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
         return $this;
     }
 
-    public function insertWithReturningPks(string $table, array $columns): bool|array
-    {
-        $params = [];
-        $sql = $this->db->getQueryBuilder()->insert($table, $columns, $params);
-        $this->setSql($sql)->bindValues($params);
-
-        if (!$this->execute()) {
-            return false;
-        }
-
-        $tableSchema = $this->db->getSchema()->getTableSchema($table);
-        $tablePrimaryKeys = $tableSchema?->getPrimaryKey() ?? [];
-
-        $result = [];
-        foreach ($tablePrimaryKeys as $name) {
-            if ($tableSchema?->getColumn($name)?->isAutoIncrement()) {
-                $result[$name] = $this->db->getLastInsertID((string) $tableSchema?->getSequenceName());
-                continue;
-            }
-
-            /** @psalm-var mixed */
-            $result[$name] = $columns[$name] ?? $tableSchema?->getColumn($name)?->getDefaultValue();
-        }
-
-        return $result;
-    }
-
     /**
      * @throws Exception|InvalidConfigException|PDOException
      */
