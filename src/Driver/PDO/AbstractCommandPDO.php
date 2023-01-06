@@ -154,19 +154,21 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
             return new DataReader($this);
         }
 
-        if ($queryMode === static::QUERY_MODE_NONE) {
+        if ($queryMode === static::QUERY_MODE_EXECUTE) {
             return $this->pdoStatement?->rowCount() ?? 0;
         }
 
-        if ($queryMode === static::QUERY_MODE_ROW) {
+        if ($this->is($queryMode, static::QUERY_MODE_ROW)) {
             /** @var mixed */
             $result = $this->pdoStatement?->fetch(PDO::FETCH_ASSOC);
-        } elseif ($queryMode === static::QUERY_MODE_COLUMN) {
+        } elseif ($this->is($queryMode, static::QUERY_MODE_COLUMN)) {
             /** @var mixed */
             $result = $this->pdoStatement?->fetchAll(PDO::FETCH_COLUMN);
-        } else {
+        } elseif ($this->is($queryMode, static::QUERY_MODE_ALL)) {
             /** @var mixed */
             $result = $this->pdoStatement?->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            throw new InvalidParamException("Unknown query mode '{$queryMode}'");
         }
 
         $this->pdoStatement?->closeCursor();

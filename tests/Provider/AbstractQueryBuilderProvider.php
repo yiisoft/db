@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
@@ -850,7 +849,7 @@ abstract class AbstractQueryBuilderProvider
                     $name1,
                     $tableName,
                     'C_index_1',
-                    AbstractQueryBuilder::INDEX_UNIQUE,
+                    QueryBuilderInterface::INDEX_UNIQUE,
                 ),
             ],
             'create unique (2 columns)' => [
@@ -861,7 +860,7 @@ abstract class AbstractQueryBuilderProvider
                     $name2,
                     $tableName,
                     'C_index_2_1, C_index_2_2',
-                    AbstractQueryBuilder::INDEX_UNIQUE,
+                    QueryBuilderInterface::INDEX_UNIQUE,
                 ),
             ],
         ];

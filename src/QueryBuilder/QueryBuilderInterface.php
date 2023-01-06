@@ -13,6 +13,11 @@ use Yiisoft\Db\Schema\QuoterInterface;
 interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilderInterface, DQLQueryBuilderInterface
 {
     /**
+     * Defines a UNIQUE index type for {@see createIndex()}.
+     */
+    public const INDEX_UNIQUE = 'UNIQUE';
+
+    /**
      * Helper method to add $value to $params array using {@see PARAM_PREFIX}.
      *
      * @param array $params passed by reference.
