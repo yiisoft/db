@@ -199,18 +199,23 @@ abstract class CommonCommandPDOTest extends TestCase
         $db->close();
     }
 
-    public function testIncorrectQueryMode(): void {
+    public function testIncorrectQueryMode(): void
+    {
         $db = $this->getConnection(true);
 
-        $command = new class($db, $this->createQueryCache()) extends AbstractCommandPDO {
+        $command = new class ($db, $this->createQueryCache()) extends AbstractCommandPDO {
             public function testExecute(): void
             {
                 $this->internalGetQueryResult(1024);
             }
 
-            protected function internalExecute(?string $rawSql): void {}
+            protected function internalExecute(?string $rawSql): void
+            {
+            }
 
-            public function queryBuilder(): QueryBuilderInterface {}
+            public function queryBuilder(): QueryBuilderInterface
+            {
+            }
         };
 
         $this->expectException(InvalidParamException::class);
