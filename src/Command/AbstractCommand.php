@@ -365,6 +365,20 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
         return $this->setSql($sql)->bindValues($params);
     }
 
+    public function insertWithReturningPks(string $table, array $columns): bool|array
+    {
+        $params = [];
+
+        $sql = $this->queryBuilder()->insertWithReturningPks($table, $columns, $params);
+
+        $this->setSql($sql)->bindValues($params);
+
+        /** @psalm-var array|bool $result */
+        $result = $this->queryOne();
+
+        return is_array($result) ? $result : false;
+    }
+
     public function noCache(): static
     {
         $this->queryCacheDuration = -1;
