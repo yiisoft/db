@@ -524,7 +524,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Query::class => QueryExpressionBuilder::class,
             Param::class => ParamBuilder::class,
             Expression::class => ExpressionBuilder::class,
-            Condition\ConjunctionCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
+            Condition\AbstractConjunctionCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
             Condition\NotCondition::class => Condition\Builder\NotConditionBuilder::class,
             Condition\AndCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
             Condition\OrCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
