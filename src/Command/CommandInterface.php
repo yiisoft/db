@@ -24,15 +24,10 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  */
 interface CommandInterface
 {
-    /** @var int */
     public const QUERY_MODE_EXECUTE = 1;
-    /** @var int */
     public const QUERY_MODE_ROW = 2;
-    /** @var int */
     public const QUERY_MODE_ALL = 4;
-    /** @var int */
     public const QUERY_MODE_COLUMN = 8;
-    /** @var int */
     public const QUERY_MODE_CURSOR = 16;
 
     /**
