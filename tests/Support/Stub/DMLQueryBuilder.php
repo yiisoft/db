@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support\Stub;
 
-use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
+use Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder;
 
-final class DMLQueryBuilder extends \Yiisoft\Db\QueryBuilder\DMLQueryBuilder implements DMLQueryBuilderInterface
+final class DMLQueryBuilder extends AbstractDMLQueryBuilder
 {
 }

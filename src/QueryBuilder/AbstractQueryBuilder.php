@@ -41,7 +41,7 @@ use function preg_replace;
  * @property string[] $expressionBuilders Array of builders that should be merged with the pre-defined one's in
  * {@see expressionBuilders} property. This property is write-only.
  */
-abstract class QueryBuilder implements QueryBuilderInterface
+abstract class AbstractQueryBuilder implements QueryBuilderInterface
 {
     /**
      * Defines a UNIQUE index type for {@see createIndex()}.
@@ -65,9 +65,9 @@ abstract class QueryBuilder implements QueryBuilderInterface
     public function __construct(
         private QuoterInterface $quoter,
         private SchemaInterface $schema,
-        private DDLQueryBuilder $ddlBuilder,
-        private DMLQueryBuilder $dmlBuilder,
-        private DQLQueryBuilder $dqlBuilder
+        private AbstractDDLQueryBuilder $ddlBuilder,
+        private AbstractDMLQueryBuilder $dmlBuilder,
+        private AbstractDQLQueryBuilder $dqlBuilder
     ) {
     }
 

@@ -38,7 +38,7 @@ use function reset;
 use function strtoupper;
 use function trim;
 
-abstract class DQLQueryBuilder implements DQLQueryBuilderInterface
+abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 {
     protected string $separator = ' ';
 

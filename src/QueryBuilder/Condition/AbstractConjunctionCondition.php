@@ -9,7 +9,7 @@ use Yiisoft\Db\QueryBuilder\Condition\Interface\ConjunctionConditionInterface;
 /**
  * Class ConjunctionCondition.
  */
-abstract class ConjunctionCondition implements ConjunctionConditionInterface
+abstract class AbstractConjunctionCondition implements ConjunctionConditionInterface
 {
     final public function __construct(protected array $expressions)
     {

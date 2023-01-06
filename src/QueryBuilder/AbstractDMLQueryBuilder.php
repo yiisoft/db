@@ -32,7 +32,7 @@ use function is_string;
 use function json_encode;
 use function preg_match;
 
-abstract class DMLQueryBuilder implements DMLQueryBuilderInterface
+abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 {
     public function __construct(
         private QueryBuilderInterface $queryBuilder,

@@ -1672,7 +1672,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         if ($db->getName() === 'db') {
             $this->expectException(NotSupportedException::class);
             $this->expectExceptionMessage(
-                'Yiisoft\Db\QueryBuilder\DMLQueryBuilder::resetSequence() is not supported by this DBMS.'
+                'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.'
             );
         } else {
             $this->expectException(InvalidArgumentException::class);
@@ -1698,7 +1698,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         if ($db->getName() === 'db') {
             $this->expectException(NotSupportedException::class);
             $this->expectExceptionMessage(
-                'Yiisoft\Db\QueryBuilder\DMLQueryBuilder::resetSequence() is not supported by this DBMS.'
+                'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.'
             );
         } else {
             $this->expectException(InvalidArgumentException::class);
