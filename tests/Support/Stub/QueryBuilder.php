@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support\Stub;
 
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
-final class QueryBuilder extends \Yiisoft\Db\QueryBuilder\QueryBuilder implements QueryBuilderInterface
+final class QueryBuilder extends AbstractQueryBuilder
 {
     public function __construct(QuoterInterface $quoter, SchemaInterface $schema)
     {

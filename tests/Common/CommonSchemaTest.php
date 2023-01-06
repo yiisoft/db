@@ -17,7 +17,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\QueryBuilder\QueryBuilder;
+use Yiisoft\Db\QueryBuilder\AbstractQueryBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
@@ -136,7 +136,12 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->assertSame([], $uniqueIndexes);
 
-        $command->createIndex('somecolUnique', 'uniqueIndex', 'somecol', QueryBuilder::INDEX_UNIQUE)->execute();
+        $command->createIndex(
+            'somecolUnique',
+            'uniqueIndex',
+            'somecol',
+            AbstractQueryBuilder::INDEX_UNIQUE,
+        )->execute();
         $tableSchema = $schema->getTableSchema('uniqueIndex', true);
 
         $this->assertNotNull($tableSchema);
@@ -150,7 +155,12 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
          *
          * @link https://github.com/yiisoft/yii2/issues/10613
          */
-        $command->createIndex('someCol2Unique', 'uniqueIndex', 'someCol2', QueryBuilder::INDEX_UNIQUE)->execute();
+        $command->createIndex(
+            'someCol2Unique',
+            'uniqueIndex',
+            'someCol2',
+            AbstractQueryBuilder::INDEX_UNIQUE,
+        )->execute();
         $tableSchema = $schema->getTableSchema('uniqueIndex', true);
 
         $this->assertNotNull($tableSchema);
@@ -160,7 +170,12 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertSame(['someCol2Unique' => ['someCol2'], 'somecolUnique' => ['somecol']], $uniqueIndexes);
 
         /** @link https://github.com/yiisoft/yii2/issues/13814 */
-        $command->createIndex('another unique index', 'uniqueIndex', 'someCol3', QueryBuilder::INDEX_UNIQUE)->execute();
+        $command->createIndex(
+            'another unique index',
+            'uniqueIndex',
+            'someCol3',
+            AbstractQueryBuilder::INDEX_UNIQUE,
+        )->execute();
         $tableSchema = $schema->getTableSchema('uniqueIndex', true);
 
         $this->assertNotNull($tableSchema);
@@ -993,12 +1008,12 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @dataProvider withIndexDataProvider
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::withIndexDataProvider()
      */
     public function testWorkWithIndex(
-        ?string $indexType = null,
-        ?string $indexMethod = null,
-        ?string $columnType = null,
+        string $indexType = null,
+        string $indexMethod = null,
+        string $columnType = null,
         bool $isPrimary = false,
         bool $isUnique = false
     ): void {
@@ -1025,19 +1040,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertSame($isPrimary, $indexes[0]->isPrimary());
 
         $this->dropTableForIndexAndConstraintTests($db, $tableName);
-    }
-
-    public function withIndexDataProvider(): array
-    {
-        return [
-            [
-                'indexType' => QueryBuilder::INDEX_UNIQUE,
-                'indexMethod' => null,
-                'columnType' => null,
-                'isPrimary' => false,
-                'isUnique' => true,
-            ],
-        ];
     }
 
     protected function createTableForIndexAndConstraintTests(ConnectionInterface $db, string $tableName, string $columnName, ?string $columnType = null): void

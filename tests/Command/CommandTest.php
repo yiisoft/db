@@ -103,7 +103,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\DDLQueryBuilder::addDefaultValue is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::addDefaultValue is not supported by this DBMS.'
         );
 
         $command->addDefaultValue('name', 'table', 'column', 'value');
@@ -229,7 +229,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\DDLQueryBuilder::checkIntegrity is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::checkIntegrity is not supported by this DBMS.'
         );
 
         $command->checkIntegrity('schema', 'table')->execute();
@@ -392,7 +392,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\DDLQueryBuilder::dropDefaultValue is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::dropDefaultValue is not supported by this DBMS.'
         );
 
         $command->dropDefaultValue('column', 'table');
@@ -665,7 +665,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\DMLQueryBuilder::resetSequence() is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.'
         );
 
         $db->createCommand()->resetSequence('table', 5);
@@ -722,7 +722,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\DMLQueryBuilder::upsert is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsert is not supported by this DBMS.'
         );
 
         $command->upsert('{{table}}', []);

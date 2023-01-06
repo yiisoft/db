@@ -17,7 +17,7 @@ use function implode;
 use function is_string;
 use function preg_split;
 
-abstract class DDLQueryBuilder implements DDLQueryBuilderInterface
+abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
 {
     public function __construct(
         private QueryBuilderInterface $queryBuilder,
