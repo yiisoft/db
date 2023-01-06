@@ -10,7 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\ConjunctionCondition;
+use Yiisoft\Db\QueryBuilder\Condition\AbstractConjunctionCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConjunctionConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
@@ -20,7 +20,7 @@ use function is_array;
 use function reset;
 
 /**
- * Class ConjunctionConditionBuilder builds objects of abstract class {@see ConjunctionCondition}.
+ * Class ConjunctionConditionBuilder builds objects of abstract class {@see AbstractConjunctionCondition}.
  */
 class ConjunctionConditionBuilder implements ExpressionBuilderInterface
 {

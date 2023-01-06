@@ -6,9 +6,6 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConjunctionConditionInterface;
 
-/**
- * Class ConjunctionCondition.
- */
 abstract class AbstractConjunctionCondition implements ConjunctionConditionInterface
 {
     final public function __construct(protected array $expressions)
