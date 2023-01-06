@@ -27,13 +27,13 @@ interface CommandInterface
     /** @var int */
     public const QUERY_MODE_EXECUTE = 1;
     /** @var int */
-    public const QUERY_MODE_ROW     = 2;
+    public const QUERY_MODE_ROW = 2;
     /** @var int */
-    public const QUERY_MODE_ALL     = 4;
+    public const QUERY_MODE_ALL = 4;
     /** @var int */
-    public const QUERY_MODE_COLUMN  = 8;
+    public const QUERY_MODE_COLUMN = 8;
     /** @var int */
-    public const QUERY_MODE_CURSOR  = 16;
+    public const QUERY_MODE_CURSOR = 16;
 
     /**
      * Creates a SQL command for adding a check constraint to an existing table.

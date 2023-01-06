@@ -544,9 +544,8 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
 
     protected function is(int $value, int $flag): bool
     {
-        return (($value & $flag) === $flag);
+        return ($value & $flag) === $flag;
     }
-
 
     /**
      * Returns the query result.
