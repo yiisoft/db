@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Driver\PDO;
 use PDO;
 use PDOException;
 use Psr\Log\LogLevel;
-use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\AbstractConnection;
 use Yiisoft\Db\Exception\Exception;
@@ -38,12 +37,8 @@ abstract class AbstractConnectionPDO extends AbstractConnection implements Conne
     protected QuoterInterface|null $quoter = null;
     protected SchemaInterface|null $schema = null;
 
-    public function __construct(
-        protected PDODriverInterface $driver,
-        protected QueryCache $queryCache,
-        protected SchemaCache $schemaCache
-    ) {
-        parent::__construct($queryCache);
+    public function __construct(protected PDODriverInterface $driver, protected SchemaCache $schemaCache)
+    {
     }
 
     /**

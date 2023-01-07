@@ -15,8 +15,7 @@ trait TestTrait
     {
         $db = new Stub\Connection(
             new PDODriver($this->dsn),
-            DbHelper::getQueryCache(),
-            DbHelper::getSchemaCache(),
+            DbHelper::getSchemaCache()
         );
 
         if ($fixture) {

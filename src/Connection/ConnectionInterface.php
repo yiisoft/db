@@ -48,42 +48,6 @@ interface ConnectionInterface
     public function beginTransaction(string $isolationLevel = null): TransactionInterface;
 
     /**
-     * Uses query cache for the queries performed with the Closure.
-     *
-     * When query caching is enabled ({@see enableQueryCache} is true and {@see QueryCache} refers to a valid cache),
-     * queries performed within the Closure will be cached and their results will be fetched from cache if available.
-     *
-     * For example,
-     *
-     * ```php
-     * // The customer will be fetched from cache if available.
-     * // If not, the query will be made against DB and cached for use next time.
-     * $customer = $db->cache(function (ConnectionInterface $db) {
-     *     return $db->createCommand('SELECT * FROM customer WHERE id=1')->queryOne();
-     * });
-     * ```
-     *
-     * Note that query cache is only meaningful for queries that return results. For queries performed with
-     * {@see Command::execute()}, query cache will not be used.
-     *
-     * @param Closure $closure A PHP Closure that contains DB queries which will make use of query cache.
-     * The signature of the Closure is `function (ConnectionInterface $db)`.
-     * @param int|null $duration The number of seconds that query results can remain valid in the cache. If this is not
-     * set, the value of {@see QueryCache::getDuration()} will be used instead. Use 0 to indicate that the cached data
-     * will never expire.
-     * @param Dependency|null $dependency The cache dependency associated with the cached query results.
-     *
-     * @throws Throwable If there is any exception during query.
-     *
-     * @return mixed The return result of the Closure.
-     *
-     * {@see setEnableQueryCache()}
-     * {@see queryCache}
-     * {@see noCache()}
-     */
-    public function cache(Closure $closure, int $duration = null, Dependency $dependency = null): mixed;
-
-    /**
      * Create a batch query result instance.
      *
      * @param QueryInterface $query The query to be executed.
@@ -218,36 +182,6 @@ interface ConnectionInterface
     public function isSavepointEnabled(): bool;
 
     /**
-     * Disables query cache temporarily.
-     *
-     * Queries performed within the Closure will not use query cache at all. For example,
-     *
-     * ```php
-     * $db->cache(function (ConnectionInterface $db) {
-     *
-     *     // ... queries that use query cache ...
-     *
-     *     return $db->noCache(function (ConnectionInterface $db) {
-     *         // this query will not use query cache
-     *         return $db->createCommand('SELECT * FROM customer WHERE id=1')->queryOne();
-     *     });
-     * });
-     * ```
-     *
-     * @param Closure $closure A PHP Closure that contains DB queries which should not use query cache. The signature
-     * of the Closure is `function (ConnectionInterface $db)`.
-     *
-     * @throws Throwable If there is any exception during query.
-     *
-     * @return mixed The return result of the Closure.
-     *
-     * {@see enableQueryCache}
-     * {@see queryCache}
-     * {@see cache()}
-     */
-    public function noCache(Closure $closure): mixed;
-
-    /**
      * Disabled profiling for current DB connection.
      */
     public function notProfiler(): void;
@@ -261,13 +195,6 @@ interface ConnectionInterface
      * @throws InvalidConfigException If connection fails.
      */
     public function open(): void;
-
-    /**
-     * Allows you to enable and disable the query cache.
-     *
-     * @param bool $value Whether to enable or disable the query cache.
-     */
-    public function queryCacheEnable(bool $value): void;
 
     /**
      * Quotes a value for use in a query.

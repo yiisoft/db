@@ -7,8 +7,6 @@ namespace Yiisoft\Db\Command;
 use Closure;
 use JsonException;
 use Throwable;
-use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -262,18 +260,6 @@ interface CommandInterface
      * @return static The current command being executed.
      */
     public function bindValues(array $values): static;
-
-    /**
-     * Enables query cache for this command.
-     *
-     * @param int|null $duration The number of seconds that query result of this command can remain valid in the cache.
-     * If this is not set, the value of {@see QueryCache::getDuration()} will be used instead.
-     * Use 0 to indicate that the cached data will never expire.
-     * @param Dependency|null $dependency The cache dependency associated with the cached query result.
-     *
-     * @return static The current command being executed.
-     */
-    public function cache(int $duration = null, Dependency $dependency = null): static;
 
     /**
      * Cancels the execution of the SQL statement.
@@ -603,13 +589,6 @@ interface CommandInterface
      * @return array|false The primary key values or false if the command fails.
      */
     public function insertWithReturningPks(string $table, array $columns): bool|array;
-
-    /**
-     * Disables query cache for this command.
-     *
-     * @return static The command object itself
-     */
-    public function noCache(): static;
 
     /**
      * Prepares the SQL statement to be executed.

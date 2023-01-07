@@ -20,7 +20,7 @@ final class Connection extends AbstractConnectionPDO
 
     public function createCommand(string $sql = null, array $params = []): CommandInterface
     {
-        $command = new Command($this, $this->queryCache);
+        $command = new Command($this);
 
         if ($sql !== null) {
             $command->setSql($sql);

@@ -6,8 +6,6 @@ namespace Yiisoft\Db\Tests\Common;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Cache\CacheInterface;
-use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
@@ -203,7 +201,7 @@ abstract class CommonCommandPDOTest extends TestCase
     {
         $db = $this->getConnection(true);
 
-        $command = new class ($db, $this->createQueryCache()) extends AbstractCommandPDO {
+        $command = new class ($db) extends AbstractCommandPDO {
             public function testExecute(): void
             {
                 $this->internalGetQueryResult(1024);
@@ -223,10 +221,5 @@ abstract class CommonCommandPDOTest extends TestCase
         $command->testExecute();
 
         $db->close();
-    }
-
-    private function createQueryCache(): QueryCache
-    {
-        return new QueryCache($this->createMock(CacheInterface::class));
     }
 }

@@ -10,8 +10,6 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -34,10 +32,6 @@ abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInt
     private int $serverRetryInterval = 600;
     private string $tablePrefix = '';
 
-    public function __construct(private QueryCache $queryCache)
-    {
-    }
-
     public function beginTransaction(string $isolationLevel = null): TransactionInterface
     {
         $this->open();
@@ -54,19 +48,6 @@ abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInt
         $this->transaction->begin($isolationLevel);
 
         return $this->transaction;
-    }
-
-    public function cache(Closure $closure, int $duration = null, Dependency $dependency = null): mixed
-    {
-        $this->queryCache->setInfo(
-            [$duration ?? $this->queryCache->getDuration(), $dependency]
-        );
-
-        /** @psalm-var mixed $result */
-        $result = $closure($this);
-        $this->queryCache->removeLastInfo();
-
-        return $result;
     }
 
     public function createBatchQueryResult(QueryInterface $query, bool $each = false): BatchQueryResultInterface
@@ -94,25 +75,9 @@ abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInt
         return $this->enableSavepoint;
     }
 
-    public function noCache(Closure $closure): mixed
-    {
-        $queryCache = $this->queryCache;
-        $queryCache->setInfo(false);
-        /** @psalm-var mixed $result */
-        $result = $closure($this);
-        $queryCache->removeLastInfo();
-
-        return $result;
-    }
-
     public function notProfiler(): void
     {
         $this->profiler = null;
-    }
-
-    public function queryCacheEnable(bool $value): void
-    {
-        $this->queryCache->setEnable($value);
     }
 
     public function setEnableSavepoint(bool $value): void

@@ -128,16 +128,6 @@ abstract class AbstractCommandTest extends TestCase
         $this->assertSame($sql2, $command->getSql());
     }
 
-    public function testNoCache(): void
-    {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand()->noCache();
-
-        $this->assertSame(-1, Assert::getInaccessibleProperty($command, 'queryCacheDuration'));
-        $this->assertInstanceOf(CommandInterface::class, $command);
-    }
-
     public function testPrepareCancel(): void
     {
         $db = $this->getConnection(true);
