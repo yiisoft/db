@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Connection;
 
 use Closure;
 use Throwable;
-use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;

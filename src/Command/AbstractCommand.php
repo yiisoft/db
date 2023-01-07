@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Command;
 
 use Closure;
-use JsonException;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;

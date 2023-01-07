@@ -303,9 +303,7 @@ class Query implements QueryInterface
     public function createCommand(): CommandInterface
     {
         [$sql, $params] = $this->db->getQueryBuilder()->build($this);
-        $command = $this->db->createCommand($sql, $params);
-
-        return $command;
+        return $this->db->createCommand($sql, $params);
     }
 
     public function distinct(bool|null $value = true): static
