@@ -37,7 +37,7 @@ abstract class AbstractDsn implements Stringable
      * ```php
      * $dsn = new Dsn('mysql', '127.0.0.1', 'yiitest', '3306', ['charset' => 'utf8mb4']);
      * $pdoDriver = new PDODriver($dsn->asString(), 'username', 'password');
-     * $connection = new Connection($pdoDriver, $queryCache, $schemaCache);
+     * $connection = new Connection($pdoDriver, $schemaCache);
      * ```
      *
      * Will result in the DSN string `mysql:host=127.0.0.1;dbname=yiitest;port=3306;charset=utf8mb4`.

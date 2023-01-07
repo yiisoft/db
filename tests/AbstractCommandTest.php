@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -126,16 +124,6 @@ abstract class AbstractCommandTest extends TestCase
         SQL;
         $command->setSql($sql2);
         $this->assertSame($sql2, $command->getSql());
-    }
-
-    public function testNoCache(): void
-    {
-        $db = $this->getConnection();
-
-        $command = $db->createCommand()->noCache();
-
-        $this->assertSame(-1, Assert::getInaccessibleProperty($command, 'queryCacheDuration'));
-        $this->assertInstanceOf(CommandInterface::class, $command);
     }
 
     public function testPrepareCancel(): void

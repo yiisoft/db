@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Query;
 use Closure;
 use Stringable;
 use Throwable;
-use Yiisoft\Cache\Dependency\Dependency;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -76,18 +75,6 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * traversed to retrieve the data in batches.
      */
     public function batch(int $batchSize = 100): BatchQueryResultInterface;
-
-    /**
-     * Enables query cache for this Query.
-     *
-     * @param int|null $duration the number of seconds that query results can remain valid in cache.
-     * Use 0 to indicate that the cached data will never expire.
-     * Use a negative number to indicate that query cache should not be used.
-     * @param Dependency|null $dependency the cache dependency associated with the cached result.
-     *
-     * @return static the Query object itself.
-     */
-    public function cache(int|null $duration = 3600, Dependency $dependency = null): static;
 
     /**
      * Executes the query and returns the first column of the result.
@@ -200,13 +187,6 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function getWhere(): array|string|ExpressionInterface|null;
 
     public function getWithQueries(): array;
-
-    /**
-     * Disables query cache for this Query.
-     *
-     * @return static the Query object itself.
-     */
-    public function noCache(): static;
 
     /**
      * Executes the query and returns a single row of result.

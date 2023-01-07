@@ -7,8 +7,6 @@ namespace Yiisoft\Db\Query;
 use Closure;
 use Throwable;
 use Yiisoft\Arrays\ArrayHelper;
-use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
@@ -79,8 +77,6 @@ class Query implements QueryInterface
     private Closure|string|null $indexBy = null;
     private Expression|int|null $limit = null;
     private Expression|int|null $offset = null;
-    private Dependency|null $queryCacheDependency = null;
-    private int|null $queryCacheDuration = null;
     private QueryHelper|null $queryHelper = null;
     private array|string|ExpressionInterface|null $where = null;
 
@@ -245,14 +241,6 @@ class Query implements QueryInterface
         return $this->db->createBatchQueryResult($this)->batchSize($batchSize);
     }
 
-    public function cache(int|null $duration = 3600, Dependency $dependency = null): static
-    {
-        $this->queryCacheDuration = $duration;
-        $this->queryCacheDependency = $dependency;
-
-        return $this;
-    }
-
     /**
      * @psalm-suppress MixedArrayOffset
      *
@@ -315,10 +303,7 @@ class Query implements QueryInterface
     public function createCommand(): CommandInterface
     {
         [$sql, $params] = $this->db->getQueryBuilder()->build($this);
-        $command = $this->db->createCommand($sql, $params);
-        $this->setCommandCache($command);
-
-        return $command;
+        return $this->db->createCommand($sql, $params);
     }
 
     public function distinct(bool|null $value = true): static
@@ -541,13 +526,6 @@ class Query implements QueryInterface
         $min = $this->queryScalar("MIN($q)");
 
         return is_numeric($min) ? $min : null;
-    }
-
-    public function noCache(): static
-    {
-        $this->queryCacheDuration = -1;
-
-        return $this;
     }
 
     public function offset(Expression|int|null $offset): static
@@ -791,23 +769,7 @@ class Query implements QueryInterface
         [$sql, $params] = $this->db->getQueryBuilder()->build($query);
         $command = $this->db->createCommand($sql, $params);
 
-        $this->setCommandCache($command);
-
         return $command->queryScalar();
-    }
-
-    /**
-     * Sets $command cache, if this query has enabled caching.
-     *
-     * @param CommandInterface $command The command instance.
-     */
-    protected function setCommandCache(CommandInterface $command): CommandInterface
-    {
-        if ($this->queryCacheDuration !== null || $this->queryCacheDependency !== null) {
-            $command->cache($this->queryCacheDuration, $this->queryCacheDependency);
-        }
-
-        return $command;
     }
 
     private function createQueryHelper(): QueryHelper

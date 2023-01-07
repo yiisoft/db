@@ -5,14 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Command;
 
 use Closure;
-use DateInterval;
-use JsonException;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Cache\CacheInterface;
-use Yiisoft\Cache\Dependency\Dependency;
-use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
@@ -79,15 +74,9 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
     protected string|null $isolationLevel = null;
     protected string|null $refreshTableName = null;
     protected Closure|null $retryHandler = null;
-    protected int|null $queryCacheDuration = null;
     private string $sql = '';
-    protected Dependency|null $queryCacheDependency = null;
     /** * @var ParamInterface[] */
     protected array $params = [];
-
-    public function __construct(protected QueryCache $queryCache)
-    {
-    }
 
     public function addCheck(string $name, string $table, string $expression): static
     {
@@ -181,13 +170,6 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
     abstract public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
 
     abstract public function bindValues(array $values): static;
-
-    public function cache(int $duration = null, Dependency $dependency = null): static
-    {
-        $this->queryCacheDuration = $duration ?? $this->queryCache->getDuration();
-        $this->queryCacheDependency = $dependency;
-        return $this;
-    }
 
     public function checkIntegrity(string $schema, string $table, bool $check = true): static
     {
@@ -379,12 +361,6 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
         return is_array($result) ? $result : false;
     }
 
-    public function noCache(): static
-    {
-        $this->queryCacheDuration = -1;
-        return $this;
-    }
-
     /**
      * @psalm-suppress MixedReturnStatement
      * @psalm-suppress MixedInferredReturnType
@@ -522,17 +498,6 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
     }
 
     /**
-     * Returns the cache key for the query.
-     *
-     * @param string $rawSql the raw SQL with parameter values inserted into the corresponding placeholders.
-     *
-     * @throws JsonException
-     *
-     * @return array The cache key.
-     */
-    abstract protected function getCacheKey(int $queryMode, string $rawSql): array;
-
-    /**
      * Executes a prepared statement.
      *
      * @param string|null $rawSql the rawSql if it has been created.
@@ -572,57 +537,8 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
      */
     protected function queryInternal(int $queryMode): mixed
     {
-        if ($this->is($queryMode, self::QUERY_MODE_EXECUTE) || $this->is($queryMode, self::QUERY_MODE_CURSOR)) {
-            return $this->queryWithoutCache($this->getRawSql(), $queryMode);
-        }
-
-        return $this->queryWithCache($queryMode);
-    }
-
-    /**
-     * Performs the actual DB query of a SQL statement.
-     *
-     * @param int $queryMode One from modes QUERY_MODE_*.
-     *
-     * @throws Exception
-     * @throws Throwable If the query causes any problem.
-     *
-     * @return mixed The method execution result.
-     */
-    protected function queryWithCache(int $queryMode): mixed
-    {
         $rawSql = $this->getRawSql();
 
-        $cacheKey = $this->getCacheKey($queryMode, $rawSql);
-        /** @psalm-var array{CacheInterface, DateInterval|int|null, Dependency|null} $info */
-        $info = $this->queryCache->info($this->queryCacheDuration, $this->queryCacheDependency);
-        /** @psalm-var mixed $cacheResult */
-        $cacheResult = $this->getFromCacheInfo($info, $cacheKey);
-
-        if ($cacheResult) {
-            $this->logger?->log(LogLevel::DEBUG, 'Get query result from cache', [self::class . '::query']);
-            return $cacheResult;
-        }
-
-        /** @psalm-var mixed $result */
-        $result = $this->queryWithoutCache($rawSql, $queryMode);
-        $this->setToCacheInfo($info, $cacheKey, $result);
-
-        return $result;
-    }
-
-    /**
-     * Performs the actual DB query of a SQL statement without caching.
-     *
-     * @param int $queryMode One from modes QUERY_MODE_*.
-     *
-     * @throws Exception
-     * @throws Throwable If the query causes any problem.
-     *
-     * @return mixed The method execution result.
-     */
-    protected function queryWithoutCache(string $rawSql, int $queryMode): mixed
-    {
         $isReadMode = $this->isReadMode($queryMode);
         $logCategory = self::class . '::' . ($isReadMode ? 'query' : 'execute');
 
@@ -640,6 +556,7 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
 
             $this->profiler?->end($rawSql, [$logCategory]);
 
+            // @todo set isReadMode to false for DDL query
             if (!$isReadMode) {
                 $this->refreshTableSchema();
             }
@@ -698,53 +615,6 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
         $this->refreshTableName = null;
         $this->isolationLevel = null;
         $this->retryHandler = null;
-    }
-
-    /**
-     * @psalm-param array{CacheInterface, DateInterval|int|null, Dependency|null} $info
-     */
-    private function getFromCacheInfo(array|null $info, array $cacheKey): mixed
-    {
-        if (!is_array($info)) {
-            return null;
-        }
-
-        $cache = $info[0];
-
-        /** @psalm-var mixed $result */
-        $result = $cache->getOrSet(
-            $cacheKey,
-            static fn () => null,
-        );
-
-        if (is_array($result) && isset($result[0])) {
-            $this->logger?->log(LogLevel::DEBUG, 'Query result served from cache', [self::class . '::query']);
-
-            return $result[0];
-        }
-
-        return null;
-    }
-
-    /**
-     * @psalm-param array{CacheInterface, DateInterval|int|null, Dependency|null} $info
-     */
-    private function setToCacheInfo(array|null $info, array $cacheKey, mixed $result): void
-    {
-        if (!is_array($info)) {
-            return;
-        }
-
-        $cache = $info[0];
-
-        $cache->getOrSet(
-            $cacheKey,
-            static fn (): array => [$result],
-            $info[1],
-            $info[2]
-        );
-
-        $this->logger?->log(LogLevel::DEBUG, 'Saved query result in cache', [self::class . '::query']);
     }
 
     private function isReadMode(int $queryMode): bool

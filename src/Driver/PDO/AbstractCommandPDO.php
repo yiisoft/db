@@ -8,7 +8,6 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use Throwable;
-use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Command\AbstractCommand;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
@@ -21,9 +20,8 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
 {
     protected PDOStatement|null $pdoStatement = null;
 
-    public function __construct(protected ConnectionPDOInterface $db, QueryCache $queryCache)
+    public function __construct(protected ConnectionPDOInterface $db)
     {
-        parent::__construct($queryCache);
     }
 
     /**
@@ -138,11 +136,6 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
         foreach ($this->params as $name => $value) {
             $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
         }
-    }
-
-    protected function getCacheKey(int $queryMode, string $rawSql): array
-    {
-        return array_merge([static::class , $queryMode], $this->db->getCacheKey(), [$rawSql]);
     }
 
     /**

@@ -8,7 +8,6 @@ use Psr\Log\LoggerInterface;
 use Yiisoft\Cache\Cache;
 use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Cache\File\FileCache;
-use Yiisoft\Db\Cache\QueryCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
@@ -33,11 +32,6 @@ final class DbHelper
     public static function getLogger(): LoggerInterface
     {
         return new Logger();
-    }
-
-    public static function getQueryCache(): QueryCache
-    {
-        return new QueryCache(self::getCache());
     }
 
     public static function getProfiler(): ProfilerInterface

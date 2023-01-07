@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Command;
 
-use Yiisoft\Cache\Dependency\TagDependency;
-use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\AbstractCommandTest;
@@ -186,19 +184,6 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $command->batchInsert('table', ['column1', 'column2'], [['value1', 'value2'], ['value3', 'value4']]);
-    }
-
-    public function testCache(): void
-    {
-        $db = $this->getConnection();
-
-        $tagDependency = new TagDependency('tag');
-        $command = $db->createCommand();
-        $command->cache(100, $tagDependency);
-
-        $this->assertInstanceOf(CommandInterface::class, $command);
-        $this->assertSame(100, Assert::getInaccessibleProperty($command, 'queryCacheDuration'));
-        $this->assertSame($tagDependency, Assert::getInaccessibleProperty($command, 'queryCacheDependency'));
     }
 
     /**
