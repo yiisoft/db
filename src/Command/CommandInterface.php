@@ -718,7 +718,7 @@ interface CommandInterface
      *
      * @param ProfilerInterface|null $profiler The profiler instance.
      */
-    public function setProfiler(ProfilerInterface|null $profiler = null): void;
+    public function setProfiler(ProfilerInterface|null $profiler): void;
 
     /**
      * Specifies the SQL statement to be executed. The SQL statement will not be modified in any way.
