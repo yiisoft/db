@@ -14,7 +14,7 @@ Using the Yii DataBase Library, you can perform common database tasks such as cr
 
 It is used in [YiiFramework] but can be used separately.
 
-[ActiveRecord]: https://github.com/yiisoft/activerecord
+[ActiveRecord]: https://github.com/yiisoft/active-record
 [MSSQL]: https://www.microsoft.com/sql-server
 [MySQ]: https://www.mysql.com
 [Oracle]: https://www.oracle.com/database
