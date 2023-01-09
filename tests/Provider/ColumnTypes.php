@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Migration\AbstractMigrationBuilder;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Tests\Support\Stub\Schema;
 
 use function array_key_exists;
 use function array_values;

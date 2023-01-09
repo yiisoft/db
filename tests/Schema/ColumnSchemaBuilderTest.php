@@ -6,8 +6,8 @@ namespace Yiisoft\Db\Tests\Schema;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Schema\ColumnSchemaBuilder;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Tests\Support\Stub\ColumnSchemaBuilder;
+use Yiisoft\Db\Tests\Support\Stub\Schema;
 
 /**
  * @group db

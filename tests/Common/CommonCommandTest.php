@@ -19,9 +19,9 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function call_user_func_array;

@@ -9,102 +9,63 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use function array_keys;
 
 /**
- * TableSchema represents the metadata of a database table.
+ * The AbstractTableSchema class is a utility class that provides information about the structure of a database table.
  *
- * @property array $columnNames List of column names. This property is read-only.
+ * It allows you to retrieve the names and types of the columns in a table, as well as other metadata such as whether
+ * a column is nullable or whether it is a primary key.
  */
-abstract class TableSchema implements TableSchemaInterface
+abstract class AbstractTableSchema implements TableSchemaInterface
 {
     private string|null $schemaName = null;
     private string $name = '';
     private string|null $fullName = null;
     private string|null $comment = null;
     private string|null $sequenceName = null;
-    /** @psalm-var string[] */
+    /** @psalm-var string[] $primaryKey */
     private array $primaryKey = [];
-    /** @psalm-var ColumnSchemaInterface[] */
+    /** @psalm-var ColumnSchemaInterface[] $columns */
     private array $columns = [];
-    /** @psalm-var array<array-key, array> */
+    /** @psalm-var array<array-key, array> $foreingKey */
     protected array $foreignKeys = [];
     protected string|null $createSql = null;
     private string|null $catalogName = null;
     private string|null $serverName = null;
 
-    /**
-     * Gets the named column metadata.
-     *
-     * This is a convenient method for retrieving a named column even if it does not exist.
-     *
-     * @param string $name column name
-     *
-     * @return ColumnSchemaInterface|null metadata of the named column. Null if the named column does not exist.
-     */
     public function getColumn(string $name): ColumnSchemaInterface|null
     {
         return $this->columns[$name] ?? null;
     }
 
-    /**
-     * Returns the names of all columns in this table.
-     *
-     * @return array list of column names
-     */
     public function getColumnNames(): array
     {
         return array_keys($this->columns);
     }
 
-    /**
-     * @return string|null the name of the schema that this table belongs to.
-     */
     public function getSchemaName(): string|null
     {
         return $this->schemaName;
     }
 
-    /**
-     * @return string the name of this table. The schema name is not included. Use {@see fullName} to get the name with
-     * schema name prefix.
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return string|null the full name of this table, which includes the schema name prefix, if any. Note that if the
-     * schema name is the same as the {@see Schema::defaultSchema|default schema name}, the schema name will not be
-     * included.
-     */
     public function getFullName(): string|null
     {
         return $this->fullName;
     }
 
-    /**
-     * @return string|null sequence name for the primary key. Null if no sequence.
-     */
     public function getSequenceName(): string|null
     {
         return $this->sequenceName;
     }
 
-    /**
-     * @return array primary keys of this table.
-     *
-     * @psalm-return string[]
-     */
     public function getPrimaryKey(): array
     {
         return $this->primaryKey;
     }
 
-    /**
-     * @return array column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object, indexed by
-     * column names.
-     *
-     * @psalm-return ColumnSchemaInterface[]
-     */
     public function getColumns(): array
     {
         return $this->columns;
@@ -155,10 +116,6 @@ abstract class TableSchema implements TableSchemaInterface
         return $this->catalogName;
     }
 
-    /**
-     * @param string|null name of the catalog (database) that this table belongs to. Defaults to null, meaning no
-     * catalog (or the current database).
-     */
     public function catalogName(string|null $value): void
     {
         $this->catalogName = $value;
@@ -169,9 +126,6 @@ abstract class TableSchema implements TableSchemaInterface
         return $this->serverName;
     }
 
-    /**
-     * @param string|null name of the server
-     */
     public function serverName(string|null $value): void
     {
         $this->serverName = $value;
@@ -187,26 +141,11 @@ abstract class TableSchema implements TableSchemaInterface
         $this->createSql = $sql;
     }
 
-    /**
-     * ```php
-     * [
-     *  'ForeignTableName',
-     *  'fk1' => 'pk1',  // pk1 is in foreign table
-     *  'fk2' => 'pk2',  // if composite foreign key
-     * ]
-     * ```
-     *
-     * @return array foreign keys of this table. Each array element is of the following structure:
-     * @psalm-return array<array-key, array>
-     */
     public function getForeignKeys(): array
     {
         return $this->foreignKeys;
     }
 
-    /**
-     * @psalm-param array<array-key, array> $value
-     */
     public function foreignKeys(array $value): void
     {
         $this->foreignKeys = $value;

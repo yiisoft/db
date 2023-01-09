@@ -27,7 +27,7 @@ use function strtr;
  * The ColumnSchemaBuilder class provides a fluent interface, which means that the methods can be chained together to
  * create a column schema with multiple properties in a single line of code.
  */
-class ColumnSchemaBuilder implements Stringable
+abstract class AbstractColumnSchemaBuilder implements Stringable
 {
     /**
      * Internally used constants representing categories that abstract column types fall under.
@@ -50,27 +50,27 @@ class ColumnSchemaBuilder implements Stringable
 
     /** @psalm-var string[] */
     private array $categoryMap = [
-        Schema::TYPE_PK => self::CATEGORY_PK,
-        Schema::TYPE_UPK => self::CATEGORY_PK,
-        Schema::TYPE_BIGPK => self::CATEGORY_PK,
-        Schema::TYPE_UBIGPK => self::CATEGORY_PK,
-        Schema::TYPE_CHAR => self::CATEGORY_STRING,
-        Schema::TYPE_STRING => self::CATEGORY_STRING,
-        Schema::TYPE_TEXT => self::CATEGORY_STRING,
-        Schema::TYPE_TINYINT => self::CATEGORY_NUMERIC,
-        Schema::TYPE_SMALLINT => self::CATEGORY_NUMERIC,
-        Schema::TYPE_INTEGER => self::CATEGORY_NUMERIC,
-        Schema::TYPE_BIGINT => self::CATEGORY_NUMERIC,
-        Schema::TYPE_FLOAT => self::CATEGORY_NUMERIC,
-        Schema::TYPE_DOUBLE => self::CATEGORY_NUMERIC,
-        Schema::TYPE_DECIMAL => self::CATEGORY_NUMERIC,
-        Schema::TYPE_DATETIME => self::CATEGORY_TIME,
-        Schema::TYPE_TIMESTAMP => self::CATEGORY_TIME,
-        Schema::TYPE_TIME => self::CATEGORY_TIME,
-        Schema::TYPE_DATE => self::CATEGORY_TIME,
-        Schema::TYPE_BINARY => self::CATEGORY_OTHER,
-        Schema::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
-        Schema::TYPE_MONEY => self::CATEGORY_NUMERIC,
+        AbstractSchema::TYPE_PK => self::CATEGORY_PK,
+        AbstractSchema::TYPE_UPK => self::CATEGORY_PK,
+        AbstractSchema::TYPE_BIGPK => self::CATEGORY_PK,
+        AbstractSchema::TYPE_UBIGPK => self::CATEGORY_PK,
+        AbstractSchema::TYPE_CHAR => self::CATEGORY_STRING,
+        AbstractSchema::TYPE_STRING => self::CATEGORY_STRING,
+        AbstractSchema::TYPE_TEXT => self::CATEGORY_STRING,
+        AbstractSchema::TYPE_TINYINT => self::CATEGORY_NUMERIC,
+        AbstractSchema::TYPE_SMALLINT => self::CATEGORY_NUMERIC,
+        AbstractSchema::TYPE_INTEGER => self::CATEGORY_NUMERIC,
+        AbstractSchema::TYPE_BIGINT => self::CATEGORY_NUMERIC,
+        AbstractSchema::TYPE_FLOAT => self::CATEGORY_NUMERIC,
+        AbstractSchema::TYPE_DOUBLE => self::CATEGORY_NUMERIC,
+        AbstractSchema::TYPE_DECIMAL => self::CATEGORY_NUMERIC,
+        AbstractSchema::TYPE_DATETIME => self::CATEGORY_TIME,
+        AbstractSchema::TYPE_TIMESTAMP => self::CATEGORY_TIME,
+        AbstractSchema::TYPE_TIME => self::CATEGORY_TIME,
+        AbstractSchema::TYPE_DATE => self::CATEGORY_TIME,
+        AbstractSchema::TYPE_BINARY => self::CATEGORY_OTHER,
+        AbstractSchema::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
+        AbstractSchema::TYPE_MONEY => self::CATEGORY_NUMERIC,
     ];
 
     /**
@@ -176,14 +176,12 @@ class ColumnSchemaBuilder implements Stringable
      */
     public function unsigned(): static
     {
-        switch ($this->type) {
-            case Schema::TYPE_PK:
-                $this->type = Schema::TYPE_UPK;
-                break;
-            case Schema::TYPE_BIGPK:
-                $this->type = Schema::TYPE_UBIGPK;
-                break;
-        }
+        $this->type = match ($this->type) {
+            AbstractSchema::TYPE_PK => AbstractSchema::TYPE_UPK,
+            AbstractSchema::TYPE_BIGPK => AbstractSchema::TYPE_UBIGPK,
+            default => $this->type,
+        };
+
         $this->isUnsigned = true;
 
         return $this;
@@ -251,7 +249,7 @@ class ColumnSchemaBuilder implements Stringable
             $this->length = implode(',', $this->length);
         }
 
-        return "({$this->length})";
+        return "($this->length)";
     }
 
     /**
@@ -300,7 +298,7 @@ class ColumnSchemaBuilder implements Stringable
             'object', 'integer' => (string)$this->default,
             'double' => NumericHelper::normalize((string)$this->default),
             'boolean' => $this->default ? 'TRUE' : 'FALSE',
-            default => "'{$this->default}'",
+            default => "'$this->default'",
         };
 
         return $string;
@@ -313,7 +311,7 @@ class ColumnSchemaBuilder implements Stringable
      */
     protected function buildCheckString(): string
     {
-        return !empty($this->check) ? " CHECK ({$this->check})" : '';
+        return !empty($this->check) ? " CHECK ($this->check)" : '';
     }
 
     /**

@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Helper\QueryHelper;
-use Yiisoft\Db\Schema\Quoter;
+use Yiisoft\Db\Tests\Support\Stub\Quoter;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor

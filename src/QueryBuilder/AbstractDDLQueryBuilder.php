@@ -9,7 +9,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\ColumnSchemaBuilder;
+use Yiisoft\Db\Schema\AbstractColumnSchemaBuilder;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -136,7 +136,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' UNIQUE (' . implode(', ', $columns) . ')';
     }
 
-    public function alterColumn(string $table, string $column, ColumnSchemaBuilder|string $type): string
+    public function alterColumn(string $table, string $column, AbstractColumnSchemaBuilder|string $type): string
     {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)

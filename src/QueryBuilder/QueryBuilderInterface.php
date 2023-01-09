@@ -7,7 +7,7 @@ namespace Yiisoft\Db\QueryBuilder;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Schema\ColumnSchemaBuilder;
+use Yiisoft\Db\Schema\AbstractColumnSchemaBuilder;
 use Yiisoft\Db\Schema\QuoterInterface;
 
 interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilderInterface, DQLQueryBuilderInterface
@@ -68,11 +68,11 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      *
      * If a type cannot be found in {@see typeMap}, it will be returned without any change.
      *
-     * @param ColumnSchemaBuilder|string $type abstract column type.
+     * @param AbstractColumnSchemaBuilder|string $type abstract column type.
      *
      * @return string physical column type.
      */
-    public function getColumnType(ColumnSchemaBuilder|string $type): string;
+    public function getColumnType(AbstractColumnSchemaBuilder|string $type): string;
 
     /**
      * Gets object of {@see ExpressionBuilderInterface} that is suitable for $expression.

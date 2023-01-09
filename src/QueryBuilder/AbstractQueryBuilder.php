@@ -12,9 +12,9 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\ColumnSchemaBuilder;
+use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
+use Yiisoft\Db\Schema\AbstractColumnSchemaBuilder;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -113,7 +113,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addUnique($name, $table, $columns);
     }
 
-    public function alterColumn(string $table, string $column, ColumnSchemaBuilder|string $type): string
+    public function alterColumn(string $table, string $column, AbstractColumnSchemaBuilder|string $type): string
     {
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
@@ -315,9 +315,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->dropView($viewName);
     }
 
-    public function getColumnType(ColumnSchemaBuilder|string $type): string
+    public function getColumnType(AbstractColumnSchemaBuilder|string $type): string
     {
-        if ($type instanceof ColumnSchemaBuilder) {
+        if ($type instanceof AbstractColumnSchemaBuilder) {
             $type = $type->__toString();
         }
 

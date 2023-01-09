@@ -10,7 +10,7 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\AnyValue;
 
 abstract class AbstractSchemaProvider

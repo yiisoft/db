@@ -6,10 +6,10 @@ namespace Yiisoft\Db\Tests;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Schema\ColumnSchema;
-use Yiisoft\Db\Schema\ColumnSchemaBuilder;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\AbstractColumnSchemaBuilder;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
+use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function fclose;
@@ -27,7 +27,7 @@ abstract class AbstractSchemaTest extends TestCase
         $schema = $db->getSchema();
         $columnSchemaBuilder = $schema->createColumnSchemaBuilder('string');
 
-        $this->assertInstanceOf(ColumnSchemaBuilder::class, $columnSchemaBuilder);
+        $this->assertInstanceOf(AbstractColumnSchemaBuilder::class, $columnSchemaBuilder);
         $this->assertSame('string', $columnSchemaBuilder->getType());
     }
 

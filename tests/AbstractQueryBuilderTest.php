@@ -18,9 +18,9 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 use Yiisoft\Db\Schema\QuoterInterface;
-use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class AbstractQueryBuilderTest extends TestCase

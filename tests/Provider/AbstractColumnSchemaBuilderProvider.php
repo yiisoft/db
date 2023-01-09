@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
-use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Tests\Support\Stub\Schema;
 
 abstract class AbstractColumnSchemaBuilderProvider
 {

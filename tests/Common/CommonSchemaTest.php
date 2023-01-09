@@ -18,12 +18,12 @@ use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Support\AnyCaseValue;
 use Yiisoft\Db\Tests\Support\AnyValue;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stub\Schema;
 
 use function array_keys;
 use function count;

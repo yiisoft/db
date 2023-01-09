@@ -32,7 +32,7 @@ use Yiisoft\Strings\NumericHelper;
  * $column->primaryKey(true);
  * ``
  */
-class ColumnSchema implements ColumnSchemaInterface
+abstract class AbstractColumnSchema implements ColumnSchemaInterface
 {
     private bool $allowNull = false;
     private bool $autoIncrement = false;
@@ -241,10 +241,10 @@ class ColumnSchema implements ColumnSchemaInterface
             && !in_array(
                 $this->type,
                 [
-                    Schema::TYPE_TEXT,
-                    Schema::TYPE_STRING,
-                    Schema::TYPE_BINARY,
-                    Schema::TYPE_CHAR,
+                    AbstractSchema::TYPE_TEXT,
+                    AbstractSchema::TYPE_STRING,
+                    AbstractSchema::TYPE_BINARY,
+                    AbstractSchema::TYPE_CHAR,
                 ],
                 true
             )
@@ -270,8 +270,8 @@ class ColumnSchema implements ColumnSchemaInterface
         }
 
         switch ($this->phpType) {
-            case Schema::PHP_TYPE_RESOURCE:
-            case Schema::PHP_TYPE_STRING:
+            case AbstractSchema::PHP_TYPE_RESOURCE:
+            case AbstractSchema::PHP_TYPE_STRING:
                 if (is_resource($value)) {
                     return $value;
                 }
@@ -286,16 +286,16 @@ class ColumnSchema implements ColumnSchemaInterface
                 }
 
                 return (string) $value;
-            case Schema::PHP_TYPE_INTEGER:
+            case AbstractSchema::PHP_TYPE_INTEGER:
                 return (int) $value;
-            case Schema::PHP_TYPE_BOOLEAN:
+            case AbstractSchema::PHP_TYPE_BOOLEAN:
                 /**
                  * treating a 0 bit value as false too
                  *
                  * @link https://github.com/yiisoft/yii2/issues/9006
                  */
                 return (bool) $value && $value !== "\0";
-            case Schema::PHP_TYPE_DOUBLE:
+            case AbstractSchema::PHP_TYPE_DOUBLE:
                 return (float) $value;
         }
 

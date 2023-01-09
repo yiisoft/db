@@ -25,12 +25,14 @@ use function substr;
  * also used by @see \Yiisoft\Db\Command\Command to quote names in SQL statements before passing them to database
  * servers.
  */
-class Quoter implements QuoterInterface
+abstract class AbstractQuoter implements QuoterInterface
 {
+    /**
+     * @psalm-param string[]|string $columnQuoteCharacter The character(s) to be used for quoting column names.
+     * @psalm-param string[]|string $tableQuoteCharacter The character(s) to be used for quoting table names.
+     */
     public function __construct(
-        /** @psalm-var string[]|string */
         private array|string $columnQuoteCharacter,
-        /** @psalm-var string[]|string */
         private array|string $tableQuoteCharacter,
         private string $tablePrefix = ''
     ) {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Schema;
 
-use Yiisoft\Db\Schema\Quoter;
 use Yiisoft\Db\Tests\AbstractQuoterTest;
+use Yiisoft\Db\Tests\Support\Stub\Quoter;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**

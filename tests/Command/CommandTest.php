@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Command;
 
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**

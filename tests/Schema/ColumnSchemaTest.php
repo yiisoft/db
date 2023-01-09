@@ -7,8 +7,8 @@ namespace Yiisoft\Db\Tests\Schema;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\ParamInterface;
-use Yiisoft\Db\Schema\ColumnSchema;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
+use Yiisoft\Db\Tests\Support\Stub\Schema;
 
 /**
  * @group db

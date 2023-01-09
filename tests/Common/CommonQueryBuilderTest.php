@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
-use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\ColumnTypes;
+use Yiisoft\Db\Tests\Support\Stub\Schema;
 
 use function str_replace;
 use function str_starts_with;
