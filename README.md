@@ -6,7 +6,7 @@
     <br>
 </p>
 
-Yii is an open-source PHP framework for developing web applications. Yii Database Library is a database extension for the [Yiiframework] that provides a set of database utilities and a database-agnostic, [ActiveRecord] implementation for working with databases in Yii applications.
+Yii is an open-source PHP framework for developing web applications. Yii Database Library is a database extension for the [Yii Framework] that provides a set of database utilities and a database-agnostic, [ActiveRecord] implementation for working with databases in Yii applications.
 
 The package contains a number of classes that can be used to connect to and query different types of databases, such as [MSSQL], [MySQ], [Oracle], [PostgreSQL], and [SQLite]. It also provides an [ActiveRecord] implementation that allows you to interact with database tables using objects, similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
 
