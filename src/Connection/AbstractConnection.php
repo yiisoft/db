@@ -10,19 +10,18 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
+use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
-use Yiisoft\Profiler\ProfilerAwareInterface;
-use Yiisoft\Profiler\ProfilerAwareTrait;
 
 /**
  * The AbstractConnection class represents a connection to a database. It provides methods for interacting with the
  * database, such as executing SQL queries and performing data manipulation.
  */
-abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInterface, ProfilerAwareInterface
+abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
@@ -73,11 +72,6 @@ abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInt
     public function isSavepointEnabled(): bool
     {
         return $this->enableSavepoint;
-    }
-
-    public function notProfiler(): void
-    {
-        $this->profiler = null;
     }
 
     public function setEnableSavepoint(bool $value): void

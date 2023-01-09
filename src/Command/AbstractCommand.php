@@ -11,11 +11,10 @@ use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
-use Yiisoft\Profiler\ProfilerAwareInterface;
-use Yiisoft\Profiler\ProfilerAwareTrait;
 
 use function explode;
 use function get_resource_type;
@@ -66,7 +65,7 @@ use function strtr;
  *
  * To build SELECT SQL statements, please use {@see QueryInterface} instead.
  */
-abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterface
+abstract class AbstractCommand implements CommandInterface
 {
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
