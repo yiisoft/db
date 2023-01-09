@@ -6,13 +6,13 @@
     <br>
 </p>
 
-Yii is an open-source PHP framework for developing web applications. Yii DataBase Library is a database extension for the [Yiiframework] that provides a set of database utilities and a database-agnostic, [ActiveRecord] implementation for working with databases in Yii applications.
+Yii is an open-source PHP framework for developing web applications. Yii Database Library is a database extension for the [Yiiframework] that provides a set of database utilities and a database-agnostic, [ActiveRecord] implementation for working with databases in Yii applications.
 
-Yii DataBase Library package contains a number of classes that can be used to connect to and query different types of databases, such as [MSSQL], [MySQ], [Oracle], [PostgreSQL], and [SQLite]. It also provides an [ActiveRecord] implementation that allows you to interact with database tables using objects, similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
+The package contains a number of classes that can be used to connect to and query different types of databases, such as [MSSQL], [MySQ], [Oracle], [PostgreSQL], and [SQLite]. It also provides an [ActiveRecord] implementation that allows you to interact with database tables using objects, similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
 
-Using the Yii DataBase Library, you can perform common database tasks such as creating, reading, updating, and deleting records in a database table, as well as executing raw SQL queries. The package is designed to be flexible and can be easily extended to support additional database types or to customize the way it interacts with databases.
+Using the Yii Database Library, you can perform common database tasks such as creating, reading, updating, and deleting records in a database table, as well as executing raw SQL queries. The package is designed to be flexible and can be easily extended to support additional database types or to customize the way it interacts with databases.
 
-It is used in [YiiFramework] but can be used separately.
+It is used in [Yii Framework] but can be used separately.
 
 [ActiveRecord]: https://github.com/yiisoft/active-record
 [MSSQL]: https://www.microsoft.com/sql-server
@@ -20,7 +20,7 @@ It is used in [YiiFramework] but can be used separately.
 [Oracle]: https://www.oracle.com/database
 [PostgreSQL]: https://www.postgresql.org
 [SQLite]: https://www.sqlite.org
-[YiiFramework]: https://www.yiiframework.com
+[Yii Framework]: https://www.yiiframework.com
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db/v/stable.png)](https://packagist.org/packages/yiisoft/db)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db/downloads.png)](https://packagist.org/packages/yiisoft/db)
