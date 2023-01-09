@@ -556,7 +556,6 @@ abstract class AbstractCommand implements CommandInterface, ProfilerAwareInterfa
 
             $this->profiler?->end($rawSql, [$logCategory]);
 
-            // @todo set isReadMode to false for DDL query
             if (!$isReadMode) {
                 $this->refreshTableSchema();
             }
