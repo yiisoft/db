@@ -13,7 +13,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Profiler\ProfilerInterface;
 
