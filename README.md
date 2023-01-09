@@ -6,10 +6,21 @@
     <br>
 </p>
 
-This database library provides: database access abstraction and query builder.
-It is used in [Yii Framework] but is supposed to be usable separately.
+Yii is an open-source PHP framework for developing web applications. Yii DataBase Library is a database extension for the [Yiiframework] that provides a set of database utilities and a database-agnostic, [ActiveRecord] implementation for working with databases in Yii applications.
 
-[Yii Framework]: https://www.yiiframework.com
+Yii DataBase Library package contains a number of classes that can be used to connect to and query different types of databases, such as [MSSQL], [MySQ], [Oracle], [PostgreSQL], and [SQLite]. It also provides an [ActiveRecord] implementation that allows you to interact with database tables using objects, similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
+
+Using the Yii DataBase Library, you can perform common database tasks such as creating, reading, updating, and deleting records in a database table, as well as executing raw SQL queries. The package is designed to be flexible and can be easily extended to support additional database types or to customize the way it interacts with databases.
+
+It is used in [YiiFramework] but can be used separately.
+
+[ActiveRecord]: https://github.com/yiisoft/activerecord
+[MSSQL]: https://www.microsoft.com/sql-server
+[MySQ]: https://www.mysql.com
+[Oracle]: https://www.oracle.com/database
+[PostgreSQL]: https://www.postgresql.org
+[SQLite]: https://www.sqlite.org
+[YiiFramework]: https://www.yiiframework.com
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db/v/stable.png)](https://packagist.org/packages/yiisoft/db)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db/downloads.png)](https://packagist.org/packages/yiisoft/db)
@@ -73,7 +84,7 @@ To run the checker, execute the following command:
 [![Facebook](https://img.shields.io/badge/facebook-join-1DA1F2?style=flat&logo=facebook&logoColor=ffffff)](https://www.facebook.com/groups/yiitalk)
 [![Slack](https://img.shields.io/badge/slack-join-1DA1F2?style=flat&logo=slack)](https://yiiframework.com/go/slack)
 
-## License
+### License
 
 The Yii DataBase Library is free software. It is released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
