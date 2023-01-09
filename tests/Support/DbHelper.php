@@ -13,8 +13,6 @@ use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Log\Logger;
-use Yiisoft\Profiler\Profiler;
-use Yiisoft\Profiler\ProfilerInterface;
 
 use function explode;
 use function file_get_contents;
@@ -32,11 +30,6 @@ final class DbHelper
     public static function getLogger(): LoggerInterface
     {
         return new Logger();
-    }
-
-    public static function getProfiler(): ProfilerInterface
-    {
-        return new Profiler(self::getLogger());
     }
 
     public static function getSchemaCache(): SchemaCache

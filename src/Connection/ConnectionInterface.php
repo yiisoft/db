@@ -11,6 +11,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -181,11 +182,6 @@ interface ConnectionInterface
     public function isSavepointEnabled(): bool;
 
     /**
-     * Disabled profiling for current DB connection.
-     */
-    public function notProfiler(): void;
-
-    /**
      * Establishes a DB connection.
      *
      * It does nothing if a DB connection has already been established.
@@ -209,6 +205,13 @@ interface ConnectionInterface
      * @param bool $value Whether to enable savepoint.
      */
     public function setEnableSavepoint(bool $value): void;
+
+    /**
+     * Sets the profiler instance.
+     *
+     * @param ProfilerInterface|null $profiler The profiler instance.
+     */
+    public function setProfiler(ProfilerInterface|null $profiler): void;
 
     /**
      * The common prefix or suffix for table names. If a table name is given as `{{%TableName}}`, then the percentage

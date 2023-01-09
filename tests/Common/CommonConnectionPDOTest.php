@@ -10,6 +10,7 @@ use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Tests\AbstractConnectionPDOTest;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Transaction\TransactionInterface;
@@ -25,7 +26,7 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
         $db = $this->getConnection();
 
         $db->setLogger(DbHelper::getLogger());
-        $db->setProfiler(DbHelper::getProfiler());
+        $db->setProfiler($this->getProfiler());
         $command = $db->createCommand('SELECT 1');
 
         $this->assertSame('SELECT 1', $command->getSql());
@@ -288,5 +289,10 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
         $this->expectExceptionMessage('Failed to set isolation level: transaction was inactive.');
 
         $transaction->setIsolationLevel(TransactionInterface::SERIALIZABLE);
+    }
+
+    private function getProfiler(): ProfilerInterface
+    {
+        return $this->createMock(ProfilerInterface::class);
     }
 }

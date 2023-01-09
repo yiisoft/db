@@ -15,6 +15,7 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Profiler\ProfilerInterface;
 
 abstract class AbstractConnectionTest extends TestCase
 {
@@ -97,7 +98,7 @@ abstract class AbstractConnectionTest extends TestCase
     {
         $db = $this->getConnection();
 
-        $profiler = DbHelper::getProfiler();
+        $profiler = $this->getProfiler();
 
         $this->assertNull(Assert::getInaccessibleProperty($db, 'profiler'));
 
@@ -117,5 +118,10 @@ abstract class AbstractConnectionTest extends TestCase
         $db->setTablePrefix('pre_');
 
         $this->assertSame('pre_', $db->getTablePrefix());
+    }
+
+    private function getProfiler(): ProfilerInterface
+    {
+        return $this->createMock(ProfilerInterface::class);
     }
 }

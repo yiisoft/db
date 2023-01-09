@@ -12,6 +12,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -711,6 +712,13 @@ interface CommandInterface
      * @return static The command object itself.
      */
     public function resetSequence(string $table, int|string $value = null): static;
+
+    /**
+     * Sets the profiler instance.
+     *
+     * @param ProfilerInterface|null $profiler The profiler instance.
+     */
+    public function setProfiler(ProfilerInterface|null $profiler = null): void;
 
     /**
      * Specifies the SQL statement to be executed. The SQL statement will not be modified in any way.
