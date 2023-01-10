@@ -310,67 +310,24 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
             ->willThrowException(new Exception('rollbackTransactionOnLevel'))
         ;
 
-        $db = new class ($transactionMock) extends AbstractConnection {
-            private $transactionMock;
-
-            public function __construct($transaction)
-            {
-                $this->transactionMock = $transaction;
-            }
-
-            public function createCommand(string $sql = null, array $params = []): CommandInterface
-            {
-            }
-
-            public function createTransaction(): TransactionInterface
-            {
-                return $this->transactionMock;
-            }
-
-            public function close(): void
-            {
-            }
-
-            public function getCacheKey(): array
-            {
-            }
-
-            public function getName(): string
-            {
-            }
-
-            public function getLastInsertID(string $sequenceName = null): string
-            {
-            }
-
-            public function getQueryBuilder(): QueryBuilderInterface
-            {
-            }
-
-            public function getQuoter(): QuoterInterface
-            {
-            }
-
-            public function getSchema(): SchemaInterface
-            {
-            }
-
-            public function getServerVersion(): string
-            {
-            }
-
-            public function isActive(): bool
-            {
-            }
-
-            public function open(): void
-            {
-            }
-
-            public function quoteValue(mixed $value): mixed
-            {
-            }
-        };
+        $db = $this->getMockBuilder(AbstractConnection::class)->onlyMethods([
+            'createTransaction',
+            'createCommand',
+            'close',
+            'getCacheKey',
+            'getName',
+            'getLastInsertID',
+            'getQueryBuilder',
+            'getQuoter',
+            'getSchema',
+            'getServerVersion',
+            'isActive',
+            'open',
+            'quoteValue',
+        ])->getMock();
+        $db->expects(self::once())
+            ->method('createTransaction')
+            ->willReturn($transactionMock);
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects(self::once())
