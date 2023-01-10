@@ -312,6 +312,7 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
 
         $db = new class ($transactionMock) extends AbstractConnection {
             private $transactionMock;
+
             public function __construct($transaction)
             {
                 $this->transactionMock = $transaction;
