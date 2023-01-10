@@ -310,26 +310,65 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
             ->willThrowException(new Exception('rollbackTransactionOnLevel'))
         ;
 
-        $db = new class($transactionMock) extends AbstractConnection {
+        $db = new class ($transactionMock) extends AbstractConnection {
             private $transactionMock;
-            public function __construct($transaction) {
+            public function __construct($transaction)
+            {
                 $this->transactionMock = $transaction;
             }
-            public function createCommand(string $sql = null, array $params = []): CommandInterface {}
-            public function createTransaction(): TransactionInterface {
+
+            public function createCommand(string $sql = null, array $params = []): CommandInterface
+            {
+            }
+
+            public function createTransaction(): TransactionInterface
+            {
                 return $this->transactionMock;
             }
-            public function close(): void {}
-            public function getCacheKey(): array {}
-            public function getName(): string {}
-            public function getLastInsertID(string $sequenceName = null): string {}
-            public function getQueryBuilder(): QueryBuilderInterface {}
-            public function getQuoter(): QuoterInterface {}
-            public function getSchema(): SchemaInterface {}
-            public function getServerVersion(): string {}
-            public function isActive(): bool {}
-            public function open(): void {}
-            public function quoteValue(mixed $value): mixed {}
+
+            public function close(): void
+            {
+            }
+
+            public function getCacheKey(): array
+            {
+            }
+
+            public function getName(): string
+            {
+            }
+
+            public function getLastInsertID(string $sequenceName = null): string
+            {
+            }
+
+            public function getQueryBuilder(): QueryBuilderInterface
+            {
+            }
+
+            public function getQuoter(): QuoterInterface
+            {
+            }
+
+            public function getSchema(): SchemaInterface
+            {
+            }
+
+            public function getServerVersion(): string
+            {
+            }
+
+            public function isActive(): bool
+            {
+            }
+
+            public function open(): void
+            {
+            }
+
+            public function quoteValue(mixed $value): mixed
+            {
+            }
         };
 
         $logger = $this->createMock(LoggerInterface::class);
@@ -340,7 +379,9 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
         $db->setLogger($logger);
 
         $this->expectException(Exception::class);
-        $db->transaction(static function() {throw new Exception('Test');});
+        $db->transaction(static function () {
+            throw new Exception('Test');
+        });
     }
 
     private function getProfiler(): ProfilerInterface
