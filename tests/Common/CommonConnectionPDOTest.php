@@ -7,10 +7,15 @@ namespace Yiisoft\Db\Tests\Common;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
+use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Connection\AbstractConnection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\ProfilerInterface;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\QuoterInterface;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractConnectionPDOTest;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Transaction\TransactionInterface;
@@ -289,6 +294,53 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
         $this->expectExceptionMessage('Failed to set isolation level: transaction was inactive.');
 
         $transaction->setIsolationLevel(TransactionInterface::SERIALIZABLE);
+    }
+
+    public function testTransactionRollbackTransactionOnLevel(): void
+    {
+        $transactionMock = $this->createMock(TransactionInterface::class);
+        $transactionMock->expects(self::once())
+            ->method('isActive')
+            ->willReturn(true);
+        $transactionMock->expects(self::exactly(2))
+            ->method('getLevel')
+            ->willReturn(0);
+        $transactionMock->expects(self::once())
+            ->method('rollBack')
+            ->willThrowException(new Exception('rollbackTransactionOnLevel'))
+        ;
+
+        $db = new class($transactionMock) extends AbstractConnection {
+            private $transactionMock;
+            public function __construct($transaction) {
+                $this->transactionMock = $transaction;
+            }
+            public function createCommand(string $sql = null, array $params = []): CommandInterface {}
+            public function createTransaction(): TransactionInterface {
+                return $this->transactionMock;
+            }
+            public function close(): void {}
+            public function getCacheKey(): array {}
+            public function getName(): string {}
+            public function getLastInsertID(string $sequenceName = null): string {}
+            public function getQueryBuilder(): QueryBuilderInterface {}
+            public function getQuoter(): QuoterInterface {}
+            public function getSchema(): SchemaInterface {}
+            public function getServerVersion(): string {}
+            public function isActive(): bool {}
+            public function open(): void {}
+            public function quoteValue(mixed $value): mixed {}
+        };
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects(self::once())
+            ->method('log')
+            ->with(LogLevel::ERROR);
+
+        $db->setLogger($logger);
+
+        $this->expectException(Exception::class);
+        $db->transaction(static function() {throw new Exception('Test');});
     }
 
     private function getProfiler(): ProfilerInterface
