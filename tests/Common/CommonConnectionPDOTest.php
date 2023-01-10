@@ -8,6 +8,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Connection\AbstractConnection;
+use Yiisoft\Db\Driver\PDO\AbstractConnectionPDO;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -336,6 +337,31 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
         $db->transaction(static function () {
             throw new Exception('Test');
         });
+    }
+
+    public function testGetActivePdo(): void
+    {
+        $db = $this->getMockBuilder(AbstractConnectionPDO::class)->onlyMethods([
+            'createCommand',
+            'createTransaction',
+            'getPdo',
+            'getQueryBuilder',
+            'getQuoter',
+            'getSchema',
+        ])
+            ->setConstructorArgs([
+                $this->getConnection()->getDriver(),
+                DbHelper::getSchemaCache(),
+            ])
+            ->getMock();
+        $db->expects(self::once())
+            ->method('getPdo')
+            ->willReturn(null);
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('PDO cannot be initialized.');
+
+        $db->getActivePDO();
     }
 
     private function getProfiler(): ProfilerInterface
