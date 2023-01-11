@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests\Schema;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 
 /**
  * @group db
@@ -262,7 +262,7 @@ final class ColumnSchemaBuilderTest extends TestCase
 
     public function testUnsignedTypePk(): void
     {
-        $column = new ColumnSchemaBuilder(Schema::TYPE_PK);
+        $column = new ColumnSchemaBuilder(SchemaInterface::TYPE_PK);
 
         $this->assertSame('pk', (string) $column);
         $this->assertSame('upk', (string) $column->unsigned());
@@ -270,7 +270,7 @@ final class ColumnSchemaBuilderTest extends TestCase
 
     public function testUnsignedTypeUbigPk(): void
     {
-        $column = new ColumnSchemaBuilder(Schema::TYPE_BIGPK);
+        $column = new ColumnSchemaBuilder(SchemaInterface::TYPE_BIGPK);
 
         $this->assertSame('bigpk', (string) $column);
         $this->assertSame('ubigpk', (string) $column->unsigned());

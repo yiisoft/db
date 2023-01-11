@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -34,7 +34,7 @@ abstract class AbstractSchemaTest extends TestCase
     public function testColumnSchemaDbTypecastWithEmptyCharType(): void
     {
         $columnSchema = new ColumnSchema();
-        $columnSchema->type(Schema::TYPE_CHAR);
+        $columnSchema->type(SchemaInterface::TYPE_CHAR);
 
         $this->assertSame('', $columnSchema->dbTypecast(''));
     }

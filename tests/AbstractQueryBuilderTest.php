@@ -18,7 +18,7 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 use Yiisoft\Db\Schema\QuoterInterface;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -1518,28 +1518,28 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
 
-        $this->assertSame('pk', $qb->getColumnType(Schema::TYPE_PK));
-        $this->assertSame('upk', $qb->getColumnType(Schema::TYPE_UPK));
-        $this->assertSame('bigpk', $qb->getColumnType(Schema::TYPE_BIGPK));
-        $this->assertSame('ubigpk', $qb->getColumnType(Schema::TYPE_UBIGPK));
-        $this->assertSame('char', $qb->getColumnType(Schema::TYPE_CHAR));
-        $this->assertSame('string', $qb->getColumnType(Schema::TYPE_STRING));
-        $this->assertSame('text', $qb->getColumnType(Schema::TYPE_TEXT));
-        $this->assertSame('tinyint', $qb->getColumnType(Schema::TYPE_TINYINT));
-        $this->assertSame('smallint', $qb->getColumnType(Schema::TYPE_SMALLINT));
-        $this->assertSame('integer', $qb->getColumnType(Schema::TYPE_INTEGER));
-        $this->assertSame('bigint', $qb->getColumnType(Schema::TYPE_BIGINT));
-        $this->assertSame('float', $qb->getColumnType(Schema::TYPE_FLOAT));
-        $this->assertSame('double', $qb->getColumnType(Schema::TYPE_DOUBLE));
-        $this->assertSame('decimal', $qb->getColumnType(Schema::TYPE_DECIMAL));
-        $this->assertSame('datetime', $qb->getColumnType(Schema::TYPE_DATETIME));
-        $this->assertSame('timestamp', $qb->getColumnType(Schema::TYPE_TIMESTAMP));
-        $this->assertSame('time', $qb->getColumnType(Schema::TYPE_TIME));
-        $this->assertSame('date', $qb->getColumnType(Schema::TYPE_DATE));
-        $this->assertSame('binary', $qb->getColumnType(Schema::TYPE_BINARY));
-        $this->assertSame('boolean', $qb->getColumnType(Schema::TYPE_BOOLEAN));
-        $this->assertSame('money', $qb->getColumnType(Schema::TYPE_MONEY));
-        $this->assertSame('json', $qb->getColumnType(Schema::TYPE_JSON));
+        $this->assertSame('pk', $qb->getColumnType(SchemaInterface::TYPE_PK));
+        $this->assertSame('upk', $qb->getColumnType(SchemaInterface::TYPE_UPK));
+        $this->assertSame('bigpk', $qb->getColumnType(SchemaInterface::TYPE_BIGPK));
+        $this->assertSame('ubigpk', $qb->getColumnType(SchemaInterface::TYPE_UBIGPK));
+        $this->assertSame('char', $qb->getColumnType(SchemaInterface::TYPE_CHAR));
+        $this->assertSame('string', $qb->getColumnType(SchemaInterface::TYPE_STRING));
+        $this->assertSame('text', $qb->getColumnType(SchemaInterface::TYPE_TEXT));
+        $this->assertSame('tinyint', $qb->getColumnType(SchemaInterface::TYPE_TINYINT));
+        $this->assertSame('smallint', $qb->getColumnType(SchemaInterface::TYPE_SMALLINT));
+        $this->assertSame('integer', $qb->getColumnType(SchemaInterface::TYPE_INTEGER));
+        $this->assertSame('bigint', $qb->getColumnType(SchemaInterface::TYPE_BIGINT));
+        $this->assertSame('float', $qb->getColumnType(SchemaInterface::TYPE_FLOAT));
+        $this->assertSame('double', $qb->getColumnType(SchemaInterface::TYPE_DOUBLE));
+        $this->assertSame('decimal', $qb->getColumnType(SchemaInterface::TYPE_DECIMAL));
+        $this->assertSame('datetime', $qb->getColumnType(SchemaInterface::TYPE_DATETIME));
+        $this->assertSame('timestamp', $qb->getColumnType(SchemaInterface::TYPE_TIMESTAMP));
+        $this->assertSame('time', $qb->getColumnType(SchemaInterface::TYPE_TIME));
+        $this->assertSame('date', $qb->getColumnType(SchemaInterface::TYPE_DATE));
+        $this->assertSame('binary', $qb->getColumnType(SchemaInterface::TYPE_BINARY));
+        $this->assertSame('boolean', $qb->getColumnType(SchemaInterface::TYPE_BOOLEAN));
+        $this->assertSame('money', $qb->getColumnType(SchemaInterface::TYPE_MONEY));
+        $this->assertSame('json', $qb->getColumnType(SchemaInterface::TYPE_JSON));
     }
 
     public function testGetExpressionBuilder(): void

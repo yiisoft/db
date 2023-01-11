@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests\Schema;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\ParamInterface;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
 
 /**
@@ -165,9 +165,9 @@ final class ColumnSchemaTest extends TestCase
 
         $this->assertNull($column->getPhpType());
 
-        $column->phpType(Schema::PHP_TYPE_STRING);
+        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
 
-        $this->assertSame(Schema::PHP_TYPE_STRING, $column->getPhpType());
+        $this->assertSame(SchemaInterface::PHP_TYPE_STRING, $column->getPhpType());
 
         $column->phpType(null);
 
@@ -178,7 +178,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
-        $column->phpType(Schema::PHP_TYPE_STRING);
+        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
 
         $this->assertSame('test', $column->phpTypecast('test'));
     }
@@ -187,7 +187,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
-        $column->phpType(Schema::PHP_TYPE_BOOLEAN);
+        $column->phpType(SchemaInterface::PHP_TYPE_BOOLEAN);
 
         $this->assertTrue($column->phpTypecast(1));
     }
@@ -196,7 +196,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
-        $column->phpType(Schema::PHP_TYPE_DOUBLE);
+        $column->phpType(SchemaInterface::PHP_TYPE_DOUBLE);
 
         $this->assertSame(1.2, $column->phpTypecast('1.2'));
     }
@@ -205,7 +205,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
-        $column->phpType(Schema::PHP_TYPE_INTEGER);
+        $column->phpType(SchemaInterface::PHP_TYPE_INTEGER);
 
         $this->assertSame(1, $column->phpTypecast('1'));
     }
@@ -214,7 +214,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
-        $column->phpType(Schema::PHP_TYPE_STRING);
+        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
 
         $this->assertSame('1', $column->phpTypecast(true));
     }
@@ -223,7 +223,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
-        $column->phpType(Schema::PHP_TYPE_STRING);
+        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
 
         $this->assertSame('1.1', $column->phpTypecast(1.1));
     }
@@ -232,7 +232,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
-        $column->phpType(Schema::PHP_TYPE_STRING);
+        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
 
         $this->assertSame('1', $column->phpTypecast(1));
     }
@@ -241,7 +241,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
-        $column->phpType(Schema::PHP_TYPE_STRING);
+        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
 
         $this->assertNull($column->phpTypecast(null));
     }
@@ -250,7 +250,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
-        $column->phpType(Schema::PHP_TYPE_STRING);
+        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
 
         $this->assertInstanceOf(ParamInterface::class, $column->phpTypecast(['test', PDO::PARAM_STR]));
         $this->assertSame('test', $column->phpTypecast(['test', PDO::PARAM_STR])->getValue());
@@ -261,7 +261,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
-        $column->phpType(Schema::PHP_TYPE_STRING);
+        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
 
         $this->assertIsResource($column->phpTypecast(fopen('php://memory', 'rb')));
     }

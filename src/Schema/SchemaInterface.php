@@ -10,10 +10,54 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
+/**
+ * The SchemaInterface class that represents the schema for a database table. It provides a set of methods for working
+ * with the schema of a database table, such as accessing the columns, indexes, and constraints of a table, as well as
+ * methods for creating, dropping, and altering tables.
+ */
 interface SchemaInterface extends ConstraintSchemaInterface
 {
+    public const SCHEMA = 'schema';
+    public const PRIMARY_KEY = 'primaryKey';
+    public const INDEXES = 'indexes';
+    public const CHECKS = 'checks';
+    public const FOREIGN_KEYS = 'foreignKeys';
+    public const DEFAULT_VALUES = 'defaultValues';
+    public const UNIQUES = 'uniques';
+
+    public const TYPE_PK = 'pk';
+    public const TYPE_UPK = 'upk';
+    public const TYPE_BIGPK = 'bigpk';
+    public const TYPE_UBIGPK = 'ubigpk';
+    public const TYPE_CHAR = 'char';
+    public const TYPE_STRING = 'string';
+    public const TYPE_TEXT = 'text';
+    public const TYPE_TINYINT = 'tinyint';
+    public const TYPE_SMALLINT = 'smallint';
+    public const TYPE_INTEGER = 'integer';
+    public const TYPE_BIGINT = 'bigint';
+    public const TYPE_FLOAT = 'float';
+    public const TYPE_DOUBLE = 'double';
+    public const TYPE_DECIMAL = 'decimal';
+    public const TYPE_DATETIME = 'datetime';
+    public const TYPE_TIMESTAMP = 'timestamp';
+    public const TYPE_TIME = 'time';
+    public const TYPE_DATE = 'date';
+    public const TYPE_BINARY = 'binary';
+    public const TYPE_BOOLEAN = 'boolean';
+    public const TYPE_MONEY = 'money';
+    public const TYPE_JSON = 'json';
+
+    public const PHP_TYPE_INTEGER = 'integer';
+    public const PHP_TYPE_STRING = 'string';
+    public const PHP_TYPE_BOOLEAN = 'boolean';
+    public const PHP_TYPE_DOUBLE = 'double';
+    public const PHP_TYPE_RESOURCE = 'resource';
+    public const PHP_TYPE_ARRAY = 'array';
+    public const PHP_TYPE_NULL = 'NULL';
+
     /**
-     * Return default schema name.
+     * @return string|null The default schema name.
      */
     public function getDefaultSchema(): string|null;
 
@@ -22,7 +66,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @param mixed $data The data whose PDO type is to be determined
      *
-     * @return int The PDO type
+     * @return int The PDO type.
      *
      * @link http://www.php.net/manual/en/pdo.constants.php
      */
@@ -72,14 +116,17 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * This method may be overridden by child classes to create a DBMS-specific column schema builder.
      *
-     * @param string $type type of the column. See {@see ColumnSchemaBuilder::$type}.
-     * @param array|int|string|null $length length or precision of the column {@see ColumnSchemaBuilder::$length}.
+     * @param string $type the type of the column. See {@see ColumnSchemaBuilder::$type}.
+     * @param array|int|string|null $length The length or precision of the column {@see ColumnSchemaBuilder::$length}.
      *
      * @return ColumnSchemaBuilder column schema builder instance
      *
      * @psalm-param string[]|int[]|int|string|null $length
      */
-    public function createColumnSchemaBuilder(string $type, array|int|string $length = null): ColumnSchemaBuilder;
+    public function createColumnSchemaBuilder(
+        string $type,
+        array|int|string $length = null
+    ): ColumnSchemaBuilder;
 
     /**
      * Returns all unique indexes for the given table.
@@ -93,11 +140,13 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * ]
      * ```
      *
-     * @param TableSchemaInterface $table the table metadata.
+     * @param TableSchemaInterface $table The table metadata.
      *
-     * @throws Exception|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      *
-     * @return array all unique indexes for the given table.
+     * @return array All unique indexes for the given table.
      */
     public function findUniqueIndexes(TableSchemaInterface $table): array;
 
@@ -156,19 +205,19 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Allows you to enable and disable the schema cache.
      *
-     * @param bool $value whether to enable or disable the schema cache.
+     * @param bool $value Whether to enable or disable the schema cache.
      */
     public function schemaCacheEnable(bool $value): void;
 
     /**
      * Returns all view names in the database.
      *
-     * @param string $schema the schema of the views. Defaults to empty string, meaning the current or default schema
+     * @param string $schema The schema of the views. Defaults to empty string, meaning the current or default schema
      * name. If not empty, the returned view names will be prefixed with the schema name.
-     * @param bool $refresh whether to fetch the latest available view names. If this is false, view names fetched
+     * @param bool $refresh Whether to fetch the latest available view names. If this is false, view names fetched
      * previously (if available) will be returned.
      *
-     * @return array all view names in the database.
+     * @return array All view names in the database.
      */
     public function getViewNames(string $schema = '', bool $refresh = false): array;
 }

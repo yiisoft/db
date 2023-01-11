@@ -21,7 +21,7 @@ use function strtr;
  * For example, the following code creates a column schema for an integer column:
  *
  * ```php
- * $column = (new ColumnSchemaBuilder(Schema::TYPE_INTEGER))->notNull()->defaultValue(0);
+ * $column = (new ColumnSchemaBuilder(SchemaInterface::TYPE_INTEGER))->notNull()->defaultValue(0);
  * ```
  *
  * The ColumnSchemaBuilder class provides a fluent interface, which means that the methods can be chained together to
@@ -50,27 +50,27 @@ class ColumnSchemaBuilder implements Stringable
 
     /** @psalm-var string[] */
     private array $categoryMap = [
-        Schema::TYPE_PK => self::CATEGORY_PK,
-        Schema::TYPE_UPK => self::CATEGORY_PK,
-        Schema::TYPE_BIGPK => self::CATEGORY_PK,
-        Schema::TYPE_UBIGPK => self::CATEGORY_PK,
-        Schema::TYPE_CHAR => self::CATEGORY_STRING,
-        Schema::TYPE_STRING => self::CATEGORY_STRING,
-        Schema::TYPE_TEXT => self::CATEGORY_STRING,
-        Schema::TYPE_TINYINT => self::CATEGORY_NUMERIC,
-        Schema::TYPE_SMALLINT => self::CATEGORY_NUMERIC,
-        Schema::TYPE_INTEGER => self::CATEGORY_NUMERIC,
-        Schema::TYPE_BIGINT => self::CATEGORY_NUMERIC,
-        Schema::TYPE_FLOAT => self::CATEGORY_NUMERIC,
-        Schema::TYPE_DOUBLE => self::CATEGORY_NUMERIC,
-        Schema::TYPE_DECIMAL => self::CATEGORY_NUMERIC,
-        Schema::TYPE_DATETIME => self::CATEGORY_TIME,
-        Schema::TYPE_TIMESTAMP => self::CATEGORY_TIME,
-        Schema::TYPE_TIME => self::CATEGORY_TIME,
-        Schema::TYPE_DATE => self::CATEGORY_TIME,
-        Schema::TYPE_BINARY => self::CATEGORY_OTHER,
-        Schema::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
-        Schema::TYPE_MONEY => self::CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_PK => self::CATEGORY_PK,
+        SchemaInterface::TYPE_UPK => self::CATEGORY_PK,
+        SchemaInterface::TYPE_BIGPK => self::CATEGORY_PK,
+        SchemaInterface::TYPE_UBIGPK => self::CATEGORY_PK,
+        SchemaInterface::TYPE_CHAR => self::CATEGORY_STRING,
+        SchemaInterface::TYPE_STRING => self::CATEGORY_STRING,
+        SchemaInterface::TYPE_TEXT => self::CATEGORY_STRING,
+        SchemaInterface::TYPE_TINYINT => self::CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_SMALLINT => self::CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_INTEGER => self::CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_BIGINT => self::CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_FLOAT => self::CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_DOUBLE => self::CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_DECIMAL => self::CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_DATETIME => self::CATEGORY_TIME,
+        SchemaInterface::TYPE_TIMESTAMP => self::CATEGORY_TIME,
+        SchemaInterface::TYPE_TIME => self::CATEGORY_TIME,
+        SchemaInterface::TYPE_DATE => self::CATEGORY_TIME,
+        SchemaInterface::TYPE_BINARY => self::CATEGORY_OTHER,
+        SchemaInterface::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_MONEY => self::CATEGORY_NUMERIC,
     ];
 
     /**
@@ -177,11 +177,11 @@ class ColumnSchemaBuilder implements Stringable
     public function unsigned(): static
     {
         switch ($this->type) {
-            case Schema::TYPE_PK:
-                $this->type = Schema::TYPE_UPK;
+            case SchemaInterface::TYPE_PK:
+                $this->type = SchemaInterface::TYPE_UPK;
                 break;
-            case Schema::TYPE_BIGPK:
-                $this->type = Schema::TYPE_UBIGPK;
+            case SchemaInterface::TYPE_BIGPK:
+                $this->type = SchemaInterface::TYPE_UBIGPK;
                 break;
         }
         $this->isUnsigned = true;
