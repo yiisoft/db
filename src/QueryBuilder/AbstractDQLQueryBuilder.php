@@ -144,12 +144,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                 return $columns;
             }
 
-            $rawColumns = $columns;
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
-
-            if ($columns === false) {
-                throw new InvalidArgumentException("$rawColumns is not valid columns.");
-            }
         }
 
         /** @psalm-var array<array-key, ExpressionInterface|string> $columns */
