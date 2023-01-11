@@ -2015,8 +2015,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
 }
 
 namespace Yiisoft\Db\QueryBuilder;
+
 function preg_split(...$args)
 {
     return false;
 }
-
