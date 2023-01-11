@@ -227,6 +227,16 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame('(id)', $qb->buildColumns('(id)'));
     }
 
+    public function testBuildColumnsWithStringPregSplit(): void
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $qb->buildColumns('id');
+    }
+
     public function testBuildColumnsWithArray(): void
     {
         $db = $this->getConnection();
@@ -2003,3 +2013,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 }
+
+namespace Yiisoft\Db\QueryBuilder;
+function preg_split(...$args)
+{
+    return false;
+}
+
