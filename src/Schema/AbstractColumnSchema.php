@@ -32,7 +32,7 @@ use Yiisoft\Strings\NumericHelper;
  * $column->primaryKey(true);
  * ``
  */
-class ColumnSchema implements ColumnSchemaInterface
+abstract class AbstractColumnSchema implements ColumnSchemaInterface
 {
     private bool $allowNull = false;
     private bool $autoIncrement = false;
