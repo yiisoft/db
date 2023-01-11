@@ -6,10 +6,10 @@ namespace Yiisoft\Db\Tests;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Schema\ColumnSchema;
 use Yiisoft\Db\Schema\ColumnSchemaBuilder;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function fclose;
