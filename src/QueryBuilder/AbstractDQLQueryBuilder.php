@@ -147,8 +147,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
 
-        /** @psalm-var ExpressionInterface|string $column */
-        foreach ((array) $columns as $i => $column) {
+        /** @psalm-var array<array-key, ExpressionInterface|string> $columns */
+        foreach ($columns as $i => $column) {
             if ($column instanceof ExpressionInterface) {
                 $columns[$i] = $this->buildExpression($column);
             } elseif (!str_contains($column, '(')) {
