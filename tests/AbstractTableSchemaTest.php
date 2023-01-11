@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\ColumnSchema;
+use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
 use Yiisoft\Db\Tests\Support\Stub\TableSchema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
