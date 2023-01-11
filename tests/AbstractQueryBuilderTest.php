@@ -234,7 +234,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->expectException(InvalidArgumentException::class);
-        $qb->buildColumns('id');
+        $qb->buildColumns('TEST_VALUE_FOR_BUILD_SELECT');
     }
 
     public function testBuildColumnsWithArray(): void
@@ -2016,7 +2016,11 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
 namespace Yiisoft\Db\QueryBuilder;
 
-function preg_split(...$args)
+function preg_split(...$args): array|false
 {
-    return false;
+    if ($args[1] === 'TEST_VALUE_FOR_BUILD_SELECT') {
+        return false;
+    }
+
+    return \preg_split(...$args);
 }
