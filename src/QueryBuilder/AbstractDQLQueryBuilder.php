@@ -33,6 +33,7 @@ use function is_int;
 use function is_string;
 use function ltrim;
 use function preg_match;
+use function preg_split;
 use function reset;
 use function strtoupper;
 use function trim;
@@ -143,16 +144,11 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                 return $columns;
             }
 
-            $rawColumns = $columns;
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
-
-            if ($columns === false) {
-                throw new InvalidArgumentException("$rawColumns is not valid columns.");
-            }
         }
 
-        /** @psalm-var array<array-key, ExpressionInterface|string> $columns */
-        foreach ($columns as $i => $column) {
+        /** @psalm-var ExpressionInterface|string $column */
+        foreach ((array) $columns as $i => $column) {
             if ($column instanceof ExpressionInterface) {
                 $columns[$i] = $this->buildExpression($column);
             } elseif (!str_contains($column, '(')) {
