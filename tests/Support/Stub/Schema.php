@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests\Support\Stub;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\AbstractSchema;
-use Yiisoft\Db\Schema\ColumnSchemaBuilder;
+use Yiisoft\Db\Schema\ColumnSchemaBuilderInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
 /**
@@ -17,8 +17,10 @@ use Yiisoft\Db\Schema\TableSchemaInterface;
  */
 class Schema extends AbstractSchema
 {
-    public function createColumnSchemaBuilder(string $type, array|int|string $length = null): ColumnSchemaBuilder
-    {
+    public function createColumnSchemaBuilder(
+        string $type,
+        array|int|string $length = null
+    ): ColumnSchemaBuilderInterface {
         return new ColumnSchemaBuilder($type, $length);
     }
 

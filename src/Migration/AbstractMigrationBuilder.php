@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Migration;
 
-use Yiisoft\Db\Schema\ColumnSchemaBuilder;
+use Yiisoft\Db\Schema\ColumnSchemaBuilderInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 /**
- * AbstractMigrationBuilder contains shortcut methods to create instances of {@see ColumnSchemaBuilder}.
+ * AbstractMigrationBuilder contains shortcut methods to create instances of {@see ColumnSchemaBuilderInterface}.
  *
  * These can be used in database migrations to define database schema types using a PHP interface. This is useful to
  * define a schema in a DBMS independent way so that the application may run on different DBMS the same way.
@@ -44,9 +44,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function bigInteger(int $length = null): ColumnSchemaBuilder
+    public function bigInteger(int $length = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_BIGINT, $length);
     }
@@ -58,9 +58,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function bigPrimaryKey(int $length = null): ColumnSchemaBuilder
+    public function bigPrimaryKey(int $length = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_BIGPK, $length);
     }
@@ -72,9 +72,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function binary(int $length = null): ColumnSchemaBuilder
+    public function binary(int $length = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_BINARY, $length);
     }
@@ -82,9 +82,9 @@ abstract class AbstractMigrationBuilder
     /**
      * Creates a boolean column.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function boolean(): ColumnSchemaBuilder
+    public function boolean(): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_BOOLEAN);
     }
@@ -96,9 +96,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function char(int $length = null): ColumnSchemaBuilder
+    public function char(int $length = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_CHAR, $length);
     }
@@ -106,9 +106,9 @@ abstract class AbstractMigrationBuilder
     /**
      * Creates a date column.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function date(): ColumnSchemaBuilder
+    public function date(): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_DATE);
     }
@@ -121,9 +121,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function dateTime(int $precision = null): ColumnSchemaBuilder
+    public function dateTime(int $precision = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_DATETIME, $precision);
     }
@@ -140,9 +140,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function decimal(int $precision = null, int $scale = null): ColumnSchemaBuilder
+    public function decimal(int $precision = null, int $scale = null): ColumnSchemaBuilderInterface
     {
         $length = [];
 
@@ -165,9 +165,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function double(int $precision = null): ColumnSchemaBuilder
+    public function double(int $precision = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_DOUBLE, $precision);
     }
@@ -180,9 +180,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function float(int $precision = null): ColumnSchemaBuilder
+    public function float(int $precision = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_FLOAT, $precision);
     }
@@ -194,9 +194,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function integer(int $length = null): ColumnSchemaBuilder
+    public function integer(int $length = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_INTEGER, $length);
     }
@@ -204,9 +204,9 @@ abstract class AbstractMigrationBuilder
     /**
      * Creates a JSON column.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function json(): ColumnSchemaBuilder
+    public function json(): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_JSON);
     }
@@ -223,9 +223,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function money(int $precision = null, int $scale = null): ColumnSchemaBuilder
+    public function money(int $precision = null, int $scale = null): ColumnSchemaBuilderInterface
     {
         $length = [];
 
@@ -247,9 +247,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function primaryKey(int $length = null): ColumnSchemaBuilder
+    public function primaryKey(int $length = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_PK, $length);
     }
@@ -261,9 +261,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function smallInteger(int $length = null): ColumnSchemaBuilder
+    public function smallInteger(int $length = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_SMALLINT, $length);
     }
@@ -275,9 +275,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function string(int $length = null): ColumnSchemaBuilder
+    public function string(int $length = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_STRING, $length);
     }
@@ -285,9 +285,9 @@ abstract class AbstractMigrationBuilder
     /**
      * Creates a text column.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function text(): ColumnSchemaBuilder
+    public function text(): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_TEXT);
     }
@@ -300,9 +300,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function time(int $precision = null): ColumnSchemaBuilder
+    public function time(int $precision = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_TIME, $precision);
     }
@@ -315,9 +315,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function timestamp(int $precision = null): ColumnSchemaBuilder
+    public function timestamp(int $precision = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_TIMESTAMP, $precision);
     }
@@ -329,9 +329,9 @@ abstract class AbstractMigrationBuilder
      *
      * This parameter will be ignored if not supported by the DBMS.
      *
-     * @return ColumnSchemaBuilder The column instance which can be further customized.
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
      */
-    public function tinyInteger(int $length = null): ColumnSchemaBuilder
+    public function tinyInteger(int $length = null): ColumnSchemaBuilderInterface
     {
         return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_TINYINT, $length);
     }
