@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\ColumnTypes;
 
@@ -32,10 +32,10 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         foreach ($columnTypes as [$column, $builder, $expected]) {
             if (
                 !(
-                    strncmp($column, Schema::TYPE_PK, 2) === 0 ||
-                    strncmp($column, Schema::TYPE_UPK, 3) === 0 ||
-                    strncmp($column, Schema::TYPE_BIGPK, 5) === 0 ||
-                    strncmp($column, Schema::TYPE_UBIGPK, 6) === 0 ||
+                    strncmp($column, SchemaInterface::TYPE_PK, 2) === 0 ||
+                    strncmp($column, SchemaInterface::TYPE_UPK, 3) === 0 ||
+                    strncmp($column, SchemaInterface::TYPE_BIGPK, 5) === 0 ||
+                    strncmp($column, SchemaInterface::TYPE_UBIGPK, 6) === 0 ||
                     str_starts_with(substr($column, -5), 'FIRST')
                 )
             ) {

@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Migration\AbstractMigrationBuilder;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_key_exists;
 use function array_values;
@@ -28,7 +28,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
 
         $items = [
             [
-                Schema::TYPE_BIGINT,
+                SchemaInterface::TYPE_BIGINT,
                 $this->bigInteger(),
                 [
                     'mysql' => 'bigint(20)',
@@ -39,7 +39,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_BIGINT . ' NOT NULL',
+                SchemaInterface::TYPE_BIGINT . ' NOT NULL',
                 $this->bigInteger()->notNull(),
                 [
                     'mysql' => 'bigint(20) NOT NULL',
@@ -50,7 +50,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_BIGINT . ' CHECK (value > 5)',
+                SchemaInterface::TYPE_BIGINT . ' CHECK (value > 5)',
                 $this->bigInteger()->check('value > 5'),
                 [
                     'mysql' => 'bigint(20) CHECK (value > 5)',
@@ -61,7 +61,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_BIGINT . '(8)',
+                SchemaInterface::TYPE_BIGINT . '(8)',
                 $this->bigInteger(8),
                 [
                     'mysql' => 'bigint(8)',
@@ -72,7 +72,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_BIGINT . '(8) CHECK (value > 5)',
+                SchemaInterface::TYPE_BIGINT . '(8) CHECK (value > 5)',
                 $this->bigInteger(8)->check('value > 5'),
                 [
                     'mysql' => 'bigint(8) CHECK (value > 5)',
@@ -83,7 +83,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_BIGPK,
+                SchemaInterface::TYPE_BIGPK,
                 $this->bigPrimaryKey(),
                 [
                     'mysql' => 'bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY',
@@ -92,7 +92,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_BINARY,
+                SchemaInterface::TYPE_BINARY,
                 $this->binary(),
                 [
                     'mysql' => 'blob',
@@ -103,7 +103,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_BOOLEAN . ' NOT NULL DEFAULT 1',
+                SchemaInterface::TYPE_BOOLEAN . ' NOT NULL DEFAULT 1',
                 $this->boolean()->notNull()->defaultValue(1),
                 [
                     'mysql' => 'tinyint(1) NOT NULL DEFAULT 1',
@@ -112,14 +112,14 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_BOOLEAN . ' NOT NULL DEFAULT TRUE',
+                SchemaInterface::TYPE_BOOLEAN . ' NOT NULL DEFAULT TRUE',
                 $this->boolean()->notNull()->defaultValue(true),
                 [
                     'pgsql' => 'boolean NOT NULL DEFAULT TRUE',
                 ],
             ],
             [
-                Schema::TYPE_BOOLEAN,
+                SchemaInterface::TYPE_BOOLEAN,
                 $this->boolean(),
                 [
                     'mysql' => 'tinyint(1)',
@@ -130,14 +130,14 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_CHAR . ' CHECK (value LIKE \'test%\')',
+                SchemaInterface::TYPE_CHAR . ' CHECK (value LIKE \'test%\')',
                 $this->char()->check('value LIKE \'test%\''),
                 [
                     'pgsql' => 'char(1) CHECK (value LIKE \'test%\')',
                 ],
             ],
             [
-                Schema::TYPE_CHAR . ' CHECK (value LIKE "test%")',
+                SchemaInterface::TYPE_CHAR . ' CHECK (value LIKE "test%")',
                 $this->char()->check('value LIKE "test%"'),
                 [
                     'mysql' => 'char(1) CHECK (value LIKE "test%")',
@@ -145,7 +145,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_CHAR . ' NOT NULL',
+                SchemaInterface::TYPE_CHAR . ' NOT NULL',
                 $this->char()->notNull(),
                 [
                     'mysql' => 'char(1) NOT NULL',
@@ -155,7 +155,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_CHAR . '(6) CHECK (value LIKE "test%")',
+                SchemaInterface::TYPE_CHAR . '(6) CHECK (value LIKE "test%")',
                 $this->char(6)->check('value LIKE "test%"'),
                 [
                     'mysql' => 'char(6) CHECK (value LIKE "test%")',
@@ -163,14 +163,14 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_CHAR . '(6)',
+                SchemaInterface::TYPE_CHAR . '(6)',
                 $this->char(6)->unsigned(),
                 [
                     'pgsql' => 'char(6)',
                 ],
             ],
             [
-                Schema::TYPE_CHAR . '(6)',
+                SchemaInterface::TYPE_CHAR . '(6)',
                 $this->char(6),
                 [
                     'mysql' => 'char(6)',
@@ -180,7 +180,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_CHAR,
+                SchemaInterface::TYPE_CHAR,
                 $this->char(),
                 [
                     'mysql' => 'char(1)',
@@ -190,7 +190,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DATE . ' NOT NULL',
+                SchemaInterface::TYPE_DATE . ' NOT NULL',
                 $this->date()->notNull(),
                 [
                     'pgsql' => 'date NOT NULL',
@@ -200,7 +200,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DATE,
+                SchemaInterface::TYPE_DATE,
                 $this->date(),
                 [
                     'mysql' => 'date',
@@ -211,7 +211,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DATETIME . ' NOT NULL',
+                SchemaInterface::TYPE_DATETIME . ' NOT NULL',
                 $this->dateTime()->notNull(),
                 [
                     'mysql' => version_compare($version, '5.6.4', '>=') ? 'datetime(0) NOT NULL' : 'datetime NOT NULL',
@@ -222,7 +222,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DATETIME,
+                SchemaInterface::TYPE_DATETIME,
                 $this->dateTime(),
                 [
                     'mysql' => version_compare($version, '5.6.4', '>=') ? 'datetime(0)' : 'datetime',
@@ -233,7 +233,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DECIMAL . ' CHECK (value > 5.6)',
+                SchemaInterface::TYPE_DECIMAL . ' CHECK (value > 5.6)',
                 $this->decimal()->check('value > 5.6'),
                 [
                     'mysql' => 'decimal(10,0) CHECK (value > 5.6)',
@@ -244,7 +244,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DECIMAL . ' NOT NULL',
+                SchemaInterface::TYPE_DECIMAL . ' NOT NULL',
                 $this->decimal()->notNull(),
                 [
                     'mysql' => 'decimal(10,0) NOT NULL',
@@ -255,7 +255,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DECIMAL . '(12,4) CHECK (value > 5.6)',
+                SchemaInterface::TYPE_DECIMAL . '(12,4) CHECK (value > 5.6)',
                 $this->decimal(12, 4)->check('value > 5.6'),
                 [
                     'mysql' => 'decimal(12,4) CHECK (value > 5.6)',
@@ -266,7 +266,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DECIMAL . '(12,4)',
+                SchemaInterface::TYPE_DECIMAL . '(12,4)',
                 $this->decimal(12, 4),
                 [
                     'mysql' => 'decimal(12,4)',
@@ -277,7 +277,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DECIMAL,
+                SchemaInterface::TYPE_DECIMAL,
                 $this->decimal(),
                 [
                     'mysql' => 'decimal(10,0)',
@@ -288,7 +288,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DOUBLE . ' CHECK (value > 5.6)',
+                SchemaInterface::TYPE_DOUBLE . ' CHECK (value > 5.6)',
                 $this->double()->check('value > 5.6'),
                 [
                     'mysql' => 'double CHECK (value > 5.6)',
@@ -299,7 +299,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DOUBLE . ' NOT NULL',
+                SchemaInterface::TYPE_DOUBLE . ' NOT NULL',
                 $this->double()->notNull(),
                 [
                     'mysql' => 'double NOT NULL',
@@ -310,7 +310,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DOUBLE . '(16) CHECK (value > 5.6)',
+                SchemaInterface::TYPE_DOUBLE . '(16) CHECK (value > 5.6)',
                 $this->double(16)->check('value > 5.6'),
                 [
                     'mysql' => 'double CHECK (value > 5.6)',
@@ -321,7 +321,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DOUBLE . '(16)',
+                SchemaInterface::TYPE_DOUBLE . '(16)',
                 $this->double(16),
                 [
                     'mysql' => 'double',
@@ -331,7 +331,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_DOUBLE,
+                SchemaInterface::TYPE_DOUBLE,
                 $this->double(),
                 [
                     'mysql' => 'double',
@@ -342,7 +342,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_FLOAT . ' CHECK (value > 5.6)',
+                SchemaInterface::TYPE_FLOAT . ' CHECK (value > 5.6)',
                 $this->float()->check('value > 5.6'),
                 [
                     'mysql' => 'float CHECK (value > 5.6)',
@@ -353,7 +353,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_FLOAT . ' NOT NULL',
+                SchemaInterface::TYPE_FLOAT . ' NOT NULL',
                 $this->float()->notNull(),
                 [
                     'mysql' => 'float NOT NULL',
@@ -364,7 +364,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_FLOAT . '(16) CHECK (value > 5.6)',
+                SchemaInterface::TYPE_FLOAT . '(16) CHECK (value > 5.6)',
                 $this->float(16)->check('value > 5.6'),
                 [
                     'mysql' => 'float CHECK (value > 5.6)',
@@ -375,7 +375,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_FLOAT . '(16)',
+                SchemaInterface::TYPE_FLOAT . '(16)',
                 $this->float(16),
                 [
                     'mysql' => 'float',
@@ -385,7 +385,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_FLOAT,
+                SchemaInterface::TYPE_FLOAT,
                 $this->float(),
                 [
                     'mysql' => 'float',
@@ -396,7 +396,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_INTEGER . ' CHECK (value > 5)',
+                SchemaInterface::TYPE_INTEGER . ' CHECK (value > 5)',
                 $this->integer()->check('value > 5'),
                 [
                     'mysql' => 'int(11) CHECK (value > 5)',
@@ -407,7 +407,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_INTEGER . ' NOT NULL',
+                SchemaInterface::TYPE_INTEGER . ' NOT NULL',
                 $this->integer()->notNull(),
                 [
                     'mysql' => 'int(11) NOT NULL',
@@ -418,7 +418,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_INTEGER . '(8) CHECK (value > 5)',
+                SchemaInterface::TYPE_INTEGER . '(8) CHECK (value > 5)',
                 $this->integer(8)->check('value > 5'),
                 [
                     'mysql' => 'int(8) CHECK (value > 5)',
@@ -429,14 +429,14 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_INTEGER . '(8)',
+                SchemaInterface::TYPE_INTEGER . '(8)',
                 $this->integer(8)->unsigned(),
                 [
                     'pgsql' => 'integer',
                 ],
             ],
             [
-                Schema::TYPE_INTEGER . '(8)',
+                SchemaInterface::TYPE_INTEGER . '(8)',
                 $this->integer(8),
                 [
                     'mysql' => 'int(8)',
@@ -447,7 +447,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_INTEGER,
+                SchemaInterface::TYPE_INTEGER,
                 $this->integer(),
                 [
                     'mysql' => 'int(11)',
@@ -458,7 +458,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_MONEY . ' CHECK (value > 0.0)',
+                SchemaInterface::TYPE_MONEY . ' CHECK (value > 0.0)',
                 $this->money()->check('value > 0.0'),
                 [
                     'mysql' => 'decimal(19,4) CHECK (value > 0.0)',
@@ -469,7 +469,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_MONEY . ' NOT NULL',
+                SchemaInterface::TYPE_MONEY . ' NOT NULL',
                 $this->money()->notNull(),
                 [
                     'mysql' => 'decimal(19,4) NOT NULL',
@@ -480,7 +480,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_MONEY . '(16,2) CHECK (value > 0.0)',
+                SchemaInterface::TYPE_MONEY . '(16,2) CHECK (value > 0.0)',
                 $this->money(16, 2)->check('value > 0.0'),
                 [
                     'mysql' => 'decimal(16,2) CHECK (value > 0.0)',
@@ -491,7 +491,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_MONEY . '(16,2)',
+                SchemaInterface::TYPE_MONEY . '(16,2)',
                 $this->money(16, 2),
                 [
                     'mysql' => 'decimal(16,2)',
@@ -502,7 +502,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_MONEY,
+                SchemaInterface::TYPE_MONEY,
                 $this->money(),
                 [
                     'mysql' => 'decimal(19,4)',
@@ -513,7 +513,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_PK . ' CHECK (value > 5)',
+                SchemaInterface::TYPE_PK . ' CHECK (value > 5)',
                 $this->primaryKey()->check('value > 5'),
                 [
                     'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY CHECK (value > 5)',
@@ -524,7 +524,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_PK . '(8) CHECK (value > 5)',
+                SchemaInterface::TYPE_PK . '(8) CHECK (value > 5)',
                 $this->primaryKey(8)->check('value > 5'),
                 [
                     'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY CHECK (value > 5)',
@@ -532,7 +532,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_PK . '(8)',
+                SchemaInterface::TYPE_PK . '(8)',
                 $this->primaryKey(8),
                 [
                     'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY',
@@ -540,7 +540,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_PK,
+                SchemaInterface::TYPE_PK,
                 $this->primaryKey(),
                 [
                     'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY',
@@ -551,7 +551,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_TINYINT . '(2)',
+                SchemaInterface::TYPE_TINYINT . '(2)',
                 $this->tinyInteger(2),
                 [
                     'mysql' => 'tinyint(2)',
@@ -562,7 +562,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_TINYINT . ' UNSIGNED',
+                SchemaInterface::TYPE_TINYINT . ' UNSIGNED',
                 $this->tinyInteger()->unsigned(),
                 [
                     'mysql' => 'tinyint(3) UNSIGNED',
@@ -570,7 +570,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_TINYINT,
+                SchemaInterface::TYPE_TINYINT,
                 $this->tinyInteger(),
                 [
                     'mysql' => 'tinyint(3)',
@@ -581,7 +581,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_SMALLINT . '(8)',
+                SchemaInterface::TYPE_SMALLINT . '(8)',
                 $this->smallInteger(8),
                 [
                     'mysql' => 'smallint(8)',
@@ -592,7 +592,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_SMALLINT,
+                SchemaInterface::TYPE_SMALLINT,
                 $this->smallInteger(),
                 [
                     'mysql' => 'smallint(6)',
@@ -603,7 +603,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_STRING . " CHECK (value LIKE 'test%')",
+                SchemaInterface::TYPE_STRING . " CHECK (value LIKE 'test%')",
                 $this->string()->check("value LIKE 'test%'"),
                 [
                     'mysql' => "varchar(255) CHECK (value LIKE 'test%')",
@@ -612,7 +612,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_STRING . ' CHECK (value LIKE \'test%\')',
+                SchemaInterface::TYPE_STRING . ' CHECK (value LIKE \'test%\')',
                 $this->string()->check('value LIKE \'test%\''),
                 [
                     'pgsql' => 'varchar(255) CHECK (value LIKE \'test%\')',
@@ -620,7 +620,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_STRING . ' NOT NULL',
+                SchemaInterface::TYPE_STRING . ' NOT NULL',
                 $this->string()->notNull(),
                 [
                     'mysql' => 'varchar(255) NOT NULL',
@@ -631,7 +631,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_STRING . "(32) CHECK (value LIKE 'test%')",
+                SchemaInterface::TYPE_STRING . "(32) CHECK (value LIKE 'test%')",
                 $this->string(32)->check("value LIKE 'test%'"),
                 [
                     'mysql' => "varchar(32) CHECK (value LIKE 'test%')",
@@ -640,7 +640,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_STRING . '(32) CHECK (value LIKE \'test%\')',
+                SchemaInterface::TYPE_STRING . '(32) CHECK (value LIKE \'test%\')',
                 $this->string(32)->check('value LIKE \'test%\''),
                 [
                     'pgsql' => 'varchar(32) CHECK (value LIKE \'test%\')',
@@ -648,7 +648,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_STRING . '(32)',
+                SchemaInterface::TYPE_STRING . '(32)',
                 $this->string(32),
                 [
                     'mysql' => 'varchar(32)',
@@ -659,7 +659,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_STRING,
+                SchemaInterface::TYPE_STRING,
                 $this->string(),
                 [
                     'mysql' => 'varchar(255)',
@@ -670,7 +670,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_TEXT . " CHECK (value LIKE 'test%')",
+                SchemaInterface::TYPE_TEXT . " CHECK (value LIKE 'test%')",
                 $this->text()->check("value LIKE 'test%'"),
                 [
                     'mysql' => "text CHECK (value LIKE 'test%')",
@@ -679,7 +679,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_TEXT . ' CHECK (value LIKE \'test%\')',
+                SchemaInterface::TYPE_TEXT . ' CHECK (value LIKE \'test%\')',
                 $this->text()->check('value LIKE \'test%\''),
                 [
                     'pgsql' => 'text CHECK (value LIKE \'test%\')',
@@ -687,7 +687,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_TEXT . ' NOT NULL',
+                SchemaInterface::TYPE_TEXT . ' NOT NULL',
                 $this->text()->notNull(),
                 [
                     'mysql' => 'text NOT NULL',
@@ -698,26 +698,26 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_TEXT . " CHECK (value LIKE 'test%')",
+                SchemaInterface::TYPE_TEXT . " CHECK (value LIKE 'test%')",
                 $this->text()->check("value LIKE 'test%'"),
                 [
                     'mysql' => "text CHECK (value LIKE 'test%')",
                     'sqlite' => "text CHECK (value LIKE 'test%')",
                     'sqlsrv' => "nvarchar(max) CHECK (value LIKE 'test%')",
                 ],
-                Schema::TYPE_TEXT . " CHECK (value LIKE 'test%')",
+                SchemaInterface::TYPE_TEXT . " CHECK (value LIKE 'test%')",
             ],
             [
-                Schema::TYPE_TEXT . ' CHECK (value LIKE \'test%\')',
+                SchemaInterface::TYPE_TEXT . ' CHECK (value LIKE \'test%\')',
                 $this->text()->check('value LIKE \'test%\''),
                 [
                     'pgsql' => 'text CHECK (value LIKE \'test%\')',
                     'oci' => 'CLOB CHECK (value LIKE \'test%\')',
                 ],
-                Schema::TYPE_TEXT . ' CHECK (value LIKE \'test%\')',
+                SchemaInterface::TYPE_TEXT . ' CHECK (value LIKE \'test%\')',
             ],
             [
-                Schema::TYPE_TEXT . ' NOT NULL',
+                SchemaInterface::TYPE_TEXT . ' NOT NULL',
                 $this->text()->notNull(),
                 [
                     'mysql' => 'text NOT NULL',
@@ -726,10 +726,10 @@ final class ColumnTypes extends AbstractMigrationBuilder
                     'oci' => 'CLOB NOT NULL',
                     'sqlsrv' => 'nvarchar(max) NOT NULL',
                 ],
-                Schema::TYPE_TEXT . ' NOT NULL',
+                SchemaInterface::TYPE_TEXT . ' NOT NULL',
             ],
             [
-                Schema::TYPE_TEXT,
+                SchemaInterface::TYPE_TEXT,
                 $this->text(),
                 [
                     'mysql' => 'text',
@@ -738,10 +738,10 @@ final class ColumnTypes extends AbstractMigrationBuilder
                     'oci' => 'CLOB',
                     'sqlsrv' => 'nvarchar(max)',
                 ],
-                Schema::TYPE_TEXT,
+                SchemaInterface::TYPE_TEXT,
             ],
             [
-                Schema::TYPE_TEXT,
+                SchemaInterface::TYPE_TEXT,
                 $this->text(),
                 [
                     'mysql' => 'text',
@@ -752,7 +752,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_TIME . ' NOT NULL',
+                SchemaInterface::TYPE_TIME . ' NOT NULL',
                 $this->time()->notNull(),
                 [
                     'mysql' => version_compare($version, '5.6.4', '>=') ? 'time(0) NOT NULL' : 'time NOT NULL',
@@ -763,7 +763,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_TIME,
+                SchemaInterface::TYPE_TIME,
                 $this->time(),
                 [
                     'mysql' => version_compare($version, '5.6.4', '>=') ? 'time(0)' : 'time',
@@ -774,7 +774,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_TIMESTAMP . ' NOT NULL',
+                SchemaInterface::TYPE_TIMESTAMP . ' NOT NULL',
                 $this->timestamp()->notNull(),
                 [
                     'mysql' => version_compare($version, '5.6.4', '>=') ? 'timestamp(0) NOT NULL'
@@ -786,7 +786,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_TIMESTAMP . ' NULL DEFAULT NULL',
+                SchemaInterface::TYPE_TIMESTAMP . ' NULL DEFAULT NULL',
                 $this->timestamp()->defaultValue(null),
                 [
                     'mysql' => version_compare($version, '5.6.4', '>=') ? 'timestamp(0) NULL DEFAULT NULL'
@@ -797,14 +797,14 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_TIMESTAMP . '(4)',
+                SchemaInterface::TYPE_TIMESTAMP . '(4)',
                 $this->timestamp(4),
                 [
                     'pgsql' => 'timestamp(4)',
                 ],
             ],
             [
-                Schema::TYPE_TIMESTAMP,
+                SchemaInterface::TYPE_TIMESTAMP,
                 $this->timestamp(),
                 [
                     /**
@@ -819,7 +819,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_UPK,
+                SchemaInterface::TYPE_UPK,
                 $this->primaryKey()->unsigned(),
                 [
                     'mysql' => 'int(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
@@ -828,7 +828,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_UBIGPK,
+                SchemaInterface::TYPE_UBIGPK,
                 $this->bigPrimaryKey()->unsigned(),
                 [
                     'mysql' => 'bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
@@ -837,7 +837,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_INTEGER . " COMMENT 'test comment'",
+                SchemaInterface::TYPE_INTEGER . " COMMENT 'test comment'",
                 $this->integer()->comment('test comment'),
                 [
                     'mysql' => "int(11) COMMENT 'test comment'",
@@ -848,7 +848,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_PK . " COMMENT 'test comment'",
+                SchemaInterface::TYPE_PK . " COMMENT 'test comment'",
                 $this->primaryKey()->comment('test comment'),
                 [
                     'mysql' => "int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'test comment'",
@@ -859,7 +859,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
-                Schema::TYPE_JSON,
+                SchemaInterface::TYPE_JSON,
                 $this->json(),
                 [
                     'pgsql' => 'jsonb',

@@ -241,10 +241,10 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
             && !in_array(
                 $this->type,
                 [
-                    Schema::TYPE_TEXT,
-                    Schema::TYPE_STRING,
-                    Schema::TYPE_BINARY,
-                    Schema::TYPE_CHAR,
+                    SchemaInterface::TYPE_TEXT,
+                    SchemaInterface::TYPE_STRING,
+                    SchemaInterface::TYPE_BINARY,
+                    SchemaInterface::TYPE_CHAR,
                 ],
                 true
             )
@@ -270,8 +270,8 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         }
 
         switch ($this->phpType) {
-            case Schema::PHP_TYPE_RESOURCE:
-            case Schema::PHP_TYPE_STRING:
+            case SchemaInterface::PHP_TYPE_RESOURCE:
+            case SchemaInterface::PHP_TYPE_STRING:
                 if (is_resource($value)) {
                     return $value;
                 }
@@ -286,16 +286,16 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
                 }
 
                 return (string) $value;
-            case Schema::PHP_TYPE_INTEGER:
+            case SchemaInterface::PHP_TYPE_INTEGER:
                 return (int) $value;
-            case Schema::PHP_TYPE_BOOLEAN:
+            case SchemaInterface::PHP_TYPE_BOOLEAN:
                 /**
                  * treating a 0 bit value as false too
                  *
                  * @link https://github.com/yiisoft/yii2/issues/9006
                  */
                 return (bool) $value && $value !== "\0";
-            case Schema::PHP_TYPE_DOUBLE:
+            case SchemaInterface::PHP_TYPE_DOUBLE:
                 return (float) $value;
         }
 

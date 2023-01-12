@@ -18,56 +18,23 @@ use function gettype;
 use function is_array;
 use function preg_match;
 
-abstract class Schema implements SchemaInterface
+/**
+ * The AbstractSchema class provides a set of methods for working with database schemas such as creating, modifying,
+ * and inspecting tables, columns, and other database objects.
+ *
+ * It is a very powerful and flexible tool that allows you to perform a wide range of database operations in a
+ * database-agnostic way.
+ */
+abstract class AbstractSchema implements SchemaInterface
 {
-    public const SCHEMA = 'schema';
-    public const PRIMARY_KEY = 'primaryKey';
-    public const INDEXES = 'indexes';
-    public const CHECKS = 'checks';
-    public const FOREIGN_KEYS = 'foreignKeys';
-    public const DEFAULT_VALUES = 'defaultValues';
-    public const UNIQUES = 'uniques';
-
-    public const TYPE_PK = 'pk';
-    public const TYPE_UPK = 'upk';
-    public const TYPE_BIGPK = 'bigpk';
-    public const TYPE_UBIGPK = 'ubigpk';
-    public const TYPE_CHAR = 'char';
-    public const TYPE_STRING = 'string';
-    public const TYPE_TEXT = 'text';
-    public const TYPE_TINYINT = 'tinyint';
-    public const TYPE_SMALLINT = 'smallint';
-    public const TYPE_INTEGER = 'integer';
-    public const TYPE_BIGINT = 'bigint';
-    public const TYPE_FLOAT = 'float';
-    public const TYPE_DOUBLE = 'double';
-    public const TYPE_DECIMAL = 'decimal';
-    public const TYPE_DATETIME = 'datetime';
-    public const TYPE_TIMESTAMP = 'timestamp';
-    public const TYPE_TIME = 'time';
-    public const TYPE_DATE = 'date';
-    public const TYPE_BINARY = 'binary';
-    public const TYPE_BOOLEAN = 'boolean';
-    public const TYPE_MONEY = 'money';
-    public const TYPE_JSON = 'json';
-
-    public const PHP_TYPE_INTEGER = 'integer';
-    public const PHP_TYPE_STRING = 'string';
-    public const PHP_TYPE_BOOLEAN = 'boolean';
-    public const PHP_TYPE_DOUBLE = 'double';
-    public const PHP_TYPE_RESOURCE = 'resource';
-    public const PHP_TYPE_ARRAY = 'array';
-    public const PHP_TYPE_NULL = 'NULL';
-
-    public const CACHE_VERSION = 'cacheVersion';
-
     /**
      * Schema cache version, to detect incompatibilities in cached values when the data format of the cache changes.
      */
     protected const SCHEMA_CACHE_VERSION = 1;
+    public const CACHE_VERSION = 'cacheVersion';
 
     /**
-     * @var string|null the default schema name used for the current session.
+     * @var string|null $defaultSchema The default schema name used for the current session.
      */
     protected string|null $defaultSchema = null;
     private array $schemaNames = [];
@@ -80,81 +47,77 @@ abstract class Schema implements SchemaInterface
     }
 
     /**
-     * Returns the cache key for the specified table name.
-     *
      * @param string $name the table name.
      *
-     * @return array the cache key.
+     * @return array The cache key for the specified table name.
      */
     abstract protected function getCacheKey(string $name): array;
 
     /**
-     * Returns the cache tag name.
+     * @return string The cache tag name.
      *
      * This allows {@see refresh()} to invalidate all cached table schemas.
-     *
-     * @return string the cache tag name.
      */
     abstract protected function getCacheTag(): string;
 
     /**
      * Loads all check constraints for the given table.
      *
-     * @param string $tableName table name.
+     * @param string $tableName The table name.
      *
-     * @return array check constraints for the given table.
+     * @return array The check constraints for the given table.
      */
     abstract protected function loadTableChecks(string $tableName): array;
 
     /**
      * Loads all default value constraints for the given table.
      *
-     * @param string $tableName table name.
+     * @param string $tableName The table name.
      *
-     * @return array default value constraints for the given table.
+     * @return array The default value constraints for the given table.
      */
     abstract protected function loadTableDefaultValues(string $tableName): array;
 
     /**
      * Loads all foreign keys for the given table.
      *
-     * @param string $tableName table name.
+     * @param string $tableName The table name.
      *
-     * @return array foreign keys for the given table.
+     * @return array The foreign keys for the given table.
      */
     abstract protected function loadTableForeignKeys(string $tableName): array;
 
     /**
      * Loads all indexes for the given table.
      *
-     * @param string $tableName table name.
+     * @param string $tableName The table name.
      *
-     * @return array indexes for the given table.
+     * @return array The indexes for the given table.
      */
     abstract protected function loadTableIndexes(string $tableName): array;
 
     /**
      * Loads a primary key for the given table.
      *
-     * @param string $tableName table name.
+     * @param string $tableName The table name.
      *
-     * @return Constraint|null primary key for the given table, `null` if the table has no primary key.
+     * @return Constraint|null The primary key for the given table. `null` if the table has no primary key.
      */
     abstract protected function loadTablePrimaryKey(string $tableName): Constraint|null;
 
     /**
      * Loads all unique constraints for the given table.
      *
-     * @param string $tableName table name.
+     * @param string $tableName The table name.
      *
-     * @return array unique constraints for the given table.
+     * @return array The unique constraints for the given table.
      */
     abstract protected function loadTableUniques(string $tableName): array;
 
     /**
      * Loads the metadata for the specified table.
      *
-     * @param string $name table name.
+     * @param string $name The table name.
      *
      * @return TableSchemaInterface|null DBMS-dependent table metadata, `null` if the table does not exist.
      */
@@ -170,11 +133,11 @@ abstract class Schema implements SchemaInterface
         /** @psalm-var array<string, int> $typeMap */
         $typeMap = [
             // php type => PDO type
-            self::PHP_TYPE_BOOLEAN => PDO::PARAM_BOOL,
-            self::PHP_TYPE_INTEGER => PDO::PARAM_INT,
-            self::PHP_TYPE_STRING => PDO::PARAM_STR,
-            self::PHP_TYPE_RESOURCE => PDO::PARAM_LOB,
-            self::PHP_TYPE_NULL => PDO::PARAM_NULL,
+            SchemaInterface::PHP_TYPE_BOOLEAN => PDO::PARAM_BOOL,
+            SchemaInterface::PHP_TYPE_INTEGER => PDO::PARAM_INT,
+            SchemaInterface::PHP_TYPE_STRING => PDO::PARAM_STR,
+            SchemaInterface::PHP_TYPE_RESOURCE => PDO::PARAM_LOB,
+            SchemaInterface::PHP_TYPE_NULL => PDO::PARAM_NULL,
         ];
 
         $type = gettype($data);
@@ -198,7 +161,7 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaChecks(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, self::CHECKS, $refresh);
+        return $this->getSchemaMetadata($schema, SchemaInterface::CHECKS, $refresh);
     }
 
     /**
@@ -206,7 +169,7 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaDefaultValues(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, self::DEFAULT_VALUES, $refresh);
+        return $this->getSchemaMetadata($schema, SchemaInterface::DEFAULT_VALUES, $refresh);
     }
 
     /**
@@ -214,7 +177,7 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaForeignKeys(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, self::FOREIGN_KEYS, $refresh);
+        return $this->getSchemaMetadata($schema, SchemaInterface::FOREIGN_KEYS, $refresh);
     }
 
     /**
@@ -222,7 +185,7 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaIndexes(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, self::INDEXES, $refresh);
+        return $this->getSchemaMetadata($schema, SchemaInterface::INDEXES, $refresh);
     }
 
     public function getSchemaNames(bool $refresh = false): array
@@ -239,7 +202,7 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, self::PRIMARY_KEY, $refresh);
+        return $this->getSchemaMetadata($schema, SchemaInterface::PRIMARY_KEY, $refresh);
     }
 
     /**
@@ -247,34 +210,34 @@ abstract class Schema implements SchemaInterface
      */
     public function getSchemaUniques(string $schema = '', bool $refresh = false): array
     {
-        return $this->getSchemaMetadata($schema, self::UNIQUES, $refresh);
+        return $this->getSchemaMetadata($schema, SchemaInterface::UNIQUES, $refresh);
     }
 
     public function getTableChecks(string $name, bool $refresh = false): array
     {
         /** @psalm-var mixed $tableChecks */
-        $tableChecks = $this->getTableMetadata($name, self::CHECKS, $refresh);
+        $tableChecks = $this->getTableMetadata($name, SchemaInterface::CHECKS, $refresh);
         return is_array($tableChecks) ? $tableChecks : [];
     }
 
     public function getTableDefaultValues(string $name, bool $refresh = false): array
     {
         /** @psalm-var mixed $tableDefaultValues */
-        $tableDefaultValues = $this->getTableMetadata($name, self::DEFAULT_VALUES, $refresh);
+        $tableDefaultValues = $this->getTableMetadata($name, SchemaInterface::DEFAULT_VALUES, $refresh);
         return is_array($tableDefaultValues) ? $tableDefaultValues : [];
     }
 
     public function getTableForeignKeys(string $name, bool $refresh = false): array
     {
         /** @psalm-var mixed $tableForeignKeys */
-        $tableForeignKeys = $this->getTableMetadata($name, self::FOREIGN_KEYS, $refresh);
+        $tableForeignKeys = $this->getTableMetadata($name, SchemaInterface::FOREIGN_KEYS, $refresh);
         return is_array($tableForeignKeys) ? $tableForeignKeys : [];
     }
 
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
         /** @psalm-var mixed $tableIndexes */
-        $tableIndexes = $this->getTableMetadata($name, self::INDEXES, $refresh);
+        $tableIndexes = $this->getTableMetadata($name, SchemaInterface::INDEXES, $refresh);
         return is_array($tableIndexes) ? $tableIndexes : [];
     }
 
@@ -291,21 +254,21 @@ abstract class Schema implements SchemaInterface
     public function getTablePrimaryKey(string $name, bool $refresh = false): Constraint|null
     {
         /** @psalm-var mixed $tablePrimaryKey */
-        $tablePrimaryKey = $this->getTableMetadata($name, self::PRIMARY_KEY, $refresh);
+        $tablePrimaryKey = $this->getTableMetadata($name, SchemaInterface::PRIMARY_KEY, $refresh);
         return $tablePrimaryKey instanceof Constraint ? $tablePrimaryKey : null;
     }
 
     public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null
     {
         /** @psalm-var mixed $tableSchema */
-        $tableSchema = $this->getTableMetadata($name, self::SCHEMA, $refresh);
+        $tableSchema = $this->getTableMetadata($name, SchemaInterface::SCHEMA, $refresh);
         return $tableSchema instanceof TableSchemaInterface ? $tableSchema : null;
     }
 
     public function getTableSchemas(string $schema = '', bool $refresh = false): array
     {
         /** @psalm-var mixed $tableSchemas */
-        $tableSchemas = $this->getSchemaMetadata($schema, self::SCHEMA, $refresh);
+        $tableSchemas = $this->getSchemaMetadata($schema, SchemaInterface::SCHEMA, $refresh);
 
         return is_array($tableSchemas) ? $tableSchemas : [];
     }
@@ -313,17 +276,10 @@ abstract class Schema implements SchemaInterface
     public function getTableUniques(string $name, bool $refresh = false): array
     {
         /** @psalm-var mixed $tableUniques */
-        $tableUniques = $this->getTableMetadata($name, self::UNIQUES, $refresh);
+        $tableUniques = $this->getTableMetadata($name, SchemaInterface::UNIQUES, $refresh);
         return is_array($tableUniques) ? $tableUniques : [];
     }
 
-    /**
-     * Returns a value indicating whether a SQL statement is for read purpose.
-     *
-     * @param string $sql the SQL statement.
-     *
-     * @return bool whether a SQL statement is for read purpose.
-     */
     public function isReadQuery(string $sql): bool
     {
         $pattern = '/^\s*(SELECT|SHOW|DESCRIBE)\b/i';
@@ -331,12 +287,6 @@ abstract class Schema implements SchemaInterface
         return preg_match($pattern, $sql) > 0;
     }
 
-    /**
-     * Refreshes the schema.
-     *
-     * This method cleans up all cached table schemas so that they can be re-created later to reflect the database
-     * schema change.
-     */
     public function refresh(): void
     {
         if ($this->schemaCache->isEnabled()) {
@@ -371,9 +321,9 @@ abstract class Schema implements SchemaInterface
      * This method should be overridden by child classes in order to support this feature because the default
      * implementation simply throws an exception.
      *
-     * @throws NotSupportedException if this method is not supported by the DBMS.
+     * @throws NotSupportedException If this method is not supported by the DBMS.
      *
-     * @return array all schema names in the database, except system schemas.
+     * @return array All schema names in the database, except system schemas.
      */
     protected function findSchemaNames(): array
     {
@@ -386,11 +336,11 @@ abstract class Schema implements SchemaInterface
      * This method should be overridden by child classes in order to support this feature because the default
      * implementation simply throws an exception.
      *
-     * @param string $schema the schema of the tables. Defaults to empty string, meaning the current or default schema.
+     * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema.
      *
-     * @throws NotSupportedException if this method is not supported by the DBMS.
+     * @throws NotSupportedException If this method is not supported by the DBMS.
      *
-     * @return array all table names in the database. The names have NO schema name prefix.
+     * @return array All table names in the database. The names have NO schema name prefix.
      */
     protected function findTableNames(string $schema): array
     {
@@ -400,53 +350,55 @@ abstract class Schema implements SchemaInterface
     /**
      * Extracts the PHP type from abstract DB type.
      *
-     * @param ColumnSchemaInterface $column the column schema information.
+     * @param ColumnSchemaInterface $column The column schema information.
      *
-     * @return string PHP type name.
+     * @return string The PHP type name.
      */
     protected function getColumnPhpType(ColumnSchemaInterface $column): string
     {
         /** @psalm-var string[] $typeMap */
         $typeMap = [
             // abstract type => php type
-            self::TYPE_TINYINT => self::PHP_TYPE_INTEGER,
-            self::TYPE_SMALLINT => self::PHP_TYPE_INTEGER,
-            self::TYPE_INTEGER => self::PHP_TYPE_INTEGER,
-            self::TYPE_BIGINT => self::PHP_TYPE_INTEGER,
-            self::TYPE_BOOLEAN => self::PHP_TYPE_BOOLEAN,
-            self::TYPE_FLOAT => self::PHP_TYPE_DOUBLE,
-            self::TYPE_DOUBLE => self::PHP_TYPE_DOUBLE,
-            self::TYPE_BINARY => self::PHP_TYPE_RESOURCE,
-            self::TYPE_JSON => self::PHP_TYPE_ARRAY,
+            SchemaInterface::TYPE_TINYINT => SchemaInterface::PHP_TYPE_INTEGER,
+            SchemaInterface::TYPE_SMALLINT => SchemaInterface::PHP_TYPE_INTEGER,
+            SchemaInterface::TYPE_INTEGER => SchemaInterface::PHP_TYPE_INTEGER,
+            SchemaInterface::TYPE_BIGINT => SchemaInterface::PHP_TYPE_INTEGER,
+            SchemaInterface::TYPE_BOOLEAN => SchemaInterface::PHP_TYPE_BOOLEAN,
+            SchemaInterface::TYPE_FLOAT => SchemaInterface::PHP_TYPE_DOUBLE,
+            SchemaInterface::TYPE_DOUBLE => SchemaInterface::PHP_TYPE_DOUBLE,
+            SchemaInterface::TYPE_BINARY => SchemaInterface::PHP_TYPE_RESOURCE,
+            SchemaInterface::TYPE_JSON => SchemaInterface::PHP_TYPE_ARRAY,
         ];
 
         if (isset($typeMap[$column->getType()])) {
-            if ($column->getType() === self::TYPE_BIGINT) {
-                return PHP_INT_SIZE === 8 && !$column->isUnsigned() ? self::PHP_TYPE_INTEGER : self::PHP_TYPE_STRING;
+            if ($column->getType() === SchemaInterface::TYPE_BIGINT) {
+                return PHP_INT_SIZE === 8 && !$column->isUnsigned()
+                    ? SchemaInterface::PHP_TYPE_INTEGER : SchemaInterface::PHP_TYPE_STRING;
             }
 
-            if ($column->getType() === self::TYPE_INTEGER) {
-                return PHP_INT_SIZE === 4 && $column->isUnsigned() ? self::PHP_TYPE_STRING : self::PHP_TYPE_INTEGER;
+            if ($column->getType() === SchemaInterface::TYPE_INTEGER) {
+                return PHP_INT_SIZE === 4 && $column->isUnsigned()
+                    ? SchemaInterface::PHP_TYPE_STRING : SchemaInterface::PHP_TYPE_INTEGER;
             }
 
             return $typeMap[$column->getType()];
         }
 
-        return self::PHP_TYPE_STRING;
+        return SchemaInterface::PHP_TYPE_STRING;
     }
 
     /**
      * Returns the metadata of the given type for all tables in the given schema.
      *
-     * @param string $schema the schema of the metadata. Defaults to empty string, meaning the current or default schema
+     * @param string $schema The schema of the metadata. Defaults to empty string, meaning the current or default schema
      * name.
-     * @param string $type metadata type.
-     * @param bool $refresh whether to fetch the latest available table metadata. If this is `false`, cached data may be
+     * @param string $type The metadata type.
+     * @param bool $refresh Whether to fetch the latest available table metadata. If this is `false`, cached data may be
      * returned if available.
      *
      * @throws NotSupportedException
      *
-     * @return array of metadata.
+     * @return array The metadata of the given type for all tables in the given schema.
      *
      * @psalm-return list<Constraint|TableSchemaInterface|array>
      */
@@ -474,8 +426,8 @@ abstract class Schema implements SchemaInterface
     /**
      * Returns the metadata of the given type for the given table.
      *
-     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param string $type metadata type.
+     * @param string $name The table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string $type The metadata type.
      * @param bool $refresh whether to reload the table metadata even if it is found in the cache.
      *
      * @return mixed metadata.
@@ -505,13 +457,13 @@ abstract class Schema implements SchemaInterface
     protected function loadTableTypeMetadata(string $type, string $name): Constraint|array|TableSchemaInterface|null
     {
         return match ($type) {
-            self::SCHEMA => $this->loadTableSchema($name),
-            self::PRIMARY_KEY => $this->loadTablePrimaryKey($name),
-            self::UNIQUES => $this->loadTableUniques($name),
-            self::FOREIGN_KEYS => $this->loadTableForeignKeys($name),
-            self::INDEXES => $this->loadTableIndexes($name),
-            self::DEFAULT_VALUES => $this->loadTableDefaultValues($name),
-            self::CHECKS => $this->loadTableChecks($name),
+            SchemaInterface::SCHEMA => $this->loadTableSchema($name),
+            SchemaInterface::PRIMARY_KEY => $this->loadTablePrimaryKey($name),
+            SchemaInterface::UNIQUES => $this->loadTableUniques($name),
+            SchemaInterface::FOREIGN_KEYS => $this->loadTableForeignKeys($name),
+            SchemaInterface::INDEXES => $this->loadTableIndexes($name),
+            SchemaInterface::DEFAULT_VALUES => $this->loadTableDefaultValues($name),
+            SchemaInterface::CHECKS => $this->loadTableChecks($name),
             default => null,
         };
     }
@@ -525,13 +477,13 @@ abstract class Schema implements SchemaInterface
         bool $refresh = false
     ): Constraint|array|null|TableSchemaInterface {
         return match ($type) {
-            self::SCHEMA => $this->getTableSchema($name, $refresh),
-            self::PRIMARY_KEY => $this->getTablePrimaryKey($name, $refresh),
-            self::UNIQUES => $this->getTableUniques($name, $refresh),
-            self::FOREIGN_KEYS => $this->getTableForeignKeys($name, $refresh),
-            self::INDEXES => $this->getTableIndexes($name, $refresh),
-            self::DEFAULT_VALUES => $this->getTableDefaultValues($name, $refresh),
-            self::CHECKS => $this->getTableChecks($name, $refresh),
+            SchemaInterface::SCHEMA => $this->getTableSchema($name, $refresh),
+            SchemaInterface::PRIMARY_KEY => $this->getTablePrimaryKey($name, $refresh),
+            SchemaInterface::UNIQUES => $this->getTableUniques($name, $refresh),
+            SchemaInterface::FOREIGN_KEYS => $this->getTableForeignKeys($name, $refresh),
+            SchemaInterface::INDEXES => $this->getTableIndexes($name, $refresh),
+            SchemaInterface::DEFAULT_VALUES => $this->getTableDefaultValues($name, $refresh),
+            SchemaInterface::CHECKS => $this->getTableChecks($name, $refresh),
             default => null,
         };
     }
@@ -539,10 +491,10 @@ abstract class Schema implements SchemaInterface
     /**
      * Changes row's array key case to lower.
      *
-     * @param array $row row's array or an array of row's arrays.
-     * @param bool $multiple whether multiple rows or a single row passed.
+     * @param array $row Thew row's array or an array of row's arrays.
+     * @param bool $multiple Whether multiple rows or a single row passed.
      *
-     * @return array normalized row or rows.
+     * @return array The normalized row or rows.
      */
     protected function normalizeRowKeyCase(array $row, bool $multiple): array
     {
@@ -556,11 +508,11 @@ abstract class Schema implements SchemaInterface
     /**
      * Resolves the table name and schema name (if any).
      *
-     * @param string $name the table name.
+     * @param string $name The table name.
      *
-     * @throws NotSupportedException if this method is not supported by the DBMS.
+     * @throws NotSupportedException If this method is not supported by the DBMS.
      *
-     * @return TableSchemaInterface with resolved table, schema, etc. names.
+     * @return TableSchemaInterface The with resolved table, schema, etc. names.
      *
      * {@see TableSchemaInterface}
      */
@@ -572,9 +524,9 @@ abstract class Schema implements SchemaInterface
     /**
      * Sets the metadata of the given type for the given table.
      *
-     * @param string $name table name.
-     * @param string $type metadata type.
-     * @param mixed $data metadata.
+     * @param string $name The table name.
+     * @param string $type The metadata type.
+     * @param mixed $data The metadata to be set.
      *
      * @psalm-suppress MixedArrayAssignment
      */
@@ -635,6 +587,13 @@ abstract class Schema implements SchemaInterface
         );
     }
 
+    /**
+     * Find the view names for the database.
+     *
+     * @param string $schema the schema of the views. Defaults to empty string, meaning the current or default schema.
+     *
+     * @return array The names of all views in the database.
+     */
     protected function findViewNames(string $schema = ''): array
     {
         return [];
@@ -642,6 +601,8 @@ abstract class Schema implements SchemaInterface
 
     /**
      * @throws Throwable
+     *
+     * @return array The view names for the database.
      */
     public function getViewNames(string $schema = '', bool $refresh = false): array
     {

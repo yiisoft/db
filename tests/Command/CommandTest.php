@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Command;
 
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -44,7 +44,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->addColumn('table', 'column', Schema::TYPE_INTEGER)->getSql();
+        $sql = $command->addColumn('table', 'column', SchemaInterface::TYPE_INTEGER)->getSql();
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -159,7 +159,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->alterColumn('table', 'column', Schema::TYPE_INTEGER)->getSql();
+        $sql = $command->alterColumn('table', 'column', SchemaInterface::TYPE_INTEGER)->getSql();
 
         $this->assertSame(
             DbHelper::replaceQuotes(

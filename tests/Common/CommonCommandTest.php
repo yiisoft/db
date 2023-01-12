@@ -19,7 +19,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Transaction\TransactionInterface;
@@ -70,10 +70,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->addColumn('{{customer}}', '{{city}}', Schema::TYPE_STRING)->execute();
+        $command->addColumn('{{customer}}', '{{city}}', SchemaInterface::TYPE_STRING)->execute();
 
         $this->assertTrue($db->getTableSchema('{{customer}}')->getColumn('city') !== null);
-        $this->assertSame(Schema::TYPE_STRING, $db->getTableSchema('{{customer}}')->getColumn('city')->getType());
+        $this->assertSame(
+            SchemaInterface::TYPE_STRING,
+            $db->getTableSchema('{{customer}}')->getColumn('city')->getType(),
+        );
 
         $db->close();
     }
@@ -150,7 +153,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->dropTable('{{test_def}}')->execute();
         }
 
-        $command->createTable('{{test_def}}', ['int1' => Schema::TYPE_INTEGER])->execute();
+        $command->createTable('{{test_def}}', ['int1' => SchemaInterface::TYPE_INTEGER])->execute();
 
         $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}', true));
 
@@ -539,7 +542,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable(
             '{{testCreateTable}}',
-            ['[[id]]' => Schema::TYPE_PK, '[[bar]]' => Schema::TYPE_INTEGER],
+            ['[[id]]' => SchemaInterface::TYPE_PK, '[[bar]]' => SchemaInterface::TYPE_INTEGER],
         )->execute();
         $command->insert('{{testCreateTable}}', ['[[bar]]' => 1])->execute();
         $records = $command->setSql(
@@ -576,7 +579,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable(
             '{{testCreateViewTable}}',
-            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER],
+            ['id' => SchemaInterface::TYPE_PK, 'bar' => SchemaInterface::TYPE_INTEGER],
         )->execute();
         $command->insert('{{testCreateViewTable}}', ['bar' => 1])->execute();
         $command->insert('{{testCreateViewTable}}', ['bar' => 6])->execute();
@@ -707,7 +710,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable(
             '{{testDropColumn}}',
-            ['id' => Schema::TYPE_PK, 'bar' => Schema::TYPE_INTEGER, 'baz' => Schema::TYPE_INTEGER],
+            [
+                'id' => SchemaInterface::TYPE_PK,
+                'bar' => SchemaInterface::TYPE_INTEGER,
+                'baz' => SchemaInterface::TYPE_INTEGER,
+            ],
         )->execute();
         $command->dropColumn('{{testDropColumn}}', 'bar')->execute();
 
@@ -820,7 +827,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->dropTable('{{test_fk}}')->execute();
         }
 
-        $command->createTable('{{test_fk}}', ['id' => Schema::TYPE_PK, 'int1' => 'integer'])->execute();
+        $command->createTable('{{test_fk}}', ['id' => SchemaInterface::TYPE_PK, 'int1' => 'integer'])->execute();
 
         $this->assertEmpty($schema->getTableForeignKeys('{{test_fk}}', true));
 
@@ -914,7 +921,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->dropTable('{{testDropTable}}')->execute();
         }
 
-        $command->createTable('{{testDropTable}}', ['id' => Schema::TYPE_PK, 'foo' => 'integer'])->execute();
+        $command->createTable('{{testDropTable}}', ['id' => SchemaInterface::TYPE_PK, 'foo' => 'integer'])->execute();
 
         $this->assertNotNull($schema->getTableSchema('{{testDropTable}}', true));
 

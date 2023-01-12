@@ -18,7 +18,7 @@ use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Schema;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Support\AnyCaseValue;
@@ -54,7 +54,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $command->dropTable('testCommentTable')->execute();
         }
 
-        $command->createTable('testCommentTable', ['bar' => Schema::TYPE_INTEGER,])->execute();
+        $command->createTable('testCommentTable', ['bar' => SchemaInterface::TYPE_INTEGER,])->execute();
         $command->addCommentOnColumn('testCommentTable', 'bar', 'Test comment for column.')->execute();
 
         $this->assertSame(
@@ -930,7 +930,11 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection();
 
         $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName, 'int');
-        $db->createCommand()->addCheck($constraintName, $tableName, $db->getQuoter()->quoteColumnName($columnName) . ' > 0')->execute();
+        $db->createCommand()->addCheck(
+            $constraintName,
+            $tableName,
+            $db->getQuoter()->quoteColumnName($columnName) . ' > 0'
+        )->execute();
 
         /** @var CheckConstraint[] $constraints */
         $constraints = $db->getSchema()->getTableChecks($tableName, true);
@@ -1052,8 +1056,12 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    protected function createTableForIndexAndConstraintTests(ConnectionInterface $db, string $tableName, string $columnName, ?string $columnType = null): void
-    {
+    protected function createTableForIndexAndConstraintTests(
+        ConnectionInterface $db,
+        string $tableName,
+        string $columnName,
+        string $columnType = null
+    ): void {
         $qb = $db->getQueryBuilder();
 
         if ($db->getTableSchema($tableName, true) !== null) {
