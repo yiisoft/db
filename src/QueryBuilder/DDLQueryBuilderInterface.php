@@ -9,7 +9,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\ColumnSchemaBuilder;
+use Yiisoft\Db\Schema\ColumnSchemaBuilderInterface;
 
 interface DDLQueryBuilderInterface
 {
@@ -146,16 +146,16 @@ interface DDLQueryBuilderInterface
      * @param string $table the table whose column is to be changed. The table name will be properly quoted by the
      * method.
      * @param string $column the name of the column to be changed. The name will be properly quoted by the method.
-     * @param ColumnSchemaBuilder|string $type the new column type. The {@see getColumnType()} method will be invoked
-     * to convert abstract column type (if any) into the physical one. Anything that is not recognized as abstract type
-     * will be kept in the generated SQL.
+     * @param ColumnSchemaBuilderInterface|string $type the new column type. The {@see getColumnType()} method will be
+     * invoked to convert abstract column type (if any) into the physical one. Anything that is not recognized as
+     * abstract type will be kept in the generated SQL.
      *
      * For example, 'string' will be turned into 'varchar(255)', while 'string not null'
      * will become 'varchar(255) not null'.
      *
      * @return string the SQL statement for changing the definition of a column.
      */
-    public function alterColumn(string $table, string $column, ColumnSchemaBuilder|string $type): string;
+    public function alterColumn(string $table, string $column, ColumnSchemaBuilderInterface|string $type): string;
 
     /**
      * Builds a SQL statement for enabling or disabling integrity check.

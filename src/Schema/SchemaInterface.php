@@ -116,17 +116,20 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * This method may be overridden by child classes to create a DBMS-specific column schema builder.
      *
-     * @param string $type the type of the column. See {@see ColumnSchemaBuilder::$type}.
-     * @param array|int|string|null $length The length or precision of the column {@see ColumnSchemaBuilder::$length}.
+     * @param string $type the type of the column.
+     * {@see AbstractColumnSchemaBuilder::$type} for supported types.
+     * @param array|int|string|null $length The length or precision of the column.
      *
-     * @return ColumnSchemaBuilder column schema builder instance
+     * {@see ColumnSchemaBuilderInterface::$length}.
+     *
+     * @return ColumnSchemaBuilderInterface column schema builder instance
      *
      * @psalm-param string[]|int[]|int|string|null $length
      */
     public function createColumnSchemaBuilder(
         string $type,
         array|int|string $length = null
-    ): ColumnSchemaBuilder;
+    ): ColumnSchemaBuilderInterface;
 
     /**
      * Returns all unique indexes for the given table.
