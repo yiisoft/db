@@ -22,7 +22,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('bigint', (string) $migrationBuilder->bigInteger());
+        $this->assertSame('bigint', $migrationBuilder->bigInteger()->asString());
     }
 
     public function testBigPrimaryKey(): void
@@ -31,7 +31,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('bigpk', (string) $migrationBuilder->bigPrimaryKey());
+        $this->assertSame('bigpk', $migrationBuilder->bigPrimaryKey()->asString());
     }
 
     public function testBinary(): void
@@ -40,7 +40,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('binary', (string) $migrationBuilder->binary());
+        $this->assertSame('binary', $migrationBuilder->binary()->asString());
     }
 
     public function testBoolean(): void
@@ -49,7 +49,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('boolean', (string) $migrationBuilder->boolean());
+        $this->assertSame('boolean', $migrationBuilder->boolean()->asString());
     }
 
     public function testChar(): void
@@ -58,7 +58,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('char', (string) $migrationBuilder->char());
+        $this->assertSame('char', $migrationBuilder->char()->asString());
     }
 
     public function testDate(): void
@@ -67,7 +67,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('date', (string) $migrationBuilder->date());
+        $this->assertSame('date', $migrationBuilder->date()->asString());
     }
 
     public function testDateTime(): void
@@ -76,7 +76,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('datetime', (string) $migrationBuilder->dateTime());
+        $this->assertSame('datetime', $migrationBuilder->dateTime()->asString());
     }
 
     public function testDecimal(): void
@@ -85,7 +85,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('decimal', (string) $migrationBuilder->decimal());
+        $this->assertSame('decimal', $migrationBuilder->decimal()->asString());
     }
 
     public function testDouble(): void
@@ -94,7 +94,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('double', (string) $migrationBuilder->double());
+        $this->assertSame('double', $migrationBuilder->double()->asString());
     }
 
     public function testFloat(): void
@@ -103,7 +103,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('float', (string) $migrationBuilder->float());
+        $this->assertSame('float', $migrationBuilder->float()->asString());
     }
 
     public function testInteger(): void
@@ -112,7 +112,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('integer', (string) $migrationBuilder->integer());
+        $this->assertSame('integer', $migrationBuilder->integer()->asString());
     }
 
     public function testJson(): void
@@ -121,7 +121,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('json', (string) $migrationBuilder->json());
+        $this->assertSame('json', $migrationBuilder->json()->asString());
     }
 
     public function testMoney(): void
@@ -130,7 +130,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('money', (string) $migrationBuilder->money());
+        $this->assertSame('money', $migrationBuilder->money()->asString());
     }
 
     public function testPrimaryKey(): void
@@ -139,7 +139,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('pk', (string) $migrationBuilder->primaryKey());
+        $this->assertSame('pk', $migrationBuilder->primaryKey()->asString());
     }
 
     public function testSmallInteger(): void
@@ -148,7 +148,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('smallint', (string) $migrationBuilder->smallInteger());
+        $this->assertSame('smallint', $migrationBuilder->smallInteger()->asString());
     }
 
     public function testString(): void
@@ -157,7 +157,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('string', (string) $migrationBuilder->string());
+        $this->assertSame('string', $migrationBuilder->string()->asString());
     }
 
     public function testText(): void
@@ -166,7 +166,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('text', (string) $migrationBuilder->text());
+        $this->assertSame('text', $migrationBuilder->text()->asString());
     }
 
     public function testTime(): void
@@ -175,7 +175,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('time', (string) $migrationBuilder->time());
+        $this->assertSame('time', $migrationBuilder->time()->asString());
     }
 
     public function testTimestamp(): void
@@ -184,7 +184,7 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('timestamp', (string) $migrationBuilder->timestamp());
+        $this->assertSame('timestamp', $migrationBuilder->timestamp()->asString());
     }
 
     public function testTinyInteger(): void
@@ -193,6 +193,6 @@ final class MigrationBuilderTest extends TestCase
 
         $migrationBuilder = $db->getMigrationBuilder();
 
-        $this->assertSame('tinyint', (string) $migrationBuilder->tinyInteger());
+        $this->assertSame('tinyint', $migrationBuilder->tinyInteger()->asString());
     }
 }
