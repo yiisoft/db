@@ -10,7 +10,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
 /**
- * The ConnectionPDOPoolInterface is an interface for creating a connection pool for PDO (PHP Data Objects) connections.
+ * The ConnectionPDOPoolInterface describes creating a connection pool of PDO (PHP Data Objects) connections.
  * It defines methods for managing the connections in the pool, such as getting and releasing connections, as well as
  * methods for checking the pool's configuration and status. By implementing this interface, developers can create
  * custom connection pool classes that can be used with the yiisoft/db library to handle PDO connections in a more
