@@ -10,13 +10,15 @@ use Closure;
 /**
  * Short implementation of ArrayHelper from Yii2
  */
-class ArrayHelper {
+class ArrayHelper
+{
     /**
      * Checks if the given array contains the specified key.
      * This method enhances the `array_key_exists()` function by supporting case-insensitive
      * key comparison.
+     *
      * @param string $key the key to check
-     * @param ArrayAccess|array $array the array with keys to check
+     * @param array|ArrayAccess $array the array with keys to check
      * @return bool whether the array contains the specified key
      */
     public static function keyExists(string $key, ArrayAccess|array $array): bool
@@ -60,13 +62,14 @@ class ArrayHelper {
      * $value = \yii\helpers\ArrayHelper::getValue($versions, ['1.0', 'date']);
      * ```
      *
-     * @param object|array $array array or object to extract value from
+     * @param array|object $array array or object to extract value from
      * @param Closure|string $key key name of the array element, an array of keys or property name of the object,
      * or an anonymous function returning the value. The anonymous function signature should be:
      * `function($array, $defaultValue)`.
      * The possibility to pass an array of keys is available since version 2.0.4.
      * @param mixed|null $default the default value to be returned if the specified array key does not exist. Not used when
      * getting value from an object.
+     *
      * @return mixed the value of the element if found, default value otherwise
      */
     public static function getValueByPath(object|array $array, Closure|string $key, mixed $default = null)

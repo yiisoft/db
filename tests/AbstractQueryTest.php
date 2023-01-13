@@ -933,7 +933,7 @@ abstract class AbstractQueryTest extends TestCase
                             'key' => 'value2',
                             't2' => [
                                 'key' => 'value3',
-                            ]
+                            ],
                         ],
                     ],
                 ],
@@ -944,7 +944,7 @@ abstract class AbstractQueryTest extends TestCase
                             'key' => 'value2',
                             't2' => [
                                 'key' => 'value3',
-                            ]
+                            ],
                         ],
                     ],
                 ],
