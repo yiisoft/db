@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Constraint;
 
 /**
- * The CheckConstraint is a class represents a CHECK constraint in a database table, which is used to validate data
+ * The CheckConstraint represents a CHECK constraint in a database table, which is used to validate data
  * before it is inserted or updated in the table. The constraint checks that the value of a specified column or
  * expression meets a certain condition. If the condition is not met, an error will be thrown and the data will not
  * be inserted or updated. The CheckConstraint class allows you to specify the condition that must be met, as well as
