@@ -789,6 +789,7 @@ abstract class AbstractQueryTest extends TestCase
         $query = (new Query($db))
             ->select('id')
             ->from('customer')
+            ->indexBy('id')
             ->limit(2)
         ;
 
@@ -803,8 +804,8 @@ abstract class AbstractQueryTest extends TestCase
         $query = (new Query($db))
             ->select('id')
             ->from('customer')
-            ->limit(2)
             ->indexBy('id')
+            ->limit(2)
         ;
 
         $populated = [
@@ -819,8 +820,8 @@ abstract class AbstractQueryTest extends TestCase
             ->select(new Expression('c1.id, c2.id'))
             ->from(['c1' => 'customer'])
             ->leftJoin(['c2' => 'customer'], 'c1.id=c2.id')
-            ->limit(2)
             ->indexBy('id')
+            ->limit(2)
         ;
 
         $populated = [

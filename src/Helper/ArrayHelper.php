@@ -13,27 +13,6 @@ use Closure;
 class ArrayHelper
 {
     /**
-     * Checks if the given array contains the specified key.
-     * This method enhances the `array_key_exists()` function by supporting case-insensitive
-     * key comparison.
-     *
-     * @param string $key the key to check
-     * @param array|ArrayAccess $array the array with keys to check
-     *
-     * @return bool whether the array contains the specified key
-     */
-    public static function keyExists(string $key, ArrayAccess|array $array): bool
-    {
-        // Function `isset` checks key faster but skips `null`, `array_key_exists` handles this case
-        // https://www.php.net/manual/en/function.array-key-exists.php#107786
-        if (is_array($array) && (isset($array[$key]) || array_key_exists($key, $array))) {
-            return true;
-        }
-        // Cannot use `array_has_key` on Objects for PHP 7.4+, therefore we need to check using [[ArrayAccess::offsetExists()]]
-        return $array instanceof ArrayAccess && $array->offsetExists($key);
-    }
-
-    /**
      * Retrieves the value of an array element or object property with the given key or property name.
      * If the key does not exist in the array, the default value will be returned instead.
      * Not used when getting value from an object.
@@ -79,22 +58,17 @@ class ArrayHelper
             return $key($array, $default);
         }
 
-        if (is_array($key)) {
-            $lastKey = array_pop($key);
-            foreach ($key as $keyPart) {
-                $array = static::getValueByPath($array, $keyPart);
-            }
-            $key = $lastKey ?? '';
-        }
-
         if (is_object($array) && property_exists($array, $key)) {
             return $array->$key;
         }
-        if (static::keyExists($key, $array)) {
+
+        /** @psalm-var array<string, mixed> $array */
+        if (array_key_exists($key, $array)) {
             return $array[$key];
         }
 
         if ($key && ($pos = strrpos($key, '.')) !== false) {
+            /** @psalm-var array<string, mixed>|object $array */
             $array = static::getValueByPath($array, substr($key, 0, $pos), $default);
             $key = substr($key, $pos + 1);
         }
@@ -112,7 +86,7 @@ class ArrayHelper
             }
         }
 
-        if (static::keyExists($key, $array)) {
+        if (array_key_exists($key, $array)) {
             return $array[$key];
         }
 
