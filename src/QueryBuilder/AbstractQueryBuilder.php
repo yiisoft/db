@@ -318,7 +318,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function getColumnType(ColumnSchemaBuilderInterface|string $type): string
     {
         if ($type instanceof ColumnSchemaBuilderInterface) {
-            $type = $type->__toString();
+            $type = $type->asString();
         }
 
         if (isset($this->typeMap[$type])) {

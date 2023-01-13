@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Stringable;
-
 /**
  * The ColumnSchemaBuilderInterface class is an interface that defines the methods that must be implemented by classes
  * that build the schema of a database column. It provides methods for setting the column name, type, length, precision,
@@ -13,7 +11,7 @@ use Stringable;
  * key, unique, and not null. Classes that implement this interface are used to create and modify the schema of a
  * database table in a database-agnostic way.
  */
-interface ColumnSchemaBuilderInterface extends Stringable
+interface ColumnSchemaBuilderInterface
 {
     /**
      * Specify additional SQL to be appended to column definition.
@@ -25,6 +23,14 @@ interface ColumnSchemaBuilderInterface extends Stringable
      * @return self The column schema builder instance itself.
      */
     public function append(string $sql): self;
+
+    /**
+     * Builds the full string for the column's schema including type, length, default value, not null and other SQL
+     * fragment.
+     *
+     * @return string The SQL fragment that will be used for creating the column.
+     */
+    public function asString(): string;
 
     /**
      * Specify a `CHECK` constraint for the column.
