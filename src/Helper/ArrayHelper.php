@@ -19,6 +19,7 @@ class ArrayHelper
      *
      * @param string $key the key to check
      * @param array|ArrayAccess $array the array with keys to check
+     *
      * @return bool whether the array contains the specified key
      */
     public static function keyExists(string $key, ArrayAccess|array $array): bool
