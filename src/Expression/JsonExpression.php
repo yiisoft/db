@@ -9,7 +9,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**
- * Class JsonExpression represents data that should be encoded to JSON.
+ * The JsonExpression class represents data that should be encoded to JSON.
  *
  * For example:
  *

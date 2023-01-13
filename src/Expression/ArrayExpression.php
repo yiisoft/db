@@ -15,7 +15,7 @@ use Yiisoft\Db\Query\QueryInterface;
 use function count;
 
 /**
- * Class ArrayExpression represents an array SQL expression.
+ * The ArrayExpression class represents an array SQL expression.
  *
  * Expressions of this type can be used in conditions as well:
  *

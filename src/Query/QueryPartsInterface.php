@@ -9,6 +9,12 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
+/**
+ * The QueryPartsInterface class defines a set of methods that are used to create and manipulate the different parts of
+ * a database query, such as the `SELECT`, `FROM`, `WHERE`, and `ORDER BY` clauses. Classes that implement this
+ * interface are used to build and manipulate SQL statements in a programmatic way, allowing developers to easily create
+ * and modify database queries without having to write raw SQL.
+ */
 interface QueryPartsInterface
 {
     /**

@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Constraint;
 
 /**
- * IndexConstraint represents the metadata of a table `INDEX` constraint.
+ * The IndexConstraint is a class, it represents a constraint on a database index, such as a primary key or unique
+ * constraint. The class includes properties and methods for working with index constraints, such as checking if a
+ * constraint is primary key or unique, getting the name of the constraint, and getting the columns that are part of
+ * the constraint. It is typically used by the database schema management tools in Yii to manage and manipulate the
+ * indexes on a database table.
  */
 final class IndexConstraint extends Constraint
 {

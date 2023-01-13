@@ -7,6 +7,12 @@ namespace Yiisoft\Db\Driver\PDO;
 use PDO;
 use Yiisoft\Db\Driver\DriverInterface;
 
+/**
+ * The PDODriverInterface is an interface, which provides a set of methods that must be implemented by PDO
+ * (PHP Data Objects) driver classes. These methods include basic CRUD (create, read, update, delete) operations for
+ * interacting with a database, such as connecting to a database, preparing and executing SQL statements, and
+ * retrieving data from the result set.
+ */
 interface PDODriverInterface extends DriverInterface
 {
     /**

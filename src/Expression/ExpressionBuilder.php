@@ -7,7 +7,10 @@ namespace Yiisoft\Db\Expression;
 use function array_merge;
 
 /**
- * Class ExpressionBuilder builds objects of {@see Expression} class.
+ * The ExpressionBuilder is a class is used to build expressions for use in database queries. It provides a methods
+ * `build()` for creating various types of expressions, such as conditions, joins, and ordering clauses. These
+ * expressions can be used with the query builder to build complex and customizable database queries {@see Expression}
+ * class.
  */
 class ExpressionBuilder implements ExpressionBuilderInterface
 {

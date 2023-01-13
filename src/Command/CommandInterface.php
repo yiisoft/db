@@ -20,6 +20,8 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 /**
  * The CommandInterface is an interface represents a database command, such as a SELECT, INSERT, UPDATE, or DELETE
  * statement.
+ *
+ * A Command object is usually created by calling {@see ConnectionInterface::createCommand()}.
  */
 interface CommandInterface
 {
