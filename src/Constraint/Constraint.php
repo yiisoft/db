@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Constraint;
 
 /**
- * The Constraint is a class used with base class to define a class constraint. It is mainly used to define the name and
+ * The Constraint is used with base class to define the name and
  * the column names of a constraint. The class is mainly used by the database abstraction layer
  * {@see \Yiisoft\Db\Schema\Schema} to create and drop constraints.
  */
