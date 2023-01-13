@@ -11,9 +11,9 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 /**
- * The TransactionInterface defines the interface for a database transaction. A transaction is a set of
- * operations that are executed as a single logical unit of work. The main benefit of using transactions is that they
- * allow for the atomic, consistent, isolated, and durable (ACID) execution of multiple database operations.
+ * The TransactionInterface defines the interface for a database transaction. A transaction is a set of operations that
+ * are executed as a single logical unit of work. The main benefit of using transactions is that they allow for the
+ * atomic, consistent, isolated, and durable (ACID) execution of multiple database operations.
  *
  * The TransactionInterface class defines several methods for working with transactions, such as `begin()`, `commit()`,
  * and `rollBack()`.
@@ -67,7 +67,8 @@ interface TransactionInterface extends LoggerAwareInterface
      *
      * [isolation level]: http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      *
-     * @throws Exception|Throwable If DB connection fails or the current transaction is active.
+     * @throws Exception
+     * @throws Throwable If DB connection fails or the current transaction is active.
      * @throws InvalidConfigException If {@see db} is `null` or invalid.
      * @throws NotSupportedException If the DBMS does not support nested transactions or the transaction is active.
      */
@@ -76,7 +77,8 @@ interface TransactionInterface extends LoggerAwareInterface
     /**
      * Commits a transaction.
      *
-     * @throws Exception|Throwable If the transaction is not active
+     * @throws Exception
+     * @throws Throwable If the transaction is not active
      */
     public function commit(): void;
 
@@ -109,7 +111,8 @@ interface TransactionInterface extends LoggerAwareInterface
      * This can be one of {@see READ_UNCOMMITTED}, {@see READ_COMMITTED}, {@see REPEATABLE_READ} and {@see SERIALIZABLE}
      * but also a string containing DBMS specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`.
      *
-     * @throws Exception|Throwable If the transaction is not active.
+     * @throws Exception
+     * @throws Throwable If the transaction is not active.
      *
      * @see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
@@ -120,7 +123,9 @@ interface TransactionInterface extends LoggerAwareInterface
      *
      * @param string $name the savepoint name
      *
-     * @throws Exception|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
     public function createSavepoint(string $name): void;
 
@@ -129,7 +134,9 @@ interface TransactionInterface extends LoggerAwareInterface
      *
      * @param string $name The savepoint name
      *
-     * @throws Exception|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
     public function rollBackSavepoint(string $name): void;
 
@@ -138,7 +145,9 @@ interface TransactionInterface extends LoggerAwareInterface
      *
      * @param string $name the savepoint name
      *
-     * @throws Exception|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
     public function releaseSavepoint(string $name): void;
 }
