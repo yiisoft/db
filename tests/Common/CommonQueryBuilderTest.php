@@ -69,7 +69,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
                 $expectedColumnSchemaBuilder = $column;
             }
 
-            $this->assertEquals($expectedColumnSchemaBuilder, $builder->__toString());
+            $this->assertEquals($expectedColumnSchemaBuilder, $builder->asString());
             $this->assertEquals($expected, $qb->getColumnType($column));
             $this->assertEquals($expected, $qb->getColumnType($builder));
         }
