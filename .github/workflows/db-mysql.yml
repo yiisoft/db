@@ -26,7 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-mysql-${{ matrix.mysql }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-master
+      COMPOSER_ROOT_VERSION: dev-remove-unnecessary-stringable
       extensions: pdo, pdo_mysql
 
     runs-on: ${{ matrix.os }}
