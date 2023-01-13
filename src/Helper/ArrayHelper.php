@@ -62,8 +62,7 @@ class ArrayHelper
             return $array->$key;
         }
 
-        /** @psalm-var array<string, mixed> $array */
-        if (array_key_exists($key, $array)) {
+        if (is_array($array) && array_key_exists($key, $array)) {
             return $array[$key];
         }
 
