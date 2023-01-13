@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Driver\PDO;
 use PDO;
 
 /**
- * The AbstractPDODriver is a class, that serves as the base class for creating PDO (PHP Data Objects) drivers.
+ * The AbstractPDODriver serves as the base class for creating PDO (PHP Data Objects) drivers.
  * It provides a set of common methods and properties that are implemented by the specific PDO driver classes,
  * such as Pgsql, Mysql, MariaDb, Sqlite, Oracle, Mssql etc. These methods and properties include things like
  * the PDO connection object, the ability to quote and format table and column names, and methods for performing
