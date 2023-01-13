@@ -22,7 +22,7 @@ use function strtoupper;
 use function trim;
 
 /**
- * The QueryHelper is a class that provides a set of helper methods for working with database queries. These methods
+ * The QueryHelper provides a set of helper methods for working with database queries. These methods
  * can be used to simplify the process of building and executing complex database queries.
  */
 final class QueryHelper
