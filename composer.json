@@ -25,7 +25,6 @@
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "psr/log": "^2.0|^3.0",
-        "yiisoft/arrays": "^2.0",
         "yiisoft/cache": "^2.0",
         "yiisoft/log": "^2.0",
         "yiisoft/strings": "^2.0"

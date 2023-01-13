@@ -752,4 +752,234 @@ abstract class AbstractQueryTest extends TestCase
             3 => 'user3',
         ], $query->column());
     }
+
+    /**
+     * @dataProvider populateProvider
+     */
+    public function testPopulate(array $rows): void
+    {
+        $db = $this->getConnection(false);
+        $query = (new Query($db));
+
+        $this->assertSame($rows, $query->populate($rows));
+    }
+
+    public function populateProvider(): array
+    {
+        return [
+            [
+                [],
+            ],
+            [
+                [['value']],
+            ],
+            [
+                [['key' => 'value']],
+            ],
+            [
+                [['table.key' => 'value']],
+            ],
+        ];
+    }
+
+    public function testPopulateWithIndexByReal(): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))
+            ->select('id')
+            ->from('customer')
+            ->limit(2)
+        ;
+
+        $populated = [
+            ['id' => '1'],
+            ['id' => '2'],
+        ];
+        $rows = $query->all();
+
+        $this->assertSame($populated, $query->populate($rows));
+
+        $query = (new Query($db))
+            ->select('id')
+            ->from('customer')
+            ->limit(2)
+            ->indexBy('id')
+        ;
+
+        $populated = [
+            1 => ['id' => '1'],
+            2 => ['id' => '2'],
+        ];
+        $rows = $query->all();
+
+        $this->assertSame($populated, $query->populate($rows));
+
+        $query = (new Query($db))
+            ->select(new Expression('c1.id, c2.id'))
+            ->from(['c1' => 'customer'])
+            ->leftJoin(['c2' => 'customer'], 'c1.id=c2.id')
+            ->limit(2)
+            ->indexBy('id')
+        ;
+
+        $populated = [
+            1 => ['id' => '1'],
+            2 => ['id' => '2'],
+        ];
+        $rows = $query->all();
+
+        $this->assertSame($populated, $query->populate($rows));
+    }
+
+    /**
+     * @dataProvider populateProviderWithIndexBy
+     */
+    public function testPopulateWithIndexByNew(string|null $indexBy, array $rows, array $populated): void
+    {
+        $db = $this->getConnection(false);
+        $query = (new Query($db))->indexBy($indexBy);
+
+        $this->assertSame($populated, $query->populate($rows));
+    }
+
+    public function populateProviderWithIndexBy(): array
+    {
+        return [
+            'null key with empty rows' => [
+                null,
+                'rows' => [],
+                'expected' => [],
+            ],
+            'null key' => [
+                null,
+                [
+                    ['key' => 'value1'],
+                    ['key' => 'value2'],
+                ],
+                [
+                    ['key' => 'value1'],
+                    ['key' => 'value2'],
+                ],
+            ],
+            'correct key' => [
+                'key',
+                [
+                    ['key' => 'value1'],
+                    ['key' => 'value2'],
+                ],
+                [
+                    'value1' => ['key' => 'value1'],
+                    'value2' => ['key' => 'value2'],
+                ],
+            ],
+            'null-key and composite.key' => [
+                null,
+                [
+                    ['table.key' => 'value1'],
+                    ['table.key' => 'value2'],
+                ],
+                [
+                    ['table.key' => 'value1'],
+                    ['table.key' => 'value2'],
+                ],
+            ],
+            'key with space' => [
+                'table key',
+                [
+                    ['table key' => 'value1'],
+                    ['table key' => 'value2'],
+                ],
+                [
+                    'value1' => ['table key' => 'value1'],
+                    'value2' => ['table key' => 'value2'],
+                ],
+            ],
+            'not existed key' => [
+                'incorrectKey',
+                [
+                    ['table.key' => 'value1'],
+                    ['table.key' => 'value2'],
+                ],
+                [
+                    '' => ['table.key' => 'value2'],
+                ],
+            ],
+            'composite-key and simple key' => [
+                't.key',
+                [
+                    [
+                        'key' => 'value1',
+                        't' => [
+                            'key' => 'value2',
+                        ],
+                    ],
+                ],
+                [
+                    'value2' => [
+                        'key' => 'value1',
+                        't' => [
+                            'key' => 'value2',
+                        ],
+                    ],
+                ],
+            ],
+            'composite-3-key and simple key' => [
+                't1.t2.key',
+                [
+                    [
+                        'key' => 'value1',
+                        't1' => [
+                            'key' => 'value2',
+                            't2' => [
+                                'key' => 'value3',
+                            ]
+                        ],
+                    ],
+                ],
+                [
+                    'value3' => [
+                        'key' => 'value1',
+                        't1' => [
+                            'key' => 'value2',
+                            't2' => [
+                                'key' => 'value3',
+                            ]
+                        ],
+                    ],
+                ],
+            ],
+            'composite-key and composite key' => [
+                'table.key',
+                [
+                    ['table.key' => 'value1'],
+                    ['table.key' => 'value2'],
+                ],
+                [
+                    'value1' => ['table.key' => 'value1'],
+                    'value2' => ['table.key' => 'value2'],
+                ],
+            ],
+            'empty key (not found key behavior)' => [
+                '',
+                [
+                    ['table.key' => 'value1'],
+                    ['table.key' => 'value2'],
+                ],
+                [
+                    '' => ['table.key' => 'value2'],
+                ],
+            ],
+            'key and composite key (not found key behavior)' => [
+                'key',
+                [
+                    ['table.key' => 'value1'],
+                    ['table.key' => 'value2'],
+                ],
+                [
+                    '' => ['table.key' => 'value2'],
+                ],
+            ],
+        ];
+    }
 }
