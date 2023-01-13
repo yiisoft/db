@@ -21,7 +21,7 @@ final class DefaultValueConstraint extends Constraint
     }
 
     /**
-     * @param mixed The default value as returned by the DBMS.
+     * @var mixed $value The default value as returned by the DBMS.
      */
     public function value(mixed $value): self
     {
