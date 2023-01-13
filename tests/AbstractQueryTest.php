@@ -782,59 +782,6 @@ abstract class AbstractQueryTest extends TestCase
         ];
     }
 
-    public function testPopulateWithIndexByReal(): void
-    {
-        $db = $this->getConnection(true);
-
-        $query = (new Query($db))
-            ->select('id')
-            ->from('customer')
-            ->orderBy('id')
-            ->limit(2)
-        ;
-
-        $populated = [
-            ['id' => '1'],
-            ['id' => '2'],
-        ];
-        $rows = $query->all();
-
-        $this->assertSame($populated, $query->populate($rows));
-
-        $query = (new Query($db))
-            ->select('id')
-            ->from('customer')
-            ->orderBy('id')
-            ->indexBy('id')
-            ->limit(2)
-        ;
-
-        $populated = [
-            1 => ['id' => '1'],
-            2 => ['id' => '2'],
-        ];
-        $rows = $query->all();
-
-        $this->assertSame($populated, $query->populate($rows));
-
-        $query = (new Query($db))
-            ->select(new Expression('c1.id, c2.id'))
-            ->from(['c1' => 'customer'])
-            ->leftJoin(['c2' => 'customer'], 'c1.id=c2.id')
-            ->orderBy('c1.id')
-            ->indexBy('id')
-            ->limit(2)
-        ;
-
-        $populated = [
-            1 => ['id' => '1'],
-            2 => ['id' => '2'],
-        ];
-        $rows = $query->all();
-
-        $this->assertSame($populated, $query->populate($rows));
-    }
-
     /**
      * @dataProvider populateProviderWithIndexBy
      */
