@@ -16,9 +16,8 @@ use function next;
 use function reset;
 
 /**
- * The BatchQueryResult is a class that represents the result of a batch query execution. A batch query is a group of
- * multiple SQL statements that are executed together as a single unit. BatchQueryResult holds the results of each
- * statement in the batch query, and provides methods for accessing the results of each statement in the batch.
+ * The BatchQueryResult represents the result of a batch query execution. A batch query is a group of
+ * multiple SQL statements that are executed together as a single unit.
  */
 class BatchQueryResult implements BatchQueryResultInterface
 {
