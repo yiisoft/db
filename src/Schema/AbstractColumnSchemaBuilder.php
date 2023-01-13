@@ -159,13 +159,7 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
         return $this;
     }
 
-    /**
-     * Builds the full string for the column's schema including type, length, default value, not null and other SQL
-     * fragment.
-     *
-     * @return string The SQL fragment that will be used for creating the column.
-     */
-    public function __toString(): string
+    public function asString(): string
     {
         if ($this->getTypeCategory() === self::CATEGORY_PK) {
             $format = '{type}{check}{comment}{append}';
