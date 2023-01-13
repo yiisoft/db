@@ -11,7 +11,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 /**
- * The TransactionInterface is a class, it defines the interface for a database transaction. A transaction is a set of
+ * The TransactionInterface defines the interface for a database transaction. A transaction is a set of
  * operations that are executed as a single logical unit of work. The main benefit of using transactions is that they
  * allow for the atomic, consistent, isolated, and durable (ACID) execution of multiple database operations.
  *
