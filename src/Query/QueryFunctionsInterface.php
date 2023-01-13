@@ -9,7 +9,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
 /**
- * The QueryFunctionsInterface is a class defines an interface for query functions. A query function is a function that
+ * The QueryFunctionsInterface defines an interface for query functions. A query function is a function that
  * can be called in a query to perform some operation on the data being selected or updated. Examples of query functions
  * might include `COUNT()`, `SUM()`, `AVG()`, and `MAX()`. The interface defines methods for building and modifying
  * queries, such as adding or removing query functions.
