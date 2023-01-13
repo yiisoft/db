@@ -11,7 +11,7 @@ use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidParamException;
 
 /**
- * The DataReader is a class that provides a way to read data from a database using a data reader. A data reader is an
+ * The DataReader provides an abstract way to read data from a database. A data reader is an
  * object that can be used to read a forward-only stream of rows from a database. DataReader is typically used in
  * combination with a command object, such as a {@see Yiisoft/Db/Command/Command}, to execute a SELECT statement and
  * read the results. The class provides methods for accessing the data returned by the query.
