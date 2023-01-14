@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Strings\NumericHelper;
+use Yiisoft\Db\Helper\NumericHelper;
 
 use function gettype;
 use function strtr;

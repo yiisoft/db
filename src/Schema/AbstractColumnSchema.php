@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Schema;
 use PDO;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Strings\NumericHelper;
+use Yiisoft\Db\Helper\NumericHelper;
 
 /**
  * The ColumnSchema class represents the metadata of a column in a database table. It provides information about the
