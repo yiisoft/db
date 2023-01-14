@@ -278,7 +278,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
 
                 if (is_float($value)) {
                     /* ensure type cast always has . as decimal separator in all locales */
-                    return NumericHelper::normalize((string) $value);
+                    return NumericHelper::normalizeFloat($value);
                 }
 
                 if (is_bool($value)) {

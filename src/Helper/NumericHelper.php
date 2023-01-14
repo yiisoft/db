@@ -13,7 +13,7 @@ final class NumericHelper
      *
      * @return string
      */
-    public static function normalize(float|string $value): string
+    public static function normalizeFloat(float|string $value): string
     {
         if (is_float($value)) {
             $value = (string)$value;
