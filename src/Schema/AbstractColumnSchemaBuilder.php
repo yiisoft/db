@@ -232,7 +232,7 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
 
         $string .= match (gettype($this->default)) {
             'object', 'integer' => (string)$this->default,
-            'double' => NumericHelper::normalizeFloat($this->default),
+            'double' => NumericHelper::normalizeFloat((string)$this->default),
             'boolean' => $this->default ? 'TRUE' : 'FALSE',
             default => "'$this->default'",
         };
