@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Schema;
 use PDO;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Strings\NumericHelper;
+use Yiisoft\Db\Helper\NumericHelper;
 
 /**
  * The ColumnSchema class represents the metadata of a column in a database table. It provides information about the
@@ -278,7 +278,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
 
                 if (is_float($value)) {
                     /* ensure type cast always has . as decimal separator in all locales */
-                    return NumericHelper::normalize((string) $value);
+                    return NumericHelper::normalizeFloat($value);
                 }
 
                 if (is_bool($value)) {

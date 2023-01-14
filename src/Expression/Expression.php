@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Expression;
 use Stringable;
 
 /**
- * Expression represents a DB expression that does not need escaping or quoting.
+ * The Expression class represents a DB expression that does not need escaping or quoting.
  *
  * When an Expression object is embedded within a SQL statement or fragment, it will be replaced with the
  * {@see expression} property value without any DB escaping or quoting. For example,

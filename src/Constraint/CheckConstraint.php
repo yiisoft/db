@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Constraint;
 
 /**
- * CheckConstraint represents the metadata of a table `CHECK` constraint.
+ * The CheckConstraint represents a CHECK constraint in a database table, which is used to validate data before it is
+ * inserted or updated in the table. The constraint checks that the value of a specified column or expression meets a
+ * certain condition. If the condition is not met, an error will be thrown and the data will not be inserted or updated.
+ * The CheckConstraint class allows you to specify the condition that must be met, as well as the columns or expressions
+ * that the constraint applies to.
  */
 final class CheckConstraint extends Constraint
 {
@@ -17,7 +21,7 @@ final class CheckConstraint extends Constraint
     }
 
     /**
-     * @param string $value the SQL of the `CHECK` constraint.
+     * @param string $value The SQL of the `CHECK` constraint.
      */
     public function expression(string $value): self
     {
