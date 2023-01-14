@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Helper;
 
-use Yiisoft\Db\Exception\InvalidArgumentException;
-
 final class NumericHelper
 {
     /**
