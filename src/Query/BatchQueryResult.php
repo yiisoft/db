@@ -15,6 +15,10 @@ use function key;
 use function next;
 use function reset;
 
+/**
+ * The BatchQueryResult represents the result of a batch query execution. A batch query is a group of multiple SQL
+ * statements that are executed together as a single unit.
+ */
 class BatchQueryResult implements BatchQueryResultInterface
 {
     protected int $batchSize = 100;
@@ -86,7 +90,9 @@ class BatchQueryResult implements BatchQueryResultInterface
     /**
      * Fetches the next batch of data.
      *
-     * @throws Exception|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      *
      * @return array the data fetched.
      */

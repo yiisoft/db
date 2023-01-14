@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Constraint;
 
 /**
- * Constraint represents the metadata of a table constraint.
+ * The Constraint is used with base class to define the name and the column names of a constraint. The class is mainly
+ * used by the database abstraction layer {@see \Yiisoft\Db\Schema\Schema} to create and drop constraints.
  */
 class Constraint
 {
@@ -23,7 +24,7 @@ class Constraint
     }
 
     /**
-     * @param array|string|null $value list of column names the constraint belongs to.
+     * @param array|string|null $value The list of column names the constraint belongs to.
      *
      * @return static
      */
@@ -35,7 +36,7 @@ class Constraint
     }
 
     /**
-     * @param object|string|null $value the constraint name.
+     * @param object|string|null $value The constraint name.
      *
      * @return static
      */
