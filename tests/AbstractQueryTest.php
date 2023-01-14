@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
+use Closure;
+use PHPUnit\Framework\Error\Warning;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
@@ -703,7 +705,7 @@ abstract class AbstractQueryTest extends TestCase
         $query = new Query($db);
         $query->select('id')->from('user')->where(['id' => 1]);
 
-        $this->assertSame(serialize($query), (string) $query);
+        $this->assertSame(serialize($query), (string)$query);
     }
 
     public function testWhere(): void
@@ -784,13 +786,43 @@ abstract class AbstractQueryTest extends TestCase
 
     /**
      * @dataProvider populateProviderWithIndexBy
+     * @dataProvider populateProviderWithIncorrectIndexBy
+     * @dataProvider populateProviderWithIndexByClosure
      */
-    public function testPopulateWithIndexByNew(string|null $indexBy, array $rows, array $populated): void
+    public function testPopulateWithIndexBy(Closure|string|null $indexBy, array $rows, array $populated): void
     {
         $db = $this->getConnection(false);
         $query = (new Query($db))->indexBy($indexBy);
 
         $this->assertSame($populated, $query->populate($rows));
+    }
+
+    /**
+     * @dataProvider populateProviderWithIndexBy
+     */
+    public function testPopulateWithIndexByWithObject(Closure|string|null $indexBy, array $rows, array $expectedPopulated): void
+    {
+        $db = $this->getConnection(false);
+        $query = (new Query($db))->indexBy($indexBy);
+
+        $rows = json_decode(json_encode($rows));
+        $populated = json_decode(json_encode($query->populate($rows)), true);
+
+        $this->assertSame($expectedPopulated, $populated);
+    }
+
+    /**
+     * @dataProvider populateProviderWithIncorrectIndexBy
+     */
+    public function testPopulateWithIncorrectIndexByWithObject(Closure|string|null $indexBy, array $rows): void
+    {
+        $db = $this->getConnection(false);
+        $query = (new Query($db))->indexBy($indexBy);
+
+        $rows = json_decode(json_encode($rows));
+
+        $this->expectWarning();
+        $query->populate($rows);
     }
 
     public function populateProviderWithIndexBy(): array
@@ -843,16 +875,6 @@ abstract class AbstractQueryTest extends TestCase
                 [
                     'value1' => ['table key' => 'value1'],
                     'value2' => ['table key' => 'value2'],
-                ],
-            ],
-            'not existed key' => [
-                'incorrectKey',
-                [
-                    ['table.key' => 'value1'],
-                    ['table.key' => 'value2'],
-                ],
-                [
-                    '' => ['table.key' => 'value2'],
                 ],
             ],
             'composite-key and simple key' => [
@@ -910,6 +932,22 @@ abstract class AbstractQueryTest extends TestCase
                     'value2' => ['table.key' => 'value2'],
                 ],
             ],
+        ];
+    }
+
+    public function populateProviderWithIncorrectIndexBy(): array
+    {
+        return [
+            'not existed key' => [
+                'incorrectKey',
+                [
+                    ['table.key' => 'value1'],
+                    ['table.key' => 'value2'],
+                ],
+                [
+                    '' => ['table.key' => 'value2'],
+                ],
+            ],
             'empty key (not found key behavior)' => [
                 '',
                 [
@@ -930,6 +968,23 @@ abstract class AbstractQueryTest extends TestCase
                     '' => ['table.key' => 'value2'],
                 ],
             ],
+        ];
+    }
+
+    public function populateProviderWithIndexByClosure(): array
+    {
+        return [
+            [
+                static function($row) {return $row['key'];},
+                [
+                    ['key' => 'value1'],
+                    ['key' => 'value2'],
+                ],
+                [
+                    'value1' => ['key' => 'value1'],
+                    'value2' => ['key' => 'value2'],
+                ],
+            ]
         ];
     }
 }

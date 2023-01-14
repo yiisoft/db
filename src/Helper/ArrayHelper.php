@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Helper;
 
-use ArrayAccess;
 use Closure;
 
 /**
@@ -78,9 +77,6 @@ class ArrayHelper
             try {
                 return $array->$key;
             } catch (\Exception $e) {
-                if ($array instanceof ArrayAccess) {
-                    return $default;
-                }
                 throw $e;
             }
         }
