@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Closure;
-use PHPUnit\Framework\Error\Warning;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
@@ -975,7 +974,9 @@ abstract class AbstractQueryTest extends TestCase
     {
         return [
             [
-                static function($row) {return $row['key'];},
+                static function ($row) {
+                    return $row['key'];
+                },
                 [
                     ['key' => 'value1'],
                     ['key' => 'value2'],
@@ -984,7 +985,7 @@ abstract class AbstractQueryTest extends TestCase
                     'value1' => ['key' => 'value1'],
                     'value2' => ['key' => 'value2'],
                 ],
-            ]
+            ],
         ];
     }
 }
