@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Query;
 
 use Closure;
 use Throwable;
-use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
@@ -15,6 +14,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Helper\ArrayHelper;
 use Yiisoft\Db\Query\Helper\QueryHelper;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
