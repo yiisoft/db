@@ -9,7 +9,7 @@ use Closure;
 /**
  * Short implementation of ArrayHelper from Yii2
  */
-class ArrayHelper
+final class ArrayHelper
 {
     /**
      * Returns the values of a specified column in an array.
