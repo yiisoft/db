@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Helper;
 
 use Closure;
-use Yiisoft\Db\Exception\InvalidArgumentException;
 
 /**
  * Short implementation of ArrayHelper from Yii2
@@ -40,7 +39,7 @@ class ArrayHelper
     public static function getColumn(array $array, string $name): array
     {
         return array_map(
-            static function(array|object $element) use($name): mixed {
+            static function (array|object $element) use($name): mixed {
                 return static::getValueByPath($element, $name);
             },
             $array
@@ -203,8 +202,9 @@ class ArrayHelper
      * defined, the array element will be discarded. Otherwise, if $groups is specified, array element will be added
      * to the result array without any key. This parameter is available since version 2.0.8.
      *
-     * @return array the indexed and/or grouped array
      * @throws \Exception
+     *
+     * @return array the indexed and/or grouped array
      */
     public static function index(array $array, string|null $key = null, array $groups = []): array
     {
@@ -276,8 +276,7 @@ class ArrayHelper
     public static function multisort(
         array &$array,
         string $key
-    ): void
-    {
+    ): void {
         if (empty($array)) {
             return;
         }
