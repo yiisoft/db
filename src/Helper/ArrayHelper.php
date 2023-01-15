@@ -287,6 +287,7 @@ class ArrayHelper
             $column,
             SORT_ASC,
             SORT_NUMERIC,
+
             // This fix is used for cases when main sorting specified by columns has equal values
             // Without it will lead to Fatal Error: Nesting level too deep - recursive dependency?
             range(1, count($array)),
