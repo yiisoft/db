@@ -39,7 +39,7 @@ class ArrayHelper
     public static function getColumn(array $array, string $name): array
     {
         return array_map(
-            static function (array|object $element) use($name): mixed {
+            static function (array|object $element) use ($name): mixed {
                 return static::getValueByPath($element, $name);
             },
             $array
