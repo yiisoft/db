@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Helper\NumericHelper;
+use Yiisoft\Db\Helper\StringHelper;
 
 use function gettype;
 use function strtr;
@@ -232,7 +232,7 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
 
         $string .= match (gettype($this->default)) {
             'object', 'integer' => (string)$this->default,
-            'double' => NumericHelper::normalizeFloat((string)$this->default),
+            'double' => StringHelper::normalizeFloat((string)$this->default),
             'boolean' => $this->default ? 'TRUE' : 'FALSE',
             default => "'$this->default'",
         };

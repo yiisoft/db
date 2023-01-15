@@ -9,7 +9,7 @@ use Closure;
 /**
  * Short implementation of ArrayHelper from Yii2
  */
-class ArrayHelper
+final class ArrayHelper
 {
     /**
      * Returns the values of a specified column in an array.
@@ -40,7 +40,7 @@ class ArrayHelper
     {
         return array_map(
             static function (array|object $element) use ($name): mixed {
-                return static::getValueByPath($element, $name);
+                return self::getValueByPath($element, $name);
             },
             $array
         );
@@ -102,7 +102,7 @@ class ArrayHelper
 
         if ($key && ($pos = strrpos($key, '.')) !== false) {
             /** @psalm-var array<string, mixed>|object $array */
-            $array = static::getValueByPath($array, substr($key, 0, $pos), $default);
+            $array = self::getValueByPath($array, substr($key, 0, $pos), $default);
             $key = substr($key, $pos + 1);
         }
 
@@ -214,7 +214,7 @@ class ArrayHelper
 
             foreach ($groups as $group) {
                 /** @psalm-var string $value */
-                $value = static::getValueByPath($element, $group);
+                $value = self::getValueByPath($element, $group);
                 if (!array_key_exists($value, $lastArray)) {
                     $lastArray[$value] = [];
                 }
@@ -227,7 +227,7 @@ class ArrayHelper
                 }
             } else {
                 /** @psalm-var mixed $value */
-                $value = static::getValueByPath($element, $key);
+                $value = self::getValueByPath($element, $key);
                 if ($value !== null) {
                     $lastArray[(string)$value] = $element;
                 }
@@ -278,7 +278,7 @@ class ArrayHelper
             return;
         }
 
-        $column = static::getColumn($array, $key);
+        $column = self::getColumn($array, $key);
 
         array_multisort(
             $column,
