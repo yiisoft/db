@@ -229,9 +229,6 @@ class ArrayHelper
                 /** @psalm-var mixed $value */
                 $value = static::getValueByPath($element, $key);
                 if ($value !== null) {
-                    if (is_float($value)) {
-                        $value = NumericHelper::normalizeFloat($value);
-                    }
                     $lastArray[(string)$value] = $element;
                 }
             }
