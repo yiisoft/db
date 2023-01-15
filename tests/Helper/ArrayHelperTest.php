@@ -14,6 +14,7 @@ final class ArrayHelperTest extends TestCase
 {
     public function testIsAssociative(): void
     {
+        $this->assertFalse(ArrayHelper::isAssociative([]));
         $this->assertTrue(ArrayHelper::isAssociative(['test' => 1]));
         $this->assertFalse(ArrayHelper::isAssociative([1]));
     }
