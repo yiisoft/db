@@ -122,9 +122,9 @@ jobs:
       - name: Run tests with phpunit with code coverage
         run: vendor/bin/phpunit --testsuite ActiveRecord --coverage-clover=coverage.xml --colors=always
 
-      - name: Upload coverage to Codecov
-        if: matrix.php == '8.1'
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+      - name: Upload coverage to Codecov(disabled)
+#        if: matrix.php == '8.1'
+#        uses: codecov/codecov-action@v3
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }}
+#          files: ./coverage.xml
