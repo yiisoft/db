@@ -15,13 +15,13 @@ final class StringHelper
      * Note: this method is not aware of the actual filesystem, or path components such as "..".
      *
      * @param string $path A path string.
+     *
      * @return string The trailing name component of the given path.
      *
      * @see http://www.php.net/manual/en/function.basename.php
      */
     public static function baseName(string $path): string
     {
-
         $path = rtrim(str_replace('\\', '/', $path), '/\\');
         $position = mb_strrpos($path, '/');
         if ($position !== false) {
@@ -65,5 +65,4 @@ final class StringHelper
 
         return mb_strtolower(trim($result, $separator));
     }
-
 }
