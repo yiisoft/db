@@ -1945,7 +1945,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->expects(self::never())
             ->method('getActivePDO');
 
-        $command = new class($db) extends AbstractCommandPDO {
+        $command = new class ($db) extends AbstractCommandPDO {
             protected function internalExecute(?string $rawSql): void
             {
             }
