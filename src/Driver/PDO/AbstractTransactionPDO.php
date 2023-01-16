@@ -130,7 +130,8 @@ abstract class AbstractTransactionPDO implements TransactionInterface
      */
     public function isActive(): bool
     {
-        return $this->level > 0 && $this->db->isActive();
+        /** Additional check pdo->inTransaction {@see https://github.com/yiisoft/yii2/pull/18407/} */
+        return $this->level > 0 && $this->db->isActive() && $this->db->getPDO()?->inTransaction();
     }
 
     /**

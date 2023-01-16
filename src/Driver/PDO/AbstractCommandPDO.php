@@ -120,6 +120,13 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
         }
 
         $sql = $this->getSql();
+        /**
+         * If sql is empty - will be {@see \ValueError} on prepare pdoStatement
+         * @link https://php.watch/versions/8.0/ValueError
+         */
+        if ($sql === '') {
+            return;
+        }
 
         $pdo = $this->db->getActivePDO($sql, $forRead);
 
