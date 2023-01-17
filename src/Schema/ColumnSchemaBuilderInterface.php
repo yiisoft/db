@@ -25,6 +25,11 @@ interface ColumnSchemaBuilderInterface
     public function append(string $sql): self;
 
     /**
+     * Changes default format string
+     */
+    public function setFormat(string $format): void;
+
+    /**
      * Builds the full string for the column's schema including type, length, default value, not null and other SQL
      * fragment.
      *

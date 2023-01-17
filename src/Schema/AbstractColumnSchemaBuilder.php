@@ -153,6 +153,11 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
         return $this;
     }
 
+    public function setFormat(string $format): void
+    {
+        $this->format = $format;
+    }
+
     public function append(string $sql): static
     {
         $this->append = $sql;
