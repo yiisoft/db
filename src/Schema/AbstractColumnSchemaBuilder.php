@@ -46,6 +46,7 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
     protected string|null $append = null;
     protected bool $isUnsigned = false;
     protected string|null $comment = null;
+    protected string $format = '{type}{length}{notnull}{unique}{default}{check}{comment}{append}';
 
     /** @psalm-var string[] */
     private array $categoryMap = [
@@ -164,7 +165,7 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
         if ($this->getTypeCategory() === self::CATEGORY_PK) {
             $format = '{type}{check}{comment}{append}';
         } else {
-            $format = '{type}{length}{notnull}{unique}{default}{check}{comment}{append}';
+            $format = $this->format;
         }
 
         return $this->buildCompleteString($format);
