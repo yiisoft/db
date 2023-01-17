@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests\Common;
 
 use ReflectionException;
 use Throwable;
+use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
@@ -19,6 +20,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -1935,6 +1937,25 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->performAndCompareUpsertResult($db, $secondData);
 
         $db->close();
+    }
+
+    public function testPrepareWithEmptySql()
+    {
+        $db = $this->createMock(ConnectionPDOInterface::class);
+        $db->expects(self::never())
+            ->method('getActivePDO');
+
+        $command = new class ($db) extends AbstractCommandPDO {
+            protected function internalExecute(?string $rawSql): void
+            {
+            }
+
+            public function queryBuilder(): QueryBuilderInterface
+            {
+            }
+        };
+
+        $command->prepare();
     }
 
     /**
