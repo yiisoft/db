@@ -11,8 +11,6 @@ use Psr\Log\LoggerInterface;
 use Yiisoft\Db\Driver\PDO\PDODriverInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class AbstractConnectionPDOTest extends TestCase
