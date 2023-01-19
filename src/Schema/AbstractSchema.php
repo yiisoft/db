@@ -409,6 +409,8 @@ abstract class AbstractSchema implements SchemaInterface
         $tableNames = $this->getTableNames($schema, $refresh);
 
         foreach ($tableNames as $name) {
+            $name = $this->db->getQuoter()->quoteSimpleTableName($name);
+
             if ($schema !== '') {
                 $name = $schema . '.' . $name;
             }
