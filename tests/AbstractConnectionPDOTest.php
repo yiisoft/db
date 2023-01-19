@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PDO;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Yiisoft\Db\Driver\PDO\PDODriverInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class AbstractConnectionPDOTest extends TestCase
@@ -89,12 +89,12 @@ abstract class AbstractConnectionPDOTest extends TestCase
         $this->assertTrue($db->isActive());
         $this->assertInstanceOf(PDO::class, $db->getPDO());
 
-        $logger = DbHelper::getLogger();
+        $logger = $this->getLogger();
+        $logger->expects(self::once())->method('log');
+
         $db->setLogger($logger);
-        $logger->flush();
         $db->close();
 
-        $this->assertCount(1, Assert::getInaccessibleProperty($logger, 'messages'));
         $this->assertFalse($db->isActive());
         $this->assertNull($db->getPDO());
 
@@ -126,5 +126,10 @@ abstract class AbstractConnectionPDOTest extends TestCase
         $db->setEmulatePrepare(true);
 
         $this->assertTrue($db->getEmulatePrepare());
+    }
+
+    protected function getLogger(): LoggerInterface|MockObject
+    {
+        return $this->createMock(LoggerInterface::class);
     }
 }
