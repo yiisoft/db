@@ -27,11 +27,6 @@ final class DbHelper
         return new Cache(new FileCache(__DIR__ . '/runtime/cache'));
     }
 
-    public static function getLogger(): LoggerInterface
-    {
-        return new Logger();
-    }
-
     public static function getSchemaCache(): SchemaCache
     {
         return new SchemaCache(self::getCache());
