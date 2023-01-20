@@ -134,13 +134,13 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 $this->char()->check('value LIKE \'test%\''),
                 [
                     'pgsql' => 'char(1) CHECK (value LIKE \'test%\')',
+                    'mysql' => 'char(1) CHECK (value LIKE \'test%\')',
                 ],
             ],
             [
                 SchemaInterface::TYPE_CHAR . ' CHECK (value LIKE "test%")',
                 $this->char()->check('value LIKE "test%"'),
                 [
-                    'mysql' => 'char(1) CHECK (value LIKE "test%")',
                     'sqlite' => 'char(1) CHECK (value LIKE "test%")',
                 ],
             ],
@@ -158,8 +158,14 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 SchemaInterface::TYPE_CHAR . '(6) CHECK (value LIKE "test%")',
                 $this->char(6)->check('value LIKE "test%"'),
                 [
-                    'mysql' => 'char(6) CHECK (value LIKE "test%")',
                     'sqlite' => 'char(6) CHECK (value LIKE "test%")',
+                ],
+            ],
+            [
+                SchemaInterface::TYPE_CHAR . '(6) CHECK (value LIKE \'test%\')',
+                $this->char(6)->check('value LIKE \'test%\''),
+                [
+                    'mysql' => 'char(6) CHECK (value LIKE \'test%\')',
                 ],
             ],
             [
