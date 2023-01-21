@@ -225,6 +225,7 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
 
     /**
      * Return the default value for the column.
+     *
      * @return string|null string with default value of column.
      */
     protected function buildDefaultValue()
