@@ -28,4 +28,14 @@ final class ConnectionTest extends AbstractConnectionTest
 
         $db->getTableSchema('non_existing_table');
     }
+
+    public function testSerialized(): void
+    {
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+        );
+
+        parent::testSerialized();
+    }
 }
