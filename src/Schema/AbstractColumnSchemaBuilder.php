@@ -224,26 +224,37 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
     }
 
     /**
+     * Return the default value for the column.
+     *
+     * @return string|null string with default value of column.
+     */
+    protected function buildDefaultValue()
+    {
+        if ($this->default === null) {
+            return $this->isNotNull === false ? 'NULL' : null;
+        }
+
+        return match (gettype($this->default)) {
+            'object', 'integer' => (string)$this->default,
+            'double' => StringHelper::normalizeFloat((string)$this->default),
+            'boolean' => $this->default ? 'TRUE' : 'FALSE',
+            default => "'$this->default'",
+        };
+    }
+
+    /**
      * Builds the default value specification for the column.
      *
      * @return string A string containing the DEFAULT keyword and the default value.
      */
     protected function buildDefaultString(): string
     {
-        if ($this->default === null) {
-            return $this->isNotNull === false ? ' DEFAULT NULL' : '';
+        $defaultValue = $this->buildDefaultValue();
+        if ($defaultValue === null) {
+            return '';
         }
 
-        $string = ' DEFAULT ';
-
-        $string .= match (gettype($this->default)) {
-            'object', 'integer' => (string)$this->default,
-            'double' => StringHelper::normalizeFloat((string)$this->default),
-            'boolean' => $this->default ? 'TRUE' : 'FALSE',
-            default => "'$this->default'",
-        };
-
-        return $string;
+        return ' DEFAULT ' . $defaultValue;
     }
 
     /**
