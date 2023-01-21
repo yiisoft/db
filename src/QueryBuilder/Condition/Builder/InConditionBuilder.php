@@ -88,6 +88,8 @@ class InConditionBuilder implements ExpressionBuilderInterface
             $rawValues = $this->getRawValuesFromTraversableObject($values);
         }
 
+        $nullCondition = null;
+        $nullConditionOperator = null;
         if (is_string($column) && in_array(null, $rawValues, true)) {
             $nullCondition = $this->getNullCondition($operator, $column);
             $nullConditionOperator = $operator === 'IN' ? 'OR' : 'AND';
@@ -96,7 +98,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
         $sqlValues = $this->buildValues($expression, $values, $params);
 
         if (empty($sqlValues)) {
-            return empty($nullCondition) ? ($operator === 'IN' ? '0=1' : '') : (string) $nullCondition;
+            return $nullCondition === null ? ($operator === 'IN' ? '0=1' : '') : (string) $nullCondition;
         }
 
         if (is_string($column) && !str_contains($column, '(')) {
@@ -111,7 +113,9 @@ class InConditionBuilder implements ExpressionBuilderInterface
         }
 
         /** @var int|string|null $nullCondition */
-        return isset($nullCondition) ? sprintf('%s %s %s', $sql, $nullConditionOperator, $nullCondition) : $sql;
+        return $nullCondition !== null && $nullConditionOperator !== null
+            ? sprintf('%s %s %s', $sql, $nullConditionOperator, $nullCondition)
+            : $sql;
     }
 
     /**
