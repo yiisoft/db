@@ -320,9 +320,9 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         if (!isset($params[0])) {
-            return preg_replace_callback('#(:\w+)#', static function ($matches) use ($params) {
+            return preg_replace_callback('#(:\w+)#', static function (array $matches) use ($params): string {
                 $m = $matches[1];
-                return $params[$m] ?? $m;
+                return (string) ($params[$m] ?? $m);
             }, $this->sql);
         }
 
