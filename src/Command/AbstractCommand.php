@@ -25,7 +25,6 @@ use function is_resource;
 use function is_string;
 use function stream_get_contents;
 use function strncmp;
-use function strtr;
 
 /**
  * Command represents a SQL statement to be executed against a database.
@@ -321,7 +320,10 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         if (!isset($params[0])) {
-            return strtr($this->sql, $params);
+            return preg_replace_callback('#(:\w+)#', static function (array $matches) use ($params): string {
+                $m = $matches[1];
+                return (string) ($params[$m] ?? $m);
+            }, $this->sql);
         }
 
         // Support unnamed placeholders should be dropped

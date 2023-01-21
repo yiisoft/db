@@ -526,6 +526,11 @@ abstract class AbstractCommandProvider
                 ),
             ],
             [
+                'SELECT * FROM customer WHERE id  = ? AND active = ?',
+                [1, false],
+                'SELECT * FROM customer WHERE id  = 1 AND active = FALSE',
+            ],
+            [
                 <<<SQL
                 SELECT * FROM [[customer]] WHERE [[id]] = ?
                 SQL,

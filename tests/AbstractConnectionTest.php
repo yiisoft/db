@@ -119,6 +119,20 @@ abstract class AbstractConnectionTest extends TestCase
         $this->assertSame('pre_', $db->getTablePrefix());
     }
 
+    public function testSerialized()
+    {
+        $connection = $this->getConnection();
+        $connection->open();
+        $serialized = serialize($connection);
+        $this->assertNotNull($connection->getPDO());
+
+        $unserialized = unserialize($serialized);
+        $this->assertInstanceOf(ConnectionPDOInterface::class, $unserialized);
+        $this->assertNull($unserialized->getPDO());
+        $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
+        $this->assertNotNull($connection->getPDO());
+    }
+
     private function getProfiler(): ProfilerInterface
     {
         return $this->createMock(ProfilerInterface::class);
