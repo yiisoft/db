@@ -25,7 +25,6 @@ use function is_resource;
 use function is_string;
 use function stream_get_contents;
 use function strncmp;
-use function strtr;
 
 /**
  * Command represents a SQL statement to be executed against a database.
@@ -321,9 +320,9 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         if (!isset($params[0])) {
-            return preg_replace_callback('#(:\w+)#', function($matches) use ($params) {
+            return preg_replace_callback('#(:\w+)#', static function ($matches) use ($params) {
                 $m = $matches[1];
-                return isset($params[$m]) ? $params[$m] : $m;
+                return $params[$m] ?? $m;
             }, $this->sql);
         }
 
