@@ -124,7 +124,7 @@ class Quoter implements QuoterInterface
 
     public function quoteTableName(string $name): string
     {
-        if (str_starts_with($name, '(') && strpos($name, ')') === strlen($name) - 1) {
+        if (str_starts_with($name, '(') && str_ends_with($name, ')')) {
             return $name;
         }
 
