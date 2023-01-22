@@ -11,7 +11,7 @@ use Yiisoft\Db\Query\QueryInterface;
 interface InConditionInterface extends ConditionInterface
 {
     /**
-     * @return array|string|ExpressionInterface|Iterator The column name. If it is an array, a composite `IN` condition will be
+     * @return array|ExpressionInterface|Iterator|string The column name. If it is an array, a composite `IN` condition will be
      * generated.
      */
     public function getColumn(): array|string|ExpressionInterface|Iterator;
