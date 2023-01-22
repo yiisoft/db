@@ -53,6 +53,10 @@ class InConditionBuilder implements ExpressionBuilderInterface
             return $operator === 'IN' ? '0=1' : '';
         }
 
+        if ($column instanceof ExpressionInterface) {
+            $column = (string) $column;
+        }
+
         if ($values instanceof QueryInterface) {
             return $this->buildSubqueryInCondition($operator, $column, $values, $params);
         }
@@ -181,6 +185,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
         if (is_array($columns)) {
             /** @psalm-var string[] $columns */
             foreach ($columns as $i => $col) {
+                if ($col instanceof ExpressionInterface) {
+                    $columns[$i] = (string) $col;
+                    continue;
+                }
+
                 if (!str_contains($col, '(')) {
                     $columns[$i] = $this->queryBuilder->quoter()->quoteColumnName($col);
                 }

@@ -395,6 +395,7 @@ abstract class AbstractQueryBuilderProvider
                 '[[id]] NOT IN (:qp0, :qp1) AND [[id]] IS NOT NULL',
                 [':qp0' => 1, ':qp1' => 2],
             ],
+            [['not in', new Expression('id'), new TraversableObject([null])], '[[id]] IS NOT NULL', []],
 
             /* in using array object containing only null value */
             [['in', 'id', new TraversableObject([null])], '[[id]] IS NULL', []],

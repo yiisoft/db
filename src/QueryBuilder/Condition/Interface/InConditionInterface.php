@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 
 use Iterator;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 interface InConditionInterface extends ConditionInterface
@@ -13,7 +14,7 @@ interface InConditionInterface extends ConditionInterface
      * @return array|Iterator|string The column name. If it is an array, a composite `IN` condition will be
      * generated.
      */
-    public function getColumn(): array|string|Iterator;
+    public function getColumn(): array|string|Iterator|ExpressionInterface;
 
     /**
      * @return string The operator to use (e.g. `IN` or `NOT IN`).
