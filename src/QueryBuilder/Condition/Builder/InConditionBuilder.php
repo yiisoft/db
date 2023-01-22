@@ -54,6 +54,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
         }
 
         if ($column instanceof ExpressionInterface) {
+            /** @psalm-suppress InvalidCast */
             $column = (string) $column;
         }
 
@@ -186,6 +187,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             /** @psalm-var string[] $columns */
             foreach ($columns as $i => $col) {
                 if ($col instanceof ExpressionInterface) {
+                    /** @psalm-suppress InvalidCast */
                     $columns[$i] = (string) $col;
                     continue;
                 }

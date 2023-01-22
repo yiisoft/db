@@ -11,10 +11,10 @@ use Yiisoft\Db\Query\QueryInterface;
 interface InConditionInterface extends ConditionInterface
 {
     /**
-     * @return array|Iterator|string The column name. If it is an array, a composite `IN` condition will be
+     * @return array|string|ExpressionInterface|Iterator The column name. If it is an array, a composite `IN` condition will be
      * generated.
      */
-    public function getColumn(): array|string|Iterator|ExpressionInterface;
+    public function getColumn(): array|string|ExpressionInterface|Iterator;
 
     /**
      * @return string The operator to use (e.g. `IN` or `NOT IN`).
