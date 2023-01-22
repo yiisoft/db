@@ -12,8 +12,6 @@ use function preg_replace_callback;
 use function str_contains;
 use function str_replace;
 use function str_starts_with;
-use function strlen;
-use function strpos;
 use function strrpos;
 use function substr;
 
@@ -124,7 +122,7 @@ class Quoter implements QuoterInterface
 
     public function quoteTableName(string $name): string
     {
-        if (str_starts_with($name, '(') && strpos($name, ')') === strlen($name) - 1) {
+        if (str_starts_with($name, '(') && str_ends_with($name, ')')) {
             return $name;
         }
 
