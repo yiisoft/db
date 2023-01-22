@@ -12,8 +12,6 @@ use function preg_replace_callback;
 use function str_contains;
 use function str_replace;
 use function str_starts_with;
-use function strlen;
-use function strpos;
 use function strrpos;
 use function substr;
 
