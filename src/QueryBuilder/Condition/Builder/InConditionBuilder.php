@@ -224,6 +224,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
             $vs = [];
             /** @psalm-var string[] $columns */
             foreach ($columns as $column) {
+                if ($column instanceof ExpressionInterface) {
+                    /** @psalm-suppress InvalidCast */
+                    $column = (string) $column;
+                }
+
                 if (isset($value[$column])) {
                     $vs[] = $this->queryBuilder->bindParam($value[$column], $params);
                 } else {
@@ -241,6 +246,12 @@ class InConditionBuilder implements ExpressionBuilderInterface
 
         /** @psalm-var string[] $columns */
         foreach ($columns as $column) {
+            if ($column instanceof ExpressionInterface) {
+                /** @psalm-suppress InvalidCast */
+                $sqlColumns[] = (string) $column;
+                continue;
+            }
+
             $sqlColumns[] = !str_contains($column, '(')
                 ? $this->queryBuilder->quoter()->quoteColumnName($column) : $column;
         }

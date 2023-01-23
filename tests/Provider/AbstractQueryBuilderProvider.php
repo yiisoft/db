@@ -355,6 +355,14 @@ abstract class AbstractQueryBuilderProvider
                 '([[id]], [[name]]) IN ((:qp0, :qp1))',
                 [':qp0' => 1, ':qp1' => 'oy'],
             ],
+            'composite in with Expression' => [
+                ['in',
+                    [new Expression('id'), new Expression('name')],
+                    [['id' => 1, 'name' => 'oy']]
+                ],
+                '(id, name) IN ((:qp0, :qp1))',
+                [':qp0' => 1, ':qp1' => 'oy'],
+            ],
             'composite in (just one column)' => [
                 ['in', ['id'], [['id' => 1, 'name' => 'Name1'], ['id' => 2, 'name' => 'Name2']]],
                 '[[id]] IN (:qp0, :qp1)',
@@ -443,6 +451,15 @@ abstract class AbstractQueryBuilderProvider
                 new InCondition(['id', 'name'], 'in', [['id' => 1, 'name' => 'oy']]),
                 '([[id]], [[name]]) IN ((:qp0, :qp1))',
                 [':qp0' => 1, ':qp1' => 'oy'],
+            ],
+            'inCondition-custom-6' => [
+                new InCondition(
+                    [new Expression('id')],
+                    'in',
+                    (new query($db))->select('id')->from('users')->where(['active' => 1]),
+                ),
+                '(id) IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
+                [':qp0' => 1],
             ],
 
             /* exists */
