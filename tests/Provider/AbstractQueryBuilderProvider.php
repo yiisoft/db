@@ -358,7 +358,7 @@ abstract class AbstractQueryBuilderProvider
             'composite in with Expression' => [
                 ['in',
                     [new Expression('id'), new Expression('name')],
-                    [['id' => 1, 'name' => 'oy']]
+                    [['id' => 1, 'name' => 'oy']],
                 ],
                 '(id, name) IN ((:qp0, :qp1))',
                 [':qp0' => 1, ':qp1' => 'oy'],
