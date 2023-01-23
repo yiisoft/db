@@ -53,6 +53,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
             return $operator === 'IN' ? '0=1' : '';
         }
 
+        if ($column instanceof ExpressionInterface) {
+            /** @psalm-suppress InvalidCast */
+            $column = (string) $column;
+        }
+
         if ($values instanceof QueryInterface) {
             return $this->buildSubqueryInCondition($operator, $column, $values, $params);
         }
@@ -181,6 +186,12 @@ class InConditionBuilder implements ExpressionBuilderInterface
         if (is_array($columns)) {
             /** @psalm-var string[] $columns */
             foreach ($columns as $i => $col) {
+                if ($col instanceof ExpressionInterface) {
+                    /** @psalm-suppress InvalidCast */
+                    $columns[$i] = (string) $col;
+                    continue;
+                }
+
                 if (!str_contains($col, '(')) {
                     $columns[$i] = $this->queryBuilder->quoter()->quoteColumnName($col);
                 }
@@ -213,6 +224,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
             $vs = [];
             /** @psalm-var string[] $columns */
             foreach ($columns as $column) {
+                if ($column instanceof ExpressionInterface) {
+                    /** @psalm-suppress InvalidCast */
+                    $column = (string) $column;
+                }
+
                 if (isset($value[$column])) {
                     $vs[] = $this->queryBuilder->bindParam($value[$column], $params);
                 } else {
@@ -230,6 +246,12 @@ class InConditionBuilder implements ExpressionBuilderInterface
 
         /** @psalm-var string[] $columns */
         foreach ($columns as $column) {
+            if ($column instanceof ExpressionInterface) {
+                /** @psalm-suppress InvalidCast */
+                $sqlColumns[] = (string) $column;
+                continue;
+            }
+
             $sqlColumns[] = !str_contains($column, '(')
                 ? $this->queryBuilder->quoter()->quoteColumnName($column) : $column;
         }

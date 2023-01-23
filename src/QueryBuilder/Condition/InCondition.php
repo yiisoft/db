@@ -6,6 +6,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use Iterator;
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\InConditionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -15,13 +16,13 @@ use Yiisoft\Db\Query\QueryInterface;
 final class InCondition implements InConditionInterface
 {
     public function __construct(
-        private array|string|Iterator $column,
+        private array|string|Iterator|ExpressionInterface $column,
         private string $operator,
         private int|iterable|Iterator|QueryInterface $values
     ) {
     }
 
-    public function getColumn(): array|string|Iterator
+    public function getColumn(): array|string|ExpressionInterface|Iterator
     {
         return $this->column;
     }
@@ -52,9 +53,9 @@ final class InCondition implements InConditionInterface
         );
     }
 
-    private static function validateColumn(string $operator, mixed $column): array|string|Iterator
+    private static function validateColumn(string $operator, mixed $column): array|string|Iterator|ExpressionInterface
     {
-        if (!is_string($column) && !is_array($column) && !$column instanceof Iterator) {
+        if (!is_string($column) && !is_array($column) && !$column instanceof Iterator && !$column instanceof ExpressionInterface) {
             throw new InvalidArgumentException("Operator '$operator' requires column to be string, array or Iterator.");
         }
 
