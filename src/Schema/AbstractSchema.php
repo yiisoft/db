@@ -31,7 +31,7 @@ abstract class AbstractSchema implements SchemaInterface
      * Schema cache version, to detect incompatibilities in cached values when the data format of the cache changes.
      */
     protected const SCHEMA_CACHE_VERSION = 1;
-    public const CACHE_VERSION = 'cacheVersion';
+    protected const CACHE_VERSION = 'cacheVersion';
 
     /**
      * @var string|null $defaultSchema The default schema name used for the current session.
