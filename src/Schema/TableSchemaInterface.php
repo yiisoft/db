@@ -189,7 +189,7 @@ interface TableSchemaInterface
     /**
      * Set one foreignKey by index.
      *
-     * @param string|int $id The index of foreign key.
+     * @param int|string $id The index of foreign key.
      * @param array $to The foreign key.
      */
     public function foreignKey(string|int $id, array $to): void;
