@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
+use Yiisoft\Db\Exception\NotSupportedException;
+
+/**
+ * TableSchemaInterface represents the metadata of a database table. It defines a set of methods to retrieve the table
+ * name, schema name, column names, primary key, foreign keys, etc. The information is obtained from the database schema
+ * and may vary according to the DBMS type.
+ */
 interface TableSchemaInterface
 {
     /**
@@ -11,57 +18,54 @@ interface TableSchemaInterface
      *
      * This is a convenient method for retrieving a named column even if it does not exist.
      *
-     * @param string $name column name
+     * @param string $name The column name.
      *
-     * @return ColumnSchemaInterface|null metadata of the named column. Null if the named column does not exist.
+     * @return ColumnSchemaInterface|null The named column metadata. Null if the named column does not exist.
      */
     public function getColumn(string $name): ColumnSchemaInterface|null;
 
     /**
-     * Returns the names of all columns in this table.
-     *
-     * @return array list of column names
+     * @return array The names of all columns in this table.
      */
     public function getColumnNames(): array;
 
     /**
-     * @return string|null comment of this table. Not all DBMS support this.
+     * @return string|null The comment of the table. Null if no comment.
      */
     public function getComment(): string|null;
 
     /**
-     * @return string|null the name of the schema that this table belongs to.
+     * @return string|null The name of the schema that this table belongs to.
      */
     public function getSchemaName(): string|null;
 
     /**
-     * @return string the name of this table. The schema name is not included. Use {@see fullName} to get the name with
+     * @return string The name of this table. The schema name is not included. Use {@see fullName} to get the name with
      * schema name prefix.
      */
     public function getName(): string;
 
     /**
-     * @return string|null the full name of this table, which includes the schema name prefix, if any. Note that if the
-     * schema name is the same as the {@see Schema::defaultSchema|default schema name}, the schema name will not be
-     * included.
+     * @return string|null The full name of this table, which includes the schema name prefix, if any. Note that if the
+     * schema name is the same as the {@see Schema::defaultSchema} schema name, the schema name will not be included.
      */
     public function getFullName(): string|null;
 
     /**
-     * @return string|null sequence name for the primary key. Null if no sequence.
+     * @return string|null The sequence name for the primary key. Null if no sequence.
      */
     public function getSequenceName(): string|null;
 
     /**
-     * @return array primary keys of this table.
+     * @return array The primary key column names.
      *
      * @psalm-return string[]
      */
     public function getPrimaryKey(): array;
 
     /**
-     * @return array column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object, indexed by
-     * column names.
+     * @return array The column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object,
+     * indexed by column names.
      *
      * @psalm-return ColumnSchemaInterface[]
      */
@@ -69,69 +73,100 @@ interface TableSchemaInterface
 
     /**
      * Set the name of the schema that this table belongs to.
+     *
+     * @param string|null $value The name of the schema that this table belongs to.
      */
     public function schemaName(string|null $value): void;
 
     /**
-     * Set name of this table
+     * Set name of this table. The schema name is not included. Use {@see fullName} to set the name with schema name
+     * prefix.
+     *
+     * @param string $value The name of this table.
      */
     public function name(string $value): void;
 
     /**
-     * Set the full name of this table, which includes the schema name prefix, if any.
+     * Set the full name of this table, which includes the schema name prefix, if any. Note that if the schema name is
+     * the same as the {@see Schema::defaultSchema} schema name, the schema name will not be included.
+     *
+     * @param string|null $value The full name of this table.
      */
     public function fullName(string|null $value): void;
 
+    /**
+     * Set the comment of the table. Null if no comment. This is not supported by all DBMS.
+     *
+     * @param string|null $value The comment of the table.
+     */
     public function comment(string|null $value): void;
 
     /**
-     * Set sequence name for the primary key
+     * Set sequence name for the primary key.
+     *
+     * @param string|null $value The sequence name for the primary key. Null if no sequence.
      */
     public function sequenceName(string|null $value): void;
 
     /**
      * Set primary keys of this table.
+     *
+     * @param string $value The primary key column names.
      */
     public function primaryKey(string $value): void;
 
     /**
-     * Set one column metadata of this table
+     * Set one column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object, indexed by
+     * column names.
+     *
+     * @param string $index The column name.
      */
     public function columns(string $index, ColumnSchemaInterface $value): void;
 
     /**
-     * @return string|null name of the catalog (database) that this table belongs to. Defaults to null, meaning no
-     * catalog (or the current database).
-     * Specifically for MS SQL Server
+     * @return string|null The name of the catalog (database) that this table belongs to. Defaults to null, meaning no
+     * catalog (or the current database). Specifically for MSSQL Server
      */
     public function getCatalogName(): string|null;
 
     /**
-     * @param string|null set name of the catalog (database) that this table belongs to. Defaults to null, meaning no
-     * catalog (or the current database).
+     * Set name of the catalog (database) that this table belongs to. Defaults to null, meaning no catalog (or the
+     * current database). Specifically for MSSQL Server
+     *
+     * @param string|null $value The name of the catalog (database) that this table belongs to.
      */
     public function catalogName(string|null $value): void;
 
     /**
-     * @return string|null name of the server
-     * Specifically for MS SQL Server
+     * @return string|null The name of the server that this table belongs to. Defaults to null, meaning no server
+     * (or the current server). Specifically for MSSQL Server
      */
     public function getServerName(): string|null;
 
     /**
-     * @param string|null set name of the server
+     * Set name of the server that this table belongs to. Defaults to null, meaning no server (or the current server).
+     * Specifically for MSSQL Server
+     *
+     * @param string|null $value The name of the server that this table belongs to.
      */
     public function serverName(string|null $value): void;
 
     /**
-     * @return string|null return sql for create current table or null if query not found/exists
-     * Now supported only in MySQL and Oracle
+     * @return string|null The sql for create current table or null if query not found/exists. Now supported only in
+     * MySQL and Oracle DBMS.
      */
     public function getCreateSql(): string|null;
 
+    /**
+     * Set sql for create current table or null if query not found/exists. Now supported only in MySQL and Oracle DBMS.
+     *
+     * @param string $sql The sql for create current table or null if query not found/exists.
+     */
     public function createSql(string $sql): void;
 
     /**
+     * @return array The foreign keys of this table. Each array element is of the following structure:
+     *
      * ```php
      * [
      *  'ForeignTableName',
@@ -140,22 +175,33 @@ interface TableSchemaInterface
      * ]
      * ```
      *
-     * @return array foreign keys of this table. Each array element is of the following structure:
      * @psalm-return array<array-key, array>
      */
     public function getForeignKeys(): array;
 
     /**
-     * Set foreign keys of this table
+     * Set foreign keys of this table.
      *
-     * @psalm-param array<array-key, array> $value
+     * @psalm-param array<array-key, array> $value The foreign keys of this table.
      */
     public function foreignKeys(array $value): void;
 
     /**
-     * Set one foreignKey by index
+     * Set one foreignKey by index.
+     *
+     * @param string|int $id The index of foreign key.
+     * @param array $to The foreign key.
      */
     public function foreignKey(string|int $id, array $to): void;
 
+    /**
+     * Set composite foreign key.
+     *
+     * @param int $id The index of foreign key.
+     * @param string $from The column name in current table.
+     * @param string $to The column name in foreign table.
+     *
+     * @throws NotSupportedException
+     */
     public function compositeFK(int $id, string $from, string $to): void;
 }
