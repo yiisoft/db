@@ -73,10 +73,9 @@ jobs:
 
       - name: Set fork if needed
         if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' }}
-        run: composer config repositories.repo vcs https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-mysql;composer require yiisoft/db-mysql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer config repositories.repo vcs https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-mysql
 
       - name: Install db-mysql.
-        if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' }}
         run: composer require yiisoft/db-mysql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run Mssql tests with phpunit and code coverage.
