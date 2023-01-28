@@ -12,7 +12,6 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
@@ -156,9 +155,9 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     public function getJoin(): array;
 
-    public function getLimit(): Expression|int|null;
+    public function getLimit(): ExpressionInterface|int|null;
 
-    public function getOffset(): Expression|int|null;
+    public function getOffset(): ExpressionInterface|int|null;
 
     public function getOrderBy(): array;
 

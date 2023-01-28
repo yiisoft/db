@@ -54,8 +54,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
         }
 
         if ($column instanceof ExpressionInterface) {
-            /** @psalm-suppress InvalidCast */
-            $column = (string) $column;
+            $column = $this->queryBuilder->buildExpression($column);
         }
 
         if ($values instanceof QueryInterface) {
@@ -187,8 +186,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             /** @psalm-var string[] $columns */
             foreach ($columns as $i => $col) {
                 if ($col instanceof ExpressionInterface) {
-                    /** @psalm-suppress InvalidCast */
-                    $columns[$i] = (string) $col;
+                    $columns[$i] = $this->queryBuilder->buildExpression($col);
                     continue;
                 }
 
@@ -225,8 +223,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             /** @psalm-var string[] $columns */
             foreach ($columns as $column) {
                 if ($column instanceof ExpressionInterface) {
-                    /** @psalm-suppress InvalidCast */
-                    $column = (string) $column;
+                    $column = $this->queryBuilder->buildExpression($column);
                 }
 
                 if (isset($value[$column])) {
@@ -247,8 +244,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
         /** @psalm-var string[] $columns */
         foreach ($columns as $column) {
             if ($column instanceof ExpressionInterface) {
-                /** @psalm-suppress InvalidCast */
-                $sqlColumns[] = (string) $column;
+                $sqlColumns[] = $this->queryBuilder->buildExpression($column);
                 continue;
             }
 

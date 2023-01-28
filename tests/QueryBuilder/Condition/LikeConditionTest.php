@@ -44,7 +44,7 @@ final class LikeConditionTest extends TestCase
     public function testFromArrayDefinitionExceptionColumn(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Operator 'LIKE' requires column to be string or Expression.");
+        $this->expectExceptionMessage("Operator 'LIKE' requires column to be string or ExpressionInterface.");
 
         LikeCondition::fromArrayDefinition('LIKE', [false, 'test']);
     }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 
-use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 interface BetweenConditionInterface extends ConditionInterface
 {
     /**
-     * @psalm-return string|Expression The column name.
+     * @psalm-return string|ExpressionInterface The column name.
      */
-    public function getColumn(): string|Expression;
+    public function getColumn(): string|ExpressionInterface;
 
     /**
      * @return mixed End of the interval.

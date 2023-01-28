@@ -12,7 +12,6 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\ArrayHelper;
 use Yiisoft\Db\Query\Helper\QueryHelper;
@@ -75,8 +74,8 @@ class Query implements QueryInterface
     protected array $withQueries = [];
     private bool $emulateExecution = false;
     private Closure|string|null $indexBy = null;
-    private Expression|int|null $limit = null;
-    private Expression|int|null $offset = null;
+    private ExpressionInterface|int|null $limit = null;
+    private ExpressionInterface|int|null $offset = null;
     private QueryHelper|null $queryHelper = null;
     private array|string|ExpressionInterface|null $where = null;
 
@@ -409,12 +408,12 @@ class Query implements QueryInterface
         return $this->join;
     }
 
-    public function getLimit(): Expression|int|null
+    public function getLimit(): ExpressionInterface|int|null
     {
         return $this->limit;
     }
 
-    public function getOffset(): Expression|int|null
+    public function getOffset(): ExpressionInterface|int|null
     {
         return $this->offset;
     }
@@ -507,7 +506,7 @@ class Query implements QueryInterface
         return $this->addParams($params);
     }
 
-    public function limit(Expression|int|null $limit): static
+    public function limit(ExpressionInterface|int|null $limit): static
     {
         $this->limit = $limit;
 
@@ -528,7 +527,7 @@ class Query implements QueryInterface
         return is_numeric($min) ? $min : null;
     }
 
-    public function offset(Expression|int|null $offset): static
+    public function offset(ExpressionInterface|int|null $offset): static
     {
         $this->offset = $offset;
 

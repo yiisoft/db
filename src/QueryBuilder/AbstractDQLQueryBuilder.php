@@ -207,11 +207,13 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             return '';
         }
 
-        /** @psalm-var array<string, Expression|string> $columns */
+        /** @psalm-var array<string, ExpressionInterface|string> $columns */
         foreach ($columns as $i => $column) {
-            if ($column instanceof Expression) {
+            if ($column instanceof ExpressionInterface) {
                 $columns[$i] = $this->buildExpression($column);
-                $params = array_merge($params, $column->getParams());
+                if ($column instanceof Expression || $column instanceof QueryInterface) {
+                    $params = array_merge($params, $column->getParams());
+                }
             } elseif (!str_contains($column, '(')) {
                 $columns[$i] = $this->quoter->quoteColumnName($column);
             }
@@ -272,16 +274,16 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return implode($this->separator, $joins);
     }
 
-    public function buildLimit(Expression|int|null $limit, Expression|int|null $offset): string
+    public function buildLimit(ExpressionInterface|int|null $limit, ExpressionInterface|int|null $offset): string
     {
         $sql = '';
 
         if ($this->hasLimit($limit)) {
-            $sql = 'LIMIT ' . (string) $limit;
+            $sql = 'LIMIT ' . ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string) $limit);
         }
 
         if ($this->hasOffset($offset)) {
-            $sql .= ' OFFSET ' . (string) $offset;
+            $sql .= ' OFFSET ' . ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string) $offset);
         }
 
         return ltrim($sql);
@@ -295,11 +297,13 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
         $orders = [];
 
-        /** @psalm-var array<string, Expression|int|string> $columns */
+        /** @psalm-var array<string, ExpressionInterface|int|string> $columns */
         foreach ($columns as $name => $direction) {
-            if ($direction instanceof Expression) {
+            if ($direction instanceof ExpressionInterface) {
                 $orders[] = $this->buildExpression($direction);
-                $params = array_merge($params, $direction->getParams());
+                if ($direction instanceof Expression || $direction instanceof QueryInterface) {
+                    $params = array_merge($params, $direction->getParams());
+                }
             } else {
                 $orders[] = $this->quoter->quoteColumnName($name) . ($direction === SORT_DESC ? ' DESC' : '');
             }
@@ -311,8 +315,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     public function buildOrderByAndLimit(
         string $sql,
         array $orderBy,
-        Expression|int|null $limit,
-        Expression|int|null $offset,
+        ExpressionInterface|int|null $limit,
+        ExpressionInterface|int|null $offset,
         array &$params = []
     ): string {
         $orderBy = $this->buildOrderBy($orderBy, $params);

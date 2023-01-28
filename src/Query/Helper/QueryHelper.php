@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query\Helper;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 
 use function array_key_exists;
@@ -46,7 +44,7 @@ final class QueryHelper
         ~^\s*((?:['"`\[]|{{).*?(?:['"`\]]|}})|\(.*?\)|.*?)(?:(?:\s+(?:as\s+)?)((?:['"`\[]|{{).*?(?:['"`\]]|}})|.*?))?\s*$~iux
         PATTERN;
 
-        /** @psalm-var array<array-key, Expression|string> $tableNames */
+        /** @psalm-var array<array-key, ExpressionInterface|string> $tableNames */
         foreach ($tableNames as $alias => $tableName) {
             if (is_string($tableName) && !is_string($alias)) {
                 if (preg_match($pattern, $tableName, $matches)) {
@@ -64,13 +62,13 @@ final class QueryHelper
                 );
             }
 
-            if ($tableName instanceof Expression) {
-                $cleanedUpTableNames[$quoter->ensureNameQuoted($alias)] = $tableName;
-            } elseif ($tableName instanceof QueryInterface) {
+            if (is_string($tableName)) {
+                $cleanedUpTableNames[$quoter->ensureNameQuoted($alias)] = $quoter->ensureNameQuoted($tableName);
+            } elseif ($tableName instanceof ExpressionInterface) {
                 $cleanedUpTableNames[$quoter->ensureNameQuoted($alias)] = $tableName;
             } else {
-                $cleanedUpTableNames[$quoter->ensureNameQuoted($alias)] = $quoter->ensureNameQuoted(
-                    (string) $tableName
+                throw new InvalidArgumentException(
+                    'Use ExpressionInterface without cast to string as object of tableName'
                 );
             }
         }

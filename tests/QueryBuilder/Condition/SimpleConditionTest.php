@@ -53,7 +53,7 @@ final class SimpleConditionTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(
-            "Operator '=' requires column to be string, ExpressionInterface or QueryInterface."
+            "Operator '=' requires column to be string or ExpressionInterface."
         );
 
         SimpleCondition::fromArrayDefinition('=', [1, 1]);

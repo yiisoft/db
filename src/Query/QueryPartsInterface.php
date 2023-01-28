@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Query;
 
 use Closure;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
@@ -30,7 +29,7 @@ interface QueryPartsInterface
      * Note that if your group-by is an expression containing commas, you should always use an array to represent the
      * group-by information. Otherwise, the method will not be able to correctly determine the group-by columns.
      *
-     * {@see Expression} Object can be passed to specify the GROUP BY part explicitly in plain SQL.
+     * {@see ExpressionInterface} Object can be passed to specify the GROUP BY part explicitly in plain SQL.
      * {@see ExpressionInterface} Object can be passed as well.
      *
      * @return static The query object itself.
@@ -429,20 +428,20 @@ interface QueryPartsInterface
     /**
      * Sets the LIMIT part of the query.
      *
-     * @param Expression|int|null $limit The limit. Use null or negative value to disable limit.
+     * @param ExpressionInterface|int|null $limit The limit. Use null or negative value to disable limit.
      *
      * @return static The query object itself.
      */
-    public function limit(Expression|int|null $limit): static;
+    public function limit(ExpressionInterface|int|null $limit): static;
 
     /**
      * Sets the OFFSET part of the query.
      *
-     * @param Expression|int|null $offset $offset The offset. Use null or negative value to disable offset.
+     * @param ExpressionInterface|int|null $offset $offset The offset. Use null or negative value to disable offset.
      *
      * @return static The query object itself.
      */
-    public function offset(Expression|int|null $offset): static;
+    public function offset(ExpressionInterface|int|null $offset): static;
 
     /**
      * Sets the ORDER BY part of the query.
