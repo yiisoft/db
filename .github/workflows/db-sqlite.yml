@@ -63,7 +63,7 @@ jobs:
         if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' }}
         run: |
           composer config repositories.yiisoft/db-sqlite git https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-sqlite.git
-          COMPOSER_ROOT_VERSION=${{ env.BASE_COMPOSER_ROOT_VERSION }} composer require yiisoft/db-sqlite:dev-${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+          COMPOSER_ROOT_VERSION=${{ env.BASE_COMPOSER_ROOT_VERSION }} composer require yiisoft/db-sqlite:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-sqlite.
         if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' }}
