@@ -74,13 +74,8 @@ jobs:
       - name: Set fork if needed
         if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' }}
         run: |
-          echo "${{ github.ref }}"
-          echo "${{ github.base_ref }}"
-          echo "${{ github.head_ref }}"
-          echo "${{ github.ref_name }}"
-          echo "${{ github.repository }}"
           composer config repositories.yiisoft/db-mysql git https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-mysql.git
-          COMPOSER_ROOT_VERSION=dev-master composer require yiisoft/db-mysql:$GIT_BRANCH --no-interaction --no-progress --optimize-autoloader --ansi
+          COMPOSER_ROOT_VERSION=dev-master composer require yiisoft/db-mysql:dev-${{ github.head_ref }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-mysql.
         if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' }}
