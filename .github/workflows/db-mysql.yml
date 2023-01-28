@@ -75,7 +75,7 @@ jobs:
         if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' }}
         run: |
           composer config repositories.yiisoft/db-mysql git https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-mysql.git
-          composer require "yiisoft/db-mysql:${{ env.COMPOSER_ROOT_VERSION }} as dev-master" --no-interaction --no-progress --optimize-autoloader --ansi
+          composer require "darkdef/db-mysql:${{ env.COMPOSER_ROOT_VERSION }} as dev-master" --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-mysql.
         if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' }}
