@@ -26,7 +26,8 @@ jobs:
     name: PHP ${{ matrix.php }}-${{ matrix.oracle }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-master
+      BASE_COMPOSER_ROOT_VERSION: dev-master
+      COMPOSER_ROOT_VERSION: dev-${{ github.head_ref }}
       extensions: pdo, pdo_oci
 
     runs-on: ${{ matrix.os }}
@@ -79,7 +80,7 @@ jobs:
         if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' }}
         run: |
           composer config repositories.yiisoft/db-oracle git https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-oracle.git
-          COMPOSER_ROOT_VERSION=dev-master composer require yiisoft/db-oracle:${GITHUB_REF##*/} --no-interaction --no-progress --optimize-autoloader --ansi
+          COMPOSER_ROOT_VERSION=${{ env.BASE_COMPOSER_ROOT_VERSION }} composer require yiisoft/db-oracle:dev-${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-oracle.
         if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' }}

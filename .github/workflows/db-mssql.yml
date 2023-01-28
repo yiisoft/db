@@ -26,7 +26,8 @@ jobs:
     name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql }}
 
     env:
-      COMPOSER_ROOT_VERSION: dev-master
+      BASE_COMPOSER_ROOT_VERSION: dev-master
+      COMPOSER_ROOT_VERSION: dev-${{ github.head_ref }}
       extensions: pdo, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
@@ -82,7 +83,7 @@ jobs:
         if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' }}
         run: |
           composer config repositories.yiisoft/db-mssql git https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-mssql.git
-          COMPOSER_ROOT_VERSION=dev-master composer require yiisoft/db-mssql:${GITHUB_REF##*/} --no-interaction --no-progress --optimize-autoloader --ansi
+          COMPOSER_ROOT_VERSION=${{ env.BASE_COMPOSER_ROOT_VERSION }} composer require yiisoft/db-mssql:dev-${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-mssql.
         if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' }}
