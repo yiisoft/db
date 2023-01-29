@@ -30,7 +30,7 @@ jobs:
       BRANCH_NAME: ${{ github.head_ref }}
       FULL_BRANCH_NAME: dev-${{ github.head_ref }}
       WORK_PACKAGE: db-mssql
-      WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-mssql
+      WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/
       extensions: pdo, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
