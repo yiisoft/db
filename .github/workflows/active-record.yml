@@ -106,36 +106,76 @@ jobs:
         run: composer self-update
 
       - name: Install db-mssql
-        run: composer require yiisoft/db-mssql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
-
-# install db-mysql
-      - name: db-mysql / Set work package
-        run: echo "CURRENT_PACKAGE=db-mysql" >> $GITHUB_ENV
-
-      - name: db-mysql / Set work package
         uses: ./.github/actions/subpackage_install
         with:
-          CURRENT_PACKAGE: ${{ env.CURRENT_PACKAGE }}
+          CURRENT_PACKAGE: db-mssql
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
+#      - name: Install db-mssql
+#        run: composer require yiisoft/db-mssql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install db-mysql
+        uses: ./.github/actions/subpackage_install
+        with:
+          CURRENT_PACKAGE: db-mysql
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
 #      - name: Install db-mysql
 #        run: composer require yiisoft/db-mysql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-pgsql
-        run: composer require yiisoft/db-pgsql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+        uses: ./.github/actions/subpackage_install
+        with:
+          CURRENT_PACKAGE: db-pgsql
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
+
+#      - name: Install db-pgsql
+#        run: composer require yiisoft/db-pgsql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-oracle
-        run: composer require yiisoft/db-oracle:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+        uses: ./.github/actions/subpackage_install
+        with:
+          CURRENT_PACKAGE: db-oracle
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
+
+#      - name: Install db-oracle
+#        run: composer require yiisoft/db-oracle:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-sqlite
-        run: composer require yiisoft/db-sqlite:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+        uses: ./.github/actions/subpackage_install
+        with:
+          CURRENT_PACKAGE: db-sqlite
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
+
+#      - name: Install db-sqlite
+#        run: composer require yiisoft/db-sqlite:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install active-record
-        run: composer require yiisoft/active-record:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+        uses: ./.github/actions/subpackage_install
+        with:
+          CURRENT_PACKAGE: active-record
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
+
+#      - name: Install active-record
+#        run: composer require yiisoft/active-record:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run tests with phpunit with code coverage
         run: vendor/bin/phpunit --testsuite ActiveRecord --coverage-clover=coverage.xml --colors=always
