@@ -81,13 +81,13 @@ jobs:
           then echo "BRANCH_EXISTS=1" >> $GITHUB_ENV; else echo "BRANCH_EXISTS=0" >> $GITHUB_ENV; fi
 
       - name: Install db-mysql (fork).
-        if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' && env.BRANCH_EXISTS == 1 }}
+        if: ${{ github.event.pull_request.head.repo.fork && env.BRANCH_EXISTS == 1 }}
         run: |
           composer config repositories.yiisoft/${{ env.WORK_PACKAGE }} git ${{ env.WORK_PACKAGE_URL }}
           COMPOSER_ROOT_VERSION=${{ env.COMPOSER_ROOT_VERSION }} composer require yiisoft/${{ env.WORK_PACKAGE }}:${{ env.FULL_BRANCH_NAME }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-mysql (branch).
-        if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' && env.BRANCH_EXISTS == 1 }}
+        if: ${{ ! github.event.pull_request.head.repo.fork  && env.BRANCH_EXISTS == 1 }}
         run: composer require yiisoft/${{ env.WORK_PACKAGE }}:${{ env.FULL_BRANCH_NAME }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-mysql (master).
