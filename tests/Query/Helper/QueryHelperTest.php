@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests\Query\Helper;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Helper\QueryHelper;
 use Yiisoft\Db\Schema\Quoter;
@@ -48,6 +49,16 @@ final class QueryHelperTest extends TestCase
         $this->expectExceptionMessage('To use Expression in from() method, pass it in array format with alias.');
         $this->createQueryHelper()->cleanUpTableNames(
             [new Expression('(SELECT id FROM user)')],
+            new Quoter('"', '"')
+        );
+    }
+
+    public function testCleanUpTableNamesWithCastException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Use ExpressionInterface without cast to string as object of tableName');
+        $this->createQueryHelper()->cleanUpTableNames(
+            ['tableAlias' => 123],
             new Quoter('"', '"')
         );
     }
