@@ -24,24 +24,24 @@ on:
         required: true
         type: string
 
-jobs:
-  psalm:
-    steps:
-      - name: db-mysql / Check exist branch.
-        run: |
-          if git ls-remote --heads ${{ input.WORK_PACKAGE_URL }}${{ input.CURRENT_PACKAGE }} ${{ input.BRANCH_NAME }} | grep ${{ input.BRANCH_NAME }};
-          then echo "BRANCH_EXISTS=1" >> $GITHUB_ENV; else echo "BRANCH_EXISTS=0" >> $GITHUB_ENV; fi
+runs:
+  using: composite
+  steps:
+    - name: db-mysql / Check exist branch.
+      run: |
+        if git ls-remote --heads ${{ input.WORK_PACKAGE_URL }}${{ input.CURRENT_PACKAGE }} ${{ input.BRANCH_NAME }} | grep ${{ input.BRANCH_NAME }};
+        then echo "BRANCH_EXISTS=1" >> $GITHUB_ENV; else echo "BRANCH_EXISTS=0" >> $GITHUB_ENV; fi
 
-      - name: db-mysql / Install from fork.
-        if: ${{ github.event.pull_request.head.repo.fork && env.BRANCH_EXISTS == 1 }}
-        run: |
-          composer config repositories.yiisoft/${{ input.CURRENT_PACKAGE }} git ${{ input.WORK_PACKAGE_URL }}${{ input.CURRENT_PACKAGE }}
-          COMPOSER_ROOT_VERSION=${{ input.COMPOSER_ROOT_VERSION }} composer require yiisoft/${{ input.CURRENT_PACKAGE }}:${{ input.FULL_BRANCH_NAME }} --no-interaction --no-progress --optimize-autoloader --ansi
+    - name: db-mysql / Install from fork.
+      if: ${{ github.event.pull_request.head.repo.fork && env.BRANCH_EXISTS == 1 }}
+      run: |
+        composer config repositories.yiisoft/${{ input.CURRENT_PACKAGE }} git ${{ input.WORK_PACKAGE_URL }}${{ input.CURRENT_PACKAGE }}
+        COMPOSER_ROOT_VERSION=${{ input.COMPOSER_ROOT_VERSION }} composer require yiisoft/${{ input.CURRENT_PACKAGE }}:${{ input.FULL_BRANCH_NAME }} --no-interaction --no-progress --optimize-autoloader --ansi
 
-      - name: db-mysql / Install from branch.
-        if: ${{ ! github.event.pull_request.head.repo.fork  && env.BRANCH_EXISTS == 1 }}
-        run: composer require yiisoft/${{ input.CURRENT_PACKAGE }}:${{ input.FULL_BRANCH_NAME }} --no-interaction --no-progress --optimize-autoloader --ansi
+    - name: db-mysql / Install from branch.
+      if: ${{ ! github.event.pull_request.head.repo.fork  && env.BRANCH_EXISTS == 1 }}
+      run: composer require yiisoft/${{ input.CURRENT_PACKAGE }}:${{ input.FULL_BRANCH_NAME }} --no-interaction --no-progress --optimize-autoloader --ansi
 
-      - name: db-mysql / Install from master.
-        if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' && env.BRANCH_EXISTS != 1 }}
-        run: composer require yiisoft/${{ input.CURRENT_PACKAGE }}:${{ input.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+    - name: db-mysql / Install from master.
+      if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' && env.BRANCH_EXISTS != 1 }}
+      run: composer require yiisoft/${{ input.CURRENT_PACKAGE }}:${{ input.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
