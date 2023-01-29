@@ -65,7 +65,7 @@ jobs:
       - name: Install db-sqlite.
         uses: ./.github/actions/subpackage_install
         with:
-          CURRENT_PACKAGE: db-mssql
+          CURRENT_PACKAGE: db-sqlite
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
