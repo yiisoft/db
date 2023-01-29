@@ -113,7 +113,7 @@ jobs:
         run: echo "CURRENT_PACKAGE=db-mysql" >> $GITHUB_ENV
 
       - name: db-mysql / Set work package
-        uses: ./.github/subpackage_install.yml
+        uses: ./.github/workflows/subpackage_install.yml
         with:
           CURRENT_PACKAGE: ${{ env.CURRENT_PACKAGE }}
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
