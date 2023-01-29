@@ -27,6 +27,10 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
+      BRANCH_NAME: ${{ github.head_ref }}
+      FULL_BRANCH_NAME: dev-${{ github.head_ref }}
+      WORK_PACKAGE: active-record
+      WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/active-record
       extensions: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
