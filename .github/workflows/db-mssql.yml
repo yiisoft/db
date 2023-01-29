@@ -26,8 +26,11 @@ jobs:
     name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql }}
 
     env:
-      BASE_COMPOSER_ROOT_VERSION: dev-master
-      COMPOSER_ROOT_VERSION: dev-${{ github.head_ref }}
+      COMPOSER_ROOT_VERSION: dev-master
+      BRANCH_NAME: ${{ github.head_ref }}
+      FULL_BRANCH_NAME: dev-${{ github.head_ref }}
+      WORK_PACKAGE: db-mssql
+      WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-mssql
       extensions: pdo, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
@@ -79,15 +82,19 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
-      - name: Set fork if needed
-        if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' }}
+      - name: Install db-mssql (fork).
+        if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' && env.BRANCH_EXISTS == 1 }}
         run: |
-          composer config repositories.yiisoft/db-mssql git https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-mssql.git
-          COMPOSER_ROOT_VERSION=${{ env.BASE_COMPOSER_ROOT_VERSION }} composer require yiisoft/db-mssql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+          composer config repositories.yiisoft/${{ env.WORK_PACKAGE }} git ${{ env.WORK_PACKAGE_URL }}
+          COMPOSER_ROOT_VERSION=${{ env.COMPOSER_ROOT_VERSION }} composer require yiisoft/${{ env.WORK_PACKAGE }}:${{ env.FULL_BRANCH_NAME }} --no-interaction --no-progress --optimize-autoloader --ansi
 
-      - name: Install db-mssql.
-        if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' }}
-        run: composer require yiisoft/db-mssql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+      - name: Install db-mssql (branch).
+        if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' && env.BRANCH_EXISTS == 1 }}
+        run: composer require yiisoft/${{ env.WORK_PACKAGE }}:${{ env.FULL_BRANCH_NAME }} --no-interaction --no-progress --optimize-autoloader --ansi
+
+      - name: Install db-mssql (master).
+        if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' && env.BRANCH_EXISTS != 1 }}
+        run: composer require yiisoft/${{ env.WORK_PACKAGE }}:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run mssql tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always

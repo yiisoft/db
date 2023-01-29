@@ -27,7 +27,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      BRANCH_NAME: ${{ github.head_ref }}2
+      BRANCH_NAME: ${{ github.head_ref }}
       FULL_BRANCH_NAME: dev-${{ github.head_ref }}
       WORK_PACKAGE: db-mysql
       WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-mysql
