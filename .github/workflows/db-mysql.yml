@@ -27,7 +27,10 @@ jobs:
 
     env:
       BASE_COMPOSER_ROOT_VERSION: dev-master
-      COMPOSER_ROOT_VERSION: dev-${{ github.head_ref }}
+      BRANCH_NAME: ${{ github.head_ref }}
+      FULL_BRANCH_NAME: dev-${{ github.head_ref }}
+      WORK_PACKAGE: db-mysql
+      WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-mysql
       extensions: pdo, pdo_mysql
 
     runs-on: ${{ matrix.os }}
@@ -72,15 +75,20 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
-      - name: Set fork if needed
-        if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' }}
+      - name: Check exist branch
         run: |
-          composer config repositories.yiisoft/db-mysql git https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/db-mysql.git
-          COMPOSER_ROOT_VERSION=${{ env.BASE_COMPOSER_ROOT_VERSION }} composer require yiisoft/db-mysql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+          if git ls-remote --heads ${{ WORK_PACKAGE_URL }} ${{ env.BRANCH_NAME }} | grep ${{ env.BRANCH_NAME }};
+          then echo "BRANCH_EXISTS=1" >> $GITHUB_ENV; else echo "BRANCH_EXISTS=0" >> $GITHUB_ENV;; fi
+
+      - name: Set fork if needed
+        if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' && ${{ BRANCH_EXISTS }} }}
+        run: |
+          composer config repositories.yiisoft/${{ env.WORK_PACKAGE }} git ${{ WORK_PACKAGE_URL }}
+          COMPOSER_ROOT_VERSION=${{ env.COMPOSER_ROOT_VERSION }} composer require yiisoft/${{ WORK_PACKAGE }}:${{ env.FULL_BRANCH_NAME }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-mysql.
         if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' }}
-        run: composer require yiisoft/db-mysql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/${{ WORK_PACKAGE }}:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run Mssql tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Mysql --coverage-clover=coverage.xml --colors=always
