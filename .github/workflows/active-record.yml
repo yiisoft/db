@@ -114,6 +114,12 @@ jobs:
 
       - name: db-mysql / Set work package
         uses: yiisoft/db/.github/subpackage_install.yml@${{ env.FULL_BRANCH_NAME }}
+        with:
+          CURRENT_PACKAGE: ${{ env.CURRENT_PACKAGE }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
 
 #      - name: Install db-mysql
