@@ -26,7 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-mysql-${{ matrix.mysql }}
 
     env:
-      BASE_COMPOSER_ROOT_VERSION: dev-master
+      COMPOSER_ROOT_VERSION: dev-master
       BRANCH_NAME: ${{ github.head_ref }}
       FULL_BRANCH_NAME: dev-${{ github.head_ref }}
       WORK_PACKAGE: db-mysql
