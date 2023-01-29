@@ -77,18 +77,18 @@ jobs:
 
       - name: Check exist branch
         run: |
-          if git ls-remote --heads ${{ WORK_PACKAGE_URL }} ${{ env.BRANCH_NAME }} | grep ${{ env.BRANCH_NAME }};
+          if git ls-remote --heads ${{ env.WORK_PACKAGE_URL }} ${{ env.BRANCH_NAME }} | grep ${{ env.BRANCH_NAME }};
           then echo "BRANCH_EXISTS=1" >> $GITHUB_ENV; else echo "BRANCH_EXISTS=0" >> $GITHUB_ENV;; fi
 
       - name: Set fork if needed
-        if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' && ${{ BRANCH_EXISTS }} }}
+        if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' && ${{ env.BRANCH_EXISTS }} }}
         run: |
-          composer config repositories.yiisoft/${{ env.WORK_PACKAGE }} git ${{ WORK_PACKAGE_URL }}
-          COMPOSER_ROOT_VERSION=${{ env.COMPOSER_ROOT_VERSION }} composer require yiisoft/${{ WORK_PACKAGE }}:${{ env.FULL_BRANCH_NAME }} --no-interaction --no-progress --optimize-autoloader --ansi
+          composer config repositories.yiisoft/${{ env.WORK_PACKAGE }} git ${{ env.WORK_PACKAGE_URL }}
+          COMPOSER_ROOT_VERSION=${{ env.COMPOSER_ROOT_VERSION }} composer require yiisoft/${{ env.WORK_PACKAGE }}:${{ env.FULL_BRANCH_NAME }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Install db-mysql.
         if: ${{ github.event.pull_request.head.repo.full_name == 'yiisoft/db' }}
-        run: composer require yiisoft/${{ WORK_PACKAGE }}:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+        run: composer require yiisoft/${{ env.WORK_PACKAGE }}:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
 
       - name: Run Mssql tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Mysql --coverage-clover=coverage.xml --colors=always
