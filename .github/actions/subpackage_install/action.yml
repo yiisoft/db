@@ -2,28 +2,23 @@ name: Subpackage install
 
 inputs:
   CURRENT_PACKAGE:
-    description: !!!
     required: true
     type: string
   BRANCH_NAME:
-    description: !!!
     required: true
     type: string
   FULL_BRANCH_NAME:
-    description: !!!
     required: true
     type: string
   COMPOSER_ROOT_VERSION:
-    description: !!!
     required: true
     type: string
   WORK_PACKAGE_URL:
-    description: !!!
     required: true
     type: string
 
 runs:
-  using: composite
+  using: "composite"
   steps:
     - name: db-mysql / Check exist branch.
       run: |
