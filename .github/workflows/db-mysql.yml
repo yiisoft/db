@@ -78,7 +78,7 @@ jobs:
       - name: Check exist branch
         run: |
           if git ls-remote --heads ${{ env.WORK_PACKAGE_URL }} ${{ env.BRANCH_NAME }} | grep ${{ env.BRANCH_NAME }};
-          then echo "BRANCH_EXISTS=1" >> $GITHUB_ENV; else echo "BRANCH_EXISTS=0" >> $GITHUB_ENV;; fi
+          then echo "BRANCH_EXISTS=1" >> $GITHUB_ENV; else echo "BRANCH_EXISTS=0" >> $GITHUB_ENV; fi
 
       - name: Set fork if needed
         if: ${{ github.event.pull_request.head.repo.full_name != 'yiisoft/db' && env.BRANCH_EXISTS }}
