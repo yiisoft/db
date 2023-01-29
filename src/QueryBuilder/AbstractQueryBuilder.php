@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder;
 
 use Generator;
-use Yiisoft\Db\Command\Command;
+use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
@@ -23,11 +22,11 @@ use function preg_match;
 use function preg_replace;
 
 /**
- * QueryBuilder builds a SELECT SQL statement based on the specification given as a {@see Query} object.
+ * QueryBuilder builds a SELECT SQL statement based on the specification given as a {@see QueryInterface} object.
  *
- * SQL statements are created from {@see Query} objects using the {@see build()}-method.
+ * SQL statements are created from {@see QueryInterface} objects using the {@see build()}-method.
  *
- * QueryBuilder is also used by {@see Command} to build SQL statements such as INSERT, UPDATE, DELETE, CREATE TABLE.
+ * QueryBuilder is also used by {@see CommandInterface} to build SQL statements such as INSERT, UPDATE, DELETE, CREATE TABLE.
  *
  * For more details and usage information on QueryBuilder:
  * {@see [guide article on query builders](guide:db-query-builder)}.
@@ -179,7 +178,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->buildJoin($joins, $params);
     }
 
-    public function buildLimit(Expression|int|null $limit, Expression|int|null $offset): string
+    public function buildLimit(ExpressionInterface|int|null $limit, ExpressionInterface|int|null $offset): string
     {
         return $this->dqlBuilder->buildLimit($limit, $offset);
     }
@@ -192,8 +191,8 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function buildOrderByAndLimit(
         string $sql,
         array $orderBy,
-        Expression|int|null $limit,
-        Expression|int|null $offset,
+        ExpressionInterface|int|null $limit,
+        ExpressionInterface|int|null $offset,
         array &$params = []
     ): string {
         return $this->dqlBuilder->buildOrderByAndLimit($sql, $orderBy, $limit, $offset, $params);

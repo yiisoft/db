@@ -6,7 +6,6 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use Iterator;
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\LikeConditionInterface;
 
@@ -18,13 +17,13 @@ final class LikeCondition implements LikeConditionInterface
     protected array|null $escapingReplacements = [];
 
     public function __construct(
-        private string|Expression $column,
+        private string|ExpressionInterface $column,
         private string $operator,
         private array|int|string|Iterator|ExpressionInterface|null $value
     ) {
     }
 
-    public function getColumn(): string|Expression
+    public function getColumn(): string|ExpressionInterface
     {
         return $this->column;
     }
@@ -71,10 +70,10 @@ final class LikeCondition implements LikeConditionInterface
         return $condition;
     }
 
-    private static function validateColumn(string $operator, mixed $column): string|Expression
+    private static function validateColumn(string $operator, mixed $column): string|ExpressionInterface
     {
-        if (!is_string($column) && !$column instanceof Expression) {
-            throw new InvalidArgumentException("Operator '$operator' requires column to be string or Expression.");
+        if (!is_string($column) && !$column instanceof ExpressionInterface) {
+            throw new InvalidArgumentException("Operator '$operator' requires column to be string or ExpressionInterface.");
         }
 
         return $column;

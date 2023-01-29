@@ -27,6 +27,10 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
+      BRANCH_NAME: ${{ github.head_ref }}
+      FULL_BRANCH_NAME: dev-${{ github.head_ref }}
+      WORK_PACKAGE: db-sqlite
+      WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/
       extensions: pdo, pdo_sqlite
 
     runs-on: ${{ matrix.os }}
@@ -59,7 +63,13 @@ jobs:
         run: composer self-update
 
       - name: Install db-sqlite.
-        run: composer require yiisoft/db-sqlite:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
+        uses: ./.github/actions/subpackage_install
+        with:
+          CURRENT_PACKAGE: db-sqlite
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Run sqlite tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Sqlite --coverage-clover=coverage.xml --colors=always

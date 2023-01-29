@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\SimpleConditionInterface;
-use Yiisoft\Db\Query\QueryInterface;
 
 /**
  * Class SimpleCondition represents a simple condition like `"column" operator value`.
@@ -15,13 +14,13 @@ use Yiisoft\Db\Query\QueryInterface;
 final class SimpleCondition implements SimpleConditionInterface
 {
     public function __construct(
-        private string|Expression|QueryInterface $column,
+        private string|ExpressionInterface $column,
         private string $operator,
         private mixed $value
     ) {
     }
 
-    public function getColumn(): string|Expression|QueryInterface
+    public function getColumn(): string|ExpressionInterface
     {
         return $this->column;
     }
@@ -48,15 +47,11 @@ final class SimpleCondition implements SimpleConditionInterface
         return new self(self::validateColumn($operator, $operands[0]), $operator, $operands[1]);
     }
 
-    private static function validateColumn(string $operator, mixed $column): string|Expression|QueryInterface
+    private static function validateColumn(string $operator, mixed $column): string|ExpressionInterface
     {
-        if (
-            !is_string($column) &&
-            !($column instanceof Expression) &&
-            !($column instanceof QueryInterface)
-        ) {
+        if (!is_string($column) && !($column instanceof ExpressionInterface)) {
             throw new InvalidArgumentException(
-                "Operator '$operator' requires column to be string, ExpressionInterface or QueryInterface."
+                "Operator '$operator' requires column to be string or ExpressionInterface."
             );
         }
 

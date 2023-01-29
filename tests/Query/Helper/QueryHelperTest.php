@@ -52,6 +52,16 @@ final class QueryHelperTest extends TestCase
         );
     }
 
+    public function testCleanUpTableNamesWithCastException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Use ExpressionInterface without cast to string as object of tableName');
+        $this->createQueryHelper()->cleanUpTableNames(
+            ['tableAlias' => 123],
+            new Quoter('"', '"')
+        );
+    }
+
     public function filterConditionDataProvider(): array
     {
         return [

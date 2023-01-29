@@ -8,7 +8,6 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
@@ -117,12 +116,12 @@ interface DQLQueryBuilderInterface
     public function buildJoin(array $joins, array &$params): string;
 
     /**
-     * @param Expression|int|null $limit
-     * @param Expression|int|null $offset
+     * @param ExpressionInterface|int|null $limit
+     * @param ExpressionInterface|int|null $offset
      *
      * @return string the LIMIT and OFFSET clauses.
      */
-    public function buildLimit(Expression|int|null $limit, Expression|int|null $offset): string;
+    public function buildLimit(ExpressionInterface|int|null $limit, ExpressionInterface|int|null $offset): string;
 
     /**
      * @param array $columns
@@ -140,8 +139,8 @@ interface DQLQueryBuilderInterface
      * @param string $sql the existing SQL (without ORDER BY/LIMIT/OFFSET).
      * @param array $orderBy the order by columns. See {@see Query::orderBy} for more details on how to specify this
      * parameter.
-     * @param Expression|int|null $limit the limit number. See {@see Query::limit} for more details.
-     * @param Expression|int|null $offset the offset number. See {@see Query::offset} for more details.
+     * @param ExpressionInterface|int|null $limit the limit number. See {@see Query::limit} for more details.
+     * @param ExpressionInterface|int|null $offset the offset number. See {@see Query::offset} for more details.
      * @param array $params the binding parameters to be populated.
      *
      * @throws Exception|InvalidArgumentException
@@ -151,8 +150,8 @@ interface DQLQueryBuilderInterface
     public function buildOrderByAndLimit(
         string $sql,
         array $orderBy,
-        Expression|int|null $limit,
-        Expression|int|null $offset,
+        ExpressionInterface|int|null $limit,
+        ExpressionInterface|int|null $offset,
         array &$params = []
     ): string;
 

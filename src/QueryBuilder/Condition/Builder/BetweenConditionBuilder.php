@@ -30,7 +30,8 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
     public function build(BetweenConditionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();
-        $column = (string) $expression->getColumn();
+        $column = $expression->getColumn();
+        $column = $column instanceof ExpressionInterface ? $this->queryBuilder->buildExpression($column) : $column;
 
         if (!str_contains($column, '(')) {
             $column = $this->queryBuilder->quoter()->quoteColumnName($column);
