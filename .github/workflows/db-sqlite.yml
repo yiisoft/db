@@ -60,11 +60,11 @@ jobs:
         run: composer self-update
 
       - name: Set environment variables pull request linux.
-        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest'
         uses: ./.github/actions/environment-linux
 
       - name: Set environment variables pull request windows.
-        if: github.event_name == 'pull_request' && matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-latest'
         uses: ./.github/actions/environment-windows
 
       - name: Install db-sqlite.
