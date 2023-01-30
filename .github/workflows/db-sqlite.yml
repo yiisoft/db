@@ -61,14 +61,14 @@ jobs:
 
       - name: Set environment variables pull request linux.
         if: matrix.os == 'ubuntu-latest'
-        uses: ./.github/actions/environment-linux
+        uses: yiisoft/actions/db/environment-linux@master
 
       - name: Set environment variables pull request windows.
         if: matrix.os == 'windows-latest'
-        uses: ./.github/actions/environment-windows
+        uses:  yiisoft/actions/db/environment-windows@master
 
-      - name: Install db-sqlite.
-        uses: ./.github/actions/subpackage_install
+      - name: Install db.
+        uses: yiisoft/actions/db/subpackage-install@master
         with:
           BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
