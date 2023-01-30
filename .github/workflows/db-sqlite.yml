@@ -65,7 +65,7 @@ jobs:
 
       - name: Set environment variables pull request windows.
         if: matrix.os == 'windows-latest'
-        uses:  yiisoft/actions/db/environment-windows@master
+        uses: yiisoft/actions/db/environment-windows@master
 
       - name: Install db.
         uses: yiisoft/actions/db/subpackage-install@master
