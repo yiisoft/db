@@ -23,7 +23,7 @@ name: db-sqlite
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-sqlite
+    name: PHP ${{ matrix.php }}-sqlite-${{ matrix.os }}
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
