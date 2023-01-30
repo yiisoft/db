@@ -72,8 +72,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Dump GitHub context
-        env:
-        GITHUB_CONTEXT: ${{ toJSON(github) }}
+        env: GITHUB_CONTEXT: ${{ toJSON(github) }}
         run: echo "$GITHUB_CONTEXT"
 
       - name: Run sqlite tests with phpunit and code coverage.
