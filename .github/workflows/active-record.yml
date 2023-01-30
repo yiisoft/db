@@ -27,11 +27,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      BRANCH_NAME: ${{ github.head_ref }}
-      FULL_BRANCH_NAME: dev-${{ github.head_ref }}
-      WORK_PACKAGE: active-record
-      WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/
-      extensions: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1
+      EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
 
@@ -97,7 +93,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: ${{ env.extensions }}
+          extensions: ${{ env.EXTENSIONS }}
           ini-values: date.timezone='UTC'
           coverage: pcov
           tools: composer:v2, pecl
@@ -105,58 +101,61 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
+      - name: Set environment variables pull request linux.
+        uses: ./.github/actions/environment-linux
+
       - name: Install db-mssql.
         uses: ./.github/actions/subpackage_install
         with:
-          CURRENT_PACKAGE: db-mssql
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          CURRENT_PACKAGE: db-mssql
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install db-mysql.
         uses: ./.github/actions/subpackage_install
         with:
-          CURRENT_PACKAGE: db-mysql
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          CURRENT_PACKAGE: db-mysql
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install db-pgsql.
         uses: ./.github/actions/subpackage_install
         with:
-          CURRENT_PACKAGE: db-pgsql
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          CURRENT_PACKAGE: db-pgsql
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install db-oracle.
         uses: ./.github/actions/subpackage_install
         with:
-          CURRENT_PACKAGE: db-oracle
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          CURRENT_PACKAGE: db-oracle
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install db-sqlite.
         uses: ./.github/actions/subpackage_install
         with:
-          CURRENT_PACKAGE: db-sqlite
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          CURRENT_PACKAGE: db-sqlite
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install active-record.
         uses: ./.github/actions/subpackage_install
         with:
-          CURRENT_PACKAGE: active-record
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          CURRENT_PACKAGE: active-record
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Run tests with phpunit with code coverage.
