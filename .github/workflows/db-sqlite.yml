@@ -57,6 +57,9 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
+      - name: Set WORK_PACKAGE_URL.
+        run: echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/" >> $GITHUB_ENV
+
       - name: Install db-sqlite.
         uses: ./.github/actions/subpackage_install
         with:
@@ -64,7 +67,7 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref }}
           FULL_BRANCH_NAME: dev-${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: dev-master
-          WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/
+          WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Run sqlite tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Sqlite --coverage-clover=coverage.xml --colors=always
