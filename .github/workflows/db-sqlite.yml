@@ -31,6 +31,7 @@ jobs:
       FULL_BRANCH_NAME: dev-${{ github.head_ref }}
       WORK_PACKAGE: db-sqlite
       WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/
+      WORK_PACKAGE_URL_PUSH: https://github.com/${{ github.event.push_request.head.repo.owner.login }}/
       extensions: pdo, pdo_sqlite
 
     runs-on: ${{ matrix.os }}
@@ -71,13 +72,13 @@ jobs:
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
-      - name: Print the GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-
-      - name: Print environment variables
+      - name: Print environment variables pull_request
+        if: github.event_name == 'pull_request'
         run: echo "$WORK_PACKAGE_URL"
+
+      - name: Print environment variables push
+        if: github.event_name == 'push'
+        run: echo "$WORK_PACKAGE_URL_PUSH"
 
       - name: Run sqlite tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Sqlite --coverage-clover=coverage.xml --colors=always
