@@ -102,10 +102,10 @@ jobs:
         run: composer self-update
 
       - name: Set environment variables pull request linux.
-        uses: ./.github/actions/environment-linux
+        uses: yiisoft/actions/db/environment-linux@master
 
-      - name: Install db-mssql.
-        uses: ./.github/actions/subpackage_install
+      - name: Install db.
+        uses: yiisoft/actions/db/subpackage-install@master
         with:
           BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
@@ -114,7 +114,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install db-mysql.
-        uses: ./.github/actions/subpackage_install
+        uses: yiisoft/actions/db/subpackage-install@master
         with:
           BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
@@ -123,7 +123,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install db-pgsql.
-        uses: ./.github/actions/subpackage_install
+        uses: yiisoft/actions/db/subpackage-install@master
         with:
           BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
@@ -132,7 +132,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install db-oracle.
-        uses: ./.github/actions/subpackage_install
+        uses: yiisoft/actions/db/subpackage-install@master
         with:
           BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
@@ -141,7 +141,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install db-sqlite.
-        uses: ./.github/actions/subpackage_install
+        uses: yiisoft/actions/db/subpackage-install@master
         with:
           BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
@@ -150,7 +150,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install active-record.
-        uses: ./.github/actions/subpackage_install
+        uses: yiisoft/actions/db/subpackage-install@master
         with:
           BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
