@@ -79,6 +79,9 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
+      - name: Set environment variables pull request linux.
+        uses: ./.github/actions/environment-linux
+
       - name: Install db-oracle.
         uses: ./.github/actions/subpackage_install
         with:
