@@ -23,14 +23,11 @@ name: db-sqlite
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-sqlite
+    name: PHP ${{ matrix.php }}-sqlite-${{ matrix.os }}
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      BRANCH_NAME: ${{ github.head_ref }}
-      FULL_BRANCH_NAME: dev-${{ github.head_ref }}
-      WORK_PACKAGE: db-sqlite
-      WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/
+      CURRENT_PACKAGE: db-sqlite
       extensions: pdo, pdo_sqlite
 
     runs-on: ${{ matrix.os }}
@@ -62,11 +59,40 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
+      - name: Print the GitHub context.
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+      - name: Set environment variable for work package url (pull request) ubuntu.
+        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest'
+        run: |
+          echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/" >> $GITHUB_ENV
+          echo "FULL_BRANCH_NAME=dev-${{ github.head_ref }}" >> $GITHUB_ENV
+
+      - name: Set environment variable for work package url (push) ubuntu.
+        if: github.event_name == 'push' && matrix.os == 'ubuntu-latest'
+        run: |
+          echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.repository.owner.login }}/" >> $GITHUB_ENV
+          echo "FULL_BRANCH_NAME=dev-master" >> $GITHUB_ENV
+
+      - name: Set environment variable for work package url (pull request) windows.
+        if: github.event_name == 'pull_request' && matrix.os == 'windows-latest'
+        run: |
+          echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "FULL_BRANCH_NAME=dev-${{ github.head_ref }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Set environment variable for work package url (push) windows.
+        if: github.event_name == 'push' && matrix.os == 'windows-latest'
+        run: |
+          echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.repository.owner.login }}/" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "FULL_BRANCH_NAME=dev-master" | Out-File -FilePath $env:GITHUB_ENV -Append
+
       - name: Install db-sqlite.
         uses: ./.github/actions/subpackage_install
         with:
-          CURRENT_PACKAGE: db-sqlite
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
+          CURRENT_PACKAGE: ${{ env.CURRENT_PACKAGE }}
+          BRANCH_NAME: ${{ github.head_ref }}
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
