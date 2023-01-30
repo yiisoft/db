@@ -53,7 +53,6 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
     public function testGetColumnType(): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
         $columnTypes = (new ColumnTypes($db))->getColumnTypes();
 
