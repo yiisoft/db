@@ -26,6 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-sqlite
 
     env:
+      COMPOSER_ROOT_VERSION: dev-master
       extensions: pdo, pdo_sqlite
 
     runs-on: ${{ matrix.os }}
@@ -71,7 +72,7 @@ jobs:
           CURRENT_PACKAGE: db-sqlite
           BRANCH_NAME: ${{ github.head_ref }}
           FULL_BRANCH_NAME: dev-${{ github.head_ref }}
-          COMPOSER_ROOT_VERSION: dev-master
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Run sqlite tests with phpunit and code coverage.
