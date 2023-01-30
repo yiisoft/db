@@ -71,9 +71,8 @@ jobs:
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
-      - name: Dump GitHub context
-        env: GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo "$GITHUB_CONTEXT"
+      - name: Dump GitHub context.
+        run: echo ${{ toJSON(github) }}
 
       - name: Run sqlite tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Sqlite --coverage-clover=coverage.xml --colors=always
