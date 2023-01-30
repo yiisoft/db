@@ -57,7 +57,12 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
-      - name: Set WORK_PACKAGE_URL.
+      - name: Print the GitHub context.
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+      - name: Set environment variable for work package url.
         run: echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/" >> $GITHUB_ENV
 
       - name: Install db-sqlite.
