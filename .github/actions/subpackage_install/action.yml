@@ -19,6 +19,7 @@ inputs:
 
 runs:
   using: "composite"
+
   steps:
     - name: Check exist branch (pull request).
       if: ${{ github.event_name == 'pull_request' }}

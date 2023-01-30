@@ -64,29 +64,11 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-      - name: Set environment variable for work package url (pull request) ubuntu.
-        if: github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest'
-        run: |
-          echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/" >> $GITHUB_ENV
-          echo "FULL_BRANCH_NAME=dev-${{ github.head_ref }}" >> $GITHUB_ENV
+      - name: Set environment variables pull request linux.
+        uses: ./.github/actions/environment-linux
 
-      - name: Set environment variable for work package url (push) ubuntu.
-        if: github.event_name == 'push' && matrix.os == 'ubuntu-latest'
-        run: |
-          echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.repository.owner.login }}/" >> $GITHUB_ENV
-          echo "FULL_BRANCH_NAME=dev-master" >> $GITHUB_ENV
-
-      - name: Set environment variable for work package url (pull request) windows.
-        if: github.event_name == 'pull_request' && matrix.os == 'windows-latest'
-        run: |
-          echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "FULL_BRANCH_NAME=dev-${{ github.head_ref }}" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-      - name: Set environment variable for work package url (push) windows.
-        if: github.event_name == 'push' && matrix.os == 'windows-latest'
-        run: |
-          echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.repository.owner.login }}/" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "FULL_BRANCH_NAME=dev-master" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Set environment variables pull request windows.
+        uses: ./.github/actions/environment-windows
 
       - name: Install db-sqlite.
         uses: ./.github/actions/subpackage_install
