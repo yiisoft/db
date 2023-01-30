@@ -27,11 +27,8 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      BRANCH_NAME: ${{ github.head_ref }}
-      FULL_BRANCH_NAME: dev-${{ github.head_ref }}
-      WORK_PACKAGE: db-mysql
-      WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/
-      extensions: pdo, pdo_mysql
+      CURRENT_PACKAGE: db-mysql
+      EXTENSIONS: pdo, pdo_mysql
 
     runs-on: ${{ matrix.os }}
 
@@ -68,20 +65,23 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: ${{ env.extensions }}
+          extensions: ${{ env.EXTENSIONS }}
           ini-values: date.timezone='UTC'
           coverage: pcov
 
       - name: Update composer.
         run: composer self-update
 
+      - name: Set environment variables pull request linux.
+        uses: ./.github/actions/environment-linux
+
       - name: Install db-mysql.
         uses: ./.github/actions/subpackage_install
         with:
-          CURRENT_PACKAGE: db-mysql
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          CURRENT_PACKAGE: ${{ env.CURRENT_PACKAGE }}
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Run Mssql tests with phpunit and code coverage.

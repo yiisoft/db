@@ -1,0 +1,19 @@
+name: Environment linux
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Set environment variable for work package url (pull request) ubuntu.
+      if: github.event_name == 'pull_request'
+      shell: bash
+      run: |
+        echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/" >> $GITHUB_ENV
+        echo "FULL_BRANCH_NAME=dev-${{ github.head_ref }}" >> $GITHUB_ENV
+
+    - name: Set environment variable for work package url (push) ubuntu.
+      if: github.event_name == 'push'
+      shell: bash
+      run: |
+        echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.repository.owner.login }}/" >> $GITHUB_ENV
+        echo "FULL_BRANCH_NAME=dev-master" >> $GITHUB_ENV

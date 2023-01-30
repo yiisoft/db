@@ -1,0 +1,19 @@
+name: Environment windows
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Set environment variable for work package url (pull request) windows.
+      if: github.event_name == 'pull_request'
+      shell: pwsh
+      run: |
+        echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/" | Out-File -FilePath $env:GITHUB_ENV -Append
+        echo "FULL_BRANCH_NAME=dev-${{ github.head_ref }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+    - name: Set environment variable for work package url (push) windows.
+      if: github.event_name == 'push'
+      shell: pwsh
+      run: |
+        echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.repository.owner.login }}/" | Out-File -FilePath $env:GITHUB_ENV -Append
+        echo "FULL_BRANCH_NAME=dev-master" | Out-File -FilePath $env:GITHUB_ENV -Append

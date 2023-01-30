@@ -23,15 +23,12 @@ name: db-sqlite
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-sqlite
+    name: PHP ${{ matrix.php }}-sqlite-${{ matrix.os }}
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      BRANCH_NAME: ${{ github.head_ref }}
-      FULL_BRANCH_NAME: dev-${{ github.head_ref }}
-      WORK_PACKAGE: db-sqlite
-      WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/
-      extensions: pdo, pdo_sqlite
+      CURRENT_PACKAGE: db-sqlite
+      EXTENSIONS: pdo, pdo_sqlite
 
     runs-on: ${{ matrix.os }}
 
@@ -54,7 +51,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: ${{ env.extensions }}
+          extensions: ${{ env.EXTENSIONS }}
           ini-values: date.timezone='UTC'
           coverage: pcov
           tools: composer:v2, pecl
@@ -62,13 +59,21 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
+      - name: Set environment variables pull request linux.
+        if: matrix.os == 'ubuntu-latest'
+        uses: ./.github/actions/environment-linux
+
+      - name: Set environment variables pull request windows.
+        if: matrix.os == 'windows-latest'
+        uses: ./.github/actions/environment-windows
+
       - name: Install db-sqlite.
         uses: ./.github/actions/subpackage_install
         with:
-          CURRENT_PACKAGE: db-sqlite
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          CURRENT_PACKAGE: ${{ env.CURRENT_PACKAGE }}
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Run sqlite tests with phpunit and code coverage.

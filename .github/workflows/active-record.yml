@@ -27,11 +27,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      BRANCH_NAME: ${{ github.head_ref }}
-      FULL_BRANCH_NAME: dev-${{ github.head_ref }}
-      WORK_PACKAGE: active-record
-      WORK_PACKAGE_URL: https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/
-      extensions: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1
+      EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
 
@@ -87,102 +83,87 @@ jobs:
           options: --name=mssql --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - name: Checkout
+      - name: Checkout.
         uses: actions/checkout@v3
 
-      - name: Create MS SQL Database
+      - name: Create MS SQL Database.
         run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
 
-      - name: Install PHP with extensions
+      - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: ${{ env.extensions }}
+          extensions: ${{ env.EXTENSIONS }}
           ini-values: date.timezone='UTC'
           coverage: pcov
           tools: composer:v2, pecl
 
-      - name: Update composer
+      - name: Update composer.
         run: composer self-update
 
-      - name: Install db-mssql
+      - name: Set environment variables pull request linux.
+        uses: ./.github/actions/environment-linux
+
+      - name: Install db-mssql.
         uses: ./.github/actions/subpackage_install
         with:
+          BRANCH_NAME: ${{ github.head_ref }}
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: db-mssql
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
-          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
-#      - name: Install db-mssql
-#        run: composer require yiisoft/db-mssql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
-
-      - name: Install db-mysql
+      - name: Install db-mysql.
         uses: ./.github/actions/subpackage_install
         with:
+          BRANCH_NAME: ${{ github.head_ref }}
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: db-mysql
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
-          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
-#      - name: Install db-mysql
-#        run: composer require yiisoft/db-mysql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
-
-      - name: Install db-pgsql
+      - name: Install db-pgsql.
         uses: ./.github/actions/subpackage_install
         with:
+          BRANCH_NAME: ${{ github.head_ref }}
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: db-pgsql
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
-          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
-#      - name: Install db-pgsql
-#        run: composer require yiisoft/db-pgsql:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
-
-      - name: Install db-oracle
+      - name: Install db-oracle.
         uses: ./.github/actions/subpackage_install
         with:
+          BRANCH_NAME: ${{ github.head_ref }}
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: db-oracle
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
-          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
-#      - name: Install db-oracle
-#        run: composer require yiisoft/db-oracle:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
-
-      - name: Install db-sqlite
+      - name: Install db-sqlite.
         uses: ./.github/actions/subpackage_install
         with:
+          BRANCH_NAME: ${{ github.head_ref }}
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: db-sqlite
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
-          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
-#      - name: Install db-sqlite
-#        run: composer require yiisoft/db-sqlite:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
-
-      - name: Install active-record
+      - name: Install active-record.
         uses: ./.github/actions/subpackage_install
         with:
-          CURRENT_PACKAGE: active-record
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
+          BRANCH_NAME: ${{ github.head_ref }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
+          CURRENT_PACKAGE: active-record
+          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
-#      - name: Install active-record
-#        run: composer require yiisoft/active-record:${{ env.COMPOSER_ROOT_VERSION }} --no-interaction --no-progress --optimize-autoloader --ansi
-
-      - name: Run tests with phpunit with code coverage
+      - name: Run tests with phpunit with code coverage.
         run: vendor/bin/phpunit --testsuite ActiveRecord --coverage-clover=coverage.xml --colors=always
 
-#      - name: Upload coverage to Codecov(disabled)
-#        if: matrix.php == '8.1'
-#        uses: codecov/codecov-action@v3
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          files: ./coverage.xml
+      - name: Upload coverage to Codecov.
+        if: matrix.php == '8.1'
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
