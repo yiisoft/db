@@ -63,8 +63,13 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-      - name: Set environment variable for work package url.
+      - name: Set environment variable for work package url (pull request).
+        if: github.event_name == 'pull_request'
         run: echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.pull_request.head.repo.owner.login }}/" >> $GITHUB_ENV
+
+      - name: Set environment variable for work package url (push).
+        if: github.event_name == 'push'
+        run: echo "WORK_PACKAGE_URL=https://github.com/${{ github.event.repository.owner.login }}/" >> $GITHUB_ENV
 
       - name: Install db-sqlite.
         uses: ./.github/actions/subpackage_install
