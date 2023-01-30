@@ -106,7 +106,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 SchemaInterface::TYPE_BOOLEAN . ' NOT NULL DEFAULT 1',
                 $this->boolean()->notNull()->defaultValue(1),
                 [
-                    'mysql' => 'tinyint(1) NOT NULL DEFAULT 1',
+                    'mysql' => 'bit(1) NOT NULL DEFAULT 1',
                     'sqlite' => 'boolean NOT NULL DEFAULT 1',
                     'sqlsrv' => 'bit NOT NULL DEFAULT 1',
                 ],
@@ -122,7 +122,7 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 SchemaInterface::TYPE_BOOLEAN,
                 $this->boolean(),
                 [
-                    'mysql' => 'tinyint(1)',
+                    'mysql' => 'bit(1)',
                     'pgsql' => 'boolean',
                     'sqlite' => 'boolean',
                     'oci' => 'NUMBER(1)',
