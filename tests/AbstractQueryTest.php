@@ -821,10 +821,10 @@ abstract class AbstractQueryTest extends TestCase
         $rows = json_decode(json_encode($rows));
 
         set_error_handler(static function (int $errno, string $errstr) {
-            throw new \Exception($errstr, $errno);
-        }, E_USER_WARNING);
+            throw new \Exception('E_WARNING: ' . $errstr, $errno);
+        }, E_WARNING);
 
-        $this->expectExceptionMessage('failed to send');
+        $this->expectExceptionMessageMatches('/^E_WARNING: /');
 
         $query->populate($rows);
 
