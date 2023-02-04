@@ -10,6 +10,7 @@ use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -174,5 +175,26 @@ abstract class AbstractCommandTest extends TestCase
         );
 
         $this->assertSame('SELECT 123', $command->getSql());
+    }
+
+    public function testProfiler(): void
+    {
+        $sql = 'SELECT 123';
+
+        $db = $this->getConnection();
+        $db->open();
+
+        $profiler = $this->createMock(ProfilerInterface::class);
+        $profiler->expects(self::once())
+            ->method('begin')
+            ->with($sql)
+        ;
+        $profiler->expects(self::once())
+            ->method('end')
+            ->with($sql)
+        ;
+        $db->setProfiler($profiler);
+
+        $db->createCommand($sql)->execute();
     }
 }
