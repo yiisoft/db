@@ -19,9 +19,6 @@ use Yiisoft\Db\Query\QueryInterface;
  */
 class JsonExpression implements ExpressionInterface, JsonSerializable
 {
-    public const TYPE_JSON = 'json';
-    public const TYPE_JSONB = 'jsonb';
-
     public function __construct(protected mixed $value, private string|null $type = null)
     {
         if ($value instanceof self) {

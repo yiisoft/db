@@ -51,13 +51,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
         $schema = $db->getSchema();
-        $sql = $qb->addColumn('table', 'column', $schema::TYPE_STRING);
+        $sql = $qb->addColumn('table', 'column', SchemaInterface::TYPE_STRING);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
-                SQL . ' ' . $qb->getColumnType($schema::TYPE_STRING),
+                SQL . ' ' . $qb->getColumnType(SchemaInterface::TYPE_STRING),
                 $db->getName(),
             ),
             $sql,
@@ -171,13 +171,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
         $schema = $db->getSchema();
-        $sql = $qb->alterColumn('customer', 'email', $schema::TYPE_STRING);
+        $sql = $qb->alterColumn('customer', 'email', SchemaInterface::TYPE_STRING);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[customer]] CHANGE [[email]] [[email]]
-                SQL . ' ' . $qb->getColumnType($schema::TYPE_STRING),
+                SQL . ' ' . $qb->getColumnType(SchemaInterface::TYPE_STRING),
                 $db->getName(),
             ),
             $sql,
