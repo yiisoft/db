@@ -820,8 +820,15 @@ abstract class AbstractQueryTest extends TestCase
 
         $rows = json_decode(json_encode($rows));
 
-        $this->expectWarning();
+        set_error_handler(static function (int $errno, string $errstr) {
+            throw new \Exception($errstr, $errno);
+        }, E_USER_WARNING);
+
+        $this->expectExceptionMessage('failed to send');
+
         $query->populate($rows);
+
+        restore_error_handler();
     }
 
     public function populateProviderWithIndexBy(): array
