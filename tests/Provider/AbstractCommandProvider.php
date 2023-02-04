@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -350,7 +350,7 @@ abstract class AbstractCommandProvider
     {
         return [
             ['{{test_idx_constraint_1}}', '{{test_idx}}', 'int1', null, null],
-            ['{{test_idx_constraint_2}}', '{{test_idx}}', ['int1'], QueryBuilderInterface::INDEX_UNIQUE, null],
+            ['{{test_idx_constraint_2}}', '{{test_idx}}', ['int1'], SchemaInterface::INDEX_UNIQUE, null],
             ['{{test_idx_constraint_3}}', '{{test_idx}}', ['int1', 'int2'], null, null],
         ];
     }
@@ -388,7 +388,7 @@ abstract class AbstractCommandProvider
                 '{{name}}',
                 '{{table}}',
                 ['column1', 'column2'],
-                QueryBuilderInterface::INDEX_UNIQUE,
+                SchemaInterface::INDEX_UNIQUE,
                 '',
                 DbHelper::replaceQuotes(
                     <<<SQL

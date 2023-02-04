@@ -20,7 +20,7 @@ use function strtr;
  * For example, the following code creates a column schema for an integer column:
  *
  * ```php
- * $column = (new ColumnSchemaBuilder(Schema::TYPE_INTEGER))->notNull()->defaultValue(0);
+ * $column = (new ColumnSchemaBuilder(SchemaInterface::TYPE_INTEGER))->notNull()->defaultValue(0);
  * ```
  *
  * The AbstractColumnSchemaBuilder class provides a fluent interface, which means that the methods can be chained

@@ -17,7 +17,6 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
@@ -140,7 +139,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             'somecolUnique',
             'uniqueIndex',
             'somecol',
-            QueryBuilderInterface::INDEX_UNIQUE,
+            SchemaInterface::INDEX_UNIQUE,
         )->execute();
         $tableSchema = $schema->getTableSchema('uniqueIndex', true);
 
@@ -159,7 +158,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             'someCol2Unique',
             'uniqueIndex',
             'someCol2',
-            QueryBuilderInterface::INDEX_UNIQUE,
+            SchemaInterface::INDEX_UNIQUE,
         )->execute();
         $tableSchema = $schema->getTableSchema('uniqueIndex', true);
 
@@ -174,7 +173,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             'another unique index',
             'uniqueIndex',
             'someCol3',
-            QueryBuilderInterface::INDEX_UNIQUE,
+            SchemaInterface::INDEX_UNIQUE,
         )->execute();
         $tableSchema = $schema->getTableSchema('uniqueIndex', true);
 

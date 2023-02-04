@@ -10,6 +10,7 @@ use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
@@ -867,7 +868,7 @@ abstract class AbstractQueryBuilderProvider
                     $name1,
                     $tableName,
                     'C_index_1',
-                    QueryBuilderInterface::INDEX_UNIQUE,
+                    SchemaInterface::INDEX_UNIQUE,
                 ),
             ],
             'create unique (2 columns)' => [
@@ -878,7 +879,7 @@ abstract class AbstractQueryBuilderProvider
                     $name2,
                     $tableName,
                     'C_index_2_1, C_index_2_2',
-                    QueryBuilderInterface::INDEX_UNIQUE,
+                    SchemaInterface::INDEX_UNIQUE,
                 ),
             ],
         ];
