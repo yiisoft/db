@@ -14,11 +14,11 @@ class Profiler implements ProfilerInterface {
 
     public function begin(string $token, array $context = []): void
     {
-        $this->logger->info('begin');
+        $this->logger->info('begin', $context);
     }
 
     public function end(string $token, array $context = []): void
     {
-        $this->logger->notice('end');
+        $this->logger->notice('end', $context);
     }
 }

@@ -190,11 +190,11 @@ abstract class AbstractCommandTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects(self::once())
             ->method('info')
-            ->with('begin');
+            ->with('begin', $context);
 
         $logger->expects(self::once())
             ->method('notice')
-            ->with('end');
+            ->with('end', $context);
 
         $profiler = new Profiler($logger);
 //        $profiler = $this->createMock(ProfilerInterface::class);
