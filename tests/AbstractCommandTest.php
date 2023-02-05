@@ -13,6 +13,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stub\Profiler;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class AbstractCommandTest extends TestCase
@@ -195,21 +196,7 @@ abstract class AbstractCommandTest extends TestCase
             ->method('notice')
             ->with('end');
 
-        $profiler = new class($logger) implements ProfilerInterface {
-            public function __construct(private LoggerInterface $logger)
-            {
-            }
-
-            public function begin(string $token, array $context = []): void
-            {
-                $this->logger->info('begin');
-            }
-
-            public function end(string $token, array $context = []): void
-            {
-                $this->logger->notice('end');
-            }
-        };
+        $profiler = new Profiler($logger);
 //        $profiler = $this->createMock(ProfilerInterface::class);
 //        $profiler->expects(self::once())
 //            ->method('begin')
