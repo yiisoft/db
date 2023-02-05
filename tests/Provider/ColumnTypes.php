@@ -758,6 +758,28 @@ final class ColumnTypes extends AbstractMigrationBuilder
                 ],
             ],
             [
+                SchemaInterface::TYPE_MEDIUMTEXT,
+                $this->mediumtext(),
+                [
+                    'mysql' => 'mediumtext',
+                    'pgsql' => 'text',
+                    'sqlite' => 'text',
+                    'oci' => 'CLOB',
+                    'sqlsrv' => 'nvarchar(max)',
+                ],
+            ],
+            [
+                SchemaInterface::TYPE_LONGTEXT,
+                $this->longtext(),
+                [
+                    'mysql' => 'longtext',
+                    'pgsql' => 'text',
+                    'sqlite' => 'text',
+                    'oci' => 'CLOB',
+                    'sqlsrv' => 'nvarchar(max)',
+                ],
+            ],
+            [
                 SchemaInterface::TYPE_TIME . ' NOT NULL',
                 $this->time()->notNull(),
                 [

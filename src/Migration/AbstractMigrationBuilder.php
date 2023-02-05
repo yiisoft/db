@@ -293,6 +293,26 @@ abstract class AbstractMigrationBuilder
     }
 
     /**
+     * Creates a medium text column.
+     *
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
+     */
+    public function mediumtext(): ColumnSchemaBuilderInterface
+    {
+        return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_MEDIUMTEXT);
+    }
+
+    /**
+     * Creates a long text column.
+     *
+     * @return ColumnSchemaBuilderInterface The column instance which can be further customized.
+     */
+    public function longtext(): ColumnSchemaBuilderInterface
+    {
+        return $this->schema->createColumnSchemaBuilder(SchemaInterface::TYPE_LONGTEXT);
+    }
+
+    /**
      * Creates a time column.
      *
      * @param int|null $precision The column value precision. First parameter passed to the column type, e.g.

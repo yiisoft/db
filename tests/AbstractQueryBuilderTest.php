@@ -1525,6 +1525,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame('char', $qb->getColumnType(SchemaInterface::TYPE_CHAR));
         $this->assertSame('string', $qb->getColumnType(SchemaInterface::TYPE_STRING));
         $this->assertSame('text', $qb->getColumnType(SchemaInterface::TYPE_TEXT));
+        $this->assertSame('mediumtext', $qb->getColumnType(SchemaInterface::TYPE_MEDIUMTEXT));
+        $this->assertSame('longtext', $qb->getColumnType(SchemaInterface::TYPE_LONGTEXT));
         $this->assertSame('tinyint', $qb->getColumnType(SchemaInterface::TYPE_TINYINT));
         $this->assertSame('smallint', $qb->getColumnType(SchemaInterface::TYPE_SMALLINT));
         $this->assertSame('integer', $qb->getColumnType(SchemaInterface::TYPE_INTEGER));

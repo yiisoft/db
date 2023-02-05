@@ -59,6 +59,8 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const TYPE_CHAR = 'char';
     public const TYPE_STRING = 'string';
     public const TYPE_TEXT = 'text';
+    public const TYPE_MEDIUMTEXT = 'mediumtext';
+    public const TYPE_LONGTEXT = 'longtext';
     public const TYPE_TINYINT = 'tinyint';
     public const TYPE_SMALLINT = 'smallint';
     public const TYPE_INTEGER = 'integer';
