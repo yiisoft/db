@@ -180,6 +180,7 @@ abstract class AbstractCommandTest extends TestCase
     public function testProfiler(): void
     {
         $sql = 'SELECT 123';
+        $context = ['Yiisoft\Db\Command\AbstractCommand::execute'];
 
         $db = $this->getConnection();
         $db->open();
@@ -187,11 +188,11 @@ abstract class AbstractCommandTest extends TestCase
         $profiler = $this->createMock(ProfilerInterface::class);
         $profiler->expects(self::once())
             ->method('begin')
-            ->with($sql)
+            ->with($sql, $context)
         ;
         $profiler->expects(self::once())
             ->method('end')
-            ->with($sql)
+            ->with($sql, $context)
         ;
         $db->setProfiler($profiler);
 
