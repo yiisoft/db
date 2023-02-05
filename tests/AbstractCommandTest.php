@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\Exception;
@@ -185,15 +186,39 @@ abstract class AbstractCommandTest extends TestCase
         $db = $this->getConnection();
         $db->open();
 
-        $profiler = $this->createMock(ProfilerInterface::class);
-        $profiler->expects(self::once())
-            ->method('begin')
-            ->with($sql, $context)
-        ;
-        $profiler->expects(self::once())
-            ->method('end')
-            ->with($sql, $context)
-        ;
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects(self::once())
+            ->method('info')
+            ->with('begin');
+
+        $logger->expects(self::once())
+            ->method('notice')
+            ->with('end');
+
+        $profiler = new class($logger) implements ProfilerInterface {
+            public function __construct(private LoggerInterface $logger)
+            {
+            }
+
+            public function begin(string $token, array $context = []): void
+            {
+                $this->logger->info('begin');
+            }
+
+            public function end(string $token, array $context = []): void
+            {
+                $this->logger->notice('end');
+            }
+        };
+//        $profiler = $this->createMock(ProfilerInterface::class);
+//        $profiler->expects(self::once())
+//            ->method('begin')
+//            ->with($sql, $context)
+//        ;
+//        $profiler->expects(self::once())
+//            ->method('end')
+//            ->with($sql, $context)
+//        ;
         $db->setProfiler($profiler);
 
         $db->createCommand($sql)->execute();
