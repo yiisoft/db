@@ -562,6 +562,45 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
+    public function testSchemaCacheExtreme(): void
+    {
+        $db = $this->getConnection(true);
+
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+        $schema->schemaCacheEnable(true);
+
+        if ($schema->getTableSchema('{{test_schema_cache}}') !== null) {
+            $command->dropTable('{{test_schema_cache}}')->execute();
+        }
+
+        $command->createTable('{{test_schema_cache}}', ['int1' => 'integer not null'])->execute();
+
+        $schemaNotCache = $schema->getTableSchema('{{test_schema_cache}}', true);
+
+        $this->assertNotNull($schemaNotCache);
+
+        $schemaCached = $schema->getTableSchema('{{test_schema_cache}}');
+
+        $this->assertNotNull($schemaCached);
+        $this->assertSame($schemaCached, $schemaNotCache);
+
+        for ($i = 2; $i <= 20; $i++) {
+            $command->addColumn('{{test_schema_cache}}', 'int' . $i, 'integer not null')->execute();
+
+            $schemaCached = $schema->getTableSchema('{{test_schema_cache}}');
+
+            $this->assertNotNull($schemaCached);
+            $this->assertNotSame($schemaCached, $schemaNotCache);
+        }
+
+        $this->assertCount(20, $schemaCached->getColumns());
+    }
+
+    /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchemaCachePrefixes()
      */
     public function testTableSchemaCacheWithTablePrefixes(
