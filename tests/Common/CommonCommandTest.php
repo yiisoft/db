@@ -407,7 +407,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
      * @throws InvalidConfigException
      * @throws Throwable
      */
-    public function testBatchInsertFailsOld(): void
+    public function testBatchInsertWithDuplicates(): void
     {
         $db = $this->getConnection(true);
 
