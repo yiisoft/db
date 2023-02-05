@@ -32,8 +32,9 @@
       <file>./src/Driver/PDO/PDODriverInterface.php</file>
       <file>./src/Expression/ExpressionBuilderInterface.php</file>
       <file>./src/Expression/ExpressionInterface.php</file>
-      <file>./src/Query/Data/DataReaderInterface.php</file>
+      <file>./src/Profiler/ProfilerInterface.php</file>
       <file>./src/Query/BatchQueryResultInterface.php</file>
+      <file>./src/Query/Data/DataReaderInterface.php</file>
       <file>./src/Query/QueryFunctionsInterface.php</file>
       <file>./src/Query/QueryInterface.php</file>
       <file>./src/Query/QueryPartsInterface.php</file>
