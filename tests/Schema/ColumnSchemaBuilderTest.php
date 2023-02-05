@@ -143,6 +143,8 @@ final class ColumnSchemaBuilderTest extends TestCase
                 'char' => 'string',
                 'string' => 'string',
                 'text' => 'string',
+                'mediumtext' => 'string',
+                'longtext' => 'string',
                 'tinyint' => 'numeric',
                 'smallint' => 'numeric',
                 'integer' => 'numeric',
