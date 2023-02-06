@@ -1980,4 +1980,23 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ->one();
         $this->assertEquals($expected, $actual, $this->upsertTestCharCast);
     }
+
+    public function testDecimalValue(): void
+    {
+        $decimalValue = 10.0;
+        $db = $this->getConnection(true);
+
+        $inserted = $db->createCommand()
+            ->insertWithReturningPks(
+                '{{%order}}',
+                ['customer_id' => 1, 'created_at' => 0, 'total' => $decimalValue]
+            );
+
+        $result = $db->createCommand('select * from {{%order}} where [[id]]=:id', ['id' => $inserted['id']])->queryOne();
+
+        $columnSchema = $db->getTableSchema('{{%order}}')->getColumn('total');
+        $phpTypecastValue = $columnSchema->phpTypecast($result['total']);
+
+        $this->assertSame($decimalValue, $phpTypecastValue);
+    }
 }
