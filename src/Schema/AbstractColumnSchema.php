@@ -242,6 +242,8 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
                 $this->type,
                 [
                     SchemaInterface::TYPE_TEXT,
+                    SchemaInterface::TYPE_MEDIUMTEXT,
+                    SchemaInterface::TYPE_LONGTEXT,
                     SchemaInterface::TYPE_STRING,
                     SchemaInterface::TYPE_BINARY,
                     SchemaInterface::TYPE_CHAR,

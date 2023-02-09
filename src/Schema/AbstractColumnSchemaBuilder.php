@@ -57,6 +57,8 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
         SchemaInterface::TYPE_CHAR => self::CATEGORY_STRING,
         SchemaInterface::TYPE_STRING => self::CATEGORY_STRING,
         SchemaInterface::TYPE_TEXT => self::CATEGORY_STRING,
+        SchemaInterface::TYPE_MEDIUMTEXT => self::CATEGORY_STRING,
+        SchemaInterface::TYPE_LONGTEXT => self::CATEGORY_STRING,
         SchemaInterface::TYPE_TINYINT => self::CATEGORY_NUMERIC,
         SchemaInterface::TYPE_SMALLINT => self::CATEGORY_NUMERIC,
         SchemaInterface::TYPE_INTEGER => self::CATEGORY_NUMERIC,
