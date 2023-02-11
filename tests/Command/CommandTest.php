@@ -225,7 +225,6 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $mb = $db->getMigrationBuilder();
 
         $expected = <<<SQL
         CREATE TABLE [test_table] (
@@ -240,14 +239,14 @@ final class CommandTest extends AbstractCommandTest
         ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
         SQL;
         $columns = [
-            'id' => $mb->primaryKey(5),
-            'name' => $mb->string(255)->notNull(),
-            'email' => $mb->string(255)->notNull(),
-            'address' => $mb->string(255)->notNull(),
-            'status' => $mb->integer()->notNull(),
-            'profile_id' => $mb->integer()->notNull(),
-            'created_at' => $mb->timestamp()->notNull(),
-            'updated_at' => $mb->timestamp()->notNull(),
+            'id' => SchemaInterface::TYPE_PK,
+            'name' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
+            'email' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
+            'address' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
+            'status' => SchemaInterface::TYPE_INTEGER . ' NOT NULL',
+            'profile_id' => SchemaInterface::TYPE_INTEGER . ' NOT NULL',
+            'created_at' => SchemaInterface::TYPE_TIMESTAMP . ' NOT NULL',
+            'updated_at' => SchemaInterface::TYPE_TIMESTAMP . ' NOT NULL',
         ];
         $options = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         $sql = $command->createTable('test_table', $columns, $options)->getSql();

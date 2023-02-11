@@ -63,11 +63,6 @@ final class Connection extends AbstractConnectionPDO
         return $this->quoter;
     }
 
-    public function getMigrationBuilder(): MigrationBuilder
-    {
-        return new MigrationBuilder($this->getSchema());
-    }
-
     public function getSchema(): SchemaInterface
     {
         if ($this->schema === null) {
