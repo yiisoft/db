@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Command;
 
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Pgsql\ColumnSchemaBuilder;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -225,7 +226,6 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $mb = $db->getMigrationBuilder();
 
         $expected = <<<SQL
         CREATE TABLE [test_table] (
@@ -240,14 +240,14 @@ final class CommandTest extends AbstractCommandTest
         ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
         SQL;
         $columns = [
-            'id' => $mb->primaryKey(5),
-            'name' => $mb->string(255)->notNull(),
-            'email' => $mb->string(255)->notNull(),
-            'address' => $mb->string(255)->notNull(),
-            'status' => $mb->integer()->notNull(),
-            'profile_id' => $mb->integer()->notNull(),
-            'created_at' => $mb->timestamp()->notNull(),
-            'updated_at' => $mb->timestamp()->notNull(),
+            'id' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_PK, 5)),
+            'name' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_STRING, 255))->notNull(),
+            'email' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_STRING, 255))->notNull(),
+            'address' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_STRING, 255))->notNull(),
+            'status' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_INTEGER))->notNull(),
+            'profile_id' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_INTEGER))->notNull(),
+            'created_at' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_TIMESTAMP))->notNull(),
+            'updated_at' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_TIMESTAMP))->notNull(),
         ];
         $options = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         $sql = $command->createTable('test_table', $columns, $options)->getSql();
