@@ -239,7 +239,7 @@ final class CommandTest extends AbstractCommandTest
         ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
         SQL;
         $columns = [
-            'id' => SchemaInterface::TYPE_PK . '(5)',
+            'id' => SchemaInterface::TYPE_PK,
             'name' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
             'email' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
             'address' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
