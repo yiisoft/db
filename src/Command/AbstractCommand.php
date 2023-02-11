@@ -97,7 +97,7 @@ abstract class AbstractCommand implements CommandInterface
     public function addCommentOnTable(string $table, string $comment): static
     {
         $sql = $this->queryBuilder()->addCommentOnTable($table, $comment);
-        return $this->setSql($sql);
+        return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function addDefaultValue(string $name, string $table, string $column, mixed $value): static
@@ -154,7 +154,6 @@ abstract class AbstractCommand implements CommandInterface
         foreach ($columns as &$column) {
             $column = $this->queryBuilder()->quoter()->quoteSql($column);
         }
-
         unset($column);
 
         $params = [];
@@ -192,9 +191,9 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function createView(string $viewName, QueryInterface|string $subquery): static
+    public function createView(string $viewName, QueryInterface|string $subQuery): static
     {
-        $sql = $this->queryBuilder()->createView($viewName, $subquery);
+        $sql = $this->queryBuilder()->createView($viewName, $subQuery);
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
     }
 
@@ -225,7 +224,7 @@ abstract class AbstractCommand implements CommandInterface
     public function dropCommentFromTable(string $table): static
     {
         $sql = $this->queryBuilder()->dropCommentFromTable($table);
-        return $this->setSql($sql);
+        return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function dropDefaultValue(string $name, string $table): static
