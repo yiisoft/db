@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Command;
 
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Pgsql\ColumnSchemaBuilder;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -240,14 +239,14 @@ final class CommandTest extends AbstractCommandTest
         ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
         SQL;
         $columns = [
-            'id' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_PK, 5)),
-            'name' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_STRING, 255))->notNull(),
-            'email' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_STRING, 255))->notNull(),
-            'address' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_STRING, 255))->notNull(),
-            'status' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_INTEGER))->notNull(),
-            'profile_id' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_INTEGER))->notNull(),
-            'created_at' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_TIMESTAMP))->notNull(),
-            'updated_at' => (new ColumnSchemaBuilder(SchemaInterface::TYPE_TIMESTAMP))->notNull(),
+            'id' => SchemaInterface::TYPE_PK . '(5)',
+            'name' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
+            'email' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
+            'address' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
+            'status' => SchemaInterface::TYPE_INTEGER . ' NOT NULL',
+            'profile_id' => SchemaInterface::TYPE_INTEGER . ' NOT NULL',
+            'created_at' => SchemaInterface::TYPE_TIMESTAMP . ' NOT NULL',
+            'updated_at' => SchemaInterface::TYPE_TIMESTAMP . ' NOT NULL',
         ];
         $options = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         $sql = $command->createTable('test_table', $columns, $options)->getSql();
