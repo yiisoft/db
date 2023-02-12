@@ -30,6 +30,6 @@ final class BetweenColumnsConditionBuilderTest extends TestCase
             (new BetweenColumnsConditionBuilder($db->getQueryBuilder()))->build($betweenColumnsCondition, $params)
         );
 
-        $this->assertEquals([], $params);
+        $this->assertEquals([':qp0' => 42], $params);
     }
 }
