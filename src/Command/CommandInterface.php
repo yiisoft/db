@@ -342,10 +342,10 @@ interface CommandInterface
      * @param QueryInterface|string $subQuery The select statement which defines the view. This can be either a string
      * or a {@see QueryInterface}.
      *
-     * @return static The command object itself.
-     *@throws InvalidArgumentException
-     *
+     * @throws InvalidArgumentException
      * @throws Exception
+     *
+     * @return static The command object itself.
      */
     public function createView(string $viewName, QueryInterface|string $subQuery): static;
 
@@ -581,7 +581,6 @@ interface CommandInterface
     /**
      * Attention! Please use function only as a last resort. The feature will be refactored in future releases.
      * Executes the INSERT command, returning primary key inserted values.
-     *
      *
      * @param string $table The table that new rows will be inserted into.
      * @param array $columns The column data (name => value) to be inserted into the table.
