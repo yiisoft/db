@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Helper;
 
-use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Schema\QuoterInterface;
 
 use function array_key_exists;
 use function array_shift;
