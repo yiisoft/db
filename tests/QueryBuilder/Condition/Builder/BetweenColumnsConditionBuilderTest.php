@@ -29,5 +29,7 @@ final class BetweenColumnsConditionBuilderTest extends TestCase
             ':qp0 BETWEEN [1] AND [100]',
             (new BetweenColumnsConditionBuilder($db->getQueryBuilder()))->build($betweenColumnsCondition, $params)
         );
+
+        $this->assertEquals([], $params);
     }
 }
