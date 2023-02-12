@@ -26,57 +26,6 @@ use function trim;
 final class QueryHelper
 {
     /**
-     * Clean up table names and aliases.
-     *
-     * Both aliases and names are enclosed into {{ and }}.
-     *
-     * @param array $tableNames non-empty array
-     * @param QuoterInterface $quoter The quoter used to quote table names and column names.
-     *
-     * @throws InvalidArgumentException
-     *
-     * @psalm-return array<array-key, ExpressionInterface|string> table names indexed by aliases
-     */
-    public function cleanUpTableNames(array $tableNames, QuoterInterface $quoter): array
-    {
-        $cleanedUpTableNames = [];
-        $pattern = <<<PATTERN
-        ~^\s*((?:['"`\[]|{{).*?(?:['"`\]]|}})|\(.*?\)|.*?)(?:(?:\s+(?:as\s+)?)((?:['"`\[]|{{).*?(?:['"`\]]|}})|.*?))?\s*$~iux
-        PATTERN;
-
-        /** @psalm-var array<array-key, ExpressionInterface|string> $tableNames */
-        foreach ($tableNames as $alias => $tableName) {
-            if (is_string($tableName) && !is_string($alias)) {
-                if (preg_match($pattern, $tableName, $matches)) {
-                    if (isset($matches[2])) {
-                        [, $tableName, $alias] = $matches;
-                    } else {
-                        $tableName = $alias = $matches[1];
-                    }
-                }
-            }
-
-            if (!is_string($alias)) {
-                throw new InvalidArgumentException(
-                    'To use Expression in from() method, pass it in array format with alias.'
-                );
-            }
-
-            if (is_string($tableName)) {
-                $cleanedUpTableNames[$quoter->ensureNameQuoted($alias)] = $quoter->ensureNameQuoted($tableName);
-            } elseif ($tableName instanceof ExpressionInterface) {
-                $cleanedUpTableNames[$quoter->ensureNameQuoted($alias)] = $tableName;
-            } else {
-                throw new InvalidArgumentException(
-                    'Use ExpressionInterface without cast to string as object of tableName'
-                );
-            }
-        }
-
-        return $cleanedUpTableNames;
-    }
-
-    /**
      * Removes {@see isEmpty()|empty operands} from the given query condition.
      *
      * @param array|string $condition the original condition

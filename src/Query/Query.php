@@ -440,7 +440,7 @@ class Query implements QueryInterface
 
     public function getTablesUsedInFrom(): array
     {
-        return $this->createQueryHelper()->cleanUpTableNames($this->from, $this->db->getQuoter());
+        return $this->db->getQuoter()->cleanUpTableNames($this->from);
     }
 
     public function getUnion(): array

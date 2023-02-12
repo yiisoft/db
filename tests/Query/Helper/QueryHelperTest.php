@@ -15,53 +15,6 @@ use Yiisoft\Db\Schema\Quoter;
  */
 final class QueryHelperTest extends TestCase
 {
-    public function tablesNameDataProvider(): array
-    {
-        return [
-            [['customer'], '', ['{{customer}}' => '{{customer}}']],
-            [['profile AS "prf"'], '', ['{{prf}}' => '{{profile}}']],
-            [['mainframe as400'], '', ['{{as400}}' => '{{mainframe}}']],
-            [
-                ['x' => new Expression('(SELECT id FROM user)')],
-                '',
-                ['{{x}}' => new Expression('(SELECT id FROM user)')],
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider tablesNameDataProvider
-     *
-     * @throws InvalidArgumentException
-     */
-    public function testCleanUpTableNames(array $tables, string $prefixDatabase, array $expected): void
-    {
-        $this->assertEquals(
-            $expected,
-            $this->createQueryHelper()->cleanUpTableNames($tables, new Quoter('"', '"'))
-        );
-    }
-
-    public function testCleanUpTableNamesException(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('To use Expression in from() method, pass it in array format with alias.');
-        $this->createQueryHelper()->cleanUpTableNames(
-            [new Expression('(SELECT id FROM user)')],
-            new Quoter('"', '"')
-        );
-    }
-
-    public function testCleanUpTableNamesWithCastException(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Use ExpressionInterface without cast to string as object of tableName');
-        $this->createQueryHelper()->cleanUpTableNames(
-            ['tableAlias' => 123],
-            new Quoter('"', '"')
-        );
-    }
-
     public function filterConditionDataProvider(): array
     {
         return [
