@@ -577,7 +577,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $command->dropTable('{{test_schema_cache}}')->execute();
         }
 
-        $command->createTable('{{test_schema_cache}}', ['int1' => 'integer not null'])->execute();
+        $command->createTable('{{test_schema_cache}}', ['int1' => 'integer not null default 0'])->execute();
 
         $schemaNotCache = $schema->getTableSchema('{{test_schema_cache}}', true);
 
@@ -589,7 +589,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertSame($schemaCached, $schemaNotCache);
 
         for ($i = 2; $i <= 20; $i++) {
-            $command->addColumn('{{test_schema_cache}}', 'int' . $i, 'integer not null')->execute();
+            $command->addColumn('{{test_schema_cache}}', 'int' . $i, 'integer not null default 0')->execute();
 
             $schemaCached = $schema->getTableSchema('{{test_schema_cache}}');
 
