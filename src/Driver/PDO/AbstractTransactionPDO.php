@@ -185,14 +185,6 @@ abstract class AbstractTransactionPDO implements TransactionInterface
     }
 
     /**
-     * @throws Exception|InvalidConfigException|Throwable
-     */
-    protected function setTransactionIsolationLevel(string $level): void
-    {
-        $this->db->createCommand("SET TRANSACTION ISOLATION LEVEL $level")->execute();
-    }
-
-    /**
      * Creates a new savepoint.
      *
      * @param string $name the savepoint name
@@ -215,5 +207,13 @@ abstract class AbstractTransactionPDO implements TransactionInterface
     public function releaseSavepoint(string $name): void
     {
         $this->db->createCommand("RELEASE SAVEPOINT $name")->execute();
+    }
+
+    /**
+     * @throws Exception|InvalidConfigException|Throwable
+     */
+    protected function setTransactionIsolationLevel(string $level): void
+    {
+        $this->db->createCommand("SET TRANSACTION ISOLATION LEVEL $level")->execute();
     }
 }

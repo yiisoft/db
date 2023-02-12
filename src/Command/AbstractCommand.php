@@ -498,6 +498,16 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
+     * Returns the query result.
+     *
+     * @param int $queryMode One from modes QUERY_MODE_*.
+     *
+     * @throws Exception
+     * @throws Throwable
+     */
+    abstract protected function internalGetQueryResult(int $queryMode): mixed;
+
+    /**
      * Executes a prepared statement.
      *
      * @param string|null $rawSql the rawSql if it has been created.
@@ -513,19 +523,13 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Returns the query result.
-     *
-     * @param int $queryMode One from modes QUERY_MODE_*.
-     *
-     * @throws Exception
-     * @throws Throwable
+     * Logs the current database query if query logging is enabled and returns the profiling token if profiling is
+     * enabled.
      */
-    abstract protected function internalGetQueryResult(int $queryMode): mixed;
-
-    /**
-     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
-     */
-    abstract protected function refreshTableSchema(): void;
+    protected function logQuery(string $rawSql, string $category): void
+    {
+        $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
+    }
 
     /**
      * The method is called after the query is executed.
@@ -568,13 +572,9 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Logs the current database query if query logging is enabled and returns the profiling token if profiling is
-     * enabled.
+     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
      */
-    protected function logQuery(string $rawSql, string $category): void
-    {
-        $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
-    }
+    abstract protected function refreshTableSchema(): void;
 
     /**
      * Marks a specified table schema to be refreshed after command execution.

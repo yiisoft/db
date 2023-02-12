@@ -16,17 +16,6 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 interface ConnectionPDOInterface extends ConnectionInterface
 {
     /**
-     * The PHP PDO instance associated with this DB connection. This property is mainly managed by {@see open()} and
-     * {@see close()} methods. When a DB connection is active, this property will represent a PDO instance; otherwise,
-     * it will be null.
-     *
-     * @return PDO|null The PHP PDO instance associated with this DB connection.
-     *
-     * {@see pdoClass}
-     */
-    public function getPDO(): PDO|null;
-
-    /**
      * Returns the PDO instance for the current connection.
      *
      * This method will open the DB connection and then return {@see pdo}.
@@ -37,6 +26,17 @@ interface ConnectionPDOInterface extends ConnectionInterface
      * @return PDO|null The PDO instance for the current connection.
      */
     public function getActivePDO(string $sql = '', bool $forRead = null): PDO|null;
+
+    /**
+     * The PHP PDO instance associated with this DB connection. This property is mainly managed by {@see open()} and
+     * {@see close()} methods. When a DB connection is active, this property will represent a PDO instance; otherwise,
+     * it will be null.
+     *
+     * @return PDO|null The PHP PDO instance associated with this DB connection.
+     *
+     * {@see pdoClass}
+     */
+    public function getPDO(): PDO|null;
 
     /**
      * Returns current DB driver.

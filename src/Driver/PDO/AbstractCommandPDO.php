@@ -156,6 +156,18 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
     }
 
     /**
+     * Executes a prepared statement.
+     *
+     * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
+     *
+     * @param string|null $rawSql the rawSql if it has been created.
+     *
+     * @throws Exception
+     * @throws Throwable
+     */
+    abstract protected function internalExecute(string|null $rawSql): void;
+
+    /**
      * @throws InvalidParamException
      */
     protected function internalGetQueryResult(int $queryMode): mixed
@@ -195,16 +207,4 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
             $this->db->getSchema()->refreshTableSchema($this->refreshTableName);
         }
     }
-
-    /**
-     * Executes a prepared statement.
-     *
-     * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
-     *
-     * @param string|null $rawSql the rawSql if it has been created.
-     *
-     * @throws Exception
-     * @throws Throwable
-     */
-    abstract protected function internalExecute(string|null $rawSql): void;
 }

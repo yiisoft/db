@@ -119,11 +119,6 @@ abstract class AbstractConnectionPDO extends AbstractConnection implements Conne
         return $this->emulatePrepare;
     }
 
-    public function getPDO(): PDO|null
-    {
-        return $this->pdo;
-    }
-
     public function getActivePDO(string|null $sql = '', bool|null $forRead = null): PDO
     {
         $this->open();
@@ -134,6 +129,11 @@ abstract class AbstractConnectionPDO extends AbstractConnection implements Conne
         }
 
         return $pdo;
+    }
+
+    public function getPDO(): PDO|null
+    {
+        return $this->pdo;
     }
 
     public function getLastInsertID(string $sequenceName = null): string
