@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Schema;
 
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Quoter;
 use Yiisoft\Db\Tests\AbstractQuoterTest;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -53,5 +55,50 @@ final class QuoterTest extends AbstractQuoterTest
         $quoter = new Quoter('`', '`');
 
         $this->assertSame('column', $quoter->unquoteSimpleColumnName('`column`'));
+    }
+
+    /**
+     * @dataProvider tablesNameDataProvider
+     *
+     * @throws InvalidArgumentException
+     */
+    public function testCleanUpTableNames(array $tables, string $prefixDatabase, array $expected): void
+    {
+        $this->assertEquals(
+            $expected,
+            (new Quoter('"', '"'))->cleanUpTableNames($tables)
+        );
+    }
+
+    public function tablesNameDataProvider(): array
+    {
+        return [
+            [['customer'], '', ['{{customer}}' => '{{customer}}']],
+            [['profile AS "prf"'], '', ['{{prf}}' => '{{profile}}']],
+            [['mainframe as400'], '', ['{{as400}}' => '{{mainframe}}']],
+            [
+                ['x' => new Expression('(SELECT id FROM user)')],
+                '',
+                ['{{x}}' => new Expression('(SELECT id FROM user)')],
+            ],
+        ];
+    }
+
+    public function testCleanUpTableNamesException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('To use Expression in from() method, pass it in array format with alias.');
+        (new Quoter('"', '"'))->cleanUpTableNames(
+            [new Expression('(SELECT id FROM user)')],
+        );
+    }
+
+    public function testCleanUpTableNamesWithCastException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Use ExpressionInterface without cast to string as object of tableName');
+        (new Quoter('"', '"'))->cleanUpTableNames(
+            ['tableAlias' => 123],
+        );
     }
 }

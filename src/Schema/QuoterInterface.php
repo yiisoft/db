@@ -4,12 +4,28 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Expression\ExpressionInterface;
+
 /**
  * The QuoterInterface class is an interface that provides a set of methods that can be used to quote table and column
  * names, values, and other SQL expressions independently of the database.
  */
 interface QuoterInterface
 {
+    /**
+     * Clean up table names and aliases.
+     *
+     * Both aliases and names are enclosed into {{ and }}.
+     *
+     * @param array $tableNames non-empty array
+     *
+     * @throws InvalidArgumentException
+     *
+     * @psalm-return array<array-key, ExpressionInterface|string> table names indexed by aliases
+     */
+    public function cleanUpTableNames(array $tableNames): array;
+
     /**
      * Splits full table name into parts.
      *
