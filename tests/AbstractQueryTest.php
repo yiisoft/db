@@ -995,4 +995,108 @@ abstract class AbstractQueryTest extends TestCase
             ],
         ];
     }
+
+    public function filterConditionDataProvider(): array
+    {
+        return [
+            /* like */
+            [['like', 'name', []], null],
+            [['not like', 'name', []], null],
+            [['or like', 'name', []],  null],
+            [['or not like', 'name', []], null],
+
+            /* not */
+            [['not', ''], null],
+
+            /* and */
+            [['and', '', ''], null],
+            [['and', '', 'id=2'], ['and', 'id=2']],
+            [['and', 'id=1', ''], ['and', 'id=1']],
+            [['and', 'type=1', ['or', '', 'id=2']], ['and', 'type=1', ['or', 'id=2']]],
+
+            /* or */
+            [['or', 'id=1', ''], ['or', 'id=1']],
+            [['or', 'type=1', ['or', '', 'id=2']], ['or', 'type=1', ['or', 'id=2']]],
+
+            /* between */
+            [['between', 'id', 1, null], null],
+            [['between', 'id'], null],
+            [['between', 'id', 1], null],
+            [['not between', 'id', null, 10], null],
+            [['between', 'id', 1, 2], ['between', 'id', 1, 2]],
+
+            /* in */
+            [['in', 'id', []], null],
+            [['not in', 'id', []], null],
+
+            /* simple conditions */
+            [['=', 'a', ''], null],
+            [['>', 'a', ''], null],
+            [['>=', 'a', ''], null],
+            [['<', 'a', ''], null],
+            [['<=', 'a', ''], null],
+            [['<>', 'a', ''], null],
+            [['!=', 'a', ''], null],
+        ];
+    }
+
+    /**
+     * @dataProvider filterConditionDataProvider
+     */
+    public function testFilterCondition(array|string $condition, array|string|null $expected): void
+    {
+        $query = (new Query($this->getConnection()));
+        $this->assertNull($query->getWhere());
+
+        $query->filterWhere($condition);
+        $this->assertEquals($expected, $query->getWhere());
+    }
+
+    public function normalizeOrderByProvider(): array
+    {
+        return [
+            ['id', ['id' => 4]],
+            [['id'], ['id']],
+            ['name ASC, date DESC', ['name' => 4, 'date' => 3]],
+            [new Expression('SUBSTR(name, 3, 4) DESC, x ASC'), [new Expression('SUBSTR(name, 3, 4) DESC, x ASC')]],
+        ];
+    }
+
+    /**
+     * @dataProvider normalizeOrderByProvider
+     */
+    public function testNormalizeOrderBy(array|string|Expression $columns, array|string $expected): void
+    {
+        $query = (new Query($this->getConnection()));
+        $this->assertEquals([], $query->getOrderBy());
+
+        $query->orderBy($columns);
+        $this->assertEquals($expected, $query->getOrderBy());
+    }
+
+    public function normalizeSelectProvider(): array
+    {
+        return [
+            ['exists', ['exists' => 'exists']],
+            ['count(*) > 1', ['count(*) > 1']],
+            ['name, name, name as X, name as X', ['name' => 'name', 'X' => 'name']],
+            [
+                ['email', 'address', 'status' => new Expression('1')],
+                ['email' => 'email', 'address' => 'address', 'status' => new Expression('1')],
+            ],
+            [new Expression('1 as Ab'), [new Expression('1 as Ab')]],
+        ];
+    }
+
+    /**
+     * @dataProvider normalizeSelectProvider
+     */
+    public function testNormalizeSelect(array|string|Expression $columns, array|string $expected): void
+    {
+        $query = (new Query($this->getConnection()));
+        $this->assertEquals([], $query->getSelect());
+
+        $query->select($columns);
+        $this->assertEquals($expected, $query->getSelect());
+    }
 }

@@ -90,7 +90,6 @@ final class QuoterTest extends AbstractQuoterTest
         $this->expectExceptionMessage('To use Expression in from() method, pass it in array format with alias.');
         (new Quoter('"', '"'))->cleanUpTableNames(
             [new Expression('(SELECT id FROM user)')],
-
         );
     }
 
@@ -100,7 +99,6 @@ final class QuoterTest extends AbstractQuoterTest
         $this->expectExceptionMessage('Use ExpressionInterface without cast to string as object of tableName');
         (new Quoter('"', '"'))->cleanUpTableNames(
             ['tableAlias' => 123],
-
         );
     }
 }
