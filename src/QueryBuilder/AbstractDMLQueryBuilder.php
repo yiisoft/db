@@ -159,7 +159,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * Prepare select-subquery and field names for INSERT INTO ... SELECT SQL statement.
+     * Prepare select-subQuery and field names for INSERT INTO ... SELECT SQL statement.
      *
      * @param QueryInterface $columns Object, which represents select query.
      * @param array $params the parameters to be bound to the generated SQL statement. These parameters will be included

@@ -19,13 +19,13 @@ final class Param implements ParamInterface, ExpressionInterface
     {
     }
 
-    public function getValue(): mixed
-    {
-        return $this->value;
-    }
-
     public function getType(): int
     {
         return $this->type;
+    }
+
+    public function getValue(): mixed
+    {
+        return $this->value;
     }
 }

@@ -40,7 +40,7 @@ final class PDODriverTest extends TestCase
     {
         $dsn = 'sqlite::memory:';
         $pdoDriver = new PDODriver($dsn);
-        $pdoDriver->setCharSet('utf8');
+        $pdoDriver->charset('utf8');
 
         $this->assertSame('utf8', $pdoDriver->getCharSet());
     }

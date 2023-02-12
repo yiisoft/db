@@ -97,7 +97,7 @@ abstract class AbstractCommand implements CommandInterface
     public function addCommentOnTable(string $table, string $comment): static
     {
         $sql = $this->queryBuilder()->addCommentOnTable($table, $comment);
-        return $this->setSql($sql);
+        return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function addDefaultValue(string $name, string $table, string $column, mixed $value): static
@@ -154,7 +154,6 @@ abstract class AbstractCommand implements CommandInterface
         foreach ($columns as &$column) {
             $column = $this->queryBuilder()->quoter()->quoteSql($column);
         }
-
         unset($column);
 
         $params = [];
@@ -192,9 +191,9 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function createView(string $viewName, QueryInterface|string $subquery): static
+    public function createView(string $viewName, QueryInterface|string $subQuery): static
     {
-        $sql = $this->queryBuilder()->createView($viewName, $subquery);
+        $sql = $this->queryBuilder()->createView($viewName, $subQuery);
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
     }
 
@@ -225,7 +224,7 @@ abstract class AbstractCommand implements CommandInterface
     public function dropCommentFromTable(string $table): static
     {
         $sql = $this->queryBuilder()->dropCommentFromTable($table);
-        return $this->setSql($sql);
+        return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function dropDefaultValue(string $name, string $table): static
@@ -499,6 +498,16 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
+     * Returns the query result.
+     *
+     * @param int $queryMode One from modes QUERY_MODE_*.
+     *
+     * @throws Exception
+     * @throws Throwable
+     */
+    abstract protected function internalGetQueryResult(int $queryMode): mixed;
+
+    /**
      * Executes a prepared statement.
      *
      * @param string|null $rawSql the rawSql if it has been created.
@@ -514,19 +523,13 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Returns the query result.
-     *
-     * @param int $queryMode One from modes QUERY_MODE_*.
-     *
-     * @throws Exception
-     * @throws Throwable
+     * Logs the current database query if query logging is enabled and returns the profiling token if profiling is
+     * enabled.
      */
-    abstract protected function internalGetQueryResult(int $queryMode): mixed;
-
-    /**
-     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
-     */
-    abstract protected function refreshTableSchema(): void;
+    protected function logQuery(string $rawSql, string $category): void
+    {
+        $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
+    }
 
     /**
      * The method is called after the query is executed.
@@ -569,13 +572,9 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Logs the current database query if query logging is enabled and returns the profiling token if profiling is
-     * enabled.
+     * Refreshes table schema, which was marked by {@see requireTableSchemaRefresh()}.
      */
-    protected function logQuery(string $rawSql, string $category): void
-    {
-        $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
-    }
+    abstract protected function refreshTableSchema(): void;
 
     /**
      * Marks a specified table schema to be refreshed after command execution.
