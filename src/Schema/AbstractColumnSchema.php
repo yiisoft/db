@@ -254,8 +254,8 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
 
         if (
             $value === null
-            || gettype($value) === $this->phpType
             || $value instanceof ExpressionInterface
+            || gettype($value) === $this->phpType
         ) {
             return $value;
         }

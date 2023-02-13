@@ -176,6 +176,56 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
         return $this->buildCompleteString($format);
     }
 
+    public function getType(): string|null
+    {
+        return $this->type;
+    }
+
+    public function getLength(): array|int|string|null
+    {
+        return $this->length;
+    }
+
+    public function isNotNull(): bool|null
+    {
+        return $this->isNotNull;
+    }
+
+    public function isUnique(): bool
+    {
+        return $this->isUnique;
+    }
+
+    public function getCheck(): string|null
+    {
+        return $this->check;
+    }
+
+    public function getDefault(): mixed
+    {
+        return $this->default;
+    }
+
+    public function getAppend(): string|null
+    {
+        return $this->append;
+    }
+
+    public function isUnsigned(): bool
+    {
+        return $this->isUnsigned;
+    }
+
+    public function getCategoryMap(): array
+    {
+        return $this->categoryMap;
+    }
+
+    public function getComment(): string|null
+    {
+        return $this->comment;
+    }
+
     /**
      * Builds the length, precision part of the column.
      *
@@ -228,7 +278,7 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
      *
      * @return string|null string with default value of column.
      */
-    protected function buildDefaultValue()
+    protected function buildDefaultValue(): string|null
     {
         if ($this->default === null) {
             return $this->isNotNull === false ? 'NULL' : null;
@@ -327,55 +377,5 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
         ];
 
         return strtr($format, $placeholderValues);
-    }
-
-    public function getType(): string|null
-    {
-        return $this->type;
-    }
-
-    public function getLength(): array|int|string|null
-    {
-        return $this->length;
-    }
-
-    public function isNotNull(): bool|null
-    {
-        return $this->isNotNull;
-    }
-
-    public function isUnique(): bool
-    {
-        return $this->isUnique;
-    }
-
-    public function getCheck(): string|null
-    {
-        return $this->check;
-    }
-
-    public function getDefault(): mixed
-    {
-        return $this->default;
-    }
-
-    public function getAppend(): string|null
-    {
-        return $this->append;
-    }
-
-    public function isUnsigned(): bool
-    {
-        return $this->isUnsigned;
-    }
-
-    public function getCategoryMap(): array
-    {
-        return $this->categoryMap;
-    }
-
-    public function getComment(): string|null
-    {
-        return $this->comment;
     }
 }

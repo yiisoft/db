@@ -67,17 +67,18 @@ class Query implements QueryInterface
     protected array $groupBy = [];
     protected array|ExpressionInterface|string|null $having = null;
     protected array $join = [];
-    private array $orderBy = [];
+    protected array $orderBy = [];
     protected array $params = [];
     protected array $union = [];
     protected array $withQueries = [];
-    private bool $emulateExecution = false;
-    private Closure|string|null $indexBy = null;
-    private ExpressionInterface|int|null $limit = null;
-    private ExpressionInterface|int|null $offset = null;
-    private array|string|ExpressionInterface|null $where = null;
+    protected Closure|string|null $indexBy = null;
+    protected ExpressionInterface|int|null $limit = null;
+    protected ExpressionInterface|int|null $offset = null;
+    protected array|string|ExpressionInterface|null $where = null;
 
-    public function __construct(private ConnectionInterface $db)
+    private bool $emulateExecution = false;
+
+    public function __construct(protected ConnectionInterface $db)
     {
     }
 
