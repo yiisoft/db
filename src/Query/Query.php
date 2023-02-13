@@ -13,7 +13,6 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Helper\ArrayHelper;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function array_merge;
@@ -222,7 +221,7 @@ class Query implements QueryInterface
     {
         return match ($this->emulateExecution) {
             true => [],
-            false => $this->populate($this->createCommand()->queryAll()),
+            false => $this->createCommand()->queryAll(),
         };
     }
 
@@ -601,25 +600,6 @@ class Query implements QueryInterface
         $this->params = $params;
 
         return $this;
-    }
-
-    /**
-     * @psalm-suppress MixedArrayOffset
-     */
-    public function populate(array $rows): array
-    {
-        if ($this->indexBy === null) {
-            return $rows;
-        }
-
-        $result = [];
-
-        /** @psalm-var array[][] $row */
-        foreach ($rows as $row) {
-            $result[ArrayHelper::getValueByPath($row, $this->indexBy)] = $row;
-        }
-
-        return $result;
     }
 
     public function prepare(QueryBuilderInterface $builder): QueryInterface

@@ -8,6 +8,7 @@ use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Helper\ArrayHelper;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 
 use function current;
@@ -95,6 +96,8 @@ class BatchQueryResult implements BatchQueryResultInterface
      * @throws Throwable
      *
      * @return array the data fetched.
+     *
+     * @psalm-suppress MixedArrayOffset
      */
     protected function fetchData(): array
     {
@@ -103,8 +106,20 @@ class BatchQueryResult implements BatchQueryResultInterface
         }
 
         $rows = $this->getRows();
+        $indexBy = $this->query->getIndexBy();
 
-        return $this->query->populate($rows);
+        if ($indexBy === null) {
+            return $rows;
+        }
+
+        $result = [];
+
+        /** @psalm-var array[][] $row */
+        foreach ($rows as $row) {
+            $result[ArrayHelper::getValueByPath($row, $indexBy)] = $row;
+        }
+
+        return $result;
     }
 
     /**
