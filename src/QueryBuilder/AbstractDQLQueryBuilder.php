@@ -219,6 +219,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             }
         }
 
+        /** @psalm-var array<string, Expression|string> $columns */
         return 'GROUP BY ' . implode(', ', $columns);
     }
 
@@ -371,6 +372,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             }
         }
 
+        /** @psalm-var array<string, Expression|string> $columns */
         return $select . ' ' . implode(', ', $columns);
     }
 

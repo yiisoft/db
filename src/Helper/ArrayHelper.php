@@ -205,10 +205,13 @@ final class ArrayHelper
      * @throws \Exception
      *
      * @return array the indexed and/or grouped array
+     *
+     * @psalm-suppress MixedArrayAssignment
      */
     public static function index(array $array, string|null $key = null, array $groups = []): array
     {
         $result = [];
+
         foreach ($array as $element) {
             $lastArray = &$result;
 
@@ -229,13 +232,13 @@ final class ArrayHelper
                 /** @psalm-var mixed $value */
                 $value = self::getValueByPath($element, $key);
                 if ($value !== null) {
-                    $lastArray[(string)$value] = $element;
+                    $lastArray[(string) $value] = $element;
                 }
             }
             unset($lastArray);
         }
 
-        return $result;
+        return is_array($result) ? $result : [];
     }
 
     /**

@@ -25,6 +25,9 @@ use function count;
  *
  * Which, depending on DBMS, will result in a well-prepared condition. For example, in PostgresSQL it will be compiled
  * to `WHERE "items" @> ARRAY[1, 2, 3]::integer[]`.
+ *
+ * @template-implements ArrayAccess<int, mixed>
+ * @template-implements IteratorAggregate<int>
  */
 class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
 {
