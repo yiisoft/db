@@ -238,7 +238,8 @@ final class ArrayHelper
             unset($lastArray);
         }
 
-        return is_array($result) ? $result : [];
+        /** @psalm-var array $result */
+        return $result;
     }
 
     /**
