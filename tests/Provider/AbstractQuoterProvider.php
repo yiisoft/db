@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use Yiisoft\Db\Expression\Expression;
+
 abstract class AbstractQuoterProvider
 {
     /**
@@ -85,6 +87,20 @@ abstract class AbstractQuoterProvider
             ['[other].[animal2]', 'animal2', 'other'],
             ['other.[animal2]', 'animal2', 'other'],
             ['other.animal2', 'animal2', 'other'],
+        ];
+    }
+
+    public function tablesNameDataProvider(): array
+    {
+        return [
+            [['customer'], '', ['{{customer}}' => '{{customer}}']],
+            [['profile AS "prf"'], '', ['{{prf}}' => '{{profile}}']],
+            [['mainframe as400'], '', ['{{as400}}' => '{{mainframe}}']],
+            [
+                ['x' => new Expression('(SELECT id FROM user)')],
+                '',
+                ['{{x}}' => new Expression('(SELECT id FROM user)')],
+            ],
         ];
     }
 }

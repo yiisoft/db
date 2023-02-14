@@ -58,7 +58,7 @@ final class QuoterTest extends AbstractQuoterTest
     }
 
     /**
-     * @dataProvider tablesNameDataProvider
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::tablesNameDataProvider()
      *
      * @throws InvalidArgumentException
      */
@@ -68,20 +68,6 @@ final class QuoterTest extends AbstractQuoterTest
             $expected,
             (new Quoter('"', '"'))->cleanUpTableNames($tables)
         );
-    }
-
-    public function tablesNameDataProvider(): array
-    {
-        return [
-            [['customer'], '', ['{{customer}}' => '{{customer}}']],
-            [['profile AS "prf"'], '', ['{{prf}}' => '{{profile}}']],
-            [['mainframe as400'], '', ['{{as400}}' => '{{mainframe}}']],
-            [
-                ['x' => new Expression('(SELECT id FROM user)')],
-                '',
-                ['{{x}}' => new Expression('(SELECT id FROM user)')],
-            ],
-        ];
     }
 
     public function testCleanUpTableNamesException(): void
