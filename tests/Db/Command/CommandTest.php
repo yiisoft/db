@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Command;
 
+use Closure;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
@@ -117,20 +118,20 @@ final class CommandTest extends AbstractCommandTest
         array|string $column2,
         string|null $delete,
         string|null $update,
-        string $expected
+        Closure $expected
     ): void {
         $db = $this->getConnection();
 
         $command = $db->createCommand();
         $sql = $command->addForeignKey($name, $tableName, $column1, $tableName, $column2, $delete, $update)->getSql();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame($expected($db->getName()), $sql);
     }
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addPrimaryKeySql
      */
-    public function testAddPrimaryKeySql(string $name, string $tableName, array|string $column, string $expected): void
+    public function testAddPrimaryKeySql(string $name, string $tableName, array|string $column, Closure $expected): void
     {
         $db = $this->getConnection();
 
@@ -138,20 +139,20 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->addPrimaryKey($name, $tableName, $column)->getSql();
 
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame($expected($db->getName()), $sql);
     }
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addUniqueSql
      */
-    public function testAddUniqueSql(string $name, string $tableName, array|string $column, string $expected): void
+    public function testAddUniqueSql(string $name, string $tableName, array|string $column, Closure $expected): void
     {
         $db = $this->getConnection();
 
         $command = $db->createCommand();
         $sql = $command->addUnique($name, $tableName, $column)->getSql();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame($expected($db->getName()), $sql);
     }
 
     public function testAlterColumn(): void
