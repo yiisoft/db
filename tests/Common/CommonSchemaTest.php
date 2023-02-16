@@ -63,7 +63,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columns()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columns
      */
     public function testColumnSchema(array $columns, string $tableName): void
     {
@@ -330,7 +330,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columnsTypeChar()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columnsTypeChar
      */
     public function testGetStringFieldsSize(
         string $columnName,
@@ -373,7 +373,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::pdoAttributes()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::pdoAttributes
      *
      * @throws NotSupportedException
      */
@@ -403,7 +403,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchema()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchema
      */
     public function testGetTableSchema(string $name, string $expectedName): void
     {
@@ -416,7 +416,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::pdoAttributes()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::pdoAttributes
      *
      * @throws NotSupportedException
      */
@@ -601,7 +601,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchemaCachePrefixes()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchemaCachePrefixes
      */
     public function testTableSchemaCacheWithTablePrefixes(
         string $tablePrefix,
@@ -642,7 +642,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints
      *
      * @throws Exception
      * @throws JsonException
@@ -663,7 +663,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints
      *
      * @throws Exception
      * @throws JsonException
@@ -687,7 +687,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::constraints
      *
      * @throws Exception
      * @throws JsonException
@@ -1058,7 +1058,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::withIndexDataProvider()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::withIndexDataProvider
      */
     public function testWorkWithIndex(
         string $indexType = null,
