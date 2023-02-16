@@ -15,7 +15,7 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
     use TestTrait;
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaBuilderProvider::types();
+     * @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaBuilderProvider::types
      */
     public function testCustomTypes(string $expected, string $type, int|null $length, array $calls): void
     {

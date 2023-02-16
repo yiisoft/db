@@ -119,7 +119,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addForeignKey()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addForeignKey
      */
     public function testAddForeignKey(
         string $name,
@@ -140,7 +140,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addPrimaryKey()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addPrimaryKey
      */
     public function testAddPrimaryKey(string $name, string $table, array|string $columns, string $expected): void
     {
@@ -153,7 +153,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addUnique()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::addUnique
      */
     public function testAddUnique(string $name, string $table, array|string $columns, string $expected): void
     {
@@ -185,7 +185,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert
      */
     public function testBatchInsert(string $table, array $columns, iterable|Generator $rows, string $expected): void
     {
@@ -198,7 +198,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildCondition()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildCondition
      */
     public function testBuildCondition(
         array|ExpressionInterface|string $condition,
@@ -280,7 +280,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildFilterCondition()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildFilterCondition
      */
     public function testBuildFilterCondition(array $condition, string $expected, array $expectedParams): void
     {
@@ -379,7 +379,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildLikeCondition()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildLikeCondition
      */
     public function testBuildLikeCondition(
         array|ExpressionInterface $condition,
@@ -606,7 +606,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildFrom()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildFrom
      */
     public function testBuildWithFrom(mixed $table, string $expectedSql, array $expectedParams = []): void
     {
@@ -1156,7 +1156,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildWhereExists()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildWhereExists
      */
     public function testBuildWithWhereExists(string $cond, string $expectedQuerySql): void
     {
@@ -1282,7 +1282,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::createIndex()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::createIndex
      */
     public function testCreateIndex(string $sql, Closure $builder): void
     {
@@ -1311,7 +1311,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::delete()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::delete
      */
     public function testDelete(string $table, array|string $condition, string $expectedSQL, array $expectedParams): void
     {
@@ -1557,7 +1557,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insert()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insert
      */
     public function testInsert(
         string $table,
@@ -1575,7 +1575,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insertWithReturningPks()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insertWithReturningPks
      */
     public function testInsertWithReturningPks(
         string $table,
@@ -1709,7 +1709,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::selectExist()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::selectExist
      */
     public function testSelectExists(string $sql, string $expected): void
     {
@@ -1885,7 +1885,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::update()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::update
      */
     public function testUpdate(
         string $table,
@@ -1904,7 +1904,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert
      */
     public function testUpsert(
         string $table,
@@ -1924,7 +1924,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert
      */
     public function testUpsertExecute(
         string $table,

@@ -19,7 +19,7 @@ abstract class CommonCommandPDOTest extends TestCase
     use TestTrait;
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandPDOProvider::bindParam()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandPDOProvider::bindParam
      */
     public function testBindParam(
         string $field,
@@ -52,7 +52,7 @@ abstract class CommonCommandPDOTest extends TestCase
     /**
      * Test whether param binding works in other places than WHERE.
      *
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandPDOProvider::bindParamsNonWhere()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandPDOProvider::bindParamsNonWhere
      */
     public function testBindParamsNonWhere(string $sql): void
     {

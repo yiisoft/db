@@ -755,7 +755,7 @@ abstract class AbstractQueryTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populate()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populate
      */
     public function testPopulate(array $rows): void
     {
@@ -766,9 +766,9 @@ abstract class AbstractQueryTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIndexBy()
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIncorrectIndexBy()
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIndexByClosure()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIndexBy
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIncorrectIndexBy
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIndexByClosure
      */
     public function testPopulateWithIndexBy(Closure|string|null $indexBy, array $rows, array $populated): void
     {
@@ -779,7 +779,7 @@ abstract class AbstractQueryTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIndexBy()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIndexBy
      */
     public function testPopulateWithIndexByWithObject(Closure|string|null $indexBy, array $rows, array $expectedPopulated): void
     {
@@ -793,7 +793,7 @@ abstract class AbstractQueryTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIncorrectIndexBy()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIncorrectIndexBy
      */
     public function testPopulateWithIncorrectIndexByWithObject(Closure|string|null $indexBy, array $rows): void
     {
@@ -814,7 +814,7 @@ abstract class AbstractQueryTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::filterConditionData()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::filterConditionData
      */
     public function testFilterCondition(array|string $condition, array|string|null $expected): void
     {
@@ -826,7 +826,7 @@ abstract class AbstractQueryTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::normalizeOrderBy()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::normalizeOrderBy
      */
     public function testNormalizeOrderBy(array|string|Expression $columns, array|string $expected): void
     {
@@ -838,7 +838,7 @@ abstract class AbstractQueryTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::normalizeSelect()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::normalizeSelect
      */
     public function testNormalizeSelect(array|string|Expression $columns, array|string $expected): void
     {

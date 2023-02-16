@@ -170,7 +170,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addForeignKey()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addForeignKey
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -226,7 +226,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addPrimaryKey()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addPrimaryKey
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -259,7 +259,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addUnique()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addUnique
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -294,7 +294,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     /**
      * Make sure that `{{something}}` in values will not be encoded.
      *
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::batchInsert()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::batchInsert
      *
      * {@see https://github.com/yiisoft/yii2/issues/11242}
      *
@@ -483,7 +483,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::createIndex()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::createIndex
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -1379,7 +1379,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     /**
      * Test INSERT INTO ... SELECT SQL statement with wrong query object.
      *
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::invalidSelectColumns()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::invalidSelectColumns
      *
      * @throws Exception
      * @throws Throwable
@@ -1878,7 +1878,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::update()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::update
      *
      * @throws Exception
      * @throws Throwable
@@ -1901,7 +1901,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::upsert()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::upsert
      *
      * @throws Exception
      * @throws InvalidConfigException
