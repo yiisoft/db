@@ -2002,7 +2002,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             );
 
         $result = $db->createCommand(
-            'select * from {{%order}} where [[id]]=:id', ['id' => $inserted['id']]
+            'select * from {{%order}} where [[id]]=:id',
+            ['id' => $inserted['id']]
         )->queryOne();
 
         $columnSchema = $db->getTableSchema('{{%order}}')->getColumn('total');

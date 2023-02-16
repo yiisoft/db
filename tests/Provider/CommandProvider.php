@@ -237,7 +237,7 @@ class CommandProvider
                 '{{test_fk_constraint_3}}',
                 '{{test_fk}}',
                 ['int1', 'int2'],
-                static fn (string $driverName): string =>  DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int1]], [[int2]])
                     SQL,
