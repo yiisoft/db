@@ -2205,7 +2205,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert
      *
-     *
      * @throws Exception
      * @throws InvalidConfigException
      * @throws JsonException
