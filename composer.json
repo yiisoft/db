@@ -39,7 +39,8 @@
         "yiisoft/di": "^1.0",
         "yiisoft/event-dispatcher": "^1.0",
         "yiisoft/json": "^1.0",
-        "yiisoft/log": "^2.0"
+        "yiisoft/log": "^2.0",
+        "yiisoft/var-dumper": "^1.5"
     },
     "autoload": {
         "psr-4": {
