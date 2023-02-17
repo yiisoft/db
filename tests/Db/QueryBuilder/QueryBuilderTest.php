@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 
+use Closure;
 use Generator;
 use JsonException;
 use Yiisoft\Db\Exception\Exception;
@@ -185,12 +186,16 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
      */
     public function testInsert(
         string $table,
-        array|QueryInterface $columns,
+        array|Closure $columns,
         array $params,
         string $expectedSQL,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
+
+        if ($columns instanceof Closure) {
+            $columns = $columns($db);
+        }
 
         $schemaMock = $this->createMock(Schema::class);
         $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
@@ -269,12 +274,16 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
      */
     public function testUpsert(
         string $table,
-        array|QueryInterface $insertColumns,
+        array|Closure $insertColumns,
         array|bool $updateColumns,
         string|array $expectedSQL,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
+
+        if ($insertColumns instanceof Closure) {
+            $insertColumns = $insertColumns($db);
+        }
 
         $actualParams = [];
 
@@ -291,10 +300,14 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
      */
     public function testUpsertExecute(
         string $table,
-        array|QueryInterface $insertColumns,
+        array|Closure $insertColumns,
         array|bool $updateColumns
     ): void {
         $db = $this->getConnection();
+
+        if ($insertColumns instanceof Closure) {
+            $insertColumns = $insertColumns($db);
+        }
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(

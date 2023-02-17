@@ -9,6 +9,7 @@ use Generator;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
@@ -201,12 +202,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildCondition
      */
     public function testBuildCondition(
-        array|ExpressionInterface|string $condition,
+        array|ExpressionInterface|string|Closure $condition,
         string|null $expected,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
 
+        $condition = $this->normalizeCondition($db, $condition);
         $query = (new Query($db))->where($condition);
 
         [$sql, $params] = $db->getQueryBuilder()->build($query);
@@ -1561,12 +1563,16 @@ abstract class AbstractQueryBuilderTest extends TestCase
      */
     public function testInsert(
         string $table,
-        array|QueryInterface $columns,
+        array|Closure $columns,
         array $params,
         string $expectedSQL,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
+
+        if ($columns instanceof Closure) {
+            $columns = $columns($db);
+        }
 
         $qb = $db->getQueryBuilder();
 
@@ -1908,12 +1914,16 @@ abstract class AbstractQueryBuilderTest extends TestCase
      */
     public function testUpsert(
         string $table,
-        array|QueryInterface $insertColumns,
+        array|Closure $insertColumns,
         array|bool $updateColumns,
         string $expectedSQL,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
+
+        if ($insertColumns instanceof Closure) {
+            $insertColumns = $insertColumns($db);
+        }
 
         $actualParams = [];
         $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
@@ -1928,10 +1938,14 @@ abstract class AbstractQueryBuilderTest extends TestCase
      */
     public function testUpsertExecute(
         string $table,
-        array|QueryInterface $insertColumns,
+        array|Closure $insertColumns,
         array|bool $updateColumns
     ): void {
         $db = $this->getConnection(true);
+
+        if ($insertColumns instanceof Closure) {
+            $insertColumns = $insertColumns($db);
+        }
 
         $actualParams = [];
         $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
@@ -2001,5 +2015,41 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $command->getRawSql()
         );
+    }
+
+    private function normalizeCondition(
+        ConnectionInterface $db,
+        array|ExpressionInterface|string|Closure $condition
+    ): array|ExpressionInterface|string|Closure {
+        if ($condition instanceof Closure) {
+            $condition = $condition($db);
+        }
+
+        if (is_array($condition)) {
+            /* adjust dbms specific escaping */
+            foreach ($condition as $key => $value) {
+                if ($value instanceof Closure) {
+                    $condition[$key] = $value($db);
+                }
+
+                if ($key === 1 && is_string($value)) {
+                    $condition[$key] = DbHelper::replaceQuotes($value, $db->getName());
+                }
+
+                if (is_array($value)) {
+                    foreach ($value as $k => $v) {
+                        if ($v instanceof Closure) {
+                            $condition[$key][$k] = $v($db);
+                        }
+
+                        if ($k === 1 && is_string($v)) {
+                            $condition[$key][$k] = DbHelper::replaceQuotes($v, $db->getName());
+                        }
+                    }
+                }
+            }
+        }
+
+        return $condition;
     }
 }

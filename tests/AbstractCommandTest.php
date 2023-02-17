@@ -102,13 +102,13 @@ abstract class AbstractCommandTest extends TestCase
      *
      * {@see https://github.com/yiisoft/yii2/issues/8592}
      */
-    public function testGetRawSql(string $sql, array $params, Closure $expectedRawSql): void
+    public function testGetRawSql(string $sql, array $params, string $expectedRawSql): void
     {
         $db = $this->getConnection();
 
         $command = $db->createCommand($sql, $params);
 
-        $this->assertSame($expectedRawSql($db->getName()), $command->getRawSql());
+        $this->assertSame($expectedRawSql, $command->getRawSql());
     }
 
     public function testGetSetSql(): void

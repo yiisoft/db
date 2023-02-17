@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
@@ -19,10 +20,11 @@ class QueryBuilderProvider
 {
     use TestTrait;
 
-    protected string $likeEscapeCharSql = '';
-    protected array $likeParameterReplacements = [];
+    protected static string $driverName = 'db';
+    protected static string $likeEscapeCharSql = '';
+    protected static array $likeParameterReplacements = [];
 
-    public function addForeignKey(): array
+    public static function addForeignKey(): array
     {
         $name = 'CN_constraints_3';
         $pkTableName = 'T_constraints_2';
@@ -41,7 +43,7 @@ class QueryBuilderProvider
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]]) REFERENCES [[$pkTableName]] ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
             'add (2 columns)' => [
@@ -56,13 +58,13 @@ class QueryBuilderProvider
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]]) REFERENCES [[$pkTableName]] ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
         ];
     }
 
-    public function addPrimaryKey(): array
+    public static function addPrimaryKey(): array
     {
         $tableName = 'T_constraints_1';
         $name = 'CN_pk';
@@ -76,7 +78,7 @@ class QueryBuilderProvider
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]])
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
             'add (2 columns)' => [
@@ -87,13 +89,13 @@ class QueryBuilderProvider
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] PRIMARY KEY ([[C_id_1]], [[C_id_2]])
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
         ];
     }
 
-    public function addUnique(): array
+    public static function addUnique(): array
     {
         $name1 = 'CN_unique';
         $tableName1 = 'T_constraints_1';
@@ -109,7 +111,7 @@ class QueryBuilderProvider
                     <<<SQL
                     ALTER TABLE [[$tableName1]] ADD CONSTRAINT [[$name1]] UNIQUE ([[C_unique_1]])
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
             'add (2 columns)' => [
@@ -120,13 +122,13 @@ class QueryBuilderProvider
                     <<<SQL
                     ALTER TABLE [[$tableName2]] ADD CONSTRAINT [[$name2]] UNIQUE ([[C_unique_1]], [[C_unique_2]])
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
         ];
     }
 
-    public function batchInsert(): array
+    public static function batchInsert(): array
     {
         return [
             'simple' => [
@@ -137,7 +139,7 @@ class QueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES (:qp0, :qp1, :qp2)
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
                 [':qp0' => 'test@example.com', ':qp1' => 'silverfire', ':qp2' => 'Kyiv {{city}}, Ukraine'],
             ],
@@ -149,7 +151,7 @@ class QueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] ([[address]]) VALUES (:qp0)
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
                 [':qp0' => "SQL-danger chars are escaped: '); --"],
             ],
@@ -167,7 +169,7 @@ class QueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] () VALUES (:qp0)
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
                 [':qp0' => 'no columns passed'],
             ],
@@ -179,7 +181,7 @@ class QueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
                 [':qp0' => 0, ':qp1' => null],
             ],
@@ -191,7 +193,7 @@ class QueryBuilderProvider
                     <<<SQL
                     INSERT INTO {{%type}} ([[float_col]], [[time]]) VALUES (:qp0, now()), (:qp1, now())
                     SQL,
-                    $this->getDriverName()
+                    static::$driverName,
                 ),
                 [':qp0' => null, ':qp1' => null],
             ],
@@ -203,7 +205,7 @@ class QueryBuilderProvider
                     <<<SQL
                     INSERT INTO {{%type}} ([[bool_col]], [[time]]) VALUES (:qp0, now())
                     SQL,
-                    $this->getDriverName()
+                    static::$driverName,
                 ),
                 [':qp0' => null],
             ],
@@ -220,10 +222,8 @@ class QueryBuilderProvider
         ];
     }
 
-    public function buildCondition(): array
+    public static function buildCondition(): array
     {
-        $db = $this->getConnection();
-
         $conditions = [
             /* empty values */
             [['like', 'name', []], '0=1', []],
@@ -237,7 +237,9 @@ class QueryBuilderProvider
             [
                 [
                     'not',
-                    (new query($db))->select('exists')->from('some_table'),
+                    static fn (ConnectionInterface $db): Query => (new query($db))
+                        ->select('exists')
+                        ->from('some_table'),
                 ],
                 'NOT ((SELECT [[exists]] FROM [[some_table]]))', [],
             ],
@@ -252,7 +254,9 @@ class QueryBuilderProvider
                 [
                     'and',
                     ['expired' => false],
-                    (new query($db))->select('count(*) > 1')->from('queue'),
+                    static fn (ConnectionInterface $db): Query => (new query($db))
+                        ->select('count(*) > 1')
+                        ->from('queue'),
                 ],
                 '([[expired]]=:qp0) AND ((SELECT count(*) > 1 FROM [[queue]]))',
                 [':qp0' => false],
@@ -307,7 +311,7 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                new BetweenColumnsCondition(
+                static fn (ConnectionInterface $db): BetweenColumnsCondition => new BetweenColumnsCondition(
                     new Expression('NOW()'),
                     'NOT BETWEEN',
                     (new query($db))->select('min_date')->from('some_table'),
@@ -317,7 +321,7 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                new BetweenColumnsCondition(
+                static fn (ConnectionInterface $db): BetweenColumnsCondition => new BetweenColumnsCondition(
                     new Expression('NOW()'),
                     'NOT BETWEEN',
                     new Expression('min_date'),
@@ -329,7 +333,15 @@ class QueryBuilderProvider
 
             /* in */
             [
-                ['in', 'id', [1, 2, (new query($db))->select('three')->from('digits')]],
+                [
+                    'in',
+                    'id',
+                    [
+                        1,
+                        2,
+                        static fn (ConnectionInterface $db): Query => (new query($db))->select('three')->from('digits'),
+                    ],
+                ],
                 '[[id]] IN (:qp0, :qp1, (SELECT [[three]] FROM [[digits]]))',
                 [':qp0' => 1, ':qp1' => 2],
             ],
@@ -339,12 +351,26 @@ class QueryBuilderProvider
                 [':qp0' => 1, ':qp1' => 2, ':qp2' => 3],
             ],
             [
-                ['in', 'id', (new query($db))->select('id')->from('users')->where(['active' => 1])],
+                [
+                    'in',
+                    'id',
+                    static fn (ConnectionInterface $db): Query => (new query($db))
+                        ->select('id')
+                        ->from('users')
+                        ->where(['active' => 1]),
+                ],
                 '[[id]] IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
             ],
             [
-                ['not in', 'id', (new query($db))->select('id')->from('users')->where(['active' => 1])],
+                [
+                    'not in',
+                    'id',
+                    static fn (ConnectionInterface $db): Query => (new query($db))
+                        ->select('id')
+                        ->from('users')
+                        ->where(['active' => 1]),
+                ],
                 '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
             ],
@@ -430,7 +456,7 @@ class QueryBuilderProvider
             [new InCondition([], 'in', [1]), '0=1', []],
             'inCondition-custom-1' => [new InCondition(['id', 'name'], 'in', []), '0=1', []],
             'inCondition-custom-2' => [
-                new InCondition(
+                static fn (ConnectionInterface $db): InCondition => new InCondition(
                     ['id'],
                     'in',
                     (new query($db))->select('id')->from('users')->where(['active' => 1]),
@@ -454,7 +480,7 @@ class QueryBuilderProvider
                 [':qp0' => 1, ':qp1' => 'oy'],
             ],
             'inCondition-custom-6' => [
-                new InCondition(
+                static fn (ConnectionInterface $db): InCondition => new InCondition(
                     [new Expression('id')],
                     'in',
                     (new query($db))->select('id')->from('users')->where(['active' => 1]),
@@ -467,13 +493,22 @@ class QueryBuilderProvider
             [
                 [
                     'exists',
-                    (new query($db))->select('id')->from('users')->where(['active' => 1]),
+                    static fn (ConnectionInterface $db): Query => (new query($db))
+                        ->select('id')
+                        ->from('users')
+                        ->where(['active' => 1]),
                 ],
                 'EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
             ],
             [
-                ['not exists', (new query($db))->select('id')->from('users')->where(['active' => 1])],
+                [
+                    'not exists',
+                    static fn (ConnectionInterface $db): Query => (new query($db))
+                        ->select('id')
+                        ->from('users')
+                        ->where(['active' => 1]),
+                ],
                 'NOT EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1],
             ],
 
@@ -496,7 +531,14 @@ class QueryBuilderProvider
                 [':month' => 2],
             ],
             [
-                ['=', 'date', (new query($db))->select('max(date)')->from('test')->where(['id' => 5])],
+                [
+                    '=',
+                    'date',
+                    static fn (ConnectionInterface $db): Query => (new query($db))
+                        ->select('max(date)')
+                        ->from('test')
+                        ->where(['id' => 5]),
+                ],
                 '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]]=:qp0)',
                 [':qp0' => 5],
             ],
@@ -509,7 +551,14 @@ class QueryBuilderProvider
                 [':qp0' => '2019-08-01'],
             ],
             [
-                ['=', (new query($db))->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
+                [
+                    '=',
+                    static fn (ConnectionInterface $db): Query => (new query($db))
+                        ->select('COUNT(*)')
+                        ->from('test')
+                        ->where(['id' => 6]),
+                    0,
+                ],
                 '(SELECT COUNT(*) FROM [[test]] WHERE [[id]]=:qp0) = :qp1',
                 [':qp0' => 6, ':qp1' => 0],
             ],
@@ -550,15 +599,10 @@ class QueryBuilderProvider
             ],
         ];
 
-        /* adjust dbms specific escaping */
-        foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $db->getName());
-        }
-
         return $conditions;
     }
 
-    public function buildFilterCondition(): array
+    public static function buildFilterCondition(): array
     {
         $conditions = [
             /* like */
@@ -600,13 +644,13 @@ class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->getDriverName());
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], static::$driverName);
         }
 
         return $conditions;
     }
 
-    public function buildFrom(): array
+    public static function buildFrom(): array
     {
         return [
             [
@@ -615,7 +659,7 @@ class QueryBuilderProvider
                     <<<SQL
                     SELECT * FROM [[table1]]
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
             [
@@ -624,7 +668,7 @@ class QueryBuilderProvider
                     <<<SQL
                     SELECT * FROM [[table1]]
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
             [
@@ -645,7 +689,7 @@ class QueryBuilderProvider
                     <<<SQL
                     SELECT * FROM [[table3]] [[alias]]
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
             [
@@ -654,7 +698,7 @@ class QueryBuilderProvider
                     <<<SQL
                     SELECT * FROM table4 [[alias]]
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
             [
@@ -663,14 +707,14 @@ class QueryBuilderProvider
                     <<<SQL
                     SELECT * FROM func(:param1, :param2) [[alias]]
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
                 ['param1' => 'A', 'param2' => 'B'],
             ],
         ];
     }
 
-    public function buildLikeCondition(): array
+    public static function buildLikeCondition(): array
     {
         $conditions = [
             /* simple like */
@@ -794,49 +838,49 @@ class QueryBuilderProvider
 
         /* adjust dbms specific escaping */
         foreach ($conditions as $i => $condition) {
-            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], $this->getDriverName());
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], static::$driverName);
 
-            if ($this->likeEscapeCharSql !== '') {
+            if (static::$likeEscapeCharSql !== '') {
                 preg_match_all('/(?P<condition>LIKE.+?)( AND| OR|$)/', $conditions[$i][1], $matches, PREG_SET_ORDER);
 
                 foreach ($matches as $match) {
                     $conditions[$i][1] = str_replace(
                         $match['condition'],
-                        $match['condition'] . $this->likeEscapeCharSql,
+                        $match['condition'] . static::$likeEscapeCharSql,
                         $conditions[$i][1]
                     );
                 }
             }
 
             foreach ($conditions[$i][2] as $name => $value) {
-                $conditions[$i][2][$name] = strtr($conditions[$i][2][$name], $this->likeParameterReplacements);
+                $conditions[$i][2][$name] = strtr($conditions[$i][2][$name], static::$likeParameterReplacements);
             }
         }
 
         return $conditions;
     }
 
-    public function buildWhereExists(): array
+    public static function buildWhereExists(): array
     {
         return [
             [
                 'exists',
                 DbHelper::replaceQuotes(
                     'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
             [
                 'not exists',
                 DbHelper::replaceQuotes(
                     'SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE NOT EXISTS (SELECT [[1]] FROM [[Website]] [[w]])',
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
         ];
     }
 
-    public function createIndex(): array
+    public static function createIndex(): array
     {
         $tableName = 'T_constraints_2';
         $name1 = 'CN_constraints_2_single';
@@ -885,7 +929,7 @@ class QueryBuilderProvider
         ];
     }
 
-    public function delete(): array
+    public static function delete(): array
     {
         return [
             [
@@ -895,17 +939,15 @@ class QueryBuilderProvider
                     <<<SQL
                     DELETE FROM [[user]] WHERE ([[is_enabled]]=:qp0) AND ([[power]]=WRONG_POWER())
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
                 [':qp0' => false],
             ],
         ];
     }
 
-    public function insert(): array
+    public static function insert(): array
     {
-        $db = $this->getConnection();
-
         return [
             'regular-values' => [
                 'customer',
@@ -921,7 +963,7 @@ class QueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) VALUES (:qp0, :qp1, :qp2, :qp3, :qp4)
                     SQL,
-                    $db->getName(),
+                    static::$driverName,
                 ),
                 [
                     ':qp0' => 'test@example.com',
@@ -939,7 +981,7 @@ class QueryBuilderProvider
                     <<<SQL
                     INSERT INTO {{%type}} ([[related_id]], [[time]]) VALUES (:qp0, now())
                     SQL,
-                    $db->getName(),
+                    static::$driverName,
                 ),
                 [':qp0' => null],
             ],
@@ -958,7 +1000,7 @@ class QueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]], [[col]]) VALUES (:qp1, :qp2, :qp3, :qp4, :qp5, CONCAT(:phFoo, :phBar))
                     SQL,
-                    $db->getName(),
+                    static::$driverName,
                 ),
                 [
                     ':phBar' => 'bar',
@@ -972,7 +1014,7 @@ class QueryBuilderProvider
             ],
             'carry passed params (query)' => [
                 'customer',
-                (new Query($db))
+                static fn (ConnectionInterface $db): Query => (new Query($db))
                     ->select(['email', 'name', 'address', 'is_active', 'related_id'])
                     ->from('customer')
                     ->where(
@@ -990,7 +1032,7 @@ class QueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]], [[address]], [[is_active]], [[related_id]]) SELECT [[email]], [[name]], [[address]], [[is_active]], [[related_id]] FROM [[customer]] WHERE ([[email]]=:qp1) AND ([[name]]=:qp2) AND ([[address]]=:qp3) AND ([[is_active]]=:qp4) AND ([[related_id]] IS NULL) AND ([[col]]=CONCAT(:phFoo, :phBar))
                     SQL,
-                    $db->getName(),
+                    static::$driverName,
                 ),
                 [
                     ':phBar' => 'bar',
@@ -1009,13 +1051,13 @@ class QueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] DEFAULT VALUES
                     SQL,
-                    $db->getName(),
+                    static::$driverName,
                 ),
                 [],
             ],
             'query' => [
                 'customer',
-                (new Query($db))
+                static fn (ConnectionInterface $db): Query => (new Query($db))
                     ->select([new Expression('email as email'), new Expression('name')])
                     ->from('customer')
                     ->where(
@@ -1028,7 +1070,7 @@ class QueryBuilderProvider
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]]) SELECT email as email, name FROM [[customer]] WHERE [[email]]=:qp0
                     SQL,
-                    $db->getName(),
+                    static::$driverName,
                 ),
                 [
                     ':qp0' => 'test@example.com',
@@ -1037,14 +1079,14 @@ class QueryBuilderProvider
         ];
     }
 
-    public function insertWithReturningPks(): array
+    public static function insertWithReturningPks(): array
     {
         return [
             ['{{table}}', [], [], '', []],
         ];
     }
 
-    public function selectExist(): array
+    public static function selectExist(): array
     {
         return [
             [
@@ -1052,19 +1094,19 @@ class QueryBuilderProvider
                     <<<SQL
                     SELECT 1 FROM `table` WHERE `id` = 1
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
                 DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT EXISTS(SELECT 1 FROM `table` WHERE `id` = 1)
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
             ],
         ];
     }
 
-    public function update(): array
+    public static function update(): array
     {
         return [
             [
@@ -1075,17 +1117,15 @@ class QueryBuilderProvider
                     <<<SQL
                     UPDATE [[customer]] SET [[status]]=:qp0, [[updated_at]]=now() WHERE [[id]]=:qp1
                     SQL,
-                    $this->getDriverName(),
+                    static::$driverName,
                 ),
                 [':qp0' => 1, ':qp1' => 100],
             ],
         ];
     }
 
-    public function upsert(): array
+    public static function upsert(): array
     {
-        $db = $this->getConnection();
-
         return [
             'regular values' => [
                 'T_upsert',
@@ -1117,7 +1157,7 @@ class QueryBuilderProvider
             ],
             'query' => [
                 'T_upsert',
-                (new Query($db))
+                static fn (ConnectionInterface $db): Query => (new Query($db))
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1128,7 +1168,7 @@ class QueryBuilderProvider
             ],
             'query with update part' => [
                 'T_upsert',
-                (new Query($db))
+                static fn (ConnectionInterface $db): Query => (new Query($db))
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1139,7 +1179,7 @@ class QueryBuilderProvider
             ],
             'query without update part' => [
                 'T_upsert',
-                (new Query($db))
+                static fn (ConnectionInterface $db): Query => (new Query($db))
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1171,7 +1211,7 @@ class QueryBuilderProvider
             ],
             'query, values and expressions with update part' => [
                 '{{%T_upsert}}',
-                (new Query($db))
+                static fn (ConnectionInterface $db): Query => (new Query($db))
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
@@ -1184,7 +1224,7 @@ class QueryBuilderProvider
             ],
             'query, values and expressions without update part' => [
                 '{{%T_upsert}}',
-                (new Query($db))
+                static fn (ConnectionInterface $db): Query => (new Query($db))
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
