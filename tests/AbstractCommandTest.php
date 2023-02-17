@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
+use Closure;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
@@ -101,13 +102,13 @@ abstract class AbstractCommandTest extends TestCase
      *
      * {@see https://github.com/yiisoft/yii2/issues/8592}
      */
-    public function testGetRawSql(string $sql, array $params, string $expectedRawSql): void
+    public function testGetRawSql(string $sql, array $params, Closure $expectedRawSql): void
     {
         $db = $this->getConnection();
 
         $command = $db->createCommand($sql, $params);
 
-        $this->assertSame($expectedRawSql, $command->getRawSql());
+        $this->assertSame($expectedRawSql($db->getName()), $command->getRawSql());
     }
 
     public function testGetSetSql(): void

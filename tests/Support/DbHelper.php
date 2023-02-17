@@ -20,6 +20,11 @@ use function trim;
 
 final class DbHelper
 {
+    public static function changeSqlForOracleBatchInsert(string &$str): void
+    {
+        $str = str_replace('INSERT INTO', 'INSERT ALL  INTO', $str) . ' SELECT 1 FROM SYS.DUAL';
+    }
+
     public static function getCache(): CacheInterface
     {
         return new Cache(new FileCache(__DIR__ . '/runtime/cache'));

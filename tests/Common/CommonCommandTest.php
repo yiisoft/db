@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use Closure;
 use ReflectionException;
 use Throwable;
 use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
@@ -306,7 +307,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         string $table,
         array $columns,
         array $values,
-        string $expected,
+        Closure $expected,
         array $expectedParams = [],
         int $insertedRow = 1
     ): void {
@@ -315,7 +316,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $command->batchInsert($table, $columns, $values);
 
-        $this->assertSame($expected, $command->getSql());
+        $this->assertSame($expected($db->getName()), $command->getSql());
         $this->assertSame($expectedParams, $command->getParams());
 
         $command->prepare(false);
@@ -1888,14 +1889,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
         array $columns,
         array|string $conditions,
         array $params,
-        string $expected
+        Closure $expected
     ): void {
         $db = $this->getConnection();
 
         $command = $db->createCommand();
         $sql = $command->update($table, $columns, $conditions, $params)->getSql();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame($expected($db->getName()), $sql);
 
         $db->close();
     }
@@ -1942,11 +1943,10 @@ abstract class CommonCommandTest extends AbstractCommandTest
     public function testPrepareWithEmptySql()
     {
         $db = $this->createMock(ConnectionPDOInterface::class);
-        $db->expects(self::never())
-            ->method('getActivePDO');
+        $db->expects(self::never())->method('getActivePDO');
 
         $command = new class ($db) extends AbstractCommandPDO {
-            protected function internalExecute(?string $rawSql): void
+            protected function internalExecute(string|null $rawSql): void
             {
             }
 
@@ -1965,7 +1965,16 @@ abstract class CommonCommandTest extends AbstractCommandTest
      */
     protected function performAndCompareUpsertResult(ConnectionPDOInterface $db, array $data): void
     {
-        $params = $data['params'];
+        $params = [];
+
+        foreach ($data['params'] as $param) {
+            if (is_callable($param)) {
+                $params[] = $param($db);
+            } else {
+                $params[] = $param;
+            }
+        }
+
         $expected = $data['expected'] ?? $params[1];
 
         $command = $db->createCommand();
@@ -1992,7 +2001,10 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 ['customer_id' => 1, 'created_at' => 0, 'total' => $decimalValue]
             );
 
-        $result = $db->createCommand('select * from {{%order}} where [[id]]=:id', ['id' => $inserted['id']])->queryOne();
+        $result = $db->createCommand(
+            'select * from {{%order}} where [[id]]=:id',
+            ['id' => $inserted['id']]
+        )->queryOne();
 
         $columnSchema = $db->getTableSchema('{{%order}}')->getColumn('total');
         $phpTypecastValue = $columnSchema->phpTypecast($result['total']);

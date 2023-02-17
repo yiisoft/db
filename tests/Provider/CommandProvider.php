@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 class CommandProvider
 {
-    use TestTrait;
-
-    public function addForeignKey(): array
+    public static function addForeignKey(): array
     {
         return [
             ['{{test_fk_constraint_1}}', '{{test_fk}}', 'int1', 'int3', 'test_fk_constraint_1'],
@@ -24,7 +22,7 @@ class CommandProvider
         ];
     }
 
-    public function addForeignKeySql(): array
+    public static function addForeignKeySql(): array
     {
         return [
             [
@@ -34,11 +32,11 @@ class CommandProvider
                 'int3',
                 null,
                 null,
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -48,11 +46,11 @@ class CommandProvider
                 'int3',
                 null,
                 null,
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -62,11 +60,11 @@ class CommandProvider
                 ['int3'],
                 null,
                 null,
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -76,11 +74,11 @@ class CommandProvider
                 ['int3'],
                 'CASCADE',
                 null,
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_4]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]]) ON DELETE CASCADE
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -90,11 +88,11 @@ class CommandProvider
                 ['int3'],
                 'CASCADE',
                 'CASCADE',
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_5]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -104,11 +102,11 @@ class CommandProvider
                 ['int3', 'int4'],
                 null,
                 null,
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_6]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[test_fk]] ([[int3]], [[int4]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -118,11 +116,11 @@ class CommandProvider
                 ['int3', 'int4'],
                 'CASCADE',
                 null,
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_7]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[test_fk]] ([[int3]], [[int4]]) ON DELETE CASCADE
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -132,17 +130,17 @@ class CommandProvider
                 ['int3', 'int4'],
                 'CASCADE',
                 'CASCADE',
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_8]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[test_fk]] ([[int3]], [[int4]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
         ];
     }
 
-    public function addPrimaryKey(): array
+    public static function addPrimaryKey(): array
     {
         return [
             ['{{test_pk_constraint_1}}', '{{test_pk}}', 'int1'],
@@ -151,46 +149,46 @@ class CommandProvider
         ];
     }
 
-    public function addPrimaryKeySql(): array
+    public static function addPrimaryKeySql(): array
     {
         return [
             [
                 '{{test_fk_constraint_1}}',
                 '{{test_fk}}',
                 'int1',
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] PRIMARY KEY ([[int1]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
                 '{{test_fk_constraint_2}}',
                 '{{test_fk}}',
                 ['int1'],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] PRIMARY KEY ([[int1]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
                 '{{test_fk_constraint_3}}',
                 '{{test_fk}}',
                 ['int3', 'int4'],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] PRIMARY KEY ([[int3]], [[int4]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
         ];
     }
 
-    public function addUnique(): array
+    public static function addUnique(): array
     {
         return [
             ['{{test_unique_constraint_1}}', '{{test_unique}}', 'int1'],
@@ -199,57 +197,57 @@ class CommandProvider
         ];
     }
 
-    public function addUniqueSql(): array
+    public static function addUniqueSql(): array
     {
         return [
             [
                 '{{test_fk_constraint_1}}',
                 '{{test_fk}}',
                 'int1',
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] UNIQUE ([[int1]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
                 '{{test_fk_constraint_2}}',
                 '{{test_fk}}',
                 ['int1'],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] UNIQUE ([[int1]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
                 '{{test_fk_constraint_3}}',
                 '{{test_fk}}',
                 ['int3', 'int4'],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int3]], [[int4]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
                 '{{test_fk_constraint_3}}',
                 '{{test_fk}}',
                 ['int1', 'int2'],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int1]], [[int2]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
         ];
     }
 
-    public function batchInsert(): array
+    public static function batchInsert(): array
     {
         return [
             'multirow' => [
@@ -259,11 +257,11 @@ class CommandProvider
                     ['0', '0.0', 'test string', true],
                     [false, 0, 'test string2', false],
                 ],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3), (:qp4, :qp5, :qp6, :qp7)
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
                 'expectedParams' => [
                     ':qp0' => 0,
@@ -286,11 +284,11 @@ class CommandProvider
                  *
                  * Make sure curly bracelets (`{{..}}`) in values will not be escaped
                  */
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
                 'expectedParams' => [
                     ':qp0' => 1,
@@ -309,11 +307,11 @@ class CommandProvider
                  * In case table name or table column is passed with curly or square bracelets, QueryBuilder can not
                  * determine the table schema and typecast values properly.
                  */
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
                 'expectedParams' => [
                     ':qp0' => '0',
@@ -330,11 +328,11 @@ class CommandProvider
                  * expression objects, such as JsonExpression.
                  */
                 'values' => [[new Expression(':exp1', [':exp1' => 42]), 1, 'test', false]],
-                'expected' => DbHelper::replaceQuotes(
+                'expected' => static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:exp1, :qp1, :qp2, :qp3)
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
                 'expectedParams' => [
                     ':exp1' => 42,
@@ -346,7 +344,7 @@ class CommandProvider
         ];
     }
 
-    public function createIndex(): array
+    public static function createIndex(): array
     {
         return [
             ['{{test_idx_constraint_1}}', '{{test_idx}}', 'int1', null, null],
@@ -355,7 +353,7 @@ class CommandProvider
         ];
     }
 
-    public function createIndexSql(): array
+    public static function createIndexSql(): array
     {
         return [
             [
@@ -364,11 +362,11 @@ class CommandProvider
                 'column',
                 '',
                 '',
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     CREATE INDEX [[name]] ON [[table]] ([[column]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -377,11 +375,11 @@ class CommandProvider
                 ['column1', 'column2'],
                 '',
                 '',
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     CREATE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -390,11 +388,11 @@ class CommandProvider
                 ['column1', 'column2'],
                 SchemaInterface::INDEX_UNIQUE,
                 '',
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     CREATE UNIQUE INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -403,11 +401,11 @@ class CommandProvider
                 ['column1', 'column2'],
                 'FULLTEXT',
                 '',
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     CREATE FULLTEXT INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -416,11 +414,11 @@ class CommandProvider
                 ['column1', 'column2'],
                 'SPATIAL',
                 '',
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     CREATE SPATIAL INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -429,22 +427,22 @@ class CommandProvider
                 ['column1', 'column2'],
                 'BITMAP',
                 '',
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     CREATE BITMAP INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
         ];
     }
 
-    public function invalidSelectColumns(): array
+    public static function invalidSelectColumns(): array
     {
         return [[[]], ['*'], [['*']]];
     }
 
-    public function rawSql(): array
+    public static function rawSql(): array
     {
         return [
             [
@@ -452,11 +450,11 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 [':id' => 1],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -464,11 +462,11 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 ['id' => 1],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -476,11 +474,11 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 ['id' => null],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = NULL
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -488,11 +486,11 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = :base OR [[id]] = :basePrefix
                 SQL,
                 ['base' => 1, 'basePrefix' => 2],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             /**
@@ -503,11 +501,11 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[active]] = :active
                 SQL,
                 [':active' => false],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[active]] = FALSE
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             /**
@@ -518,28 +516,30 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] IN (:ids)
                 SQL,
                 [':ids' => new Expression(implode(', ', [1, 2]))],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] IN (1, 2)
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
                 'SELECT * FROM customer WHERE id  = ? AND active = ?',
                 [1, false],
-                'SELECT * FROM customer WHERE id  = 1 AND active = FALSE',
+                static fn (string $driverName): string => <<<SQL
+                SELECT * FROM customer WHERE id  = 1 AND active = FALSE
+                SQL,
             ],
             [
                 <<<SQL
                 SELECT * FROM [[customer]] WHERE [[id]] = ?
                 SQL,
                 [1],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -547,17 +547,17 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = ? OR [[id]] = ?
                 SQL,
                 [1, 2],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
         ];
     }
 
-    public function update(): array
+    public static function update(): array
     {
         return [
             [
@@ -565,11 +565,11 @@ class CommandProvider
                 ['name' => '{{test}}'],
                 [],
                 [],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp0
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -577,11 +577,11 @@ class CommandProvider
                 ['name' => '{{test}}'],
                 ['id' => 1],
                 [],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]]=:qp1
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -589,11 +589,11 @@ class CommandProvider
                 ['name' => '{{test}}'],
                 ['id' => 1],
                 ['id' => 'integer'],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -601,11 +601,11 @@ class CommandProvider
                 ['name' => '{{test}}'],
                 ['id' => 1],
                 ['id' => 'string'],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -613,11 +613,11 @@ class CommandProvider
                 ['name' => '{{test}}'],
                 ['id' => 1],
                 ['id' => 'boolean'],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -625,11 +625,11 @@ class CommandProvider
                 ['{{table}}.name' => '{{test}}'],
                 ['id' => 1],
                 ['id' => 'boolean'],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
             [
@@ -637,20 +637,18 @@ class CommandProvider
                 ['name' => '{{test}}'],
                 ['id' => 1],
                 ['id' => 'float'],
-                DbHelper::replaceQuotes(
+                static fn (string $driverName): string => DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
         ];
     }
 
-    public function upsert(): array
+    public static function upsert(): array
     {
-        $db = $this->getConnection();
-
         return [
             'regular values' => [
                 ['params' => ['T_upsert', ['email' => 'foo@example.com', 'address' => 'Earth', 'status' => 3]]],
@@ -687,7 +685,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        (new query($db))
+                        static fn (ConnectionInterface $db): Query => (new query($db))
                             ->select(['email', 'address', 'status' => new Expression('1')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -698,7 +696,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        (new query($db))
+                        static fn (ConnectionInterface $db): Query => (new query($db))
                             ->select(['email', 'address', 'status' => new Expression('2')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -711,7 +709,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        (new query($db))
+                        static fn (ConnectionInterface $db): Query => (new query($db))
                             ->select(['email', 'address', 'status' => new Expression('1')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -723,7 +721,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        (new query($db))
+                        static fn (ConnectionInterface $db): Query => (new query($db))
                             ->select(['email', 'address', 'status' => new Expression('3')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -737,7 +735,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        (new query($db))
+                        static fn (ConnectionInterface $db): Query => (new query($db))
                             ->select(['email', 'address', 'status' => new Expression('1')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -749,7 +747,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        (new query($db))
+                        static fn (ConnectionInterface $db): Query => (new query($db))
                             ->select(['email', 'address', 'status' => new Expression('2')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
