@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 
-use Closure;
 use Generator;
 use JsonException;
 use Yiisoft\Db\Exception\Exception;

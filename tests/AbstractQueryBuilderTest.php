@@ -12,7 +12,6 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Throwable;
 use Yiisoft\Db\Command\Param;
-use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;

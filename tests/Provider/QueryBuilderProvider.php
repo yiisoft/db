@@ -243,7 +243,7 @@ class QueryBuilderProvider
             [['not', 'name'], 'NOT (name)', []],
             [[
                 'not',
-                (new query(static::getConnection()))->select('exists')->from('some_table')],
+                (new query(static::getConnection()))->select('exists')->from('some_table'), ],
                 'NOT ((SELECT [[exists]] FROM [[some_table]]))', [],
             ],
 
