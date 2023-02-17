@@ -16,6 +16,11 @@ use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
+/**
+ * @psalm-suppress MixedAssignment
+ * @psalm-suppress MixedArgument
+ * @psalm-suppress PossiblyUndefinedArrayOffset
+ */
 class QueryBuilderProvider
 {
     use TestTrait;
@@ -224,7 +229,7 @@ class QueryBuilderProvider
 
     public static function buildCondition(): array
     {
-        $conditions = [
+        return [
             /* empty values */
             [['like', 'name', []], '0=1', []],
             [['not like', 'name', []], '', []],
@@ -598,8 +603,6 @@ class QueryBuilderProvider
                 ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => '%b%'],
             ],
         ];
-
-        return $conditions;
     }
 
     public static function buildFilterCondition(): array
