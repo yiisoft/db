@@ -8,7 +8,7 @@ use PDO;
 
 class CommandPDOProvider
 {
-    public function bindParam(): array
+    public static function bindParam(): array
     {
         return [
             [
@@ -30,7 +30,7 @@ class CommandPDOProvider
         ];
     }
 
-    public function bindParamsNonWhere(): array
+    public static function bindParamsNonWhere(): array
     {
         return [
             [
