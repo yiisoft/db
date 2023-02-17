@@ -9,6 +9,8 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stub\Connection;
+use Yiisoft\Db\Tests\Support\Stub\PDODriver;
 
 class CommandProvider
 {
@@ -687,7 +689,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        static fn (ConnectionInterface $db): Query => (new query($db))
+                        (new query(static::getConnection()))
                             ->select(['email', 'address', 'status' => new Expression('1')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -698,7 +700,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        static fn (ConnectionInterface $db): Query => (new query($db))
+                        (new query(static::getConnection()))
                             ->select(['email', 'address', 'status' => new Expression('2')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -711,7 +713,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        static fn (ConnectionInterface $db): Query => (new query($db))
+                        (new query(static::getConnection()))
                             ->select(['email', 'address', 'status' => new Expression('1')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -723,7 +725,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        static fn (ConnectionInterface $db): Query => (new query($db))
+                        (new query(static::getConnection()))
                             ->select(['email', 'address', 'status' => new Expression('3')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -737,7 +739,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        static fn (ConnectionInterface $db): Query => (new query($db))
+                        (new query(static::getConnection()))
                             ->select(['email', 'address', 'status' => new Expression('1')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -749,7 +751,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        static fn (ConnectionInterface $db): Query => (new query($db))
+                        (new query(static::getConnection()))
                             ->select(['email', 'address', 'status' => new Expression('2')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -760,5 +762,10 @@ class CommandProvider
                 ],
             ],
         ];
+    }
+
+    protected static function getConnection(): ConnectionInterface
+    {
+        return new Connection(new PDODriver('sqlite::memory:'), DbHelper::getSchemaCache());
     }
 }

@@ -13,6 +13,8 @@ use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stub\Connection;
+use Yiisoft\Db\Tests\Support\Stub\PDODriver;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
@@ -229,7 +231,7 @@ class QueryBuilderProvider
 
     public static function buildCondition(): array
     {
-        return [
+        $conditions = [
             /* empty values */
             [['like', 'name', []], '0=1', []],
             [['not like', 'name', []], '', []],
@@ -239,13 +241,9 @@ class QueryBuilderProvider
             /* not */
             [['not', ''], '', []],
             [['not', 'name'], 'NOT (name)', []],
-            [
-                [
-                    'not',
-                    static fn (ConnectionInterface $db): Query => (new query($db))
-                        ->select('exists')
-                        ->from('some_table'),
-                ],
+            [[
+                'not',
+                (new query(static::getConnection()))->select('exists')->from('some_table')],
                 'NOT ((SELECT [[exists]] FROM [[some_table]]))', [],
             ],
 
@@ -259,9 +257,7 @@ class QueryBuilderProvider
                 [
                     'and',
                     ['expired' => false],
-                    static fn (ConnectionInterface $db): Query => (new query($db))
-                        ->select('count(*) > 1')
-                        ->from('queue'),
+                    (new query(static::getConnection()))->select('count(*) > 1')->from('queue'),
                 ],
                 '([[expired]]=:qp0) AND ((SELECT count(*) > 1 FROM [[queue]]))',
                 [':qp0' => false],
@@ -316,21 +312,21 @@ class QueryBuilderProvider
                 [],
             ],
             [
-                static fn (ConnectionInterface $db): BetweenColumnsCondition => new BetweenColumnsCondition(
+                new BetweenColumnsCondition(
                     new Expression('NOW()'),
                     'NOT BETWEEN',
-                    (new query($db))->select('min_date')->from('some_table'),
+                    (new query(static::getConnection()))->select('min_date')->from('some_table'),
                     'max_date'
                 ),
                 'NOW() NOT BETWEEN (SELECT [[min_date]] FROM [[some_table]]) AND [[max_date]]',
                 [],
             ],
             [
-                static fn (ConnectionInterface $db): BetweenColumnsCondition => new BetweenColumnsCondition(
+                new BetweenColumnsCondition(
                     new Expression('NOW()'),
                     'NOT BETWEEN',
                     new Expression('min_date'),
-                    (new query($db))->select('max_date')->from('some_table'),
+                    (new query(static::getConnection()))->select('max_date')->from('some_table'),
                 ),
                 'NOW() NOT BETWEEN min_date AND (SELECT [[max_date]] FROM [[some_table]])',
                 [],
@@ -338,15 +334,7 @@ class QueryBuilderProvider
 
             /* in */
             [
-                [
-                    'in',
-                    'id',
-                    [
-                        1,
-                        2,
-                        static fn (ConnectionInterface $db): Query => (new query($db))->select('three')->from('digits'),
-                    ],
-                ],
+                ['in', 'id', [1, 2, (new query(static::getConnection()))->select('three')->from('digits')]],
                 '[[id]] IN (:qp0, :qp1, (SELECT [[three]] FROM [[digits]]))',
                 [':qp0' => 1, ':qp1' => 2],
             ],
@@ -359,10 +347,7 @@ class QueryBuilderProvider
                 [
                     'in',
                     'id',
-                    static fn (ConnectionInterface $db): Query => (new query($db))
-                        ->select('id')
-                        ->from('users')
-                        ->where(['active' => 1]),
+                    (new query(static::getConnection()))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 '[[id]] IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -371,10 +356,7 @@ class QueryBuilderProvider
                 [
                     'not in',
                     'id',
-                    static fn (ConnectionInterface $db): Query => (new query($db))
-                        ->select('id')
-                        ->from('users')
-                        ->where(['active' => 1]),
+                    (new query(static::getConnection()))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -461,10 +443,10 @@ class QueryBuilderProvider
             [new InCondition([], 'in', [1]), '0=1', []],
             'inCondition-custom-1' => [new InCondition(['id', 'name'], 'in', []), '0=1', []],
             'inCondition-custom-2' => [
-                static fn (ConnectionInterface $db): InCondition => new InCondition(
+                new InCondition(
                     ['id'],
                     'in',
-                    (new query($db))->select('id')->from('users')->where(['active' => 1]),
+                    (new query(static::getConnection()))->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '([[id]]) IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -485,10 +467,10 @@ class QueryBuilderProvider
                 [':qp0' => 1, ':qp1' => 'oy'],
             ],
             'inCondition-custom-6' => [
-                static fn (ConnectionInterface $db): InCondition => new InCondition(
+                new InCondition(
                     [new Expression('id')],
                     'in',
-                    (new query($db))->select('id')->from('users')->where(['active' => 1]),
+                    (new query(static::getConnection()))->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '(id) IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -498,10 +480,7 @@ class QueryBuilderProvider
             [
                 [
                     'exists',
-                    static fn (ConnectionInterface $db): Query => (new query($db))
-                        ->select('id')
-                        ->from('users')
-                        ->where(['active' => 1]),
+                    (new query(static::getConnection()))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -509,10 +488,7 @@ class QueryBuilderProvider
             [
                 [
                     'not exists',
-                    static fn (ConnectionInterface $db): Query => (new query($db))
-                        ->select('id')
-                        ->from('users')
-                        ->where(['active' => 1]),
+                    (new query(static::getConnection()))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'NOT EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1],
             ],
@@ -539,10 +515,7 @@ class QueryBuilderProvider
                 [
                     '=',
                     'date',
-                    static fn (ConnectionInterface $db): Query => (new query($db))
-                        ->select('max(date)')
-                        ->from('test')
-                        ->where(['id' => 5]),
+                    (new query(static::getConnection()))->select('max(date)')->from('test')->where(['id' => 5]),
                 ],
                 '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]]=:qp0)',
                 [':qp0' => 5],
@@ -556,14 +529,7 @@ class QueryBuilderProvider
                 [':qp0' => '2019-08-01'],
             ],
             [
-                [
-                    '=',
-                    static fn (ConnectionInterface $db): Query => (new query($db))
-                        ->select('COUNT(*)')
-                        ->from('test')
-                        ->where(['id' => 6]),
-                    0,
-                ],
+                ['=', (new query(static::getConnection()))->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
                 '(SELECT COUNT(*) FROM [[test]] WHERE [[id]]=:qp0) = :qp1',
                 [':qp0' => 6, ':qp1' => 0],
             ],
@@ -603,6 +569,13 @@ class QueryBuilderProvider
                 ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => '%b%'],
             ],
         ];
+
+        /* adjust dbms specific escaping */
+        foreach ($conditions as $i => $condition) {
+            $conditions[$i][1] = DbHelper::replaceQuotes($condition[1], static::$driverName);
+        }
+
+        return $conditions;
     }
 
     public static function buildFilterCondition(): array
@@ -1017,7 +990,7 @@ class QueryBuilderProvider
             ],
             'carry passed params (query)' => [
                 'customer',
-                static fn (ConnectionInterface $db): Query => (new Query($db))
+                (new query(static::getConnection()))
                     ->select(['email', 'name', 'address', 'is_active', 'related_id'])
                     ->from('customer')
                     ->where(
@@ -1060,7 +1033,7 @@ class QueryBuilderProvider
             ],
             'query' => [
                 'customer',
-                static fn (ConnectionInterface $db): Query => (new Query($db))
+                (new query(static::getConnection()))
                     ->select([new Expression('email as email'), new Expression('name')])
                     ->from('customer')
                     ->where(
@@ -1160,7 +1133,7 @@ class QueryBuilderProvider
             ],
             'query' => [
                 'T_upsert',
-                static fn (ConnectionInterface $db): Query => (new Query($db))
+                (new query(static::getConnection()))
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1171,7 +1144,7 @@ class QueryBuilderProvider
             ],
             'query with update part' => [
                 'T_upsert',
-                static fn (ConnectionInterface $db): Query => (new Query($db))
+                (new query(static::getConnection()))
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1182,7 +1155,7 @@ class QueryBuilderProvider
             ],
             'query without update part' => [
                 'T_upsert',
-                static fn (ConnectionInterface $db): Query => (new Query($db))
+                (new query(static::getConnection()))
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1214,7 +1187,7 @@ class QueryBuilderProvider
             ],
             'query, values and expressions with update part' => [
                 '{{%T_upsert}}',
-                static fn (ConnectionInterface $db): Query => (new Query($db))
+                (new query(static::getConnection()))
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
@@ -1227,7 +1200,7 @@ class QueryBuilderProvider
             ],
             'query, values and expressions without update part' => [
                 '{{%T_upsert}}',
-                static fn (ConnectionInterface $db): Query => (new Query($db))
+                (new query(static::getConnection()))
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
@@ -1260,5 +1233,10 @@ class QueryBuilderProvider
                 [':qp0' => 'test'],
             ],
         ];
+    }
+
+    protected static function getConnection(): ConnectionInterface
+    {
+        return new Connection(new PDODriver('sqlite::memory:'), DbHelper::getSchemaCache());
     }
 }

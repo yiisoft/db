@@ -186,16 +186,12 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
      */
     public function testInsert(
         string $table,
-        array|Closure $columns,
+        array|QueryInterface $columns,
         array $params,
         string $expectedSQL,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
-
-        if ($columns instanceof Closure) {
-            $columns = $columns($db);
-        }
 
         $schemaMock = $this->createMock(Schema::class);
         $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
@@ -274,16 +270,12 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
      */
     public function testUpsert(
         string $table,
-        array|Closure $insertColumns,
+        array|QueryInterface $insertColumns,
         array|bool $updateColumns,
         string|array $expectedSQL,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
-
-        if ($insertColumns instanceof Closure) {
-            $insertColumns = $insertColumns($db);
-        }
 
         $actualParams = [];
 
@@ -300,14 +292,10 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
      */
     public function testUpsertExecute(
         string $table,
-        array|Closure $insertColumns,
+        array|QueryInterface $insertColumns,
         array|bool $updateColumns
     ): void {
         $db = $this->getConnection();
-
-        if ($insertColumns instanceof Closure) {
-            $insertColumns = $insertColumns($db);
-        }
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
