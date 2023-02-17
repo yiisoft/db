@@ -8,7 +8,7 @@ use Yiisoft\Db\Expression\Expression;
 
 class QueryProvider
 {
-    public function filterConditionData(): array
+    public static function filterConditionData(): array
     {
         return [
             /* like */
@@ -52,7 +52,7 @@ class QueryProvider
         ];
     }
 
-    public function normalizeOrderBy(): array
+    public static function normalizeOrderBy(): array
     {
         return [
             ['id', ['id' => 4]],
@@ -62,7 +62,7 @@ class QueryProvider
         ];
     }
 
-    public function normalizeSelect(): array
+    public static function normalizeSelect(): array
     {
         return [
             ['exists', ['exists' => 'exists']],
@@ -76,7 +76,7 @@ class QueryProvider
         ];
     }
 
-    public function populate(): array
+    public static function populate(): array
     {
         return [
             [
@@ -94,7 +94,7 @@ class QueryProvider
         ];
     }
 
-    public function populateWithIndexByClosure(): array
+    public static function populateWithIndexByClosure(): array
     {
         return [
             [
@@ -113,7 +113,7 @@ class QueryProvider
         ];
     }
 
-    public function populateWithIncorrectIndexBy(): array
+    public static function populateWithIncorrectIndexBy(): array
     {
         return [
             'not existed key' => [
@@ -149,7 +149,7 @@ class QueryProvider
         ];
     }
 
-    public function populateWithIndexBy(): array
+    public static function populateWithIndexBy(): array
     {
         return [
             'null key with empty rows' => [

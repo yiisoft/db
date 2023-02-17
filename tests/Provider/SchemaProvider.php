@@ -14,12 +14,12 @@ use Yiisoft\Db\Tests\Support\AnyValue;
 
 class SchemaProvider
 {
-    public function columns(): array
+    public static function columns(): array
     {
         return [];
     }
 
-    public function columnsTypeChar(): array
+    public static function columnsTypeChar(): array
     {
         return [
             ['char_col', 'char', 100, 'char(100)'],
@@ -28,7 +28,7 @@ class SchemaProvider
         ];
     }
 
-    public function constraints(): array
+    public static function constraints(): array
     {
         return [
             '1: primary key' => [
@@ -147,12 +147,12 @@ class SchemaProvider
         ];
     }
 
-    public function pdoAttributes(): array
+    public static function pdoAttributes(): array
     {
         return [[[PDO::ATTR_EMULATE_PREPARES => true]], [[PDO::ATTR_EMULATE_PREPARES => false]]];
     }
 
-    public function tableSchema(): array
+    public static function tableSchema(): array
     {
         return [
             ['negative_default_values', 'negative_default_values'],
@@ -160,7 +160,7 @@ class SchemaProvider
         ];
     }
 
-    public function tableSchemaCachePrefixes(): array
+    public static function tableSchemaCachePrefixes(): array
     {
         $configs = [
             ['prefix' => '', 'name' => 'type'],
@@ -195,7 +195,7 @@ class SchemaProvider
         return $data;
     }
 
-    public function withIndexDataProvider(): array
+    public static function withIndexDataProvider(): array
     {
         return [
             [
