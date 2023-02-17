@@ -230,7 +230,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
      * @throws NotSupportedException
      */
     public function testBuildCondition(
-        array|ExpressionInterface|string|Closure $condition,
+        array|ExpressionInterface|string $condition,
         string|null $expected,
         array $expectedParams
     ): void {
@@ -1813,10 +1813,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         array $expectedParams
     ): void {
         $db = $this->getConnection();
-
-        if ($columns instanceof Closure) {
-            $columns = $columns($db);
-        }
 
         $qb = $db->getQueryBuilder();
 
