@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Throwable;
 use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -30,12 +31,6 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
- * @psalm-suppress MixedAssignment
- * @psalm-suppress MixedArrayAccess
- * @psalm-suppress MixedArgument
- * @psalm-suppress MixedArrayAssignment
- * @psalm-suppress MixedReturnStatement
- * @psalm-suppress MindexInferedReturnType
  */
 abstract class AbstractQueryBuilderTest extends TestCase
 {
@@ -236,7 +231,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
      * @throws NotSupportedException
      */
     public function testBuildCondition(
-        array|ExpressionInterface|string $condition,
+        array|ExpressionInterface|string|Closure $condition,
         string|null $expected,
         array $expectedParams
     ): void {
@@ -1820,6 +1815,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
     ): void {
         $db = $this->getConnection();
 
+        if ($columns instanceof Closure) {
+            $columns = $columns($db);
+        }
+
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
@@ -2203,6 +2202,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert
+     *
      *
      * @throws Exception
      * @throws InvalidConfigException
