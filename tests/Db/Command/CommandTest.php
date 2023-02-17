@@ -196,7 +196,7 @@ final class CommandTest extends AbstractCommandTest
         array|string $column,
         string $indexType,
         string $indexMethod,
-        string $expected,
+        Closure $expected,
     ): void {
         $db = $this->getConnection();
 
@@ -204,7 +204,7 @@ final class CommandTest extends AbstractCommandTest
 
         $sql = $command->createIndex($name, $table, $column, $indexType, $indexMethod)->getSql();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame($expected($db->getName()), $sql);
     }
 
     public function testCheckIntegrity(): void

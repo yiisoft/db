@@ -241,7 +241,7 @@ class CommandProvider
                     <<<SQL
                     ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] UNIQUE ([[int1]], [[int2]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
         ];
@@ -431,7 +431,7 @@ class CommandProvider
                     <<<SQL
                     CREATE BITMAP INDEX [[name]] ON [[table]] ([[column1]], [[column2]])
                     SQL,
-                    $this->getDriverName(),
+                    $driverName,
                 ),
             ],
         ];
