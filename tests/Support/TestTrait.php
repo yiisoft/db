@@ -25,6 +25,11 @@ trait TestTrait
         return $db;
     }
 
+    protected static function getDb(): ConnectionPDOInterface
+    {
+        return new Stub\Connection(new PDODriver('sqlite::memory:'), DbHelper::getSchemaCache());
+    }
+
     protected function getDriverName(): string
     {
         return 'db';

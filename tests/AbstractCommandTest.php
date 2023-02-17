@@ -109,7 +109,7 @@ abstract class AbstractCommandTest extends TestCase
     /**
      * Test command getRawSql.
      *
-     * @dataProvider  \Yiisoft\Db\Tests\Provider\CommandProvider::rawSql
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::rawSql
      *
      * @throws Exception
      * @throws InvalidConfigException
