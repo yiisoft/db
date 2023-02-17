@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
-use Closure;
 use ReflectionException;
 use Throwable;
 use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
