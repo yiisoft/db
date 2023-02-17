@@ -9,7 +9,7 @@ use Yiisoft\Db\Schema\SchemaInterface;
 
 class ColumnSchemaBuilderProvider
 {
-    public function types(): array
+    public static function types(): array
     {
         return [
             ['integer NULL DEFAULT NULL', SchemaInterface::TYPE_INTEGER, null, [['unsigned'], ['null']]],
