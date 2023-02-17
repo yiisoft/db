@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
-use Closure;
 use ReflectionException;
 use Throwable;
 use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
@@ -307,7 +306,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         string $table,
         array $columns,
         array $values,
-        Closure $expected,
+        string $expected,
         array $expectedParams = [],
         int $insertedRow = 1
     ): void {
@@ -316,7 +315,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $command->batchInsert($table, $columns, $values);
 
-        $this->assertSame($expected($db->getName()), $command->getSql());
+        $this->assertSame($expected, $command->getSql());
         $this->assertSame($expectedParams, $command->getParams());
 
         $command->prepare(false);
@@ -1889,14 +1888,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
         array $columns,
         array|string $conditions,
         array $params,
-        Closure $expected
+        string $expected
     ): void {
         $db = $this->getConnection();
 
         $command = $db->createCommand();
         $sql = $command->update($table, $columns, $conditions, $params)->getSql();
 
-        $this->assertSame($expected($db->getName()), $sql);
+        $this->assertSame($expected, $sql);
 
         $db->close();
     }
