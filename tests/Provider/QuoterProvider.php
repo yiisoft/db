@@ -11,7 +11,7 @@ class QuoterProvider
     /**
      * @return string[][]
      */
-    public function columnNames(): array
+    public static function columnNames(): array
     {
         return [
             ['*', '*'],
@@ -23,7 +23,7 @@ class QuoterProvider
     /**
      * @return string[][]
      */
-    public function ensureColumnName(): array
+    public static function ensureColumnName(): array
     {
         return [
             ['*', '*'],
@@ -40,7 +40,7 @@ class QuoterProvider
     /**
      * @return string[][]
      */
-    public function ensureNameQuoted(): array
+    public static function ensureNameQuoted(): array
     {
         return [
             ['name', '{{name}}'],
@@ -57,7 +57,7 @@ class QuoterProvider
     /**
      * @return string[][]
      */
-    public function simpleColumnNames(): array
+    public static function simpleColumnNames(): array
     {
         return [
             ['*', '*', '*'],
@@ -67,7 +67,7 @@ class QuoterProvider
     /**
      * @return string[][]
      */
-    public function simpleTableNames(): array
+    public static function simpleTableNames(): array
     {
         return [
             ['test', 'test'],
@@ -78,7 +78,7 @@ class QuoterProvider
     /**
      * @return string[][]
      */
-    public function tableNameParts(): array
+    public static function tableNameParts(): array
     {
         return [
             ['animal', 'animal',],
@@ -90,7 +90,7 @@ class QuoterProvider
         ];
     }
 
-    public function tablesNameDataProvider(): array
+    public static function tablesNameDataProvider(): array
     {
         return [
             [['customer'], '', ['{{customer}}' => '{{customer}}']],
