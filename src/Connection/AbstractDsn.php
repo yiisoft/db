@@ -44,7 +44,12 @@ abstract class AbstractDsn implements Stringable
      */
     public function asString(): string
     {
-        $dsn = "$this->driver:" . "host=$this->host" . ';' . "dbname=$this->databaseName";
+        $host = match (str_contains($this->host, '/')) {
+            true => "unix_socket=$this->host",
+            default => "host=$this->host",
+        };
+
+        $dsn = "$this->driver:" . $host . ';' . "dbname=$this->databaseName";
 
         if ($this->port !== null) {
             $dsn .= ';' . "port=$this->port";

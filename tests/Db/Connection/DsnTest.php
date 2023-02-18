@@ -47,6 +47,20 @@ final class DsnTest extends TestCase
         $this->assertSame('mysql:host=localhost;dbname=yiitest;port=3306;charset=utf8', $dsn->__toString());
     }
 
+    public function testGetDsnWithUnixSocket(): void
+    {
+        $dsn = new Dsn('mysql', '/var/run/mysqld/mysqld.sock', 'yiitest', null, ['charset' => 'utf8']);
+
+        $this->assertSame(
+            'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=yiitest;charset=utf8',
+            $dsn->asString(),
+        );
+        $this->assertSame(
+            'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=yiitest;charset=utf8',
+            $dsn->__toString(),
+        );
+    }
+
     public function testGetHost(): void
     {
         $dsn = new Dsn('mysql', 'localhost', 'yiitest', '3306', ['charset' => 'utf8']);
