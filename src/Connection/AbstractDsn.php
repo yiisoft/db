@@ -22,7 +22,8 @@ abstract class AbstractDsn implements Stringable
         private string $host,
         private string $databaseName,
         private string|null $port = null,
-        private array $options = []
+        private array $options = [],
+        private bool $socket = false,
     ) {
     }
 
@@ -44,7 +45,7 @@ abstract class AbstractDsn implements Stringable
      */
     public function asString(): string
     {
-        $host = match (str_contains($this->host, '/')) {
+        $host = match ($this->socket) {
             true => "unix_socket=$this->host",
             default => "host=$this->host",
         };
