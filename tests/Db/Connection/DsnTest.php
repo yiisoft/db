@@ -53,22 +53,22 @@ final class DsnTest extends TestCase
 
         $this->assertSame(
             'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=yiitest;charset=utf8',
-            $dsn->asString(),
+            $dsn->unixSocket()->asString(),
         );
         $this->assertSame(
             'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=yiitest;charset=utf8',
-            $dsn->__toString(),
+            $dsn->unixSocket()->__toString(),
         );
 
         $dsn = new Dsn('mysql', 'https://other.host', 'yiitest', null, ['charset' => 'utf8'], true);
 
         $this->assertSame(
             'mysql:unix_socket=https://other.host;dbname=yiitest;charset=utf8',
-            $dsn->asString(),
+            $dsn->unixSocket()->asString(),
         );
         $this->assertSame(
             'mysql:unix_socket=https://other.host;dbname=yiitest;charset=utf8',
-            $dsn->__toString(),
+            $dsn->unixSocket()->__toString(),
         );
     }
 

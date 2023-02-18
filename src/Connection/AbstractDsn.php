@@ -14,6 +14,8 @@ use Stringable;
  */
 abstract class AbstractDsn implements Stringable
 {
+    private bool $unixSocket = false;
+
     /**
      * @psalm-param string[] $options
      */
@@ -22,8 +24,7 @@ abstract class AbstractDsn implements Stringable
         private string $host,
         private string $databaseName,
         private string|null $port = null,
-        private array $options = [],
-        private bool $socket = false,
+        private array $options = []
     ) {
     }
 
@@ -45,10 +46,11 @@ abstract class AbstractDsn implements Stringable
      */
     public function asString(): string
     {
-        $host = match ($this->socket) {
-            true => "unix_socket=$this->host",
-            default => "host=$this->host",
-        };
+        $host = "host=$this->host";
+
+        if ($this->unixSocket) {
+            $host = "unix_socket=$this->host";
+        }
 
         $dsn = "$this->driver:" . $host . ';' . "dbname=$this->databaseName";
 
@@ -115,5 +117,12 @@ abstract class AbstractDsn implements Stringable
     public function getPort(): string|null
     {
         return $this->port;
+    }
+
+    public function unixSocket(): static
+    {
+        $this->unixSocket = true;
+
+        return $this;
     }
 }
