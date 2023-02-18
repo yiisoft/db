@@ -51,4 +51,11 @@ final class DsnSocketTest extends TestCase
             $dsn->__toString(),
         );
     }
+
+    public function testGetOptions(): void
+    {
+        $dsn = new DsnSocket('mysql', '/var/run/mysqld/mysqld.sock', 'yiitest', ['charset' => 'utf8']);
+
+        $this->assertSame(['charset' => 'utf8'], $dsn->getOptions());
+    }
 }
