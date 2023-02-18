@@ -55,7 +55,7 @@
       <directory>./tests/Db</directory>
     </testsuite>
     <testsuite name="ActiveRecord">
-      <directory>./vendor/yiisoft/active-record/tests/driver</directory>
+      <directory>./vendor/yiisoft/active-record/tests/Driver</directory>
     </testsuite>
     <testsuite name="Mssql">
       <directory>./vendor/yiisoft/db-mssql/tests</directory>
