@@ -14,6 +14,9 @@ use Stringable;
  */
 abstract class AbstractDsnSocket implements DsnInterface, Stringable
 {
+    /**
+     * @psalm-param string[] $options
+     */
     public function __construct(
         private string $driver,
         private string $unixSocket,
