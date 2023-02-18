@@ -49,7 +49,7 @@ final class DsnTest extends TestCase
 
     public function testGetDsnWithUnixSocket(): void
     {
-        $dsn = new Dsn('mysql', '/var/run/mysqld/mysqld.sock', 'yiitest', null, ['charset' => 'utf8'], true);
+        $dsn = new Dsn('mysql', '/var/run/mysqld/mysqld.sock', 'yiitest', null, ['charset' => 'utf8']);
 
         $this->assertSame(
             'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=yiitest;charset=utf8',
@@ -60,7 +60,7 @@ final class DsnTest extends TestCase
             $dsn->unixSocket()->__toString(),
         );
 
-        $dsn = new Dsn('mysql', 'https://other.host', 'yiitest', null, ['charset' => 'utf8'], true);
+        $dsn = new Dsn('mysql', 'https://other.host', 'yiitest', null, ['charset' => 'utf8']);
 
         $this->assertSame(
             'mysql:unix_socket=https://other.host;dbname=yiitest;charset=utf8',
