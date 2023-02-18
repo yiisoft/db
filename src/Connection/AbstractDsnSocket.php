@@ -8,31 +8,23 @@ use Stringable;
 
 /**
  * The Dsn class is typically used to parse a DSN string, which is a string that contains all the necessary information
- * to connect to a database, such as the database driver, hostname, database name, port and options.
+ * to connect to a database, such as the database driver, unix socket, database name, options.
  *
  * It also allows you to access individual components of the DSN, such as the driver or the database name.
  */
-abstract class AbstractDsn implements DsnInterface, Stringable
+abstract class AbstractDsnSocket implements DsnInterface, Stringable
 {
-    /**
-     * @psalm-param string[] $options
-     */
     public function __construct(
         private string $driver,
-        private string $host,
+        private string $unixSocket,
         private string $databaseName,
-        private string|null $port = null,
         private array $options = []
     ) {
     }
 
     public function asString(): string
     {
-        $dsn = "$this->driver:" . "host=$this->host" . ';' . "dbname=$this->databaseName";
-
-        if ($this->port !== null) {
-            $dsn .= ';' . "port=$this->port";
-        }
+        $dsn = "$this->driver:" . "unix_socket=$this->unixSocket" . ';' . "dbname=$this->databaseName";
 
         $parts = [];
 
@@ -64,7 +56,7 @@ abstract class AbstractDsn implements DsnInterface, Stringable
     }
 
     /**
-     * @return string The database driver name.
+     * @return string The database driver to use.
      */
     public function getDriver(): string
     {
@@ -72,26 +64,18 @@ abstract class AbstractDsn implements DsnInterface, Stringable
     }
 
     /**
-     * @return string The database host name or IP address.
+     * @return string The unix socket to connect to.
      */
-    public function getHost(): string
+    public function getUnixSocket(): string
     {
-        return $this->host;
+        return $this->unixSocket;
     }
 
     /**
-     * @return array The database connection options. Default value to an empty array.
+     * @return array The options to use.
      */
     public function getOptions(): array
     {
         return $this->options;
-    }
-
-    /**
-     * @return string|null The database port. Null if not set.
-     */
-    public function getPort(): string|null
-    {
-        return $this->port;
     }
 }
