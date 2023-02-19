@@ -17,12 +17,12 @@ interface ParamInterface
     public function __construct(mixed $value, int $type);
 
     /**
-     * @return mixed The value to bind to the parameter.
-     */
-    public function getValue(): mixed;
-
-    /**
      * @return int The SQL data type of the parameter.
      */
     public function getType(): int;
+
+    /**
+     * @return mixed The value to bind to the parameter.
+     */
+    public function getValue(): mixed;
 }

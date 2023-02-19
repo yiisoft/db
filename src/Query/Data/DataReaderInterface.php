@@ -28,6 +28,8 @@ use Iterator;
  *
  * Note that since DataReader is a forward-only stream, you can only traverse it once. Doing it the second time will
  * throw an exception.
+ *
+ * @extends Iterator<int|string, mixed>
  */
 interface DataReaderInterface extends Iterator, Countable
 {

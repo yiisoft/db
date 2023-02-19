@@ -170,7 +170,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addForeignKey()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addForeignKey
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -226,7 +226,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addPrimaryKey()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addPrimaryKey
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -259,7 +259,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addUnique()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addUnique
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -294,7 +294,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     /**
      * Make sure that `{{something}}` in values will not be encoded.
      *
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::batchInsert()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::batchInsert
      *
      * {@see https://github.com/yiisoft/yii2/issues/11242}
      *
@@ -407,7 +407,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
      * @throws InvalidConfigException
      * @throws Throwable
      */
-    public function testBatchInsertFailsOld(): void
+    public function testBatchInsertWithDuplicates(): void
     {
         $db = $this->getConnection(true);
 
@@ -483,7 +483,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::createIndex()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::createIndex
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -1379,7 +1379,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     /**
      * Test INSERT INTO ... SELECT SQL statement with wrong query object.
      *
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::invalidSelectColumns()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::invalidSelectColumns
      *
      * @throws Exception
      * @throws Throwable
@@ -1878,7 +1878,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::update()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::update
      *
      * @throws Exception
      * @throws Throwable
@@ -1901,7 +1901,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::upsert()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::upsert
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -1942,11 +1942,10 @@ abstract class CommonCommandTest extends AbstractCommandTest
     public function testPrepareWithEmptySql()
     {
         $db = $this->createMock(ConnectionPDOInterface::class);
-        $db->expects(self::never())
-            ->method('getActivePDO');
+        $db->expects(self::never())->method('getActivePDO');
 
         $command = new class ($db) extends AbstractCommandPDO {
-            protected function internalExecute(?string $rawSql): void
+            protected function internalExecute(string|null $rawSql): void
             {
             }
 
@@ -1965,7 +1964,16 @@ abstract class CommonCommandTest extends AbstractCommandTest
      */
     protected function performAndCompareUpsertResult(ConnectionPDOInterface $db, array $data): void
     {
-        $params = $data['params'];
+        $params = [];
+
+        foreach ($data['params'] as $param) {
+            if (is_callable($param)) {
+                $params[] = $param($db);
+            } else {
+                $params[] = $param;
+            }
+        }
+
         $expected = $data['expected'] ?? $params[1];
 
         $command = $db->createCommand();
@@ -1979,5 +1987,27 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ->from('{{T_upsert}}')
             ->one();
         $this->assertEquals($expected, $actual, $this->upsertTestCharCast);
+    }
+
+    public function testDecimalValue(): void
+    {
+        $decimalValue = 10.0;
+        $db = $this->getConnection(true);
+
+        $inserted = $db->createCommand()
+            ->insertWithReturningPks(
+                '{{%order}}',
+                ['customer_id' => 1, 'created_at' => 0, 'total' => $decimalValue]
+            );
+
+        $result = $db->createCommand(
+            'select * from {{%order}} where [[id]]=:id',
+            ['id' => $inserted['id']]
+        )->queryOne();
+
+        $columnSchema = $db->getTableSchema('{{%order}}')->getColumn('total');
+        $phpTypecastValue = $columnSchema->phpTypecast($result['total']);
+
+        $this->assertSame($decimalValue, $phpTypecastValue);
     }
 }

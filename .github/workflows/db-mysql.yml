@@ -43,12 +43,19 @@ jobs:
           - 8.2
 
         mysql:
-          - 5.7
-          - 8.0
+          - mysql:5.7
+          - mysql:latest
+          - mariadb:10.4
+          - mariadb:10.5
+          - mariadb:10.6
+          - mariadb:10.7
+          - mariadb:10.8
+          - mariadb:10.9
+          - mariadb:latest
 
     services:
       mysql:
-        image: mysql:${{ matrix.mysql }}
+        image: ${{ matrix.mysql }}
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_PASSWORD: ''

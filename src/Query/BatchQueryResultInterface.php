@@ -24,6 +24,8 @@ use Yiisoft\Db\Exception\InvalidCallException;
  * foreach ($query->each() as $user) {
  * }
  * ```
+ *
+ * @extends Iterator<int|string, mixed>
  */
 interface BatchQueryResultInterface extends Iterator
 {

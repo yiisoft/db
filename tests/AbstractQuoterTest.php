@@ -12,7 +12,7 @@ abstract class AbstractQuoterTest extends TestCase
     use TestTrait;
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::ensureColumnName()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::ensureColumnName
      */
     public function testEnsureColumnName(string $columnName, string $expected): void
     {
@@ -22,7 +22,7 @@ abstract class AbstractQuoterTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::ensureNameQuoted()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::ensureNameQuoted
      */
     public function testEnsureNameQuoted(string $name, string $expected): void
     {
@@ -32,7 +32,7 @@ abstract class AbstractQuoterTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::tableNameParts()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::tableNameParts
      */
     public function testGetTableNameParts(string $tableName, string ...$expected): void
     {
@@ -42,7 +42,7 @@ abstract class AbstractQuoterTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::columnNames()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::columnNames
      */
     public function testQuoteColumnName(string $columnName, string $expected): void
     {
@@ -52,7 +52,7 @@ abstract class AbstractQuoterTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::simpleColumnNames()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::simpleColumnNames
      */
     public function testQuoteSimpleColumnName(
         string $columnName,
@@ -72,7 +72,7 @@ abstract class AbstractQuoterTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::simpleTableNames()
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::simpleTableNames
      */
     public function testQuoteTableName(string $tableName, string $expected): void
     {

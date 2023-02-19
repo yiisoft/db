@@ -287,13 +287,13 @@ interface QueryPartsInterface
      * $query = (new \Yiisoft\Db\Query\Query)->from(['u' => 'user', 'profile']);
      *
      * // SELECT * FROM (SELECT * FROM `user` WHERE `active` = 1) `activeusers`;
-     * $subquery = (new \Yiisoft\Db\Query\Query)->from('user')->where(['active' => true])
-     * $query = (new \Yiisoft\Db\Query\Query)->from(['activeusers' => $subquery]);
+     * $subQuery = (new \Yiisoft\Db\Query\Query)->from('user')->where(['active' => true])
+     * $query = (new \Yiisoft\Db\Query\Query)->from(['activeusers' => $subQuery]);
      *
-     * // subquery can also be a string with plain SQL wrapped in parentheses
+     * // subQuery can also be a string with plain SQL wrapped in parentheses
      * // SELECT * FROM (SELECT * FROM `user` WHERE `active` = 1) `activeusers`;
-     * $subquery = "(SELECT * FROM `user` WHERE `active` = 1)";
-     * $query = (new \Yiisoft\Db\Query\Query)->from(['activeusers' => $subquery]);
+     * $subQuery = "(SELECT * FROM `user` WHERE `active` = 1)";
+     * $query = (new \Yiisoft\Db\Query\Query)->from(['activeusers' => $subQuery]);
      * ```
      *
      * @return static The query object itself.

@@ -26,6 +26,20 @@ interface PDODriverInterface extends DriverInterface
     public function createConnection(): PDO;
 
     /**
+     * The charset used for database connection. The property is only used for MySQL, PostgresSQL databases. Defaults to
+     * null, meaning using default charset as configured by the database.
+     *
+     * For Oracle Database, the charset must be specified in the {@see dsn}, for example for UTF-8 by appending
+     * `;charset=UTF-8` to the DSN string.
+     *
+     * The same applies for if you're using GBK or BIG5 charset with MySQL, then it's highly recommended specifying
+     * charset via {@see dsn} like `'mysql:dbname=database;host=127.0.0.1;charset=GBK;'`.
+     *
+     * @param string|null $charset
+     */
+    public function charset(string|null $charset): void;
+
+    /**
      * Returns the charset currently used for database connection. The returned charset is only applicable for MySQL,
      * PostgresSQL databases.
      *
@@ -66,20 +80,6 @@ interface PDODriverInterface extends DriverInterface
      * @param string $password the password for establishing DB connection.
      */
     public function password(string $password): void;
-
-    /**
-     * The charset used for database connection. The property is only used for MySQL, PostgresSQL databases. Defaults to
-     * null, meaning using default charset as configured by the database.
-     *
-     * For Oracle Database, the charset must be specified in the {@see dsn}, for example for UTF-8 by appending
-     * `;charset=UTF-8` to the DSN string.
-     *
-     * The same applies for if you're using GBK or BIG5 charset with MySQL, then it's highly recommended specifying
-     * charset via {@see dsn} like `'mysql:dbname=database;host=127.0.0.1;charset=GBK;'`.
-     *
-     * @param string|null $charset
-     */
-    public function setCharset(string|null $charset): void;
 
     /**
      * The username for establishing DB connection. Defaults to `null` meaning no username to use.

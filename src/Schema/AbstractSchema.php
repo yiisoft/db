@@ -364,6 +364,7 @@ abstract class AbstractSchema implements SchemaInterface
             SchemaInterface::TYPE_INTEGER => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_BIGINT => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_BOOLEAN => SchemaInterface::PHP_TYPE_BOOLEAN,
+            SchemaInterface::TYPE_DECIMAL => SchemaInterface::PHP_TYPE_DOUBLE,
             SchemaInterface::TYPE_FLOAT => SchemaInterface::PHP_TYPE_DOUBLE,
             SchemaInterface::TYPE_DOUBLE => SchemaInterface::PHP_TYPE_DOUBLE,
             SchemaInterface::TYPE_BINARY => SchemaInterface::PHP_TYPE_RESOURCE,

@@ -29,7 +29,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $columns = [];
         $i = 0;
 
-        foreach ($columnTypes as [$column, $builder, $expected]) {
+        foreach ($columnTypes as [$column, $expected]) {
             if (
                 !(
                     strncmp($column, SchemaInterface::TYPE_PK, 2) === 0 ||
@@ -56,21 +56,8 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $qb = $db->getQueryBuilder();
         $columnTypes = (new ColumnTypes($db))->getColumnTypes();
 
-        foreach ($columnTypes as $item) {
-            [$column, $builder, $expected] = $item;
-
-            $driverName = $db->getDriver()->getDriverName();
-            if (isset($item[3][$driverName])) {
-                $expectedColumnSchemaBuilder = $item[3][$driverName];
-            } elseif (isset($item[3]) && !is_array($item[3])) {
-                $expectedColumnSchemaBuilder = $item[3];
-            } else {
-                $expectedColumnSchemaBuilder = $column;
-            }
-
-            $this->assertEquals($expectedColumnSchemaBuilder, $builder->asString());
+        foreach ($columnTypes as [$column, $expected]) {
             $this->assertEquals($expected, $qb->getColumnType($column));
-            $this->assertEquals($expected, $qb->getColumnType($builder));
         }
 
         $db->close();
