@@ -55,12 +55,12 @@ final class BetweenCondition implements BetweenConditionInterface
 
     private static function validateColumn(string $operator, mixed $column): string|ExpressionInterface
     {
-        if (!is_string($column) && !($column instanceof ExpressionInterface)) {
-            throw new InvalidArgumentException(
-                "Operator '$operator' requires column to be string or ExpressionInterface."
-            );
+        if (is_string($column) || $column instanceof ExpressionInterface) {
+            return $column;
         }
 
-        return $column;
+        throw new InvalidArgumentException(
+            "Operator '$operator' requires column to be string or ExpressionInterface."
+        );
     }
 }

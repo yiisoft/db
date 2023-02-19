@@ -32,9 +32,9 @@ class NotConditionBuilder implements ExpressionBuilderInterface
             return '';
         }
 
-        $expression = $this->queryBuilder->buildCondition($operand, $params);
+        $expressionValue = $this->queryBuilder->buildCondition($operand, $params);
 
-        return "{$this->getNegationOperator()} ($expression)";
+        return "{$this->getNegationOperator()} ($expressionValue)";
     }
 
     protected function getNegationOperator(): string

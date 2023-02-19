@@ -32,10 +32,10 @@ final class ExistsCondition implements ExistConditionInterface
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
-        if (!isset($operands[0]) || !$operands[0] instanceof QueryInterface) {
-            throw new InvalidArgumentException('Sub query for EXISTS operator must be a Query object.');
+        if (isset($operands[0]) && $operands[0] instanceof QueryInterface) {
+            return new self($operator, $operands[0]);
         }
 
-        return new self($operator, $operands[0]);
+        throw new InvalidArgumentException('Sub query for EXISTS operator must be a Query object.');
     }
 }

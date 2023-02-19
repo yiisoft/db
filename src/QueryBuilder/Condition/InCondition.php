@@ -55,21 +55,21 @@ final class InCondition implements InConditionInterface
 
     private static function validateColumn(string $operator, mixed $column): array|string|Iterator|ExpressionInterface
     {
-        if (!is_string($column) && !is_array($column) && !$column instanceof Iterator && !$column instanceof ExpressionInterface) {
-            throw new InvalidArgumentException("Operator '$operator' requires column to be string, array or Iterator.");
+        if (is_string($column) || is_array($column) || $column instanceof Iterator || $column instanceof ExpressionInterface) {
+            return $column;
         }
 
-        return $column;
+        throw new InvalidArgumentException("Operator '$operator' requires column to be string, array or Iterator.");
     }
 
     private static function validateValues(string $operator, mixed $values): int|iterable|Iterator|QueryInterface
     {
-        if (!is_array($values) && !$values instanceof Iterator && !is_int($values) && !$values instanceof QueryInterface) {
-            throw new InvalidArgumentException(
-                "Operator '$operator' requires values to be array, Iterator, int or QueryInterface."
-            );
+        if (is_array($values) || $values instanceof Iterator || is_int($values) || $values instanceof QueryInterface) {
+            return $values;
         }
 
-        return $values;
+        throw new InvalidArgumentException(
+            "Operator '$operator' requires values to be array, Iterator, int or QueryInterface."
+        );
     }
 }
