@@ -86,18 +86,18 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
         mixed $value
     ): array|int|string|Iterator|ExpressionInterface {
         if (
-            !is_array($value) &&
-            !is_int($value) &&
-            !is_string($value) &&
-            !($value instanceof Iterator) &&
-            !($value instanceof ExpressionInterface)
+            is_array($value) ||
+            is_int($value) ||
+            is_string($value) ||
+            ($value instanceof Iterator) ||
+            ($value instanceof ExpressionInterface)
         ) {
-            throw new InvalidArgumentException(
-                "Operator '$operator' requires value to be array, int, string, Iterator or ExpressionInterface."
-            );
+            return $value;
         }
 
-        return $value;
+        throw new InvalidArgumentException(
+            "Operator '$operator' requires value to be array, int, string, Iterator or ExpressionInterface."
+        );
     }
 
     private static function validateIntervalStartColumn(
@@ -105,15 +105,15 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
         mixed $intervalStartColumn
     ): string|ExpressionInterface {
         if (
-            !is_string($intervalStartColumn) &&
-            !($intervalStartColumn instanceof ExpressionInterface)
+            is_string($intervalStartColumn) ||
+            $intervalStartColumn instanceof ExpressionInterface
         ) {
-            throw new InvalidArgumentException(
-                "Operator '$operator' requires interval start column to be string or ExpressionInterface."
-            );
+            return $intervalStartColumn;
         }
 
-        return $intervalStartColumn;
+        throw new InvalidArgumentException(
+            "Operator '$operator' requires interval start column to be string or ExpressionInterface."
+        );
     }
 
     private static function validateIntervalEndColumn(
@@ -121,14 +121,14 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
         mixed $intervalEndColumn
     ): string|ExpressionInterface {
         if (
-            !is_string($intervalEndColumn) &&
-            !($intervalEndColumn instanceof ExpressionInterface)
+            is_string($intervalEndColumn) ||
+            $intervalEndColumn instanceof ExpressionInterface
         ) {
-            throw new InvalidArgumentException(
-                "Operator '$operator' requires interval end column to be string or ExpressionInterface."
-            );
+            return $intervalEndColumn;
         }
 
-        return $intervalEndColumn;
+        throw new InvalidArgumentException(
+            "Operator '$operator' requires interval end column to be string or ExpressionInterface."
+        );
     }
 }

@@ -39,20 +39,20 @@ final class NotCondition implements NotConditionInterface
             throw new InvalidArgumentException("Operator '$operator' requires exactly one operand.");
         }
 
-        /** @var mixed $condition */
-        $condition = array_shift($condition);
+        /** @var mixed $firstValue */
+        $firstValue = array_shift($condition);
 
         if (
-            !is_array($condition) &&
-            !($condition instanceof ExpressionInterface) &&
-            !is_string($condition) &&
-            $condition !== null
+            is_array($firstValue) ||
+            $firstValue instanceof ExpressionInterface ||
+            is_string($firstValue) ||
+            $firstValue === null
         ) {
-            throw new InvalidArgumentException(
-                "Operator '$operator' requires condition to be array, string, null or ExpressionInterface."
-            );
+            return $firstValue;
         }
 
-        return $condition;
+        throw new InvalidArgumentException(
+            "Operator '$operator' requires condition to be array, string, null or ExpressionInterface."
+        );
     }
 }
