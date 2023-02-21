@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Tests\Db\Cache;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
 use Yiisoft\Db\Cache\SchemaCache;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -90,5 +91,15 @@ final class SchemaCacheTest extends TestCase
 
         $this->expectException(InvalidCallException::class);
         $schemaCache->getOrSet('key');
+    }
+
+    public function testInvalidCacheKey(): void
+    {
+        $resource = fopen('php://memory', 'r');
+        $schemaCache = new SchemaCache(DbHelper::getPsrCache());
+
+        $this->expectException(InvalidArgumentException::class);
+        $schemaCache->set($resource, 1);
+        fclose($resource);
     }
 }
