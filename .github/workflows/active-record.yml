@@ -104,7 +104,7 @@ jobs:
       - name: Set environment variables pull request linux.
         uses: yiisoft/actions/db/environment-linux@master
 
-      - name: Install db.
+      - name: Install db-mssql.
         uses: yiisoft/actions/db/subpackage-install@master
         with:
           BRANCH_NAME: ${{ github.head_ref }}
@@ -148,6 +148,9 @@ jobs:
           CURRENT_PACKAGE: db-sqlite
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
+
+      - name: Install yiisoft/cache
+        run: composer require yiisoft/cache
 
       - name: Install active-record.
         uses: yiisoft/actions/db/subpackage-install@master
