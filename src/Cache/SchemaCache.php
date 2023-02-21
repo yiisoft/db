@@ -105,6 +105,10 @@ final class SchemaCache
      */
     public function invalidate(string $cacheTag): void
     {
+        if (empty($cacheTag)) {
+            return;
+        }
+
         /** @var string[] $data */
         $data = $this->psrCache->get($cacheTag, []);
         foreach ($data as $key) {
@@ -190,14 +194,14 @@ final class SchemaCache
         return md5($key);
     }
 
-    private function addToTag(string $key, string $tag = null): void
+    private function addToTag(string $key, string $cacheTag = null): void
     {
-        if (empty($tag)) {
+        if (empty($cacheTag)) {
             return;
         }
         /** @var string[] $data */
-        $data = $this->psrCache->get($tag, []);
+        $data = $this->psrCache->get($cacheTag, []);
         $data[] = $key;
-        $this->psrCache->set($tag, $data);
+        $this->psrCache->set($cacheTag, $data);
     }
 }

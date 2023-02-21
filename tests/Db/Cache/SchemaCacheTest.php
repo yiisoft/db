@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Cache;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Cache\CacheInterface;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
