@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Cache;
 
 use PHPUnit\Framework\TestCase;
+use Psr\SimpleCache\CacheInterface;
 use Yiisoft\Db\Cache\SchemaCache;
+use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -26,6 +28,19 @@ final class SchemaCacheTest extends TestCase
         $this->assertSame('value', $schemaCache->getOrSet('key'));
 
         $schemaCache->invalidate('tag');
+
+        $this->assertNull($schemaCache->getOrSet('key'));
+    }
+
+    public function testInvalidateWithEmptyTag(): void
+    {
+        $schemaCache = new SchemaCache(DbHelper::getPsrCache());
+
+        $schemaCache->set('key', 'value', 3600, '');
+
+        $this->assertSame('value', $schemaCache->getOrSet('key'));
+
+        $schemaCache->invalidate('');
 
         $this->assertNull($schemaCache->getOrSet('key'));
     }
@@ -59,5 +74,21 @@ final class SchemaCacheTest extends TestCase
         $schemaCache->setExclude(['table1', 'table2']);
 
         $this->assertSame(['table1', 'table2'], Assert::getInaccessibleProperty($schemaCache, 'exclude'));
+    }
+
+    public function testWithFailSetCache(): void
+    {
+        $cacheMock = $this->createMock(CacheInterface::class);
+        $cacheMock->expects(self::once())
+            ->method('has')
+            ->willReturn(false);
+        $cacheMock->expects(self::once())
+            ->method('set')
+            ->willReturn(false);
+
+        $schemaCache = new SchemaCache($cacheMock);
+
+        $this->expectException(InvalidCallException::class);
+        $schemaCache->getOrSet('key');
     }
 }
