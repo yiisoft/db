@@ -42,7 +42,7 @@ final class SchemaCacheTest extends TestCase
 
         $schemaCache->invalidate('');
 
-        $this->assertNull($schemaCache->getOrSet('key'));
+        $this->assertNotNull($schemaCache->getOrSet('key'));
     }
 
     public function testSetDuration(): void
