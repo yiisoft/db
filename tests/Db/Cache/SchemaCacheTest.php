@@ -30,7 +30,7 @@ final class SchemaCacheTest extends TestCase
     {
         $schemaCache = new SchemaCache(DbHelper::getCache());
 
-        $schemaCache->set('key', 'value', 3600, new TagDependency('tag'));
+        $schemaCache->set('key', 'value', 3600, 'tag');
 
         $this->assertSame('value', $schemaCache->getOrSet('key'));
 

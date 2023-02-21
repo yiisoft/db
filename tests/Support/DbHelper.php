@@ -11,6 +11,7 @@ use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Psr\SimpleCache\CacheInterface as PsrCacheInterface;
 
 use function explode;
 use function file_get_contents;
@@ -30,9 +31,14 @@ final class DbHelper
         return new Cache(new FileCache(__DIR__ . '/runtime/cache'));
     }
 
+    public static function getPsrCache(): PsrCacheInterface
+    {
+        return new FileCache(__DIR__ . '/runtime/cache');
+    }
+
     public static function getSchemaCache(): SchemaCache
     {
-        return new SchemaCache(self::getCache());
+        return new SchemaCache(self::getPsrCache());
     }
 
     /**

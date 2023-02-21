@@ -552,7 +552,7 @@ abstract class AbstractSchema implements SchemaInterface
             $this->getCacheKey($rawName),
             null,
             $this->schemaCache->getDuration(),
-            new TagDependency($this->getCacheTag()),
+            $this->getCacheTag()
         );
 
         if (
@@ -586,7 +586,7 @@ abstract class AbstractSchema implements SchemaInterface
             $this->getCacheKey($rawName),
             $metadata,
             $this->schemaCache->getDuration(),
-            new TagDependency($this->getCacheTag()),
+            $this->getCacheTag()
         );
     }
 
