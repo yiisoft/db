@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Schema;
 
 use PDO;
 use Throwable;
-use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;

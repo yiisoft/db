@@ -9,7 +9,6 @@ use Psr\SimpleCache\CacheInterface;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 
-
 /**
  * The SchemaCache class is used to cache database schema information.
  *
@@ -34,6 +33,7 @@ final class SchemaCache
      * Remove a value with the specified key from cache.
      *
      * @param mixed $key A key identifying the value to be deleted from cache.
+     *
      * @throws InvalidArgumentException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
@@ -61,7 +61,7 @@ final class SchemaCache
         );
 
         if ($result) {
-            $this->addToTag($cacheTag, $stringKey);
+            $this->addToTag($stringKey, $cacheTag);
             return $value;
         }
 
@@ -100,6 +100,7 @@ final class SchemaCache
      * Invalidates all the cached values that are associated with any of the specified.
      *
      * @param string $cacheTag The cache tag used to identify the values to be invalidated.
+     *
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function invalidate(string $cacheTag): void
@@ -189,9 +190,9 @@ final class SchemaCache
         return md5($key);
     }
 
-    private function addToTag(string $tag = null, string $key): void
+    private function addToTag(string $key, string $tag = null): void
     {
-        if ($tag === null) {
+        if (empty($tag)) {
             return;
         }
         /** @var string[] $data */
