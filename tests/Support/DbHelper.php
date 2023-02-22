@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support;
 
-use Yiisoft\Cache\Cache;
-use Yiisoft\Cache\CacheInterface;
+use Psr\SimpleCache\CacheInterface;
 use Yiisoft\Cache\File\FileCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
@@ -25,14 +24,14 @@ final class DbHelper
         $str = str_replace('INSERT INTO', 'INSERT ALL  INTO', $str) . ' SELECT 1 FROM SYS.DUAL';
     }
 
-    public static function getCache(): CacheInterface
+    public static function getPsrCache(): CacheInterface
     {
-        return new Cache(new FileCache(__DIR__ . '/runtime/cache'));
+        return new FileCache(__DIR__ . '/runtime/cache');
     }
 
     public static function getSchemaCache(): SchemaCache
     {
-        return new SchemaCache(self::getCache());
+        return new SchemaCache(self::getPsrCache());
     }
 
     /**
@@ -44,7 +43,7 @@ final class DbHelper
     public static function loadFixture(ConnectionPDOInterface $db, string $fixture): void
     {
         // flush cache to new import data to dbms.
-        self::getCache()->psr()->clear();
+        self::getPsrCache()->clear();
 
         $db->open();
 

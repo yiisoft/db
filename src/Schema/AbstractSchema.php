@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Schema;
 
 use PDO;
 use Throwable;
-use Yiisoft\Cache\Dependency\TagDependency;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
@@ -552,7 +551,7 @@ abstract class AbstractSchema implements SchemaInterface
             $this->getCacheKey($rawName),
             null,
             $this->schemaCache->getDuration(),
-            new TagDependency($this->getCacheTag()),
+            $this->getCacheTag()
         );
 
         if (
@@ -586,7 +585,7 @@ abstract class AbstractSchema implements SchemaInterface
             $this->getCacheKey($rawName),
             $metadata,
             $this->schemaCache->getDuration(),
-            new TagDependency($this->getCacheTag()),
+            $this->getCacheTag()
         );
     }
 
