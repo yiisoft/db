@@ -13,7 +13,7 @@ use function array_keys;
  *
  * @property array $columnNames List of column names. This property is read-only.
  */
-abstract class TableSchema implements TableSchemaInterface
+abstract class AbstractTableSchema implements TableSchemaInterface
 {
     private string|null $schemaName = null;
     private string $name = '';
