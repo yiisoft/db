@@ -8,6 +8,7 @@ use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Helper\ArrayHelper;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 
 use function current;
@@ -104,7 +105,7 @@ class BatchQueryResult implements BatchQueryResultInterface
 
         $rows = $this->getRows();
 
-        return $this->query->populate($rows);
+        return ArrayHelper::populate($rows, $this->query->getIndexBy());
     }
 
     /**

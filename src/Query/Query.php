@@ -220,10 +220,11 @@ class Query implements QueryInterface
 
     public function all(): array
     {
-        return match ($this->emulateExecution) {
-            true => [],
-            false => $this->populate($this->createCommand()->queryAll()),
-        };
+        if ($this->emulateExecution === true) {
+            return [];
+        }
+
+        return ArrayHelper::populate($this->createCommand()->queryAll(), $this->indexBy);
     }
 
     public function average(string $q): int|float|null|string
@@ -601,25 +602,6 @@ class Query implements QueryInterface
         $this->params = $params;
 
         return $this;
-    }
-
-    /**
-     * @psalm-suppress MixedArrayOffset
-     */
-    public function populate(array $rows): array
-    {
-        if ($this->indexBy === null) {
-            return $rows;
-        }
-
-        $result = [];
-
-        /** @psalm-var array[][] $row */
-        foreach ($rows as $row) {
-            $result[ArrayHelper::getValueByPath($row, $this->indexBy)] = $row;
-        }
-
-        return $result;
     }
 
     public function prepare(QueryBuilderInterface $builder): QueryInterface

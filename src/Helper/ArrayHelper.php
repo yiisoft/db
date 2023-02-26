@@ -297,4 +297,32 @@ final class ArrayHelper
             $array
         );
     }
+
+    /**
+     * @todo - Write correct description
+     * Converts the array with data, using index-key if needed
+     *
+     * This method is internally used to convert the data fetched from database into the format as required by this
+     * query.
+     *
+     * @param array $rows the raw query result from database.
+     * @psalm-suppress MixedArrayOffset
+     *
+     * @return array the converted query result.
+     */
+    public static function populate(array $rows, Closure|string|null $indexBy = null): array
+    {
+        if ($indexBy === null) {
+            return $rows;
+        }
+
+        $result = [];
+
+        /** @psalm-var array[][] $row */
+        foreach ($rows as $row) {
+            $result[self::getValueByPath($row, $indexBy)] = $row;
+        }
+
+        return $result;
+    }
 }

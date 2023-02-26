@@ -755,65 +755,6 @@ abstract class AbstractQueryTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populate
-     */
-    public function testPopulate(array $rows): void
-    {
-        $db = $this->getConnection(false);
-        $query = (new Query($db));
-
-        $this->assertSame($rows, $query->populate($rows));
-    }
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIndexBy
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIncorrectIndexBy
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIndexByClosure
-     */
-    public function testPopulateWithIndexBy(Closure|string|null $indexBy, array $rows, array $populated): void
-    {
-        $db = $this->getConnection(false);
-        $query = (new Query($db))->indexBy($indexBy);
-
-        $this->assertSame($populated, $query->populate($rows));
-    }
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIndexBy
-     */
-    public function testPopulateWithIndexByWithObject(Closure|string|null $indexBy, array $rows, array $expectedPopulated): void
-    {
-        $db = $this->getConnection(false);
-        $query = (new Query($db))->indexBy($indexBy);
-
-        $rows = json_decode(json_encode($rows));
-        $populated = json_decode(json_encode($query->populate($rows)), true);
-
-        $this->assertSame($expectedPopulated, $populated);
-    }
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::populateWithIncorrectIndexBy
-     */
-    public function testPopulateWithIncorrectIndexByWithObject(Closure|string|null $indexBy, array $rows): void
-    {
-        $db = $this->getConnection(false);
-        $query = (new Query($db))->indexBy($indexBy);
-
-        $rows = json_decode(json_encode($rows));
-
-        set_error_handler(static function (int $errno, string $errstr) {
-            throw new \Exception('E_WARNING: ' . $errstr, $errno);
-        }, E_WARNING);
-
-        $this->expectExceptionMessageMatches('/^E_WARNING: /');
-
-        $query->populate($rows);
-
-        restore_error_handler();
-    }
-
-    /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::filterConditionData
      */
     public function testFilterCondition(array|string $condition, array|string|null $expected): void
