@@ -89,4 +89,13 @@ final class ArrayExpressionTest extends TestCase
 
         $expression->getIterator();
     }
+
+    public function testGetKeyException(): void
+    {
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('The ArrayExpression offset must be an integer.');
+
+        $expression = new ArrayExpression([1]);
+        $expression['a'];
+    }
 }
