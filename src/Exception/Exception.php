@@ -18,7 +18,7 @@ class Exception extends \Exception implements Stringable
     }
 
     /**
-     * @return string readable representation of exception
+     * @return string Readable representation of exception.
      */
     public function __toString(): string
     {
