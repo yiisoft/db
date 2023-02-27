@@ -57,7 +57,6 @@ final class StringHelper
         }
 
         $value = str_replace([' ', ','], ['', '.'], $value);
-
         return preg_replace('/\.(?=.*\.)/', '', $value);
     }
 
@@ -73,9 +72,7 @@ final class StringHelper
     public static function pascalCaseToId(string $input): string
     {
         $separator = '_';
-
         $result = preg_replace('/(?<=\p{L})(?<!\p{Lu})(\p{Lu})/u', addslashes($separator) . '\1', $input);
-
         return mb_strtolower(trim($result, $separator));
     }
 }

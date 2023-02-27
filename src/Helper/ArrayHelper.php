@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Helper;
 
 use Closure;
-
 use Exception;
+
 use function array_key_exists;
 use function array_map;
 use function array_multisort;
@@ -255,6 +255,7 @@ final class ArrayHelper
                     $lastArray[(string) $value] = $element;
                 }
             }
+
             unset($lastArray);
         }
 
