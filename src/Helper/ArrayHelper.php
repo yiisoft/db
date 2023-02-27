@@ -96,7 +96,6 @@ final class ArrayHelper
      * anonymous function returning the value. The anonymous function signature should be:
      *
      * `function($array, $defaultValue)`.
-     *
      * @param mixed|null $default The default value to be returned if the specified array key does not exist. Not used
      * when getting value from an object.
      *
