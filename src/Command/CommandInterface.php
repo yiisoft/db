@@ -673,6 +673,8 @@ interface CommandInterface
      *
      * @return false|float|int|string|null The value of the first column in the first row of the query result.
      * False is returned if there is no value.
+     *
+     * @psalm-return null|scalar
      */
     public function queryScalar(): bool|string|null|int|float;
 

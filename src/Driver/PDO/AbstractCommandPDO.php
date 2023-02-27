@@ -181,7 +181,7 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
         }
 
         if ($this->is($queryMode, self::QUERY_MODE_ROW)) {
-            /** @var mixed */
+            /** @psalm-var array|false $result */
             $result = $this->pdoStatement?->fetch(PDO::FETCH_ASSOC);
         } elseif ($this->is($queryMode, self::QUERY_MODE_COLUMN)) {
             /** @var mixed */
