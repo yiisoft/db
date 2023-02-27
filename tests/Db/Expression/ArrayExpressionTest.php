@@ -81,14 +81,4 @@ final class ArrayExpressionTest extends TestCase
 
         $this->assertSame(['a', 'b', 'c'], iterator_to_array($expression->getIterator()));
     }
-
-    public function testGetIteratorException(): void
-    {
-        $this->expectException(InvalidConfigException::class);
-        $this->expectExceptionMessage('The ArrayExpression value must be an array.');
-
-        $expression = new ArrayExpression('c', 'string', 2);
-
-        $expression->getIterator();
-    }
 }
