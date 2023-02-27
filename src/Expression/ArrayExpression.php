@@ -78,7 +78,6 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     public function offsetExists(mixed $offset): bool
     {
         $key = $this->validateKey($offset);
-
         return isset($this->value[$key]);
     }
 
@@ -97,7 +96,6 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     {
         $key = $this->validateKey($offset);
         $this->value = $this->validateValue($this->value);
-
         return $this->value[$key];
     }
 
@@ -115,7 +113,6 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     {
         $key = $this->validateKey($offset);
         $this->value = $this->validateValue($this->value);
-
         $this->value[$key] = $value;
     }
 
@@ -128,7 +125,6 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     {
         $key = $this->validateKey($offset);
         $this->value = $this->validateValue($this->value);
-
         unset($this->value[$key]);
     }
 
@@ -154,7 +150,6 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     public function getIterator(): Traversable
     {
         $value = $this->validateValue($this->value);
-
         return new ArrayIterator($value);
     }
 
