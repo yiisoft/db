@@ -16,13 +16,17 @@ use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
+use function current;
 use function explode;
 use function get_resource_type;
 use function is_array;
 use function is_bool;
+use function is_int;
 use function is_object;
 use function is_resource;
+use function is_scalar;
 use function is_string;
+use function preg_replace_callback;
 use function stream_get_contents;
 use function strncmp;
 
@@ -34,6 +38,7 @@ use function strncmp;
  * The SQL statement it represents can be set via the {@see sql} property.
  *
  * To execute a non-query SQL (such as INSERT, DELETE, UPDATE), call {@see execute()}.
+ *
  * To execute a SQL statement that returns a result data set (such as SELECT), use {@see queryAll()}, {@see queryOne()},
  * {@see queryColumn()}, {@see queryScalar()}, or {@see query()}.
  *
@@ -70,39 +75,44 @@ abstract class AbstractCommand implements CommandInterface
     use ProfilerAwareTrait;
 
     protected string|null $isolationLevel = null;
+    /** @psalm-var ParamInterface[] */
+    protected array $params = [];
     protected string|null $refreshTableName = null;
     protected Closure|null $retryHandler = null;
     private string $sql = '';
-    /** * @var ParamInterface[] */
-    protected array $params = [];
 
     public function addCheck(string $name, string $table, string $expression): static
     {
         $sql = $this->queryBuilder()->addCheck($name, $table, $expression);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function addColumn(string $table, string $column, string $type): static
     {
         $sql = $this->queryBuilder()->addColumn($table, $column, $type);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function addCommentOnColumn(string $table, string $column, string $comment): static
     {
         $sql = $this->queryBuilder()->addCommentOnColumn($table, $column, $comment);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function addCommentOnTable(string $table, string $comment): static
     {
         $sql = $this->queryBuilder()->addCommentOnTable($table, $comment);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function addDefaultValue(string $name, string $table, string $column, mixed $value): static
     {
         $sql = $this->queryBuilder()->addDefaultValue($name, $table, $column, $value);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -131,18 +141,21 @@ abstract class AbstractCommand implements CommandInterface
     public function addPrimaryKey(string $name, string $table, array|string $columns): static
     {
         $sql = $this->queryBuilder()->addPrimaryKey($name, $table, $columns);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function addUnique(string $name, string $table, array|string $columns): static
     {
         $sql = $this->queryBuilder()->addUnique($name, $table, $columns);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function alterColumn(string $table, string $column, string $type): static
     {
         $sql = $this->queryBuilder()->alterColumn($table, $column, $type);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -154,6 +167,7 @@ abstract class AbstractCommand implements CommandInterface
         foreach ($columns as &$column) {
             $column = $this->queryBuilder()->quoter()->quoteSql($column);
         }
+
         unset($column);
 
         $params = [];
@@ -161,6 +175,7 @@ abstract class AbstractCommand implements CommandInterface
 
         $this->setRawSql($sql);
         $this->bindValues($params);
+
         return $this;
     }
 
@@ -171,6 +186,7 @@ abstract class AbstractCommand implements CommandInterface
     public function checkIntegrity(string $schema, string $table, bool $check = true): static
     {
         $sql = $this->queryBuilder()->checkIntegrity($schema, $table, $check);
+
         return $this->setSql($sql);
     }
 
@@ -182,90 +198,105 @@ abstract class AbstractCommand implements CommandInterface
         string $indexMethod = null
     ): static {
         $sql = $this->queryBuilder()->createIndex($name, $table, $columns, $indexType, $indexMethod);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function createTable(string $table, array $columns, string $options = null): static
     {
         $sql = $this->queryBuilder()->createTable($table, $columns, $options);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function createView(string $viewName, QueryInterface|string $subQuery): static
     {
         $sql = $this->queryBuilder()->createView($viewName, $subQuery);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
     }
 
     public function delete(string $table, array|string $condition = '', array $params = []): static
     {
         $sql = $this->queryBuilder()->delete($table, $condition, $params);
+
         return $this->setSql($sql)->bindValues($params);
     }
 
     public function dropCheck(string $name, string $table): static
     {
         $sql = $this->queryBuilder()->dropCheck($name, $table);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function dropColumn(string $table, string $column): static
     {
         $sql = $this->queryBuilder()->dropColumn($table, $column);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function dropCommentFromColumn(string $table, string $column): static
     {
         $sql = $this->queryBuilder()->dropCommentFromColumn($table, $column);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function dropCommentFromTable(string $table): static
     {
         $sql = $this->queryBuilder()->dropCommentFromTable($table);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function dropDefaultValue(string $name, string $table): static
     {
         $sql = $this->queryBuilder()->dropDefaultValue($name, $table);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function dropForeignKey(string $name, string $table): static
     {
         $sql = $this->queryBuilder()->dropForeignKey($name, $table);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function dropIndex(string $name, string $table): static
     {
         $sql = $this->queryBuilder()->dropIndex($name, $table);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function dropPrimaryKey(string $name, string $table): static
     {
         $sql = $this->queryBuilder()->dropPrimaryKey($name, $table);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function dropTable(string $table): static
     {
         $sql = $this->queryBuilder()->dropTable($table);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function dropUnique(string $name, string $table): static
     {
         $sql = $this->queryBuilder()->dropUnique($name, $table);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function dropView(string $viewName): static
     {
         $sql = $this->queryBuilder()->dropView($viewName);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
     }
 
@@ -293,7 +324,7 @@ abstract class AbstractCommand implements CommandInterface
 
         $params = [];
 
-        /** @var mixed $value */
+        /** @psalm-var mixed $value */
         foreach ($this->params as $name => $value) {
             if (is_string($name) && strncmp(':', $name, 1)) {
                 $name = ':' . $name;
@@ -344,6 +375,7 @@ abstract class AbstractCommand implements CommandInterface
     {
         $params = [];
         $sql = $this->queryBuilder()->insert($table, $columns, $params);
+
         return $this->setSql($sql)->bindValues($params);
     }
 
@@ -361,10 +393,6 @@ abstract class AbstractCommand implements CommandInterface
         return is_array($result) ? $result : false;
     }
 
-    /**
-     * @psalm-suppress MixedReturnStatement
-     * @psalm-suppress MixedInferredReturnType
-     */
     public function execute(): int
     {
         $sql = $this->getSql();
@@ -373,15 +401,15 @@ abstract class AbstractCommand implements CommandInterface
             return 0;
         }
 
-        return $this->queryInternal(self::QUERY_MODE_EXECUTE);
+        /** @psalm-var int|bool $execute */
+        $execute = $this->queryInternal(self::QUERY_MODE_EXECUTE);
+
+        return is_int($execute) ? $execute : 0;
     }
 
-    /**
-     * @psalm-suppress MixedReturnStatement
-     * @psalm-suppress MixedInferredReturnType
-     */
     public function query(): DataReaderInterface
     {
+        /** @psalm-var DataReaderInterface */
         return $this->queryInternal(self::QUERY_MODE_CURSOR);
     }
 
@@ -409,15 +437,12 @@ abstract class AbstractCommand implements CommandInterface
         return is_array($results) ? $results : null;
     }
 
-    /**
-     * @psalm-suppress MixedReturnStatement
-     * @psalm-suppress MixedInferredReturnType
-     */
     public function queryScalar(): bool|string|null|int|float
     {
+        /** @psalm-var array|false $firstRow */
         $firstRow = $this->queryInternal(self::QUERY_MODE_ROW);
 
-        if (!is_array($firstRow)) {
+        if (!$firstRow) {
             return false;
         }
 
@@ -428,24 +453,27 @@ abstract class AbstractCommand implements CommandInterface
             return stream_get_contents($result);
         }
 
-        return $result;
+        return is_scalar($result) ? $result : null;
     }
 
     public function renameColumn(string $table, string $oldName, string $newName): static
     {
         $sql = $this->queryBuilder()->renameColumn($table, $oldName, $newName);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function renameTable(string $table, string $newName): static
     {
         $sql = $this->queryBuilder()->renameTable($table, $newName);
+
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function resetSequence(string $table, int|string $value = null): static
     {
         $sql = $this->queryBuilder()->resetSequence($table, $value);
+
         return $this->setSql($sql);
     }
 
@@ -472,18 +500,21 @@ abstract class AbstractCommand implements CommandInterface
     public function setRetryHandler(Closure|null $handler): static
     {
         $this->retryHandler = $handler;
+
         return $this;
     }
 
     public function truncateTable(string $table): static
     {
         $sql = $this->queryBuilder()->truncateTable($table);
+
         return $this->setSql($sql);
     }
 
     public function update(string $table, array $columns, array|string $condition = '', array $params = []): static
     {
         $sql = $this->queryBuilder()->update($table, $columns, $condition, $params);
+
         return $this->setSql($sql)->bindValues($params);
     }
 
@@ -494,6 +525,7 @@ abstract class AbstractCommand implements CommandInterface
         array $params = []
     ): static {
         $sql = $this->queryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
+
         return $this->setSql($sql)->bindValues($params);
     }
 
@@ -510,7 +542,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * Executes a prepared statement.
      *
-     * @param string|null $rawSql the rawSql if it has been created.
+     * @param string|null $rawSql The rawSql if it has been created.
      *
      * @throws Exception
      * @throws Throwable
@@ -542,22 +574,19 @@ abstract class AbstractCommand implements CommandInterface
     protected function queryInternal(int $queryMode): mixed
     {
         $rawSql = $this->getRawSql();
-
         $isReadMode = $this->isReadMode($queryMode);
+
         $logCategory = self::class . '::' . ($isReadMode ? 'query' : 'execute');
 
         $this->logQuery($rawSql, $logCategory);
-
         $this->prepare($isReadMode);
 
         try {
             $this->profiler?->begin($rawSql, [$logCategory]);
-
             $this->internalExecute($rawSql);
 
             /** @psalm-var mixed $result */
             $result = $this->internalGetQueryResult($queryMode);
-
             $this->profiler?->end($rawSql, [$logCategory]);
 
             if (!$isReadMode) {
@@ -565,6 +594,7 @@ abstract class AbstractCommand implements CommandInterface
             }
         } catch (Exception $e) {
             $this->profiler?->end($rawSql, [$logCategory]);
+
             throw $e;
         }
 
@@ -580,12 +610,11 @@ abstract class AbstractCommand implements CommandInterface
      * Marks a specified table schema to be refreshed after command execution.
      *
      * @param string $name Name of the table, which schema should be refreshed.
-     *
-     * @return static The command object itself.
      */
     protected function requireTableSchemaRefresh(string $name): static
     {
         $this->refreshTableName = $name;
+
         return $this;
     }
 
@@ -595,12 +624,11 @@ abstract class AbstractCommand implements CommandInterface
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      *
      * {@see TransactionInterface::begin()} for details.
-     *
-     * @return static The command object itself.
      */
     protected function requireTransaction(string $isolationLevel = null): static
     {
         $this->isolationLevel = $isolationLevel;
+
         return $this;
     }
 
@@ -616,6 +644,9 @@ abstract class AbstractCommand implements CommandInterface
         $this->retryHandler = null;
     }
 
+    /**
+     * Checks if the query mode is read mode.
+     */
     private function isReadMode(int $queryMode): bool
     {
         return !$this->is($queryMode, self::QUERY_MODE_EXECUTE);
