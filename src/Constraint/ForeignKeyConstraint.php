@@ -66,7 +66,6 @@ final class ForeignKeyConstraint extends Constraint
     public function foreignSchemaName(string|null $value): self
     {
         $this->foreignSchemaName = $value;
-
         return $this;
     }
 
@@ -78,7 +77,6 @@ final class ForeignKeyConstraint extends Constraint
     public function foreignTableName(string|null $value): self
     {
         $this->foreignTableName = $value;
-
         return $this;
     }
 
@@ -90,7 +88,6 @@ final class ForeignKeyConstraint extends Constraint
     public function foreignColumnNames(array $value): self
     {
         $this->foreignColumnNames = $value;
-
         return $this;
     }
 
@@ -102,7 +99,6 @@ final class ForeignKeyConstraint extends Constraint
     public function onUpdate(string|null $value): self
     {
         $this->onUpdate = $value;
-
         return $this;
     }
 
@@ -114,7 +110,6 @@ final class ForeignKeyConstraint extends Constraint
     public function onDelete(string|null $value): self
     {
         $this->onDelete = $value;
-
         return $this;
     }
 }

@@ -39,7 +39,6 @@ final class IndexConstraint extends Constraint
     public function unique(bool $value): self
     {
         $this->isUnique = $value;
-
         return $this;
     }
 
@@ -51,7 +50,6 @@ final class IndexConstraint extends Constraint
     public function primary(bool $value): self
     {
         $this->isPrimary = $value;
-
         return $this;
     }
 }

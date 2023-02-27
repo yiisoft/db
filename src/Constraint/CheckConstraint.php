@@ -31,7 +31,6 @@ final class CheckConstraint extends Constraint
     public function expression(string $value): self
     {
         $this->expression = $value;
-
         return $this;
     }
 }

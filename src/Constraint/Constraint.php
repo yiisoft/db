@@ -37,7 +37,6 @@ class Constraint
     public function columnNames(array|string|null $value): static
     {
         $this->columnNames = $value;
-
         return $this;
     }
 
@@ -49,7 +48,6 @@ class Constraint
     public function name(object|string|null $value): static
     {
         $this->name = $value;
-
         return $this;
     }
 }

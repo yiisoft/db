@@ -31,7 +31,6 @@ final class DefaultValueConstraint extends Constraint
     public function value(mixed $value): self
     {
         $this->value = $value;
-
         return $this;
     }
 }
