@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Expression;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Expression\ArrayExpression;
 
 /**
@@ -59,8 +60,6 @@ final class ArrayExpressionTest extends TestCase
 
         unset($expression[0], $expression[1], $expression[2]);
 
-
-
         $this->assertFalse(isset($expression[0]));
         $this->assertFalse(isset($expression[1]));
         $this->assertFalse(isset($expression[2]));
@@ -79,5 +78,15 @@ final class ArrayExpressionTest extends TestCase
 
 
         $this->assertSame(['a', 'b', 'c'], iterator_to_array($expression->getIterator()));
+    }
+
+    public function testGetIteratorException(): void
+    {
+        $this->expectException(InvalidConfigException::class);
+        $this->expectExceptionMessage('The ArrayExpression value must be an array.');
+
+        $expression = new ArrayExpression('c', 'string', 2);
+
+        $expression->getIterator();
     }
 }

@@ -31,7 +31,7 @@ use function count;
  */
 class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
 {
-    public function __construct(private array $value = [], private string|null $type = null, private int $dimension = 1)
+    public function __construct(private mixed $value = [], private string|null $type = null, private int $dimension = 1)
     {
     }
 
@@ -50,7 +50,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * The array's content. In can be represented as an array of values or a {@see QueryInterface} that returns these
      * values.
      */
-    public function getValue(): array
+    public function getValue(): mixed
     {
         return $this->value;
     }
@@ -70,7 +70,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @param mixed $offset An offset to check for.
      *
-     * @throws InvalidConfigException If offset is not an integer
+     * @throws InvalidConfigException If offset is not an integer.
      *
      * @return bool `true` on success or `false` on failure. The return value will be cast to boolean if non-boolean
      * was returned.
@@ -89,13 +89,14 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @param mixed $offset The offset to retrieve.
      *
-     * @throws InvalidConfigException If offset is not an integer
+     * @throws InvalidConfigException If offset is not an integer.
      *
      * @return mixed Can return all value types.
      */
     public function offsetGet(mixed $offset): mixed
     {
         $key = $this->validateKey($offset);
+        $this->value = $this->validateValue($this->value);
 
         return $this->value[$key];
     }
@@ -108,11 +109,13 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * @param mixed $offset The offset to assign the value to.
      * @param mixed $value The value to set.
      *
-     * @throws InvalidConfigException
+     * @throws InvalidConfigException If offset is not an integer.
+     *
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
         $key = $this->validateKey($offset);
+        $this->value = $this->validateValue($this->value);
 
         $this->value[$key] = $value;
     }
@@ -124,7 +127,10 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      */
     public function offsetUnset(mixed $offset): void
     {
-        unset($this->value[$offset]);
+        $key = $this->validateKey($offset);
+        $this->value = $this->validateValue($this->value);
+
+        unset($this->value[$key]);
     }
 
     /**
@@ -136,7 +142,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      */
     public function count(): int
     {
-        return count($this->value);
+        return count((array) $this->value);
     }
 
     /**
@@ -144,17 +150,19 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
      *
-     * @return ArrayIterator An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>.
+     * @return ArrayIterator An instance of an object implementing `Iterator` or `Traversable`.
      */
     public function getIterator(): Traversable
     {
-        return new ArrayIterator($this->value);
+        $value = $this->validateValue($this->value);
+
+        return new ArrayIterator($value);
     }
 
     /**
      * Validates the key of the array expression is an integer.
      *
-     * @throws InvalidConfigException
+     * @throws InvalidConfigException If offset is not an integer.
      */
     private function validateKey(mixed $key): int
     {
@@ -163,5 +171,17 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
         }
 
         return $key;
+    }
+
+    /**
+     * Validates the value of the array expression is an array.
+     */
+    private function validateValue(mixed $value): array
+    {
+        if (!is_array($value)) {
+            throw new InvalidConfigException('The ArrayExpression value must be an array.');
+        }
+
+        return $value;
     }
 }
