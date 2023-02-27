@@ -31,7 +31,7 @@ use function count;
  */
 class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
 {
-    public function __construct(private mixed $value = [], private string|null $type = null, private int $dimension = 1)
+    public function __construct(private array $value = [], private string|null $type = null, private int $dimension = 1)
     {
     }
 
@@ -50,7 +50,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * The array's content. In can be represented as an array of values or a {@see QueryInterface} that returns these
      * values.
      */
-    public function getValue(): mixed
+    public function getValue(): array
     {
         return $this->value;
     }
@@ -70,16 +70,16 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @param mixed $offset An offset to check for.
      *
-     * @return bool true On success or false on failure.
+     * @throws InvalidConfigException If offset is not an integer
      *
-     * The return value will be cast to boolean if non-boolean was returned.
-     *
-     * @psalm-suppress MixedArrayOffset
-     * @psalm-suppress MixedAssignment
+     * @return bool `true` on success or `false` on failure. The return value will be cast to boolean if non-boolean
+     * was returned.
      */
     public function offsetExists(mixed $offset): bool
     {
-        return isset($this->value[$offset]);
+        $key = $this->validateKey($offset);
+
+        return isset($this->value[$key]);
     }
 
     /**
@@ -89,14 +89,15 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @param mixed $offset The offset to retrieve.
      *
-     * @return mixed Can return all value types.
+     * @throws InvalidConfigException If offset is not an integer
      *
-     * @psalm-suppress MixedArrayAccess
-     * @psalm-suppress MixedArrayOffset
+     * @return mixed Can return all value types.
      */
     public function offsetGet(mixed $offset): mixed
     {
-        return $this->value[$offset];
+        $key = $this->validateKey($offset);
+
+        return $this->value[$key];
     }
 
     /**
@@ -105,23 +106,21 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * @link http://php.net/manual/en/arrayaccess.offsetset.php
      *
      * @param mixed $offset The offset to assign the value to.
-     * @param mixed $value  The value to set.
+     * @param mixed $value The value to set.
      *
-     * @psalm-suppress MixedArrayOffset
-     * @psalm-suppress MixedArrayAssignment
+     * @throws InvalidConfigException
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        $this->value[$offset] = $value;
+        $key = $this->validateKey($offset);
+
+        $this->value[$key] = $value;
     }
 
     /**
      * Offset to unset.
      *
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-     *
-     * @psalm-suppress MixedArrayAccess
-     * @psalm-suppress MixedArrayOffset
      */
     public function offsetUnset(mixed $offset): void
     {
@@ -134,12 +133,10 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * @link http://php.net/manual/en/countable.count.php
      *
      * @return int The custom count as an integer.
-     *
-     * The return value is cast to an integer.
      */
     public function count(): int
     {
-        return count((array) $this->value);
+        return count($this->value);
     }
 
     /**
@@ -147,16 +144,24 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
      *
-     * @throws InvalidConfigException When ArrayExpression contains QueryInterface object.
-     *
      * @return ArrayIterator An instance of an object implementing <b>Iterator</b> or <b>Traversable</b>.
      */
     public function getIterator(): Traversable
     {
-        if (!is_array($this->value)) {
-            throw new InvalidConfigException('The ArrayExpression value must be an array.');
+        return new ArrayIterator($this->value);
+    }
+
+    /**
+     * Validates the key of the array expression is an integer.
+     *
+     * @throws InvalidConfigException
+     */
+    private function validateKey(mixed $key): int
+    {
+        if (!is_int($key)) {
+            throw new InvalidConfigException('The ArrayExpression offset must be an integer.');
         }
 
-        return new ArrayIterator($this->value);
+        return $key;
     }
 }
