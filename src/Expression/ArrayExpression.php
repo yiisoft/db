@@ -110,7 +110,6 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * @param mixed $value The value to set.
      *
      * @throws InvalidConfigException If offset is not an integer.
-     *
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
