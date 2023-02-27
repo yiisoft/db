@@ -350,7 +350,6 @@ abstract class AbstractCommand implements CommandInterface
     {
         $params = [];
         $sql = $this->queryBuilder()->insert($table, $columns, $params);
-
         return $this->setSql($sql)->bindValues($params);
     }
 
