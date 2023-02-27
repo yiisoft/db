@@ -53,17 +53,16 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
      *
      * @throws InvalidConfigException when JsonExpression contains QueryInterface object
      *
-     * @return mixed Data which can be serialized by <b>json_encode</b>, which is a value of any type other than a
-     * resource.
+     * @return mixed Data which can be serialized by `json_encode`, which is a value of any type other than a resource.
      */
     public function jsonSerialize(): mixed
     {
-        /** @var mixed */
+        /** @psalm-var mixed $value */
         $value = $this->getValue();
 
         if ($value instanceof QueryInterface) {
             throw new InvalidConfigException(
-                'The JsonExpression class can not be serialized to JSON when the value is a QueryInterface object'
+                'The JsonExpression class can not be serialized to JSON when the value is a QueryInterface object.'
             );
         }
 

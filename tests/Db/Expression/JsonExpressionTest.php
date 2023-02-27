@@ -54,7 +54,7 @@ final class JsonExpressionTest extends TestCase
 
         $this->expectException(InvalidConfigException::class);
         $this->expectExceptionMessage(
-            'The JsonExpression class can not be serialized to JSON when the value is a QueryInterface object'
+            'The JsonExpression class can not be serialized to JSON when the value is a QueryInterface object.'
         );
 
         $expression->jsonSerialize();
