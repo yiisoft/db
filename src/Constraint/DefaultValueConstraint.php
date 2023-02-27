@@ -15,12 +15,17 @@ final class DefaultValueConstraint extends Constraint
 {
     private mixed $value = null;
 
+    /**
+     * @return mixed The default value as returned by the DBMS.
+     */
     public function getValue(): mixed
     {
         return $this->value;
     }
 
     /**
+     * Set the default value as returned by the DBMS.
+     *
      * @param mixed $value The default value as returned by the DBMS.
      */
     public function value(mixed $value): self

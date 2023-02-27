@@ -13,20 +13,26 @@ class Constraint
     private string|array|null $columnNames = null;
     private string|null|object $name = null;
 
+    /**
+     * @return array|string|null The list of column names the constraint belongs to.
+     */
     public function getColumnNames(): array|string|null
     {
         return $this->columnNames;
     }
 
+    /**
+     * @return object|string|null The constraint name.
+     */
     public function getName(): object|string|null
     {
         return $this->name;
     }
 
     /**
-     * @param array|string|null $value The list of column names the constraint belongs to.
+     * Set the list of column names the constraint belongs to.
      *
-     * @return static
+     * @param array|string|null $value The list of column names the constraint belongs to.
      */
     public function columnNames(array|string|null $value): static
     {
@@ -36,9 +42,9 @@ class Constraint
     }
 
     /**
-     * @param object|string|null $value The constraint name.
+     * Set the constraint name.
      *
-     * @return static
+     * @param object|string|null $value The constraint name.
      */
     public function name(object|string|null $value): static
     {
