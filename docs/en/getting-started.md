@@ -1,12 +1,12 @@
 ## Getting Started
 
-[Yii Db](https://github.com/yiisoft/db) is DAO (Data Access Object) layer for Yii 3.0. It provides a set of classes that help you access relational databases. It is designed to be flexible and extensible, so that it can be used with different databases and different database schemas. Its db-agnostic nature makes it easy to switch from one database to another.
+[Yii Db](https://github.com/yiisoft/db) is DAO (Data Access Object) layer for [YiiFramework](https://www.yiiframework.com/). It provides a set of classes that help you access relational databases. It is designed to be flexible and extensible, so that it can be used with different databases and different database schemas. Its database agnostic nature makes it easy to switch from one database to another.
 
 Built on top of [PDO](https://www.php.net/manual/en/book.pdo.php), [Yii Db](https://github.com/yiisoft/db) provides an object-oriented API for accessing relational databases. It is the foundation for other more advanced database access methods, including [Query Builder](query-builder.md) and [Active Record](active-record.md).
 
-When using [Yii Db](https://github.com/yiisoft/db), you mainly need to deal with plain SQLs and PHP arrays. As a result, it is the most efficient way to access databases. However, because SQL syntax may vary for different databases, using [Yii Db](https://github.com/yiisoft/db) also means you have to take extra effort to create a database-agnostic application.
+When using [Yii Db](https://github.com/yiisoft/db), you mainly need to deal with plain SQLs and PHP arrays. As a result, it is the most efficient way to access databases. However, because SQL syntax may vary for different databases, using [Yii Db](https://github.com/yiisoft/db) also means you have to take extra effort to create a database agnostic application.
 
-In Yii 3.0, [Yii Db](https://github.com/yiisoft/db) supports the following databases out of the box:
+In [YiiFramework](https://www.yiiframework.com/), [Yii Db](https://github.com/yiisoft/db) supports the following databases out of the box:
 
 1. [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) version 2017, 2019, 2022,
 2. [MySQL](https://www.mysql.com/) version 5.7 - 8.0.
