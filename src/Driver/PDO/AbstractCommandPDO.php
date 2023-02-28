@@ -12,7 +12,6 @@ use Yiisoft\Db\Command\AbstractCommand;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Query\Data\DataReader;
 
@@ -32,7 +31,6 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
     }
 
     /**
-     * @inheritDoc
      * This method mainly sets {@see pdoStatement} to be null.
      */
     public function cancel(): void
@@ -45,11 +43,6 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
         return $this->pdoStatement;
     }
 
-    /**
-     * @inheritDoc
-     *
-     * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
-     */
     public function bindParam(
         int|string $name,
         mixed &$value,
@@ -106,11 +99,6 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
         return $this;
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws PDOException
-     */
     public function prepare(bool|null $forRead = null): void
     {
         if (isset($this->pdoStatement)) {
@@ -120,6 +108,7 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
         }
 
         $sql = $this->getSql();
+
         /**
          * If sql is empty - will be {@see \ValueError} on prepare pdoStatement
          *
@@ -136,7 +125,7 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
             $this->bindPendingParams();
         } catch (PDOException $e) {
             $message = $e->getMessage() . "\nFailed to prepare SQL: $sql";
-            /** @var array|null */
+            /** @psalm-var array|null $errorInfo */
             $errorInfo = $e->errorInfo ?? null;
 
             throw new Exception($message, $errorInfo, $e);
@@ -184,13 +173,13 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
             /** @psalm-var array|false $result */
             $result = $this->pdoStatement?->fetch(PDO::FETCH_ASSOC);
         } elseif ($this->is($queryMode, self::QUERY_MODE_COLUMN)) {
-            /** @var mixed */
+            /** @psalm-var mixed $result */
             $result = $this->pdoStatement?->fetchAll(PDO::FETCH_COLUMN);
         } elseif ($this->is($queryMode, self::QUERY_MODE_ALL)) {
-            /** @var mixed */
+            /** @psalm-var mixed $result */
             $result = $this->pdoStatement?->fetchAll(PDO::FETCH_ASSOC);
         } else {
-            throw new InvalidParamException("Unknown query mode '{$queryMode}'");
+            throw new InvalidParamException("Unknown query mode $queryMode");
         }
 
         $this->pdoStatement?->closeCursor();

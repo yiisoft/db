@@ -18,7 +18,7 @@ interface ConnectionPDOInterface extends ConnectionInterface
     /**
      * Returns the PDO instance for the current connection.
      *
-     * This method will open the DB connection and then return {@see pdo}.
+     * This method will open the DB connection and then return {@see PDO}.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -34,7 +34,7 @@ interface ConnectionPDOInterface extends ConnectionInterface
      *
      * @return PDO|null The PHP PDO instance associated with this DB connection.
      *
-     * {@see pdoClass}
+     * {@see PDO}
      */
     public function getPDO(): PDO|null;
 

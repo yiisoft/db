@@ -138,7 +138,7 @@ abstract class AbstractConnectionPDO extends AbstractConnection implements Conne
 
     public function getLastInsertID(string $sequenceName = null): string
     {
-        if ($this->isActive() && $this->pdo) {
+        if ($this->pdo !== null) {
             return $this->pdo->lastInsertID($sequenceName ?? null);
         }
 

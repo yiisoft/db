@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Command;
 
 use Closure;
 use JsonException;
+use PDOException;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -223,6 +224,8 @@ interface CommandInterface
      * @throws Exception
      *
      * @return static The current command being executed.
+     *
+     * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
     public function bindParam(
         int|string $name,
@@ -604,6 +607,8 @@ interface CommandInterface
      * should be used to determine whether it is for read or write.
      *
      * @throws Exception If there is any DB error.
+     * @throws InvalidConfigException
+     * @throws PDOException
      */
     public function prepare(bool $forRead = null): void;
 

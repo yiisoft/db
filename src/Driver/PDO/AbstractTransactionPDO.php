@@ -31,27 +31,20 @@ use Yiisoft\Db\Transaction\TransactionInterface;
  *     throw $e;
  * }
  * ```
- *
- * @property bool $isActive Whether this transaction is active. Only an active transaction can {@see commit()} or
- * {@see rollBack()}. This property is read-only.
- * @property string $isolationLevel The transaction isolation level to use for this transaction. This can be one of
- * {@see READ_UNCOMMITTED}, {@see READ_COMMITTED}, {@see REPEATABLE_READ} and {@see SERIALIZABLE} but also a string
- * containing DBMS specific syntax to be used after `SET TRANSACTION ISOLATION LEVEL`. This property is write-only.
- * @property int $level The current nesting level of the transaction. This property is read-only.
  */
 abstract class AbstractTransactionPDO implements TransactionInterface
 {
     use LoggerAwareTrait;
 
+    /**
+     * @var int The nesting level of the transaction.
+     */
     private int $level = 0;
 
     public function __construct(protected ConnectionPDOInterface $db)
     {
     }
 
-    /**
-     * @inheritDoc
-     */
     public function begin(string $isolationLevel = null): void
     {
         $this->db->open();
@@ -89,9 +82,6 @@ abstract class AbstractTransactionPDO implements TransactionInterface
         $this->level++;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function commit(): void
     {
         if (!$this->isActive()) {
@@ -99,6 +89,7 @@ abstract class AbstractTransactionPDO implements TransactionInterface
         }
 
         $this->level--;
+
         if ($this->level === 0) {
             $this->logger?->log(LogLevel::DEBUG, 'Commit transaction ' . __METHOD__);
             $this->db->getPDO()?->commit();
@@ -117,28 +108,17 @@ abstract class AbstractTransactionPDO implements TransactionInterface
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getLevel(): int
     {
         return $this->level;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function isActive(): bool
     {
         /** Additional check pdo->inTransaction {@see https://github.com/yiisoft/yii2/pull/18407/} */
         return $this->level > 0 && $this->db->isActive() && $this->db->getPDO()?->inTransaction();
     }
 
-    /**
-     * @inheritDoc
-     *
-     * @throws Exception|InvalidConfigException|Throwable
-     */
     public function rollBack(): void
     {
         if (!$this->isActive()) {
@@ -150,6 +130,7 @@ abstract class AbstractTransactionPDO implements TransactionInterface
         }
 
         $this->level--;
+
         if ($this->level === 0) {
             $this->logger?->log(LogLevel::INFO, 'Roll back transaction ' . __METHOD__);
             $this->db->getPDO()?->rollBack();
@@ -168,9 +149,6 @@ abstract class AbstractTransactionPDO implements TransactionInterface
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     public function setIsolationLevel(string $level): void
     {
         if (!$this->isActive()) {
@@ -184,13 +162,6 @@ abstract class AbstractTransactionPDO implements TransactionInterface
         $this->setTransactionIsolationLevel($level);
     }
 
-    /**
-     * Creates a new savepoint.
-     *
-     * @param string $name the savepoint name
-     *
-     * @throws Exception|InvalidConfigException|Throwable
-     */
     public function createSavepoint(string $name): void
     {
         $this->db->createCommand("SAVEPOINT $name")->execute();
@@ -201,16 +172,17 @@ abstract class AbstractTransactionPDO implements TransactionInterface
         $this->db->createCommand("ROLLBACK TO SAVEPOINT $name")->execute();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function releaseSavepoint(string $name): void
     {
         $this->db->createCommand("RELEASE SAVEPOINT $name")->execute();
     }
 
     /**
-     * @throws Exception|InvalidConfigException|Throwable
+     * Sets the transaction isolation level.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
     protected function setTransactionIsolationLevel(string $level): void
     {
