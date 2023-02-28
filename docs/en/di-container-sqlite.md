@@ -2,7 +2,7 @@
 
 To configure [Yii Db Sqlite](https://github.com/yiisoft/db-pgsql) with [di container](https://github.com/yiisoft/di) you need to create a configuration file.
 
-Create a file `config/common/di/db-sqlite.php` for Sqlite:
+Create a file `config/common/di/db-sqlite.php`:
 
 ```php
 <?php

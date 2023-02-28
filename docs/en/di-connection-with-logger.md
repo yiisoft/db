@@ -28,7 +28,7 @@ return [
 ];
 ```
 
-Create a file `config/common/di/db-mssql.php` for Mssql:
+Create a file `config/common/di/db-mssql.php`:
 
 ```php
 <?php

@@ -2,7 +2,7 @@
 
 To configure [Yii Db Pgsql](https://github.com/yiisoft/db-pgsql) with [di container](https://github.com/yiisoft/di) you need to create a configuration file.
 
-Create a file `config/common/di/db-pgsql.php` for Pgsql:
+Create a file `config/common/di/db-pgsql.php`:
 
 ```php
 <?php

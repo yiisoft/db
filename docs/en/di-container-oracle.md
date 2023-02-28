@@ -2,7 +2,7 @@
 
 To configure [Yii Db Oracle](https://github.com/yiisoft/db-oracle) with [di container](https://github.com/yiisoft/di) you need to create a configuration file.
 
-Create a file `config/common/di/db-oracle.php` for Oracle:
+Create a file `config/common/di/db-oracle.php`:
 
 ```php
 <?php

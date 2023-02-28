@@ -5,7 +5,7 @@
 
 When we install [Yii Profiler](https://github.com/yiisoft/profiler) it is automatically configured in the [di container](https://github.com/yiisoft/di) for [Yii Config](https://github.com/yiisoft/config), so we can use it in our application.
 
-Create a file `config/common/di/db-mssql.php` for Mssql:
+Create a file `config/common/di/db-mssql.php`:
 
 ```php
 <?php
