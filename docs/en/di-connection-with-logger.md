@@ -1,6 +1,6 @@
 ## Create Connection with di container and Logger
 
-[Yii Db](https://github.com/yiisoft/db) used [psr-3](https://www.php-fig.org/psr/psr-3/) for logger. You can configure a logger that implements `Psr\Log\LoggerInterface::class` in the [di container](https://github.com/yiisoft/di), for example [Yii Logging Library](https://github.com/yiisoft/log).
+[Yii Db](https://github.com/yiisoft/db) used [psr-3](https://www.php-fig.org/psr/psr-3/) for logger. You can configure a logger that implements `Psr\Log\LoggerInterface::class` in the [di container](https://github.com/yiisoft/di), for example [Yii Logging Library](https://github.com/yiisoft/log) and [Yii Logging Library - File Target](https://github.com/yiisoft/log-target-file).
 
 Create a file `config/common/di/logger.php` for Logger:
 
