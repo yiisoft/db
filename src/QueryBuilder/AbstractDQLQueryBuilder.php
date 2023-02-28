@@ -41,9 +41,8 @@ use function trim;
 abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 {
     protected string $separator = ' ';
-
     /**
-     * @var array map of condition aliases to condition classes. For example:
+     * @var array Map of condition aliases to condition classes. For example:
      *
      * ```php
      * return [
@@ -52,6 +51,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      * ```
      *
      * This property is used by {@see createConditionFromArray} method.
+     *
      * See default condition classes list in {@see defaultConditionClasses()} method.
      *
      * In case you want to add custom conditions support, use the {@see setConditionClasses()} method.
@@ -60,7 +60,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      * @see defaultConditionClasses()
      */
     protected array $conditionClasses = [];
-
     /**
      * @psalm-var array<string, class-string<ExpressionBuilderInterface>> maps expression class to expression builder
      * class.
@@ -177,15 +176,10 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return $condition ?? '';
     }
 
-    /**
-     * @throws InvalidArgumentException
-     *
-     * @psalm-suppress UndefinedInterfaceMethod
-     * @psalm-suppress MixedMethodCall
-     */
     public function buildExpression(ExpressionInterface $expression, array &$params = []): string
     {
         $builder = $this->queryBuilder->getExpressionBuilder($expression);
+        /** @psalm-suppress MixedMethodCall */
         return (string) $builder->build($expression, $params);
     }
 
@@ -195,7 +189,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             return '';
         }
 
-        /** @psalm-var string[] */
+        /** @psalm-var string[] $tables */
         $tables = $this->quoteTableNames($tables, $params);
 
         return 'FROM ' . implode(', ', $tables);
@@ -477,7 +471,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     }
 
     /**
-     * @param string the separator between different fragments of a SQL statement.
+     * @param string $separator The separator between different fragments of a SQL statement.
      *
      * Defaults to an empty space. This is mainly used by {@see build()} when generating a SQL statement.
      */
@@ -556,9 +550,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     /**
      * Checks to see if the given limit is effective.
      *
-     * @param mixed $limit the given limit.
+     * @param mixed $limit The given limit.
      *
-     * @return bool whether the limit is effective.
+     * @return bool Whether the limit is effective.
      */
     protected function hasLimit(mixed $limit): bool
     {
@@ -568,9 +562,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     /**
      * Checks to see if the given offset is effective.
      *
-     * @param mixed $offset the given offset.
+     * @param mixed $offset The given offset.
      *
-     * @return bool whether the offset is effective.
+     * @return bool Whether the offset is effective.
      */
     protected function hasOffset(mixed $offset): bool
     {
@@ -578,9 +572,11 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     }
 
     /**
-     * Quotes table names passed.
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      *
-     * @throws Exception|InvalidConfigException|NotSupportedException
+     * @return array The list of table names with quote.
      */
     private function quoteTableNames(array $tables, array &$params): array
     {

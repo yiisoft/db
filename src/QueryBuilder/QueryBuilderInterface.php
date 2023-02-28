@@ -15,9 +15,9 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
     /**
      * Helper method to add $value to $params array using {@see PARAM_PREFIX}.
      *
-     * @param array $params passed by reference.
+     * @param array $params Passed by reference.
      *
-     * @return string the placeholder name in $params array.
+     * @return string The placeholder name in $params array.
      */
     public function bindParam(mixed $value, array &$params = []): string;
 
@@ -63,9 +63,9 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      *
      * If a type cannot be found in {@see typeMap}, it will be returned without any change.
      *
-     * @param ColumnSchemaBuilderInterface|string $type abstract column type.
+     * @param ColumnSchemaBuilderInterface|string $type Abstract column type.
      *
-     * @return string physical column type.
+     * @return string Physical column type.
      */
     public function getColumnType(ColumnSchemaBuilderInterface|string $type): string;
 
@@ -74,16 +74,16 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      *
      * Uses {@see expressionBuilders} array to find a suitable builder class.
      *
-     * @param ExpressionInterface $expression
+     * @param ExpressionInterface $expression Expression to build.
      *
-     * @throws InvalidArgumentException when $expression building is not supported by this QueryBuilder.
+     * @throws InvalidArgumentException When expression building is not supported by this QueryBuilder.
      *
-     * {@see expressionBuilders}
+     * @see expressionBuilders
      */
     public function getExpressionBuilder(ExpressionInterface $expression): object;
 
     /**
-     * Return quoter interface instance.
+     * @return QuoterInterface Quoter instance.
      */
     public function quoter(): QuoterInterface;
 }

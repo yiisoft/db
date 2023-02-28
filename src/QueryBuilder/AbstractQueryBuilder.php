@@ -6,10 +6,6 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Generator;
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
@@ -26,19 +22,8 @@ use function preg_replace;
  *
  * SQL statements are created from {@see QueryInterface} objects using the {@see build()}-method.
  *
- * QueryBuilder is also used by {@see CommandInterface} to build SQL statements such as INSERT, UPDATE, DELETE, CREATE TABLE.
- *
- * For more details and usage information on QueryBuilder:
- * {@see [guide article on query builders](guide:db-query-builder)}.
- *
- * @property string[] $conditionClasses Map of condition aliases to condition classes. This property is write-only.
- *
- * For example:
- * ```php
- *     ['LIKE' => \Yiisoft\Db\Condition\LikeCondition::class]
- * ```
- * @property string[] $expressionBuilders Array of builders that should be merged with the pre-defined one's in
- * {@see expressionBuilders} property. This property is write-only.
+ * QueryBuilder is also used by {@see CommandInterface} to build SQL statements such as INSERT, UPDATE, DELETE,
+ * CREATE TABLE.
  */
 abstract class AbstractQueryBuilder implements QueryBuilderInterface
 {
@@ -46,13 +31,11 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
      * The prefix for automatically generated query binding parameters.
      */
     public const PARAM_PREFIX = ':qp';
-
     /**
-     * @var array the abstract column types mapped to physical column types.
-     * This is mainly used to support creating/modifying tables using DB-independent data type specifications.
-     * Child classes should override this property to declare supported type mappings.
+     * @psalm-var string[] The abstract column types mapped to physical column types.
      *
-     * @psalm-var string[]
+     * This is mainly used to support creating/modifying tables using DB-independent data type specifications. Child
+     * classes should override this property to declare supported type mappings.
      */
     protected array $typeMap = [];
 
@@ -351,9 +334,6 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->insert($table, $columns, $params);
     }
 
-    /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
-     */
     public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         return $this->dmlBuilder->insertWithReturningPks($table, $columns, $params);
