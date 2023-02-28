@@ -13,7 +13,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 interface LikeConditionInterface extends ConditionInterface
 {
     /**
-     * @return string|ExpressionInterface The column name.
+     * @return ExpressionInterface|string The column name.
      */
     public function getColumn(): string|ExpressionInterface;
 

@@ -12,7 +12,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 interface SimpleConditionInterface extends ConditionInterface
 {
     /**
-     * @return string|ExpressionInterface The column name. If it is an array, a composite `IN` condition
+     * @return ExpressionInterface|string The column name. If it is an array, a composite `IN` condition
      * will be generated.
      */
     public function getColumn(): string|ExpressionInterface;
