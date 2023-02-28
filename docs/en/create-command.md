@@ -190,7 +190,7 @@ object(Yiisoft\Db\Query\Data\DataReader)#4710 (2) {
 
 When creating a DB command from a SQL with parameters, you should almost always use the approach of binding parameters to prevent SQL injection attacks. You can bind parameters to a SQL statement by using named placeholders or question mark placeholders. Named placeholders are of the form `:name` and question mark placeholders are of the form `?`. The following example shows how to bind parameters to a SQL statement:
 
-Example 1: Binding parameters using named placeholders:
+Example 1: Binding parameters using named placeholders.
 
 ```php
 <?php
@@ -225,7 +225,7 @@ array(6) {
 }
 ```
 
-Example 2: Binding parameters using question mark placeholders:
+Example 2: Binding parameters using question mark placeholders.
 
 ```php
 <?php
@@ -268,7 +268,7 @@ In the SQL statement, you can embed one or multiple parameter placeholders (e.g.
 
 The following example shows how to bind parameters using the above three methods:
 
-Example 1: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindValue()`:
+Example 1: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindValue()`.
 
 ```php
 <?php
@@ -303,7 +303,7 @@ array(6) {
 }
 ```
 
-Example 2: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindValues()`:
+Example 2: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindValues()`.
 
 ```php
 <?php
@@ -338,7 +338,7 @@ array(6) {
 }
 ```
 
-Example 3: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindParam()`:
+Example 3: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindParam()`.
 
 ```php
 <?php
@@ -380,6 +380,8 @@ array(6) {
 
 The `query methods` introduced in the previous sections all deal with SELECT queries which fetch data from databases. For queries that do not bring back data, you should call the `Yiisoft\Db\Command\CommandInterface::execute()` method. The following example shows how to execute a non-SELECT query:
 
+Example 1: Executing a non-SELECT query.
+
 ```php
 <?php
 
@@ -391,4 +393,37 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 $command = $db->createCommand('UPDATE customer SET status=2 WHERE id=1');
 $command->execute();
+```
+
+If the query is successful, `Yiisoft\Db\Command\CommandInterface::execute()` will return the number of rows affected by the SQL statement. If the sql does not affect any row, 0 will be returned. If the query fails, a `Yiisoft\Db\Exception\Exception` exception will be thrown.
+
+Example 2: Executing a non-SELECT query and row count is 0.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+
+$command = $db->createCommand('UPDATE customer SET status=2 WHERE id=1000');
+$command->execute();
+```
+
+```php
+
+Example 3: Throw Exception when executing a non-SELECT query.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+
+$command = $db->createCommand('bad SQL')->execute();
 ```
