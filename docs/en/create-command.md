@@ -1,4 +1,4 @@
-## Create command object
+## Create command
 
 Once you have a database connection instance, you can execute a SQL query by taking the following steps:
 
