@@ -6,10 +6,13 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
 
+/**
+ * Interface BetweenConditionInterface represents a condition which is used to check if a value is between two values.
+ */
 interface BetweenConditionInterface extends ConditionInterface
 {
     /**
-     * @psalm-return string|ExpressionInterface The column name.
+     * @return string|ExpressionInterface The column name.
      */
     public function getColumn(): string|ExpressionInterface;
 

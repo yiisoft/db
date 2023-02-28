@@ -7,22 +7,27 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 use Iterator;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
+/**
+ * LikeConditionInterface is the interface that must be implemented by classes that represent a LIKE condition.
+ */
 interface LikeConditionInterface extends ConditionInterface
 {
     /**
-     * @psalm-return string|ExpressionInterface The column name.
+     * @return string|ExpressionInterface The column name.
      */
     public function getColumn(): string|ExpressionInterface;
 
     /**
-     * {see setEscapingReplacements}
+     * @see setEscapingReplacements()
      */
     public function getEscapingReplacements(): ?array;
 
     /**
      * This method allows specifying how to escape special characters in the value(s).
      *
-     * @param array|null An array of mappings from the special characters to their escaped counterparts.
+     * @param array|null $escapingReplacements An array of mappings from the special characters to their escaped
+     * counterparts.
+     *
      * You may use an empty array to indicate the values are already escaped and no escape should be applied.
      * Note that when using an escape mapping (or the third operand is not provided), the values will be automatically
      * enclosed within a pair of percentage characters.
