@@ -1,4 +1,4 @@
-## Create Connection with di container for Sqlite Server
+## Create connection with di container for sqlite server
 
 To configure [Yii Db Sqlite](https://github.com/yiisoft/db-pgsql) with [di container](https://github.com/yiisoft/di) you need to create a configuration file.
 

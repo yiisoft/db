@@ -1,4 +1,4 @@
-## Create Connection with di container for Oracle Server
+## Create connection with di container for oracle server
 
 To configure [Yii Db Oracle](https://github.com/yiisoft/db-oracle) with [di container](https://github.com/yiisoft/di) you need to create a configuration file.
 

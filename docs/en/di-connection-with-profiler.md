@@ -1,4 +1,4 @@
-## Create Connection with di container and Profiler
+## Create connection with di container and profiler
 
 [Yii Db](https://github.com/yiisoft/db) used [Yii Profiler](https://github.com/yiisoft/profiler), a tool for collecting and analyzing database queries. This can be useful for debugging and optimizing database performance.
 

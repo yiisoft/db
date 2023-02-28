@@ -1,4 +1,4 @@
-## Create Connection with di container for Mssql Server
+## Create connection with di container for mssql server
 
 To configure [Yii Db Mssql](https://github.com/yiisoft/db-mssql) with [di container](https://github.com/yiisoft/di) you need to create a configuration file.
 

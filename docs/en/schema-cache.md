@@ -1,4 +1,4 @@
-## Configuring SchemaCache
+## Configuring schema cache
 
  The [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php) is used to `cache` database schema information.
  

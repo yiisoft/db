@@ -1,4 +1,4 @@
-## Create Connection with di container for Mysql/MariaDb Server
+## Create connection with di container for mysql/mariadb server
 
 To configure [Yii Db Mysql](https://github.com/yiisoft/db-mysql)/[Yii Db MariaDb](https://github.com/yiisoft/db-mysql) with [di container](https://github.com/yiisoft/di) you need to create a configuration file.
 

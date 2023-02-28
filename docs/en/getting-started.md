@@ -58,5 +58,5 @@ composer require yiisoft/db-sqlite
 4. [Di container for Oracle Server](di-container-oracle.md)
 5. [Di container for Pgsql Server](di-container-pgsql.md)
 6. [Di container for Sqlite Server](di-container-sqlite.md)
-7. [With logger](di-connection-with-logger.md)
-8. [With profiler](di-connection-with-profiler.md)
+7. [With Logger](di-connection-with-logger.md)
+8. [With Profiler](di-connection-with-profiler.md)
