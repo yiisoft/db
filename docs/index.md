@@ -1,6 +1,5 @@
 ## Index 
 
 [...]
-    
-    
-    - [Database Access Objects](dao.md)
+       
+- [Database Access Objects](dao.md)
