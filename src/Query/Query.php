@@ -754,6 +754,7 @@ class Query implements QueryInterface
         if (!isset($condition[0])) {
             /**
              * hash format: 'column1' => 'value1', 'column2' => 'value2', ...
+             *
              * @psalm-var mixed $value
              */
             foreach ($condition as $name => $value) {
@@ -767,6 +768,7 @@ class Query implements QueryInterface
 
         /**
          * operator format: operator, operand 1, operand 2, ...
+         *
          * @psalm-var string $operator
          */
         $operator = array_shift($condition);

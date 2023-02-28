@@ -162,7 +162,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function getGroupBy(): array;
 
     /**
-     * @return string|array|ExpressionInterface|null The having value.
+     * @return array|ExpressionInterface|string|null The having value.
      */
     public function getHaving(): string|array|ExpressionInterface|null;
 
@@ -223,7 +223,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function getUnion(): array;
 
     /**
-     * @return array|string|ExpressionInterface|null The where value.
+     * @return array|ExpressionInterface|string|null The where value.
      */
     public function getWhere(): array|string|ExpressionInterface|null;
 
