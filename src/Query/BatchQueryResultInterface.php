@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Closure;
 use Iterator;
 use Yiisoft\Db\Exception\InvalidCallException;
 
@@ -94,4 +95,6 @@ interface BatchQueryResultInterface extends Iterator
      * @return $this
      */
     public function batchSize(int $value): self;
+
+    public function setPopulatedMethod(Closure|null $populateMethod = null): self;
 }

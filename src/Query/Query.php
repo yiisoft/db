@@ -237,7 +237,11 @@ class Query implements QueryInterface
 
     public function batch(int $batchSize = 100): BatchQueryResultInterface
     {
-        return $this->db->createBatchQueryResult($this)->batchSize($batchSize);
+        return $this->db
+            ->createBatchQueryResult($this)
+            ->batchSize($batchSize)
+            ->setPopulatedMethod(fn($rows, $indexBy = null) => ArrayHelper::populate($rows, $indexBy))
+        ;
     }
 
     /**
@@ -314,7 +318,11 @@ class Query implements QueryInterface
 
     public function each(int $batchSize = 100): BatchQueryResultInterface
     {
-        return $this->db->createBatchQueryResult($this, true)->batchSize($batchSize);
+        return $this->db
+            ->createBatchQueryResult($this, true)
+            ->batchSize($batchSize)
+            ->setPopulatedMethod(fn($rows, $indexBy = null) => ArrayHelper::populate($rows, $indexBy))
+        ;
     }
 
     /**
