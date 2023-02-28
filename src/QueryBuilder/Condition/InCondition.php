@@ -38,7 +38,9 @@ final class InCondition implements InConditionInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * Creates a condition based on the given operator and operands.
+     *
+     * @throws InvalidArgumentException If the number of operands is not 2.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -53,6 +55,11 @@ final class InCondition implements InConditionInterface
         );
     }
 
+    /**
+     * Validates the given column to be string, array or ExpressionInterface.
+     *
+     * @throws InvalidArgumentException If the column is not string, array or ExpressionInterface.
+     */
     private static function validateColumn(string $operator, mixed $column): array|string|Iterator|ExpressionInterface
     {
         if (is_string($column) || is_array($column) || $column instanceof Iterator || $column instanceof ExpressionInterface) {
@@ -62,6 +69,11 @@ final class InCondition implements InConditionInterface
         throw new InvalidArgumentException("Operator '$operator' requires column to be string, array or Iterator.");
     }
 
+    /**
+     * Validates the given values to be arrayed, Iterator, int or QueryInterface.
+     *
+     * @throws InvalidArgumentException If the values is not array, Iterator, int or QueryInterface.
+     */
     private static function validateValues(string $operator, mixed $values): int|iterable|Iterator|QueryInterface
     {
         if (is_array($values) || $values instanceof Iterator || is_int($values) || $values instanceof QueryInterface) {

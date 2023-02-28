@@ -42,7 +42,9 @@ final class BetweenCondition implements BetweenConditionInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * Creates a condition based on the given operator and operands.
+     *
+     * @throws InvalidArgumentException If the number of operands is not 3.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -53,6 +55,11 @@ final class BetweenCondition implements BetweenConditionInterface
         return new self(self::validateColumn($operator, $operands[0]), $operator, $operands[1], $operands[2]);
     }
 
+    /**
+     * Validates the given column to be string or ExpressionInterface.
+     *
+     * @throws InvalidArgumentException If the column is not string or ExpressionInterface.
+     */
     private static function validateColumn(string $operator, mixed $column): string|ExpressionInterface
     {
         if (is_string($column) || $column instanceof ExpressionInterface) {
