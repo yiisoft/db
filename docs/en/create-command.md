@@ -2,9 +2,9 @@
 
 Once you have a database connection instance, you can execute a SQL query by taking the following steps:
 
-1.- Create a command object by calling `Yiisoft\Db\Connection\ConnectionInterface::createCommand()` with a plain SQL query.
-2.- Bind parameters (optional);
-3.- Call one of the SQL execution methods in `Yiisoft\Db\Command\CommandInterface` to execute the SQL statement.
+1. Create a command object by calling `Yiisoft\Db\Connection\ConnectionInterface::createCommand()` with a plain SQL query.
+2. Bind parameters (optional);
+3. Call one of the SQL execution methods in `Yiisoft\Db\Command\CommandInterface` to execute the SQL statement.
 
 The following example shows various ways of fetching data from a database:
 
