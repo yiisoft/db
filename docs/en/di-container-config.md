@@ -2,7 +2,7 @@
 
 To configure [Yii Db](https://github.com/yiisoft/db) with [di container](https://github.com/yiisoft/di) you need to create a configuration file.
 
-### Configuration file
+### Configuration
 
 Create a file `config/common/di/db-mssql.php` for Mssql:
 
@@ -86,7 +86,7 @@ return [
 
 ### Configuration file with manual cache configuration
 
-Create a file `config/common/di/db-mssql.php` for Mssql:
+Create a file `config/common/di/db-schema-cache.php` for Mssql:
 
 ```php
 <?php
