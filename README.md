@@ -1,8 +1,8 @@
-<p style="text-align: center">
+<p align="center" style="text-align: center">
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px" alt="YiiFramework">
     </a>
-    <h1 style="text-align: center">Yii DataBase Library</h1>
+    <h1 align="center">Yii DataBase Library</h1>
 </p>
 
 Yii is an open-source PHP framework for developing web applications. Yii Database Library is a database extension for the [Yii Framework] that provides a set of database utilities and a database-agnostic, [ActiveRecord] implementation for working with databases in Yii applications.
