@@ -8,43 +8,43 @@ When using [Yii Db](https://github.com/yiisoft/db), you mainly need to deal with
 
 In [YiiFramework](https://www.yiiframework.com/), [Yii Db](https://github.com/yiisoft/db) supports the following databases out of the box:
 
-1. [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) version 2017, 2019, 2022,
-2. [MySQL](https://www.mysql.com/) version 5.7 - 8.0.
-3. [MariaDB](https://mariadb.org/) version 10.4 - 10.9.
-4. [Oracle](https://www.oracle.com/database/) version 18c - 21c.
-5. [PostgreSQL](https://www.postgresql.org/) version 9.6 - 15. 
-6. [Sqlite](https://www.sqlite.org/index.html) version 3.3 and above.
+1. [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) version **2017, 2019, 2022**.
+2. [MySQL](https://www.mysql.com/) version **5.7 - 8.0**.
+3. [MariaDB](https://mariadb.org/) version **10.4 - 10.9**.
+4. [Oracle](https://www.oracle.com/database/) version **18c - 21c**.
+5. [PostgreSQL](https://www.postgresql.org/) version **9.6 - 15**. 
+6. [Sqlite](https://www.sqlite.org/index.html) version **3.3 and above**.
 
 ## Installation
 
 To install [Yii Db](https://github.com/yiisoft/db), you must select the driver you want to use and install it with [Composer](https://getcomposer.org/).
 
-- [Yii Mssql](https://github.com/yiisoft/db-mssql)
+- [Yii Db Mssql](https://github.com/yiisoft/db-mssql)
 
 ```bash
 composer require yiisoft/db-mssql
 ```
 
-- [Yii Mysql](https://github.com/yiisoft/db-mysql)
-- [Yii MariaDB](https://github.com/yiisoft/db-mysql)
+- [Yii Db Mysql](https://github.com/yiisoft/db-mysql)
+- [Yii Db MariaDB](https://github.com/yiisoft/db-mysql)
 
 ```bash
 composer require yiisoft/db-mysql
 ```
 
-- [Yii Oracle](https://github.com/yiisoft/db-oracle)
+- [Yii Db Oracle](https://github.com/yiisoft/db-oracle)
 
 ```bash
 composer require yiisoft/db-oracle
 ```
 
-- [Yii Pgsql](https://github.com/yiisoft/db-pgsql)
+- [Yii Db Pgsql](https://github.com/yiisoft/db-pgsql)
 
 ```bash
 composer require yiisoft/db-pgsql
 ```
 
-- [Yii Sqlite](https://github.com/yiisoft/db-pgsql)
+- [Yii Db Sqlite](https://github.com/yiisoft/db-pgsql)
 
 ```bash
 composer require yiisoft/db-sqlite
