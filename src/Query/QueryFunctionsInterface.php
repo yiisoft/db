@@ -19,69 +19,65 @@ interface QueryFunctionsInterface
     /**
      * Returns the average of the specified column values.
      *
-     * @param string $q the column name or expression.
-     * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
+     * @param string $q The column name or expression. Make sure you properly quote column names in the expression.
      *
      * @throws Throwable
      *
-     * @return float|int|string|null the average of the specified column values.
+     * @return float|int|string|null The average of the specified column values.
      */
     public function average(string $q): int|float|null|string;
 
     /**
      * Returns the number of records.
      *
-     * @param string $q the COUNT expression. Defaults to '*'.
-     * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
+     * @param string $q The COUNT expression. Defaults to '*'. Make sure you properly quote column names in the
+     * expression.
      *
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return int|string number of records. The result may be a string depending on the underlying database
-     * engine and to support integer values higher than a 32bit PHP integer can handle.
+     * @return int|string Number of records. The result may be a string depending on the underlying database engine and
+     * to support integer values higher than a 32bit PHP integer can handle.
      */
     public function count(string $q = '*'): int|string;
 
     /**
      * Returns the maximum of the specified column values.
      *
-     * @param string $q the column name or expression.
-     * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
+     * @param string $q The column name or expression. Make sure you properly quote column names in the expression.
      *
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return float|int|string|null the maximum of the specified column values.
+     * @return float|int|string|null The maximum of the specified column values.
      */
     public function max(string $q): int|float|null|string;
 
     /**
      * Returns the minimum of the specified column values.
      *
-     * @param string $q the column name or expression.
-     * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
+     * @param string $q The column name or expression. Make sure you properly quote column names in the expression.
      *
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return float|int|string|null the minimum of the specified column values.
+     * @return float|int|string|null The minimum of the specified column values.
      */
     public function min(string $q): int|float|null|string;
 
     /**
      * Returns the sum of the specified column values.
      *
-     * @param string $q the column name or expression.
-     * Make sure you properly [quote](guide:db-dao#quoting-table-and-column-names) column names in the expression.
+     * @param string $q The column name or expression. Make sure you properly quote column names in the expression.
      *
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return float|int|string|null the sum of the specified column values.
+     * @return float|int|string|null The sum of the specified column values.
      */
     public function sum(string $q): int|float|null|string;
 }
