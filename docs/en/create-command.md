@@ -412,8 +412,6 @@ $command = $db->createCommand('UPDATE customer SET status=2 WHERE id=1000');
 $command->execute();
 ```
 
-```php
-
 Example 3: Throw Exception when executing a non-SELECT query.
 
 ```php
