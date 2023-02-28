@@ -25,33 +25,26 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const DEFAULT_VALUES = 'defaultValues';
     public const UNIQUES = 'uniques';
     public const DEFAULTS = 'defaults';
-
     /**
      * Types of supported indexes {@see QueryBuilderInterface::createIndex()}.
      * MySQL, MSSQL, Oracle, PostgreSQL, SQLite
      */
     public const INDEX_UNIQUE = 'UNIQUE';
-
     /* MySQL, PostgreSQL */
     public const INDEX_BTREE = 'BTREE';
     public const INDEX_HASH = 'HASH';
-
     /* MySQL */
     public const INDEX_FULLTEXT = 'FULLTEXT';
     public const INDEX_SPATIAL = 'SPATIAL';
-
     /* PostgreSQL */
     public const INDEX_GIST = 'GIST';
     public const INDEX_GIN = 'GIN';
     public const INDEX_BRIN = 'BRIN';
-
     /* MS SQL */
     public const INDEX_CLUSTERED = 'CLUSTERED';
     public const INDEX_NONCLUSTERED = 'NONCLUSTERED';
-
     /* Oracle */
     public const INDEX_BITMAP = 'BITMAP';
-
     public const TYPE_PK = 'pk';
     public const TYPE_UPK = 'upk';
     public const TYPE_BIGPK = 'bigpk';
@@ -75,7 +68,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const TYPE_MONEY = 'money';
     public const TYPE_JSON = 'json';
     public const TYPE_JSONB = 'jsonb';
-
     public const PHP_TYPE_INTEGER = 'integer';
     public const PHP_TYPE_STRING = 'string';
     public const PHP_TYPE_BOOLEAN = 'boolean';
