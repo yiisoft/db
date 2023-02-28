@@ -58,7 +58,7 @@ return [
 ]
 ```
 
-For configuration of `Yiisoft\Db\Cache\SchemaCache::class` you can do it in two ways, the first is configure `psr-16`(https://github.com/php-fig/simple-cache) cache in the [di container](https://github.com/yiisoft/di) and it is configured automatically by autowired in the application controller, the second is configure it manually in the configuration file.
+For configuration of `Yiisoft\Db\Cache\SchemaCache::class` you can do it in two ways, the first is configure [psr-16](https://github.com/php-fig/simple-cache) cache in the [di container](https://github.com/yiisoft/di) and it is configured automatically by autowired in the application controller, the second is configure it manually in the configuration file.
 
 ### Configuration file with autowired cache
 
