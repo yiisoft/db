@@ -375,3 +375,20 @@ array(6) {
   NULL
 }
 ```
+
+## Executing Non-SELECT Queries
+
+The `query methods` introduced in the previous sections all deal with SELECT queries which fetch data from databases. For queries that do not bring back data, you should call the `Yiisoft\Db\Command\CommandInterface::execute()` method. The following example shows how to execute a non-SELECT query:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+
+$command = $db->createCommand('UPDATE customer SET status=2 WHERE id=1');
+$command->execute();
+```
