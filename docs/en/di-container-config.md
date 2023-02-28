@@ -40,7 +40,7 @@ return [
 - `setLogget()` is a method for set your implementation [psr-3](https://www.php-fig.org/psr/psr-3/). You can configure a logger that implements `Psr\Log\LoggerInterface` in the [di container](https://github.com/yiisoft/di), for example [Yii Logging Library](https://github.com/yiisoft/log)
 - `setProfiler()` is a method for set your implementation [Yii Profiler](https://github.com/yiisoft/profiler) that implements `Yiisoft\Profiler\ProfilerInterface`, a tool for collecting and analyzing database queries. This can be useful for debugging and optimizing database performance.
 
-Create a file `config/common/params.php` for Mssql:
+Create a file `config/common/params.php` for `common` parameters:
 
 ```php
 <?php
@@ -86,7 +86,7 @@ return [
 
 ### Configuration file with manual cache configuration
 
-Create a file `config/common/di/db-schema-cache.php` for Mssql:
+Create a file `config/common/di/db-schema-cache.php` for cache:
 
 ```php
 <?php
