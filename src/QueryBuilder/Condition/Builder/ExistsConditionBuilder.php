@@ -22,7 +22,12 @@ class ExistsConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * Build SQL for {@see ExistsCondition}.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function build(ExistConditionInterface $expression, array &$params = []): string
     {

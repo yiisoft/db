@@ -26,7 +26,12 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * Build SQL for {@see BetweenColumnsCondition}.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function build(BetweenColumnsConditionInterface $expression, array &$params = []): string
     {
@@ -40,7 +45,10 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
     /**
      * Attaches $value to $params array and returns placeholder.
      *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     protected function createPlaceholder(mixed $value, array &$params): string
     {
@@ -54,7 +62,10 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
     /**
      * Prepares column name to be used in SQL statement.
      *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     protected function escapeColumnName(
         ExpressionInterface|QueryInterface|string $columnName,

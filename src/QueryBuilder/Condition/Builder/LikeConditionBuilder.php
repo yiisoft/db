@@ -16,7 +16,9 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use function implode;
 use function is_array;
 use function preg_match;
+use function str_contains;
 use function strtoupper;
+use function strtr;
 
 /**
  * Class LikeConditionBuilder builds objects of {@see LikeCondition}.
@@ -30,7 +32,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @var array map of chars to their replacements in LIKE conditions. By default, it's configured to escape
+     * @var array Map of chars to their replacements in LIKE conditions. By default, it's configured to escape
      * `%`, `_` and `\` with `\`.
      */
     protected array $escapingReplacements = [
@@ -40,7 +42,12 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     ];
 
     /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * Build SQL for {@see LikeCondition}.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function build(LikeConditionInterface $expression, array &$params = []): string
     {
@@ -81,13 +88,15 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
                     $params
                 );
             }
-            $parts[] = "{$column} {$operator} {$phName}{$this->escapeSql}";
+            $parts[] = "$column $operator $phName$this->escapeSql";
         }
 
         return implode($andor, $parts);
     }
 
     /**
+     * Parses operator and returns its parts.
+     *
      * @throws InvalidArgumentException
      *
      * @psalm-return array{0: string, 1: bool, 2: string}
@@ -95,7 +104,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     protected function parseOperator(string $operator): array
     {
         if (!preg_match('/^(AND |OR |)((NOT |)I?LIKE)/', $operator, $matches)) {
-            throw new InvalidArgumentException("Invalid operator in like condition: \"{$operator}\"");
+            throw new InvalidArgumentException("Invalid operator in like condition: \"$operator\"");
         }
 
         $andor = ' ' . (!empty($matches[1]) ? $matches[1] : 'AND ');
