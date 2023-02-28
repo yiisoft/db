@@ -15,7 +15,6 @@ Example 1: Fetching all rows from a table using `Yiisoft\Db\Command\CommandInter
 
 declare(strict_types=1);
 
-use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -81,7 +80,6 @@ Example 2: Fetching a single row from a table using `Yiisoft\Db\Command\CommandI
 
 declare(strict_types=1);
 
-use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -114,7 +112,6 @@ Example 3: Fetching a single column from a table using `Yiisoft\Db\Command\Comma
 
 declare(strict_types=1);
 
-use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -142,7 +139,6 @@ Example 4: Fetching a single value from a table using `Yiisoft\Db\Command\Comman
 
 declare(strict_types=1);
 
-use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -163,7 +159,6 @@ Example 5: Fetching a single row using `Yiisoft\Db\Command\CommandInterface::que
 
 declare(strict_types=1);
 
-use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -202,7 +197,6 @@ Example 1: Binding parameters using named placeholders:
 
 declare(strict_types=1);
 
-use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -238,7 +232,6 @@ Example 2: Binding parameters using question mark placeholders:
 
 declare(strict_types=1);
 
-use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -282,7 +275,6 @@ Example 1: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindVa
 
 declare(strict_types=1);
 
-use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -318,7 +310,6 @@ Example 2: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindVa
 
 declare(strict_types=1);
 
-use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -354,7 +345,6 @@ Example 3: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindPa
 
 declare(strict_types=1);
 
-use Yiisoft\Db\Command\Command;
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
