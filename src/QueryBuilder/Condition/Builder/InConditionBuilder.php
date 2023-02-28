@@ -226,10 +226,10 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @throws NotSupportedException
      */
     protected function buildCompositeInCondition(
-        string|null       $operator,
-        iterable          $columns,
+        string|null $operator,
+        iterable $columns,
         iterable|Iterator $values,
-        array             &$params = []
+        array &$params = []
     ): string {
         $vss = [];
 

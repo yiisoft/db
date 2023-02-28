@@ -26,7 +26,7 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
 
     /**
      * Build SQL for {@see BetweenCondition}.
-     * 
+     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
