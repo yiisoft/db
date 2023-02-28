@@ -3,7 +3,7 @@
 Once you have a database connection instance, you can execute a SQL query by taking the following steps:
 
 1. Create a command object by calling `Yiisoft\Db\Connection\ConnectionInterface::createCommand()` with a plain SQL query.
-2. Bind parameters (optional);
+2. Bind parameters (optional).
 3. Call one of the SQL execution methods in `Yiisoft\Db\Command\CommandInterface` to execute the SQL statement.
 
 The following example shows various ways of fetching data from a database:
@@ -73,7 +73,6 @@ array(3) {
   }
 }
 ```
-
 
 Example 2: Fetching a single row from a table using `Yiisoft\Db\Command\CommandInterface::queryOne()`, return array the first row (in terms of an array) of the query result. Null is returned if the query results in nothing.
 
@@ -385,11 +384,4 @@ array(6) {
   ["profile_id"]=>
   NULL
 }
-``
-
-
-
-
-
-
-
+```
