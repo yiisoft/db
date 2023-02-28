@@ -1,0 +1,60 @@
+## Create Connection with di container and Logger
+
+[Yii Db](https://github.com/yiisoft/db) used [psr-3](https://www.php-fig.org/psr/psr-3/) for logger. You can configure a logger that implements `Psr\Log\LoggerInterface::class` in the [di container](https://github.com/yiisoft/di), for example [Yii Logging Library](https://github.com/yiisoft/log).
+
+Create a file `config/common/di/logger.php` for Logger:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Psr\Log\LoggerInterface;
+use Yiisoft\Definitions\ReferencesArray;
+use Yiisoft\Log\Logger;
+use Yiisoft\Log\Target\File\FileTarget;
+
+/** @var array $params */
+
+return [
+    LoggerInterface::class => [
+        'class' => Logger::class,
+        '__construct()' => [
+            'targets' => ReferencesArray::from([
+                FileTarget::class,
+            ]),
+        ],
+    ],
+];
+```
+
+Create a file `config/common/di/db-mssql.php` for Mssql:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Psr\Log\LoggerInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Mssql\ConnectionPDO;
+use Yiisoft\Db\Mssql\PDODriver;
+use Yiisoft\Definitions\Reference;
+
+/** @var array $params */
+
+return [
+    ConnectionInterface::class => [
+        'class' => ConnectionPDO::class,
+        '__construct()' => [
+            'driver' => new PDODriver(
+                $params['yiisoft/db-mssql']['dsn'],
+                $params['yiisoft/db-mssql']['username'],
+                $params['yiisoft/db-mssql']['password'],
+            ),
+        ],
+        'setLogger()' => [
+            Reference::to(LoggerInterface::class),
+        ],
+    ],
+];
