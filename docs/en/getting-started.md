@@ -50,7 +50,7 @@ composer require yiisoft/db-pgsql
 composer require yiisoft/db-sqlite
 ```
 
-## Configuration
+## Create Connection
 
-1. [di-container](di-container-config.md)
-2. [without-di-container](without-di-container.md)
+1. [Configuring SchemaCache](schema-cache.md)
+2. [Create Connection with di container for Mssql Server](di-container-mssql.md)
