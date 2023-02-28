@@ -179,7 +179,7 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
             /** @psalm-var mixed $result */
             $result = $this->pdoStatement?->fetchAll(PDO::FETCH_ASSOC);
         } else {
-            throw new InvalidParamException("Unknown query mode $queryMode");
+            throw new InvalidParamException("Unknown query mode '$queryMode'");
         }
 
         $this->pdoStatement?->closeCursor();
