@@ -35,7 +35,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$command = $db->createCommand('SELECT * FROM customer')->queryAll();
+$result = $db->createCommand('SELECT * FROM customer')->queryAll();
 ```
 
 The result of the above example is.
@@ -83,7 +83,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$command = $db->createCommand('SELECT * FROM customer')->queryOne();
+$result = $db->createCommand('SELECT * FROM customer')->queryOne();
 ```
 
 The result of the above example is.
@@ -114,7 +114,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 
-$command = $db->createCommand('SELECT * FROM customer')->queryColumn();
+$result = $db->createCommand('SELECT * FROM customer')->queryColumn();
 ```
 
 The result of the above example is.
@@ -142,7 +142,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 
-$command = $db->createCommand('SELECT * FROM customer')->queryScalar();
+$result = $db->createCommand('SELECT * FROM customer')->queryScalar();
 ```
 
 The result of the above example is.
@@ -166,7 +166,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 
-$command = $db->createCommand('SELECT * FROM customer')->query();
+$result = $db->createCommand('SELECT * FROM customer')->query();
 
 foreach ($command as $row) {
     // do something with $row

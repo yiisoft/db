@@ -4,38 +4,6 @@ When creating a **DB** command from a **SQL with parameters**, you should almost
 
 **Info:** *Parameter binding is only used in places where values need to be inserted into strings that contain plain **SQL**. In many places in higher abstraction layers like **query builder** you often specify an **array of values** which will be transformed into **SQL**. In these places parameter binding is done by Yii internally, so there is no need to specify params manually.*
 
-For example, the following **SQL statement** contains `:id` named placeholders.
-
-```php
-<?php
-
-declare(strict_types=1);
-
-use Yiisoft\Db\Connection\ConnectionInterface;
-
-/** @var ConnectionInterface $db */
-
-$command = $db->createCommand('SELECT * FROM customer WHERE id=:id');
-$command->bindValue(':id', 1);
-```
-
-You can bind the value using the `?` mark question placeholders as follows.
-
-```php
-<?php
-
-declare(strict_types=1);
-
-use Yiisoft\Db\Connection\ConnectionInterface;
-
-/** @var ConnectionInterface $db */
-
-$command = $db->createCommand('SELECT * FROM customer WHERE id=?');
-$command->bindValue(1, 1);
-```
-
-In the **SQL statement**, you can embed one or multiple parameter placeholders (e.g. :id in the above example). A parameter placeholder should be a string starting with a colon. You may then call one of the following parameter binding methods to bind the parameter values.
-
 ## Bind value
 
 `BindValue()` binds a value to a parameter. It is recommended to use this method to bind parameter values to ensure the security of your application.
