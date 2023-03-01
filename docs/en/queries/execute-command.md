@@ -45,5 +45,5 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 
-$command = $db->createCommand('bad SQL')->execute();
+$db->createCommand('bad SQL')->execute();
 ```
