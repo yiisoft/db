@@ -57,7 +57,7 @@ composer require yiisoft/db-sqlite
 
 You can create a database connection instance using [di container](https://github.com/yiisoft/di) or without it.
 
-## Using DI Container
+### Using DI Container
 
 1. [MsSQL Server](di-container-mssql.md)
 2. [MySQL/MariaDb Server](di-container-mysql.md)
