@@ -1,4 +1,4 @@
-## Getting Started
+# Getting Started
 
 [Yii Db](https://github.com/yiisoft/db) is DAO (Data Access Object) layer for [YiiFramework](https://www.yiiframework.com/). It provides a set of classes that help you access relational databases. It is designed to be flexible and extensible, so that it can be used with different databases and different database schemas. Its database agnostic nature makes it easy to switch from one database to another.
 
@@ -63,4 +63,8 @@ composer require yiisoft/db-sqlite
 
 ## Executing SQL Queries
 
-1. [Create Command](create-command.md)
+Once you have a database connection instance, you can execute a SQL query by taking the following steps:
+
+1. [Create a command with a plain SQL query](create-command.md).
+2. [Bind parameters](bind-parameters.md).
+3. [Call one of the SQL execute method to execute the command](execute-command.md).

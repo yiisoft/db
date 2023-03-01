@@ -1,14 +1,27 @@
-## Create command
+# Create a command with a plain SQL query
 
-Once you have a database connection instance, you can execute a SQL query by taking the following steps:
+To create a command with a plain SQL query, you can use the `Yiisoft\Db\Connection\ConnectionInterface::createCommand()` method. The following example shows how to create a command with a plain SQL query:
 
-1. Create a command object by calling `Yiisoft\Db\Connection\ConnectionInterface::createCommand()` with a plain SQL query.
-2. Bind parameters (optional).
-3. Call one of the SQL execution methods in `Yiisoft\Db\Command\CommandInterface` to execute the SQL statement.
+```php
+<?php
 
-The following example shows various ways of fetching data from a database:
+declare(strict_types=1);
 
-Example 1: Fetching all rows from a table using `Yiisoft\Db\Command\CommandInterface::queryAll()`, return array all rows of the query result. Each array element is an array representing a row of data. Empty array is returned if the query results in nothing.
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+$command = $db->createCommand('SELECT * FROM customer');
+```
+
+## Fetching Data
+
+To fetch data from a table, you can use the `Yiisoft\Db\Command\CommandInterface::queryAll()`, `Yiisoft\Db\Command\CommandInterface::queryOne()`, `Yiisoft\Db\Command\CommandInterface::queryColumn()`, `Yiisoft\Db\Command\CommandInterface::queryScalar()` and `Yiisoft\Db\Command\CommandInterface::query()`. The following examples show how to fetch data from a table:
+
+### Query all
+
+Returns an array of all rows in the result set. Each array element is an array representing a row of data, with the array keys as column names. An empty array is returned if the query results in nothing.
+
+For example, the following code fetches all rows from the `customer` table:
 
 ```php
 <?php
@@ -52,7 +65,11 @@ The result of the above example is:
 ]
 ```
 
-Example 2: Fetching a single row from a table using `Yiisoft\Db\Command\CommandInterface::queryOne()`, return array the first row (in terms of an array) of the query result. Null is returned if the query results in nothing.
+### Query one
+
+Returns a single row of data. The return value is an array representing the first row of the query result. An `null` is returned if the query results in nothing.
+
+For example, the following code fetches the first row from the `customer` table:
 
 ```php
 <?php
@@ -78,7 +95,11 @@ The result of the above example is:
 ]
 ```
 
-Example 3: Fetching a single column from a table using `Yiisoft\Db\Command\CommandInterface::queryColumn()`, return array the values of the first column in the query result. An empty array is returned if the query results in nothing.
+### Query column
+
+Returns the values of the first column in the query result. An empty array is returned if the query results in nothing.
+
+For example, the following code fetches the values of the first column from the `customer` table:
 
 ```php
 <?php
@@ -102,7 +123,11 @@ The result of the above example is:
 ]
 ```
 
-Example 4: Fetching a single value from a table using `Yiisoft\Db\Command\CommandInterface::queryScalar()`, return the value of the first column in the first row of the query result. False is returned if there is no value.
+### Query scalar
+
+Returns the value of the first column in the first row of the query result. `false` is returned if there is no value.
+
+For example, the following code fetches the value of the first column from the first row from the `customer` table:
 
 ```php
 <?php
@@ -122,7 +147,11 @@ The result of the above example is:
 '1'
 ```
 
-Example 5: Fetching a single row using `Yiisoft\Db\Command\CommandInterface::query()`, return `Yiisoft\Db\DataReader\DataReaderInterface` object. You can iterate over the returned object to get the data.
+### Query
+
+Returns a `Yiisoft\Db\DataReader\DataReaderInterface` object for traversing the rows in the result set.
+
+For example, the following code fetches all rows from the `customer` table:
 
 ```php
 <?php
@@ -143,225 +172,11 @@ foreach ($command as $row) {
 The result of the above example is:
 
 ```php
-object(Yiisoft\Db\Query\Data\DataReader)#4710 (2) {
-  ["index":"Yiisoft\Db\Query\Data\DataReader":private]=>
-  int(-1)
-  ["row":"Yiisoft\Db\Query\Data\DataReader":private]=>
-  uninitialized(mixed)
-  ["statement":"Yiisoft\Db\Query\Data\DataReader":private]=>
-  object(PDOStatement)#4711 (1) {
-    ["queryString"]=>
-    string(22) "SELECT * FROM customer"
-  }
-}
-```
-
-## Binding parameters
-
-When creating a DB command from a SQL with parameters, you should almost always use the approach of binding parameters to prevent SQL injection attacks. You can bind parameters to a SQL statement by using named placeholders or question mark placeholders. Named placeholders are of the form `:name` and question mark placeholders are of the form `?`. The following example shows how to bind parameters to a SQL statement:
-
-Example 1: Binding parameters using named placeholders.
-
-```php
-<?php
-
-declare(strict_types=1);
-
-use Yiisoft\Db\Connection\ConnectionInterface;
-
-/** @var ConnectionInterface $db */
-
-$command = $db->createCommand('SELECT * FROM customer WHERE id=:id');
-$command->bindValue(':id', 1);
-$command->queryOne();
-```
-
-The result of the above example is:
-
-```php
-[
-    'id' => '1',
-    'email' => 'user1@example.com',
-    'name' => 'user1',
-    'address' => 'address1',
-    'status' => '1',
-    'profile_id' => '1',
-]
-```
-
-Example 2: Binding parameters using question mark placeholders.
-
-```php
-<?php
-
-declare(strict_types=1);
-
-use Yiisoft\Db\Connection\ConnectionInterface;
-
-/** @var ConnectionInterface $db */
-
-$command = $db->createCommand('SELECT * FROM customer WHERE id=?');
-$command->bindValue(1, 1);
-$command->queryOne();
-```
-
-The result of the above example is:
-
-```php
-[
-    'id' => '1',
-    'email' => 'user1@example.com',
-    'name' => 'user1',
-    'address' => 'address1',
-    'status' => '1',
-    'profile_id' => '1',
-]
-```
-
-In the SQL statement, you can embed one or multiple parameter placeholders (e.g. :id in the above example). A parameter placeholder should be a string starting with a colon. You may then call one of the following parameter binding methods to bind the parameter values:
-
-1. `Yiisoft\Db\Command\CommandInterface::bindValue()` bind a single parameter value.
-2. `Yiisoft\Db\Command\CommandInterface::bindValues()` bind multiple parameter values in one call.
-3. `Yiisoft\Db\Command\CommandInterface::bindParam()` similar to bindValue() but also support binding parameter references.
-
-The following example shows how to bind parameters using the above three methods:
-
-Example 1: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindValue()`.
-
-```php
-<?php
-
-declare(strict_types=1);
-
-use Yiisoft\Db\Connection\ConnectionInterface;
-
-/** @var ConnectionInterface $db */
-
-$command = $db->createCommand('SELECT * FROM customer WHERE id=:id');
-$command->bindValue(':id', 1);
-$command->queryOne();
-```
-
-The result of the above example is:
-
-```php
-[
-    'id' => '1',
-    'email' => 'user1@example.com',
-    'name' => 'user1',
-    'address' => 'address1',
-    'status' => '1',
-    'profile_id' => '1',
-]
-```
-
-Example 2: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindValues()`.
-
-```php
-<?php
-
-declare(strict_types=1);
-
-use Yiisoft\Db\Connection\ConnectionInterface;
-
-/** @var ConnectionInterface $db */
-
-$command = $db->createCommand('SELECT * FROM customer WHERE id=:id AND name=:name');
-$command->bindValues([':id' => 3, ':name' => 'user3']);
-$command->queryOne();
-```
-
-The result of the above example is:
-
-```php
-[
-    'id' => '3'
-    'email' => 'user3@example.com'
-    'name' => 'user3'
-    'address' => 'address3'
-    'status' => '2'
-    'profile_id' => '2'
-]
-```
-
-Example 3: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindParam()`.
-
-```php
-<?php
-
-declare(strict_types=1);
-
-use Yiisoft\Db\Connection\ConnectionInterface;
-
-/** @var ConnectionInterface $db */
-
-$command = $db->createCommand('SELECT * FROM customer WHERE id=:id AND name=:name');
-$id = 2;
-$name = 'user2';
-$command->bindParam(':id', $id);
-$command->bindParam(':name', $name);
-$command->queryOne();
-```
-
-The result of the above example is:
-
-```php
-[
-    'id' => '2'
-    'email' => 'user2@example.com'
-    'name' => 'user2'
-    'address' => 'address2'
-    'status' => '1'
-    'profile_id' => NULL
-]
-```
-
-## Executing Non-SELECT Queries
-
-The `query methods` introduced in the previous sections all deal with SELECT queries which fetch data from databases. For queries that do not bring back data, you should call the `Yiisoft\Db\Command\CommandInterface::execute()` method. The following example shows how to execute a non-SELECT query:
-
-If the query is successful, `Yiisoft\Db\Command\CommandInterface::execute()` will return the number of rows affected by the SQL statement. If the sql does not affect any row, 0 will be returned. If the query fails, a `Yiisoft\Db\Exception\Exception` exception will be thrown.
-
-Example 1: Executing a non-SELECT query.
-
-```php
-<?php
-
-declare(strict_types=1);
-
-use Yiisoft\Db\Connection\ConnectionInterface;
-
-/** @var ConnectionInterface $db */
-
-$command = $db->createCommand('UPDATE customer SET status=2 WHERE id=1');
-$command->execute();
-```
-
-Example 2: Executing a non-SELECT query and row count is 0.
-
-```php
-<?php
-
-declare(strict_types=1);
-
-use Yiisoft\Db\Connection\ConnectionInterface;
-
-/** @var ConnectionInterface $db */
-
-$command = $db->createCommand('UPDATE customer SET status=2 WHERE id=1000');
-$command->execute();
-```
-
-Example 3: Throw Exception when executing a non-SELECT query.
-
-```php
-<?php
-
-declare(strict_types=1);
-
-use Yiisoft\Db\Connection\ConnectionInterface;
-
-/** @var ConnectionInterface $db */
-
-$command = $db->createCommand('bad SQL')->execute();
-```
+Yiisoft\Db\Query\Data\DataReader#4710
+(
+    [Yiisoft\Db\Query\Data\DataReader:index] => -1
+    [Yiisoft\Db\Query\Data\DataReader:statement] => PDOStatement#4711
+    (
+        [queryString] => 'SELECT * FROM customer'
+    )
+)
