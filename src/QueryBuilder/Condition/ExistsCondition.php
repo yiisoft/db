@@ -28,7 +28,9 @@ final class ExistsCondition implements ExistConditionInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * Creates a condition based on the given operator and operands.
+     *
+     * @throws InvalidArgumentException If the number of operands is not 1 and the first operand is not a Query object.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {

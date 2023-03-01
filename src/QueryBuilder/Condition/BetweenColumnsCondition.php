@@ -9,6 +9,10 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\BetweenColumnsConditionInterface;
 
+use function is_array;
+use function is_int;
+use function is_string;
+
 /**
  * Class BetweenColumnCondition represents a `BETWEEN` condition where values are between two columns.
  *
@@ -65,7 +69,9 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * Creates a condition based on the given operator and operands.
+     *
+     * @throws InvalidArgumentException If the number of operands is not 3.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -81,6 +87,11 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
         );
     }
 
+    /**
+     * Validates the given value to be arrayed, int, string, Iterator or ExpressionInterface.
+     *
+     * @throws InvalidArgumentException If the value is not arrayed, int, string, Iterator or ExpressionInterface.
+     */
     private static function validateValue(
         string $operator,
         mixed $value
@@ -100,6 +111,11 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
         );
     }
 
+    /**
+     * Validates the given interval start column to be string or ExpressionInterface.
+     *
+     * @throws InvalidArgumentException If the interval start column is not string or ExpressionInterface.
+     */
     private static function validateIntervalStartColumn(
         string $operator,
         mixed $intervalStartColumn
@@ -116,6 +132,11 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
         );
     }
 
+    /**
+     * Validates the given interval end column to be string or ExpressionInterface.
+     *
+     * @throws InvalidArgumentException If the interval end column is not string or ExpressionInterface.
+     */
     private static function validateIntervalEndColumn(
         string $operator,
         mixed $intervalEndColumn
