@@ -67,8 +67,6 @@ You can create a database connection instance using [di container](https://githu
 
 ## Without it
 
-You can create a database connection instance without [di container](https://github.com/yiisoft/di).
-
 1. [MsSQL Server](/docs/en/create_connection/mssql.md)
 2. [MySQL/MariaDb Server](/docs/en/create_connection/mysql.md)
 3. [Oracle Server](/docs/en/create_connection/oracle.md)
