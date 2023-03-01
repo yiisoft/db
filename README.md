@@ -1,9 +1,8 @@
-<p align="center">
+<p align="center" style="text-align: center">
     <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px">
+        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px" alt="YiiFramework">
     </a>
     <h1 align="center">Yii DataBase Library</h1>
-    <br>
 </p>
 
 Yii is an open-source PHP framework for developing web applications. Yii Database Library is a database extension for the [Yii Framework] that provides a set of database utilities and a database-agnostic, [ActiveRecord] implementation for working with databases in Yii applications.
@@ -29,6 +28,12 @@ It is used in [Yii Framework] but can be used separately.
 [![codecov](https://codecov.io/gh/yiisoft/db/branch/master/graph/badge.svg?token=pRr4gci2qj)](https://codecov.io/gh/yiisoft/db)
 [![static analysis](https://github.com/yiisoft/db/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db/actions/workflows/static.yml)
 [![type-coverage](https://shepherd.dev/github/yiisoft/db/coverage.svg)](https://shepherd.dev/github/yiisoft/db)
+
+## Usage 
+
+[Check the documentation docs](/docs/en/getting-started.md) to learn about usage.
+
+## Testing
 
 ### Unit testing
 
