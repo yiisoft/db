@@ -2,7 +2,7 @@
 
 [Yii DB](https://github.com/yiisoft/db) used [PSR-3](https://www.php-fig.org/psr/psr-3/) for logger. You can configure a logger that implements `Psr\Log\LoggerInterface::class` in the [DI container](https://github.com/yiisoft/di), for example [Yii Logging Library](https://github.com/yiisoft/log) and [Yii Logging Library - File Target](https://github.com/yiisoft/log-target-file).
 
-Create a file `config/common/di/logger.php` for Logger:
+Create a file `config/common/di/logger.php` for Logger.
 
 ```php
 <?php
@@ -20,15 +20,13 @@ return [
     LoggerInterface::class => [
         'class' => Logger::class,
         '__construct()' => [
-            'targets' => ReferencesArray::from([
-                FileTarget::class,
-            ]),
+            'targets' => ReferencesArray::from([FileTarget::class]),
         ],
     ],
 ];
 ```
 
-Create a file `config/common/di/db-pgsql.php`:
+Create a file `config/common/di/db-pgsql.php`.
 
 ```php
 <?php
@@ -53,9 +51,7 @@ return [
                 $params['yiisoft/db-pgsql']['password'],
             ),
         ],
-        'setLogger()' => [
-            Reference::to(LoggerInterface::class),
-        ],        
+        'setLogger()' => [Reference::to(LoggerInterface::class)],        
     ],
 ];
 ```

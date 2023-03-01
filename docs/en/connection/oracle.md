@@ -2,7 +2,7 @@
 
 To configure [Yii DB Oracle](https://github.com/yiisoft/db-oracle) with [DI container](https://github.com/yiisoft/di) you need to create a configuration file.
 
-Create a file `config/common/di/db-oracle.php`:
+Create a file `config/common/di/db-oracle.php`.
 
 ```php
 <?php
@@ -24,12 +24,12 @@ return [
                 $params['yiisoft/db-oracle']['username'],
                 $params['yiisoft/db-oracle']['password'],
             ),
-        ]
-    ]
+        ],
+    ],
 ];
 ```
 
-Create a file `config/common/params.php` for `common` parameters:
+Create a file `config/common/params.php` for `common` parameters.
 
 ```php
 <?php
@@ -43,7 +43,7 @@ return [
         'dsn' => (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString(),
         'username' => 'user',
         'password' => 'password',
-    ]
+    ],
 ];
 ```
 

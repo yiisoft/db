@@ -2,7 +2,7 @@
 
 To configure [Yii DB MySQL/MariaDB](https://github.com/yiisoft/db-mysql) with [DI container](https://github.com/yiisoft/di) you need to create a configuration file.
 
-Create a file `config/common/di/db-mysql.php`:
+Create a file `config/common/di/db-mysql.php`.
 
 ```php
 <?php
@@ -24,12 +24,12 @@ return [
                 $params['yiisoft/db-mysql']['username'],
                 $params['yiisoft/db-mysql']['password'],
             ),
-        ]
-    ]
+        ],
+    ],
 ];
 ```
 
-Create a file `config/common/params.php` for `common` parameters:
+Create a file `config/common/params.php` for `common` parameters.
 
 ```php
 <?php
@@ -43,7 +43,25 @@ return [
         'dsn' => (new Dsn('mysql', '127.0.0.1', 'yiitest', '3306', ['charset' => 'utf8mb4']))->asString(),
         'username' => 'user',
         'password' => 'password',
-    ]
+    ],
+];
+```
+
+Create a file `config/common/params.php` for `common` parameters with dsn unix socket.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Yiisoft\Db\Mysql\DsnSocket;
+
+return [
+    'yiisoft/db-mysql' => [
+        'dsn' => (new DsnSocket('mysql', '/var/run/mysqld/mysqld.sock', 'yiitest'))->asString(),
+        'username' => 'user',
+        'password' => 'password',
+    ],
 ];
 ```
 

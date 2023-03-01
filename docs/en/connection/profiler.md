@@ -4,7 +4,7 @@
 
 When we install [Yii Profiler](https://github.com/yiisoft/profiler) it is automatically configured in the [DI container](https://github.com/yiisoft/di) for [Yii Config](https://github.com/yiisoft/config), so we can use it in our application.
 
-Create a file `config/common/di/db-pgsql.php`:
+Create a file `config/common/di/db-pgsql.php`.
 
 ```php
 <?php
@@ -29,9 +29,7 @@ return [
                 $params['yiisoft/db-pgsql']['password'],
             ),
         ],
-        'setProfiler()' => [
-            Reference::to(ProfilerInterface::class),
-        ],
+        'setProfiler()' => [Reference::to(ProfilerInterface::class)],
     ],
 ];
 ```

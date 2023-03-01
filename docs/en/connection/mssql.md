@@ -2,7 +2,7 @@
 
 To configure [Yii DB MSSQL](https://github.com/yiisoft/db-mssql) with [DI container](https://github.com/yiisoft/di) you need to create a configuration file.
 
-Create a file `config/common/di/db-mssql.php`:
+Create a file `config/common/di/db-mssql.php`.
 
 ```php
 <?php
@@ -31,7 +31,7 @@ return [
 ];
 ```
 
-Create a file `config/common/params.php` for `common` parameters:
+Create a file `config/common/params.php` for `common` parameters.
 
 ```php
 <?php
@@ -45,8 +45,8 @@ return [
         'dsn' => (new Dsn('sqlsrv', 'localhost', 'yiitest'))->asString(),
         'username' => 'user',
         'password' => 'password',
-    ]
-]
+    ],
+];
 ```
 
 To configure without [DI container](https://github.com/yiisoft/di), you need to follow the following steps.
@@ -77,4 +77,3 @@ $pdoDriver = new PDODriver($dsn, 'user', 'password');
 // Connection.
 $db = new ConnectionPDO($pdoDriver, $schemaCache);
 ```
-
