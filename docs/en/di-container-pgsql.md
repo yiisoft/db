@@ -1,4 +1,4 @@
-## Create connection with di container for pgsql server
+# Connecting PostgreSQL
 
 To configure [Yii Db Pgsql](https://github.com/yiisoft/db-pgsql) with [di container](https://github.com/yiisoft/di) you need to create a configuration file.
 
