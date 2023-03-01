@@ -9,6 +9,14 @@ use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\StringHelper;
 
+use function count;
+use function gettype;
+use function in_array;
+use function is_array;
+use function is_bool;
+use function is_float;
+use function is_resource;
+
 /**
  * The ColumnSchema class represents the metadata of a column in a database table. It provides information about the
  * column's name, type, size, precision, and other details.
@@ -230,9 +238,9 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
      *
      * If the value is null or an {@see Expression}, it will not be converted.
      *
-     * @param mixed $value input value
+     * @param mixed $value The value to be converted.
      *
-     * @return mixed converted value
+     * @return mixed The converted value.
      */
     protected function typecast(mixed $value): mixed
     {
@@ -277,7 +285,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
                 }
 
                 if (is_float($value)) {
-                    /* ensure type cast always has . as decimal separator in all locales */
+                    /** ensure type cast always has . as decimal separator in all locales */
                     return StringHelper::normalizeFloat($value);
                 }
 
@@ -303,7 +311,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     }
 
     /**
-     * @return int[] array of numbers that represent possible PDO parameter types
+     * @return int[] Array of numbers that represent possible PDO parameter types
      */
     private function getPdoParamTypes(): array
     {

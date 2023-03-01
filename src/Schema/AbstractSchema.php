@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use PDO;
+use Psr\SimpleCache\InvalidArgumentException;
 use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 use function array_change_key_case;
@@ -16,6 +18,9 @@ use function array_map;
 use function gettype;
 use function is_array;
 use function preg_match;
+use function preg_replace;
+use function str_contains;
+use function str_replace;
 
 /**
  * The AbstractSchema class provides a set of methods for working with database schemas such as creating, modifying,
@@ -31,12 +36,12 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected const SCHEMA_CACHE_VERSION = 1;
     protected const CACHE_VERSION = 'cacheVersion';
-
     /**
      * @var string|null $defaultSchema The default schema name used for the current session.
      */
     protected string|null $defaultSchema = null;
     private array $schemaNames = [];
+    /** @psalm-var string[]|array */
     private array $tableNames = [];
     protected array $viewNames = [];
     private array $tableMetadata = [];
@@ -46,7 +51,7 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * @param string $name the table name.
+     * @param string $name The table name.
      *
      * @return array The cache key for the specified table name.
      */
@@ -156,7 +161,12 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
      * @throws NotSupportedException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return array The metadata for check constraints.
      */
     public function getSchemaChecks(string $schema = '', bool $refresh = false): array
     {
@@ -164,7 +174,12 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
      * @throws NotSupportedException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return array The metadata for default values constraints.
      */
     public function getSchemaDefaultValues(string $schema = '', bool $refresh = false): array
     {
@@ -172,7 +187,12 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
      * @throws NotSupportedException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return array The metadata for foreign keys constraints.
      */
     public function getSchemaForeignKeys(string $schema = '', bool $refresh = false): array
     {
@@ -180,13 +200,23 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
      * @throws NotSupportedException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return array The metadata for indexes constraints.
      */
     public function getSchemaIndexes(string $schema = '', bool $refresh = false): array
     {
         return $this->getSchemaMetadata($schema, SchemaInterface::INDEXES, $refresh);
     }
 
+    /**
+     * @throws NotSupportedException If this method is not supported by the underlying DBMS.
+     *
+     * @return array The schema names in the database, except system schemas.
+     */
     public function getSchemaNames(bool $refresh = false): array
     {
         if (empty($this->schemaNames) || $refresh) {
@@ -197,7 +227,12 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
      * @throws NotSupportedException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return array The metadata for primary keys constraints.
      */
     public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array
     {
@@ -205,13 +240,25 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
      * @throws NotSupportedException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return array The metadata for unique constraints.
      */
     public function getSchemaUniques(string $schema = '', bool $refresh = false): array
     {
         return $this->getSchemaMetadata($schema, SchemaInterface::UNIQUES, $refresh);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return array The metadata for table checks constraints.
+     */
     public function getTableChecks(string $name, bool $refresh = false): array
     {
         /** @psalm-var mixed $tableChecks */
@@ -219,6 +266,13 @@ abstract class AbstractSchema implements SchemaInterface
         return is_array($tableChecks) ? $tableChecks : [];
     }
 
+    /**
+     * @throws InvalidCallException
+     * @throws InvalidArgumentException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return array The metadata for table default values constraints.
+     */
     public function getTableDefaultValues(string $name, bool $refresh = false): array
     {
         /** @psalm-var mixed $tableDefaultValues */
@@ -226,6 +280,13 @@ abstract class AbstractSchema implements SchemaInterface
         return is_array($tableDefaultValues) ? $tableDefaultValues : [];
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return array The metadata for table foreign keys constraints.
+     */
     public function getTableForeignKeys(string $name, bool $refresh = false): array
     {
         /** @psalm-var mixed $tableForeignKeys */
@@ -233,6 +294,13 @@ abstract class AbstractSchema implements SchemaInterface
         return is_array($tableForeignKeys) ? $tableForeignKeys : [];
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return array The metadata for table indexes constraints.
+     */
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
         /** @psalm-var mixed $tableIndexes */
@@ -240,16 +308,27 @@ abstract class AbstractSchema implements SchemaInterface
         return is_array($tableIndexes) ? $tableIndexes : [];
     }
 
+    /**
+     * @throws NotSupportedException If this method is not supported by the underlying DBMS.
+     *
+     * @return array The table names in the database.
+     */
     public function getTableNames(string $schema = '', bool $refresh = false): array
     {
         if (!isset($this->tableNames[$schema]) || $refresh) {
-            /** @psalm-var string[] */
             $this->tableNames[$schema] = $this->findTableNames($schema);
         }
 
         return is_array($this->tableNames[$schema]) ? $this->tableNames[$schema] : [];
     }
 
+    /**
+     * @throws InvalidCallException
+     * @throws InvalidArgumentException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return Constraint|null The metadata for table primary key constraint.
+     */
     public function getTablePrimaryKey(string $name, bool $refresh = false): Constraint|null
     {
         /** @psalm-var mixed $tablePrimaryKey */
@@ -257,6 +336,13 @@ abstract class AbstractSchema implements SchemaInterface
         return $tablePrimaryKey instanceof Constraint ? $tablePrimaryKey : null;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return TableSchemaInterface|null The table schema information. Null if the named table does not exist.
+     */
     public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null
     {
         /** @psalm-var mixed $tableSchema */
@@ -264,6 +350,14 @@ abstract class AbstractSchema implements SchemaInterface
         return $tableSchema instanceof TableSchemaInterface ? $tableSchema : null;
     }
 
+    /**
+     * @throws NotSupportedException
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return array The list of table schemas in the database.
+     */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array
     {
         /** @psalm-var mixed $tableSchemas */
@@ -272,6 +366,13 @@ abstract class AbstractSchema implements SchemaInterface
         return is_array($tableSchemas) ? $tableSchemas : [];
     }
 
+    /**
+     * @throws InvalidCallException
+     * @throws InvalidArgumentException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     *
+     * @return array The metadata for table unique constraints.
+     */
     public function getTableUniques(string $name, bool $refresh = false): array
     {
         /** @psalm-var mixed $tableUniques */
@@ -286,6 +387,9 @@ abstract class AbstractSchema implements SchemaInterface
         return preg_match($pattern, $sql) > 0;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function refresh(): void
     {
         if ($this->schemaCache->isEnabled()) {
@@ -296,6 +400,10 @@ abstract class AbstractSchema implements SchemaInterface
         $this->tableMetadata = [];
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
+     */
     public function refreshTableSchema(string $name): void
     {
         $rawName = $this->getRawTableName($name);
@@ -396,11 +504,12 @@ abstract class AbstractSchema implements SchemaInterface
      * @param bool $refresh Whether to fetch the latest available table metadata. If this is `false`, cached data may be
      * returned if available.
      *
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
      * @throws NotSupportedException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata of the given type for all tables in the given schema.
-     *
-     * @psalm-return list<Constraint|TableSchemaInterface|array>
      */
     protected function getSchemaMetadata(string $schema, string $type, bool $refresh): array
     {
@@ -432,10 +541,11 @@ abstract class AbstractSchema implements SchemaInterface
      * @param string $type The metadata type.
      * @param bool $refresh whether to reload the table metadata even if it is found in the cache.
      *
-     * @return mixed metadata.
+     * @throws InvalidCallException
+     * @throws InvalidArgumentException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
-     * @psalm-suppress MixedArrayAccess
-     * @psalm-suppress MixedArrayAssignment
+     * @return mixed The metadata of the given type for the given table.
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false): mixed
     {
@@ -446,10 +556,12 @@ abstract class AbstractSchema implements SchemaInterface
         }
 
         if ($refresh || !isset($this->tableMetadata[$rawName][$type])) {
+            /** @psalm-suppress MixedArrayAssignment */
             $this->tableMetadata[$rawName][$type] = $this->loadTableTypeMetadata($type, $rawName);
             $this->saveTableMetadataToCache($rawName);
         }
 
+        /** @psalm-suppress MixedArrayAccess */
         return $this->tableMetadata[$rawName][$type];
     }
 
@@ -471,7 +583,11 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * This method returns the desired metadata type for table name (with refresh if needed)
+     * This method returns the desired metadata type for table name (with refresh if needed).
+     *
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      */
     protected function getTableTypeMetadata(
         string $type,
@@ -516,7 +632,7 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @return TableSchemaInterface The with resolved table, schema, etc. names.
      *
-     * {@see TableSchemaInterface}
+     * @see TableSchemaInterface
      */
     protected function resolveTableName(string $name): TableSchemaInterface
     {
@@ -529,16 +645,19 @@ abstract class AbstractSchema implements SchemaInterface
      * @param string $name The table name.
      * @param string $type The metadata type.
      * @param mixed $data The metadata to be set.
-     *
-     * @psalm-suppress MixedArrayAssignment
      */
     protected function setTableMetadata(string $name, string $type, mixed $data): void
     {
+        /** @psalm-suppress MixedArrayAssignment  */
         $this->tableMetadata[$this->getRawTableName($name)][$type] = $data;
     }
 
     /**
      * Tries to load and populate table metadata from cache.
+     *
+     * @throws InvalidCallException
+     * @throws InvalidArgumentException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      */
     private function loadTableMetadataFromCache(string $rawName): void
     {
@@ -569,6 +688,10 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * Saves table metadata to cache.
+     *
+     * @throws InvalidArgumentException
+     * @throws InvalidCallException
+     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      */
     private function saveTableMetadataToCache(string $rawName): void
     {
@@ -578,7 +701,7 @@ abstract class AbstractSchema implements SchemaInterface
 
         /** @psalm-var array<string, array<TableSchemaInterface|int>> $metadata */
         $metadata = $this->tableMetadata[$rawName];
-        /** @var int */
+        /** @psalm-var int */
         $metadata[self::CACHE_VERSION] = static::SCHEMA_CACHE_VERSION;
 
         $this->schemaCache->set(
