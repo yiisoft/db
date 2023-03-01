@@ -24,53 +24,32 @@ $command = $db->createCommand('SELECT * FROM customer')->queryAll();
 The result of the above example is:
 
 ```php
-array(3) {
-  [0]=>
-  array(6) {
-    ["id"]=>
-    string(1) "1"
-    ["email"]=>
-    string(17) "user1@example.com"
-    ["name"]=>
-    string(5) "user1"
-    ["address"]=>
-    string(8) "address1"
-    ["status"]=>
-    string(1) "1"
-    ["profile_id"]=>
-    string(1) "1"
-  }
-  [1]=>
-  array(6) {
-    ["id"]=>
-    string(1) "2"
-    ["email"]=>
-    string(17) "user2@example.com"
-    ["name"]=>
-    string(5) "user2"
-    ["address"]=>
-    string(8) "address2"
-    ["status"]=>
-    string(1) "1"
-    ["profile_id"]=>
-    NULL
-  }
-  [2]=>
-  array(6) {
-    ["id"]=>
-    string(1) "3"
-    ["email"]=>
-    string(17) "user3@example.com"
-    ["name"]=>
-    string(5) "user3"
-    ["address"]=>
-    string(8) "address3"
-    ["status"]=>
-    string(1) "2"
-    ["profile_id"]=>
-    string(1) "2"
-  }
-}
+[
+    [
+        'id' => '1',
+        'email' => 'user1@example.com',
+        'name' => 'user1',
+        'address' => 'address1',
+        'status' => '1',
+        'profile_id' => '1',
+    ],
+    [
+        'id' => '2',
+        'email' => 'user2@example.com'
+        'name' => 'user2',
+        'address' => 'address2',
+        'status' => '1',
+        'profile_id' => null,
+    ],
+    [
+        'id' => '3',
+        'email' => 'user3@example.com',
+        'name' => 'user3',
+        'address' => 'address3',
+        'status' => '2',
+        'profile_id' => '2',
+    ],
+]
 ```
 
 Example 2: Fetching a single row from a table using `Yiisoft\Db\Command\CommandInterface::queryOne()`, return array the first row (in terms of an array) of the query result. Null is returned if the query results in nothing.
@@ -89,20 +68,14 @@ $command = $db->createCommand('SELECT * FROM customer')->queryOne();
 The result of the above example is:
 
 ```php
-array(6) {
-  ["id"]=>
-  string(1) "1"
-  ["email"]=>
-  string(17) "user1@example.com"
-  ["name"]=>
-  string(5) "user1"
-  ["address"]=>
-  string(8) "address1"
-  ["status"]=>
-  string(1) "1"
-  ["profile_id"]=>
-  string(1) "1"
-}
+[
+    'id' => '1',
+    'email' => 'user1@example.com',
+    'name' => 'user1',
+    'address' => 'address1',
+    'status' => '1',
+    'profile_id' => '1',
+]
 ```
 
 Example 3: Fetching a single column from a table using `Yiisoft\Db\Command\CommandInterface::queryColumn()`, return array the values of the first column in the query result. An empty array is returned if the query results in nothing.
@@ -122,14 +95,11 @@ $command = $db->createCommand('SELECT * FROM customer')->queryColumn();
 The result of the above example is:
 
 ```php
-array(3) {
-  [0]=>
-  string(1) "1"
-  [1]=>
-  string(1) "2"
-  [2]=>
-  string(1) "3"
-}
+[
+    '1',
+    '2',
+    '3',
+]
 ```
 
 Example 4: Fetching a single value from a table using `Yiisoft\Db\Command\CommandInterface::queryScalar()`, return the value of the first column in the first row of the query result. False is returned if there is no value.
@@ -149,7 +119,7 @@ $command = $db->createCommand('SELECT * FROM customer')->queryScalar();
 The result of the above example is:
 
 ```php
-string(1) "1"
+'1'
 ```
 
 Example 5: Fetching a single row using `Yiisoft\Db\Command\CommandInterface::query()`, return `Yiisoft\Db\DataReader\DataReaderInterface` object. You can iterate over the returned object to get the data.
@@ -209,20 +179,14 @@ $command->queryOne();
 The result of the above example is:
 
 ```php
-array(6) {
-  ["id"]=>
-  string(1) "1"
-  ["email"]=>
-  string(17) "user1@example.com"
-  ["name"]=>
-  string(5) "user1"
-  ["address"]=>
-  string(8) "address1"
-  ["status"]=>
-  string(1) "1"
-  ["profile_id"]=>
-  string(1) "1"
-}
+[
+    'id' => '1',
+    'email' => 'user1@example.com',
+    'name' => 'user1',
+    'address' => 'address1',
+    'status' => '1',
+    'profile_id' => '1',
+]
 ```
 
 Example 2: Binding parameters using question mark placeholders.
@@ -244,20 +208,14 @@ $command->queryOne();
 The result of the above example is:
 
 ```php
-array(6) {
-  ["id"]=>
-  string(1) "1"
-  ["email"]=>
-  string(17) "user1@example.com"
-  ["name"]=>
-  string(5) "user1"
-  ["address"]=>
-  string(8) "address1"
-  ["status"]=>
-  string(1) "1"
-  ["profile_id"]=>
-  string(1) "1"
-}
+[
+    'id' => '1',
+    'email' => 'user1@example.com',
+    'name' => 'user1',
+    'address' => 'address1',
+    'status' => '1',
+    'profile_id' => '1',
+]
 ```
 
 In the SQL statement, you can embed one or multiple parameter placeholders (e.g. :id in the above example). A parameter placeholder should be a string starting with a colon. You may then call one of the following parameter binding methods to bind the parameter values:
@@ -287,20 +245,14 @@ $command->queryOne();
 The result of the above example is:
 
 ```php
-array(6) {
-  ["id"]=>
-  string(1) "1"
-  ["email"]=>
-  string(17) "user1@example.com"
-  ["name"]=>
-  string(5) "user1"
-  ["address"]=>
-  string(8) "address1"
-  ["status"]=>
-  string(1) "1"
-  ["profile_id"]=>
-  string(1) "1"
-}
+[
+    'id' => '1',
+    'email' => 'user1@example.com',
+    'name' => 'user1',
+    'address' => 'address1',
+    'status' => '1',
+    'profile_id' => '1',
+]
 ```
 
 Example 2: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindValues()`.
@@ -322,20 +274,14 @@ $command->queryOne();
 The result of the above example is:
 
 ```php
-array(6) {
-  ["id"]=>
-  string(1) "3"
-  ["email"]=>
-  string(17) "user3@example.com"
-  ["name"]=>
-  string(5) "user3"
-  ["address"]=>
-  string(8) "address3"
-  ["status"]=>
-  string(1) "2"
-  ["profile_id"]=>
-  string(1) "2"
-}
+[
+    'id' => '3'
+    'email' => 'user3@example.com'
+    'name' => 'user3'
+    'address' => 'address3'
+    'status' => '2'
+    'profile_id' => '2'
+]
 ```
 
 Example 3: Binding parameters using `Yiisoft\Db\Command\CommandInterface::bindParam()`.
@@ -360,20 +306,14 @@ $command->queryOne();
 The result of the above example is:
 
 ```php
-array(6) {
-  ["id"]=>
-  string(1) "2"
-  ["email"]=>
-  string(17) "user2@example.com"
-  ["name"]=>
-  string(5) "user2"
-  ["address"]=>
-  string(8) "address2"
-  ["status"]=>
-  string(1) "1"
-  ["profile_id"]=>
-  NULL
-}
+[
+    'id' => '2'
+    'email' => 'user2@example.com'
+    'name' => 'user2'
+    'address' => 'address2'
+    'status' => '1'
+    'profile_id' => NULL
+]
 ```
 
 ## Executing Non-SELECT Queries
