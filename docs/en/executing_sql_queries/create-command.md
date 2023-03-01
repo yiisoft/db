@@ -1,6 +1,6 @@
 # Create a command with a plain SQL query
 
-To create a command with a plain SQL query, you can use the `Yiisoft\Db\Connection\ConnectionInterface::createCommand()` method. The following example shows how to create a command with a plain SQL query:
+To create a command with a plain **SQL query**, you can use the `Yiisoft\Db\Connection\ConnectionInterface::createCommand()` method. The following example shows how to create a command with a plain **SQL query**:
 
 ```php
 <?php
@@ -15,7 +15,7 @@ $command = $db->createCommand('SELECT * FROM customer');
 
 ## Fetching Data
 
-To fetch data from a table, you can use the `Yiisoft\Db\Command\CommandInterface::queryAll()`, `Yiisoft\Db\Command\CommandInterface::queryOne()`, `Yiisoft\Db\Command\CommandInterface::queryColumn()`, `Yiisoft\Db\Command\CommandInterface::queryScalar()` and `Yiisoft\Db\Command\CommandInterface::query()`.
+To **fetch data** from a **table**, you can use the `Yiisoft\Db\Command\CommandInterface::queryAll()`, `Yiisoft\Db\Command\CommandInterface::queryOne()`, `Yiisoft\Db\Command\CommandInterface::queryColumn()`, `Yiisoft\Db\Command\CommandInterface::queryScalar()` and `Yiisoft\Db\Command\CommandInterface::query()`.
 
 **Note:** *To preserve precision, the data fetched from databases are all represented as strings, even if the corresponding database column types are numerical. You may need to use type conversion to convert them into the corresponding PHP types.*
 

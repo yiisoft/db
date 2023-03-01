@@ -1,6 +1,6 @@
 # Call one of the SQL execute method to execute the command
 
-The `query methods` introduced in the [Create a command with a plain SQL query](create-command.md) all deal with SELECT queries which fetch data from databases. For queries that do not bring back data, you should call the `Yiisoft\Db\Command\CommandInterface::execute()` method. The following example shows how to execute a non-SELECT query:
+The **query methods** introduced in the [Create a command with a plain SQL query](create-command.md) all deal with SELECT queries which fetch data from databases. For queries that do not bring back data, you should call the `Yiisoft\Db\Command\CommandInterface::execute()` method. The following example shows how to execute a non-SELECT query:
 
 If the query is successful, `Yiisoft\Db\Command\CommandInterface::execute()` will return the number of rows affected by the SQL statement. If the sql does not affect any row, 0 will be returned. If the query fails, a `Yiisoft\Db\Exception\Exception` exception will be thrown.
 
