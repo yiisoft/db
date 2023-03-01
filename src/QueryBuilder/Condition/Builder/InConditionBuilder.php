@@ -40,7 +40,12 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * Build SQL for {@see InCondition}.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function build(InConditionInterface $expression, array &$params = []): string
     {
@@ -71,7 +76,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
                 return $this->buildCompositeInCondition($operator, $column, $values, $params);
             }
 
-            /** @var mixed */
+            /** @psalm-var mixed $column */
             $column = reset($column);
         }
 
@@ -81,7 +86,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             }
 
             $column->rewind();
-            /** @var mixed */
+            /** @psalm-var mixed $column */
             $column = $column->current();
         }
 
@@ -131,26 +136,29 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @psalm-suppress MixedArrayTypeCoercion
      * @psalm-suppress MixedArrayOffset
      */
-    protected function buildValues(InConditionInterface $condition, array|Traversable $values, array &$params = []): array
+    protected function buildValues(InConditionInterface $condition, iterable $values, array &$params = []): array
     {
         $sqlValues = [];
         $column = $condition->getColumn();
 
         if (is_array($column)) {
-            /** @var mixed */
+            /** @psalm-var mixed $column */
             $column = reset($column);
         }
 
         if ($column instanceof Iterator) {
             $column->rewind();
-            /** @var mixed */
+            /** @psalm-var mixed $column */
             $column = $column->current();
         }
 
-        /** @var mixed $value */
+        /**
+         * @psalm-var string|int $i
+         * @psalm-var mixed $value
+         */
         foreach ($values as $i => $value) {
             if (is_array($value) || $value instanceof ArrayAccess) {
-                /** @var mixed */
+                /** @psalm-var mixed $value */
                 $value = $value[$column] ?? null;
             }
 
@@ -169,9 +177,12 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Builds SQL for IN condition.
+     * Build SQL for composite IN condition.
      *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     protected function buildSubqueryInCondition(
         string $operator,
@@ -207,11 +218,16 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Builds SQL for IN condition.
+     * Builds a SQL statement for checking the existence of rows with the specified composite column values.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
      */
     protected function buildCompositeInCondition(
         string|null $operator,
-        array|Traversable $columns,
+        iterable $columns,
         iterable|Iterator $values,
         array &$params = []
     ): string {
@@ -273,13 +289,13 @@ class InConditionBuilder implements ExpressionBuilderInterface
     {
         $rawValues = [];
 
-        /** @var mixed $value */
+        /** @psalm-var mixed $value */
         foreach ($traversableObject as $value) {
             if (is_array($value)) {
                 $values = array_values($value);
                 $rawValues = array_merge($rawValues, $values);
             } else {
-                /** @var mixed */
+                /** @psalm-var mixed */
                 $rawValues[] = $value;
             }
         }

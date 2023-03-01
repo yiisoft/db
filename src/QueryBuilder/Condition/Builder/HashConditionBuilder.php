@@ -17,6 +17,7 @@ use Yiisoft\Db\Query\QueryInterface;
 
 use function count;
 use function implode;
+use function is_iterable;
 use function str_contains;
 
 /**
@@ -29,9 +30,12 @@ class HashConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * Build SQL for {@see HashCondition}.
      *
-     * @psalm-suppress MixedAssignment
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function build(HashConditionInterface $expression, array &$params = []): string
     {
@@ -40,6 +44,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
 
         /**
          * @psalm-var array<string, array|mixed> $hash
+         * @psalm-var array|mixed $value
          */
         foreach ($hash as $column => $value) {
             if (is_iterable($value) || $value instanceof QueryInterface) {
