@@ -7,7 +7,7 @@
 
 Yii is an open-source PHP framework for developing web applications. Yii Database Library is a database extension for the [Yii Framework] that provides a set of database utilities and a database-agnostic, [ActiveRecord] implementation for working with databases in Yii applications.
 
-The package contains a number of classes that can be used to connect to and query different types of databases, such as [MariaDB], [MSSQL], [MySQL], [Oracle], [PostgresSQL], and [SQLite]. It also provides an [ActiveRecord] implementation that allows you to interact with database tables using objects, similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
+The package contains a number of classes that can be used to connect to and query different types of databases, such as [MariaDB], [MSSQL], [MySQL], [Oracle], [PostgreSQL], and [SQLite]. It also provides an [ActiveRecord] implementation that allows you to interact with database tables using objects, similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
 
 Using the Yii Database Library, you can perform common database tasks such as creating, reading, updating, and deleting records in a database table, as well as executing raw SQL queries. The package is designed to be flexible and can be easily extended to support additional database types or to customize the way it interacts with databases.
 
