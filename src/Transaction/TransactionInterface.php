@@ -23,28 +23,25 @@ interface TransactionInterface extends LoggerAwareInterface
     /**
      * A constant representing the transaction isolation level `READ UNCOMMITTED`.
      *
-     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
+     * @link http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     public const READ_UNCOMMITTED = 'READ UNCOMMITTED';
-
     /**
      * A constant representing the transaction isolation level `READ COMMITTED`.
      *
-     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
+     * @link http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     public const READ_COMMITTED = 'READ COMMITTED';
-
     /**
      * A constant representing the transaction isolation level `REPEATABLE READ`.
      *
-     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
+     * @link http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     public const REPEATABLE_READ = 'REPEATABLE READ';
-
     /**
      * A constant representing the transaction isolation level `SERIALIZABLE`.
      *
-     * {@see http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels}
+     * @link http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     public const SERIALIZABLE = 'SERIALIZABLE';
 
@@ -69,7 +66,7 @@ interface TransactionInterface extends LoggerAwareInterface
      *
      * @throws Exception
      * @throws Throwable If DB connection fails or the current transaction is active.
-     * @throws InvalidConfigException If {@see db} is `null` or invalid.
+     * @throws InvalidConfigException If {@see \Yiisoft\Db\Connection\ConnectionInterface} is `null` or invalid.
      * @throws NotSupportedException If the DBMS does not support nested transactions or the transaction is active.
      */
     public function begin(string $isolationLevel = null): void;
