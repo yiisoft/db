@@ -61,7 +61,7 @@ composer require yiisoft/db-sqlite
 4. [PostgreSQL Server](di-container-pgsql.md)
 5. [Sqlite Server](di-container-sqlite.md)
 
-## Logger and profiler
+### Logger and profiler
 
 Logger and profiler are optional. You can use them if you need to log and profile your queries.
 
