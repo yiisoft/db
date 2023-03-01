@@ -28,17 +28,16 @@ return [
 ];
 ```
 
-Create a file `config/common/di/db-mssql.php`:
+Create a file `config/common/di/db-pgsql.php`:
 
 ```php
 <?php
 
 declare(strict_types=1);
 
-use Psr\Log\LoggerInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Mssql\ConnectionPDO;
-use Yiisoft\Db\Mssql\PDODriver;
+use Yiisoft\Db\Pgsql\ConnectionPDO;
+use Yiisoft\Db\Pgsql\PDODriver;
 use Yiisoft\Definitions\Reference;
 
 /** @var array $params */
@@ -48,13 +47,14 @@ return [
         'class' => ConnectionPDO::class,
         '__construct()' => [
             'driver' => new PDODriver(
-                $params['yiisoft/db-mssql']['dsn'],
-                $params['yiisoft/db-mssql']['username'],
-                $params['yiisoft/db-mssql']['password'],
+                $params['yiisoft/db-pgsql']['dsn'],
+                $params['yiisoft/db-pgsql']['username'],
+                $params['yiisoft/db-pgsql']['password'],
             ),
         ],
         'setLogger()' => [
             Reference::to(LoggerInterface::class),
-        ],
+        ],        
     ],
 ];
+```

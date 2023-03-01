@@ -56,13 +56,13 @@ composer require yiisoft/db-sqlite
 
 ## Create Connection
 
-2. [Di container for Mssql Server](di-container-mssql.md)
-3. [Di container for Mysql/MariaDb Server](di-container-mysql.md)
-4. [Di container for Oracle Server](di-container-oracle.md)
-5. [Di container for Pgsql Server](di-container-pgsql.md)
-6. [Di container for Sqlite Server](di-container-sqlite.md)
-7. [With Logger](di-connection-with-logger.md)
-8. [With Profiler](di-connection-with-profiler.md)
+1. [Di container for Mssql Server](di-container-mssql.md)
+2. [Di container for Mysql/MariaDb Server](di-container-mysql.md)
+3. [Di container for Oracle Server](di-container-oracle.md)
+4. [Di container for Pgsql Server](di-container-pgsql.md)
+5. [Di container for Sqlite Server](di-container-sqlite.md)
+6. [With Logger](di-connection-with-logger.md)
+7. [With Profiler](di-connection-with-profiler.md)
 
 ## Executing SQL Queries
 
