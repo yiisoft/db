@@ -60,8 +60,13 @@ composer require yiisoft/db-sqlite
 3. [Oracle Server](di-container-oracle.md)
 4. [PostgreSQL Server](di-container-pgsql.md)
 5. [Sqlite Server](di-container-sqlite.md)
-6. [With Logger](di-connection-with-logger.md)
-7. [With Profiler](di-connection-with-profiler.md)
+
+## Create connection with logger and profiler
+
+Logger and profiler are optional. You can use them if you need to log and profile your queries.
+
+1. [Logger](di-connection-with-logger.md)
+2. [Profiler](di-connection-with-profiler.md)
 
 ## Executing SQL Queries
 
