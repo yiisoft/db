@@ -97,6 +97,10 @@ interface TransactionInterface extends LoggerAwareInterface
 
     /**
      * Rolls back a transaction.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
     public function rollBack(): void;
 
