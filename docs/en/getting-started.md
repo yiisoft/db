@@ -1,12 +1,12 @@
 # Getting Started
 
-[Yii Db](https://github.com/yiisoft/db) is DAO (Data Access Object) layer for [YiiFramework](https://www.yiiframework.com/). It provides a set of classes that help you access relational databases. It is designed to be flexible and extensible, so that it can be used with different databases and different database schemas. Its database agnostic nature makes it easy to switch from one database to another.
+[Yii DB](https://github.com/yiisoft/db) is DAO (Data Access Object) layer for [YiiFramework](https://www.yiiframework.com/). It provides a set of classes that help you access relational databases. It is designed to be flexible and extensible, so that it can be used with different databases and different database schemas. Its database agnostic nature makes it easy to switch from one database to another.
 
-Built on top of [PDO](https://www.php.net/manual/en/book.pdo.php), [Yii Db](https://github.com/yiisoft/db) provides an object-oriented API for accessing relational databases. It is the foundation for other more advanced database access methods, including [Query Builder](query-builder.md) and [Active Record](active-record.md).
+Built on top of [PDO](https://www.php.net/manual/en/book.pdo.php), [Yii DB](https://github.com/yiisoft/db) provides an object-oriented API for accessing relational databases. It is the foundation for other more advanced database access methods, including [Query Builder](query-builder.md) and [Active Record](active-record.md).
 
-When using [Yii Db](https://github.com/yiisoft/db), you mainly need to deal with plain SQLs and PHP arrays. As a result, it is the most efficient way to access databases. However, because SQL syntax may vary for different databases, using [Yii Db](https://github.com/yiisoft/db) also means you have to take extra effort to create a database agnostic application.
+When using [Yii DB](https://github.com/yiisoft/db), you mainly need to deal with plain SQLs and PHP arrays. As a result, it is the most efficient way to access databases. However, because SQL syntax may vary for different databases, using [Yii DB](https://github.com/yiisoft/db) also means you have to take extra effort to create a database agnostic application.
 
-In [YiiFramework](https://www.yiiframework.com/), [Yii Db](https://github.com/yiisoft/db) supports the following databases out of the box:
+In [YiiFramework](https://www.yiiframework.com/), [Yii DB](https://github.com/yiisoft/db) supports the following databases out of the box:
 
 1. [MsSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) version **2017, 2019, 2022**.
 2. [MySQL](https://www.mysql.com/) version **5.7 - 8.0**.
@@ -17,7 +17,7 @@ In [YiiFramework](https://www.yiiframework.com/), [Yii Db](https://github.com/yi
 
 ## Installation
 
-To install [Yii Db](https://github.com/yiisoft/db), you must select the driver you want to use and install it with [Composer](https://getcomposer.org/).
+To install [Yii DB](https://github.com/yiisoft/db), you must select the driver you want to use and install it with [Composer](https://getcomposer.org/).
 
 - [Yii DB MSSQL](https://github.com/yiisoft/db-mssql)
 
@@ -69,8 +69,8 @@ You can create a database connection instance using [DI container](https://githu
 
 Logger and profiler are optional. You can use them if you need to log and profile your queries.
 
-1. [Logger](/docs/en/logger_profiler/connection-logger.md)
-2. [Profiler](/docs/en/logger_profiler/connection-profiler.md)
+1. [Logger](/docs/en/connection/logger_profiler/logger.md)
+2. [Profiler](/docs/en/connection/logger_profiler/profiler.md)
 
 ## Executing SQL queries
 
