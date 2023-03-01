@@ -1,4 +1,4 @@
-# Connecting PostgreSQL with profiler
+# Connecting with profiler
 
 [Yii DB](https://github.com/yiisoft/db) used [Yii Profiler](https://github.com/yiisoft/profiler), a tool for collecting and analyzing database queries. This can be useful for debugging and optimizing database performance.
 
