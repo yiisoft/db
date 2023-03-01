@@ -57,25 +57,25 @@ composer require yiisoft/db-sqlite
 
 You can create a database connection instance using [di container](https://github.com/yiisoft/di) or without it.
 
-### Using DI Container
+### Using di Container
 
-1. [MsSQL Server](di-container-mssql.md)
-2. [MySQL/MariaDb Server](di-container-mysql.md)
-3. [Oracle Server](di-container-oracle.md)
-4. [PostgreSQL Server](di-container-pgsql.md)
-5. [Sqlite Server](di-container-sqlite.md)
+1. [MsSQL Server](/docs/en/create_connection/di-container-mssql.md)
+2. [MySQL/MariaDb Server](/docs/en/create_connection/di-container-mysql.md)
+3. [Oracle Server](/docs/en/create_connection/di-container-oracle.md)
+4. [PostgreSQL Server](/docs/en/create_connection/di-container-pgsql.md)
+5. [Sqlite Server](/docs/en/create_connection/di-container-sqlite.md)
 
 ### Logger and profiler
 
 Logger and profiler are optional. You can use them if you need to log and profile your queries.
 
-1. [Logger](di-connection-with-logger.md)
-2. [Profiler](di-connection-with-profiler.md)
+1. [Logger](/docs/en/logger_profiler/connection-logger.md)
+2. [Profiler](/docs/en/logger_profiler/connection-profiler.md)
 
-## Executing SQL Queries
+## Executing SQL queries
 
 Once you have a database connection instance, you can execute a SQL query by taking the following steps:
 
-1. [Create a command with a plain SQL query](create-command.md).
-2. [Bind parameters](bind-parameters.md).
-3. [Call one of the SQL execute method to execute the command](execute-command.md).
+1. [Create a command with a plain SQL query](/docs/en/executing_sql_queries/create-command.md)
+2. [Bind parameters](/docs/en/executing_sql_queries/bind-parameters.md).
+3. [Call one of the SQL execute method to execute the command](/docs/en/executing_sql_queries/execute-command.md).
