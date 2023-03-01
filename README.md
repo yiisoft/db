@@ -31,7 +31,7 @@ It is used in [Yii Framework] but can be used separately.
 
 ## Usage 
 
-For use read the [docs](/docs/en/getting-started.md).
+[Check the documentation docs](/docs/en/getting-started.md) to learn about usage.
 
 ## Testing
 
