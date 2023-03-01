@@ -25,8 +25,7 @@ To install [Yii Db](https://github.com/yiisoft/db), you must select the driver y
 composer require yiisoft/db-mssql
 ```
 
-- [Yii Db Mysql](https://github.com/yiisoft/db-mysql)
-- [Yii Db MariaDB](https://github.com/yiisoft/db-mysql)
+- [Yii Db Mysql/MariaDb](https://github.com/yiisoft/db-mysql)
 
 ```bash
 composer require yiisoft/db-mysql
