@@ -77,5 +77,5 @@ Logger and profiler are optional. You can use them if you need to log and profil
 Once you have a database connection instance, you can execute a **SQL** query by taking the following steps:
 
 1. [Create a command with a plain SQL query](/docs/en/executing_sql_queries/create-command.md)
-2. [Bind parameters](/docs/en/executing_sql_queries/bind-parameters.md).
-3. [Call one of the SQL execute method to execute the command](/docs/en/executing_sql_queries/execute-command.md).
+2. [Bind parameters](/docs/en/executing_sql_queries/bind-parameters.md)
+3. [Call one of the SQL execute method to execute the command](/docs/en/executing_sql_queries/execute-command.md)
