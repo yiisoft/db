@@ -6,7 +6,7 @@ Built on top of [PDO](https://www.php.net/manual/en/book.pdo.php), [Yii DB](http
 
 When using [Yii DB](https://github.com/yiisoft/db), you mainly need to deal with plain **SQLs** and **PHP arrays**. As a result, it is the most efficient way to access databases. However, because **SQL** syntax may vary for different databases, using [Yii DB](https://github.com/yiisoft/db) also means you have to take extra effort to create a database agnostic application.
 
-In [YiiFramework](https://www.yiiframework.com/), [Yii DB](https://github.com/yiisoft/db) supports the following databases out of the box:
+[Yii DB](https://github.com/yiisoft/db) supports the following databases out of the box:
 
 1. [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) version **2017, 2019, 2022**.
 2. [MySQL](https://www.mysql.com/) version **5.7 - 8.0**.
