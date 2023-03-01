@@ -18,8 +18,6 @@ use Yiisoft\Definitions\Reference;
 use Yiisoft\Profiler\Profiler;
 use Yiisoft\Profiler\ProfilerInterface;
 
-/** @var array $params */
-
 return [
     ProfilerInterface::class => [
         'class' => Profiler::class,
