@@ -1,10 +1,10 @@
 # Binding parameters
 
-When creating a **DB** command from a **SQL with parameters**, you should almost always use the approach of binding parameters to prevent **SQL injection attacks**. You can **bind parameters** to a **SQL statement** by using named placeholders or question mark placeholders. Named placeholders are of the form `:name` and question mark placeholders are of the form `?`. The following example shows how to **bind parameters** to a **SQL statement**:
+When creating a **DB** command from a **SQL with parameters**, you should almost always use the approach of binding parameters to prevent **SQL injection attacks**. You can **bind parameters** to a **SQL statement** by using named placeholders or question mark placeholders. Named placeholders are of the form `:name` and question mark placeholders are of the form `?`. The following example shows how to **bind parameters** to a **SQL statement**.
 
-**Info:** *Parameter binding is only used in places where values need to be inserted into strings that contain plain **SQL**. In many places in higher abstraction layers like **query builder** and **active record** you often specify an **array of values** which will be transformed into **SQL**. In these places parameter binding is done by Yii internally, so there is no need to specify params manually.*
+**Info:** *Parameter binding is only used in places where values need to be inserted into strings that contain plain **SQL**. In many places in higher abstraction layers like **query builder** you often specify an **array of values** which will be transformed into **SQL**. In these places parameter binding is done by Yii internally, so there is no need to specify params manually.*
 
-For example, the following **SQL statement** contains `:id` named placeholders:
+For example, the following **SQL statement** contains `:id` named placeholders.
 
 ```php
 <?php
@@ -19,7 +19,7 @@ $command = $db->createCommand('SELECT * FROM customer WHERE id=:id');
 $command->bindValue(':id', 1);
 ```
 
-You can bind the value using the `?` mark question placeholders as follows:
+You can bind the value using the `?` mark question placeholders as follows.
 
 ```php
 <?php
@@ -34,13 +34,13 @@ $command = $db->createCommand('SELECT * FROM customer WHERE id=?');
 $command->bindValue(1, 1);
 ```
 
-In the **SQL statement**, you can embed one or multiple parameter placeholders (e.g. :id in the above example). A parameter placeholder should be a string starting with a colon. You may then call one of the following parameter binding methods to bind the parameter values:
+In the **SQL statement**, you can embed one or multiple parameter placeholders (e.g. :id in the above example). A parameter placeholder should be a string starting with a colon. You may then call one of the following parameter binding methods to bind the parameter values.
 
 ## Bind value
 
 `BindValue()` binds a value to a parameter. It is recommended to use this method to bind parameter values to ensure the security of your application.
 
-For example, the following code binds the value `1` to the named placeholder `:id`:
+For example, the following code binds the value `1` to the named placeholder `:id`.
 
 ```php
 <?php
@@ -56,7 +56,7 @@ $command->bindValue(':id', 1);
 $command->queryOne();
 ```
 
-The result of the above example is:
+The result of the above example is.
 
 ```php
 [
@@ -73,7 +73,7 @@ The result of the above example is:
 
 `BindValues()` binds a list of values to the corresponding named placeholders in the **SQL statement**. It is recommended to use this method to bind parameter values to ensure the security of your application.
 
-For example, the following code binds the values `3` and `user3` to the named placeholders `:id` and `:name`:
+For example, the following code binds the values `3` and `user3` to the named placeholders `:id` and `:name`.
 
 ```php
 <?php
@@ -89,7 +89,7 @@ $command->bindValues([':id' => 3, ':name' => 'user3']);
 $command->queryOne();
 ```
 
-The result of the above example is:
+The result of the above example is.
 
 ```php
 [
@@ -106,7 +106,7 @@ The result of the above example is:
 
 `bindParam()` binds a parameter to the specified variable name. It is recommended to use this method to bind parameter values to ensure the security of your application.
 
-For example, the following code binds the value `2` and `user2` to the named placeholders `:id` and `:name`:
+For example, the following code binds the value `2` and `user2` to the named placeholders `:id` and `:name`.
 
 ```php
 <?php
@@ -125,7 +125,7 @@ $command->bindParam(':name', $name);
 $command->queryOne();
 ```
 
-The result of the above example is:
+The result of the above example is.
 
 ```php
 [

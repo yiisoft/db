@@ -66,7 +66,7 @@ $dsn = (new Dsn('mysql', '127.0.0.1', 'yiitest', '3306', ['charset' => 'utf8mb4'
 // PSR-16 cache implementation.
 $arrayCache = new ArrayCache();
 
-// Cache psr-6 implementation.
+// Cache PSR-6 implementation.
 $schemaCache = new SchemaCache($cache);
 
 // PDO driver.
