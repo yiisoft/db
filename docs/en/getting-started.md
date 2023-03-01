@@ -54,13 +54,13 @@ composer require yiisoft/db-sqlite
 
 1. [Configuring SchemaCache](schema-cache.md)
 
-## Create Connection
+## Create Connection with Di Container
 
-1. [Di container for Mssql Server](di-container-mssql.md)
-2. [Di container for Mysql/MariaDb Server](di-container-mysql.md)
-3. [Di container for Oracle Server](di-container-oracle.md)
-4. [Di container for Pgsql Server](di-container-pgsql.md)
-5. [Di container for Sqlite Server](di-container-sqlite.md)
+1. [Mssql Server](di-container-mssql.md)
+2. [Mysql/MariaDb Server](di-container-mysql.md)
+3. [Oracle Server](di-container-oracle.md)
+4. [Pgsql Server](di-container-pgsql.md)
+5. [Sqlite Server](di-container-sqlite.md)
 6. [With Logger](di-connection-with-logger.md)
 7. [With Profiler](di-connection-with-profiler.md)
 

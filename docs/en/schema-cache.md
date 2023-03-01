@@ -1,4 +1,4 @@
-## Configuring schema cache
+# Configuring schema cache
 
  The [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php) is used to `cache` database schema information.
  
@@ -6,7 +6,7 @@
 
  For configuration of [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php) you can do it in two ways, the first is configure [psr-16](https://github.com/php-fig/simple-cache) cache in the [di container](https://github.com/yiisoft/di) and it is configured automatically by autowired in the application controller, the second is configure it manually in the configuration file.
 
-### Configuration file with autowired cache
+## Configuration file with autowired cache
 
 Create a file `config/common/di/psr16.php` for cache:
 
@@ -30,7 +30,7 @@ return [
 ];
 ```
 
-### Configuration file with manual cache configuration
+## Configuration file with manual cache configuration
 
 Create a file `config/common/di/db-schema-cache.php` for cache:
 
@@ -51,5 +51,3 @@ return [
     ],
 ];
 ```
-
-
