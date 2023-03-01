@@ -60,7 +60,7 @@ $dsn = (new Dsn('sqlite', 'memory'))->asString();
 // PSR-16 cache implementation.
 $arrayCache = new ArrayCache();
 
-// Cache psr-6 implementation.
+// Cache PSR-6 implementation.
 $schemaCache = new SchemaCache($cache);
 
 // PDO driver.
