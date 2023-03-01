@@ -69,8 +69,8 @@ You can create a database connection instance using [DI container](https://githu
 
 Logger and profiler are optional. You can use them if you need to log and profile your queries.
 
-1. [Logger](/docs/en/connection/logger_profiler/logger.md)
-2. [Profiler](/docs/en/connection/logger_profiler/profiler.md)
+1. [Logger](/docs/en/connection/logger.md)
+2. [Profiler](/docs/en/connection/profiler.md)
 
 ## Executing SQL queries
 
