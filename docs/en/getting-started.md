@@ -8,7 +8,7 @@ When using [Yii Db](https://github.com/yiisoft/db), you mainly need to deal with
 
 In [YiiFramework](https://www.yiiframework.com/), [Yii Db](https://github.com/yiisoft/db) supports the following databases out of the box:
 
-1. [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) version **2017, 2019, 2022**.
+1. [MsSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) version **2017, 2019, 2022**.
 2. [MySQL](https://www.mysql.com/) version **5.7 - 8.0**.
 3. [MariaDB](https://mariadb.org/) version **10.4 - 10.9**.
 4. [Oracle](https://www.oracle.com/database/) version **18c - 21c**.
@@ -56,10 +56,10 @@ composer require yiisoft/db-sqlite
 
 ## Create Connection with di container
 
-1. [Mssql Server](di-container-mssql.md)
-2. [Mysql/MariaDb Server](di-container-mysql.md)
+1. [MsSQL Server](di-container-mssql.md)
+2. [MySQL/MariaDb Server](di-container-mysql.md)
 3. [Oracle Server](di-container-oracle.md)
-4. [Pgsql Server](di-container-pgsql.md)
+4. [PostgreSQL Server](di-container-pgsql.md)
 5. [Sqlite Server](di-container-sqlite.md)
 6. [With Logger](di-connection-with-logger.md)
 7. [With Profiler](di-connection-with-profiler.md)
