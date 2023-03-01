@@ -19,31 +19,31 @@ In [YiiFramework](https://www.yiiframework.com/), [Yii Db](https://github.com/yi
 
 To install [Yii Db](https://github.com/yiisoft/db), you must select the driver you want to use and install it with [Composer](https://getcomposer.org/).
 
-- [Yii Db Mssql](https://github.com/yiisoft/db-mssql)
+- [Yii DB MSSQL](https://github.com/yiisoft/db-mssql)
 
 ```bash
 composer require yiisoft/db-mssql
 ```
 
-- [Yii Db Mysql/MariaDb](https://github.com/yiisoft/db-mysql)
+- [Yii DB MySQL/MariaDB](https://github.com/yiisoft/db-mysql)
 
 ```bash
 composer require yiisoft/db-mysql
 ```
 
-- [Yii Db Oracle](https://github.com/yiisoft/db-oracle)
+- [Yii DB Oracle](https://github.com/yiisoft/db-oracle)
 
 ```bash
 composer require yiisoft/db-oracle
 ```
 
-- [Yii Db Pgsql](https://github.com/yiisoft/db-pgsql)
+- [Yii DB PostgreSQL](https://github.com/yiisoft/db-pgsql)
 
 ```bash
 composer require yiisoft/db-pgsql
 ```
 
-- [Yii Db Sqlite](https://github.com/yiisoft/db-pgsql)
+- [Yii DB SQLite](https://github.com/yiisoft/db-pgsql)
 
 ```bash
 composer require yiisoft/db-sqlite
@@ -55,11 +55,7 @@ composer require yiisoft/db-sqlite
 
 ## Create Connection
 
-You can create a database connection instance using [di container](https://github.com/yiisoft/di) or without it.
-
-**Info:** *When you create a DB connection instance, the actual connection to the database is not established until you execute the first `SQL` or you call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.*
-
-### Using di Container
+You can create a database connection instance using [DI container](https://github.com/yiisoft/di) or without it.
 
 1. [MsSQL Server](/docs/en/create_connection/di-container-mssql.md)
 2. [MySQL/MariaDb Server](/docs/en/create_connection/di-container-mysql.md)
@@ -67,13 +63,7 @@ You can create a database connection instance using [di container](https://githu
 4. [PostgreSQL Server](/docs/en/create_connection/di-container-pgsql.md)
 5. [Sqlite Server](/docs/en/create_connection/di-container-sqlite.md)
 
-### Without di Container
-
-1. [MsSQL Server](/docs/en/create_connection/mssql.md)
-2. [MySQL/MariaDb Server](/docs/en/create_connection/mysql.md)
-3. [Oracle Server](/docs/en/create_connection/oracle.md)
-4. [PostgreSQL Server](/docs/en/create_connection/pgsql.md)
-5. [Sqlite Server](/docs/en/create_connection/sqlite.md)
+**Info:** *When you create a DB connection instance, the actual connection to the database is not established until you execute the first `SQL` or you call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.*
 
 ### Logger and profiler
 
