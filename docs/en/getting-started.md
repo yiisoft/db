@@ -8,12 +8,12 @@ When using [Yii DB](https://github.com/yiisoft/db), you mainly need to deal with
 
 In [YiiFramework](https://www.yiiframework.com/), [Yii DB](https://github.com/yiisoft/db) supports the following databases out of the box:
 
-1. [MsSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) version **2017, 2019, 2022**.
+1. [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) version **2017, 2019, 2022**.
 2. [MySQL](https://www.mysql.com/) version **5.7 - 8.0**.
 3. [MariaDB](https://mariadb.org/) version **10.4 - 10.9**.
 4. [Oracle](https://www.oracle.com/database/) version **18c - 21c**.
 5. [PostgreSQL](https://www.postgresql.org/) version **9.6 - 15**. 
-6. [Sqlite](https://www.sqlite.org/index.html) version **3.3 and above**.
+6. [SQLite](https://www.sqlite.org/index.html) version **3.3 and above**.
 
 ## Installation
 
