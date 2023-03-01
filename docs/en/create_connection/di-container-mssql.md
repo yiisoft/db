@@ -1,6 +1,6 @@
 # Connecting MSSQL
 
-To configure [Yii Db Mssql](https://github.com/yiisoft/db-mssql) with [di container](https://github.com/yiisoft/di) you need to create a configuration file.
+To configure [Yii DB MSSQL](https://github.com/yiisoft/db-mssql) with [DI container](https://github.com/yiisoft/di) you need to create a configuration file.
 
 Create a file `config/common/di/db-mssql.php`:
 
