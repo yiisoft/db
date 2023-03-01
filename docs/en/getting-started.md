@@ -57,6 +57,8 @@ composer require yiisoft/db-sqlite
 
 You can create a database connection instance using [di container](https://github.com/yiisoft/di) or without it.
 
+**Info:** *When you create a DB connection instance, the actual connection to the database is not established until you execute the first `SQL` or you call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.*
+
 ### Using di Container
 
 1. [MsSQL Server](/docs/en/create_connection/di-container-mssql.md)
