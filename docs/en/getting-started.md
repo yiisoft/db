@@ -57,11 +57,11 @@ composer require yiisoft/db-sqlite
 
 You can create a database connection instance using [DI container](https://github.com/yiisoft/di) or without it.
 
-1. [MSSQL Server](/docs/en/create_connection/di-container-mssql.md)
-2. [MySQL/MariaDB Server](/docs/en/create_connection/di-container-mysql.md)
-3. [Oracle Server](/docs/en/create_connection/di-container-oracle.md)
-4. [PostgreSQL Server](/docs/en/create_connection/di-container-pgsql.md)
-5. [SQLite Server](/docs/en/create_connection/di-container-sqlite.md)
+1. [MSSQL Server](/docs/en/connection/mssql.md)
+2. [MySQL/MariaDB Server](/docs/en/connection/mysql.md)
+3. [Oracle Server](/docs/en/connection/oracle.md)
+4. [PostgreSQL Server](/docs/en/connection/pgsql.md)
+5. [SQLite Server](/docs/en/connection/sqlite.md)
 
 **Info:** *When you create a DB connection instance, the actual connection to the database is not established until you execute the first `SQL` or you call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.*
 
