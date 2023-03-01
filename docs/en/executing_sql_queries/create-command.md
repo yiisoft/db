@@ -15,7 +15,11 @@ $command = $db->createCommand('SELECT * FROM customer');
 
 ## Fetching Data
 
-To fetch data from a table, you can use the `Yiisoft\Db\Command\CommandInterface::queryAll()`, `Yiisoft\Db\Command\CommandInterface::queryOne()`, `Yiisoft\Db\Command\CommandInterface::queryColumn()`, `Yiisoft\Db\Command\CommandInterface::queryScalar()` and `Yiisoft\Db\Command\CommandInterface::query()`. The following examples show how to fetch data from a table:
+To fetch data from a table, you can use the `Yiisoft\Db\Command\CommandInterface::queryAll()`, `Yiisoft\Db\Command\CommandInterface::queryOne()`, `Yiisoft\Db\Command\CommandInterface::queryColumn()`, `Yiisoft\Db\Command\CommandInterface::queryScalar()` and `Yiisoft\Db\Command\CommandInterface::query()`.
+
+**Note:** *To preserve precision, the data fetched from databases are all represented as strings, even if the corresponding database column types are numerical. You may need to use type conversion to convert them into the corresponding PHP types.*
+
+The following examples show how to fetch data from a table:
 
 ### Query all
 
@@ -180,3 +184,4 @@ Yiisoft\Db\Query\Data\DataReader#4710
         [queryString] => 'SELECT * FROM customer'
     )
 )
+```
