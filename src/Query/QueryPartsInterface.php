@@ -34,7 +34,7 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see groupBy()}
+     * @see groupBy()
      */
     public function addGroupBy(array|string|ExpressionInterface $columns): static;
 
@@ -57,7 +57,7 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see orderBy()}
+     * @see orderBy()
      */
     public function addOrderBy(array|string|ExpressionInterface $columns): static;
 
@@ -76,7 +76,7 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see select()}
+     * @see select()
      */
     public function addSelect(array|string|ExpressionInterface $columns): static;
 
@@ -127,8 +127,8 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see filterHaving()}
-     * {@see orFilterHaving()}
+     * @see filterHaving()
+     * @see orFilterHaving()
      */
     public function andFilterHaving(array $condition): static;
 
@@ -143,8 +143,8 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see having()}
-     * {@see orHaving()}
+     * @see having()
+     * @see orHaving()
      */
     public function andHaving(array|string|ExpressionInterface $condition, array $params = []): static;
 
@@ -163,8 +163,8 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see filterWhere()}
-     * {@see orFilterWhere()}
+     * @see filterWhere()
+     * @see orFilterWhere()
      */
     public function andFilterWhere(array $condition): static;
 
@@ -179,8 +179,8 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see where()}
-     * {@see orWhere()}
+     * @see where()
+     * @see orWhere()
      */
     public function andWhere(array|ExpressionInterface|string $condition, array $params = []): static;
 
@@ -221,9 +221,9 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see having()}
-     * {@see andFilterHaving()}
-     * {@see orFilterHaving()}
+     * @see having()
+     * @see andFilterHaving()
+     * @see orFilterHaving()
      */
     public function filterHaving(array $condition): static;
 
@@ -255,9 +255,9 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see where()}
-     * {@see andFilterWhere()}
-     * {@see orFilterWhere()}
+     * @see where()
+     * @see andFilterWhere()
+     * @see orFilterWhere()
      */
     public function filterWhere(array $condition): static;
 
@@ -318,7 +318,7 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see addGroupBy()}
+     * @see addGroupBy()
      */
     public function groupBy(array|string|ExpressionInterface $columns): static;
 
@@ -331,8 +331,8 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see andHaving()}
-     * {@see orHaving()}
+     * @see andHaving()
+     * @see orHaving()
      */
     public function having(array|ExpressionInterface|string|null $condition, array $params = []): static;
 
@@ -461,7 +461,7 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see addOrderBy()}
+     * @see addOrderBy()
      */
     public function orderBy(array|string|ExpressionInterface $columns): static;
 
@@ -480,8 +480,8 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see filterWhere()}
-     * {@see andFilterWhere()}
+     * @see filterWhere()
+     * @see andFilterWhere()
      */
     public function orFilterWhere(array $condition): static;
 
@@ -501,8 +501,8 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see filterHaving()}
-     * {@see andFilterHaving()}
+     * @see filterHaving()
+     * @see andFilterHaving()
      */
     public function orFilterHaving(array $condition): static;
 
@@ -517,8 +517,8 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see having()}
-     * {@see andHaving()}
+     * @see having()
+     * @see andHaving()
      */
     public function orHaving(array|string|ExpressionInterface $condition, array $params = []): static;
 
@@ -533,8 +533,8 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see where()}
-     * {@see andWhere()}
+     * @see where()
+     * @see andWhere()
      */
     public function orWhere(array|string|ExpressionInterface $condition, array $params = []): static;
 
@@ -713,8 +713,8 @@ interface QueryPartsInterface
      *
      * @return static The query object itself.
      *
-     * {@see andWhere()}
-     * {@see orWhere()}
+     * @see andWhere()
+     * @see orWhere()
      */
     public function where(array|string|ExpressionInterface|null $condition, array $params = []): static;
 

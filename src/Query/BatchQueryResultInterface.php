@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Iterator;
-use Yiisoft\Db\Exception\InvalidCallException;
+use Throwable;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidConfigException;
 
 /**
  * BatchQueryResult represents a batch query from which you can retrieve data in batches.
@@ -41,7 +43,9 @@ interface BatchQueryResultInterface extends Iterator
      *
      * This method is required by the interface {@see Iterator}.
      *
-     * @throws InvalidCallException
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
     public function rewind(): void;
 
@@ -49,6 +53,10 @@ interface BatchQueryResultInterface extends Iterator
      * Moves the internal pointer to the next dataset.
      *
      * This method is required by the interface {@see Iterator}.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      */
     public function next(): void;
 
