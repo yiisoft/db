@@ -20,7 +20,7 @@ use function str_contains;
  */
 class SimpleConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(protected QueryBuilderInterface $queryBuilder)
     {
     }
 

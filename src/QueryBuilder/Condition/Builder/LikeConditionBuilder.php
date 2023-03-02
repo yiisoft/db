@@ -26,7 +26,7 @@ use function strtr;
 class LikeConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(
-        private QueryBuilderInterface $queryBuilder,
+        protected QueryBuilderInterface $queryBuilder,
         private string|null $escapeSql = null
     ) {
     }

@@ -21,7 +21,7 @@ use function str_contains;
  */
 class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(protected QueryBuilderInterface $queryBuilder)
     {
     }
 

@@ -17,7 +17,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  */
 class NotConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(protected QueryBuilderInterface $queryBuilder)
     {
     }
 

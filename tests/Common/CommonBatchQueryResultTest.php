@@ -22,7 +22,6 @@ abstract class CommonBatchQueryResultTest extends TestCase
         $query->from('customer')->orderBy('id');
         $result = $query->batch(2);
 
-        $this->assertInstanceOf(BatchQueryResultInterface::class, $result);
         $this->assertSame(2, $result->getBatchSize());
         $this->assertSame($result->getQuery(), $query);
 
@@ -33,6 +32,7 @@ abstract class CommonBatchQueryResultTest extends TestCase
         $batch = $query->batch(2);
         $step = 0;
 
+        /** @psalm-var mixed $rows */
         foreach ($batch as $rows) {
             $allRows = array_merge($allRows, $rows);
             $step++;
