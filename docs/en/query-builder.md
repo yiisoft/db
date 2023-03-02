@@ -36,7 +36,7 @@ WHERE `last_name` = :last_name
 LIMIT 10
 ```
 
-**Info:** *You usually mainly work with `Yiisoft\Db\Query\Query` instead of `Yiisoft\Db\QueryBuilder\QueryBuilder`. The latter is invoked by the former implicitly when you call one of the query methods. `Yiisoft\Db\QueryBuilder\QueryBuilder` is the class responsible for generating DBMS-dependent SQL statements (e.g. `SELECT`, `INSERT`, `UPDATE`, `DELETE`) from `Yiisoft\Db\Query\Query`.*
+**Info:** *You usually mainly work with `Yiisoft\Db\Query\Query` instead of `Yiisoft\Db\QueryBuilder\QueryBuilder`. The latter is invoked by the former implicitly when you call one of the query methods. `Yiisoft\Db\QueryBuilder\QueryBuilder` is the class responsible for generating DBMS-dependent SQL statements (e.g. `SELECT`, `FROM`, `WHERE`, `ORDERBY`) from `Yiisoft\Db\Query\Query`.*
 
 ## Using 
 
