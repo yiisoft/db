@@ -4,12 +4,12 @@ To build a `Yiisoft\Db\Query\Query` object, you call different query building me
 
 In the following, we will describe the usage of each query building method.
 
-1. [select](/docs/en/query/select.md)
-2. [from](/docs/en/query/from.md)
-3. [where](/docs/en/query/where.md)
-   - [string format](/docs/en/query/where.md#string-format)
-   - [hash format](/docs/en/query/where.md#hash-format)
-   - [operator format](/docs/en/query/where.md#operator-format)
-   - [object format](/docs/en/query/where.md#object-format)
-   - [appending conditions](/docs/en/query/where.md#appending-conditions)
-   - [filter conditions](/docs/en/query/where.md#filter-conditions)
+1. [Select](/docs/en/query/select.md)
+2. [From](/docs/en/query/from.md)
+3. [Where](/docs/en/query/where.md)
+   - [String format](/docs/en/query/where.md#string-format)
+   - [Hash format](/docs/en/query/where.md#hash-format)
+   - [Operator format](/docs/en/query/where.md#operator-format)
+   - [Object format](/docs/en/query/where.md#object-format)
+   - [Appending conditions](/docs/en/query/where.md#appending-conditions)
+   - [Filter conditions](/docs/en/query/where.md#filter-conditions)
