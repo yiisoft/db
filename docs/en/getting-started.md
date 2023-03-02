@@ -79,3 +79,31 @@ Once you have a database connection instance, you can execute a **SQL** query by
 1. [Create a command with a plain SQL query](/docs/en/queries/create-command.md)
 2. [Bind parameters](/docs/en/queries/bind-parameters.md)
 3. [Call one of the SQL execute method to execute the command](/docs/en/queries/execute-command.md)
+
+
+## Quoting Table and Column Names
+
+When writing database-agnostic code, properly quoting table and column names is often a headache because different databases have different name quoting rules. To overcome this problem, you may use the following quoting syntax introduced by [Yii DB](https://github.com/yiisoft/db):
+
+- `[[column name]]`: enclose a column name to be quoted in double square brackets.
+- `{{table name}}`: enclose a table name to be quoted in double curly brackets.
+
+[Yii DB](https://github.com/yiisoft/db) will automatically convert such constructs into the corresponding quoted column or table names using the DBMS specific syntax.
+
+For example, the following code will generate a SQL statement that is valid for all supported databases:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+
+$result = $db->createCommand("SELECT COUNT([[id]]) FROM {{employee}}")->queryScalar()
+```
+
+## Query Builder
+
+[Yii DB](https://github.com/yiisoft/db) provides a [Query Builder](query-builder.md) that helps you create **SQL** statements in a more convenient way. It is a powerful tool that can be used to create complex **SQL** statements in a simple way.
