@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Cache;
 
 use DateInterval;
-use JsonException;
 use Psr\SimpleCache\CacheInterface;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -46,7 +45,6 @@ final class SchemaCache
      * @param mixed $key A key identifying the value to be deleted from cache.
      *
      * @throws InvalidArgumentException
-     * @throws JsonException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function remove(mixed $key): void
@@ -58,7 +56,6 @@ final class SchemaCache
     /**
      * @throws InvalidArgumentException
      * @throws InvalidCallException
-     * @throws JsonException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function getOrSet(
@@ -86,7 +83,6 @@ final class SchemaCache
     /**
      * @throws InvalidArgumentException
      * @throws InvalidCallException
-     * @throws JsonException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function set(
@@ -198,7 +194,6 @@ final class SchemaCache
      * @param mixed $key The key to be normalized.
      *
      * @throws InvalidArgumentException For invalid key.
-     * @throws JsonException
      *
      * @return string The normalized cache key.
      */
@@ -210,7 +205,7 @@ final class SchemaCache
             return (strpbrk($key, '{}()/\@:') || $length < 1 || $length > 64) ? md5($key) : $key;
         }
 
-        $key = json_encode($key, JSON_THROW_ON_ERROR);
+        $key = json_encode($key);
 
         if (!$key) {
             throw new InvalidArgumentException('Invalid key. ' . json_last_error_msg());
