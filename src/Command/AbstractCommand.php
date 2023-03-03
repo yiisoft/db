@@ -46,7 +46,7 @@ use function strncmp;
  * $users = $connectionInterface->createCommand('SELECT * FROM user')->queryAll();
  * ```
  *
- * Supports SQL statement preparation and parameter binding.
+ * Abstract command supports SQL statement preparation and parameter binding.
  *
  * Call {@see bindValue()} to bind a value to a SQL parameter;
  * Call {@see bindParam()} to bind a PHP variable to a SQL parameter.
@@ -54,7 +54,8 @@ use function strncmp;
  * When binding a parameter, the SQL statement is automatically prepared. You may also call {@see prepare()} explicitly
  * to prepare a SQL statement.
  *
- * Also supports building SQL statements by providing methods such as {@see insert()}, {@see update()}, etc.
+ * Abstract command also supports building SQL statements by providing methods such as {@see insert()}, {@see update()},
+ * etc.
  *
  * For example, the following code will create and execute an INSERT SQL statement:
  *
