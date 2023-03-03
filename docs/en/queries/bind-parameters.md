@@ -19,7 +19,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 
-$command = $db->createCommand('SELECT * FROM customer WHERE id=:id');
+$command = $db->createCommand('SELECT * FROM {{%customer}} WHERE [[id]] = :id');
 $command->bindValue(':id', 1);
 $command->queryOne();
 ```
@@ -52,7 +52,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 
-$command = $db->createCommand('SELECT * FROM customer WHERE id=:id AND name=:name');
+$command = $db->createCommand('SELECT * FROM {{%customer}} WHERE [[id]] = :id AND [[name]] = :name');
 $command->bindValues([':id' => 3, ':name' => 'user3']);
 $command->queryOne();
 ```
@@ -85,7 +85,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 
-$command = $db->createCommand('SELECT * FROM customer WHERE id=:id AND name=:name');
+$command = $db->createCommand('SELECT * FROM {{%customer}} WHERE [[id]] = :id AND [[name]] = :name');
 $id = 2;
 $name = 'user2';
 $command->bindParam(':id', $id);
