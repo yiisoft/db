@@ -19,14 +19,15 @@ use function md5;
 use function strpbrk;
 
 /**
- * The SchemaCache class is used to cache database schema information.
+ * Implements a cache for the database schema information.
  *
- * The Schema class retrieves information about the database schema from the database server and stores it in the cache
- * for faster access. When the Schema class needs to retrieve information about the database schema, it first checks the
- * cache using the SchemaCache class. If the information is not in the cache, the Schema class retrieves it from the
- * database server and stores it in the cache using the SchemaCache class.
+ * The {@see \Yiisoft\Db\Schema\AbstractSchema} retrieves information about the database schema from the database server
+ * and stores it in the cache for faster access. When the {@see \Yiisoft\Db\Schema\AbstractSchema} needs to retrieve
+ * information about the database schema, it first checks the cache using the {@see SchemaCache}. If the information is
+ * not in the cache, the Schema retrieves it from the database server and stores it in the cache using the
+ * {@see SchemaCache}.
  *
- * SchemaCache is used by {@see \Yiisoft\Db\Schema\Schema} to cache table metadata.
+ * This implementation is used by {@see \Yiisoft\Db\Schema\AbstractSchema} to cache table metadata.
  */
 final class SchemaCache
 {
