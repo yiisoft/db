@@ -8,13 +8,11 @@ use Closure;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function current;
 use function explode;
@@ -31,9 +29,9 @@ use function stream_get_contents;
 use function strncmp;
 
 /**
- * Command represents a SQL statement to be executed against a database.
+ * Represents a SQL statement to be executed against a database.
  *
- * A command object is usually created by calling {@see ConnectionInterface::createCommand()}.
+ * A command object is usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
  *
  * The SQL statement it represents can be set via the {@see sql} property.
  *
@@ -48,7 +46,7 @@ use function strncmp;
  * $users = $connectionInterface->createCommand('SELECT * FROM user')->queryAll();
  * ```
  *
- * Command supports SQL statement preparation and parameter binding.
+ * Supports SQL statement preparation and parameter binding.
  *
  * Call {@see bindValue()} to bind a value to a SQL parameter;
  * Call {@see bindParam()} to bind a PHP variable to a SQL parameter.
@@ -56,7 +54,7 @@ use function strncmp;
  * When binding a parameter, the SQL statement is automatically prepared. You may also call {@see prepare()} explicitly
  * to prepare a SQL statement.
  *
- * Command also supports building SQL statements by providing methods such as {@see insert()}, {@see update()}, etc.
+ * Also supports building SQL statements by providing methods such as {@see insert()}, {@see update()}, etc.
  *
  * For example, the following code will create and execute an INSERT SQL statement:
  *
@@ -67,7 +65,7 @@ use function strncmp;
  * )->execute();
  * ```
  *
- * To build SELECT SQL statements, please use {@see QueryInterface} instead.
+ * To build SELECT SQL statements, please use {@see \Yiisoft\Db\Query\QueryInterface} instead.
  */
 abstract class AbstractCommand implements CommandInterface
 {
@@ -585,7 +583,7 @@ abstract class AbstractCommand implements CommandInterface
      *
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      *
-     * {@see TransactionInterface::begin()} for details.
+     * {@see \Yiisoft\Db\Transaction\TransactionInterface::begin()} for details.
      */
     protected function requireTransaction(string $isolationLevel = null): static
     {
