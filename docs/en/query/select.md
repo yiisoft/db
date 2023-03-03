@@ -56,10 +56,10 @@ use Yiisoft\Db\Query\Query;
 
 /** @var ConnectionInterface $db */
 
-$subQuery = (new Query($db))->select('COUNT(*)')->from('user');
+$subQuery = (new Query($db))->select('COUNT(*)')->from('{{%user}}');
 
 // SELECT `id`, (SELECT COUNT(*) FROM `user`) AS `count` FROM `post`
-$query = (new Query($db))->select(['id', 'count' => $subQuery])->from('post');
+$query = (new Query($db))->select(['id', 'count' => $subQuery])->from('{{%post}}');
 ```
 
 To select distinct rows, you may call distinct(), like the following.

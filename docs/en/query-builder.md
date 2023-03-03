@@ -21,7 +21,7 @@ use Yiisoft\Db\Query\Query;
 
 $rows = (new Query($db))
     ->select(['id', 'email'])
-    ->from('user')
+    ->from('{{%user}}')
     ->where(['last_name' => 'Smith'])
     ->limit(10)
     ->all();

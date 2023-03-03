@@ -85,8 +85,8 @@ Once you have a database connection instance, you can execute a **SQL** query by
 
 When writing database-agnostic code, properly quoting table and column names is often a headache because different databases have different name quoting rules. To overcome this problem, you may use the following quoting syntax introduced by [Yii DB](https://github.com/yiisoft/db):
 
-- `[[column name]]`: enclose a column name to be quoted in double square brackets.
-- `{{table name}}`: enclose a table name to be quoted in double curly brackets.
+- `[[column name]]`: enclose a *column name* to be quoted in *double square brackets*.
+- `{{%table name}}`: enclose a *table name* to be quoted in *double curly brackets*, and the percentage character `%` will be replaced with the *table prefix*.
 
 [Yii DB](https://github.com/yiisoft/db) will automatically convert such constructs into the corresponding quoted column or table names using the DBMS specific syntax.
 
@@ -101,7 +101,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 
-$result = $db->createCommand("SELECT COUNT([[id]]) FROM {{employee}}")->queryScalar()
+$result = $db->createCommand("SELECT COUNT([[id]]) FROM {{%employee}}")->queryScalar()
 ```
 
 ## Query Builder

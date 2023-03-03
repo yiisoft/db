@@ -15,7 +15,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 
-$command = $db->createCommand('UPDATE customer SET status=2 WHERE id=1');
+$command = $db->createCommand('UPDATE {{%customer}} SET [[status]] = 2 WHERE [[id]] = 1');
 $command->execute();
 ```
 
@@ -30,7 +30,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 
-$command = $db->createCommand('UPDATE customer SET status=2 WHERE id=1000');
+$command = $db->createCommand('UPDATE {{%customer}} SET [[status]] = 2 WHERE [[id]] = 1000');
 $command->execute();
 ```
 
