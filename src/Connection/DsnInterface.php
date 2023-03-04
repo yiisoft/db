@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Connection;
 
 /**
- * DsnInterface represents a Data Source Name. It is used to configure a {@see ConnectionInterface} instance. The DSN
+ * This interface represents a Data Source Name. It is used to configure a {@see ConnectionInterface} instance. The DSN
  * string format is described in {@see asString()}.
  */
 interface DsnInterface

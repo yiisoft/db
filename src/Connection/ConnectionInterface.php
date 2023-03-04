@@ -20,11 +20,9 @@ use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
-use function version_compare;
-
 /**
- * The ConnectionInterface provides methods for establishing a connection to a database, executing SQL statements, and
- * performing other tasks related to interacting with a database.
+ * This interface provides methods for establishing a connection to a database, executing SQL statements, and performing
+ * other tasks related to interacting with a database.
  *
  * It allows you to access and manipulate databases in a database-agnostic way, so you can write code that works with
  * different database systems without having to worry about the specific details of each one.
@@ -138,7 +136,7 @@ interface ConnectionInterface
     public function getSchema(): SchemaInterface;
 
     /**
-     * Returns a server version as a string comparable by {@see version_compare()}.
+     * Returns a server version as a string comparable by {@see \version_compare()}.
      *
      * @return string The server version as a string.
      */

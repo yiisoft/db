@@ -9,8 +9,8 @@ use Stringable;
 use function implode;
 
 /**
- * The Dsn class is typically used to parse a DSN string, which is a string that contains all the necessary information
- * to connect to a database, such as the database driver, hostname, database name, port and options.
+ * it's typically used to parse a DSN string, which is a string that contains all the necessary information to connect
+ * to a database, such as the database driver, hostname, database name, port and options.
  *
  * It also allows you to access individual components of the DSN, such as the driver or the database name.
  */
