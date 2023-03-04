@@ -12,6 +12,7 @@ use Yiisoft\Db\Connection\AbstractConnection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Profiler\Context\ConnectionContext;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -77,14 +78,15 @@ abstract class AbstractConnectionPDO extends AbstractConnection implements Conne
         }
 
         $token = 'Opening DB connection: ' . $this->driver->getDsn();
+        $connectionContext = new ConnectionContext(__METHOD__);
 
         try {
             $this->logger?->log(LogLevel::INFO, $token);
-            $this->profiler?->begin($token, [__METHOD__]);
+            $this->profiler?->begin($token, $connectionContext);
             $this->initConnection();
-            $this->profiler?->end($token, [__METHOD__]);
+            $this->profiler?->end($token, $connectionContext);
         } catch (PDOException $e) {
-            $this->profiler?->end($token, [__METHOD__]);
+            $this->profiler?->end($token, $connectionContext->setException($e));
             $this->logger?->log(LogLevel::ERROR, $token);
 
             throw new Exception($e->getMessage(), (array) $e->errorInfo, $e);

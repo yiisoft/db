@@ -17,9 +17,9 @@ interface ProfilerInterface
      * The begin- and end- calls must also be properly nested.
      *
      * @param string $token Token for the code block.
-     * @param array $context The context data of this profile block.
+     * @param array|ContextInterface $context The context data of this profile block.
      */
-    public function begin(string $token, array $context = []): void;
+    public function begin(string $token, array|ContextInterface $context = []): void;
 
     /**
      * Marks the end of a code block for profiling.
@@ -27,9 +27,9 @@ interface ProfilerInterface
      * This has to be matched with a previous call to {@see begin()} with the same category name.
      *
      * @param string $token Token for the code block.
-     * @param array $context The context data of this profile block.
+     * @param array|ContextInterface $context The context data of this profile block.
      *
      * {@see begin()}
      */
-    public function end(string $token, array $context = []): void;
+    public function end(string $token, array|ContextInterface $context = []): void;
 }
