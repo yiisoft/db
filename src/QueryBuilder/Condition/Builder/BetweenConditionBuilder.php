@@ -25,7 +25,12 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * Build SQL for {@see BetweenCondition}.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function build(BetweenConditionInterface $expression, array &$params = []): string
     {
@@ -39,13 +44,17 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
 
         $phName1 = $this->createPlaceholder($expression->getIntervalStart(), $params);
         $phName2 = $this->createPlaceholder($expression->getIntervalEnd(), $params);
+
         return "$column $operator $phName1 AND $phName2";
     }
 
     /**
      * Attaches $value to $params array and returns placeholder.
      *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     protected function createPlaceholder(mixed $value, array &$params): string
     {

@@ -7,6 +7,10 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 use Iterator;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
+/**
+ * Interface BetweenColumnsConditionInterface represents a condition that is based on the comparison of a column with a
+ * value.
+ */
 interface BetweenColumnsConditionInterface extends ConditionInterface
 {
     /**

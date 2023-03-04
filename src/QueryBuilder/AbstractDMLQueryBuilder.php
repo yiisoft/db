@@ -21,16 +21,19 @@ use Yiisoft\Db\Schema\SchemaInterface;
 use function array_combine;
 use function array_diff;
 use function array_filter;
+use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_unique;
 use function array_values;
+use function count;
 use function implode;
 use function in_array;
 use function is_array;
 use function is_string;
 use function json_encode;
 use function preg_match;
+use function sort;
 
 abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 {
@@ -41,10 +44,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     ) {
     }
 
-    /**
-     * @psalm-param string[] $columns
-     * @psalm-suppress MixedArrayOffset
-     */
     public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
     {
         if (empty($rows)) {
@@ -65,7 +64,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $placeholders = [];
             foreach ($row as $index => $value) {
                 if (isset($columns[$index], $mappedNames[$columns[$index]], $columnSchemas[$mappedNames[$columns[$index]]])) {
-                    /** @var mixed $value */
+                    /** @psalm-var mixed $value */
                     $value = $this->getTypecastValue($value, $columnSchemas[$mappedNames[$columns[$index]]]);
                 }
 
@@ -91,9 +90,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             . ' (' . implode(', ', $columns) . ') VALUES ' . implode(', ', $values);
     }
 
-    /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
-     */
     public function delete(string $table, array|string $condition, array &$params): string
     {
         $sql = 'DELETE FROM ' . $this->quoter->quoteTableName($table);
@@ -117,38 +113,27 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : $values);
     }
 
-    /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
-     */
     public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string
     {
         throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function resetSequence(string $tableName, int|string|null $value = null): string
     {
         throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
     }
 
-    /**
-     * @psalm-suppress MixedArgument
-     */
     public function update(string $table, array $columns, array|string $condition, array &$params = []): string
     {
         /** @psalm-var string[] $lines */
         [$lines, $params] = $this->prepareUpdateSets($table, $columns, $params);
         $sql = 'UPDATE ' . $this->quoter->quoteTableName($table) . ' SET ' . implode(', ', $lines);
+        /** @psalm-var array $params */
         $where = $this->queryBuilder->buildWhere($condition, $params);
 
         return $where === '' ? $sql : $sql . ' ' . $where;
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function upsert(
         string $table,
         QueryInterface|array $insertColumns,
@@ -162,12 +147,15 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * Prepare select-subQuery and field names for INSERT INTO ... SELECT SQL statement.
      *
      * @param QueryInterface $columns Object, which represents select query.
-     * @param array $params the parameters to be bound to the generated SQL statement. These parameters will be included
+     * @param array $params The parameters to be bound to the generated SQL statement. These parameters will be included
      * in the result with the additional parameters generated during the query building process.
      *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      *
-     * @return array array of column names, values and params.
+     * @return array Array of column names, values and params.
      */
     protected function prepareInsertSelectSubQuery(QueryInterface $columns, array $params = []): array
     {
@@ -201,6 +189,14 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         return [$names, $values, $params];
     }
 
+    /**
+     * Prepare column names and placeholders for INSERT SQL statement.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
+     */
     protected function prepareInsertValues(string $table, array|QueryInterface $columns, array $params = []): array
     {
         $tableSchema = $this->schema->getTableSchema($table);
@@ -214,7 +210,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         } else {
             $columns = $this->normalizeColumnNames($table, $columns);
             /**
-             * @var mixed $value
+             * @psalm-var mixed $value
              * @psalm-var array<string, mixed> $columns
              */
             foreach ($columns as $name => $value) {
@@ -233,14 +229,19 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         return [$names, $placeholders, $values, $params];
     }
 
+    /**
+     * Prepare column names and placeholders for UPDATE SQL statement.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
+     */
     protected function prepareUpdateSets(string $table, array $columns, array $params = []): array
     {
         $tableSchema = $this->schema->getTableSchema($table);
-
         $columnSchemas = $tableSchema !== null ? $tableSchema->getColumns() : [];
-
         $sets = [];
-
         $columns = $this->normalizeColumnNames($table, $columns);
 
         /**
@@ -263,9 +264,15 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * @psalm-param Constraint[] $constraints
+     * Prepare column names and placeholders for UPSERT SQL statement.
      *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|JsonException|NotSupportedException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws JsonException
+     * @throws NotSupportedException
+     *
+     * @psalm-param Constraint[] $constraints
      */
     protected function prepareUpsertColumns(
         string $table,
@@ -313,19 +320,19 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * The column list will be unique by column names.
      *
-     * @param string $name table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param string[] $columns source column list.
-     * @param Constraint[] $constraints this parameter optionally receives a matched constraint list. The constraints
+     * @param string $name The table name, may contain schema name if any. Do not quote the table name.
+     * @param string[] $columns Source column list.
+     * @param array $constraints This parameter optionally receives a matched constraint list. The constraints
      * will be unique by their column names.
      *
      * @throws JsonException
      *
-     * @return array column list.
-     * @psalm-suppress ReferenceConstraintViolation
+     * @return array The column list.
+     *
+     * @psalm-param Constraint[] $constraints
     */
     private function getTableUniqueColumnNames(string $name, array $columns, array &$constraints = []): array
     {
-        $constraints = [];
         $primaryKey = $this->schema->getTablePrimaryKey($name);
 
         if ($primaryKey !== null) {
@@ -343,7 +350,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
         $constraints = array_merge($constraints, $this->schema->getTableUniques($name));
 
-        /** Remove duplicates */
+        /**
+         * Remove duplicates
+         *
+         * @psalm-var Constraint[] $constraints
+         */
         $constraints = array_combine(
             array_map(
                 static function (Constraint $constraint) {
@@ -386,10 +397,13 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             )
         );
 
-        /** @psalm-var array $columnNames */
+        /** @psalm-var Constraint[] $columnNames */
         return array_unique($columnNames);
     }
 
+    /**
+     * @return mixed The typecast value of the given column.
+     */
     protected function getTypecastValue(mixed $value, ColumnSchemaInterface $columnSchema = null): mixed
     {
         if ($columnSchema) {
@@ -400,14 +414,13 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * Normalizes column names
+     * Normalizes the column names for the given table.
      *
-     * @param string $table the table that data will be saved into.
-     * @param array $columns the column data (name => value) to be saved into the table or instance of
-     * {@see QueryInterface} to perform INSERT INTO ... SELECT SQL statement. Passing of
-     * {@see QueryInterface}.
+     * @param string $table The table that data will be saved into.
+     * @param array $columns The column data (name => value) to be saved into the table or instance of
+     * {@see QueryInterface} to perform INSERT INTO ... SELECT SQL statement. Passing of {@see QueryInterface}.
      *
-     * @return array normalized columns.
+     * @return array The normalized column names (name => value).
      */
     protected function normalizeColumnNames(string $table, array $columns): array
     {
@@ -415,16 +428,16 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $columnsList = array_keys($columns);
         $mappedNames = $this->getNormalizeColumnNames($table, $columnsList);
 
-        /** @psalm-var mixed[] $normalizedColumns */
+        /** @psalm-var array $normalizedColumns */
         $normalizedColumns = [];
 
         /**
-         * @var string $name
-         * @var mixed $value
+         * @psalm-var string $name
+         * @psalm-var mixed $value
          */
         foreach ($columns as $name => $value) {
             $mappedName = $mappedNames[$name] ?? $name;
-            /** @psalm-suppress MixedAssignment */
+            /** @psalm-var mixed */
             $normalizedColumns[$mappedName] = $value;
         }
 
@@ -434,10 +447,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Get map of normalized columns
      *
-     * @param string $table
-     * @param string[] $columns
+     * @param string $table The table that data will be saved into.
+     * @param string[] $columns The column data (name => value) to be saved into the table or instance of
+     * {@see QueryInterface} to perform INSERT INTO ... SELECT SQL statement. Passing of {@see QueryInterface}.
      *
-     * @return string[]
+     * @return string[] Map of normalized columns.
      */
     protected function getNormalizeColumnNames(string $table, array $columns): array
     {

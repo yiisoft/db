@@ -25,7 +25,12 @@ class SimpleConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * Build SQL for {@see SimpleCondition}.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function build(SimpleConditionInterface $expression, array &$params = []): string
     {

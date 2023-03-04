@@ -8,11 +8,14 @@ use Iterator;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
+/**
+ * Interface InConditionInterface represents a condition that is based on `IN` operator.
+ */
 interface InConditionInterface extends ConditionInterface
 {
     /**
-     * @return array|ExpressionInterface|Iterator|string The column name. If it is an array, a composite `IN` condition will be
-     * generated.
+     * @return array|ExpressionInterface|Iterator|string The column name. If it is an array, a composite `IN` condition
+     * will be generated.
      */
     public function getColumn(): array|string|ExpressionInterface|Iterator;
 
