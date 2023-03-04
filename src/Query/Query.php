@@ -245,7 +245,7 @@ class Query implements QueryInterface
         return $this->db
             ->createBatchQueryResult($this)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn(array $rows, Closure|string|null $indexBy = null): array => ArrayHelper::populate($rows, $indexBy))
+            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => ArrayHelper::populate($rows, $indexBy))
         ;
     }
 
@@ -319,7 +319,7 @@ class Query implements QueryInterface
         return $this->db
             ->createBatchQueryResult($this, true)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn(array $rows, Closure|string|null $indexBy = null): array => ArrayHelper::populate($rows, $indexBy))
+            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => ArrayHelper::populate($rows, $indexBy))
         ;
     }
 
