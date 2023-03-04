@@ -8,6 +8,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\StringHelper;
 
 use function gettype;
+use function implode;
 use function strtr;
 
 /**
@@ -85,28 +86,24 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
     public function notNull(): static
     {
         $this->isNotNull = true;
-
         return $this;
     }
 
     public function null(): static
     {
         $this->isNotNull = false;
-
         return $this;
     }
 
     public function unique(): static
     {
         $this->isUnique = true;
-
         return $this;
     }
 
     public function check(string|null $check): static
     {
         $this->check = $check;
-
         return $this;
     }
 
@@ -124,7 +121,6 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
     public function comment(string|null $comment): static
     {
         $this->comment = $comment;
-
         return $this;
     }
 
@@ -149,7 +145,6 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
     public function defaultExpression(string $default): static
     {
         $this->default = new Expression($default);
-
         return $this;
     }
 
@@ -161,7 +156,6 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
     public function append(string $sql): static
     {
         $this->append = $sql;
-
         return $this;
     }
 
@@ -285,8 +279,8 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
         }
 
         return match (gettype($this->default)) {
-            'object', 'integer' => (string)$this->default,
-            'double' => StringHelper::normalizeFloat((string)$this->default),
+            'object', 'integer' => (string) $this->default,
+            'double' => StringHelper::normalizeFloat((string) $this->default),
             'boolean' => $this->default ? 'TRUE' : 'FALSE',
             default => "'$this->default'",
         };

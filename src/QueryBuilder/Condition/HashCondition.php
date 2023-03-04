@@ -20,6 +20,9 @@ final class HashCondition implements HashConditionInterface
         return $this->hash;
     }
 
+    /**
+     * Creates a condition based on the given operator and operands.
+     */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         return new self($operands);

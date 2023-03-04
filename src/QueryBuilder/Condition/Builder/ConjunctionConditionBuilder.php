@@ -11,6 +11,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\AbstractConjunctionCondition;
+use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConjunctionConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
@@ -29,11 +30,16 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * Build SQL for {@see AndCondition} and {@see OrCondition}.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function build(ConjunctionConditionInterface $expression, array &$params = []): string
     {
-        /** @psalm-var string[] */
+        /** @psalm-var string[] $parts */
         $parts = $this->buildExpressionsFrom($expression, $params);
 
         if (empty($parts)) {
@@ -50,7 +56,10 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds expressions, that are stored in $condition.
      *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     private function buildExpressionsFrom(ConjunctionConditionInterface $condition, array &$params = []): array
     {

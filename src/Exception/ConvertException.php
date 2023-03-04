@@ -28,7 +28,8 @@ final class ConvertException
     public function run(): Exception
     {
         $message = $this->e->getMessage() . PHP_EOL . 'The SQL being executed was: ' . $this->rawSql;
-        /** @var array|null */
+
+        /** @var array|null $errorInfo */
         $errorInfo = $this->e instanceof PDOException ? $this->e->errorInfo : null;
 
         return match (

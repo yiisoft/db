@@ -6,6 +6,9 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
 
+/**
+ * Interface NotConditionInterface represents a condition that can be negated.
+ */
 interface NotConditionInterface extends ConditionInterface
 {
     /**

@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\ColumnSchemaBuilderInterface;
@@ -63,18 +60,11 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . (string) $this->quoter->quoteValue($comment);
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function addDefaultValue(string $name, string $table, string $column, mixed $value): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
     public function addForeignKey(
         string $name,
         string $table,
@@ -108,7 +98,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
 
-        /** @var string[] $columns */
+        /** @psalm-var string[] $columns */
         foreach ($columns as $i => $col) {
             $columns[$i] = $this->quoter->quoteColumnName($col);
         }
@@ -125,7 +115,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
         }
 
-        /** @var string[] $columns */
+        /** @psalm-var string[] $columns */
         foreach ($columns as $i => $col) {
             $columns[$i] = $this->quoter->quoteColumnName($col);
         }
@@ -150,18 +140,11 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . $this->queryBuilder->getColumnType($type);
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function checkIntegrity(string $schema = '', string $table = '', bool $check = true): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
     public function createIndex(
         string $name,
         string $table,
@@ -197,12 +180,6 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         return $options === null ? $sql : $sql . ' ' . $options;
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
     public function createView(string $viewName, QueryInterface|string $subQuery): string
     {
         if ($subQuery instanceof QueryInterface) {
@@ -252,9 +229,6 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
              . ' IS NULL';
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function dropDefaultValue(string $name, string $table): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');

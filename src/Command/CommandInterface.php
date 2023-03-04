@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Command;
 
 use Closure;
 use JsonException;
+use PDOException;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -18,10 +19,9 @@ use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * The CommandInterface is an interface represents a database command, such as a SELECT, INSERT, UPDATE, or DELETE
- * statement.
+ * This interface represents a database command, such as a SELECT, INSERT, UPDATE, or DELETE statement.
  *
- * A Command object is usually created by calling {@see ConnectionInterface::createCommand()}.
+ * A command object is usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
  */
 interface CommandInterface
 {
@@ -223,6 +223,8 @@ interface CommandInterface
      * @throws Exception
      *
      * @return static The current command being executed.
+     *
+     * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
     public function bindParam(
         int|string $name,
@@ -604,6 +606,8 @@ interface CommandInterface
      * should be used to determine whether it is for read or write.
      *
      * @throws Exception If there is any DB error.
+     * @throws InvalidConfigException
+     * @throws PDOException
      */
     public function prepare(bool $forRead = null): void;
 
@@ -673,6 +677,8 @@ interface CommandInterface
      *
      * @return false|float|int|string|null The value of the first column in the first row of the query result.
      * False is returned if there is no value.
+     *
+     * @psalm-return null|scalar
      */
     public function queryScalar(): bool|string|null|int|float;
 

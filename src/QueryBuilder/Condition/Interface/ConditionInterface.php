@@ -13,15 +13,12 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 interface ConditionInterface extends ExpressionInterface
 {
     /**
-     * Creates object by array-definition as described in
-     * [Query Builder – Operator format](guide:db-query-builder#operator-format) guide article.
+     * Creates object by array-definition.
      *
      * @param string $operator Operator in uppercase.
      * @param array  $operands Array of corresponding operands
      *
-     * @throws InvalidArgumentException If input parameters are not suitable for this condition
-     *
-     * @return self
+     * @throws InvalidArgumentException If input parameters are not suitable for this condition.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self;
 }

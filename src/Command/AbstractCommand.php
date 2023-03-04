@@ -8,32 +8,35 @@ use Closure;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Transaction\TransactionInterface;
 
+use function current;
 use function explode;
 use function get_resource_type;
 use function is_array;
 use function is_bool;
+use function is_int;
 use function is_object;
 use function is_resource;
+use function is_scalar;
 use function is_string;
+use function preg_replace_callback;
 use function stream_get_contents;
 use function strncmp;
 
 /**
- * Command represents a SQL statement to be executed against a database.
+ * Represents a SQL statement to be executed against a database.
  *
- * A command object is usually created by calling {@see ConnectionInterface::createCommand()}.
+ * A command object is usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
  *
  * The SQL statement it represents can be set via the {@see sql} property.
  *
  * To execute a non-query SQL (such as INSERT, DELETE, UPDATE), call {@see execute()}.
+ *
  * To execute a SQL statement that returns a result data set (such as SELECT), use {@see queryAll()}, {@see queryOne()},
  * {@see queryColumn()}, {@see queryScalar()}, or {@see query()}.
  *
@@ -43,7 +46,7 @@ use function strncmp;
  * $users = $connectionInterface->createCommand('SELECT * FROM user')->queryAll();
  * ```
  *
- * Command supports SQL statement preparation and parameter binding.
+ * Abstract command supports SQL statement preparation and parameter binding.
  *
  * Call {@see bindValue()} to bind a value to a SQL parameter;
  * Call {@see bindParam()} to bind a PHP variable to a SQL parameter.
@@ -51,7 +54,8 @@ use function strncmp;
  * When binding a parameter, the SQL statement is automatically prepared. You may also call {@see prepare()} explicitly
  * to prepare a SQL statement.
  *
- * Command also supports building SQL statements by providing methods such as {@see insert()}, {@see update()}, etc.
+ * Abstract command also supports building SQL statements by providing methods such as {@see insert()}, {@see update()},
+ * etc.
  *
  * For example, the following code will create and execute an INSERT SQL statement:
  *
@@ -62,7 +66,7 @@ use function strncmp;
  * )->execute();
  * ```
  *
- * To build SELECT SQL statements, please use {@see QueryInterface} instead.
+ * To build SELECT SQL statements, please use {@see \Yiisoft\Db\Query\QueryInterface} instead.
  */
 abstract class AbstractCommand implements CommandInterface
 {
@@ -70,11 +74,11 @@ abstract class AbstractCommand implements CommandInterface
     use ProfilerAwareTrait;
 
     protected string|null $isolationLevel = null;
+    /** @psalm-var ParamInterface[] */
+    protected array $params = [];
     protected string|null $refreshTableName = null;
     protected Closure|null $retryHandler = null;
     private string $sql = '';
-    /** * @var ParamInterface[] */
-    protected array $params = [];
 
     public function addCheck(string $name, string $table, string $expression): static
     {
@@ -124,7 +128,6 @@ abstract class AbstractCommand implements CommandInterface
             $delete,
             $update
         );
-
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -154,6 +157,7 @@ abstract class AbstractCommand implements CommandInterface
         foreach ($columns as &$column) {
             $column = $this->queryBuilder()->quoter()->quoteSql($column);
         }
+
         unset($column);
 
         $params = [];
@@ -161,6 +165,7 @@ abstract class AbstractCommand implements CommandInterface
 
         $this->setRawSql($sql);
         $this->bindValues($params);
+
         return $this;
     }
 
@@ -293,7 +298,7 @@ abstract class AbstractCommand implements CommandInterface
 
         $params = [];
 
-        /** @var mixed $value */
+        /** @psalm-var mixed $value */
         foreach ($this->params as $name => $value) {
             if (is_string($name) && strncmp(':', $name, 1)) {
                 $name = ':' . $name;
@@ -361,10 +366,6 @@ abstract class AbstractCommand implements CommandInterface
         return is_array($result) ? $result : false;
     }
 
-    /**
-     * @psalm-suppress MixedReturnStatement
-     * @psalm-suppress MixedInferredReturnType
-     */
     public function execute(): int
     {
         $sql = $this->getSql();
@@ -373,15 +374,15 @@ abstract class AbstractCommand implements CommandInterface
             return 0;
         }
 
-        return $this->queryInternal(self::QUERY_MODE_EXECUTE);
+        /** @psalm-var int|bool $execute */
+        $execute = $this->queryInternal(self::QUERY_MODE_EXECUTE);
+
+        return is_int($execute) ? $execute : 0;
     }
 
-    /**
-     * @psalm-suppress MixedReturnStatement
-     * @psalm-suppress MixedInferredReturnType
-     */
     public function query(): DataReaderInterface
     {
+        /** @psalm-var DataReaderInterface */
         return $this->queryInternal(self::QUERY_MODE_CURSOR);
     }
 
@@ -389,7 +390,6 @@ abstract class AbstractCommand implements CommandInterface
     {
         /** @psalm-var array<array-key, array>|null $results */
         $results = $this->queryInternal(self::QUERY_MODE_ALL);
-
         return $results ?? [];
     }
 
@@ -397,7 +397,6 @@ abstract class AbstractCommand implements CommandInterface
     {
         /** @psalm-var mixed $results */
         $results = $this->queryInternal(self::QUERY_MODE_COLUMN);
-
         return is_array($results) ? $results : [];
     }
 
@@ -405,19 +404,15 @@ abstract class AbstractCommand implements CommandInterface
     {
         /** @psalm-var mixed $results */
         $results = $this->queryInternal(self::QUERY_MODE_ROW);
-
         return is_array($results) ? $results : null;
     }
 
-    /**
-     * @psalm-suppress MixedReturnStatement
-     * @psalm-suppress MixedInferredReturnType
-     */
     public function queryScalar(): bool|string|null|int|float
     {
+        /** @psalm-var array|false $firstRow */
         $firstRow = $this->queryInternal(self::QUERY_MODE_ROW);
 
-        if (!is_array($firstRow)) {
+        if (!$firstRow) {
             return false;
         }
 
@@ -428,7 +423,7 @@ abstract class AbstractCommand implements CommandInterface
             return stream_get_contents($result);
         }
 
-        return $result;
+        return is_scalar($result) ? $result : null;
     }
 
     public function renameColumn(string $table, string $oldName, string $newName): static
@@ -465,7 +460,6 @@ abstract class AbstractCommand implements CommandInterface
         $this->cancel();
         $this->reset();
         $this->sql = $this->queryBuilder()->quoter()->quoteSql($sql);
-
         return $this;
     }
 
@@ -510,7 +504,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * Executes a prepared statement.
      *
-     * @param string|null $rawSql the rawSql if it has been created.
+     * @param string|null $rawSql The rawSql if it has been created.
      *
      * @throws Exception
      * @throws Throwable
@@ -542,22 +536,19 @@ abstract class AbstractCommand implements CommandInterface
     protected function queryInternal(int $queryMode): mixed
     {
         $rawSql = $this->getRawSql();
-
         $isReadMode = $this->isReadMode($queryMode);
+
         $logCategory = self::class . '::' . ($isReadMode ? 'query' : 'execute');
 
         $this->logQuery($rawSql, $logCategory);
-
         $this->prepare($isReadMode);
 
         try {
             $this->profiler?->begin($rawSql, [$logCategory]);
-
             $this->internalExecute($rawSql);
 
             /** @psalm-var mixed $result */
             $result = $this->internalGetQueryResult($queryMode);
-
             $this->profiler?->end($rawSql, [$logCategory]);
 
             if (!$isReadMode) {
@@ -565,6 +556,7 @@ abstract class AbstractCommand implements CommandInterface
             }
         } catch (Exception $e) {
             $this->profiler?->end($rawSql, [$logCategory]);
+
             throw $e;
         }
 
@@ -580,8 +572,6 @@ abstract class AbstractCommand implements CommandInterface
      * Marks a specified table schema to be refreshed after command execution.
      *
      * @param string $name Name of the table, which schema should be refreshed.
-     *
-     * @return static The command object itself.
      */
     protected function requireTableSchemaRefresh(string $name): static
     {
@@ -594,9 +584,7 @@ abstract class AbstractCommand implements CommandInterface
      *
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      *
-     * {@see TransactionInterface::begin()} for details.
-     *
-     * @return static The command object itself.
+     * {@see \Yiisoft\Db\Transaction\TransactionInterface::begin()} for details.
      */
     protected function requireTransaction(string $isolationLevel = null): static
     {
@@ -616,6 +604,9 @@ abstract class AbstractCommand implements CommandInterface
         $this->retryHandler = null;
     }
 
+    /**
+     * Checks if the query mode is read mode.
+     */
     private function isReadMode(int $queryMode): bool
     {
         return !$this->is($queryMode, self::QUERY_MODE_EXECUTE);

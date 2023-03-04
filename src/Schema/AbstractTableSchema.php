@@ -10,8 +10,6 @@ use function array_keys;
 
 /**
  * TableSchema represents the metadata of a database table.
- *
- * @property array $columnNames List of column names. This property is read-only.
  */
 abstract class AbstractTableSchema implements TableSchemaInterface
 {

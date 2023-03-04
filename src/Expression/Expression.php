@@ -18,8 +18,8 @@ use Stringable;
  * echo $now; // prints the current date
  * ```
  *
- * Expression objects are mainly created for passing raw SQL expressions to methods of {@see QueryInterface},
- * {@see ActiveQuery}, and related classes.
+ * Expression objects are mainly created for passing raw SQL expressions to methods of {@see QueryInterface} and related
+ * classes.
  */
 class Expression implements ExpressionInterface, Stringable
 {
@@ -28,9 +28,7 @@ class Expression implements ExpressionInterface, Stringable
     }
 
     /**
-     * String magic method.
-     *
-     * @return string the DB expression.
+     * @return string The expression.
      */
     public function __toString(): string
     {
@@ -38,9 +36,8 @@ class Expression implements ExpressionInterface, Stringable
     }
 
     /**
-     * List of parameters that should be bound for this expression.
-     *
-     * The keys are placeholders appearing in {@see expression} and the values are the corresponding parameter values.
+     * @return array List of parameters that should be bound for this expression. The keys are placeholders appearing in
+     * {@see expression} and the values are the corresponding parameter values.
      */
     public function getParams(): array
     {

@@ -36,7 +36,9 @@ final class SimpleCondition implements SimpleConditionInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * Creates a condition based on the given operator and operands.
+     *
+     * @throws InvalidArgumentException If the number of operands is not 2.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -47,6 +49,11 @@ final class SimpleCondition implements SimpleConditionInterface
         throw new InvalidArgumentException("Operator '$operator' requires two operands.");
     }
 
+    /**
+     * Validate the given column to be string or ExpressionInterface.
+     *
+     * @throws InvalidArgumentException If the column is not string or ExpressionInterface.
+     */
     private static function validateColumn(string $operator, mixed $column): string|ExpressionInterface
     {
         if (is_string($column) || $column instanceof ExpressionInterface) {

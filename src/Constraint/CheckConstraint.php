@@ -15,18 +15,22 @@ final class CheckConstraint extends Constraint
 {
     private string $expression = '';
 
+    /**
+     * @return string The SQL of the `CHECK` constraint.
+     */
     public function getExpression(): string
     {
         return $this->expression;
     }
 
     /**
+     * Set the SQL of the `CHECK` constraint.
+     *
      * @param string $value The SQL of the `CHECK` constraint.
      */
     public function expression(string $value): self
     {
         $this->expression = $value;
-
         return $this;
     }
 }

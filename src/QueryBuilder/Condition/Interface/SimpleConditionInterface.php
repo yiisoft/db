@@ -6,10 +6,13 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
 
+/**
+ * Interface SimpleConditionInterface represents a simple condition, such as `column = value`.
+ */
 interface SimpleConditionInterface extends ConditionInterface
 {
     /**
-     * @psalm-return string|ExpressionInterface The column name. If it is an array, a composite `IN` condition
+     * @return ExpressionInterface|string The column name. If it is an array, a composite `IN` condition
      * will be generated.
      */
     public function getColumn(): string|ExpressionInterface;

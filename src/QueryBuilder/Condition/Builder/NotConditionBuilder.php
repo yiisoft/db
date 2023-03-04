@@ -22,7 +22,12 @@ class NotConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * Build SQL for {@see NotCondition}.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      */
     public function build(NotConditionInterface $expression, array &$params = []): string
     {

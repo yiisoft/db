@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query\Data;
 
+use Countable;
+use Iterator;
 use PDO;
 use PDOStatement;
 use Yiisoft\Db\Driver\PDO\CommandPDOInterface;
@@ -13,7 +15,7 @@ use Yiisoft\Db\Exception\InvalidParamException;
 /**
  * The DataReader provides an abstract way to read data from a database. A data reader is an object that can be used to
  * read a forward-only stream of rows from a database. DataReader is typically used in combination with a command
- * object, such as a {@see Yiisoft/Db/Command/Command}, to execute a SELECT statement and read the results. The class
+ * object, such as a {@see \Yiisoft\Db\Command\Command}, to execute a SELECT statement and read the results. The class
  * provides methods for accessing the data returned by the query.
  */
 final class DataReader implements DataReaderInterface
@@ -22,6 +24,9 @@ final class DataReader implements DataReaderInterface
     private mixed $row;
     private PDOStatement $statement;
 
+    /**
+     * @throws InvalidParamException If the PDOStatement is null.
+     */
     public function __construct(CommandPDOInterface $command)
     {
         $statement = $command->getPDOStatement();
@@ -36,12 +41,10 @@ final class DataReader implements DataReaderInterface
     /**
      * Returns the number of rows in the result set.
      *
-     * This method is required by the Countable interface.
+     * This method is required by the interface {@see Countable}.
      *
      * Note, most DBMS may not give a meaningful count. In this case, use "SELECT COUNT(*) FROM tableName" to obtain the
      * number of rows.
-     *
-     * @return int number of rows contained in the result.
      */
     public function count(): int
     {
@@ -69,8 +72,6 @@ final class DataReader implements DataReaderInterface
      * Returns the index of the current row.
      *
      * This method is required by the interface {@see Iterator}.
-     *
-     * @return int the index of the current row.
      */
     public function key(): int
     {
@@ -81,8 +82,6 @@ final class DataReader implements DataReaderInterface
      * Returns the current row.
      *
      * This method is required by the interface {@see Iterator}.
-     *
-     * @return mixed the current row.
      */
     public function current(): mixed
     {
@@ -104,8 +103,6 @@ final class DataReader implements DataReaderInterface
      * Returns whether there is a row of data at current position.
      *
      * This method is required by the interface {@see Iterator}.
-     *
-     * @return bool whether there is a row of data at current position.
      */
     public function valid(): bool
     {

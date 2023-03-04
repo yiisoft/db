@@ -16,18 +16,25 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\ArrayHelper;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
+use function array_key_exists;
 use function array_merge;
+use function array_shift;
+use function array_unshift;
 use function count;
 use function is_array;
 use function is_int;
+use function is_numeric;
 use function is_string;
 use function key;
 use function preg_match;
 use function preg_split;
 use function reset;
+use function serialize;
 use function str_contains;
 use function strcasecmp;
 use function strlen;
+use function strpos;
+use function strtoupper;
 use function substr;
 use function trim;
 
@@ -84,8 +91,6 @@ class Query implements QueryInterface
 
     /**
      * Returns the SQL representation of Query.
-     *
-     * @return string
      */
     public function __toString(): string
     {
@@ -240,18 +245,10 @@ class Query implements QueryInterface
         return $this->db
             ->createBatchQueryResult($this)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn($rows, $indexBy = null) => ArrayHelper::populate($rows, $indexBy))
+            ->setPopulatedMethod(fn(array $rows, Closure|string|null $indexBy = null): array => ArrayHelper::populate($rows, $indexBy))
         ;
     }
 
-    /**
-     * @psalm-suppress MixedArrayOffset
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     * @throws Throwable
-     */
     public function column(): array
     {
         if ($this->emulateExecution) {
@@ -273,6 +270,7 @@ class Query implements QueryInterface
         $rows = $this->createCommand()->queryAll();
         $results = [];
         $column = null;
+
         if (is_string($this->indexBy)) {
             if (($dotPos = strpos($this->indexBy, '.')) === false) {
                 $column = $this->indexBy;
@@ -286,6 +284,7 @@ class Query implements QueryInterface
             $value = reset($row);
 
             if ($this->indexBy instanceof Closure) {
+                /** @psalm-suppress MixedArrayOffset */
                 $results[($this->indexBy)($row)] = $value;
             } else {
                 $results[$row[$column] ?? $row[$this->indexBy]] = $value;
@@ -312,7 +311,6 @@ class Query implements QueryInterface
     public function distinct(bool|null $value = true): static
     {
         $this->distinct = $value;
-
         return $this;
     }
 
@@ -321,13 +319,10 @@ class Query implements QueryInterface
         return $this->db
             ->createBatchQueryResult($this, true)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn($rows, $indexBy = null) => ArrayHelper::populate($rows, $indexBy))
+            ->setPopulatedMethod(fn(array $rows, Closure|string|null $indexBy = null): array => ArrayHelper::populate($rows, $indexBy))
         ;
     }
 
-    /**
-     * @throws Exception|InvalidConfigException|Throwable
-     */
     public function exists(): bool
     {
         if ($this->emulateExecution) {
@@ -345,7 +340,6 @@ class Query implements QueryInterface
     public function emulateExecution(bool $value = true): static
     {
         $this->emulateExecution = $value;
-
         return $this;
     }
 
@@ -482,67 +476,58 @@ class Query implements QueryInterface
     {
         $this->having = $condition;
         $this->addParams($params);
-
         return $this;
     }
 
     public function indexBy(Closure|string|null $column): static
     {
         $this->indexBy = $column;
-
         return $this;
     }
 
     public function innerJoin(array|string $table, array|string $on = '', array $params = []): static
     {
         $this->join[] = ['INNER JOIN', $table, $on];
-
         return $this->addParams($params);
     }
 
     public function join(string $type, array|string $table, array|string $on = '', array $params = []): static
     {
         $this->join[] = [$type, $table, $on];
-
         return $this->addParams($params);
     }
 
     public function leftJoin(array|string $table, array|string $on = '', array $params = []): static
     {
         $this->join[] = ['LEFT JOIN', $table, $on];
-
         return $this->addParams($params);
     }
 
     public function limit(ExpressionInterface|int|null $limit): static
     {
         $this->limit = $limit;
-
         return $this;
     }
 
     public function max(string $q): int|float|null|string
     {
         $max = $this->queryScalar("MAX($q)");
-
         return is_numeric($max) ? $max : null;
     }
 
     public function min(string $q): int|float|null|string
     {
         $min = $this->queryScalar("MIN($q)");
-
         return is_numeric($min) ? $min : null;
     }
 
     public function offset(ExpressionInterface|int|null $offset): static
     {
         $this->offset = $offset;
-
         return $this;
     }
 
-    public function one(): array|object|null
+    public function one(): array|null
     {
         return match ($this->emulateExecution) {
             true => null,
@@ -553,7 +538,6 @@ class Query implements QueryInterface
     public function orderBy(array|string|ExpressionInterface $columns): static
     {
         $this->orderBy = $this->normalizeOrderBy($columns);
-
         return $this;
     }
 
@@ -608,7 +592,6 @@ class Query implements QueryInterface
     public function params(array $params): static
     {
         $this->params = $params;
-
         return $this;
     }
 
@@ -620,7 +603,6 @@ class Query implements QueryInterface
     public function rightJoin(array|string $table, array|string $on = '', array $params = []): static
     {
         $this->join[] = ['RIGHT JOIN', $table, $on];
-
         return $this->addParams($params);
     }
 
@@ -636,28 +618,24 @@ class Query implements QueryInterface
     {
         $this->select = $this->normalizeSelect($columns);
         $this->selectOption = $option;
-
         return $this;
     }
 
     public function selectOption(string|null $value): static
     {
         $this->selectOption = $value;
-
         return $this;
     }
 
     public function setJoin(array $value): static
     {
         $this->join = $value;
-
         return $this;
     }
 
     public function setUnion(array $value): static
     {
         $this->union = $value;
-
         return $this;
     }
 
@@ -677,7 +655,6 @@ class Query implements QueryInterface
     public function union(QueryInterface|string $sql, bool $all = false): static
     {
         $this->union[] = ['query' => $sql, 'all' => $all];
-
         return $this;
     }
 
@@ -685,21 +662,18 @@ class Query implements QueryInterface
     {
         $this->where = $condition;
         $this->addParams($params);
-
         return $this;
     }
 
     public function withQuery(QueryInterface|string $query, string $alias, bool $recursive = false): static
     {
         $this->withQueries[] = ['query' => $query, 'alias' => $alias, 'recursive' => $recursive];
-
         return $this;
     }
 
     public function withQueries(array $withQueries): static
     {
         $this->withQueries = $withQueries;
-
         return $this;
     }
 
@@ -715,10 +689,6 @@ class Query implements QueryInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      * @throws Throwable
-     *
-     * @return bool|float|int|string|null
-     *
-     * @psalm-suppress PossiblyUndefinedVariable
      */
     protected function queryScalar(string|ExpressionInterface $selectExpression): bool|int|null|string|float
     {
@@ -763,9 +733,9 @@ class Query implements QueryInterface
     /**
      * Removes {@see isEmpty()|empty operands} from the given query condition.
      *
-     * @param array|string $condition the original condition
+     * @param array|string $condition The original condition.
      *
-     * @return array|string the condition with {@see isEmpty()|empty operands} removed.
+     * @return array|string The condition with {@see isEmpty()|empty operands} removed.
      */
     private function filterCondition(array|string $condition): array|string
     {
@@ -774,8 +744,11 @@ class Query implements QueryInterface
         }
 
         if (!isset($condition[0])) {
-            /** hash format: 'column1' => 'value1', 'column2' => 'value2', ... */
-            /** @var mixed $value */
+            /**
+             * hash format: 'column1' => 'value1', 'column2' => 'value2', ...
+             *
+             * @psalm-var mixed $value
+             */
             foreach ($condition as $name => $value) {
                 if ($this->isEmpty($value)) {
                     unset($condition[$name]);
@@ -785,8 +758,11 @@ class Query implements QueryInterface
             return $condition;
         }
 
-        /** operator format: operator, operand 1, operand 2, ... */
-        /** @var string */
+        /**
+         * operator format: operator, operand 1, operand 2, ...
+         *
+         * @psalm-var string $operator
+         */
         $operator = array_shift($condition);
 
         switch (strtoupper($operator)) {
@@ -840,9 +816,9 @@ class Query implements QueryInterface
      * - a string containing only whitespace characters,
      * - or an empty array.
      *
-     * @param mixed $value
+     * @param mixed $value The value to be checked.
      *
-     * @return bool if the value is empty
+     * @return bool If the value is empty.
      */
     private function isEmpty(mixed $value): bool
     {
@@ -852,7 +828,7 @@ class Query implements QueryInterface
     /**
      * Normalizes format of ORDER BY data.
      *
-     * @param array|ExpressionInterface|string $columns the columns value to normalize.
+     * @param array|ExpressionInterface|string $columns The columns value to normalize.
      *
      * See {@see orderBy} and {@see addOrderBy}.
      */
@@ -919,7 +895,7 @@ class Query implements QueryInterface
             }
 
             // Either a string calling a function, DB expression, or sub-query
-            /** @var string */
+            /** @psalm-var string */
             $select[] = $columnDefinition;
         }
 

@@ -9,6 +9,11 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\LikeConditionInterface;
 
+use function array_key_exists;
+use function is_array;
+use function is_int;
+use function is_string;
+
 /**
  * Class LikeCondition represents a `LIKE` condition.
  */
@@ -49,7 +54,9 @@ final class LikeCondition implements LikeConditionInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * Creates a condition based on the given operator and operands.
+     *
+     * @throws InvalidArgumentException If the number of operands is not 2.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -70,6 +77,11 @@ final class LikeCondition implements LikeConditionInterface
         return $condition;
     }
 
+    /**
+     * Validates the given column to be string or ExpressionInterface.
+     *
+     * @throws InvalidArgumentException
+     */
     private static function validateColumn(string $operator, mixed $column): string|ExpressionInterface
     {
         if (is_string($column) || $column instanceof ExpressionInterface) {
@@ -79,6 +91,11 @@ final class LikeCondition implements LikeConditionInterface
         throw new InvalidArgumentException("Operator '$operator' requires column to be string or ExpressionInterface.");
     }
 
+    /**
+     * Validates the given values to be string, array, Iterator or ExpressionInterface.
+     *
+     * @throws InvalidArgumentException If the values is not string, array, Iterator or ExpressionInterface.
+     */
     private static function validateValue(
         string $operator,
         mixed $value
