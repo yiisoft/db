@@ -10,8 +10,6 @@ final class QueryContext extends AbstractContext
     private const SQL = 'sql';
     private const PARAMS = 'params';
 
-    protected string $type = 'query';
-
     public function __construct(
         private string $method,
         private string $logContext,
@@ -19,6 +17,11 @@ final class QueryContext extends AbstractContext
         private array $params,
     ) {
         parent::__construct($this->method);
+    }
+
+    public function getType(): string
+    {
+        return 'query';
     }
 
     public function __toArray(): array
