@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Profiler\Context;
 
-use Throwable;
-use Yiisoft\Db\Profiler\ContextInterface;
-
 final class QueryContext extends AbstractContext
 {
     private const LOG_CONTEXT = 'logContext';

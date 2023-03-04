@@ -8,14 +8,12 @@ use Closure;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\Profiler\Context\QueryContext;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function current;
 use function explode;
