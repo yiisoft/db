@@ -170,8 +170,9 @@ final class SchemaCache
     }
 
     /**
-     * List of tables whose metadata should NOT be cached. Defaults to empty array. The table names may contain schema
-     * prefix, if any. Do not quote the table names.
+     * List of tables whose metadata should NOT be cached.
+     *
+     * Defaults to an empty array. The table names may contain schema prefix, if any. Do not quote the table names.
      *
      * @param array $value The table names.
      *

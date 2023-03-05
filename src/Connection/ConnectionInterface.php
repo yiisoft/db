@@ -83,18 +83,18 @@ interface ConnectionInterface
     public function close(): void;
 
     /**
-     * Return cache key as array.
+     * Return a cache key as an array.
      *
-     * For example in PDO implementation: [$dsn, $username]
+     * For example, in PDO implementation: [$dsn, $username]
      *
-     * @return array The cache key as array.
+     * @return array The cache key as an array.
      */
     public function getCacheKey(): array;
 
     /**
      * Returns the name of the DB driver for the current `dsn`.
      *
-     * Use this method for informational purposes only.
+     * Use this method for information only.
      *
      * @return string The name of the DB driver for the current `dsn`.
      */
@@ -226,7 +226,7 @@ interface ConnectionInterface
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      * {@see TransactionInterface::begin()} for details.
      *
-     * @throws Throwable If there is any exception during query. In this case the transaction will be rolled back.
+     * @throws Throwable If there is any exception during query. In this case, the transaction will be rolled back.
      *
      * @return mixed Result of callback function.
      */

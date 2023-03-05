@@ -18,8 +18,10 @@ use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 /**
- * Represents a connection to a database. It provides methods for interacting with the database, such as executing SQL
- * queries and performing data manipulation.
+ * Represents a connection to a database.
+ *
+ * It provides methods for interacting with the database, such as executing SQL queries and performing data
+ * manipulation.
  */
 abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInterface
 {
@@ -106,14 +108,15 @@ abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInt
     }
 
     /**
-     * Rolls back given {@see TransactionInterface} object if it's still active and level match. In some cases rollback
-     * can fail, so this method is fail-safe. Exceptions thrown from rollback will be caught and just logged with
-     * {@see logger->log()}.
+     * Rolls back given {@see TransactionInterface} an object if it's still active and level match.
+     *
+     * In some cases, rollback can fail, so this method is fail-safe. Exceptions thrown from rollback will be caught and
+     * just logged with {@see logger->log()}.
      *
      * @param TransactionInterface $transaction TransactionInterface object given from {@see beginTransaction()}.
      * @param int $level TransactionInterface level just after {@see beginTransaction()} call.
      *
-     * @throws Throwable If transaction was not rolled back.
+     * @throws Throwable If transaction wasn't rolled back.
      */
     private function rollbackTransactionOnLevel(TransactionInterface $transaction, int $level): void
     {
