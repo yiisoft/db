@@ -1,13 +1,15 @@
 # Query builder
 
-Built on top of [Yii DB](https://github.com/yiisoft/db), query builder allows you to construct a **SQL query** in a programmatic and **DBMS-agnostic** way. Compared to writing **raw SQL statements**, using query builder will help you write more readable **SQL-related** code and generate more secure **SQL statements**.
+Built on top of [Yii DB](https://github.com/yiisoft/db), query builder allows you to construct an **SQL query** in a programmatic and **DBMS-agnostic** way.
 
-Using query builder usually involves two steps:
+Compared to writing **raw SQL statements**, using query builder will help you write more readable **SQL-related** code and generate more secure **SQL statements**.
+
+Using a query builder usually involves two steps:
 
 1. Build a `Yiisoft\Db\Query\Query` class to represent different parts (e.g. `SELECT`, `FROM`) of a `SELECT` **SQL statement**.
 2. Execute a **query method** (e.g. `all()`, `one()`, `scalar()`, `column()`, `query()`) of `Yiisoft\Db\Query\Query` to retrieve data from the database.
 
-The following code shows a typical way of using query builder.
+The following code shows a typical way of using a query builder.
 
 ```php
 <?php
@@ -27,7 +29,7 @@ $rows = (new Query($db))
     ->all();
 ```
 
-The above code generates and executes the following SQL query, where the :last_name parameter is bound with the string 'Smith'.
+The above code generates and executes the following SQL query, where the `:last_name` parameter is bound with the string 'Smith'.
 
 ```sql
 SELECT `id`, `email` 

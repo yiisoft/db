@@ -9,7 +9,7 @@ The `Yiisoft\Db\Query\Query::where()` method specifies the `WHERE` fragment of a
 
 ## String format
 
-String format is best used to specify very simple conditions or if you need to use built-in functions of the DBMS. It works as if you are writing a raw SQL.
+String format is best used to specify basic conditions or if you need to use built-in functions of the DBMS. It works as if you are writing a raw SQL.
 
 For example, the following code will select all users whose status is 1.
 
@@ -67,16 +67,18 @@ $userQuery = (new Query($db))->select('id')->from('user');
 $query->where(['id' => $userQuery]);
 ```
 
-Using the Hash Format, [Yii DB](https://github.com/yiisoft/db) internally applies parameter binding for values, so in contrast to the string format, here you do not have to add parameters manually. However, note that [Yii DB](https://github.com/yiisoft/db) never escapes column names, so if you pass a variable obtained from user side as a column name without any additional checks, the application will become vulnerable to **SQL injection attack**. In order to keep the application secure, either do not use variables as column names or filter variable against allowlist.
+Using the Hash Format, [Yii DB](https://github.com/yiisoft/db) internally applies parameter binding for values, so in contrast to the string format, here you do not have to add parameters manually.
 
-For example the following code is vulnerable.
+However, note that [Yii DB](https://github.com/yiisoft/db) never escapes column names, so if you pass a variable obtained from the user side as a column name without any additional checks, the application will become vulnerable to **SQL injection attack**. In order to keep the application secure, either do not use variables as column names or filter variable against allowlist.
+
+For example, the following code is vulnerable.
 
 ```php
 // Vulnerable code:
 $column = $request->get('column');
 $value = $request->get('value');
 $query->where([$column => $value]);
-// $value is safe, but $column name won't be encoded!
+// $value is safe, but the $column name won't be encoded!
 ```
 
 ## Operator format
@@ -98,7 +100,7 @@ Where the operands can each be specified in string format, hash format or operat
 - `not in`: Similar to the in operator except that `IN` is replaced with `NOT IN` in the generated condition.
 - `like`: Operand 1 should be a column or DB expression, and operand 2 be a string or an array representing the values that the column or DB expression should be like. For example, `['like', 'name', 'tester']` will generate `name LIKE '%tester%'`. When the value range is given as an array, multiple `LIKE` predicates will be generated and concatenated using `AND`. For example, `['like', 'name', ['test', 'sample']]` will generate `name LIKE '%test%' AND name LIKE '%sample%'`. You may also provide an optional third operand to specify how to escape special characters in the values. The operand should be an array of mappings from the special characters to their escaped counterparts. If this operand is not provided, a default escape mapping will be used. You may use false or an empty array to indicate the values are already escaped and no escape should be applied. Note that when using an escape mapping (or the third operand is not provided), the values will be automatically enclosed within a pair of percentage characters.
 
-**Note:** *When using PostgreSQL you may also use ilike instead of like for case-insensitive matching.*
+**Note:** *When using PostgreSQL, you may also use ilike instead of like for case-insensitive matching.*
 
 - `or like`: Similar to the `like` operator except that `OR` is used to concatenate the `LIKE` predicates when operand 2 is an array.
 - `not like`: Similar to the `like` operator except that `LIKE` is replaced with `NOT LIKE` in the generated condition.
@@ -107,9 +109,13 @@ Where the operands can each be specified in string format, hash format or operat
 - `not exists`: Similar to the `exists` operator and builds a `NOT EXISTS` (sub-query) expression.
 - `>`, `<=`, or any other valid DB operator that takes two operands: The first operand must be a `column name` while the second operand a `value`. For example, `['>', 'age', 10]` will generate `age > 10`.
 
-Using the Operator Format, [Yii DB](https://github.com/yiisoft/db) internally uses parameter binding for values, so in contrast to the string format, here you do not have to add parameters manually. However, note that [Yii DB](https://github.com/yiisoft/db) never escapes column names, so if you pass a variable as a column name, the application will likely become vulnerable to `SQL injection attack`. In order to keep application secure, either do not use variables as column names or filter variable against allowlist. In case you need to get column name from user.
+Using the Operator Format, [Yii DB](https://github.com/yiisoft/db) internally uses parameter binding for values, so in contrast to the string format, here you do not have to add parameters manually.
 
-For example the following code is vulnerable.
+However, note that [Yii DB](https://github.com/yiisoft/db) never escapes column names, so if you pass a variable as a column name, the application will likely become vulnerable to `SQL injection attack`.
+
+In order to keep application secure, either do not use variables as column names or filter variables against allow-list. In case you need to get a column name from user.
+
+For example, the following code is vulnerable.
 
 ```php
 // Vulnerable code:
@@ -125,7 +131,7 @@ Object Form most powerful and most complex way to define conditions. You need to
 
 Instances of condition classes are immutable. Their only purpose is to store condition data and provide getters for condition builders. Condition builder is a class that holds the logic that transforms data stored in condition into the SQL expression.
 
-Internally the formats described above are implicitly converted to object format prior to building raw SQL, so it is possible to combine formats in a single condition:
+Internally, the formats described above are implicitly converted to object format prior to building raw SQL, so it is possible to combine formats in a single condition:
 
 
 ```php
@@ -150,7 +156,7 @@ $query->andWhere(
 );
 ```
 
-Conversion from operator format into object format is performed according to `Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder::conditionClasses` property, that maps operators names to representative class names.
+Conversion from operator format into object format is performed according to `Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder::conditionClasses` property, that maps operator names to representative class names.
 
 - `AND`, `OR` => `Yiisoft\Db\QueryBuilder\Condition\ConjunctionCondition`.
 - `NOT` => `Yiisoft\Db\QueryBuilder\Condition\NotCondition`.
@@ -180,16 +186,22 @@ WHERE (`status` = 10) AND (`title` LIKE '%yii%')
 
 ## Filter Conditions
 
-When building `WHERE` conditions based on input from end users, you usually want to ignore those input values, that are empty. For example, in a search form that allows you to search by username and email, you would like to ignore the username/email condition if the user does not enter anything in the username/email input field. You can achieve this goal by using the `Yiisoft\Db\Query\Query::filterWhere()` method.
+When building `WHERE` conditions based on input from end users, you usually want to ignore those input values, that are empty.
+
+For example, in a search form that allows you to search by username and email you would like to ignore the username/email condition if the user does not enter anything in the username/email input field.
+
+You can achieve this goal by using the `Yiisoft\Db\Query\Query::filterWhere()` method.
 
 ```php	
 // $username and $email are from user inputs
 $query->filterWhere(['username' => $username, 'email' => $email]);
 ```
 
-The only difference between `Yiisoft\Db\Query\Query::filterWhere()` and `Yiisoft\Db\Query\Query::where()` is that the former will ignore empty values provided in the condition in hash format. So if $email is empty while $username is not, the above code will result in the SQL condition WHERE username=:username.
+The only difference between `Yiisoft\Db\Query\Query::filterWhere()` and `Yiisoft\Db\Query\Query::where()` is that the former will ignore empty values provided in the condition in hash format.
 
-**Info:** *A value is considered empty if it is null, an empty array, an empty string or a string consisting of whitespaces only.*
+So, if $email is empty while $username is not, the above code will result in the SQL condition WHERE username=:username.
+
+**Info:** *A value is considered empty if it is null, an empty array, an empty string or a string consisting of space only.*
 
 Like `Yiisoft\Db\Query\Query::andWhere()` and `Yiisoft\Db\Query\Query::orWhere()`, you can use `Yiisoft\Db\Query\Query::andFilterWhere()` and `Yiisoft\Db\Query\Query::orFilterWhere()` to append additional filter conditions to the existing one.
 
@@ -201,7 +213,7 @@ $query->andFilterCompare('rating', '>9');
 $query->andFilterCompare('value', '<=100');
 ```
 
-You can also specify operator explicitly.
+You can also specify the operator explicitly.
 
 ```php
 $query->andFilterCompare('name', 'Doe', 'like');

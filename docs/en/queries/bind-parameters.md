@@ -1,8 +1,10 @@
 # Binding parameters
 
-When creating a **DB** command from a **SQL with parameters**, you should almost always use the approach of binding parameters to prevent **SQL injection attacks**. You can **bind parameters** to a **SQL statement** by using named placeholders or question mark placeholders. Named placeholders are of the form `:name` and question mark placeholders are of the form `?`. The following example shows how to **bind parameters** to a **SQL statement**.
+When creating a **DB** command from an **SQL with parameters**, you should almost always use the approach of binding parameters to prevent **SQL injection attacks**.
 
-**Info:** *Parameter binding is only used in places where values need to be inserted into strings that contain plain **SQL**. In many places in higher abstraction layers like **query builder** you often specify an **array of values** which will be transformed into **SQL**. In these places parameter binding is done by Yii internally, so there is no need to specify params manually.*
+You can **bind parameters** to an **SQL statement** by using named placeholders or question mark placeholders. Named placeholders are of the form `:name` and question mark placeholders are of the form `?`.
+
+**Info:** *Parameter binding is only used in places where values need to be inserted into strings that contain plain **SQL**. In many places in higher abstraction layers, like **query builder**, you often specify an **array of values** which will be transformed into **SQL**. In these places parameter binding is done by Yii internally, so there is no need to specify params manually.*
 
 ## Bind value
 

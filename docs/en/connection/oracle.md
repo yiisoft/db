@@ -1,6 +1,6 @@
 # Connecting Oracle
 
-To configure [Yii DB Oracle](https://github.com/yiisoft/db-oracle) with [DI container](https://github.com/yiisoft/di) you need to create a configuration file.
+To configure [Yii DB Oracle](https://github.com/yiisoft/db-oracle) with [DI container](https://github.com/yiisoft/di), you need to create a configuration file.
 
 Create a file `config/common/di/db-oracle.php`.
 

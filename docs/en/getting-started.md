@@ -17,7 +17,7 @@ When using [Yii DB](https://github.com/yiisoft/db), you mainly need to deal with
 
 ## Installation
 
-To install [Yii DB](https://github.com/yiisoft/db), you must select the driver you want to use and install it with [Composer](https://getcomposer.org/).
+To install [Yii DB](https://github.com/yiisoft/db), you must select the driver you want to use and install it with a [Composer](https://getcomposer.org/).
 
 - [Yii DB MSSQL](https://github.com/yiisoft/db-mssql)
 
@@ -55,7 +55,7 @@ composer require yiisoft/db-sqlite
 
 ## Create Connection
 
-You can create a database connection instance using [DI container](https://github.com/yiisoft/di) or without it.
+You can create a database connection instance using a [DI container](https://github.com/yiisoft/di) or without it.
 
 1. [MSSQL Server](/docs/en/connection/mssql.md)
 2. [MySQL/MariaDB Server](/docs/en/connection/mysql.md)
@@ -74,23 +74,25 @@ Logger and profiler are optional. You can use them if you need to log and profil
 
 ## Executing SQL queries
 
-Once you have a database connection instance, you can execute a **SQL** query by taking the following steps:
+Once you have a database connection instance, you can execute an **SQL** query by taking the following steps:
 
 1. [Create a command with a plain SQL query](/docs/en/queries/create-command.md)
 2. [Bind parameters](/docs/en/queries/bind-parameters.md)
-3. [Call one of the SQL execute method to execute the command](/docs/en/queries/execute-command.md)
+3. [Call one of the SQL executed methods to execute the command](/docs/en/queries/execute-command.md)
 
 
 ## Quoting Table and Column Names
 
-When writing database-agnostic code, properly quoting table and column names is often a headache because different databases have different name quoting rules. To overcome this problem, you may use the following quoting syntax introduced by [Yii DB](https://github.com/yiisoft/db):
+When writing a database-agnostic code, properly quoting table and column names is often a headache because different databases have different names quoting rules.
+
+To overcome this problem, you may use the following quoting syntax introduced by [Yii DB](https://github.com/yiisoft/db):
 
 - `[[column name]]`: enclose a *column name* to be quoted in *double square brackets*.
 - `{{%table name}}`: enclose a *table name* to be quoted in *double curly brackets*, and the percentage character `%` will be replaced with the *table prefix*.
 
-[Yii DB](https://github.com/yiisoft/db) will automatically convert such constructs into the corresponding quoted column or table names using the DBMS specific syntax.
+[Yii DB](https://github.com/yiisoft/db) will automatically convert such constructs into the corresponding quoted column or table names using the DBMS-specific syntax.
 
-For example, the following code will generate a SQL statement that is valid for all supported databases:
+For example, the following code will generate an SQL statement that is valid for all supported databases:
 
 ```php
 <?php
