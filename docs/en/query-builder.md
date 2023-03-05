@@ -7,7 +7,7 @@ Compared to writing **raw SQL statements**, using query builder will help you wr
 Using a query builder usually involves two steps:
 
 1. Build a `Yiisoft\Db\Query\Query` class to represent different parts (e.g. `SELECT`, `FROM`) of a `SELECT` **SQL statement**.
-2. Execute a **query method** (e.g. `all()`, `one()`, `scalar()`, `column()`, `query()`) of `Yiisoft\Db\Query\Query` to retrieve data from the database.
+2. Execute a **query method** for example, `all()`, `one()`, `scalar()`, `column()`, `query()` of `Yiisoft\Db\Query\Query` to retrieve data from the database.
 
 The following code shows a typical way of using a query builder.
 
