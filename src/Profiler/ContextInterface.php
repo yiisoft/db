@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Profiler;
 
-use Throwable;
-
 interface ContextInterface
 {
     /**

@@ -219,8 +219,10 @@ abstract class AbstractCommandTest extends TestCase
      * @throws Throwable
      * @throws \PHPUnit\Framework\MockObject\Exception
      */
-    public function testProfiler($sql = 'SELECT 123'): void
+    public function testProfiler(string $sql = null): void
     {
+        $sql = $sql ??  'SELECT 123';
+
         $db = $this->getConnection();
         $db->open();
 
@@ -244,9 +246,9 @@ abstract class AbstractCommandTest extends TestCase
      * @throws Throwable
      * @throws \PHPUnit\Framework\MockObject\Exception
      */
-    public function testProfilerData(): void
+    public function testProfilerData(string $sql = null): void
     {
-        $sql = 'SELECT 123';
+        $sql = $sql ?? 'SELECT 123';
 
         $db = $this->getConnection();
         $db->open();
