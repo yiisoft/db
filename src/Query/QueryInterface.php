@@ -259,18 +259,6 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function params(array $params): static;
 
     /**
-     * Converts the raw query results into the format as specified by this query.
-     *
-     * This method is internally used to convert the data fetched from database into the format as required by this
-     * query.
-     *
-     * @param array $rows The raw query result from database.
-     *
-     * @return array The converted query result.
-     */
-    public function populate(array $rows): array;
-
-    /**
      * Prepares for building SQL.
      *
      * This method is called by {@see QueryBuilderInterface} when it starts to build SQL from a query object.

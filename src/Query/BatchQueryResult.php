@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Closure;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -32,6 +33,8 @@ class BatchQueryResult implements BatchQueryResultInterface
      * @var array|null The data retrieved in the current batch.
      */
     private array|null $batch = null;
+
+    private Closure|null $populateMethod = null;
 
     /**
      * @var mixed The value for the current iteration.
@@ -101,7 +104,11 @@ class BatchQueryResult implements BatchQueryResultInterface
 
         $rows = $this->getRows();
 
-        return $this->query->populate($rows);
+        if ($this->populateMethod !== null) {
+            return (array) ($this->populateMethod)($rows, $this->query->getIndexBy());
+        }
+
+        return $rows;
     }
 
     /**
@@ -149,6 +156,13 @@ class BatchQueryResult implements BatchQueryResultInterface
     public function batchSize(int $value): self
     {
         $this->batchSize = $value;
+
+        return $this;
+    }
+
+    public function setPopulatedMethod(Closure|null $populateMethod = null): static
+    {
+        $this->populateMethod = $populateMethod;
 
         return $this;
     }

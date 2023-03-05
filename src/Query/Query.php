@@ -225,10 +225,11 @@ class Query implements QueryInterface
 
     public function all(): array
     {
-        return match ($this->emulateExecution) {
-            true => [],
-            false => $this->populate($this->createCommand()->queryAll()),
-        };
+        if ($this->emulateExecution === true) {
+            return [];
+        }
+
+        return ArrayHelper::populate($this->createCommand()->queryAll(), $this->indexBy);
     }
 
     public function average(string $q): int|float|null|string
@@ -241,7 +242,11 @@ class Query implements QueryInterface
 
     public function batch(int $batchSize = 100): BatchQueryResultInterface
     {
-        return $this->db->createBatchQueryResult($this)->batchSize($batchSize);
+        return $this->db
+            ->createBatchQueryResult($this)
+            ->batchSize($batchSize)
+            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => ArrayHelper::populate($rows, $indexBy))
+        ;
     }
 
     public function column(): array
@@ -311,7 +316,11 @@ class Query implements QueryInterface
 
     public function each(int $batchSize = 100): BatchQueryResultInterface
     {
-        return $this->db->createBatchQueryResult($this, true)->batchSize($batchSize);
+        return $this->db
+            ->createBatchQueryResult($this, true)
+            ->batchSize($batchSize)
+            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => ArrayHelper::populate($rows, $indexBy))
+        ;
     }
 
     public function exists(): bool
@@ -584,23 +593,6 @@ class Query implements QueryInterface
     {
         $this->params = $params;
         return $this;
-    }
-
-    public function populate(array $rows): array
-    {
-        if ($this->indexBy === null) {
-            return $rows;
-        }
-
-        $result = [];
-
-        /** @psalm-var array[][] $row */
-        foreach ($rows as $row) {
-            /** @psalm-suppress MixedArrayOffset */
-            $result[ArrayHelper::getValueByPath($row, $this->indexBy)] = $row;
-        }
-
-        return $result;
     }
 
     public function prepare(QueryBuilderInterface $builder): QueryInterface
