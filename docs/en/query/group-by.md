@@ -19,7 +19,7 @@ $query->groupBy('id, status');
 
 **Note:** *You should use the array format if `GROUP BY` involves some DB expression*.
 
-You can call `\Yiisoft\Db\Query\Query::addGroupBy()` to add additional columns to the `GROUP BY` fragment.
+You can call `\Yiisoft\Db\Query\Query::addGroupBy()` to add more columns to the `GROUP BY` fragment.
 
 For example, the following code will generate a query that groups the results by the `id` column, the `status` column and the `age` column.
 

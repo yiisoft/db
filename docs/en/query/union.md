@@ -19,4 +19,4 @@ $query2 = (new Query($db))->select('id, type, name')->from('{{%user}}')->limit(1
 $query1->union($query2);
 ```
 
-You can call `Yiisoft\Db\Query\Query::union()` multiple times to append more `UNION` fragments.
+You can call `Yiisoft\Db\Query\Query::union()` many times to append more `UNION` fragments.

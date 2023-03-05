@@ -1,6 +1,12 @@
 # Building queries
 
-To build a `Yiisoft\Db\Query\Query` object, you call different query building methods to specify different parts of a **SQL query**. The names of these methods resemble the **SQL keywords** used in the corresponding parts of the **SQL statement**. For example, to specify the **FROM** part of a **SQL query**, you would call the `Yiisoft\Db\Query\Query::from()` method. All the query building methods return the query object itself, which allows you to chain multiple calls together.
+To build a `Yiisoft\Db\Query\Query` object, you call different query building methods to specify different parts of a **SQL query**.
+
+The names of these methods resemble the **SQL keywords** used in the corresponding parts of the **SQL statement**.
+
+For example, to specify the `FROM` part of a **SQL query**, you would call the `Yiisoft\Db\Query\Query::from()` method.
+
+All the query building methods return the query object itself, which allows you to chain many calls together.
 
 In the following, we will describe the usage of each query building method.
 

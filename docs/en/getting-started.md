@@ -1,10 +1,10 @@
 # Getting Started
 
-[Yii DB](https://github.com/yiisoft/db) is **DAO (Data Access Object)** layer for applications using [PHP](https://www.php.net/). It provides a set of classes that help you access relational databases. It is designed to be flexible and extensible, so that it can be used with different databases and different database schemas. Its database agnostic nature makes it easy to switch from one database to another.
+[Yii DB](https://github.com/yiisoft/db) is **DAO (Data Access Object)** layer for applications using [PHP](https://www.php.net/). It provides a set of classes that help you access relational databases. It's designed to be flexible and extensible, so that it can be used with different databases and different database schemas. Its database agnostic nature makes it easy to switch from one database to another.
 
-Built on top of [PDO](https://www.php.net/manual/en/book.pdo.php), [Yii DB](https://github.com/yiisoft/db) provides an **object-oriented API** for accessing relational databases. It is the foundation for other more advanced database access methods, including [Query Builder](query-builder.md).
+Built on top of [PDO](https://www.php.net/manual/en/book.pdo.php), [Yii DB](https://github.com/yiisoft/db) provides an **object-oriented API** for accessing relational databases. It's the foundation for other more advanced database access methods, including [Query Builder](query-builder.md).
 
-When using [Yii DB](https://github.com/yiisoft/db), you mainly need to deal with plain **SQLs** and **PHP arrays**. As a result, it is the most efficient way to access databases. However, because **SQL** syntax may vary for different databases, using [Yii DB](https://github.com/yiisoft/db) also means you have to take extra effort to create a database agnostic application.
+When using [Yii DB](https://github.com/yiisoft/db), you mainly need to deal with plain **SQLs** and **PHP arrays**. As a result, it's the most efficient way to access databases. However, because **SQL** syntax may vary for different databases, using [Yii DB](https://github.com/yiisoft/db) also means you have to take extra effort to create a database agnostic application.
 
 [Yii DB](https://github.com/yiisoft/db) supports the following databases out of the box:
 
@@ -63,7 +63,7 @@ You can create a database connection instance using a [DI container](https://git
 4. [PostgreSQL Server](/docs/en/connection/pgsql.md)
 5. [SQLite Server](/docs/en/connection/sqlite.md)
 
-**Info:** *When you create a **DB** connection instance, the actual connection to the database is not established until you execute the first **SQL** or you call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.*
+**Info:** *When you create a **DB** connection instance, the actual connection to the database isn't established until you execute the first **SQL** or you call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.*
 
 ### Logger and profiler
 
@@ -83,7 +83,7 @@ Once you have a database connection instance, you can execute an **SQL** query b
 
 ## Quoting Table and Column Names
 
-When writing a database-agnostic code, properly quoting table and column names is often a headache because different databases have different names quoting rules.
+When writing a database-agnostic code, quoting table and column names is often a headache because different databases have different names quoting rules.
 
 To overcome this problem, you may use the following quoting syntax introduced by [Yii DB](https://github.com/yiisoft/db):
 
@@ -92,7 +92,7 @@ To overcome this problem, you may use the following quoting syntax introduced by
 
 [Yii DB](https://github.com/yiisoft/db) will automatically convert such constructs into the corresponding quoted column or table names using the DBMS-specific syntax.
 
-For example, the following code will generate an SQL statement that is valid for all supported databases:
+For example, the following code will generate an SQL statement that's valid for all supported databases:
 
 ```php
 <?php
@@ -108,4 +108,4 @@ $result = $db->createCommand("SELECT COUNT([[id]]) FROM {{%employee}}")->querySc
 
 ## Query Builder
 
-[Yii DB](https://github.com/yiisoft/db) provides a [Query Builder](query-builder.md) that helps you create **SQL** statements in a more convenient way. It is a powerful tool that can be used to create complex **SQL** statements in a simple way.
+[Yii DB](https://github.com/yiisoft/db) provides a [Query Builder](query-builder.md) that helps you create **SQL** statements in a more convenient way. It's a powerful tool that can be used to create complex **SQL** statements in a simple way.

@@ -5,7 +5,7 @@ The `Yiisoft\Db\Query\Query::select()` method specifies the `SELECT` fragment of
 ```php
 $query->select(['id', 'email']);
 
-// equivalent to:
+// equal to:
 
 $query->select('id, email');
 ```
@@ -17,12 +17,12 @@ For example, the following code will select the `id` and `email` columns from th
 ```php
 $query->select(['user.id AS user_id', 'email']);
 
-// equivalent to:
+// equal to:
 
 $query->select('user.id AS user_id, email');
 ```
 
-If you are using the array format to specify columns, you can also use the array keys to specify the column aliases.
+If you're using the array format to specify columns, you can also use the array keys to specify the column aliases.
 
 For example, the above code can be rewritten as follows.
 
@@ -30,9 +30,9 @@ For example, the above code can be rewritten as follows.
 $query->select(['user_id' => 'user.id', 'email']);
 ```
 
-If you do not call the `Yiisoft\Db\Query\Query::select()` method when building a query, `*` will be selected, which means selecting all columns.
+If you don't call the `Yiisoft\Db\Query\Query::select()` method when building a query, `*` will be selected, which means selecting all columns.
 
-Besides column names, you can also select **DB expressions**. You must use the array format when selecting a **DB expression** that contains commas to avoid incorrect automatic name quoting. 
+Besides column names, you can also select **DB expressions**. You must use the array format when selecting a **DB expression** that has commas to avoid wrong automatic name quoting. 
 
 For example, the following code will select columns `CONCAT(first_name, ' ', last_name)` with alias `full_name` and column `email`.
 
@@ -69,7 +69,7 @@ To select distinct rows, you may call distinct(), like the following.
 $query->select('user_id')->distinct();
 ```
 
-You can call `Yiisoft\Db\Query\Query::addSelect()` to select additional columns.
+You can call `Yiisoft\Db\Query\Query::addSelect()` to select more columns.
 
 For example, the following code will select `id` and `username` columns, additionally to the `email` column. 
 
