@@ -8,7 +8,7 @@ You can **bind parameters** to an **SQL statement** by using named placeholders 
 
 ## Bind value
 
-`BindValue()` binds a value to a parameter. It is recommended to use this method to bind parameter values to ensure the security of your application.
+`BindValue()` binds a value to a parameter. It's recommended to use this method to bind parameter values to ensure the security of your application.
 
 For example, the following code binds the value `1` to the named placeholder `:id`.
 
@@ -41,7 +41,7 @@ The result of the above example is.
 
 ## Bind values
 
-`BindValues()` binds a list of values to the corresponding named placeholders in the **SQL statement**. It is recommended to use this method to bind parameter values to ensure the security of your application.
+`BindValues()` binds a list of values to the corresponding named placeholders in the **SQL statement**. It's recommended to use this method to bind parameter values to ensure the security of your application.
 
 For example, the following code binds the values `3` and `user3` to the named placeholders `:id` and `:name`.
 
@@ -74,7 +74,7 @@ The result of the above example is.
 
 ## Bind parameter
 
-`bindParam()` binds a parameter to the specified variable name. It is recommended to use this method to bind parameter values to ensure the security of your application.
+`bindParam()` binds a parameter to the specified variable name. It's recommended to use this method to bind parameter values to ensure the security of your application.
 
 For example, the following code binds the value `2` and `user2` to the named placeholders `:id` and `:name`.
 

@@ -30,4 +30,4 @@ $mainQuery = (new Query($db))
     ->withQuery($initialQuery->union($recursiveQuery), 't1', true);
 ```
 
-`\Yiisoft\Db\Query\Query::withQuery()` can be called multiple times to prepend more CTE's to the main query. Queries will be prepended in the same order as they attached. If one of the queries is recursive, then the whole CTE becomes recursive.
+`\Yiisoft\Db\Query\Query::withQuery()` can be called many times to prepend more CTE's to the main query. Queries will be prepended in the same order as they attached. If one of the queries is recursive, then the whole CTE becomes recursive.

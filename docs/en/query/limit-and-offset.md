@@ -9,6 +9,6 @@ For example, the following code will build a query that will return only 10 reco
 $query->limit(10)->offset(20);
 ```
 
-If you specify an invalid limit or offset (e.g. a negative value), it will be ignored.
+If you specify an invalid limit or offset, for example, a negative value, it will be ignored.
 
-**Info:** *For DBMS that do not support `LIMIT` and `OFFSET` (e.g. `MSSQL`), query builder will generate a SQL statement that emulates the `LIMIT/OFFSET behavior`.*
+**Info:** *For DBMS that don't support `LIMIT` and `OFFSET` (e.g. `MSSQL`), query builder will generate a SQL statement that emulates the `LIMIT/OFFSET behavior`.*

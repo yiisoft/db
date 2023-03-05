@@ -2,7 +2,7 @@
 
 [Yii DB](https://github.com/yiisoft/db) used [Yii Profiler](https://github.com/yiisoft/profiler), a tool for collecting and analyzing database queries. This can be useful for debugging and optimizing database performance.
 
-When we install [Yii Profiler](https://github.com/yiisoft/profiler) it is automatically configured in the [DI container](https://github.com/yiisoft/di) for [Yii Config](https://github.com/yiisoft/config), so we can use it in our application. 
+When we install [Yii Profiler](https://github.com/yiisoft/profiler) it's automatically configured in the [DI container](https://github.com/yiisoft/di) for [Yii Config](https://github.com/yiisoft/config), so we can use it in our application. 
 
 But we will leave an example of how to configure it manually.
 

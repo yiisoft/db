@@ -4,11 +4,11 @@ The [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCach
  
 The [Schema](https://github.com/yiisoft/db/blob/master/src/Schema/AbstractSchema.php) retrieves information about the **database schema** from the **database server** and stores it in the **cache** for faster access. When the [Schema](https://github.com/yiisoft/db/blob/master/src/Schema/AbstractSchema.php) needs to retrieve information about the database **schema**, it first checks the **cache** using the [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php).
 
-If the information is not in the **cache**, the [Schema](https://github.com/yiisoft/db/blob/master/src/Schema/AbstractSchema.php) retrieves it from the database server and stores it in the **cache** using the [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php).
+If the information isn't in the **cache**, the [Schema](https://github.com/yiisoft/db/blob/master/src/Schema/AbstractSchema.php) retrieves it from the database server and stores it in the **cache** using the [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php).
 
 For the configuration of [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php), you can do it in two ways. 
  
-The first is configured [psr-16](https://github.com/php-fig/simple-cache) **cache** in the [DI container](https://github.com/yiisoft/di), and it is **configured automatically** by **autowired** in the **application controller**, the second is configuring it **manually in the configuration file**.
+The first is configured [PSR-16](https://github.com/php-fig/simple-cache) **cache** in the [DI container](https://github.com/yiisoft/di), and it's **configured automatically** by **autowired** in the **application controller**, the second is configuring it **manually in the configuration file**.
 
 ## Configuration file with autowired cache
 
