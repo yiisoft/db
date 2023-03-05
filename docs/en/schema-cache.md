@@ -8,7 +8,7 @@ If the information isn't in the **cache**, the [Schema](https://github.com/yiiso
 
 For the configuration of [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php), you can do it in two ways. 
  
-The first is configured [psr-16](https://github.com/php-fig/simple-cache) **cache** in the [DI container](https://github.com/yiisoft/di), and it's **configured automatically** by **autowired** in the **application controller**, the second is configuring it **manually in the configuration file**.
+The first is configured [PSR-16](https://github.com/php-fig/simple-cache) **cache** in the [DI container](https://github.com/yiisoft/di), and it's **configured automatically** by **autowired** in the **application controller**, the second is configuring it **manually in the configuration file**.
 
 ## Configuration file with autowired cache
 
