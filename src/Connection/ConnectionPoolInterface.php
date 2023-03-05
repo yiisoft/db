@@ -7,6 +7,10 @@ namespace Yiisoft\Db\Connection;
 use Closure;
 use Throwable;
 
+/**
+ * This interface represents a connection pool. It provides a way to get a connection from the pool. It also provides
+ * methods to set and get the master and slave connections.
+ */
 interface ConnectionPoolInterface
 {
     /**
@@ -89,8 +93,8 @@ interface ConnectionPoolInterface
      * });
      * ```
      *
-     * @param Closure $callback a PHP Closure to be executed by this method. Its signature is
-     * `function (ConnectionInterface $db)`. Its return value will be returned by this method.
+     * @param Closure $closure a PHP Closure to be executed by this method.
+     * Its signature is `function (ConnectionInterface $db)`. Its return value will be returned by this method.
      *
      * @throws Throwable If there is any exception thrown from the callback.
      *

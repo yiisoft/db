@@ -18,8 +18,8 @@ use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 /**
- * The AbstractConnection class represents a connection to a database. It provides methods for interacting with the
- * database, such as executing SQL queries and performing data manipulation.
+ * Represents a connection to a database. It provides methods for interacting with the database, such as executing SQL
+ * queries and performing data manipulation.
  */
 abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInterface
 {
@@ -112,6 +112,8 @@ abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInt
      *
      * @param TransactionInterface $transaction TransactionInterface object given from {@see beginTransaction()}.
      * @param int $level TransactionInterface level just after {@see beginTransaction()} call.
+     *
+     * @throws Throwable If transaction was not rolled back.
      */
     private function rollbackTransactionOnLevel(TransactionInterface $transaction, int $level): void
     {
