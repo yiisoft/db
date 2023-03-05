@@ -253,7 +253,7 @@ abstract class AbstractCommandTest extends TestCase
         $db = $this->getConnection();
         $db->open();
 
-        $profiler = new class($this, $sql) implements ProfilerInterface {
+        $profiler = new class ($this, $sql) implements ProfilerInterface {
             public function __construct(private TestCase $test, private string $sql)
             {
             }
