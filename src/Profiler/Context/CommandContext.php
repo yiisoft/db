@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Profiler\Context;
 
-final class QueryContext extends AbstractContext
+final class CommandContext extends AbstractContext
 {
     private const LOG_CONTEXT = 'logContext';
     private const SQL = 'sql';
@@ -21,12 +21,12 @@ final class QueryContext extends AbstractContext
 
     public function getType(): string
     {
-        return 'query';
+        return 'command';
     }
 
-    public function __toArray(): array
+    public function asArray(): array
     {
-        return parent::__toArray() + [
+        return parent::asArray() + [
             self::LOG_CONTEXT => $this->logContext,
             self::SQL => $this->sql,
             self::PARAMS => $this->params,

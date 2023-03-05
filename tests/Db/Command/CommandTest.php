@@ -719,4 +719,12 @@ final class CommandTest extends AbstractCommandTest
         );
         parent::testProfiler();
     }
+
+    public function testProfilerData(): void
+    {
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+        );
+        parent::testProfilerData();
+    }
 }

@@ -24,7 +24,7 @@ abstract class AbstractContext implements ContextInterface
         return $this;
     }
 
-    public function __toArray(): array
+    public function asArray(): array
     {
         return [
             self::METHOD => $this->method,

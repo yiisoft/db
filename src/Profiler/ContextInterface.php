@@ -13,7 +13,5 @@ interface ContextInterface
      */
     public function getType(): string;
 
-    public function setException(Throwable $e): static;
-
-    public function __toArray(): array;
+    public function asArray(): array;
 }

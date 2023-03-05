@@ -11,7 +11,7 @@ use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
-use Yiisoft\Db\Profiler\Context\QueryContext;
+use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -540,7 +540,7 @@ abstract class AbstractCommand implements CommandInterface
         $isReadMode = $this->isReadMode($queryMode);
 
         $logCategory = self::class . '::' . ($isReadMode ? 'query' : 'execute');
-        $queryContext = new QueryContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
+        $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
 
         $this->logQuery($rawSql, $logCategory);
         $this->prepare($isReadMode);

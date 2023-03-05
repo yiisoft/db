@@ -11,6 +11,8 @@ use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Profiler\Context\CommandContext;
+use Yiisoft\Db\Profiler\ContextInterface;
 use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -217,10 +219,8 @@ abstract class AbstractCommandTest extends TestCase
      * @throws Throwable
      * @throws \PHPUnit\Framework\MockObject\Exception
      */
-    public function testProfiler(): void
+    public function testProfiler($sql = 'SELECT 123'): void
     {
-        $sql = 'SELECT 123';
-
         $db = $this->getConnection();
         $db->open();
 
@@ -233,6 +233,46 @@ abstract class AbstractCommandTest extends TestCase
             ->method('end')
             ->with($sql)
         ;
+        $db->setProfiler($profiler);
+
+        $db->createCommand($sql)->execute();
+    }
+
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
+    public function testProfilerData(): void
+    {
+        $sql = 'SELECT 123';
+
+        $db = $this->getConnection();
+        $db->open();
+
+        $profiler = new class($this, $sql) implements ProfilerInterface {
+            public function __construct(private TestCase $test, private string $sql)
+            {
+            }
+
+            public function begin(string $token, ContextInterface|array $context = []): void
+            {
+                $this->test->assertSame($this->sql, $token);
+                $this->test->assertInstanceOf(CommandContext::class, $context);
+                $this->test->assertSame('command', $context->getType());
+                $this->test->assertIsArray($context->asArray());
+            }
+
+            public function end(string $token, ContextInterface|array $context = []): void
+            {
+                $this->test->assertSame($this->sql, $token);
+                $this->test->assertInstanceOf(CommandContext::class, $context);
+                $this->test->assertSame('command', $context->getType());
+                $this->test->assertIsArray($context->asArray());
+            }
+        };
+
         $db->setProfiler($profiler);
 
         $db->createCommand($sql)->execute();
