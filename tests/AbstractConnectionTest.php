@@ -10,7 +10,6 @@ use Throwable;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\Context\ConnectionContext;
 use Yiisoft\Db\Profiler\ContextInterface;
 use Yiisoft\Db\Query\BatchQueryResult;
