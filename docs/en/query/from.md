@@ -11,7 +11,7 @@ $query->from('{{%user}}');
 
 You can specify the **table(s)** being selected from in either a string or an array. The table names may contain **schema prefixes and/or table aliases**, like you do when writing **raw SQL statements**.
 
-For example, *the following code not recommend to use*, prefer to always *use the array syntax*.
+For example, *the following code does not recommend to use*, prefer to always *use the array syntax*.
 
 ```php
 $query->from(['{{public.%user}} u', '{{public.%post}} p']);

@@ -1,6 +1,6 @@
 # Connecting MySQL
 
-To configure [Yii DB MySQL/MariaDB](https://github.com/yiisoft/db-mysql) with [DI container](https://github.com/yiisoft/di) you need to create a configuration file.
+To configure [Yii DB MySQL/MariaDB](https://github.com/yiisoft/db-mysql) with a [DI container](https://github.com/yiisoft/di), you need to create a configuration file.
 
 Create a file `config/common/di/db-mysql.php`.
 

@@ -11,7 +11,7 @@ $query->having(['status' => 1]);
 
 Please refer to the documentation for [Where](/docs/en/query/where.md) for more details about how to specify a condition.
 
-You can call `Yiisoft\Db\Query\Query::andHaving()` or ``Yiisoft\Db\Query\Query::orHaving()` to append additional conditions to the `HAVING` fragment.
+You can call `Yiisoft\Db\Query\Query::andHaving()` or `Yiisoft\Db\Query\Query::orHaving()` to append additional conditions to the `HAVING` fragment.
 
 For example, the following code will generate a query that filters the results by the `status` column and the `age` column:
 

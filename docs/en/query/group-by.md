@@ -9,7 +9,7 @@ For example, the following code will generate a query that groups the results by
 $query->groupBy(['id', 'status']);
 ```
 
-If GROUP BY only involves simple column names, you can specify it using a string, just like you do when writing raw SQL statements.
+If a `GROUP BY` only involves simple column names, you can specify it using a string, just like you do when writing raw SQL statements.
 
 For example, the following code will generate a query that groups the results by the `id` column and the `status` column.
 
