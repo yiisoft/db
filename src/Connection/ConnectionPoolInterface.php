@@ -16,7 +16,7 @@ interface ConnectionPoolInterface
     /**
      * Whether to enable read/write splitting by using {@see slaves} to read data.
      *
-     * Note that if {@see slaves} is empty, read/write splitting will NOT be enabled no matter what value this property
+     * Note that if {@see slaves} is empty, read/write splitting won't be enabled no matter what value this property
      * takes.
      */
     public function areSecondaryEnabled(): bool;
@@ -48,13 +48,13 @@ interface ConnectionPoolInterface
 
     /**
      * Whether to enable read/write splitting by using {@see setSecondary()} to read data.
-     * Note that if {@see setSecondary()} is empty, read/write splitting will NOT be enabled no matter what value this
+     * Note that if {@see setSecondary()} is empty, read/write splitting won't be enabled no matter what value this
      * property takes.
      */
     public function setEnableSecondary(bool $value): void;
 
     /**
-     * Set connection for primary server, you can specify multiple connections, adding the id for each one.
+     * Set connection for primary server, you can specify many connections, adding the id for each one.
      *
      * @param string $key Index primary connection.
      * @param ConnectionInterface $master The connection every primary.
@@ -76,7 +76,7 @@ interface ConnectionPoolInterface
     public function setShufflePrimary(bool $value): void;
 
     /**
-     * Set connection for a primary secondary, you can specify multiple connections, adding the id for each one.
+     * Set connection for a primary secondary, you can specify many connections, adding the id for each one.
      *
      * @param string $key Index secondary connection.
      * @param ConnectionInterface $slave The connection every secondary.
@@ -87,7 +87,9 @@ interface ConnectionPoolInterface
      * Executes the provided callback by using the primary connection.
      *
      * This method is provided so that you can temporarily force using the primary connection to perform DB operations
-     * even if they are read queries. For example,
+     * even if they're read queries.
+     *
+     * For example,
      *
      * ```php
      * $result = $db->useMaster(function (ConnectionInterface $db) {

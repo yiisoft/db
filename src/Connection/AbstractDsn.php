@@ -9,7 +9,7 @@ use Stringable;
 use function implode;
 
 /**
- * It's typically used to parse a DSN string, which is a string that contains all the necessary information to connect
+ * It's typically used to parse a DSN string, which is a string that has all the necessary information to connect
  * to a database, such as the database driver, hostname, database name, port and options.
  *
  * It also allows you to access individual components of the DSN, such as the driver or the database name.
@@ -50,7 +50,7 @@ abstract class AbstractDsn implements DsnInterface, Stringable
     }
 
     /**
-     * @return string The Data Source Name, or DSN, contains the information required to connect to the database.
+     * @return string The Data Source Name, or DSN, has the information required to connect to the database.
      */
     public function __toString(): string
     {
@@ -90,7 +90,7 @@ abstract class AbstractDsn implements DsnInterface, Stringable
     }
 
     /**
-     * @return string|null The database port. Null if is not set.
+     * @return string|null The database port. Null if isn't set.
      */
     public function getPort(): string|null
     {

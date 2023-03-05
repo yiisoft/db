@@ -153,9 +153,9 @@ interface ConnectionInterface
      * Obtains the schema information for the named table.
      *
      * @param string $name The table name.
-     * @param bool $refresh Whether to reload the table schema even if it is found in the cache.
+     * @param bool $refresh Whether to reload the table schema even if it's found in the cache.
      *
-     * @return TableSchemaInterface|null The schema information for the named table. Null if the named table does not
+     * @return TableSchemaInterface|null The schema information for the named table. Null if the named table doesn't
      * exist.
      */
     public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null;
@@ -192,13 +192,14 @@ interface ConnectionInterface
     /**
      * Quotes a value for use in a query.
      *
-     * @return mixed The properly quoted string.
+     * @return mixed The quoted string.
      */
     public function quoteValue(mixed $value): mixed;
 
     /**
-     * Whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint). Note that if the underlying DBMS does not
-     * support savepoint, setting this property to be true will have no effect.
+     * Whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint).
+     *
+     * Note that if the underlying DBMS doesn't support savepoint, setting this property to be true will have no effect.
      *
      * @param bool $value Whether to enable savepoint.
      */

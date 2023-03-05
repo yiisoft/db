@@ -48,7 +48,7 @@ use function strncmp;
  *
  * Abstract command supports SQL statement preparation and parameter binding.
  *
- * Call {@see bindValue()} to bind a value to a SQL parameter;
+ * Call {@see bindValue()} to bind a value to a SQL parameter.
  * Call {@see bindParam()} to bind a PHP variable to a SQL parameter.
  *
  * When binding a parameter, the SQL statement is automatically prepared. You may also call {@see prepare()} explicitly

@@ -7,13 +7,14 @@ namespace Yiisoft\Db\Connection;
 /**
  * This interface represents a Data Source Name.
  *
- * It is used to configure a {@see ConnectionInterface} instance. The DSN string format is described in
- * {@see asString()}.
+ * It's used to configure a {@see ConnectionInterface} instance.
+ *
+ * The DSN string format is described in {@see asString()}.
  */
 interface DsnInterface
 {
     /**
-     * @return string The Data Source Name, or DSN, contains the information required to connect to the database.
+     * @return string The Data Source Name, or DSN, has the information required to connect to the database.
      *
      * Please refer to the [PHP manual](http://php.net/manual/en/pdo.construct.php) on the format of the DSN string.
      *

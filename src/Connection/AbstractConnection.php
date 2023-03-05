@@ -110,8 +110,9 @@ abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInt
     /**
      * Rolls back given {@see TransactionInterface} an object if it's still active and level match.
      *
-     * In some cases, rollback can fail, so this method is fail-safe. Exceptions thrown from rollback will be caught and
-     * just logged with {@see logger->log()}.
+     * Sometimes, rollback can fail, so this method is fail-safe.
+     *
+     * Exceptions thrown from rollback will be caught and just logged with {@see logger->log()}.
      *
      * @param TransactionInterface $transaction TransactionInterface object given from {@see beginTransaction()}.
      * @param int $level TransactionInterface level just after {@see beginTransaction()} call.
