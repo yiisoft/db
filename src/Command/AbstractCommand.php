@@ -29,7 +29,7 @@ use function stream_get_contents;
 use function strncmp;
 
 /**
- * Represents a SQL statement to be executed against a database.
+ * Represents an SQL statement to be executed against a database.
  *
  * A command object is usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
  *
@@ -48,7 +48,7 @@ use function strncmp;
  *
  * Abstract command supports SQL statement preparation and parameter binding.
  *
- * Call {@see bindValue()} to bind a value to a SQL parameter;
+ * Call {@see bindValue()} to bind a value to a SQL parameter.
  * Call {@see bindParam()} to bind a PHP variable to a SQL parameter.
  *
  * When binding a parameter, the SQL statement is automatically prepared. You may also call {@see prepare()} explicitly
@@ -66,7 +66,7 @@ use function strncmp;
  * )->execute();
  * ```
  *
- * To build SELECT SQL statements, please use {@see \Yiisoft\Db\Query\QueryInterface} instead.
+ * To build SELECT SQL statements, please use {@see QueryInterface} instead.
  */
 abstract class AbstractCommand implements CommandInterface
 {
@@ -605,7 +605,7 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Checks if the query mode is read mode.
+     * Checks if the query mode is a read mode.
      */
     private function isReadMode(int $queryMode): bool
     {

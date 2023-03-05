@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Command;
 
 /**
- * This interface represents a parameter to be bound to a SQL statement.
+ * This interface represents a parameter to be bound to an SQL statement.
  */
 interface ParamInterface
 {
     /**
      * @param mixed $value The value to bind to the parameter.
-     * @param int $type The SQL data type of the parameter. If null, the type is determined by the PHP type of the
-     * value.
+     * @param int $type The SQL data type of the parameter.
+     * If null, the type is determined by the PHP type of the value.
      */
     public function __construct(mixed $value, int $type);
 

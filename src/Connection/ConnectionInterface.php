@@ -83,18 +83,18 @@ interface ConnectionInterface
     public function close(): void;
 
     /**
-     * Return cache key as array.
+     * Return a cache key as an array.
      *
-     * For example in PDO implementation: [$dsn, $username]
+     * For example, in PDO implementation: [$dsn, $username]
      *
-     * @return array The cache key as array.
+     * @return array The cache key as an array.
      */
     public function getCacheKey(): array;
 
     /**
      * Returns the name of the DB driver for the current `dsn`.
      *
-     * Use this method for informational purposes only.
+     * Use this method for information only.
      *
      * @return string The name of the DB driver for the current `dsn`.
      */
@@ -153,9 +153,9 @@ interface ConnectionInterface
      * Obtains the schema information for the named table.
      *
      * @param string $name The table name.
-     * @param bool $refresh Whether to reload the table schema even if it is found in the cache.
+     * @param bool $refresh Whether to reload the table schema even if it's found in the cache.
      *
-     * @return TableSchemaInterface|null The schema information for the named table. Null if the named table does not
+     * @return TableSchemaInterface|null The schema information for the named table. Null if the named table doesn't
      * exist.
      */
     public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null;
@@ -192,13 +192,14 @@ interface ConnectionInterface
     /**
      * Quotes a value for use in a query.
      *
-     * @return mixed The properly quoted string.
+     * @return mixed The quoted string.
      */
     public function quoteValue(mixed $value): mixed;
 
     /**
-     * Whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint). Note that if the underlying DBMS does not
-     * support savepoint, setting this property to be true will have no effect.
+     * Whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint).
+     *
+     * Note that if the underlying DBMS doesn't support savepoint, setting this property to be true will have no effect.
      *
      * @param bool $value Whether to enable savepoint.
      */
@@ -226,7 +227,7 @@ interface ConnectionInterface
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      * {@see TransactionInterface::begin()} for details.
      *
-     * @throws Throwable If there is any exception during query. In this case the transaction will be rolled back.
+     * @throws Throwable If there is any exception during query. In this case, the transaction will be rolled back.
      *
      * @return mixed Result of callback function.
      */
