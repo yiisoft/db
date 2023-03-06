@@ -13,9 +13,11 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 /**
- * Transaction represents a DB transaction.
+ * Represents a DB transaction.
  *
- * It is usually created by calling {@see Connection::beginTransaction()}.
+ * A transaction is a set of SQL statements that must either all succeed or all fail.
+ *
+ * It's usually created by calling {@see \Yiisoft\Db\Connection\AbstractConnectionAbstractConnection::beginTransaction()}.
  *
  * The following code is a typical example of using transactions (note that some DBMS may not support transactions):
  *
@@ -115,7 +117,7 @@ abstract class AbstractTransactionPDO implements TransactionInterface
 
     public function isActive(): bool
     {
-        /** Additional check pdo->inTransaction {@see https://github.com/yiisoft/yii2/pull/18407/} */
+        /** More check pdo->inTransaction {@see https://github.com/yiisoft/yii2/pull/18407/} */
         return $this->level > 0 && $this->db->isActive() && $this->db->getPDO()?->inTransaction();
     }
 
@@ -123,8 +125,8 @@ abstract class AbstractTransactionPDO implements TransactionInterface
     {
         if (!$this->isActive()) {
             /**
-             * do nothing if transaction is not active: this could be the transaction is committed but the event handler
-             * to "commitTransaction" throw an exception
+             * Do nothing if a transaction isn't active: this could be the transaction is committed but the event
+             * handler to "commitTransaction" throw an exception
              */
             return;
         }

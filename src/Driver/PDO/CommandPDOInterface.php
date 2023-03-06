@@ -8,7 +8,7 @@ use PDOStatement;
 use Yiisoft\Db\Command\CommandInterface;
 
 /**
- * The CommandPDOInterface defines a method `getPdoStatement()` that must be implemented by PDO command classes.
+ * This interface defines the method {@see getPdoStatement()} that must be implemented by {@see \PDO}.
  *
  * @see CommandInterface
  */

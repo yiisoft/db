@@ -16,14 +16,22 @@ use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Query\Data\DataReader;
 
 /**
- * The AbstractCommandPDO represents a database command that can be executed against a PDO (PHP Data Object) database
- * connection. It is an abstract class that provides a common interface for building and executing various types of
- * statements (such as cancel, getPDOStatement, prepare etc.) using a PDO connection. It also provides methods for
- * binding parameter values and retrieving query results. It is designed to be used in conjunction with other classes
- * in the yiisoft/db library for working with databases in a consistent and efficient manner.
+ * Represents a database command that can be executed against a PDO (PHP Data Object) database connection.
+ *
+ * It's an abstract class that provides a common interface for building and executing various types of statements
+ * such as {@see cancel()}, {@see execute()}, {@see insert()}, {@see update()}, {@see delete()}, etc., using a PDO
+ * connection.
+ *
+ * It also provides methods for binding parameter values and retrieving query results.
  */
 abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOInterface
 {
+    /**
+     * @var PDOStatement|null Represents a prepared statement and, after the statement is executed, an associated
+     * result set.
+     *
+     * @link https://www.php.net/manual/en/class.pdostatement.php
+     */
     protected PDOStatement|null $pdoStatement = null;
 
     public function __construct(protected ConnectionPDOInterface $db)

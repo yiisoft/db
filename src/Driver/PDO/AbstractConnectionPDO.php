@@ -20,13 +20,14 @@ use function array_keys;
 use function is_string;
 
 /**
- * The AbstractConnectionPDO class represents a connection to a database using the PDO (PHP Data Objects) extension. It
- * provides a set of methods for interacting with a database using PDO, such as executing SQL statements, preparing and
- * executing statements, and managing transactions.
+ * Represents a connection to a database using the PDO (PHP Data Objects) extension.
  *
- * The ConnectionPDO class extends from the AbstractConnection class, which is a base class for representing a
- * connection to a database. It implements the ConnectionInterface, which defines the interface for interacting with a
- * database connection.
+ * It provides a set of methods for interacting with a database using PDO, such as executing SQL statements, preparing
+ * and executing statements, and managing transactions.
+ *
+ * The ConnectionPDO classes extend from this class, which is a base class for representing a connection to a database.
+ *
+ * It implements the ConnectionInterface, which defines the interface for interacting with a database connection.
  */
 abstract class AbstractConnectionPDO extends AbstractConnection implements ConnectionPDOInterface
 {
@@ -150,10 +151,6 @@ abstract class AbstractConnectionPDO extends AbstractConnection implements Conne
         return $this->driver->getDriverName();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function getServerVersion(): string
     {
         if ($this->serverVersion === '') {
@@ -170,10 +167,6 @@ abstract class AbstractConnectionPDO extends AbstractConnection implements Conne
         return $this->pdo !== null;
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function quoteValue(mixed $value): mixed
     {
         if (is_string($value) === false) {
@@ -193,9 +186,7 @@ abstract class AbstractConnectionPDO extends AbstractConnection implements Conne
      *
      * This method is invoked right after the DB connection is established.
      *
-     * The default implementation turns on `PDO::ATTR_EMULATE_PREPARES`.
-     *
-     * if {@see emulatePrepare} is true, and sets the database {@see charset} if it is not empty.
+     * The default implementation turns on `PDO::ATTR_EMULATE_PREPARES`, if {@see getEmulatePrepare()} is `true`.
      */
     protected function initConnection(): void
     {
