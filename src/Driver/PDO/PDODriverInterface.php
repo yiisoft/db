@@ -58,7 +58,7 @@ interface PDODriverInterface extends DriverInterface
     public function getDsn(): string;
 
     /**
-     * @return string The driver names DB connection.
+     * @return string The driver name for DB connection.
      */
     public function getDriverName(): string;
 
