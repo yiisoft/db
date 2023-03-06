@@ -13,7 +13,7 @@ use Yiisoft\Db\Query\QueryInterface;
  *
  * For example:
  *
- * ```Php
+ * ```php
  * new JsonExpression(['a' => 1, 'b' => 2]); // will be encoded to '{"a": 1, "b": 2}'
  * ```
  */
