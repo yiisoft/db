@@ -7,8 +7,10 @@ namespace Yiisoft\Db\Exception;
 use PDOException;
 
 /**
- * The ConvertException class converts an exception into a more specific one. For example, if an exception is caused by
- * a violation of a unique key constraint, it will be converted into an {@see IntegrityException} exception.
+ * Converts an exception into a more specific one.
+ *
+ * For example, if an exception is caused by a violation of a unique key constraint, it will be converted into an
+ * {@see IntegrityException} exception.
  */
 final class ConvertException
 {
