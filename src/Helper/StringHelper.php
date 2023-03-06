@@ -17,7 +17,7 @@ use function trim;
 final class StringHelper
 {
     /**
-     * Returns the trailing name component of a path.
+     * Returns the trailing name part of a path.
      *
      * This method is similar to the php function `basename()` except that it will treat both \ and / as directory
      * separators, independent of the operating system.
@@ -25,11 +25,11 @@ final class StringHelper
      * This method was mainly created to work on php namespaces. When working with real file paths, PHP's `basename()`
      * should work fine for you.
      *
-     * Note: this method is not aware of the actual filesystem, or path components such as "..".
+     * Note: this method isn't aware of the actual filesystem, or path components such as "..".
      *
      * @param string $path A path string.
      *
-     * @return string The trailing name component of the given path.
+     * @return string The trailing name part of the given path.
      *
      * @link http://www.php.net/manual/en/function.basename.php
      */
@@ -46,7 +46,7 @@ final class StringHelper
     }
 
     /**
-     * Returns string representation of a number value without thousands separators and with dot as decimal separator.
+     * Returns string representation of a number value without a thousand separators and with dot as decimal separator.
      *
      * @param float|string $value The number value to be normalized.
      */

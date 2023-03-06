@@ -62,19 +62,24 @@ final class ArrayHelper
     /**
      * Retrieves the value of an array element or object property with the given key or property name.
      *
-     * If the key does not exist in the array, the default value will be returned instead.
+     * If the key doesn't exist in the array, the default value will be returned instead.
      *
      * Not used when getting value from an object.
      *
-     * The key may be specified in a dot format to retrieve the value of a sub-array or the property
-     * of an embedded object. In particular, if the key is `x.y.z`, then the returned value would
-     * be `$array['x']['y']['z']` or `$array->x->y->z` (if `$array` is an object). If `$array['x']`
-     * or `$array->x` is neither an array nor an object, the default value will be returned.
-     * Note that if the array already has an element `x.y.z`, then its value will be returned
-     * instead of going through the sub-arrays. So it is better to be done specifying an array of key names
-     * like `['x', 'y', 'z']`.
+     * The key may be specified in a dot format to retrieve the value of a sub-array or the property of an embedded
+     * object.
      *
-     * Below are some usage examples,
+     * In particular, if the key is `x.y.z`, then the returned value would be `$array['x']['y']['z']` or
+     * `$array->x->y->z` (if `$array` is an object).
+     *
+     * If `$array['x']` or `$array->x` is neither an array nor an object, the default value will be returned.
+     *
+     * Note that if the array already has an element `x.y.z`, then its value will be returned instead of going through
+     * the sub-arrays.
+     *
+     * So it's better to be done specifying an array of key names like `['x', 'y', 'z']`.
+     *
+     * Below are some usage examples.
      *
      * ```php
      * // working with array
@@ -94,9 +99,8 @@ final class ArrayHelper
      * @param array|object $array Array or object to extract value from.
      * @param Closure|string $key Key name of the array element, an array of keys or property name of the object, or an
      * anonymous function returning the value. The anonymous function signature should be:
-     *
      * `function($array, $defaultValue)`.
-     * @param mixed|null $default The default value to be returned if the specified array key does not exist. Not used
+     * @param mixed|null $default The default value to be returned if the specified array key doesn't exist. Not used
      * when getting value from an object.
      *
      * @return mixed The value of the element if found, default value otherwise
@@ -122,8 +126,10 @@ final class ArrayHelper
         }
 
         if (is_object($array)) {
-            // this is expected to fail if the property does not exist, or __get() is not implemented
-            // it is not reliably possible to check whether a property is accessible beforehand
+            /**
+             * This is expected to fail if the property doesn't exist, or __get() isn't implemented it isn't reliably
+             * possible to check whether a property is accessible beforehand
+             */
             return $array->$key;
         }
 
@@ -137,10 +143,10 @@ final class ArrayHelper
     /**
      * Indexes and/or groups the array according to a specified key.
      *
-     * The input should be either multidimensional array or an array of objects.
+     * The input should be either a multidimensional array or an array of objects.
      *
-     * The $key can be either a key name of the sub-array, a property name of object, or an anonymous function that must
-     * return the value that will be used as a key.
+     * The $key can be either a key name of the sub-array, a property name of an object, or an anonymous function that
+     * must return the value that will be used as a key.
      *
      * $groups is an array of keys, that will be used to group the input array into one or more sub-arrays based on keys
      * specified.
@@ -213,17 +219,17 @@ final class ArrayHelper
      *
      * @param array $array The array that needs to be indexed or grouped.
      * @param string|null $key The column name or anonymous function which result will be used to index the array.
-     * @param array $groups The array of keys, that will be used to group the input array by one or more keys. If the
-     * $key attribute or its value for the particular element is null and $groups is not defined, the array element will
-     * be discarded. Otherwise, if $groups is specified, array element will be added to the result array without any
-     * key.
+     * @param array $groups The array of keys that will be used to group the input array by one or more keys. If the
+     * $key attribute or its value for the particular element is null and $groups aren't defined.
+     * The array element will be discarded.
+     * Otherwise, if $groups are specified, an array element will be added to the result array without any key.
      *
      * @throws Exception
      *
      * @return array The indexed and/or grouped array.
      *
      * @psalm-param array[] $array The array that needs to be indexed or grouped.
-     * @psalm-param string[] $groups The array of keys, that will be used to group the input array by one or more keys.
+     * @psalm-param string[] $groups The array of keys that will be used to group the input array by one or more keys.
      *
      * @psalm-suppress MixedArrayAssignment
      */
@@ -268,11 +274,11 @@ final class ArrayHelper
      *
      * An array is associative if all its keys are strings.
      *
-     * Note that an empty array will NOT be considered associative.
+     * Note that an empty array won't be considered associative.
      *
-     * @param array $array The array being checked
+     * @param array $array The array being checked.
      *
-     * @return bool Whether the array is associative
+     * @return bool Whether the array is associative.
      */
     public static function isAssociative(array $array): bool
     {
@@ -311,8 +317,8 @@ final class ArrayHelper
             SORT_NUMERIC,
 
             /**
-             * This fix is used for cases when main sorting specified by columns has equal values without it will lead
-             * to Fatal Error: Nesting level too deep - recursive dependency?
+             * This fix is used for cases when the main sorting specified by columns has equal values without it will
+             * lead to Fatal Error: Nesting level too deep - recursive dependency?
              */
             range(1, count($array)),
             SORT_ASC,
@@ -322,16 +328,14 @@ final class ArrayHelper
     }
 
     /**
-     * @todo - Write correct description
-     * Converts the array with data, using index-key if needed
+     * Returns the value of an array element or object property with the given path.
      *
-     * This method is internally used to convert the data fetched from database into the format as required by this
+     * This method is internally used to convert the data fetched from a database into the format as required by this
      * query.
      *
-     * @param array $rows the raw query result from database.
-     * @psalm-suppress MixedArrayOffset
+     * @param array $rows The raw query result from a database.
      *
-     * @return array the converted query result.
+     * @psalm-suppress MixedArrayOffset
      */
     public static function populate(array $rows, Closure|string|null $indexBy = null): array
     {
