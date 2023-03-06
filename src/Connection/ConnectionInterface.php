@@ -138,6 +138,9 @@ interface ConnectionInterface
     /**
      * Returns a server version as a string comparable by {@see \version_compare()}.
      *
+     * @throws Exception
+     * @throws InvalidConfigException
+     *
      * @return string The server version as a string.
      */
     public function getServerVersion(): string;
@@ -191,6 +194,9 @@ interface ConnectionInterface
 
     /**
      * Quotes a value for use in a query.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
      *
      * @return mixed The quoted string.
      */
