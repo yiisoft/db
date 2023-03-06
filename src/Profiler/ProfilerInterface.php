@@ -16,7 +16,7 @@ interface ProfilerInterface
      *
      * This has to be matched with a call to {@see end()} with the same category name.
      *
-     * The beginning and end calls must also be nested.
+     * The begin and end calls must also be nested.
      *
      * @param string $token Token for the code block.
      * @param array $context The context data of this profile block.
