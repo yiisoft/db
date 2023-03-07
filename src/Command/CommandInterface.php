@@ -19,7 +19,7 @@ use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * This interface represents a database command, such as a SELECT, INSERT, UPDATE, or DELETE statement.
+ * This interface represents a database command, such as a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement.
  *
  * A command object is usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
  */
@@ -32,68 +32,67 @@ interface CommandInterface
     public const QUERY_MODE_CURSOR = 16;
 
     /**
-     * Creates an SQL command for adding a check constraint to an existing table.
+     * Creates an SQL command for adding a `CHECK` constraint to an existing table.
      *
-     * @param string $name The name of the check constraint. The name will be quoted by the method.
-     * @param string $table The table that the check constraint will be added to. The name will be quoted by the method.
+     * @param string $name The name of the check constraint.
+     * @param string $table The table that the check constraint will be added to.
      * @param string $expression The SQL of the `CHECK` constraint.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
     public function addCheck(string $name, string $table, string $expression): static;
 
     /**
      * Creates an SQL command for adding a new DB column.
      *
-     * @param string $table The table that the new column will be added to. The method will quote the table name.
-     * @param string $column The name of the new column. The name will be quoted by the method.
+     * @param string $table The table that the new column will be added to.
+     * @param string $column The name of the new column.
      * @param string $type The column type. {@see QueryBuilder::getColumnType()} will be called to convert the give
      * column type to the physical one. For example, `string` will be converted as `varchar(255)`, and `string not null`
      * becomes `varchar(255) not null`.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
     public function addColumn(string $table, string $column, string $type): static;
 
     /**
      * Builds an SQL command for adding comment to column.
      *
-     * @param string $table The table whose column is to be commented. The will quote the table name method.
-     * @param string $column The name of the column to be commented. The will quote the column name method.
-     * @param string $comment The text of the comment to be added. The method will quote the comment.
+     * @param string $table The table whose column is to be commented.
+     * @param string $column The name of the column to be commented.
+     * @param string $comment The text of the comment to be added.
      *
      * @throws \Exception
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table`, `column` and `comment` parameters before using them in the generated
+     * SQL.
      */
     public function addCommentOnColumn(string $table, string $column, string $comment): static;
 
     /**
      * Builds an SQL command for adding comment to the table.
      *
-     * @param string $table The table whose column is to be commented. The will quote the table name method.
-     * @param string $comment The text of the comment to be added. The method will quote the comment.
+     * @param string $table The table whose column is to be commented.
+     * @param string $comment The text of the comment to be added.
      *
      * @throws \Exception
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` and `comment` parameters before using them in the generated SQL.
      */
     public function addCommentOnTable(string $table, string $comment): static;
 
     /**
      * Creates an SQL command for adding a default value constraint to an existing table.
      *
-     * @param string $name The name of the default value constraint. The name will be quoted by the method.
-     * @param string $table The table that the default value constraint will be added to. The name will be proper quoted
-     * by the method.
-     * @param string $column The name of the column to that the constraint will be added on. The name will be proper
-     * quoted by the method.
+     * @param string $name The name of the default value constraint.
+     * @param string $table The table that the default value constraint will be added to.
+     * @param string $column The name of the column to that the constraint will be added on.
      * @param mixed $value Default value.
      *
      * @throws Exception
      * @throws NotSupportedException
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `name`, `table` and `column` parameters before using them in the generated SQL.
      */
     public function addDefaultValue(string $name, string $table, string $column, mixed $value): static;
 
@@ -117,7 +116,7 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `name`, `table`, refTable` parameters before using them in the generated SQL.
      */
     public function addForeignKey(
         string $name,
@@ -138,33 +137,32 @@ interface CommandInterface
      * @param string $table The table that the primary key constraint will be added to.
      * @param array|string $columns The comma separated string or array of columns that the primary key will consist of.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
     public function addPrimaryKey(string $name, string $table, array|string $columns): static;
 
     /**
      * Creates an SQL command for adding a unique constraint to an existing table.
      *
-     * @param string $name The name of the unique constraint. The name will be quoted by the method.
-     * @param string $table The table that the unique constraint will be added to. The name will be quoted by
-     * the method.
+     * @param string $name The name of the unique constraint.
+     * @param string $table The table that the unique constraint will be added to.
      * @param array|string $columns The name of the column to that the constraint will be added on. If there are
-     * many columns, separate them with commas. The name will be quoted by the method.
+     * many columns, separate them with commas.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
     public function addUnique(string $name, string $table, array|string $columns): static;
 
     /**
      * Creates an SQL command for changing the definition of a column.
      *
-     * @param string $table The table whose column is to be changed. The will quote the table name method.
-     * @param string $column The name of the column to be changed. The name will be quoted by the method.
+     * @param string $table The table whose column is to be changed.
+     * @param string $column The name of the column to be changed.
      * @param string $type The column type. {@see QueryBuilder::getColumnType()} will be called to convert the give
      * column type to the physical one. For example, `string` will be converted as `varchar(255)`, and `string not null`
      * becomes `varchar(255) not null`.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
     public function alterColumn(string $table, string $column, string $type): static;
 
@@ -198,7 +196,7 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
     public function batchInsert(string $table, array $columns, iterable $rows): static;
 
@@ -215,8 +213,6 @@ interface CommandInterface
      * @param mixed|null $driverOptions The driver-specific options.
      *
      * @throws Exception
-     *
-     * @return static The current command being executed.
      *
      * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
@@ -237,8 +233,6 @@ interface CommandInterface
      * @param mixed $value The value to bind to the parameter.
      * @param int|null $dataType The SQL data type of the parameter. If null, the type is determined by the PHP type of
      * the value.
-     *
-     * @return static The current command being executed.
      */
     public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
 
@@ -251,12 +245,10 @@ interface CommandInterface
      *
      * @param array|ParamInterface[] $values The values to be bound. This must be given in terms of an associative
      * array with array keys being the parameter names, and an array values the corresponding parameter values,
-     * e.g. `[':name' => 'John', ':age' => 25]`.
-     * By default, the {@see \PDO} type of each value is determined by its PHP type. You may explicitly specify the
-     * {@see PDO} type by using a {@see Param} class: `new Param(value, type)`,
-     * e.g. `[':name' => 'John', ':profile' => new Param($profile, \PDO::PARAM_LOB)]`.
-     *
-     * @return static The current command being executed.
+     * for example, `[':name' => 'John', ':age' => 25]`.
+     * By default, the {@see PDO} type of each value is determined by its PHP type. You may explicitly specify the
+     * {@see PDO} type by using a {@see Param} class: `new Param(value, type)`, for example,
+     * `[':name' => 'John', ':profile' => new Param($profile, PDO::PARAM_LOB)]`.
      */
     public function bindValues(array $values): static;
 
@@ -276,18 +268,17 @@ interface CommandInterface
      * @throws Exception
      * @throws NotSupportedException
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` parameters before using them in the generated SQL.
      */
     public function checkIntegrity(string $schema, string $table, bool $check = true): static;
 
     /**
      * Creates an SQL command for creating a new index.
      *
-     * @param string $name The name of the index. The name will be quoted by the method.
-     * @param string $table The table that the new index will be created for. The table name will be quoted by
-     * the method.
+     * @param string $name The name of the index.
+     * @param string $table The table that the new index will be created for.
      * @param array|string $columns The column(s) that should be included in the index. If there are many columns.
-     * Please separate them by commas. The method will quote the column names.
+     * Please separate them by commas.
      * @param string|null $indexType The type of index-supported DBMS - for example: `UNIQUE`, `FULLTEXT`, `SPATIAL`,
      * `BITMAP` or null as default.
      * @param string|null $indexMethod The setting index organization method (with `USING`, not all DBMS).
@@ -295,7 +286,7 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
     public function createIndex(
         string $name,
@@ -319,7 +310,7 @@ interface CommandInterface
      * If a column is specified with definition only (e.g. 'PRIMARY KEY (name, type)'), it will be directly inserted
      * into the generated SQL.
      *
-     * @param string $table The name of the table to be created. The name will be quoted by the method.
+     * @param string $table The name of the table to be created.
      * @param array $columns The columns (name => definition) in the new table.
      * @param string|null $options More SQL fragments that will be appended to the generated SQL.
      *
@@ -327,7 +318,7 @@ interface CommandInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
     public function createTable(string $table, array $columns, string $options = null): static;
 
@@ -341,7 +332,7 @@ interface CommandInterface
      * @throws InvalidArgumentException
      * @throws Exception
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `viewName` parameter before using it in the generated SQL.
      */
     public function createView(string $viewName, QueryInterface|string $subQuery): static;
 
@@ -373,79 +364,79 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
     public function delete(string $table, array|string $condition = '', array $params = []): static;
 
     /**
      * Creates an SQL command for dropping a check constraint.
      *
-     * @param string $name The name of the check constraint to be dropped. The will quote the name method.
-     * @param string $table The table whose check constraint is to be dropped. The will quote the name method.
+     * @param string $name The name of the check constraint to be dropped.
+     * @param string $table The table whose check constraint is to be dropped.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
     public function dropCheck(string $name, string $table): static;
 
     /**
      * Creates an SQL command for dropping a DB column.
      *
-     * @param string $table The table whose column is to be dropped. The name will be quoted by the method.
-     * @param string $column The name of the column to be dropped. The name will be quoted by the method.
+     * @param string $table The table whose column is to be dropped.
+     * @param string $column The name of the column to be dropped.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
     public function dropColumn(string $table, string $column): static;
 
     /**
      * Builds an SQL command for dropping comment from column.
      *
-     * @param string $table The table whose column is to be commented. The will quote the table name method.
-     * @param string $column The name of the column to be commented. The will quote the column name method.
+     * @param string $table The table whose column is to be commented.
+     * @param string $column The name of the column to be commented.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
     public function dropCommentFromColumn(string $table, string $column): static;
 
     /**
      * Builds an SQL command for dropping comment from the table.
      *
-     * @param string $table The table whose column is to be commented. The will quote the table name method.
+     * @param string $table The table whose column is to be commented.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
     public function dropCommentFromTable(string $table): static;
 
     /**
      * Creates an SQL command for dropping a default value constraint.
      *
-     * @param string $name The name of the default value constraint to be dropped. The will quote the name method.
-     * @param string $table The table whose default value constraint is to be dropped. The will quote the name method.
+     * @param string $name The name of the default value constraint to be dropped.
+     * @param string $table The table whose default value constraint is to be dropped.
      *
      * @throws Exception
      * @throws NotSupportedException
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
     public function dropDefaultValue(string $name, string $table): static;
 
     /**
      * Creates an SQL command for dropping a foreign key constraint.
      *
-     * @param string $name The name of the foreign key constraint to be dropped. The name will be quoted by the method.
-     * @param string $table The table whose foreign is to be dropped. The name will be quoted by the method.
+     * @param string $name The name of the foreign key constraint to be dropped.
+     * @param string $table The table whose foreign is to be dropped.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
     public function dropForeignKey(string $name, string $table): static;
 
     /**
      * Creates an SQL command for dropping an index.
      *
-     * @param string $name The name of the index to be dropped. The name will be quoted by the method.
-     * @param string $table The table whose index is to be dropped. The name will be quoted by the method.
+     * @param string $name The name of the index to be dropped.
+     * @param string $table The table whose index is to be dropped.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
     public function dropIndex(string $name, string $table): static;
 
@@ -455,26 +446,26 @@ interface CommandInterface
      * @param string $name The name of the primary key constraint to be removed.
      * @param string $table The table that the primary key constraint will be removed from.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
     public function dropPrimaryKey(string $name, string $table): static;
 
     /**
      * Creates an SQL command for dropping a DB table.
      *
-     * @param string $table The table to be dropped. The name will be quoted by the method.
+     * @param string $table The table to be dropped.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
     public function dropTable(string $table): static;
 
     /**
      * Creates an SQL command for dropping a unique constraint.
      *
-     * @param string $name The name of the unique constraint to be dropped. The will quote the name method.
-     * @param string $table The table whose unique constraint is to be dropped. The will quote the name method.
+     * @param string $name The name of the unique constraint to be dropped.
+     * @param string $table The table whose unique constraint is to be dropped.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
     public function dropUnique(string $name, string $table): static;
 
@@ -483,7 +474,7 @@ interface CommandInterface
      *
      * @param string $viewName The name of the view to be dropped.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `viewName` parameter before using it in the generated SQL.
      */
     public function dropView(string $viewName): static;
 
@@ -560,7 +551,7 @@ interface CommandInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      *
-     * @return static The command object itself
+     * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
     public function insert(string $table, QueryInterface|array $columns): static;
 
@@ -577,6 +568,8 @@ interface CommandInterface
      * @throws Throwable
      *
      * @return array|false The primary key values or false if the command fails.
+     *
+     * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
     public function insertWithReturningPks(string $table, array $columns): bool|array;
 
@@ -670,21 +663,21 @@ interface CommandInterface
     /**
      * Creates an SQL command for renaming a column.
      *
-     * @param string $table The table whose column is to be renamed. The name will be quoted by the method.
-     * @param string $oldName The old name of the column. The name will be quoted by the method.
-     * @param string $newName The new name of the column. The name will be quoted by the method.
+     * @param string $table The table whose column is to be renamed.
+     * @param string $oldName The old name of the column.
+     * @param string $newName The new name of the column.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table`, `oldName` and `newName` parameter before using it in the generated SQL.
      */
     public function renameColumn(string $table, string $oldName, string $newName): static;
 
     /**
      * Creates an SQL command for renaming a DB table.
      *
-     * @param string $table The table to be renamed. The name will be quoted by the method.
-     * @param string $newName The new table name. The name will be quoted by the method.
+     * @param string $table The table to be renamed.
+     * @param string $newName The new table name.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` and `newName` parameter before using it in the generated SQL.
      */
     public function renameTable(string $table, string $newName): static;
 
@@ -703,7 +696,7 @@ interface CommandInterface
      * @throws Exception
      * @throws NotSupportedException
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
     public function resetSequence(string $table, int|string $value = null): static;
 
@@ -725,8 +718,6 @@ interface CommandInterface
      *
      * @param string $sql The SQL statement to be set.
      *
-     * @return static The command object itself.
-     *
      * {@see reset()}
      * {@see cancel()}
      */
@@ -747,8 +738,6 @@ interface CommandInterface
      * starting from 1.
      *
      * @param Closure|null $handler A PHP callback to handle database exceptions.
-     *
-     * @return static The command object itself.
      */
     public function setRetryHandler(Closure|null $handler): static;
 
@@ -761,8 +750,6 @@ interface CommandInterface
      *
      * @param string $sql The SQL statement to be set.
      *
-     * @return static The command object itself.
-     *
      * {@see reset()}
      * {@see cancel()}
      */
@@ -771,9 +758,9 @@ interface CommandInterface
     /**
      * Creates an SQL command for truncating a DB table.
      *
-     * @param string $table The table to be truncated. The name will be quoted by the method.
+     * @param string $table The table to be truncated.
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
     public function truncateTable(string $table): static;
 
@@ -811,7 +798,7 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
     public function update(string $table, array $columns, array|string $condition = '', array $params = []): static;
 
@@ -851,7 +838,8 @@ interface CommandInterface
      * @throws JsonException
      * @throws NotSupportedException
      *
-     * @return static The command object itself.
+     * Note: The method will quote the `table` and `insertColumns`, `updateColumns` parameters before using it in the
+     * generated SQL.
      */
     public function upsert(
         string $table,
