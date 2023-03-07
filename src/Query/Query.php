@@ -85,6 +85,7 @@ class Query implements QueryInterface
     protected ExpressionInterface|int|null $limit = null;
     protected ExpressionInterface|int|null $offset = null;
     protected array|string|ExpressionInterface|null $where = null;
+    protected array $with = [];
 
     private bool $emulateExecution = false;
 
