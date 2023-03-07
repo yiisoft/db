@@ -7,8 +7,9 @@ namespace Yiisoft\Db\Exception;
 use Stringable;
 
 /**
- * The Exception class represents an exception that is caused by some DB-related operations. It provides additional
- * information about the error that is caused by the exception.
+ * Represents an exception that's caused by some DB-related operations.
+ *
+ * It provides more information about the error that's caused by the exception.
  */
 class Exception extends \Exception implements Stringable
 {
