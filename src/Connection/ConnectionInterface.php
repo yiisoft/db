@@ -34,7 +34,7 @@ interface ConnectionInterface
      *
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      *
-     * {@see TransactionInterface::begin()} For details.
+     * {@see TransactionInterface::begin()} for details.
      *
      * @throws Exception
      * @throws InvalidConfigException
