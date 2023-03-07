@@ -18,12 +18,13 @@ use function preg_match;
 use function preg_replace;
 
 /**
- * QueryBuilder builds a SELECT SQL statement based on the specification given as a {@see QueryInterface} object.
+ * Builds a SELECT SQL statement based on the specification given as a {@see QueryInterface} object.
  *
- * SQL statements are created from {@see QueryInterface} objects using the {@see build()}-method.
+ * SQL statements are created from {@see QueryInterface} objects using the
+ * {@see AbstractDQLQueryBuilder::build()}-method.
  *
- * QueryBuilder is also used by {@see CommandInterface} to build SQL statements such as INSERT, UPDATE, DELETE,
- * CREATE TABLE.
+ * AbstractQueryBuilder is also used by {@see CommandInterface} to build SQL statements such as {@see insert()},
+ * {@see update()}, {@see delete()} and {@see createTable()}.
  */
 abstract class AbstractQueryBuilder implements QueryBuilderInterface
 {

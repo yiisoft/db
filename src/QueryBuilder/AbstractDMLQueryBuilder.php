@@ -35,6 +35,14 @@ use function json_encode;
 use function preg_match;
 use function sort;
 
+/**
+ * It's used to manipulate data in tables.
+ *
+ * This manipulation involves inserting data into database tables, retrieving existing data, deleting data from existing
+ * tables and modifying existing data.
+ *
+ * @link https://en.wikipedia.org/wiki/Data_manipulation_language
+ */
 abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 {
     public function __construct(
@@ -146,9 +154,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Prepare select-subQuery and field names for INSERT INTO ... SELECT SQL statement.
      *
-     * @param QueryInterface $columns Object, which represents select query.
+     * @param QueryInterface $columns Object, which represents a select query.
      * @param array $params The parameters to be bound to the generated SQL statement. These parameters will be included
-     * in the result with the additional parameters generated during the query building process.
+     * in the result, with the more parameters generated during the query building process.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -316,11 +324,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
     /**
      * Returns all column names belonging to constraints enforcing uniqueness (`PRIMARY KEY`, `UNIQUE INDEX`, etc.)
-     * for the named table removing constraints which did not cover the specified column list.
+     * for the named table removing constraints which didn't cover the specified column list.
      *
      * The column list will be unique by column names.
      *
-     * @param string $name The table name, may contain schema name if any. Do not quote the table name.
+     * @param string $name The table name, may contain schema name if any. Don't quote the table name.
      * @param string[] $columns Source column list.
      * @param array $constraints This parameter optionally receives a matched constraint list. The constraints
      * will be unique by their column names.
@@ -371,7 +379,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $columnNames = [];
         $quoter = $this->quoter;
 
-        // Remove all constraints which do not cover the specified column list.
+        // Remove all constraints which don't cover the specified column list.
         $constraints = array_values(
             array_filter(
                 $constraints,
@@ -445,7 +453,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * Get map of normalized columns
+     * Get a map of normalized columns
      *
      * @param string $table The table that data will be saved into.
      * @param string[] $columns The column data (name => value) to be saved into the table or instance of

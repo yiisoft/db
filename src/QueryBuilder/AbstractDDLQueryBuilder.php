@@ -14,6 +14,13 @@ use function implode;
 use function is_string;
 use function preg_split;
 
+/**
+ * It's used to create and change the structure of database objects in a database.
+ *
+ * These database objects include views, schemas, tables, indexes, etc.
+ *
+ * @link https://en.wikipedia.org/wiki/Data_definition_language
+ */
 abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
 {
     public function __construct(

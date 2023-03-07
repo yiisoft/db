@@ -38,6 +38,11 @@ use function reset;
 use function strtoupper;
 use function trim;
 
+/**
+ * It's used to query data from a database.
+ *
+ * @link https://en.wikipedia.org/wiki/Data_query_language
+ */
 abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 {
     protected string $separator = ' ';
@@ -61,8 +66,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      */
     protected array $conditionClasses = [];
     /**
-     * @psalm-var array<string, class-string<ExpressionBuilderInterface>> maps expression class to expression builder
-     * class.
+     * @var array Map of expression aliases to expression classes.
      *
      * For example:
      *
@@ -76,6 +80,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      *
      * {@see setExpressionBuilders()}
      * {@see defaultExpressionBuilders()}
+     *
+     * @psalm-var array<string, class-string<ExpressionBuilderInterface>>
      */
     protected array $expressionBuilders = [];
 
@@ -471,7 +477,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     }
 
     /**
-     * @param string $separator The separator between different fragments of a SQL statement.
+     * @param string $separator The separator between different fragments of an SQL statement.
      *
      * Defaults to an empty space. This is mainly used by {@see build()} when generating a SQL statement.
      */
@@ -481,8 +487,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     }
 
     /**
-     * Contains array of default condition classes. Extend this method, if you want to change default condition classes
-     * for the query builder.
+     * Has an array of default condition classes.
+     *
+     * Extend this method if you want to change default condition classes for the query builder.
      *
      * See {@see conditionClasses} docs for details.
      */
@@ -506,8 +513,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     }
 
     /**
-     * Contains array of default expression builders. Extend this method and override it, if you want to change default
-     * expression builders for this query builder.
+     * Has an array of default expression builders.
+     *
+     * Extend this method and override it if you want to change default expression builders for this query builder.
      *
      * See {@see expressionBuilders} docs for details.
      *
