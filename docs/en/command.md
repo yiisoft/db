@@ -1,4 +1,4 @@
-# Working with database transactions
+# Working with database
 
 ## Creating a table
 
