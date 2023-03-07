@@ -58,8 +58,8 @@ interface ConnectionInterface
     /**
      * Creates a command for execution.
      *
-     * @param string|null $sql The SQL statement to be executed
-     * @param array $params The parameters to be bound to the SQL statement
+     * @param string|null $sql The SQL statement to be executed.
+     * @param array $params The parameters to be bound to the SQL statement.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -85,7 +85,7 @@ interface ConnectionInterface
     /**
      * Return a cache key as an array.
      *
-     * For example, in PDO implementation: [$dsn, $username]
+     * For example, in PDO implementation: `[$dsn, $username]`.
      *
      * @return array The cache key as an array.
      */
@@ -108,7 +108,7 @@ interface ConnectionInterface
      * @throws Exception
      * @throws InvalidCallException
      *
-     * @return string The row ID of the last row inserted, or the last value retrieved from the sequence object
+     * @return string The row ID of the last row inserted, or the last value retrieved from the sequence object.
      *
      * @link http://php.net/manual/en/pdo.lastinsertid.php'>http://php.net/manual/en/pdo.lastinsertid.php
      */
@@ -137,6 +137,9 @@ interface ConnectionInterface
 
     /**
      * Returns a server version as a string comparable by {@see \version_compare()}.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
      *
      * @return string The server version as a string.
      */
@@ -191,6 +194,9 @@ interface ConnectionInterface
 
     /**
      * Quotes a value for use in a query.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
      *
      * @return mixed The quoted string.
      */
