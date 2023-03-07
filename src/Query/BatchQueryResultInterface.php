@@ -11,20 +11,26 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
 /**
- * BatchQueryResult represents a batch query from which you can retrieve data in batches.
+ * This interface represents a batch query from which you can retrieve data in batches.
  *
- * You usually do not instantiate BatchQueryResult directly. Instead, you obtain it by calling {@see Query::batch()} or
- * {@see Query::each()}. Because BatchQueryResult implements the {@see Iterator} interface, you can iterate it to
- * obtain a batch of data in each iteration.
+ * You usually don't instantiate BatchQueryResult directly.
+ *
+ * Instead, you obtain it by calling {@see Query::batch()} or {@see Query::each()}.
+ *
+ * Because BatchQueryResult implements the {@see Iterator} interface, you can iterate it to obtain a batch of data in
+ * each iteration.
  *
  * For example,
  *
  * ```php
  * $query = (new Query)->from('user');
+ *
  * foreach ($query->batch() as $i => $users) {
  *     // $users represents the rows in the $i-th batch
  * }
+ *
  * foreach ($query->each() as $user) {
+ *     // $user represents the next row in the query result
  * }
  * ```
  *
@@ -99,8 +105,6 @@ interface BatchQueryResultInterface extends Iterator
 
     /**
      * @param int $value the number of rows to be returned in each batch.
-     *
-     * @return $this
      */
     public function batchSize(int $value): self;
 

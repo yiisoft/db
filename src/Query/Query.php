@@ -39,31 +39,34 @@ use function substr;
 use function trim;
 
 /**
- * Query represents a SELECT SQL statement in a way that is independent of DBMS.
+ * Represents a SELECT SQL statement in a way that's independent of DBMS.
  *
- * Query provides a set of methods to facilitate the specification of different clauses in a SELECT statement. These
- * methods can be chained together.
+ * Provides a set of methods to ease the specification of different clauses in a SELECT statement.
  *
- * By calling {@see createCommand()}, we can get a {@see Command} instance which can be further used to perform/execute
- * the DB query against a database.
+ * These methods can be chained together.
+ *
+ * By calling {@see createCommand()}, we can get a {@see CommandInterface} instance which can be further used to
+ * perform/execute the DB query against a database.
  *
  * For example,
  *
  * ```php
  * $query = new Query;
+ *
  * // compose the query
- * $query->select('id, name')
- *     ->from('user')
- *     ->limit(10);
+ * $query->select('id, name')->from('user')->limit(10);
+ *
  * // build and execute the query
  * $rows = $query->all();
+ *
  * // alternatively, you can create DB command and execute it
  * $command = $query->createCommand();
+ *
  * // $command->sql returns the actual SQL
  * $rows = $command->queryAll();
  * ```
  *
- * Query internally uses the {@see QueryBuilder} class to generate the SQL statement.
+ * Query internally uses the {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} class to generate the SQL statement.
  */
 class Query implements QueryInterface
 {
@@ -82,6 +85,7 @@ class Query implements QueryInterface
     protected ExpressionInterface|int|null $limit = null;
     protected ExpressionInterface|int|null $offset = null;
     protected array|string|ExpressionInterface|null $where = null;
+    protected array $with = [];
 
     private bool $emulateExecution = false;
 
@@ -678,7 +682,7 @@ class Query implements QueryInterface
     }
 
     /**
-     * Queries a scalar value by setting {@see select} first.
+     * Queries a scalar value by setting {@see select()} first.
      *
      * Restores the value of select to make this query reusable.
      *
@@ -731,11 +735,11 @@ class Query implements QueryInterface
     }
 
     /**
-     * Removes {@see isEmpty()|empty operands} from the given query condition.
+     * Removes {@see Query::isEmpty()} from the given query condition.
      *
      * @param array|string $condition The original condition.
      *
-     * @return array|string The condition with {@see isEmpty()|empty operands} removed.
+     * @return array|string The condition with {@see Query::isEmpty()} removed.
      */
     private function filterCondition(array|string $condition): array|string
     {
@@ -745,7 +749,7 @@ class Query implements QueryInterface
 
         if (!isset($condition[0])) {
             /**
-             * hash format: 'column1' => 'value1', 'column2' => 'value2', ...
+             * Hash format: 'column1' => 'value1', 'column2' => 'value2', ...
              *
              * @psalm-var mixed $value
              */
@@ -759,7 +763,7 @@ class Query implements QueryInterface
         }
 
         /**
-         * operator format: operator, operand 1, operand 2, ...
+         * Operator format: operator, operand 1, operand 2, ...
          *
          * @psalm-var string $operator
          */
@@ -809,11 +813,11 @@ class Query implements QueryInterface
     /**
      * Returns a value indicating whether the give value is "empty".
      *
-     * The value is considered "empty", if one of the following conditions is satisfied:
+     * The value is considered "empty" if one of the following conditions is satisfied:
      *
-     * - it is `null`,
+     * - It's `null`,
      * - an empty string (`''`),
-     * - a string containing only whitespace characters,
+     * - a string containing only space characters,
      * - or an empty array.
      *
      * @param mixed $value The value to be checked.
@@ -826,11 +830,11 @@ class Query implements QueryInterface
     }
 
     /**
-     * Normalizes format of ORDER BY data.
+     * Normalizes a format of ORDER BY data.
      *
      * @param array|ExpressionInterface|string $columns The columns value to normalize.
      *
-     * See {@see orderBy} and {@see addOrderBy}.
+     * See {@see orderBy()} and {@see addOrderBy()}.
      */
     private function normalizeOrderBy(array|string|ExpressionInterface $columns): array
     {

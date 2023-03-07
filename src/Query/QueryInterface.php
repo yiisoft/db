@@ -16,36 +16,37 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * The QueryInterface defines several methods for building and executing database queries, including methods for
- * selecting data, inserting data, updating data, and deleting data. It also defines methods for specifying the
- * conditions for a query, as well as methods for pagination and sorting.
+ * This interface defines several methods for building and executing database queries, including methods for selecting
+ * data, inserting data, updating data, and deleting data.
  *
- * It has support for getting {@see one} instance or {@see all}.
+ * It also defines methods for specifying the conditions for a query, as well as methods for pagination and sorting.
  *
- * Allows pagination via {@see limit} and {@see offset}.
+ * It has support for getting {@see one()} instance or {@see all()}.
  *
- * Sorting is supported via {@see orderBy} and items can be limited to match some conditions using {@see where}.
+ * Allows pagination via {@see limit()} and {@see offset()}.
+ *
+ * Sorting is supported via {@see orderBy()} and items can be limited to match some conditions using {@see where()}.
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface, Stringable
 {
     /**
-     * Adds additional parameters to be bound to the query.
+     * Adds more parameters to be bound to the query.
      *
-     * @param array $params The list of query parameter values indexed by parameter placeholders. For example,
-     * `[':name' => 'Dan', ':age' => 31]`.
+     * @param array $params The list of query parameter values indexed by parameter placeholders.
+     * For example, `[':name' => 'Dan', ':age' => 31]`.
      *
-     * @return static The query object itself.
-     *
-     * {@see params()}
+     * @see params()
      */
     public function addParams(array $params): static;
 
     /**
      * Executes the query and returns all results as an array.
      *
-     * If this parameter is not given, the `db` application component will be used.
+     * If this parameter isn't given, the `db` application part will be used.
      *
-     * @throws Exception|InvalidConfigException|Throwable
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws Throwable
      *
      * @return array The query results. If the query results in nothing, an empty array will be returned.
      */
@@ -56,13 +57,14 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * A batch query supports fetching data in batches, which can keep the memory usage under a limit.
      *
-     * This method will return a {@see BatchQueryResultInterface} object which implements the {@see Iterator} interface
+     * This method will return a {@see BatchQueryResultInterface} object which implements the {@see \Iterator} interface
      * and can be traversed to retrieve the data in batches.
      *
      * For example,
      *
      * ```php
      * $query = (new Query)->from('user');
+     *
      * foreach ($query->batch() as $rows) {
      *     // $rows is an array of 100 or fewer rows from user table
      * }
@@ -70,7 +72,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @param int $batchSize The number of records to be fetched in each batch.
      *
-     * @return BatchQueryResultInterface The batch query result. It implements the {@see Iterator} interface and can be
+     * @return BatchQueryResultInterface The batch query result. It implements the {@see \Iterator} interface and can be
      * traversed to retrieve the data in batches.
      */
     public function batch(int $batchSize = 100): BatchQueryResultInterface;
@@ -78,7 +80,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     /**
      * Executes the query and returns the first column of the result.
      *
-     * If this parameter is not given, the `db` application component will be used.
+     * If this parameter isn't given, the `db` application part will be used.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -91,8 +93,6 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     /**
      * Creates a DB command that can be used to execute this query.
-     *
-     * If this parameter is not given, the `db` application component will be used.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -109,13 +109,14 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * ```php
      * $query = (new Query)->from('user');
+     *
      * foreach ($query->each() as $row) {
      * }
      * ```
      *
      * @param int $batchSize The number of records to be fetched in each batch.
      *
-     * @return BatchQueryResultInterface The batch query result. It implements the {@see Iterator} interface and can be
+     * @return BatchQueryResultInterface The batch query result. It implements the {@see \Iterator} interface and can be
      * traversed to retrieve the data in batches.
      */
     public function each(int $batchSize = 100): BatchQueryResultInterface;
@@ -126,23 +127,21 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * After this mode is enabled, methods, returning query results like {@see one()}, {@see all()}, {@see exists()}
      * and so on, will return empty or false values.
      *
-     * You should use this method in case your program logic indicates query should not return any results, like in case
-     * you set false where condition like `0=1`.
+     * You should use this method in case your program logic indicates a query shouldn't return any results, like in
+     * case you set false where condition like `0=1`.
      *
-     * @param bool $value whether to prevent query execution.
-     *
-     * @return static The query object itself.
+     * @param bool $value Whether to prevent query execution.
      */
     public function emulateExecution(bool $value = true): static;
 
     /**
-     * Returns a value indicating whether the query result contains any row of data.
+     * Returns a value indicating whether the query result has any row of data.
      *
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return bool whether the query result contains any row of data.
+     * @return bool whether the query result has any row of data.
      */
     public function exists(): bool;
 
@@ -207,7 +206,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function getSelectOption(): string|null;
 
     /**
-     * Returns table names used in {@see from} indexed by aliases.
+     * Returns table names used in {@see from()} indexed by aliases.
      *
      * Both aliases and names are enclosed into {{ and }}.
      *
@@ -233,9 +232,9 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function getWithQueries(): array;
 
     /**
-     * Executes the query and returns a single row of result.
+     * Executes the query and returns a single row of a result.
      *
-     * If this parameter is not given, the `db` application component will be used.
+     * If this parameter isn't given, the `db` application part will be used.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -252,8 +251,6 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @param array $params list of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
      *
-     * @return static The query object itself.
-     *
      * @see addParams()
      */
     public function params(array $params): static;
@@ -262,16 +259,14 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * Prepares for building SQL.
      *
      * This method is called by {@see QueryBuilderInterface} when it starts to build SQL from a query object.
-     * You may override this method to do some final preparation work when converting a query into a SQL statement.
+     * You may override this method to do some final preparation work when converting a query into an SQL statement.
      *
      * @param QueryBuilderInterface $builder The query builder.
-     *
-     * @return QueryInterface A prepared query instance which will be used by {@see QueryBuilder} to build the SQL.
      */
     public function prepare(QueryBuilderInterface $builder): self;
 
     /**
-     * Returns the query result as a scalar value.
+     * Returns the query results as a scalar value.
      *
      * The value returned will be the first column in the first row of the query results.
      *
