@@ -511,3 +511,31 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 /** @var ConnectionInterface $db */
 $db->createCommand()->update('{{%customer}}', ['status' => 2], ['id' > 1])->execute();
 ```
+
+## Upsert
+
+To upsert rows in a table, you can use the `Yiisoft\Db\Command\CommandInterface::upsert()` method.
+
+The following example shows how to upsert rows in a table.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+$db->createCommand()->upsert(
+    'pages',
+    [
+        'name' => 'Front page',
+        'url' => '<a href="http://example.com/&#39;"', // url is unique
+        'visits' => 0,
+    ],
+    [
+        'visits' => new \Yiisoft\Db\Expression\Expression('visits + 1'),
+    ],
+    $params,
+)->execute();
+```
