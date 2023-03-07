@@ -8,14 +8,16 @@ use PDO;
 use Yiisoft\Db\Driver\DriverInterface;
 
 /**
- * The PDODriverInterface provides a set of methods that must be implemented by PDO (PHP Data Objects) driver classes.
- * These methods include basic CRUD (create, read, update, delete) operations for interacting with a database, such as
- * connecting to a database, preparing and executing SQL statements, and retrieving data from the result set.
+ * This interface provides a set of methods that must be implemented by {@see PDO} (PHP Data Objects) driver classes.
+ *
+ * {@link https://www.php.net/manual/en/book.pdo.php}
  */
 interface PDODriverInterface extends DriverInterface
 {
     /**
-     * Set PDO attributes (name => value) that should be set when calling {@see open()} to establish a DB connection.
+     * Set {@see PDO} attributes (name => value) that should be set when calling {@see open()} to establish a DB
+     * connection.
+     *
      * Please refer to the [PHP manual](http://php.net/manual/en/pdo.setattribute.php) for details about available
      * attributes.
      *
@@ -24,9 +26,9 @@ interface PDODriverInterface extends DriverInterface
     public function attributes(array $attributes): void;
 
     /**
-     * Creates a PDO instance representing a connection to a database.
+     * Creates a {@see PDO} instance representing a connection to a database.
      *
-     * @return PDO The created PDO instance.
+     * @return PDO The created {@see PDO} instance.
      */
     public function createConnection(): PDO;
 
@@ -34,7 +36,7 @@ interface PDODriverInterface extends DriverInterface
      * Set charset used for database connection. The property is only used for MySQL, PostgresSQL databases. Defaults to
      * null, meaning using default charset as configured by the database.
      *
-     * For Oracle Database, the charset must be specified in the {@see dsn}, for example for UTF-8 by appending
+     * For Oracle Database, the charset must be specified in the {@see dsn}, for example, for UTF-8 by appending
      * `;charset=UTF-8` to the DSN string.
      *
      * The same applies for if you're using GBK or BIG5 charset with MySQL, then it's highly recommended specifying
@@ -45,7 +47,7 @@ interface PDODriverInterface extends DriverInterface
     public function charset(string|null $charset): void;
 
     /**
-     * @return string|null The charset of the pdo instance. Null is returned if the charset is not set yet or not
+     * @return string|null The charset of the pdo instance. Null is returned if the charset isn't set yet or not
      * supported by the pdo driver
      */
     public function getCharset(): string|null;
@@ -56,7 +58,7 @@ interface PDODriverInterface extends DriverInterface
     public function getDsn(): string;
 
     /**
-     * @return string The driver name DB connection.
+     * @return string The driver name for DB connection.
      */
     public function getDriverName(): string;
 
