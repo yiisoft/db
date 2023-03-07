@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Constraint;
 
 /**
- * The ConstraintSchemaInterface is an interface that represents a constraint on a database table. A constraint is a
- * rule that is applied to the data in a table to ensure the integrity and correctness of the data.
+ * Represents the methods that are required to work with constraints in a database, as getting the name of the
+ * constraint, the columns that the constraint is applied to, and the type of constraint.
  *
- * The ConstraintSchemaInterface provides methods for working with table constraints, including methods for getting the
- * name of the constraint, the columns that the constraint is applied to, and the type of constraint.
+ * A constraint is a rule that's applied to the data in a table to ensure the integrity and correctness of the data.
  */
 interface ConstraintSchemaInterface
 {
@@ -94,8 +93,8 @@ interface ConstraintSchemaInterface
     /**
      * Obtains the check constraints' information for the named table.
      *
-     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool $refresh Whether to reload the information even if it is found in the cache.
+     * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
+     * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
      * @return array The information metadata for the check constraints of the named table.
      */
@@ -104,8 +103,8 @@ interface ConstraintSchemaInterface
     /**
      * Obtains the default value constraints information for the named table.
      *
-     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool $refresh Whether to reload the information even if it is found in the cache.
+     * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
+     * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
      * @return array The information metadata for the default value constraints of the named table.
      */
@@ -114,8 +113,8 @@ interface ConstraintSchemaInterface
     /**
      * Obtains the foreign keys' information for the named table.
      *
-     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool $refresh Whether to reload the information even if it is found in the cache.
+     * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
+     * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
      * @return array The information metadata for the foreign keys of the named table.
      */
@@ -124,8 +123,8 @@ interface ConstraintSchemaInterface
     /**
      * Obtains the indexes' information for the named table.
      *
-     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool $refresh Whether to reload the information even if it is found in the cache.
+     * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
+     * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
      * @return array The information metadata for the indexes of the named table.
      */
@@ -134,8 +133,8 @@ interface ConstraintSchemaInterface
     /**
      * Obtains the primary key for the named table.
      *
-     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool $refresh Whether to reload the information even if it is found in the cache.
+     * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
+     * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
      * @return Constraint|null The information metadata for the primary key of the named table.
      */
@@ -144,8 +143,8 @@ interface ConstraintSchemaInterface
     /**
      * Obtains the unique constraints' information for the named table.
      *
-     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool $refresh Whether to reload the information even if it is found in the cache.
+     * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
+     * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
      * @return array The information metadata for the unique constraints of the named table.
      */

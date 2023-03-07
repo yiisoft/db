@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Constraint;
 
 /**
- * The ForeignKeyConstraint represents a foreign key constraint in a database. It contains information about the table
- * and column(s) that the constraint applies to, as well as any actions that should be taken when a referenced record
- * is deleted or updated. You can use this class to create and modify foreign key constraints in a database, as well as
- * to retrieve information about existing constraints.
+ * Represents a foreign key constraint in a database.
+ *
+ * A foreign key constraint is a constraint that enforces referential integrity between two tables.
+ *
+ * It has information about the table and column(s) that the constraint applies to, as well as any actions that
+ * should be taken when a referenced record is deleted or updated.
  */
 final class ForeignKeyConstraint extends Constraint
 {
