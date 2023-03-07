@@ -16,7 +16,7 @@ use Yiisoft\Db\QueryBuilder\Condition\Interface\BetweenConditionInterface;
 use function str_contains;
 
 /**
- * Class BetweenConditionBuilder builds objects of {@see BetweenCondition}.
+ * Build an object of {@see BetweenCondition} into SQL expressions.
  */
 class BetweenConditionBuilder implements ExpressionBuilderInterface
 {
@@ -49,7 +49,7 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Attaches $value to $params array and returns placeholder.
+     * Attaches `$value` to `$params` array and return placeholder.
      *
      * @throws Exception
      * @throws InvalidArgumentException

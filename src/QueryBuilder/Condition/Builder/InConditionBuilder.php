@@ -31,7 +31,7 @@ use function str_contains;
 use function strtoupper;
 
 /**
- * Class InConditionBuilder builds objects of {@see InCondition}.
+ * Build an object of {@see InCondition} into SQL expressions.
  */
 class InConditionBuilder implements ExpressionBuilderInterface
 {
@@ -127,7 +127,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Builds $values to be used in {@see InCondition}.
+     * Builds `$values` to be used in {@see InCondition}.
      *
      * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
      *
@@ -218,7 +218,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Builds a SQL statement for checking the existence of rows with the specified composite column values.
+     * Builds an SQL statement for checking the existence of rows with the specified composite column values.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -272,7 +272,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Builds is null/is not null condition for column based on operator.
+     * The Builds are `null/is` not `null` condition for column based on the operator.
      */
     protected function getNullCondition(string $operator, string $column): string
     {

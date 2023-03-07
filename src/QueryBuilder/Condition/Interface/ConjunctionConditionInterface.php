@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 
 /**
- * ConjunctionConditionInterface represents a condition that is composed by multiple other conditions connected by a
- * conjunction (e.g. `AND`, `OR`).
+ * Represents a condition that's composed by many other conditions connected by a conjunction
+ * (for example, `AND`, `OR`).
  */
 interface ConjunctionConditionInterface extends ConditionInterface
 {
     /**
-     * @return string The operator that is represented by this condition class, e.g. `AND`, `OR`.
+     * @return string The operator that's represented by this condition class, e.g. `AND`, `OR`.
      */
     public function getOperator(): string;
 

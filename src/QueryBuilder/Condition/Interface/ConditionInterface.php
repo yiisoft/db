@@ -8,7 +8,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
- * Interface ConditionInterface should be implemented by classes that represent a condition in DBAL of framework.
+ * Should be implemented by classes that represent a condition in the {@see \Yiisoft\Db\QueryBuilder\QueryBuilder}.
  */
 interface ConditionInterface extends ExpressionInterface
 {
@@ -18,7 +18,7 @@ interface ConditionInterface extends ExpressionInterface
      * @param string $operator Operator in uppercase.
      * @param array  $operands Array of corresponding operands
      *
-     * @throws InvalidArgumentException If input parameters are not suitable for this condition.
+     * @throws InvalidArgumentException If input parameters aren't suitable for this condition.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self;
 }

@@ -13,7 +13,7 @@ use Yiisoft\Db\QueryBuilder\Condition\Interface\NotConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * Class NotConditionBuilder builds objects of {@see NotCondition}.
+ * Build an object of {@see NotCondition} into SQL expressions.
  */
 class NotConditionBuilder implements ExpressionBuilderInterface
 {
