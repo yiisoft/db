@@ -368,7 +368,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->dropDefaultValue('df-customer-name', '{{%customer}}')->execute();
 ```
 
-## Add unique constraint
+## Add `UNIQUE` constraint
 
 To add a unique constraint to an existing column, you can use the `Yiisoft\Db\Command\CommandInterface::addUnique()`
 method.
@@ -386,7 +386,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->addUnique('uq-customer-name', '{{%customer}}', 'name')->execute();
 ```
 
-## Drop unique constraint
+## Drop `UNIQUE` constraint
 
 To drop a unique constraint from an existing column, you can use the `Yiisoft\Db\Command\CommandInterface::dropUnique()`
 method.
