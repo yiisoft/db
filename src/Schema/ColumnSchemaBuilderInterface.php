@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 /**
- * The ColumnSchemaBuilderInterface class is an interface that defines the methods that must be implemented by classes
- * that build the schema of a database column. It provides methods for setting the column name, type, length, precision,
- * scale, default value, and other properties of the column, as well as methods for adding constraints, such as primary
- * key, unique, and not null. Classes that implement this interface are used to create and modify the schema of a
- * database table in a database-agnostic way.
+ * This interface defines the methods that must be implemented by classes that build the schema of a database column.
+ *
+ * It provides methods for setting the column name, type, length, precision, scale, default value, and other properties
+ * of the column, as well as methods for adding constraints, such as a primary key, unique, and not null.
  */
 interface ColumnSchemaBuilderInterface
 {
     /**
-     * Specify additional SQL to be appended to column definition.
+     * Specify more SQL to be appended to column definition.
      *
      * Position modifiers will be appended after column definition in databases that support them.
      *
@@ -30,7 +29,7 @@ interface ColumnSchemaBuilderInterface
     public function setFormat(string $format): void;
 
     /**
-     * Builds the full string for the column's schema including type, length, default value, not null and other SQL
+     * Builds the full string for the column's schema including type, length, default value, not null and another SQL
      * fragment.
      *
      * @return string The SQL fragment that will be used for creating the column.
@@ -100,7 +99,7 @@ interface ColumnSchemaBuilderInterface
 
     /**
      * @return array|int|string|null The column size or precision definition. This is what goes into the parenthesis
-     * after the column type. This can be either a string, an integer or an array. If it is an array, the array values
+     * after the column type. This can be either a string, an integer or an array. If it's an array, the array values
      * will be joined into a string separated by comma.
      */
     public function getLength(): array|int|string|null;
@@ -111,8 +110,8 @@ interface ColumnSchemaBuilderInterface
     public function getType(): string|null;
 
     /**
-     * @return bool|null Whether the column is or not nullable. If this is `true`, a `NOT NULL` constraint will be
-     * added. If this is `false`, a `NULL` constraint will be added.
+     * @return bool|null Whether the column is or not nullable. If this is `true`, a `NOT NULL` constraint will be added.
+     * If this is `false`, a `NULL` constraint will be added.
      */
     public function isNotNull(): bool|null;
 

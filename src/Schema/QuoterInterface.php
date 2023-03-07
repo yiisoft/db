@@ -8,21 +8,21 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
- * The QuoterInterface class is an interface that provides a set of methods that can be used to quote table and column
- * names, values, and other SQL expressions independently of the database.
+ * This interface provides a set of methods that can be used to quote table and column names, values, and other SQL
+ * expressions independently of the database.
  */
 interface QuoterInterface
 {
     /**
-     * Clean up table names and aliases.
+     * Clean-up table names and aliases.
      *
-     * Both aliases and names are enclosed into {{ and }}.
+     * Both aliases and names are enclosed into `{{ and }}`.
      *
-     * @param array $tableNames non-empty array
+     * @param array $tableNames Non-empty array.
      *
      * @throws InvalidArgumentException
      *
-     * @psalm-return array<array-key, ExpressionInterface|string> table names indexed by aliases
+     * @psalm-return array<array-key, ExpressionInterface|string>
      */
     public function cleanUpTableNames(array $tableNames): array;
 
@@ -30,14 +30,14 @@ interface QuoterInterface
      * Splits full table name into parts.
      *
      * @param string $name The full name of the table.
-     * @param bool $withColumn For cases when full name contain as last prat name of column.
+     * @param bool $withColumn For cases when full name has as last prat name of column.
      *
      * @return string[] The table name parts.
      */
     public function getTableNameParts(string $name, bool $withColumn = false): array;
 
     /**
-     * Ensures name is wrapped with {{ and }}.
+     * Ensures name is wrapped with `{{ and }}`.
      *
      * @param string $name The name to be quoted.
      *
@@ -46,7 +46,7 @@ interface QuoterInterface
     public function ensureNameQuoted(string $name): string;
 
     /**
-     * Ensures name of column is wrapped with [[ and ]].
+     * Ensures name of the column is wrapped with `[[ and ]]`.
      *
      * @param string $name The name to be quoted.
      *
@@ -57,12 +57,12 @@ interface QuoterInterface
     /**
      * Quotes a column name for use in a query.
      *
-     * If the column name contains prefix, the prefix will also be properly quoted. If the column name is already quoted
-     * or contains '(', '[[' or '{{', then this method will do nothing.
+     * If the column name has a prefix, the prefix will also be quoted.
+     * If the column name is already quoted or contains '(', '[[' or '{{', then this method will do nothing.
      *
      * @param string $name The column name to be quoted.
      *
-     * @return string The properly quoted column name.
+     * @return string The quoted column name.
      *
      * @see quoteSimpleColumnName()
      */
@@ -76,7 +76,7 @@ interface QuoterInterface
      *
      * @param string $name The column name to be quoted.
      *
-     * @return string The properly quoted column name.
+     * @return string The quoted column name.
      */
     public function quoteSimpleColumnName(string $name): string;
 
@@ -88,16 +88,20 @@ interface QuoterInterface
      *
      * @param string $name The table name to be quoted.
      *
-     * @return string The properly quoted table name.
+     * @return string The quoted table name.
      */
     public function quoteSimpleTableName(string $name): string;
 
     /**
-     * Processes a SQL statement by quoting table and column names that are enclosed within double brackets.
+     * Processes an SQL statement by quoting table and column names that are inside within double brackets.
      *
-     * Tokens enclosed within double curly brackets are treated as table names, while tokens enclosed within double
-     * square brackets are column names. They will be quoted accordingly. Also, the percentage character "%" at the
-     * beginning or ending of a table name will be replaced with {@see tablePrefix}.
+     * Tokens inside within double curly brackets are treated as table names, while tokens inside within double square
+     * brackets are column names.
+     *
+     * They will be quoted so.
+     *
+     * Also, the percentage character "%" at the beginning or ending of a table name will be replaced with
+     * {@see \Yiisoft\Db\Connection\ConnectionInterface::setTablePrefix()}.
      *
      * @param string $sql The SQL statement to be quoted.
      *
@@ -108,12 +112,13 @@ interface QuoterInterface
     /**
      * Quotes a table name for use in a query.
      *
-     * If the table name contains schema prefix, the prefix will also be properly quoted. If the table name is already
-     * quoted or contains '(' or '{{', then this method will do nothing.
+     * If the table name has a schema prefix, the prefix will also be quoted.
+     *
+     * If the table name is already quoted or has '(' or '{{', then this method will do nothing.
      *
      * @param string $name The table name to be quoted.
      *
-     * @return string The properly quoted table name.
+     * @return string The quoted table name.
      *
      * @see quoteSimpleTableName()
      */
@@ -122,20 +127,22 @@ interface QuoterInterface
     /**
      * Quotes a string value for use in a query.
      *
-     * Note that if the parameter is not a string, it will be returned without change.
-     * Attention: The usage of this method is not safe. Use prepared statements.
+     * Note: That if the parameter isn't a string, it will be returned without change.
+     * Attention: The usage of this method isn't safe.
+     * Use prepared statements.
      *
      * @param mixed $value The value to be quoted.
      *
-     * @return mixed The properly quoted value.
+     * @return mixed The quoted value.
      */
     public function quoteValue(mixed $value): mixed;
 
     /**
      * Unquotes a simple column name.
      *
-     * A simple column name should contain the column name only without any prefix. If the column name is not quoted or
-     * is the asterisk character '*', this method will do nothing.
+     * A simple column name should contain the column name only without any prefix.
+     *
+     * If the column name isn't quoted or is the asterisk character '*', this method will do nothing.
      *
      * @param string $name The column name to be unquoted.
      *
@@ -146,8 +153,9 @@ interface QuoterInterface
     /**
      * Unquotes a simple table name.
      *
-     * A simple table name should contain the table name only without any schema prefix. If the table name is not
-     * quoted, this method will do nothing.
+     * A simple table name should contain the table name only without any schema prefix.
+     *
+     * If the table name isn't quoted, this method will do nothing.
      *
      * @param string $name The table name to be unquoted.
      *

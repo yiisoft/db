@@ -12,8 +12,7 @@ use function implode;
 use function strtr;
 
 /**
- * The AbstractColumnSchemaBuilder class is a utility class that provides a convenient way to create column schemas for
- * use with Schema class @see Schema.
+ * Is a utility class that provides a convenient way to create column schemas for {@see AbstractSchema}.
  *
  * It provides methods for specifying the properties of a column, such as its type, size, default value, and whether it
  * is nullable or not. It also provides a method for creating a column schema based on the specified properties.
@@ -24,15 +23,15 @@ use function strtr;
  * $column = (new ColumnSchemaBuilder(SchemaInterface::TYPE_INTEGER))->notNull()->defaultValue(0);
  * ```
  *
- * The AbstractColumnSchemaBuilder class provides a fluent interface, which means that the methods can be chained
- * together to create a column schema with multiple properties in a single line of code.
+ * Provides a fluent interface, which means that the methods can be chained together to create a column schema with
+ * many properties in a single line of code.
  */
 abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterface
 {
     /**
      * Internally used constants representing categories that abstract column types fall under.
      *
-     * {@see $categoryMap} for mappings of abstract column types to category.
+     * {@see $categoryMap} For mappings of abstract column types to category.
      */
     public const CATEGORY_PK = 'pk';
     public const CATEGORY_STRING = 'string';
@@ -126,8 +125,6 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
 
     /**
      * Marks column as unsigned.
-     *
-     * @return static The column schema builder instance itself.
      */
     public function unsigned(): static
     {

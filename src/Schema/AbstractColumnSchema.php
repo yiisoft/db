@@ -18,11 +18,14 @@ use function is_float;
 use function is_resource;
 
 /**
- * The ColumnSchema class represents the metadata of a column in a database table. It provides information about the
- * column's name, type, size, precision, and other details.
+ * Represents the metadata of a column in a database table.
  *
- * The ColumnSchema class is used to store and retrieve metadata about a column in a database table. It is typically
- * used in conjunction with the TableSchema class, which represents the metadata of a database table as a whole.
+ * It provides information about the column's name, type, size, precision, and other details.
+ *
+ * The ColumnSchema class is used to store and retrieve metadata about a column in a database table.
+ *
+ * It's typically used in conjunction with the TableSchema class, which represents the metadata of a database table as a
+ * whole.
  *
  * Here is an example of how the ColumnSchema class might be used:
  *
@@ -87,8 +90,8 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     public function dbTypecast(mixed $value): mixed
     {
         /**
-         * the default implementation does the same as casting for PHP, but it should be possible to override this with
-         * annotation of explicit PDO type.
+         * The default implementation does the same as casting for PHP, but it should be possible to override this with
+         * annotation of an explicit PDO type.
          */
         return $this->typecast($value);
     }
@@ -236,7 +239,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     /**
      * Converts the input value according to {@see phpType} after retrieval from the database.
      *
-     * If the value is null or an {@see Expression}, it will not be converted.
+     * If the value is null or an {@see Expression}, it won't be converted.
      *
      * @param mixed $value The value to be converted.
      *
@@ -298,7 +301,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
                 return (int) $value;
             case SchemaInterface::PHP_TYPE_BOOLEAN:
                 /**
-                 * treating a 0 bit value as false too
+                 * Treating a 0-bit value as false too.
                  *
                  * @link https://github.com/yiisoft/yii2/issues/9006
                  */

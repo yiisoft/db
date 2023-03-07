@@ -23,10 +23,10 @@ use function str_contains;
 use function str_replace;
 
 /**
- * The AbstractSchema class provides a set of methods for working with database schemas such as creating, modifying,
- * and inspecting tables, columns, and other database objects.
+ * Provides a set of methods for working with database schemas such as creating, modifying, and inspecting tables,
+ * columns, and other database objects.
  *
- * It is a very powerful and flexible tool that allows you to perform a wide range of database operations in a
+ * It's a powerful and flexible tool that allows you to perform a wide range of database operations in a
  * database-agnostic way.
  */
 abstract class AbstractSchema implements SchemaInterface
@@ -123,7 +123,7 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $name The table name.
      *
-     * @return TableSchemaInterface|null DBMS-dependent table metadata, `null` if the table does not exist.
+     * @return TableSchemaInterface|null DBMS-dependent table metadata, `null` if the table doesn't exist.
      */
     abstract protected function loadTableSchema(string $name): TableSchemaInterface|null;
 
@@ -213,7 +213,7 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * @throws NotSupportedException If this method is not supported by the underlying DBMS.
+     * @throws NotSupportedException If this method isn't supported by the underlying DBMS.
      *
      * @return array The schema names in the database, except system schemas.
      */
@@ -309,7 +309,7 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * @throws NotSupportedException If this method is not supported by the underlying DBMS.
+     * @throws NotSupportedException If this method isn't supported by the underlying DBMS.
      *
      * @return array The table names in the database.
      */
@@ -341,7 +341,7 @@ abstract class AbstractSchema implements SchemaInterface
      * @throws InvalidCallException
      * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
-     * @return TableSchemaInterface|null The table schema information. Null if the named table does not exist.
+     * @return TableSchemaInterface|null The table schema information. Null if the named table doesn't exist.
      */
     public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null
     {
@@ -425,12 +425,12 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * Returns all schema names in the database, including the default one but not system schemas.
      *
-     * This method should be overridden by child classes in order to support this feature because the default
+     * This method should be overridden by child classes to support this feature because the default
      * implementation simply throws an exception.
      *
-     * @throws NotSupportedException If this method is not supported by the DBMS.
+     * @throws NotSupportedException If the DBMS doesn't support this method.
      *
-     * @return array All schema names in the database, except system schemas.
+     * @return array All schemas name in the database, except system schemas.
      */
     protected function findSchemaNames(): array
     {
@@ -440,14 +440,14 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * Returns all table names in the database.
      *
-     * This method should be overridden by child classes in order to support this feature because the default
+     * This method should be overridden by child classes to support this feature because the default
      * implementation simply throws an exception.
      *
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema.
      *
-     * @throws NotSupportedException If this method is not supported by the DBMS.
+     * @throws NotSupportedException If the DBMS doesn't support this method.
      *
-     * @return array All table names in the database. The names have NO schema name prefix.
+     * @return array All tables name in the database. The names have NO schema name prefix.
      */
     protected function findTableNames(string $schema): array
     {
@@ -455,7 +455,7 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * Extracts the PHP type from abstract DB type.
+     * Extracts the PHP type from an abstract DB type.
      *
      * @param ColumnSchemaInterface $column The column schema information.
      *
@@ -537,9 +537,10 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * Returns the metadata of the given type for the given table.
      *
-     * @param string $name The table name. The table name may contain schema name if any. Do not quote the table name.
+     * @param string $name The table name. The table name may contain a schema name if any.
+     * Don't quote the table name.
      * @param string $type The metadata type.
-     * @param bool $refresh whether to reload the table metadata even if it is found in the cache.
+     * @param bool $refresh whether to reload the table metadata even if it's found in the cache.
      *
      * @throws InvalidCallException
      * @throws InvalidArgumentException
@@ -607,10 +608,10 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * Changes row's array key case to lower.
+     * Change row's array key case to lower.
      *
-     * @param array $row Thew row's array or an array of row's arrays.
-     * @param bool $multiple Whether multiple rows or a single row passed.
+     * @param array $row Thew row's array or an array of row arrays.
+     * @param bool $multiple Whether many rows or a single row passed.
      *
      * @return array The normalized row or rows.
      */
@@ -628,7 +629,7 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $name The table name.
      *
-     * @throws NotSupportedException If this method is not supported by the DBMS.
+     * @throws NotSupportedException If the DBMS doesn't support this method.
      *
      * @return TableSchemaInterface The with resolved table, schema, etc. names.
      *
@@ -715,7 +716,8 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * Find the view names for the database.
      *
-     * @param string $schema the schema of the views. Defaults to empty string, meaning the current or default schema.
+     * @param string $schema The schema of the views.
+     * Defaults to empty string, meaning the current or default schema.
      *
      * @return array The names of all views in the database.
      */

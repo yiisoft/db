@@ -18,12 +18,16 @@ use function strrpos;
 use function substr;
 
 /**
- * The Quoter is a class that is used to quote table and column names for use in SQL statements. It provides a set of
- * methods for quoting different types of names, such as table names, column names, and schema names.
+ * The Quoter is a class that's used to quote table and column names for use in SQL statements.
  *
- * The Quoter class is used by @see \Yiisoft\Db\QueryBuilder\QueryBuilder to quote names that need to be quoted. It is
- * also used by @see \Yiisoft\Db\Command\Command to quote names in SQL statements before passing them to database
- * servers.
+ * It provides a set of methods for quoting different types of names, such as table names, column names, and schema
+ * names.
+ *
+ * The Quoter class is used by {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} to quote names that need to be
+ * quoted.
+ *
+ * It's also used by {@see \Yiisoft\Db\Command\AbstractCommand} to quote names in SQL statements before passing them to
+ * database servers.
  */
 class Quoter implements QuoterInterface
 {
@@ -216,10 +220,8 @@ class Quoter implements QuoterInterface
     }
 
     /**
-     * @param string[] $parts
-     * @param bool $withColumn
-     *
-     * @return string[]
+     * @psalm-param string[] $parts Parts of table name
+     * @psalm-return string[]
      */
     protected function unquoteParts(array $parts, bool $withColumn): array
     {
