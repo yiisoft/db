@@ -9,7 +9,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**
- * The JsonExpression class represents data that should be encoded to JSON.
+ * Represents data that should be encoded to JSON.
  *
  * For example:
  *
@@ -27,7 +27,7 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
     }
 
     /**
-     * The value must be compatible with {@see \Yiisoft\Json\Json::encode()|Json::encode()} input requirements.
+     * The value must be compatible with {@see \Yiisoft\Json\Json::encode()|\Json::encode()} input requirements.
      */
     public function getValue(): mixed
     {
@@ -51,7 +51,7 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
      *
      * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
      *
-     * @throws InvalidConfigException when JsonExpression contains QueryInterface object
+     * @throws InvalidConfigException When JsonExpression has a {@see QueryInterface} object
      *
      * @return mixed Data which can be serialized by `json_encode`, which is a value of any type other than a resource.
      */

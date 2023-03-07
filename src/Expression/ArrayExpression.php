@@ -15,12 +15,12 @@ use Yiisoft\Db\Query\QueryInterface;
 use function count;
 
 /**
- * The ArrayExpression class represents an array SQL expression.
+ * Represents an array SQL expression.
  *
  * Expressions of this type can be used in conditions as well:
  *
  * ```php
- * $query->andWhere(['@>', 'items', new ArrayExpression([1, 2, 3], 'integer')])
+ * $query->andWhere(['@>', 'items', new ArrayExpression([1, 2, 3], 'integer')]);
  * ```
  *
  * Which, depending on DBMS, will result in a well-prepared condition. For example, in PostgresSQL it will be compiled
@@ -36,9 +36,11 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     }
 
     /**
-     * The type of the array elements. Defaults to `null` which means the type is not explicitly specified.
+     * The type of the array elements.
      *
-     * Note that in case when type is not specified explicitly and DBMS can not guess it from the context, SQL error
+     * Defaults to `null` which means the type isn't explicitly specified.
+     *
+     * Note that in the case where a type isn't specified explicitly and DBMS can't guess it from the context, SQL error
      * will be raised.
      */
     public function getType(): string|null
@@ -70,9 +72,9 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @param mixed $offset An offset to check for.
      *
-     * @throws InvalidConfigException If offset is not an integer.
+     * @throws InvalidConfigException If offset isn't an integer.
      *
-     * @return bool `true` on success or `false` on failure. The return value will be cast to boolean if non-boolean
+     * @return bool Its `true` on success or `false` on failure. The return value will be cast to boolean if non-boolean
      * was returned.
      */
     public function offsetExists(mixed $offset): bool
@@ -88,7 +90,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @param mixed $offset The offset to retrieve.
      *
-     * @throws InvalidConfigException If offset is not an integer.
+     * @throws InvalidConfigException If offset isn't an integer.
      *
      * @return mixed Can return all value types.
      */
@@ -107,7 +109,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * @param mixed $offset The offset to assign the value to.
      * @param mixed $value The value to set.
      *
-     * @throws InvalidConfigException If offset is not an integer.
+     * @throws InvalidConfigException If offset isn't an integer.
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
@@ -118,6 +120,8 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
 
     /**
      * Offset to unset.
+     *
+     * @throws InvalidConfigException If offset isn't an integer.
      *
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
      */
@@ -145,6 +149,8 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
      *
+     * @throws InvalidConfigException If value isn't an array.
+     *
      * @return ArrayIterator An instance of an object implementing `Iterator` or `Traversable`.
      */
     public function getIterator(): Traversable
@@ -156,7 +162,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     /**
      * Validates the key of the array expression is an integer.
      *
-     * @throws InvalidConfigException If offset is not an integer.
+     * @throws InvalidConfigException If offset isn't an integer.
      */
     private function validateKey(mixed $key): int
     {
@@ -169,6 +175,8 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
 
     /**
      * Validates the value of the array expression is an array.
+     *
+     * @throws InvalidConfigException If value isn't an array.
      */
     private function validateValue(mixed $value): array
     {

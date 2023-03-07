@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Expression;
 use Stringable;
 
 /**
- * The Expression class represents a DB expression that does not need escaping or quoting.
+ * Represents a DB expression that doesn't need escaping or quoting.
  *
  * When an Expression object is embedded within a SQL statement or fragment, it will be replaced with the
  * {@see expression} property value without any DB escaping or quoting. For example,
@@ -18,8 +18,8 @@ use Stringable;
  * echo $now; // prints the current date
  * ```
  *
- * Expression objects are mainly created for passing raw SQL expressions to methods of {@see QueryInterface} and related
- * classes.
+ * Expression objects are mainly created for passing raw SQL expressions to methods of
+ * {@see \Yiisoft\Db\Query\QueryInterface} and related classes.
  */
 class Expression implements ExpressionInterface, Stringable
 {
