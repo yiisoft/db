@@ -13,10 +13,14 @@ use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidParamException;
 
 /**
- * The DataReader provides an abstract way to read data from a database. A data reader is an object that can be used to
- * read a forward-only stream of rows from a database. DataReader is typically used in combination with a command
- * object, such as a {@see \Yiisoft\Db\Command\Command}, to execute a SELECT statement and read the results. The class
- * provides methods for accessing the data returned by the query.
+ * Provides an abstract way to read data from a database.
+ *
+ * A data reader is an object that can be used to read a forward-only stream of rows from a database.
+ *
+ * It's typically used in combination with a command object, such as a {@see \Yiisoft\Db\Command\AbstractCommand},
+ * to execute a SELECT statement and read the results.
+ *
+ * The class provides methods for accessing the data returned by the query.
  */
 final class DataReader implements DataReaderInterface
 {
@@ -43,7 +47,7 @@ final class DataReader implements DataReaderInterface
      *
      * This method is required by the interface {@see Countable}.
      *
-     * Note, most DBMS may not give a meaningful count. In this case, use "SELECT COUNT(*) FROM tableName" to obtain the
+     * Note, most DBMS mayn't give a meaningful count. In this case, use "SELECT COUNT(*) FROM tableName" to obtain the
      * number of rows.
      */
     public function count(): int
@@ -56,7 +60,7 @@ final class DataReader implements DataReaderInterface
      *
      * This method is required by the interface {@see Iterator}.
      *
-     * @throws InvalidCallException
+     * @throws InvalidCallException If the data reader isn't at the beginning.
      */
     public function rewind(): void
     {

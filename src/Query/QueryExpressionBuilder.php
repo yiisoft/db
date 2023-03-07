@@ -12,7 +12,7 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * The QueryExpressionBuilder class is used internally to build {@see Query} object using unified {@see QueryBuilder}
+ * Is used internally to build {@see Query} object using unified {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder}
  * expression building interface.
  */
 final class QueryExpressionBuilder implements ExpressionBuilderInterface
