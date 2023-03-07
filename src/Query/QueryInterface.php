@@ -263,7 +263,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @param QueryBuilderInterface $builder The query builder.
      */
-    public function prepare(QueryBuilderInterface $builder): static;
+    public function prepare(QueryBuilderInterface $builder): self;
 
     /**
      * Returns the query results as a scalar value.
