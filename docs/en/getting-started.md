@@ -111,7 +111,7 @@ $result = $db->createCommand("SELECT COUNT([[id]]) FROM {{%employee}}")->querySc
 [Yii DB](https://github.com/yiisoft/db) provides a [Query Builder](query-builder.md) that helps you create **SQL** statements in a more convenient way. It's a powerful tool that can be used to create complex **SQL** statements in a simple way.
 
 
-## Working with database transactions
+## Working with database
 
 [Yii DB](https://github.com/yiisoft/db) provides a [Command](command.md) class that represents an **SQL** statement to
 be executed against a database.
