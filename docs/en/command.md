@@ -530,7 +530,7 @@ $db->createCommand()->upsert(
     'pages',
     [
         'name' => 'Front page',
-        'url' => '<a href="http://example.com/&#39;"', // url is unique
+        'url' => 'http://example.com/', // url is unique
         'visits' => 0,
     ],
     [
