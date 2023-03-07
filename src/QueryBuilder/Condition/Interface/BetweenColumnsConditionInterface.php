@@ -8,23 +8,22 @@ use Iterator;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
- * Interface BetweenColumnsConditionInterface represents a condition that is based on the comparison of a column with a
- * value.
+ * Represents a condition which is used to check if a value is between two values.
  */
 interface BetweenColumnsConditionInterface extends ConditionInterface
 {
     /**
-     * @return ExpressionInterface|string The column name or expression that is an end of the interval.
+     * @return ExpressionInterface|string The column name or expression that's an end of the interval.
      */
     public function getIntervalEndColumn(): string|ExpressionInterface;
 
     /**
-     * @return ExpressionInterface|string The column name or expression that is a beginning of the interval.
+     * @return ExpressionInterface|string The column name or expression that's the beginning of the interval.
      */
     public function getIntervalStartColumn(): string|ExpressionInterface;
 
     /**
-     * @return string The operator to use (e.g. `BETWEEN` or `NOT BETWEEN`).
+     * @return string The operator to use (for example `BETWEEN` or `NOT BETWEEN`).
      */
     public function getOperator(): string;
 

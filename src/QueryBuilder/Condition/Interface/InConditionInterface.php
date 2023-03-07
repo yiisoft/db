@@ -9,7 +9,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**
- * Interface InConditionInterface represents a condition that is based on `IN` operator.
+ * Represents a condition that's based on `IN` operator.
  */
 interface InConditionInterface extends ConditionInterface
 {

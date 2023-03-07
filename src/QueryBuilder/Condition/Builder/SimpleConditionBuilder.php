@@ -16,7 +16,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use function str_contains;
 
 /**
- * Class NotConditionBuilder builds objects of {@see SimpleCondition}.
+ * Build an object of {@see SimpleCondition} into SQL expressions.
  */
 class SimpleConditionBuilder implements ExpressionBuilderInterface
 {

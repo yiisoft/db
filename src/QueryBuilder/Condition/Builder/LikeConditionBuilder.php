@@ -21,7 +21,7 @@ use function strtoupper;
 use function strtr;
 
 /**
- * Class LikeConditionBuilder builds objects of {@see LikeCondition}.
+ * Build an object of {@see LikeCondition} into SQL expressions.
  */
 class LikeConditionBuilder implements ExpressionBuilderInterface
 {

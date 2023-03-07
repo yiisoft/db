@@ -7,12 +7,12 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**
- * ExistConditionInterface represents a condition that checks whether a sub-query returns any rows.
+ * Represents a condition that checks whether a sub-query returns any rows.
  */
 interface ExistConditionInterface extends ConditionInterface
 {
     /**
-     * @return string The operator to use (e.g. `EXISTS` or `NOT EXISTS`).
+     * @return string The operator to use (for example, `EXISTS` or `NOT EXISTS`).
      */
     public function getOperator(): string;
 

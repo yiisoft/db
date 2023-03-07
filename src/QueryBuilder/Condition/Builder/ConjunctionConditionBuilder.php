@@ -21,7 +21,7 @@ use function is_array;
 use function reset;
 
 /**
- * Class ConjunctionConditionBuilder builds objects of abstract class {@see AbstractConjunctionCondition}.
+ * Build an object of {@see AbstractConjunctionCondition} into SQL expressions.
  */
 class ConjunctionConditionBuilder implements ExpressionBuilderInterface
 {

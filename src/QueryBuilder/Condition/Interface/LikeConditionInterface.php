@@ -8,7 +8,7 @@ use Iterator;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
- * LikeConditionInterface is the interface that must be implemented by classes that represent a LIKE condition.
+ * Represents a condition that's based on `LIKE` operator.
  */
 interface LikeConditionInterface extends ConditionInterface
 {
@@ -29,8 +29,8 @@ interface LikeConditionInterface extends ConditionInterface
      * counterparts.
      *
      * You may use an empty array to indicate the values are already escaped and no escape should be applied.
-     * Note that when using an escape mapping (or the third operand is not provided), the values will be automatically
-     * enclosed within a pair of percentage characters.
+     * Note that when using an escape mapping (or the third operand isn't provided), the values will be automatically
+     * inside within a pair of percentage characters.
      */
     public function setEscapingReplacements(array|null $escapingReplacements): void;
 

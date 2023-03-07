@@ -21,7 +21,7 @@ use function is_iterable;
 use function str_contains;
 
 /**
- * Class HashConditionBuilder builds objects of {@see HashCondition}.
+ * Build an object of {@see HashCondition} into SQL expressions.
  */
 class HashConditionBuilder implements ExpressionBuilderInterface
 {

@@ -13,7 +13,7 @@ use Yiisoft\Db\QueryBuilder\Condition\Interface\ExistConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * Class ExistsConditionBuilder builds objects of {@see ExistsCondition}.
+ * Build an object of {@see ExistsCondition} into SQL expressions.
  */
 class ExistsConditionBuilder implements ExpressionBuilderInterface
 {

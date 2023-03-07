@@ -7,7 +7,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
- * Interface BetweenConditionInterface represents a condition which is used to check if a value is between two values.
+ * Represents a condition which is used to check if a value is between two values.
  */
 interface BetweenConditionInterface extends ConditionInterface
 {
@@ -27,7 +27,7 @@ interface BetweenConditionInterface extends ConditionInterface
     public function getIntervalStart(): mixed;
 
     /**
-     * @return string The operator to use (e.g. `BETWEEN` or `NOT BETWEEN`).
+     * @return string The operator to use (for example `BETWEEN` or `NOT BETWEEN`).
      */
     public function getOperator(): string;
 }
