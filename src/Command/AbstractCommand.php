@@ -78,6 +78,7 @@ abstract class AbstractCommand implements CommandInterface
     protected array $params = [];
     protected string|null $refreshTableName = null;
     protected Closure|null $retryHandler = null;
+    /** @var string The SQL statement to be executed */
     private string $sql = '';
 
     public function addCheck(string $name, string $table, string $expression): static
