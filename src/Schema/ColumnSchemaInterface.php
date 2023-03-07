@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 /**
- * The ColumnSchemaInterface class is an interface that defines a set of methods that must be implemented by a class
- * that represents the column schema of a database table column.
+ * This interface defines a set of methods that must be implemented by a class that represents the column schema of a
+ * database table column.
  */
 interface ColumnSchemaInterface
 {
@@ -14,8 +14,8 @@ interface ColumnSchemaInterface
      * The allowNull can be set to either `true` or `false`, depending on whether null values should be allowed in the
      * ColumnSchema class.
      *
-     * By default, the allowNull is set to `false`, so if it is not specified when defining a ColumnSchema class,
-     * null values will not be allowed in the ColumnSchema class.
+     * By default, the allowNull is set to `false`, so if it isn't specified when defining a ColumnSchema class,
+     * null values won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -26,13 +26,13 @@ interface ColumnSchemaInterface
     public function allowNull(bool $value): void;
 
     /**
-     * The autoIncrement is a column that is assigned a unique value automatically by the database management system
+     * The autoIncrement is a column that's assigned a unique value automatically by the database management system
      * (DBMS) whenever a new row is inserted into the table. This is useful for generating unique IDs for rows in the
      * table, such as customer or employee numbers. The autoIncrement attribute can be specified for `INTEGER` or
      * `BIGINT` data types.
      *
-     * By default, the autoIncrement is set to `false`, so if it is not specified when defining a ColumnSchema class,
-     * the autoIncrement will not be allowed in the ColumnSchema class.
+     * By default, the autoIncrement is set to `false`, so if it isn't specified when defining a ColumnSchema class,
+     * the autoIncrement won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -43,11 +43,12 @@ interface ColumnSchemaInterface
     public function autoIncrement(bool $value): void;
 
     /**
-     * The comment refers to a string of text that can be added to a column in a database table. The comment can provide
-     * additional information about the purpose or usage of the column.
+     * The comment refers to a string of text that can be added to a column in a database table.
      *
-     * By default, the comment is set to `null`, so if it is not specified when defining a ColumnSchema class, the
-     * comment will not be allowed in the ColumnSchema class.
+     * The comment can give more information about the purpose or usage of the column.
+     *
+     * By default, the comment is set to `null`, so if it isn't specified when defining a ColumnSchema class, the
+     * comment won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -61,8 +62,8 @@ interface ColumnSchemaInterface
      * A computed column is a virtual column that computes its values from an expression. We can use a constant value,
      * function, value derived from other columns, non-computed column name, or their combinations.
      *
-     * By default, the computed is set to `false`, so if it is not specified when defining a ColumnSchema class, the
-     * computed will not be allowed in the ColumnSchema class.
+     * By default, the computed is set to `false`, so if it isn't specified when defining a ColumnSchema class, the
+     * computed won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -99,24 +100,24 @@ interface ColumnSchemaInterface
 
     /**
      * The dbTypecast is used to convert a value from its PHP representation to a database-specific representation.
-     * It is typically used when preparing a SQL statement for execution, to ensure that the values being bound to
+     * It's typically used when preparing an SQL statement for execution, to ensure that the values being bound to
      * placeholders in the statement are in a format that the database can understand.
      *
-     * The dbTypecast method is typically called automatically by the yiisoft/db library when preparing a SQL
+     * The dbTypecast method is typically called automatically by the yiisoft/db library when preparing an SQL
      * statement for execution, so you don't usually need to call it directly in your code. However, it can be useful
      * to understand how it works if you need to customize the way that values are converted for use in a SQL statement.
      *
-     * If the value is null or an {@see Expression}, it will not be converted.
+     * If the value is null or an {@see Expression}, it won't be converted.
      */
     public function dbTypecast(mixed $value): mixed;
 
     /**
-     * The default value is a value that is automatically assigned to a column when a new row is inserted into the
+     * The default value is a value that's automatically assigned to a column when a new row is inserted into the
      * database table. The default value can be a constant value, function, value derived from other columns,
      * non-computed column name, or their combinations.
      *
-     * By default, value is set to `null`, so if it is not specified when defining a ColumnSchema class, the default
-     * value will not be allowed in the ColumnSchema class.
+     * By default, value is set to `null`, so if it isn't specified when defining a ColumnSchema class, the default
+     * value won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -127,10 +128,12 @@ interface ColumnSchemaInterface
     public function defaultValue(mixed $value): void;
 
     /**
-     * The enumValues is a list of possible values for the column. It is used only for `ENUM` columns.
+     * The enumValues is a list of possible values for the column.
      *
-     * By default, the enumValues is set to `null`, so if it is not specified when defining a ColumnSchema class, the
-     * enumValues will not be allowed in the ColumnSchema class.
+     * It's used only for `ENUM` columns.
+     *
+     * By default, the enumValues are set to `null`, so if it isn't specified when defining a ColumnSchema class, the
+     * enumValues won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -141,12 +144,14 @@ interface ColumnSchemaInterface
     public function enumValues(array|null $value): void;
 
     /**
-     * The extra column schema refers to a string attribute that can be used to specify additional SQL to be appended to
-     * the generated SQL for a column. This can be useful for adding custom constraints or other SQL statements that are
-     * not supported by the column schema itself.
+     * The extra column schema refers to a string attribute that can be used to specify more SQL to be appended to the
+     * generated SQL for a column.
      *
-     * By default, the extra is set to `null`, so if it is not specified when defining a ColumnSchema class, the extra
-     * will not be allowed in the ColumnSchema class.
+     * This can be useful for adding custom constraints or other SQL statements that aren't supported by the column
+     * schema itself.
+     *
+     * By default, the extra is set to `null`, so if it isn't specified when defining a ColumnSchema class, the extra
+     * won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -181,7 +186,7 @@ interface ColumnSchemaInterface
     public function getDefaultValue(): mixed;
 
     /**
-     * @return array|null The enum values of the column. `null` if no enum values has been defined.
+     * @return array|null The enum values of the column. `null` if no enum values have been defined.
      * By default, it returns `null`.
      *
      * @see enumValues()
@@ -252,8 +257,9 @@ interface ColumnSchemaInterface
     public function isAllowNull(): bool;
 
     /**
-     * Whether this column is auto-incremental. This is only meaningful when {@see type} is `smallint`, `integer`
-     * or `bigint`.
+     * Whether this column is auto incremental.
+     *
+     * This is only meaningful when {@see type} is `smallint`, `integer` or `bigint`.
      *
      * @see autoIncrement()
      */
@@ -282,10 +288,13 @@ interface ColumnSchemaInterface
     public function isUnsigned(): bool;
 
     /**
-     * Represents the name of the column in the database. It is used to generate the SQL statement.
+     * Represents the name of the column in the database.
      *
-     * For default name is empty string. Db ColumnSchema class will generate name automatically based on the column
-     * name.
+     * It's used to generate the SQL statement.
+     *
+     * For default name is an empty string.
+     *
+     * The db ColumnSchema class will generate a name automatically based on the column name.
      *
      * ```php
      * $columns = [
@@ -296,10 +305,10 @@ interface ColumnSchemaInterface
     public function name(string $value): void;
 
     /**
-     * The phpType is used to return the PHP data type that is most appropriate for representing the data stored in the
+     * The phpType is used to return the PHP data type that's most appropriate for representing the data stored in the
      * column. This is determined based on the data type of the column as defined in the database schema. For example,
      * if the column is defined as a varchar or text data type, the phpType() method may return string. If the column
-     * is defined as an int or tinyint, the phpType() method may return integer.
+     * is defined as an int or tinyint, the phpType() method may return an integer.
      *
      * By default, the phpType is set to `null`. Db ColumnSchema class will generate phpType automatically based on the
      * column type.
@@ -315,7 +324,7 @@ interface ColumnSchemaInterface
     /**
      * Converts the input value according to {@see phpType} after retrieval from the database.
      *
-     * If the value is null or an {@see Expression}, it will not be converted.
+     * If the value is null or an {@see Expression}, it won't be converted.
      */
     public function phpTypecast(mixed $value): mixed;
 
@@ -323,8 +332,8 @@ interface ColumnSchemaInterface
      * The precision is the total number of digits that are used to represent the value. This is only meaningful when
      * {@see type} is `decimal`.
      *
-     * By default, the precision is set to `null`, so if it is not specified when defining a ColumnSchema class, the
-     * precision will not be allowed in the ColumnSchema class.
+     * By default, the precision is set to `null`, so if it isn't specified when defining a ColumnSchema class, the
+     * precision won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -338,8 +347,8 @@ interface ColumnSchemaInterface
      * ColumnSchema class is used to specify which column or columns should be used as the primary key for a particular
      * table.
      *
-     * By default, the primaryKey is set to `false`, so if it is not specified when defining a ColumnSchema class, the
-     * primaryKey will not be allowed in the ColumnSchema class.
+     * By default, the primaryKey is set to `false`, so if it isn't specified when defining a ColumnSchema class, the
+     * primaryKey won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -353,8 +362,8 @@ interface ColumnSchemaInterface
      * The scale is the number of digits to the right of the decimal point and is only meaningful when {@see type} is
      * `decimal`.
      *
-     * By default, the scale is set to `null`, so if it is not specified when defining a ColumnSchema class, the scale
-     * will not be allowed in the ColumnSchema class.
+     * By default, the scale is set to `null`, so if it isn't specified when defining a ColumnSchema class, the scale
+     * won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -369,8 +378,8 @@ interface ColumnSchemaInterface
      * typically used for character or numeric data types, such as VARCHAR or INT, to specify the maximum length or
      * precision of the data that can be stored in the column.
      *
-     * By default, the size is set to `null`, so if it is not specified when defining a ColumnSchema class, the size
-     * will not be allowed in the ColumnSchema class.
+     * By default, the size is set to `null`, so if it isn't specified when defining a ColumnSchema class, the size
+     * won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -381,12 +390,14 @@ interface ColumnSchemaInterface
     public function size(int|null $value): void;
 
     /**
-     * The type of the ColumnSchema class that is used to set the data type of column in a database table. The data
-     * type of column specifies the kind of values that can be stored in that column, such as integers, strings,
-     * dates, or floating point numbers.
+     * The type of the ColumnSchema class that's used to set the data type of column in a database table.
      *
-     * By default, the type is set to empty string. Db ColumnSchema class will generate setType automatically based
-     * on the column type.
+     * The data type of column specifies the kind of values that can be stored in that column, such as integers,
+     * strings, dates, or floating point numbers.
+     *
+     * By default, the type is set to empty strings.
+     *
+     * The db ColumnSchema class will generate setType automatically based on the column type.
      *
      * ```php
      * $columns = [
@@ -397,11 +408,11 @@ interface ColumnSchemaInterface
 
     /**
      * The unsigned is used to specify that a column in a database table should be an unsigned integer. An unsigned
-     * integer is a data type that can only represent positive whole numbers, and cannot represent negative numbers
+     * integer is a data type that can only represent positive whole numbers, and can't represent negative numbers
      * or decimal values.
      *
-     * By default, the unsigned is set to `false`, so if it is not specified when defining a ColumnSchema class, the
-     * unsigned will not be allowed in the ColumnSchema class.
+     * By default, the unsigned is set to `false`, so if it isn't specified, when defining a ColumnSchema class, the
+     * unsigned won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [

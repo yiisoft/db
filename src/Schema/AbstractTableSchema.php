@@ -9,7 +9,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use function array_keys;
 
 /**
- * TableSchema represents the metadata of a database table.
+ * Represents the metadata of a database table.
  */
 abstract class AbstractTableSchema implements TableSchemaInterface
 {

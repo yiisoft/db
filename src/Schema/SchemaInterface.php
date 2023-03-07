@@ -11,9 +11,10 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 /**
- * The SchemaInterface class that represents the schema for a database table. It provides a set of methods for working
- * with the schema of a database table, such as accessing the columns, indexes, and constraints of a table, as well as
- * methods for creating, dropping, and altering tables.
+ * Represents the schema for a database table.
+ *
+ * It provides a set of methods for working with the schema of a database table, such as accessing the columns,
+ * indexes, and constraints of a table, as well as methods for creating, dropping, and altering tables.
  */
 interface SchemaInterface extends ConstraintSchemaInterface
 {
@@ -108,11 +109,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * Returns all schema names in the database, except system schemas.
      *
      * @param bool $refresh Whether to fetch the latest available schema names. If this is false, schema names fetched
-     * previously (if available) will be returned.
+     * before (if available) will be returned.
      *
      * @throws NotSupportedException
      *
-     * @return array All schema names in the database, except system schemas.
+     * @return array All schemas name in the database, except system schemas.
      */
     public function getSchemaNames(bool $refresh = false): array;
 
@@ -123,11 +124,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * name.
      * If not empty, the returned table names will be prefixed with the schema name.
      * @param bool $refresh Whether to fetch the latest available table names. If this is false, table names fetched
-     * previously (if available) will be returned.
+     * before (if available) will be returned.
      *
      * @throws NotSupportedException
      *
-     * @return array All table names in the database.
+     * @return array All tables name in the database.
      */
     public function getTableNames(string $schema = '', bool $refresh = false): array;
 
@@ -176,10 +177,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Obtains the metadata for the named table.
      *
-     * @param string $name Table name. The table name may contain schema name if any. Do not quote the table name.
-     * @param bool $refresh Whether to reload the table schema even if it is found in the cache.
+     * @param string $name Table name. The table name may contain a schema name if any.
+     * Don't quote the table name.
+     * @param bool $refresh Whether to reload the table schema even if it's found in the cache.
      *
-     * @return TableSchemaInterface|null Table metadata. `null` if the named table does not exist.
+     * @return TableSchemaInterface|null Table metadata. `null` if the named table doesn't exist.
      */
     public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null;
 
@@ -199,11 +201,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function getTableSchemas(string $schema = '', bool $refresh = false): array;
 
     /**
-     * Returns a value indicating whether a SQL statement is for read purpose.
+     * Returns a value indicating whether an SQL statement is for read purpose.
      *
      * @param string $sql The SQL statement.
      *
-     * @return bool Whether a SQL statement is for read purpose.
+     * @return bool Whether an SQL statement is for read purpose.
      */
     public function isReadQuery(string $sql): bool;
 
@@ -238,7 +240,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param string $schema The schema of the views. Defaults to empty string, meaning the current or default schema
      * name. If not empty, the returned view names will be prefixed with the schema name.
      * @param bool $refresh Whether to fetch the latest available view names. If this is false, view names fetched
-     * previously (if available) will be returned.
+     * before (if available) will be returned.
      *
      * @return array All view names in the database.
      */

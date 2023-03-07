@@ -7,20 +7,22 @@ namespace Yiisoft\Db\Schema;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 /**
- * TableSchemaInterface represents the metadata of a database table. It defines a set of methods to retrieve the table
- * name, schema name, column names, primary key, foreign keys, etc. The information is obtained from the database schema
- * and may vary according to the DBMS type.
+ * Represents the metadata of a database table.
+ *
+ * It defines a set of methods to retrieve the table name, schema name, column names, primary key, foreign keys, etc.
+ *
+ * The information is obtained from the database schema and may vary according to the DBMS type.
  */
 interface TableSchemaInterface
 {
     /**
      * Gets the named column metadata.
      *
-     * This is a convenient method for retrieving a named column even if it does not exist.
+     * This is a convenient method for retrieving a named column even if it doesn't exist.
      *
      * @param string $name The column name.
      *
-     * @return ColumnSchemaInterface|null The named column metadata. Null if the named column does not exist.
+     * @return ColumnSchemaInterface|null The named column metadata. Null if the named column doesn't exist.
      */
     public function getColumn(string $name): ColumnSchemaInterface|null;
 
@@ -40,14 +42,14 @@ interface TableSchemaInterface
     public function getSchemaName(): string|null;
 
     /**
-     * @return string The name of this table. The schema name is not included. Use {@see fullName} to get the name with
+     * @return string The name of this table. The schema name isn't included. Use {@see fullName} to get the name with
      * schema name prefix.
      */
     public function getName(): string;
 
     /**
      * @return string|null The full name of this table, which includes the schema name prefix, if any. Note that if the
-     * schema name is the same as the {@see Schema::defaultSchema} schema name, the schema name will not be included.
+     * schema name is the same as the {@see Schema::defaultSchema} schema name, the schema name won't be included.
      */
     public function getFullName(): string|null;
 
@@ -79,8 +81,9 @@ interface TableSchemaInterface
     public function schemaName(string|null $value): void;
 
     /**
-     * Set name of this table. The schema name is not included. Use {@see fullName} to set the name with schema name
-     * prefix.
+     * Set the name of this table.
+     *
+     * The schema name isn't included. Use {@see fullName} to set the name with schema name prefix.
      *
      * @param string $value The name of this table.
      */
@@ -88,14 +91,16 @@ interface TableSchemaInterface
 
     /**
      * Set the full name of this table, which includes the schema name prefix, if any. Note that if the schema name is
-     * the same as the {@see Schema::defaultSchema} schema name, the schema name will not be included.
+     * the same as the {@see Schema::defaultSchema} schema name, the schema name won't be included.
      *
      * @param string|null $value The full name of this table.
      */
     public function fullName(string|null $value): void;
 
     /**
-     * Set the comment of the table. Null if no comment. This is not supported by all DBMS.
+     * Set the comment of the table.
+     *
+     * Null if no comment. This isn't supported by all DBMS.
      *
      * @param string|null $value The comment of the table.
      */
@@ -125,7 +130,9 @@ interface TableSchemaInterface
 
     /**
      * @return string|null The name of the catalog (database) that this table belongs to. Defaults to null, meaning no
-     * catalog (or the current database). Specifically for MSSQL Server
+     * catalog (or the current database).
+     *
+     * Specifically for MSSQL Server
      */
     public function getCatalogName(): string|null;
 
@@ -139,7 +146,9 @@ interface TableSchemaInterface
 
     /**
      * @return string|null The name of the server that this table belongs to. Defaults to null, meaning no server
-     * (or the current server). Specifically for MSSQL Server
+     * (or the current server).
+     *
+     * Specifically for MSSQL Server
      */
     public function getServerName(): string|null;
 
@@ -152,15 +161,15 @@ interface TableSchemaInterface
     public function serverName(string|null $value): void;
 
     /**
-     * @return string|null The sql for create current table or null if query not found/exists. Now supported only in
+     * @return string|null The sql for create current table or null if a query not found/exists. Now supported only in
      * MySQL and Oracle DBMS.
      */
     public function getCreateSql(): string|null;
 
     /**
-     * Set sql for create current table or null if query not found/exists. Now supported only in MySQL and Oracle DBMS.
+     * Set sql for create current table or null if a query not found/exists. Now supported only in MySQL and Oracle DBMS.
      *
-     * @param string $sql The sql for create current table or null if query not found/exists.
+     * @param string $sql The sql for create current table or null if a query not found/exists.
      */
     public function createSql(string $sql): void;
 
