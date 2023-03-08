@@ -72,7 +72,7 @@ interface BatchQueryResultInterface extends Iterator
      *
      * This method is required by the interface {@see Iterator}.
      *
-     * @return int|string|null the index of the current row.
+     * @return int|string|null The index of the current row.
      */
     public function key(): int|string|null;
 
@@ -81,7 +81,7 @@ interface BatchQueryResultInterface extends Iterator
      *
      * This method is required by the interface {@see Iterator}.
      *
-     * @return mixed the current dataset.
+     * @return mixed The current dataset.
      */
     public function current(): mixed;
 
@@ -90,21 +90,19 @@ interface BatchQueryResultInterface extends Iterator
      *
      * This method is required by the interface {@see Iterator}.
      *
-     * @return bool whether there is a valid dataset at the current position.
+     * @return bool Whether there is a valid dataset at the current position.
      */
     public function valid(): bool;
 
     public function getQuery(): QueryInterface|null;
 
     /**
-     * {@see batchSize}
-     *
-     * @return int
+     * @see batchSize()
      */
     public function getBatchSize(): int;
 
     /**
-     * @param int $value the number of rows to be returned in each batch.
+     * @param int $value The number of rows to be returned in each batch.
      */
     public function batchSize(int $value): self;
 

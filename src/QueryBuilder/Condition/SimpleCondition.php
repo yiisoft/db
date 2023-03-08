@@ -9,7 +9,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\SimpleConditionInterface;
 
 /**
- * Class SimpleCondition represents a simple condition like `"column" operator value`.
+ * Represents a simple condition like `"column" operator value`.
  */
 final class SimpleCondition implements SimpleConditionInterface
 {
@@ -38,7 +38,7 @@ final class SimpleCondition implements SimpleConditionInterface
     /**
      * Creates a condition based on the given operator and operands.
      *
-     * @throws InvalidArgumentException If the number of operands is not 2.
+     * @throws InvalidArgumentException If the number of operands isn't 2.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -52,7 +52,7 @@ final class SimpleCondition implements SimpleConditionInterface
     /**
      * Validate the given column to be string or ExpressionInterface.
      *
-     * @throws InvalidArgumentException If the column is not string or ExpressionInterface.
+     * @throws InvalidArgumentException If the column isn't a string or ExpressionInterface.
      */
     private static function validateColumn(string $operator, mixed $column): string|ExpressionInterface
     {

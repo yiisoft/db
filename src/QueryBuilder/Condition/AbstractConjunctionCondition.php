@@ -7,7 +7,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConjunctionConditionInterface;
 
 /**
- * Class AbstractConjunctionCondition represents a conjunction condition.
+ * Represents a conjunction condition (`AND` or `OR`).
  */
 abstract class AbstractConjunctionCondition implements ConjunctionConditionInterface
 {
