@@ -10,6 +10,8 @@ use Throwable;
 use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Profiler\Context\ConnectionContext;
+use Yiisoft\Db\Profiler\ContextInterface;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -108,6 +110,33 @@ abstract class AbstractConnectionTest extends TestCase
         $db->setProfiler(null);
 
         $this->assertNull(Assert::getInaccessibleProperty($db, 'profiler'));
+    }
+
+    public function testProfiler(): void
+    {
+        $db = $this->getConnection();
+
+        $profiler = new class ($this) implements ProfilerInterface {
+            public function __construct(private TestCase $test)
+            {
+            }
+
+            public function begin(string $token, ContextInterface|array $context = []): void
+            {
+                $this->test->assertInstanceOf(ConnectionContext::class, $context);
+                $this->test->assertSame('connection', $context->getType());
+                $this->test->assertIsArray($context->asArray());
+            }
+
+            public function end(string $token, ContextInterface|array $context = []): void
+            {
+                $this->test->assertInstanceOf(ConnectionContext::class, $context);
+                $this->test->assertSame('connection', $context->getType());
+                $this->test->assertIsArray($context->asArray());
+            }
+        };
+        $db->setProfiler($profiler);
+        $db->open();
     }
 
     public function testSetTablePrefix(): void

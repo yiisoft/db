@@ -11,6 +11,7 @@ use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
+use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -540,24 +541,26 @@ abstract class AbstractCommand implements CommandInterface
         $isReadMode = $this->isReadMode($queryMode);
 
         $logCategory = self::class . '::' . ($isReadMode ? 'query' : 'execute');
+        $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
 
         $this->logQuery($rawSql, $logCategory);
         $this->prepare($isReadMode);
 
         try {
-            $this->profiler?->begin($rawSql, [$logCategory]);
+            $this->profiler?->begin($rawSql, $queryContext);
+
             $this->internalExecute($rawSql);
 
             /** @psalm-var mixed $result */
             $result = $this->internalGetQueryResult($queryMode);
-            $this->profiler?->end($rawSql, [$logCategory]);
+
+            $this->profiler?->end($rawSql, $queryContext);
 
             if (!$isReadMode) {
                 $this->refreshTableSchema();
             }
         } catch (Exception $e) {
-            $this->profiler?->end($rawSql, [$logCategory]);
-
+            $this->profiler?->end($rawSql, $queryContext->setException($e));
             throw $e;
         }
 

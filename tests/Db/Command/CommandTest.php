@@ -712,11 +712,19 @@ final class CommandTest extends AbstractCommandTest
         $command->upsert('{{table}}', []);
     }
 
-    public function testProfiler(): void
+    public function testProfiler(string $sql = null): void
     {
         $this->expectExceptionMessage(
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
         );
         parent::testProfiler();
+    }
+
+    public function testProfilerData(string $sql = null): void
+    {
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
+        );
+        parent::testProfilerData();
     }
 }
