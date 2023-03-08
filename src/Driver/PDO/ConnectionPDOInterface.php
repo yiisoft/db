@@ -36,7 +36,7 @@ interface ConnectionPDOInterface extends ConnectionInterface
      *
      * @return PDO|null The PHP PDO instance associated with this DB connection.
      *
-     * {@see PDO}
+     * @see PDO
      */
     public function getPDO(): PDO|null;
 

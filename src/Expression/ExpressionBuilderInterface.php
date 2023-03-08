@@ -14,7 +14,7 @@ namespace Yiisoft\Db\Expression;
  * The interface provides a consistent way for developers to build expressions that can be used in different types of
  * database queries, without having to worry about the specific syntax of the underlying database.
  *
- * {@see ExpressionInterface}.
+ * @see ExpressionInterface
  */
 interface ExpressionBuilderInterface
 {

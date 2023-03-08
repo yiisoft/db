@@ -15,7 +15,7 @@ use function is_int;
 use function is_string;
 
 /**
- * Class LikeCondition represents a `LIKE` condition.
+ * Condition that represents `LIKE` operator.
  */
 final class LikeCondition implements LikeConditionInterface
 {
@@ -56,7 +56,7 @@ final class LikeCondition implements LikeConditionInterface
     /**
      * Creates a condition based on the given operator and operands.
      *
-     * @throws InvalidArgumentException If the number of operands is not 2.
+     * @throws InvalidArgumentException If the number of operands isn't 2.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -94,7 +94,7 @@ final class LikeCondition implements LikeConditionInterface
     /**
      * Validates the given values to be string, array, Iterator or ExpressionInterface.
      *
-     * @throws InvalidArgumentException If the values is not string, array, Iterator or ExpressionInterface.
+     * @throws InvalidArgumentException If the values aren't string, array, Iterator or ExpressionInterface.
      */
     private static function validateValue(
         string $operator,

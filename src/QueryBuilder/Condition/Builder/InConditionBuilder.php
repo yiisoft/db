@@ -129,10 +129,12 @@ class InConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds `$values` to be used in {@see InCondition}.
      *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      *
      * @psalm-return string[]
-     *
      * @psalm-suppress MixedArrayTypeCoercion
      * @psalm-suppress MixedArrayOffset
      */
