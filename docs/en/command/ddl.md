@@ -1,4 +1,4 @@
-# Data Definition Language (DDL)
+# Data Definition Language (DDL) commands
 
 Data Definition Language (DDL) is a set of SQL statements that allows you to define the database structure.
 

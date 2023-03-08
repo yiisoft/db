@@ -1,4 +1,4 @@
-# Data Manipulation Language (DML)
+# Data Manipulation Language (DML) Commands
 
 DML is a set of SQL statements that are used to manipulate data in a database.
 
