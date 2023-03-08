@@ -296,6 +296,7 @@ $db->createCommand()->createTable(
         'created_at' => 'datetime NOT NULL',
      ],
 )->execute();
+```
 
 This results in the following SQL execution in `MSSQL`.
 
