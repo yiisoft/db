@@ -12,7 +12,7 @@ use PDO;
  * It provides a set of common methods and properties that are implemented by the specific PDO driver classes, such as
  * MSSQL, Mysql, MariaDb, Oracle, PostgreSQL and SQLite.
  *
- * {@link https://www.php.net/manual/en/book.pdo.php}
+ * @link https://www.php.net/manual/en/book.pdo.php
  */
 abstract class AbstractPDODriver implements PDODriverInterface
 {
