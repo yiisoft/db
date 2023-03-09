@@ -10,7 +10,7 @@ use Yiisoft\Db\Driver\DriverInterface;
 /**
  * This interface provides a set of methods that must be implemented by {@see PDO} (PHP Data Objects) driver classes.
  *
- * {@link https://www.php.net/manual/en/book.pdo.php}
+ * @link https://www.php.net/manual/en/book.pdo.php
  */
 interface PDODriverInterface extends DriverInterface
 {
