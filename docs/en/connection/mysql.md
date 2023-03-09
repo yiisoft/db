@@ -1,4 +1,4 @@
-# Connecting MySQL
+# Connecting MySQL, MariaDB
 
 To configure [Yii DB MySQL/MariaDB](https://github.com/yiisoft/db-mysql) with a [DI container](https://github.com/yiisoft/di), you need to create a configuration file.
 
