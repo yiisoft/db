@@ -9,6 +9,7 @@ use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 
 /**
  * Represents the schema for a database table.
@@ -131,26 +132,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @return array All tables name in the database.
      */
     public function getTableNames(string $schema = '', bool $refresh = false): array;
-
-    /**
-     * Create a column schema builder instance giving the type and value precision.
-     *
-     * This method may be overridden by child classes to create a DBMS-specific column schema builder.
-     *
-     * @param string $type the type of the column.
-     * {@see AbstractColumnSchemaBuilder::$type} for supported types.
-     * @param array|int|string|null $length The length or precision of the column.
-     *
-     * {@see ColumnSchemaBuilderInterface::$length}.
-     *
-     * @return ColumnSchemaBuilderInterface column schema builder instance
-     *
-     * @psalm-param string[]|int[]|int|string|null $length
-     */
-    public function createColumnSchemaBuilder(
-        string $type,
-        array|int|string $length = null
-    ): ColumnSchemaBuilderInterface;
 
     /**
      * Returns all unique indexes for the given table.

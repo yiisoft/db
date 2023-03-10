@@ -34,12 +34,13 @@ The following example shows how to add a new column to an existing table.
 declare(strict_types=1);
 
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Mysql\Column;
 
 /** @var ConnectionInterface $db */
 $db->createCommand()->addColumn(
     '{{%customer}}',
     'profile_id',
-     $db->getSchema()->createColumnSchemaBuilder('integer')
+     new Column('integer')
 )->execute();
 ```
 
@@ -168,12 +169,13 @@ The following example shows how to change an existing column.
 declare(strict_types=1);
 
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Mysql\Column;
 
 /** @var ConnectionInterface $db */
 $db->createCommand()->alterColumn(
     '{{%customer}}',
     'profile_id',
-    $db->getSchema()->createColumnSchemaBuilder('integer')->notNull()
+    new Column('integer')->notNull()
 )->execute();
 ```
 
