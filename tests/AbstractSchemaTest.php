@@ -23,7 +23,7 @@ abstract class AbstractSchemaTest extends TestCase
 
     public function testCreateColumnSchemaBuilder(): void
     {
-        $columnSchemaBuilder = new Column('string');
+        $columnSchemaBuilder = $this->getConnection()->getSchema()->createColumn('string');
 
         $this->assertInstanceOf(ColumnInterface::class, $columnSchemaBuilder);
         $this->assertSame('string', $columnSchemaBuilder->getType());

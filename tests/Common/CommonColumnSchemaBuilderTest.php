@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function array_shift;
@@ -25,7 +24,10 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
 
     protected function checkBuildString(string $expected, string $type, int|null $length, array $calls): void
     {
-        $builder = new Column($type, $length);
+        $db = $this->getConnection();
+
+        $schema = $db->getSchema();
+        $builder = $schema->createColumn($type, $length);
 
         foreach ($calls as $call) {
             $method = array_shift($call);
@@ -33,5 +35,7 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
         }
 
         $this->assertSame($expected, $builder->asString());
+
+        $db->close();
     }
 }

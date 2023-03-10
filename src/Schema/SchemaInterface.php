@@ -78,6 +78,8 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const PHP_TYPE_ARRAY = 'array';
     public const PHP_TYPE_NULL = 'NULL';
 
+    public function createColumn(string $type, array|int|string $length = null): ColumnInterface;
+
     /**
      * @return string|null The default schema name.
      */
