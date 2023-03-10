@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
