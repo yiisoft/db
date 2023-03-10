@@ -14,7 +14,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  * A query function is a function that can be called in a query to perform some operation on the data being selected or
  * updated.
  *
- * Examples of query functions might include `COUNT()`, `SUM()`, `AVG()`, and `MAX()`.
+ * Examples of query functions might include {@see count()}, {@see sum()}, {@see average()}, and {@see max()}.
  */
 interface QueryFunctionsInterface
 {

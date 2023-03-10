@@ -14,6 +14,9 @@ use function rtrim;
 use function str_replace;
 use function trim;
 
+/**
+ * Short implementation of StringHelper from Yii2.
+ */
 final class StringHelper
 {
     /**

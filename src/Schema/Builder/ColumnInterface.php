@@ -18,8 +18,6 @@ interface ColumnInterface
      * Position modifiers will be appended after column definition in databases that support them.
      *
      * @param string $sql The SQL string to be appended.
-     *
-     * @return self The column schema builder instance itself.
      */
     public function append(string $sql): self;
 
@@ -40,8 +38,6 @@ interface ColumnInterface
      * Specify a `CHECK` constraint for the column.
      *
      * @param string|null $check The SQL of the `CHECK` constraint to be added.
-     *
-     * @return self The column schema builder instance itself.
      */
     public function check(string|null $check): self;
 
@@ -49,8 +45,6 @@ interface ColumnInterface
      * Specifies the comment for column.
      *
      * @param string|null $comment The comment to be added.
-     *
-     * @return self The column schema builder instance itself.
      */
     public function comment(string|null $comment): self;
 
@@ -58,8 +52,6 @@ interface ColumnInterface
      * Specify the default SQL expression for the column.
      *
      * @param string $default The SQL expression to be used as default value.
-     *
-     * @return self The column schema builder instance itself.
      */
     public function defaultExpression(string $default): self;
 
@@ -67,8 +59,6 @@ interface ColumnInterface
      * Specify the default value for the column.
      *
      * @param mixed $default The default value to be used.
-     *
-     * @return self The column schema builder instance itself.
      */
     public function defaultValue(mixed $default): self;
 
@@ -129,16 +119,12 @@ interface ColumnInterface
     /**
      * Adds a `NOT NULL` constraint to the column.
      *
-     * @return static The column schema builder instance itself.
-     *
      * @see isNotNull
      */
     public function notNull(): self;
 
     /**
      * Adds a `NULL` constraint to the column.
-     *
-     * @return static The column schema builder instance itself.
      *
      * @see isNotNull
      */
@@ -147,16 +133,12 @@ interface ColumnInterface
     /**
      * Adds a `UNIQUE` constraint to the column.
      *
-     * @return static The column schema builder instance itself.
-     *
      * @see isUnique
      */
     public function unique(): self;
 
     /**
      * Marks column as unsigned.
-     *
-     * @return self The column schema builder instance itself.
      */
     public function unsigned(): self;
 }

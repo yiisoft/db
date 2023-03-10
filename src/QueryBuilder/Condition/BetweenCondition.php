@@ -9,7 +9,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\BetweenConditionInterface;
 
 /**
- * Class BetweenCondition represents a `BETWEEN` condition.
+ * Condition that's represented `BETWEEN` operator is used to check if a value is between two values.
  */
 final class BetweenCondition implements BetweenConditionInterface
 {
@@ -44,7 +44,7 @@ final class BetweenCondition implements BetweenConditionInterface
     /**
      * Creates a condition based on the given operator and operands.
      *
-     * @throws InvalidArgumentException If the number of operands is not 3.
+     * @throws InvalidArgumentException If the number of operands isn't 3.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -58,7 +58,7 @@ final class BetweenCondition implements BetweenConditionInterface
     /**
      * Validates the given column to be string or ExpressionInterface.
      *
-     * @throws InvalidArgumentException If the column is not string or ExpressionInterface.
+     * @throws InvalidArgumentException If the column isn't a string or ExpressionInterface.
      */
     private static function validateColumn(string $operator, mixed $column): string|ExpressionInterface
     {

@@ -20,7 +20,7 @@ interface LikeConditionInterface extends ConditionInterface
     /**
      * @see setEscapingReplacements()
      */
-    public function getEscapingReplacements(): ?array;
+    public function getEscapingReplacements(): array|null;
 
     /**
      * This method allows specifying how to escape special characters in the value(s).

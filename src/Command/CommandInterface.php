@@ -718,8 +718,8 @@ interface CommandInterface
      *
      * @param string $sql The SQL statement to be set.
      *
-     * {@see reset()}
-     * {@see cancel()}
+     * @see reset()
+     * @see cancel()
      */
     public function setRawSql(string $sql): static;
 
@@ -750,8 +750,8 @@ interface CommandInterface
      *
      * @param string $sql The SQL statement to be set.
      *
-     * {@see reset()}
-     * {@see cancel()}
+     * @see reset()
+     * @see cancel()
      */
     public function setSql(string $sql): static;
 

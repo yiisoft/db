@@ -10,7 +10,9 @@ use Stringable;
  * Represents a DB expression that doesn't need escaping or quoting.
  *
  * When an Expression object is embedded within a SQL statement or fragment, it will be replaced with the
- * {@see expression} property value without any DB escaping or quoting. For example,
+ * {@see expression} property value without any DB escaping or quoting.
+ *
+ * For example,
  *
  * ```php
  * $expression = new Expression('NOW()');

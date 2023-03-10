@@ -27,8 +27,8 @@ interface QueryPartsInterface
      * group-by information.
      * Otherwise, the method won't be able to correctly decide the group-by columns.
      *
-     * {@see ExpressionInterface} Object can be passed to specify the GROUP BY part explicitly in plain SQL.
-     * {@see ExpressionInterface} Object can be passed as well.
+     * {@see ExpressionInterface} object can be passed to specify the GROUP BY part explicitly in plain SQL.
+     * {@see ExpressionInterface} object can be passed as well.
      *
      * @see groupBy()
      */
@@ -63,7 +63,7 @@ interface QueryPartsInterface
      *
      * @param array|ExpressionInterface|string $columns The columns to add to the select.
      *
-     * {@see select()} For more details about the format of this parameter.
+     * {@see select()} for more details about the format of this parameter.
      */
     public function addSelect(array|string|ExpressionInterface $columns): static;
 
@@ -193,7 +193,7 @@ interface QueryPartsInterface
      * Note that unlike {@see having()}, you can't pass binding parameters to this method.
      *
      * @param array $condition The conditions that should be put in the HAVING part.
-     * {@see having()} On how to specify this parameter.
+     * {@see having()} on how to specify this parameter.
      *
      * @throws NotSupportedException If this query doesn't support filtering.
      *
@@ -279,8 +279,8 @@ interface QueryPartsInterface
      * group-by information.
      * Otherwise, the method won't be able to correctly decide the group-by columns.
      *
-     * {@see ExpressionInterface} Object can be passed to specify the GROUP BY part explicitly in plain SQL.
-     * {@see ExpressionInterface} Object can be passed as well.
+     * {@see ExpressionInterface} object can be passed to specify the GROUP BY part explicitly in plain SQL.
+     * {@see ExpressionInterface} object can be passed as well.
      *
      * @see addGroupBy()
      */
