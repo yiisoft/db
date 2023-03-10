@@ -78,6 +78,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const PHP_TYPE_ARRAY = 'array';
     public const PHP_TYPE_NULL = 'NULL';
 
+    /**
+     * @psalm-param string[]|int[]|int|string|null $length
+     */
     public function createColumn(string $type, array|int|string $length = null): ColumnInterface;
 
     /**
