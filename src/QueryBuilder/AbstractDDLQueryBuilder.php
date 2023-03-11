@@ -6,7 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\ColumnSchemaBuilderInterface;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -136,7 +136,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     public function alterColumn(
         string $table,
         string $column,
-        ColumnSchemaBuilderInterface|string $type
+        ColumnInterface|string $type
     ): string {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)

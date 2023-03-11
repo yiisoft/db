@@ -27,7 +27,7 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $schema = $db->getSchema();
-        $builder = $schema->createColumnSchemaBuilder($type, $length);
+        $builder = $schema->createColumn($type, $length);
 
         foreach ($calls as $call) {
             $method = array_shift($call);

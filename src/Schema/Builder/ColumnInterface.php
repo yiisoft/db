@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Schema;
+namespace Yiisoft\Db\Schema\Builder;
 
 /**
  * This interface defines the methods that must be implemented by classes that build the schema of a database column.
@@ -10,7 +10,7 @@ namespace Yiisoft\Db\Schema;
  * It provides methods for setting the column name, type, length, precision, scale, default value, and other properties
  * of the column, as well as methods for adding constraints, such as a primary key, unique, and not null.
  */
-interface ColumnSchemaBuilderInterface
+interface ColumnInterface
 {
     /**
      * Specify more SQL to be appended to column definition.

@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Schema;
+namespace Yiisoft\Db\Schema\Builder;
 
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\StringHelper;
+use Yiisoft\Db\Schema\SchemaInterface;
 
 use function gettype;
 use function implode;
@@ -20,13 +21,13 @@ use function strtr;
  * For example, the following code creates a column schema for an integer column:
  *
  * ```php
- * $column = (new ColumnSchemaBuilder(SchemaInterface::TYPE_INTEGER))->notNull()->defaultValue(0);
+ * $column = (new Column(SchemaInterface::TYPE_INTEGER))->notNull()->defaultValue(0);
  * ```
  *
  * Provides a fluent interface, which means that the methods can be chained together to create a column schema with
  * many properties in a single line of code.
  */
-abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterface
+abstract class AbstractColumn implements ColumnInterface
 {
     /**
      * Internally used constants representing categories that abstract column types fall under.

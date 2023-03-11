@@ -9,7 +9,7 @@ use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
-use Yiisoft\Db\Schema\ColumnSchemaBuilderInterface;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -96,7 +96,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addUnique($name, $table, $columns);
     }
 
-    public function alterColumn(string $table, string $column, ColumnSchemaBuilderInterface|string $type): string
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
@@ -298,9 +298,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->dropView($viewName);
     }
 
-    public function getColumnType(ColumnSchemaBuilderInterface|string $type): string
+    public function getColumnType(ColumnInterface|string $type): string
     {
-        if ($type instanceof ColumnSchemaBuilderInterface) {
+        if ($type instanceof ColumnInterface) {
             $type = $type->asString();
         }
 
