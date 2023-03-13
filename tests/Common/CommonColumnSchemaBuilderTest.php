@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Helper\StringHelper;
+use Yiisoft\Db\Helper\UuidHelper;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -61,9 +61,9 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
 
         $columnInfo = $tableSchema->getColumn('uuid_pk');
 
-        $uuidString = StringHelper::toUuid($uuid);
+        $uuidString = UuidHelper::toUuid($uuid);
         if ($columnInfo->getType() === SchemaInterface::TYPE_BINARY) {
-            $this->assertEquals($uuid, StringHelper::uuidToBlob($uuidString));
+            $this->assertEquals($uuid, UuidHelper::uuidToBlob($uuidString));
         }
 
         $this->assertStringMatchesFormat('%s-%s-%s-%s-%s', $uuidString);
