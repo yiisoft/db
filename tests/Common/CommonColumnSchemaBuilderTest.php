@@ -64,7 +64,6 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
         $uuidString = StringHelper::toUuid($uuid);
         if ($columnInfo->getType() === SchemaInterface::TYPE_BINARY) {
             $this->assertEquals($uuid, StringHelper::uuidToBlob($uuidString));
-            $uuid = $uuidString;
         }
 
         $this->assertStringMatchesFormat('%s-%s-%s-%s-%s', $uuidString);
