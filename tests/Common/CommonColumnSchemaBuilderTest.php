@@ -104,7 +104,7 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
         }
 
         $command = $db->createCommand()->createTable($tableName, [
-            'column' => $builder
+            'column' => $builder,
         ]);
 
         $this->assertStringContainsString("\t" . $expected . "\n", $command->getRawSql());

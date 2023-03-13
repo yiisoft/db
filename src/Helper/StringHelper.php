@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Helper;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
+
 use function addslashes;
 use function is_float;
 use function mb_strrpos;
@@ -88,7 +89,7 @@ final class StringHelper
 
         if (strlen($blobString) === 16) {
             $hex = bin2hex($blobString);
-        } elseif(strlen($blobString) === 32 && self::isValidHexUuid($blobString)) {
+        } elseif (strlen($blobString) === 32 && self::isValidHexUuid($blobString)) {
             $hex = $blobString;
         } else {
             throw new InvalidArgumentException('Length of source data is should be 16 or 32 bytes.');
