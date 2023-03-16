@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\UuidHelper;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -44,13 +45,24 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
         }
 
         $db->createCommand()->createTable($tableName, [
-            'uuid_pk' => $schema->createColumn(SchemaInterface::TYPE_UUID_PK_SEQ),
+            'uuid_pk' => $schema->createColumn(SchemaInterface::TYPE_UUID_PK),
             'int_col' => $schema->createColumn(SchemaInterface::TYPE_INTEGER),
         ])->execute();
         $tableSchema = $db->getTableSchema($tableName, true);
         $this->assertNotNull($tableSchema);
 
-        $db->createCommand()->insert($tableName, ['int_col' => 1])->execute();
+        $uuidValue = $uuidSource = '738146be-87b1-49f2-9913-36142fb6fcbe';
+
+        if ($db->getName() === 'oci') {
+            $uuidValue = new Expression('HEXTORAW(REGEXP_REPLACE(:uuid, \'-\', \'\'))', [':uuid' => $uuidValue]);
+        } elseif ($db->getName() === 'mysql') {
+            $uuidValue = UuidHelper::uuidToBlob($uuidValue);
+        }
+
+        $db->createCommand()->insert($tableName, [
+            'int_col' => 1,
+            'uuid_pk' => $uuidValue,
+        ])->execute();
 
         $uuid = (new Query($db))
             ->select(['[[uuid_pk]]'])
@@ -59,14 +71,9 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
             ->scalar()
         ;
 
-        $columnInfo = $tableSchema->getColumn('uuid_pk');
+        $uuidString = strtolower(UuidHelper::toUuid($uuid));
 
-        $uuidString = UuidHelper::toUuid($uuid);
-        if ($columnInfo->getType() === SchemaInterface::TYPE_BINARY) {
-            $this->assertEquals($uuid, UuidHelper::uuidToBlob($uuidString));
-        }
-
-        $this->assertStringMatchesFormat('%s-%s-%s-%s-%s', $uuidString);
+        $this->assertEquals($uuidSource, $uuidString);
     }
 
     protected function checkBuildString(string $expected, string $type, int|null $length, array $calls): void

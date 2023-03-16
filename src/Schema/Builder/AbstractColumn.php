@@ -57,7 +57,6 @@ abstract class AbstractColumn implements ColumnInterface
         SchemaInterface::TYPE_UPK => self::CATEGORY_PK,
         SchemaInterface::TYPE_BIGPK => self::CATEGORY_PK,
         SchemaInterface::TYPE_UBIGPK => self::CATEGORY_PK,
-        SchemaInterface::TYPE_UUID_PK_SEQ => self::CATEGORY_PK,
         SchemaInterface::TYPE_CHAR => self::CATEGORY_STRING,
         SchemaInterface::TYPE_STRING => self::CATEGORY_STRING,
         SchemaInterface::TYPE_TEXT => self::CATEGORY_STRING,
@@ -166,7 +165,8 @@ abstract class AbstractColumn implements ColumnInterface
     {
         $format = match ($this->getTypeCategory()) {
             self::CATEGORY_PK => '{type}{check}{comment}{append}',
-            self::CATEGORY_UUID => '{type}{notnull}{default}{check}{comment}{append}',
+            self::CATEGORY_UUID => '{type}{notnull}{unique}{default}{check}{comment}{append}',
+            self::CATEGORY_UUID_PK => '{type}{notnull}{default}{check}{comment}{append}',
             default => $this->format,
         };
 

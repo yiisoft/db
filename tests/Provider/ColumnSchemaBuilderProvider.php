@@ -73,12 +73,6 @@ class ColumnSchemaBuilderProvider
                 null,
                 [],
             ],
-            'uuid pk sequence' => [
-                '',
-                SchemaInterface::TYPE_UUID_PK_SEQ,
-                null,
-                [],
-            ],
         ];
     }
 }
