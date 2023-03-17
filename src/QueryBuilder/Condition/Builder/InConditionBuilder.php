@@ -135,6 +135,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @throws NotSupportedException
      *
      * @psalm-return string[]
+     *
      * @psalm-suppress MixedArrayTypeCoercion
      * @psalm-suppress MixedArrayOffset
      */
