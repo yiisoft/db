@@ -60,6 +60,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             'Test comment for column.',
             $schema->getTableSchema('testCommentTable')->getColumn('bar')->getComment(),
         );
+
+        $db->close();
     }
 
     /**
@@ -91,6 +93,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertSame('order_item', $expectedKey[0]);
         $this->assertSame('order_id', $expectedKey['order_id']);
         $this->assertSame('item_id', $expectedKey['item_id']);
+
+        $db->close();
     }
 
     public function testContraintTablesExistance(): void
@@ -104,6 +108,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $tableSchema = $schema->getTableSchema($tableName);
             $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema, $tableName);
         }
+
+        $db->close();
     }
 
     /**
@@ -185,6 +191,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             ['another unique index' => ['someCol3'], 'someCol2Unique' => ['someCol2'], 'somecolUnique' => ['somecol']],
             $uniqueIndexes,
         );
+
+        $db->close();
     }
 
     public function testGetColumnNoExist(): void
@@ -196,6 +204,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->assertNotNull($table);
         $this->assertNull($table->getColumn('no_exist'));
+
+        $db->close();
     }
 
     public function testGetDefaultSchema(): void
@@ -205,6 +215,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $schema = $db->getSchema();
 
         $this->assertNull($schema->getDefaultSchema());
+
+        $db->close();
     }
 
     public function testGetNonExistingTableSchema(): void
@@ -214,6 +226,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $schema = $db->getSchema();
 
         $this->assertNull($schema->getTableSchema('nonexisting_table'));
+
+        $db->close();
     }
 
     /**
@@ -241,6 +255,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertIsArray($insertResult);
         $this->assertIsArray($selectResult);
         $this->assertEquals($selectResult['id'], $insertResult['id']);
+
+        $db->close();
     }
 
     public function testGetSchemaChecks(): void
@@ -256,6 +272,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $this->assertIsArray($checks);
             $this->assertContainsOnlyInstancesOf(CheckConstraint::class, $checks);
         }
+
+        $db->close();
     }
 
     public function testGetSchemaDefaultValues(): void
@@ -271,6 +289,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $this->assertIsArray($defaultValues);
             $this->assertContainsOnlyInstancesOf(DefaultValueConstraint::class, $defaultValues);
         }
+
+        $db->close();
     }
 
     public function testGetSchemaForeignKeys(): void
@@ -286,6 +306,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $this->assertIsArray($foreignKeys);
             $this->assertContainsOnlyInstancesOf(ForeignKeyConstraint::class, $foreignKeys);
         }
+
+        $db->close();
     }
 
     public function testGetSchemaIndexes(): void
@@ -301,6 +323,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $this->assertIsArray($indexes);
             $this->assertContainsOnlyInstancesOf(IndexConstraint::class, $indexes);
         }
+
+        $db->close();
     }
 
     public function testGetSchemaPrimaryKeys(): void
@@ -312,6 +336,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->assertIsArray($tablePks);
         $this->assertContainsOnlyInstancesOf(Constraint::class, $tablePks);
+
+        $db->close();
     }
 
     public function testGetSchemaUniques(): void
@@ -327,6 +353,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $this->assertIsArray($uniques);
             $this->assertContainsOnlyInstancesOf(Constraint::class, $uniques);
         }
+
+        $db->close();
     }
 
     /**
@@ -358,6 +386,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 $this->assertSame($columnDbType, $dbType);
             }
         }
+
+        $db->close();
     }
 
     public function testGetTableChecks(): void
@@ -370,6 +400,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertIsArray($tableChecks);
 
         $this->assertContainsOnlyInstancesOf(CheckConstraint::class, $tableChecks);
+
+        $db->close();
     }
 
     /**
@@ -400,6 +432,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertContains('type', $tablesNames);
         $this->assertContains('animal', $tablesNames);
         $this->assertContains('animal_view', $tablesNames);
+
+        $db->close();
     }
 
     /**
@@ -413,6 +447,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema);
         $this->assertEquals($expectedName, $tableSchema->getName());
+
+        $db->close();
     }
 
     /**
@@ -440,6 +476,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         foreach ($tables as $table) {
             $this->assertInstanceOf(TableSchemaInterface::class, $table);
         }
+
+        $db->close();
     }
 
     /**
@@ -459,6 +497,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 
         $this->assertCount(count($schema->getTableNames()), $schema->getTableSchemas());
+
+        $db->close();
     }
 
     public function testGetViewNames(): void
@@ -469,13 +509,15 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $views = $schema->getViewNames();
 
         $this->assertSame(['animal_view'], $views);
+
+        $db->close();
     }
 
     public function testNegativeDefaultValues(): void
     {
-        $schema = $this->getConnection(true);
+        $db = $this->getConnection(true);
 
-        $schema = $schema->getSchema();
+        $schema = $db->getSchema();
         $table = $schema->getTableSchema('negative_default_values');
 
         $this->assertNotNull($table);
@@ -485,6 +527,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertSame(-123, $table->getColumn('bigint_col')?->getDefaultValue());
         $this->assertSame(-12345.6789, $table->getColumn('float_col')?->getDefaultValue());
         $this->assertEquals(-33.22, $table->getColumn('numeric_col')?->getDefaultValue());
+
+        $db->close();
     }
 
     /**
@@ -520,6 +564,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
             $this->assertSame($value, $result['description']);
         }
+
+        $db->close();
     }
 
     /**
@@ -536,6 +582,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $refreshedTable = $schema->getTableSchema('type');
 
         $this->assertNotSame($noCacheTable, $refreshedTable);
+
+        $db->close();
     }
 
     /**
@@ -559,6 +607,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertNotSame($noCacheTable, $cachedTable);
 
         $db->createCommand()->renameTable('type_test', 'type')->execute();
+
+        $db->close();
     }
 
     /**
@@ -598,6 +648,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         }
 
         $this->assertCount(20, $schemaCached->getColumns());
+
+        $db->close();
     }
 
     /**
@@ -639,6 +691,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertInstanceOf(TableSchemaInterface::class, $testRefreshedTable);
         $this->assertEquals($refreshedTable, $testRefreshedTable);
         $this->assertNotSame($testNoCacheTable, $testRefreshedTable);
+
+        $db->close();
     }
 
     /**
