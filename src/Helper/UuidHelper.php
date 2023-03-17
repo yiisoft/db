@@ -13,7 +13,7 @@ use function str_replace;
 
 final class UuidHelper
 {
-    public static function toUuid(string $blobString)
+    public static function toUuid(string $blobString): string
     {
         if (self::isValidUuid($blobString)) {
             return $blobString;
