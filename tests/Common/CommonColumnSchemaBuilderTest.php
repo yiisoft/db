@@ -99,9 +99,16 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
     {
         $db = $this->getConnection();
 
-        if (str_contains($db->getServerVersion(), 'MariaDB') && str_contains($expected, 'UUID_TO_BIN')) {
-            $db->close();
-            $this->markTestSkipped('UUID_TO_BIN not supported MariaDB as defaultValue');
+        if (str_contains($expected, 'UUID_TO_BIN')) {
+            $serverVersion = $db->getServerVersion();
+            if (str_contains($serverVersion, 'MariaDB')) {
+                $db->close();
+                $this->markTestSkipped('UUID_TO_BIN not supported MariaDB as defaultValue');
+            }
+            if (version_compare($serverVersion, '8', '<')) {
+                $db->close();
+                $this->markTestSkipped('UUID_TO_BIN not exists in MySQL 5.7');
+            }
         }
 
         $schema = $db->getSchema();
