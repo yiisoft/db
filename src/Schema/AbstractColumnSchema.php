@@ -45,10 +45,9 @@ use function is_resource;
  */
 abstract class AbstractColumnSchema implements ColumnSchemaInterface
 {
-    public function __construct(string $name, string $type)
+    public function __construct(string $name)
     {
         $this->name = $name;
-        $this->type = $type;
     }
 
     private bool $allowNull = false;
@@ -65,7 +64,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     private int|null $precision = null;
     private int|null $scale = null;
     private int|null $size = null;
-    private string $type;
+    private string $type = '';
     private bool $unsigned = false;
 
     public function allowNull(bool $value): void
