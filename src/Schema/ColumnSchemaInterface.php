@@ -171,6 +171,7 @@ interface ColumnSchemaInterface
     /**
      * @return string|null The database type of the column.
      * Null means the column has no type in the database.
+     *
      * @see dbType()
      */
     public function getDbType(): string|null;
