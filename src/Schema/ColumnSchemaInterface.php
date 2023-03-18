@@ -204,8 +204,6 @@ interface ColumnSchemaInterface
      * @return string The name of the column.
      *
      * @psalm-return non-empty-string
-     *
-     * @see name()
      */
     public function getName(): string;
 
@@ -289,19 +287,6 @@ interface ColumnSchemaInterface
      * @see unsigned()
      */
     public function isUnsigned(): bool;
-
-    /**
-     * Represents the name of the column in the database.
-     *
-     * The db ColumnSchema class will generate a name automatically based on the column name.
-     *
-     * ```php
-     * $columns = [
-     *     'description' => $this->text()->name('description'),
-     * ];
-     * ```
-     */
-    public function name(string $value): void;
 
     /**
      * The phpType is used to return the PHP data type that's most appropriate for representing the data stored in the

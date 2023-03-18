@@ -196,11 +196,6 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->unsigned;
     }
 
-    public function name(string $value): void
-    {
-        $this->name = $value;
-    }
-
     public function phpType(string|null $value): void
     {
         $this->phpType = $value;

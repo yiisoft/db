@@ -146,17 +146,9 @@ final class ColumnSchemaTest extends TestCase
 
     public function testName(): void
     {
-        $column = new ColumnSchema();
-
-        $this->assertSame('', $column->getName());
-
-        $column->name('test');
+        $column = new ColumnSchema('test');
 
         $this->assertSame('test', $column->getName());
-
-        $column->name('');
-
-        $this->assertSame('', $column->getName());
     }
 
     public function testPhpType(): void
