@@ -49,7 +49,7 @@ class JsonExpression implements ExpressionInterface, JsonSerializable
     /**
      * Specify data which should be serialized to JSON.
      *
-     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
      *
      * @throws InvalidConfigException When JsonExpression has a {@see QueryInterface} object
      *

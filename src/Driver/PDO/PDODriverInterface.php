@@ -18,7 +18,7 @@ interface PDODriverInterface extends DriverInterface
      * Set {@see PDO} attributes (name => value) that should be set when calling {@see open()} to establish a DB
      * connection.
      *
-     * Please refer to the [PHP manual](http://php.net/manual/en/pdo.setattribute.php) for details about available
+     * Please refer to the [PHP manual](https://php.net/manual/en/pdo.setattribute.php) for details about available
      * attributes.
      *
      * @param array $attributes The attributes (name => value) to be set on the DB connection.

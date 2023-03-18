@@ -26,25 +26,25 @@ interface TransactionInterface extends LoggerAwareInterface
     /**
      * A constant representing the transaction isolation level `READ UNCOMMITTED`.
      *
-     * @link http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * @link https://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     public const READ_UNCOMMITTED = 'READ UNCOMMITTED';
     /**
      * A constant representing the transaction isolation level `READ COMMITTED`.
      *
-     * @link http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * @link https://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     public const READ_COMMITTED = 'READ COMMITTED';
     /**
      * A constant representing the transaction isolation level `REPEATABLE READ`.
      *
-     * @link http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * @link https://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     public const REPEATABLE_READ = 'REPEATABLE READ';
     /**
      * A constant representing the transaction isolation level `SERIALIZABLE`.
      *
-     * @link http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * @link https://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     public const SERIALIZABLE = 'SERIALIZABLE';
 
@@ -66,7 +66,7 @@ interface TransactionInterface extends LoggerAwareInterface
      * isolation level for all transactions explicitly to avoid conflicting settings.
      * At the time of this writing affected DBMS are MSSQL and SQLite.
      *
-     * @link http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * @link https://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      *
      * @throws Exception
      * @throws Throwable If DB connection fails or the current transaction is active.
@@ -119,7 +119,7 @@ interface TransactionInterface extends LoggerAwareInterface
      * @throws Exception
      * @throws Throwable If the transaction isn't active.
      *
-     * @link http://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
+     * @link https://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
     public function setIsolationLevel(string $level): void;
 

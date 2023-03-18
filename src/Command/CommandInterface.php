@@ -214,7 +214,7 @@ interface CommandInterface
      *
      * @throws Exception
      *
-     * @link http://www.php.net/manual/en/function.PDOStatement-bindParam.php
+     * @link https://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
     public function bindParam(
         int|string $name,

@@ -34,7 +34,7 @@ final class StringHelper
      *
      * @return string The trailing name part of the given path.
      *
-     * @link http://www.php.net/manual/en/function.basename.php
+     * @link https://www.php.net/manual/en/function.basename.php
      */
     public static function baseName(string $path): string
     {
