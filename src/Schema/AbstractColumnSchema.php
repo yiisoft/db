@@ -45,21 +45,28 @@ use function is_resource;
  */
 abstract class AbstractColumnSchema implements ColumnSchemaInterface
 {
+    public function __construct(string $name, string $type, string $dbType)
+    {
+        $this->name = $name;
+        $this->type = $type;
+        $this->dbType = $dbType;
+    }
+
     private bool $allowNull = false;
     private bool $autoIncrement = false;
     private string|null $comment = null;
     private bool $computed = false;
-    private string $dbType = '';
+    private string $dbType;
     private mixed $defaultValue = null;
     private array|null $enumValues = null;
     private string|null $extra = null;
     private bool $isPrimaryKey = false;
-    private string $name = '';
+    private string $name;
     private string|null $phpType = null;
     private int|null $precision = null;
     private int|null $scale = null;
     private int|null $size = null;
-    private string $type = '';
+    private string $type;
     private bool $unsigned = false;
 
     public function allowNull(bool $value): void
