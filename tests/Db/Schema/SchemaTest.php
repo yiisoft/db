@@ -65,16 +65,16 @@ final class SchemaTest extends AbstractSchemaTest
 
         $schema = $db->getSchema();
 
-        $columnBigInt = new ColumnSchema();
+        $columnBigInt = new ColumnSchema('bigint');
         $columnBigInt->type('bigint');
 
-        $columnBoolean = new ColumnSchema();
+        $columnBoolean = new ColumnSchema('boolean');
         $columnBoolean->type('boolean');
 
-        $columnInteger = new ColumnSchema();
+        $columnInteger = new ColumnSchema('integer');
         $columnInteger->type('integer');
 
-        $columnString = new ColumnSchema();
+        $columnString = new ColumnSchema('string');
         $columnString->type('string');
 
         $this->assertSame(
