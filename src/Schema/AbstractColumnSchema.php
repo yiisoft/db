@@ -45,18 +45,17 @@ use function is_resource;
  */
 abstract class AbstractColumnSchema implements ColumnSchemaInterface
 {
-    public function __construct(string $name, string $type, string $dbType)
+    public function __construct(string $name, string $type)
     {
         $this->name = $name;
         $this->type = $type;
-        $this->dbType = $dbType;
     }
 
     private bool $allowNull = false;
     private bool $autoIncrement = false;
     private string|null $comment = null;
     private bool $computed = false;
-    private string $dbType;
+    private string|null $dbType = null;
     private mixed $defaultValue = null;
     private array|null $enumValues = null;
     private string|null $extra = null;
@@ -89,7 +88,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         $this->computed = $value;
     }
 
-    public function dbType(string $value): void
+    public function dbType(string|null $value): void
     {
         $this->dbType = $value;
     }
@@ -123,7 +122,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->comment;
     }
 
-    public function getDbType(): string
+    public function getDbType(): string|null
     {
         return $this->dbType;
     }

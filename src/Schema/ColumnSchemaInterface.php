@@ -79,7 +79,8 @@ interface ColumnSchemaInterface
      * consistent and abstracted way.
      *
      * The data type can be one of the built-in data types supported by the database server (such as INTEGER, VARCHAR,
-     * DATETIME, etc.), or it can be a custom data type defined by the database server. The dbType property is used to
+     * DATETIME, etc.), a custom data type defined by the database server,
+     * or null if the database allows untyped columns. The dbType property is used to
      * specify the type of data that can be stored in the column and how it should be treated by the database server
      * when performing operations on it.
      *
@@ -94,7 +95,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function dbType(string $value): void;
+    public function dbType(string|null $value): void;
 
     /**
      * The dbTypecast is used to convert a value from its PHP representation to a database-specific representation.
@@ -168,11 +169,11 @@ interface ColumnSchemaInterface
     public function getComment(): string|null;
 
     /**
-     * @return string The dbType of the column.
-     *
+     * @return string|null The database type of the column.
+     * Null means the column has no type in the database.
      * @see dbType()
      */
-    public function getDbType(): string;
+    public function getDbType(): string|null;
 
     /**
      * @return mixed The default value of the column. `null` if no default value has been defined.
