@@ -45,16 +45,21 @@ use function is_resource;
  */
 abstract class AbstractColumnSchema implements ColumnSchemaInterface
 {
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
+
     private bool $allowNull = false;
     private bool $autoIncrement = false;
     private string|null $comment = null;
     private bool $computed = false;
-    private string $dbType = '';
+    private string|null $dbType = null;
     private mixed $defaultValue = null;
     private array|null $enumValues = null;
     private string|null $extra = null;
     private bool $isPrimaryKey = false;
-    private string $name = '';
+    private string $name;
     private string|null $phpType = null;
     private int|null $precision = null;
     private int|null $scale = null;
@@ -82,7 +87,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         $this->computed = $value;
     }
 
-    public function dbType(string $value): void
+    public function dbType(string|null $value): void
     {
         $this->dbType = $value;
     }
@@ -116,7 +121,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->comment;
     }
 
-    public function getDbType(): string
+    public function getDbType(): string|null
     {
         return $this->dbType;
     }
@@ -189,11 +194,6 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     public function isUnsigned(): bool
     {
         return $this->unsigned;
-    }
-
-    public function name(string $value): void
-    {
-        $this->name = $value;
     }
 
     public function phpType(string|null $value): void

@@ -65,16 +65,16 @@ final class SchemaTest extends AbstractSchemaTest
 
         $schema = $db->getSchema();
 
-        $columnBigInt = new ColumnSchema();
+        $columnBigInt = new ColumnSchema('bigint');
         $columnBigInt->type('bigint');
 
-        $columnBoolean = new ColumnSchema();
+        $columnBoolean = new ColumnSchema('boolean');
         $columnBoolean->type('boolean');
 
-        $columnInteger = new ColumnSchema();
+        $columnInteger = new ColumnSchema('integer');
         $columnInteger->type('integer');
 
-        $columnString = new ColumnSchema();
+        $columnString = new ColumnSchema('string');
         $columnString->type('string');
 
         $this->assertSame(
@@ -437,39 +437,34 @@ final class SchemaTest extends AbstractSchemaTest
     private function createTableSchemaStub(): TableSchemaInterface
     {
         // defined column C_id
-        $columnCid = new ColumnSchema();
+        $columnCid = new ColumnSchema('C_id');
         $columnCid->autoIncrement(true);
         $columnCid->dbType('int');
         $columnCid->primaryKey(true);
-        $columnCid->name('C_id');
         $columnCid->phpType('integer');
         $columnCid->type('integer');
 
         // defined column C_not_null
-        $columnCNotNull = new ColumnSchema();
+        $columnCNotNull = new ColumnSchema('C_not_null');
         $columnCNotNull->dbType('int');
-        $columnCNotNull->name('C_not_null');
         $columnCNotNull->phpType('int');
         $columnCNotNull->type('int');
 
         // defined column C_check
-        $columnCCheck = new ColumnSchema();
+        $columnCCheck = new ColumnSchema('C_check');
         $columnCCheck->dbType('varchar(255)');
-        $columnCCheck->name('C_check');
         $columnCCheck->phpType('string');
         $columnCCheck->type('string');
 
         // defined column C_default
-        $columnCDefault = new ColumnSchema();
+        $columnCDefault = new ColumnSchema('C_default');
         $columnCDefault->dbType('int');
-        $columnCDefault->name('C_default');
         $columnCDefault->phpType('integer');
         $columnCDefault->type('integer');
 
         // defined column C_unique
-        $columnCUnique = new ColumnSchema();
+        $columnCUnique = new ColumnSchema('C_unique');
         $columnCUnique->dbType('int');
-        $columnCUnique->name('C_unique');
         $columnCUnique->phpType('integer');
         $columnCUnique->type('integer');
 
