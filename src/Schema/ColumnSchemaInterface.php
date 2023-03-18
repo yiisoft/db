@@ -200,6 +200,7 @@ interface ColumnSchemaInterface
 
     /**
      * @return string The name of the column.
+     *
      * @psalm-return non-empty-string
      *
      * @see name()
@@ -217,6 +218,7 @@ interface ColumnSchemaInterface
     /**
      * @return string|null The phpType of the column. `null` if no phpType has been defined.
      * By default, it returns `null`.
+     *
      * @psalm-return non-empty-string
      *
      * @see phpType()
@@ -241,6 +243,7 @@ interface ColumnSchemaInterface
 
     /**
      * @return string The type of the column.
+     *
      * @psalm-return non-empty-string
      *
      * @see type()
