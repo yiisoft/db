@@ -88,8 +88,6 @@ interface ColumnSchemaInterface
      * has a dbType of VARCHAR, it means that it can store character strings of a certain length, and the database
      * server will treat the data in the column as a character string when performing operations on it.
      *
-     * For default dbType is null.
-     *
      * ```php
      * $columns = [
      *    'description' => $this->text()->dbType('text'),
@@ -170,8 +168,7 @@ interface ColumnSchemaInterface
     public function getComment(): string|null;
 
     /**
-     * @return string The dbType of the column. Empty string if no dbType has been defined.
-     * By default, it returns an empty string.
+     * @return string The dbType of the column.
      *
      * @see dbType()
      */
@@ -202,8 +199,7 @@ interface ColumnSchemaInterface
     public function getExtra(): string|null;
 
     /**
-     * @return string The name of the column. Empty string if no name has been defined.
-     * By default, it returns an empty string.
+     * @return string The name of the column.
      *
      * @see name()
      */
@@ -242,8 +238,7 @@ interface ColumnSchemaInterface
     public function getSize(): int|null;
 
     /**
-     * @return string The type of the column. Empty string if no type has been defined.
-     * By default, it returns an empty string.
+     * @return string The type of the column.
      *
      * @see type()
      */
@@ -289,10 +284,6 @@ interface ColumnSchemaInterface
 
     /**
      * Represents the name of the column in the database.
-     *
-     * It's used to generate the SQL statement.
-     *
-     * For default name is an empty string.
      *
      * The db ColumnSchema class will generate a name automatically based on the column name.
      *
@@ -394,10 +385,6 @@ interface ColumnSchemaInterface
      *
      * The data type of column specifies the kind of values that can be stored in that column, such as integers,
      * strings, dates, or floating point numbers.
-     *
-     * By default, the type is set to empty strings.
-     *
-     * The db ColumnSchema class will generate setType automatically based on the column type.
      *
      * ```php
      * $columns = [
