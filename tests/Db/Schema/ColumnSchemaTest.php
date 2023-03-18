@@ -81,15 +81,15 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema('new');
 
-        $this->assertSame('', $column->getDbType());
+        $this->assertNull($column->getDbType());
 
         $column->dbType('test');
 
         $this->assertSame('test', $column->getDbType());
 
-        $column->dbType('');
+        $column->dbType(null);
 
-        $this->assertSame('', $column->getDbType());
+        $this->assertNull($column->getDbType());
     }
 
     public function testDbTypecast(): void
