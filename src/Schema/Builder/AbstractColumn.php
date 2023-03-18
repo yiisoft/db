@@ -39,6 +39,8 @@ abstract class AbstractColumn implements ColumnInterface
     public const CATEGORY_NUMERIC = 'numeric';
     public const CATEGORY_TIME = 'time';
     public const CATEGORY_OTHER = 'other';
+    public const CATEGORY_UUID = 'uuid';
+    public const CATEGORY_UUID_PK = 'uuid_pk';
 
     protected bool|null $isNotNull = null;
     protected bool $isUnique = false;
@@ -72,6 +74,8 @@ abstract class AbstractColumn implements ColumnInterface
         SchemaInterface::TYPE_BINARY => self::CATEGORY_OTHER,
         SchemaInterface::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
         SchemaInterface::TYPE_MONEY => self::CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_UUID => self::CATEGORY_UUID,
+        SchemaInterface::TYPE_UUID_PK => self::CATEGORY_UUID_PK,
     ];
 
     /**
@@ -159,11 +163,12 @@ abstract class AbstractColumn implements ColumnInterface
 
     public function asString(): string
     {
-        if ($this->getTypeCategory() === self::CATEGORY_PK) {
-            $format = '{type}{check}{comment}{append}';
-        } else {
-            $format = $this->format;
-        }
+        $format = match ($this->getTypeCategory()) {
+            self::CATEGORY_PK => '{type}{check}{comment}{append}',
+            self::CATEGORY_UUID => '{type}{notnull}{unique}{default}{check}{comment}{append}',
+            self::CATEGORY_UUID_PK => '{type}{notnull}{default}{check}{comment}{append}',
+            default => $this->format,
+        };
 
         return $this->buildCompleteString($format);
     }

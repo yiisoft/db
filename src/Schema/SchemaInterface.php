@@ -47,10 +47,14 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const INDEX_NONCLUSTERED = 'NONCLUSTERED';
     /* Oracle */
     public const INDEX_BITMAP = 'BITMAP';
+    /* DB Types */
     public const TYPE_PK = 'pk';
     public const TYPE_UPK = 'upk';
     public const TYPE_BIGPK = 'bigpk';
     public const TYPE_UBIGPK = 'ubigpk';
+    public const TYPE_UUID_PK = 'uuid_pk';
+    public const TYPE_UUID_PK_SEQ = 'uuid_pk_seq';
+    public const TYPE_UUID = 'uuid';
     public const TYPE_CHAR = 'char';
     public const TYPE_STRING = 'string';
     public const TYPE_TEXT = 'text';
@@ -70,6 +74,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const TYPE_MONEY = 'money';
     public const TYPE_JSON = 'json';
     public const TYPE_JSONB = 'jsonb';
+    /* PHP Types */
     public const PHP_TYPE_INTEGER = 'integer';
     public const PHP_TYPE_STRING = 'string';
     public const PHP_TYPE_BOOLEAN = 'boolean';

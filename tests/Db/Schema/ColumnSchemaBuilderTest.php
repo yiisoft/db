@@ -157,6 +157,8 @@ final class ColumnSchemaBuilderTest extends TestCase
                 'binary' => 'other',
                 'boolean' => 'numeric',
                 'money' => 'numeric',
+                'uuid' => 'uuid',
+                'uuid_pk' => 'uuid_pk',
             ],
             $column->getCategoryMap(),
         );
