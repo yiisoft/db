@@ -58,7 +58,7 @@ final class UuidHelperTest extends TestCase
     public function successUuids(): array
     {
         return [
-            ['738146be-87b1-49f2-9913-36142fb6fcbe']
+            ['738146be-87b1-49f2-9913-36142fb6fcbe'],
         ];
     }
 
