@@ -110,7 +110,7 @@ interface ConnectionInterface
      *
      * @return string The row ID of the last row inserted, or the last value retrieved from the sequence object.
      *
-     * @link http://php.net/manual/en/pdo.lastinsertid.php'>http://php.net/manual/en/pdo.lastinsertid.php
+     * @link https://php.net/manual/en/pdo.lastinsertid.php'>https://php.net/manual/en/pdo.lastinsertid.php
      */
     public function getLastInsertID(string $sequenceName = null): string;
 
@@ -178,7 +178,7 @@ interface ConnectionInterface
     public function isActive(): bool;
 
     /**
-     * @return bool Whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
+     * @return bool Whether this DBMS supports [savepoint](https://en.wikipedia.org/wiki/Savepoint).
      */
     public function isSavepointEnabled(): bool;
 
@@ -203,7 +203,7 @@ interface ConnectionInterface
     public function quoteValue(mixed $value): mixed;
 
     /**
-     * Whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint).
+     * Whether to enable [savepoint](https://en.wikipedia.org/wiki/Savepoint).
      *
      * Note that if the underlying DBMS doesn't support savepoint, setting this property to be true will have no effect.
      *

@@ -100,7 +100,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @return int The PDO type.
      *
-     * @link http://www.php.net/manual/en/pdo.constants.php
+     * @link https://www.php.net/manual/en/pdo.constants.php
      */
     public function getPdoType(mixed $data): int;
 
