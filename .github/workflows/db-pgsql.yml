@@ -83,7 +83,7 @@ jobs:
       - name: Install db.
         uses: yiisoft/actions/db/subpackage-install@master
         with:
-          BRANCH_NAME: ${{ github.head_ref }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: ${{ env.CURRENT_PACKAGE }}
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}

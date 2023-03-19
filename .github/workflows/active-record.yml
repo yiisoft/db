@@ -107,7 +107,7 @@ jobs:
       - name: Install db-mssql.
         uses: yiisoft/actions/db/subpackage-install@master
         with:
-          BRANCH_NAME: ${{ github.head_ref }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: db-mssql
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
@@ -116,7 +116,7 @@ jobs:
       - name: Install db-mysql.
         uses: yiisoft/actions/db/subpackage-install@master
         with:
-          BRANCH_NAME: ${{ github.head_ref }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: db-mysql
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
@@ -125,7 +125,7 @@ jobs:
       - name: Install db-pgsql.
         uses: yiisoft/actions/db/subpackage-install@master
         with:
-          BRANCH_NAME: ${{ github.head_ref }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: db-pgsql
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
@@ -134,7 +134,7 @@ jobs:
       - name: Install db-oracle.
         uses: yiisoft/actions/db/subpackage-install@master
         with:
-          BRANCH_NAME: ${{ github.head_ref }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: db-oracle
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
@@ -143,7 +143,7 @@ jobs:
       - name: Install db-sqlite.
         uses: yiisoft/actions/db/subpackage-install@master
         with:
-          BRANCH_NAME: ${{ github.head_ref }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: db-sqlite
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
@@ -155,7 +155,7 @@ jobs:
       - name: Install active-record.
         uses: yiisoft/actions/db/subpackage-install@master
         with:
-          BRANCH_NAME: ${{ github.head_ref }}
+          BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: active-record
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
