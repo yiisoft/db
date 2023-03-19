@@ -202,6 +202,7 @@ interface ColumnSchemaInterface
 
     /**
      * @return string The name of the column.
+     *
      * @psalm-return non-empty-string
      */
     public function getName(): string;
@@ -242,6 +243,7 @@ interface ColumnSchemaInterface
 
     /**
      * @return string The type of the column.
+     *
      * @psalm-return non-empty-string
      *
      * @see type()
