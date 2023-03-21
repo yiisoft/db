@@ -79,7 +79,8 @@ interface ColumnSchemaInterface
      * consistent and abstracted way.
      *
      * The data type can be one of the built-in data types supported by the database server (such as INTEGER, VARCHAR,
-     * DATETIME, etc.), or it can be a custom data type defined by the database server. The dbType property is used to
+     * DATETIME, etc.), a custom data type defined by the database server,
+     * or null if the database allows untyped columns. The dbType property is used to
      * specify the type of data that can be stored in the column and how it should be treated by the database server
      * when performing operations on it.
      *
@@ -88,15 +89,13 @@ interface ColumnSchemaInterface
      * has a dbType of VARCHAR, it means that it can store character strings of a certain length, and the database
      * server will treat the data in the column as a character string when performing operations on it.
      *
-     * For default dbType is null.
-     *
      * ```php
      * $columns = [
      *    'description' => $this->text()->dbType('text'),
      * ];
      * ```
      */
-    public function dbType(string $value): void;
+    public function dbType(string|null $value): void;
 
     /**
      * The dbTypecast is used to convert a value from its PHP representation to a database-specific representation.
@@ -170,12 +169,12 @@ interface ColumnSchemaInterface
     public function getComment(): string|null;
 
     /**
-     * @return string The dbType of the column. Empty string if no dbType has been defined.
-     * By default, it returns an empty string.
+     * @return string|null The database type of the column.
+     * Null means the column has no type in the database.
      *
      * @see dbType()
      */
-    public function getDbType(): string;
+    public function getDbType(): string|null;
 
     /**
      * @return mixed The default value of the column. `null` if no default value has been defined.
@@ -202,10 +201,7 @@ interface ColumnSchemaInterface
     public function getExtra(): string|null;
 
     /**
-     * @return string The name of the column. Empty string if no name has been defined.
-     * By default, it returns an empty string.
-     *
-     * @see name()
+     * @return string The name of the column.
      */
     public function getName(): string;
 
@@ -242,8 +238,7 @@ interface ColumnSchemaInterface
     public function getSize(): int|null;
 
     /**
-     * @return string The type of the column. Empty string if no type has been defined.
-     * By default, it returns an empty string.
+     * @return string The type of the column.
      *
      * @see type()
      */
@@ -286,23 +281,6 @@ interface ColumnSchemaInterface
      * @see unsigned()
      */
     public function isUnsigned(): bool;
-
-    /**
-     * Represents the name of the column in the database.
-     *
-     * It's used to generate the SQL statement.
-     *
-     * For default name is an empty string.
-     *
-     * The db ColumnSchema class will generate a name automatically based on the column name.
-     *
-     * ```php
-     * $columns = [
-     *     'description' => $this->text()->name('description'),
-     * ];
-     * ```
-     */
-    public function name(string $value): void;
 
     /**
      * The phpType is used to return the PHP data type that's most appropriate for representing the data stored in the
@@ -394,10 +372,6 @@ interface ColumnSchemaInterface
      *
      * The data type of column specifies the kind of values that can be stored in that column, such as integers,
      * strings, dates, or floating point numbers.
-     *
-     * By default, the type is set to empty strings.
-     *
-     * The db ColumnSchema class will generate setType automatically based on the column type.
      *
      * ```php
      * $columns = [

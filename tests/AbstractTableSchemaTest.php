@@ -49,8 +49,7 @@ abstract class AbstractTableSchemaTest extends TestCase
     public function testGetColumn(): void
     {
         // Defined column schema.
-        $columnSchema = new ColumnSchema();
-        $columnSchema->name('id');
+        $columnSchema = new ColumnSchema('id');
 
         // Create table schema.
         $tableSchema = new TableSchema();
@@ -65,8 +64,7 @@ abstract class AbstractTableSchemaTest extends TestCase
     public function testGetColumns(): void
     {
         // Defined column schema.
-        $columnSchema = new ColumnSchema();
-        $columnSchema->name('id');
+        $columnSchema = new ColumnSchema('id');
 
         // Create table schema.
         $tableSchema = new TableSchema();
@@ -81,8 +79,7 @@ abstract class AbstractTableSchemaTest extends TestCase
     public function testGetColumnName(): void
     {
         // Defined column schema.
-        $columnSchema = new ColumnSchema();
-        $columnSchema->name('id');
+        $columnSchema = new ColumnSchema('id');
 
         // Create table schema.
         $tableSchema = new TableSchema();
