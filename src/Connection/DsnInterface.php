@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Connection;
 /**
  * Represents a Data Source Name (DSN) that's used to configure a {@see ConnectionInterface} instance.
  *
- * The DSN string format is described in {@see asString()}.
+ * For DSN string format see {@see DsnInterface::asString()}.
  */
 interface DsnInterface
 {

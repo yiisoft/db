@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Constraint;
 
 /**
- * Represents the methods that are required to work with constraints in a database, as getting the name of the
- * constraint, the columns that the constraint is applied to, and the type of constraint.
+ * Defines the methods to get information about database constraints:
  *
- * A constraint is a rule that's applied to the data in a table to ensure the integrity and correctness of the data.
+ * - Name of the constraint
+ * - Columns that the constraint applies to
+ * - Type of constraint
+ *
+ * A constraint is a rule that's applied to enforce the integrity and correctness of the data.
  */
 interface ConstraintSchemaInterface
 {
@@ -17,7 +20,7 @@ interface ConstraintSchemaInterface
      *
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
      * name.
-     * @param bool $refresh Whether to fetch the latest available table schemas. If this is false, cached data may be
+     * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
      * @return array The check constraints for all tables in the database. Each array element is an array of the
@@ -30,7 +33,7 @@ interface ConstraintSchemaInterface
      *
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
      * name.
-     * @param bool $refresh Whether to fetch the latest available table schemas. If this is false, cached data may be
+     * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
      * @return array The default value constraints for all tables in the database. Each array element is an array of
@@ -43,7 +46,7 @@ interface ConstraintSchemaInterface
      *
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
      * name.
-     * @param bool $refresh Whether to fetch the latest available table schemas. If this is false, cached data may be
+     * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
      * @return array The foreign keys for all tables in the database. Each array element is an array of the following
@@ -82,7 +85,7 @@ interface ConstraintSchemaInterface
      *
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
      * name.
-     * @param bool $refresh Whether to fetch the latest available table schemas. If this is false, cached data may be
+     * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
      * @return array The unique constraints for all tables in the database. Each array element is an array of the
