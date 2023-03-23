@@ -50,6 +50,7 @@ interface ConnectionPDOInterface extends ConnectionInterface
 
     /**
      * Whether to emulate prepared statements on PHP side.
+     *
      * @see setEmulatePrepare()
      */
     public function getEmulatePrepare(): bool|null;
