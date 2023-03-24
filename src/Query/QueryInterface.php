@@ -16,7 +16,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * This interface defines several methods for building and executing database queries, including methods for selecting
+ * Defines several methods for building and executing database queries, including methods for selecting
  * data, inserting data, updating data, and deleting data.
  *
  * It also defines methods for specifying the conditions for a query, as well as methods for pagination and sorting.
@@ -30,7 +30,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface, Stringable
 {
     /**
-     * Adds more parameters to be bound to the query.
+     * Adds more parameters to biun to the query.
      *
      * @param array $params The list of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
@@ -42,13 +42,11 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     /**
      * Executes the query and returns all results as an array.
      *
-     * If this parameter isn't given, the `db` application part will be used.
-     *
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array The query results. If the query results in nothing, an empty array will be returned.
+     * @return array The query results. If the query results in nothing, it returns an empty array.
      */
     public function all(): array;
 
@@ -70,7 +68,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * }
      * ```
      *
-     * @param int $batchSize The number of records to be fetched in each batch.
+     * @param int $batchSize The number of records to fetch in each batch.
      *
      * @return BatchQueryResultInterface The batch query result. It implements the {@see \Iterator} interface and can be
      * traversed to retrieve the data in batches.
@@ -80,19 +78,17 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     /**
      * Executes the query and returns the first column of the result.
      *
-     * If this parameter isn't given, the `db` application part will be used.
-     *
      * @throws Exception
      * @throws InvalidConfigException
      * @throws NotSupportedException
      * @throws Throwable
      *
-     * @return array The first column of the query result. An empty array is returned if the query results in nothing.
+     * @return array The first column of the query result. It returns an empty array if the query results in nothing.
      */
     public function column(): array;
 
     /**
-     * Creates a DB command that can be used to execute this query.
+     * Creates a DB command to execute the query.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -104,8 +100,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     /**
      * Starts a batch query and retrieves data row by row.
      *
-     * This method is similar to {@see batch()} except that in each iteration of the result, only one row of data is
-     * returned. For example,
+     * This method is similar to {@see batch()} except that in each iteration of the result,
+     * it returns only one row of data.
+     *
+     * For example,
      *
      * ```php
      * $query = (new Query)->from('user');
@@ -114,7 +112,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * }
      * ```
      *
-     * @param int $batchSize The number of records to be fetched in each batch.
+     * @param int $batchSize The number of records to fetch in each batch.
      *
      * @return BatchQueryResultInterface The batch query result. It implements the {@see \Iterator} interface and can be
      * traversed to retrieve the data in batches.
@@ -122,15 +120,14 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function each(int $batchSize = 100): BatchQueryResultInterface;
 
     /**
-     * Sets whether to emulate query execution, preventing any interaction with data storage.
+     * Sets whether to emulate query execution without actually executing a query.
      *
-     * After this mode is enabled, methods, returning query results like {@see one()}, {@see all()}, {@see exists()}
-     * and so on, will return empty or false values.
+     * When enabled, methods returning results such as {@see one()}, {@see all()}, or {@see exists()}
+     * will return empty or `false` values.
      *
-     * You should use this method in case your program logic indicates a query shouldn't return any results, like in
-     * case you set false where condition like `0=1`.
+     * You should use this method in case your program logic requires that a query shouldn't return any results.
      *
-     * @param bool $value Whether to prevent query execution.
+     * @param bool $value Whether to emulate query execution.
      */
     public function emulateExecution(bool $value = true): static;
 
@@ -146,62 +143,62 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function exists(): bool;
 
     /**
-     * @return bool|null The distinct value.
+     * @return bool|null The "distinct" value.
      */
     public function getDistinct(): bool|null;
 
     /**
-     * @return array The from value.
+     * @return array The "from" value.
      */
     public function getFrom(): array;
 
     /**
-     * @return array The group by value.
+     * @return array The "group by" value.
      */
     public function getGroupBy(): array;
 
     /**
-     * @return array|ExpressionInterface|string|null The having value.
+     * @return array|ExpressionInterface|string|null The "having" value.
      */
     public function getHaving(): string|array|ExpressionInterface|null;
 
     /**
-     * @return Closure|string|null The indexBy value.
+     * @return Closure|string|null The "index by" value.
      */
     public function getIndexBy(): Closure|string|null;
 
     /**
-     * @return array The join value.
+     * @return array The "join" value.
      */
     public function getJoin(): array;
 
     /**
-     * @return ExpressionInterface|int|null The limit value.
+     * @return ExpressionInterface|int|null The "limit" value.
      */
     public function getLimit(): ExpressionInterface|int|null;
 
     /**
-     * @return ExpressionInterface|int|null The offset value.
+     * @return ExpressionInterface|int|null The "offset" value.
      */
     public function getOffset(): ExpressionInterface|int|null;
 
     /**
-     * @return array The order by value.
+     * @return array The "order by" value.
      */
     public function getOrderBy(): array;
 
     /**
-     * @return array The params value.
+     * @return array The "params" value.
      */
     public function getParams(): array;
 
     /**
-     * @return array The select value.
+     * @return array The "select" value.
      */
     public function getSelect(): array;
 
     /**
-     * @return string|null The select option value.
+     * @return string|null The "select option" value.
      */
     public function getSelectOption(): string|null;
 
@@ -217,12 +214,12 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function getTablesUsedInFrom(): array;
 
     /**
-     * @return array The union value.
+     * @return array The "union" value.
      */
     public function getUnion(): array;
 
     /**
-     * @return array|ExpressionInterface|string|null The where value.
+     * @return array|ExpressionInterface|string|null The "where" value.
      */
     public function getWhere(): array|string|ExpressionInterface|null;
 
@@ -234,21 +231,19 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     /**
      * Executes the query and returns a single row of a result.
      *
-     * If this parameter isn't given, the `db` application part will be used.
-     *
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array|null The first row (in terms of an array) of the query result. Null is returned if the query
+     * @return array|null The first row (in terms of an array) of the query result. It returns `null` if the query
      * results in nothing.
      */
     public function one(): array|null;
 
     /**
-     * Sets the parameters to be bound to the query.
+     * Sets the parameters to bind to the query.
      *
-     * @param array $params list of query parameter values indexed by parameter placeholders.
+     * @param array $params List of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
      *
      * @see addParams()
@@ -256,9 +251,9 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function params(array $params): static;
 
     /**
-     * Prepares for building SQL.
+     * Prepare for building SQL.
      *
-     * This method is called by {@see QueryBuilderInterface} when it starts to build SQL from a query object.
+     * {@see QueryBuilderInterface} uses this method when it starts to build SQL from a query object.
      * You may override this method to do some final preparation work when converting a query into an SQL statement.
      *
      * @param QueryBuilderInterface $builder The query builder.

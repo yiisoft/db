@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Command;
 
 /**
- * This interface represents a parameter to be bound to an SQL statement.
+ * This interface represents a parameter to bind to an SQL statement.
  */
 interface ParamInterface
 {

@@ -102,7 +102,7 @@ interface BatchQueryResultInterface extends Iterator
     public function getBatchSize(): int;
 
     /**
-     * @param int $value The number of rows to be returned in each batch.
+     * @param int $value The number of rows to return in each batch.
      */
     public function batchSize(int $value): self;
 

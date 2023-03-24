@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Profiler;
 
 /**
- * Interface-decorator for work with `yiisoft\profiler` or another profiler.
+ * Interface-decorator to work with `yiisoft\profiler` or another profiler.
  *
  * @see \Yiisoft\Db\Connection\ConnectionInterface::setProfiler()
  */
@@ -14,9 +14,9 @@ interface ProfilerInterface
     /**
      * Marks the beginning of a code block for profiling.
      *
-     * This has to be matched with a call to {@see end()} with the same category name.
+     * There should be a matching call to {@see end()} with the same category name.
      *
-     * The begin and end calls must also be nested.
+     * The `begin()` and `end()` calls must also be properly nested.
      *
      * @param string $token Token for the code block.
      * @param array|ContextInterface $context The context data of this profile block.
@@ -26,7 +26,9 @@ interface ProfilerInterface
     /**
      * Marks the end of a code block for profiling.
      *
-     * This has to be matched with an earlier call to {@see begin()} with the same category name.
+     * There should be a matching call to {@see begin()} with the same category name.
+     *
+     * The `begin()` and `end()` calls must also be properly nested.
      *
      * @param string $token Token for the code block.
      * @param array|ContextInterface $context The context data of this profile block.
