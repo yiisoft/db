@@ -25,12 +25,6 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  */
 interface CommandInterface
 {
-    public const QUERY_MODE_EXECUTE = 1;
-    public const QUERY_MODE_ROW = 2;
-    public const QUERY_MODE_ALL = 4;
-    public const QUERY_MODE_COLUMN = 8;
-    public const QUERY_MODE_CURSOR = 16;
-
     /**
      * Creates an SQL command for adding a `CHECK` constraint to an existing table.
      *

@@ -71,6 +71,12 @@ use function strncmp;
  */
 abstract class AbstractCommand implements CommandInterface
 {
+    protected const QUERY_MODE_EXECUTE = 1;
+    protected const QUERY_MODE_ROW = 2;
+    protected const QUERY_MODE_ALL = 4;
+    protected const QUERY_MODE_COLUMN = 8;
+    protected const QUERY_MODE_CURSOR = 16;
+
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
 
