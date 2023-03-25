@@ -71,6 +71,17 @@ use function strncmp;
  */
 abstract class AbstractCommand implements CommandInterface
 {
+    // Query mode: return count of affected rows. {@see execute()}.
+    protected const QUERY_MODE_EXECUTE = 1;
+    // Query mode: first row of selected data. {@see queryOne()}
+    protected const QUERY_MODE_ROW = 2;
+    // Query mode: all rows of selected data. {@see queryAll()}
+    protected const QUERY_MODE_ALL = 4;
+    // Query mode: all rows with first column of selected data. {@see queryColumns()}
+    protected const QUERY_MODE_COLUMN = 8;
+    // Query mode: returned DataReaderInterface (abstraction of db cursor to selected data) {@see query()}
+    protected const QUERY_MODE_CURSOR = 16;
+
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
 
