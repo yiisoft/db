@@ -118,13 +118,13 @@ interface DDLQueryBuilderInterface
      * Note: The method will quote the `name`, `table`, `refTable` parameters before using them in the generated SQL.
      */
     public function addForeignKey(
-        string       $table,
-        string       $name,
+        string $table,
+        string $name,
         array|string $columns,
-        string       $refTable,
+        string $refTable,
         array|string $refColumns,
-        string|null  $delete = null,
-        string|null  $update = null
+        string|null $delete = null,
+        string|null $update = null
     ): string;
 
     /**
@@ -206,11 +206,11 @@ interface DDLQueryBuilderInterface
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
     public function createIndex(
-        string       $table,
-        string       $name,
+        string $table,
+        string $name,
         array|string $columns,
-        string       $indexType = null,
-        string       $indexMethod = null
+        string $indexType = null,
+        string $indexMethod = null
     ): string;
 
     /**
