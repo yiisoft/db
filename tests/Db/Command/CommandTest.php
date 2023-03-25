@@ -25,7 +25,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->addCheck('name', 'table', 'id > 0')->getSql();
+        $sql = $command->addCheck('table', 'name', 'id > 0')->getSql();
 
 
         $this->assertSame(
@@ -104,7 +104,7 @@ final class CommandTest extends AbstractCommandTest
             'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::addDefaultValue is not supported by this DBMS.'
         );
 
-        $command->addDefaultValue('name', 'table', 'column', 'value');
+        $command->addDefaultValue('table', 'name', 'column', 'value');
     }
 
     /**
@@ -122,7 +122,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->addForeignKey($name, $tableName, $column1, $tableName, $column2, $delete, $update)->getSql();
+        $sql = $command->addForeignKey($tableName, $name, $column1, $tableName, $column2, $delete, $update)->getSql();
 
         $this->assertSame($expected, $sql);
     }
@@ -135,7 +135,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->addPrimaryKey($name, $tableName, $column)->getSql();
+        $sql = $command->addPrimaryKey($tableName, $name, $column)->getSql();
 
 
         $this->assertSame($expected, $sql);
@@ -149,7 +149,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->addUnique($name, $tableName, $column)->getSql();
+        $sql = $command->addUnique($tableName, $name, $column)->getSql();
 
         $this->assertSame($expected, $sql);
     }
@@ -201,7 +201,7 @@ final class CommandTest extends AbstractCommandTest
 
         $command = $db->createCommand();
 
-        $sql = $command->createIndex($name, $table, $column, $indexType, $indexMethod)->getSql();
+        $sql = $command->createIndex($table, $name, $column, $indexType, $indexMethod)->getSql();
 
         $this->assertSame($expected, $sql);
     }
@@ -301,7 +301,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->dropCheck('name', 'table')->getSql();
+        $sql = $command->dropCheck('table', 'name')->getSql();
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -379,7 +379,7 @@ final class CommandTest extends AbstractCommandTest
             'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::dropDefaultValue is not supported by this DBMS.'
         );
 
-        $command->dropDefaultValue('column', 'table');
+        $command->dropDefaultValue('table', 'column');
     }
 
     public function testDropForeingKey(): void
@@ -387,7 +387,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->dropForeignKey('name', 'table')->getSql();
+        $sql = $command->dropForeignKey('table', 'name')->getSql();
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -405,7 +405,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->dropIndex('name', 'table')->getSql();
+        $sql = $command->dropIndex('table', 'name')->getSql();
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -423,7 +423,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->dropPrimaryKey('name', 'table')->getSql();
+        $sql = $command->dropPrimaryKey('table', 'name')->getSql();
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -477,7 +477,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->dropUnique('name', 'table')->getSql();
+        $sql = $command->dropUnique('table', 'name')->getSql();
 
         $this->assertSame(
             DbHelper::replaceQuotes(

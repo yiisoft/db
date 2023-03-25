@@ -19,7 +19,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->addCheck('ck-customer-status', '{{%customer}}', 'status > 0')->execute();
+$db->createCommand()->addCheck('{{%customer}}', 'ck-customer-status', 'status > 0')->execute();
 ```
 
 ## Adding a new column
@@ -94,7 +94,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->addDefaultValue('df-customer-name', '{{%customer}}', 'name', 'John Doe')->execute();
+$db->createCommand()->addDefaultValue('{{%customer}}', 'df-customer-name', 'name', 'John Doe')->execute();
 ```
 
 ## Adding a foreign key
@@ -112,8 +112,8 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 $db->createCommand()->addForeignKey(
-    'fk-customer-profile_id',
     '{{%customer}}',
+    'fk-customer-profile_id',
     'profile_id',
     '{{%profile}}',
     'id',
@@ -136,7 +136,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->addPrimaryKey('pk-customer-id', '{{%customer}}', 'id')->execute();
+$db->createCommand()->addPrimaryKey('{{%customer}}', 'pk-customer-id', 'id')->execute();
 ```
 
 ## Add `UNIQUE` constraint
@@ -154,7 +154,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->addUnique('uq-customer-name', '{{%customer}}', 'name')->execute();
+$db->createCommand()->addUnique('{{%customer}}', 'uq-customer-name', 'name')->execute();
 ```
 
 ## Alter column
@@ -193,7 +193,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->createIndex('idx-customer-name', '{{%customer}}', 'name')->execute();
+$db->createCommand()->createIndex('{{%customer}}', 'idx-customer-name', 'name')->execute();
 ```
 
 ### Unique index
@@ -209,7 +209,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->createIndex('idx_test_name', 'test', 'id', 'UNIQUE')->execute();
+$db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'UNIQUE')->execute();
 ```
 
 ### Clustered index
@@ -224,7 +224,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->createIndex('idx_test_name', 'test', 'id', 'CLUSTERED')->execute();
+$db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'CLUSTERED')->execute();
 ```
 
 ### Non-clustered index
@@ -239,7 +239,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->createIndex('idx_test_name', 'test', 'id', 'NONCLUSTERED')->execute();
+$db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'NONCLUSTERED')->execute();
 ```
 
 ### Fulltext index
@@ -255,7 +255,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->createIndex('idx_test_name', 'test', 'name', 'FULLTEXT')->execute();
+$db->createCommand()->createIndex('test', 'idx_test_name', 'name', 'FULLTEXT')->execute();
 ```
 
 ### Bitmap index
@@ -271,7 +271,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 
-$db->createCommand()->createIndex('idx_test_name', 'test', 'id', 'BITMAP')->execute();
+$db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'BITMAP')->execute();
 ```
 
 ## Creating a table
@@ -374,7 +374,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->dropCheck('ck-customer-status', '{{%customer}}')->execute();
+$db->createCommand()->dropCheck('{{%customer}}', 'ck-customer-status')->execute();
 ```
 
 ## Drop column
@@ -445,7 +445,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->dropDefaultValue('df-customer-name', '{{%customer}}')->execute();
+$db->createCommand()->dropDefaultValue('{{%customer}}', 'df-customer-name')->execute();
 ```
 
 ## Dropping a foreign key
@@ -462,7 +462,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->dropForeignKey('fk-customer-profile_id', '{{%customer}}')->execute();
+$db->createCommand()->dropForeignKey('{{%customer}}', 'fk-customer-profile_id')->execute();
 ```
 
 ## Dropping an index
@@ -479,7 +479,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->dropIndex('idx-customer-name', '{{%customer}}')->execute();
+$db->createCommand()->dropIndex('{{%customer}}', 'idx-customer-name')->execute();
 ```
 
 ## Drop a primary key
@@ -496,7 +496,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->dropPrimaryKey('pk-customer-id', '{{%customer}}')->execute();
+$db->createCommand()->dropPrimaryKey('{{%customer}}', 'pk-customer-id')->execute();
 ```
 
 ## Drop a table
@@ -531,7 +531,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->dropUnique('uq-customer-name', '{{%customer}}')->execute();
+$db->createCommand()->dropUnique('{{%customer}}', 'uq-customer-name')->execute();
 ```
 
 ## Rename a column

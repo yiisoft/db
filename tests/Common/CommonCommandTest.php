@@ -52,7 +52,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableChecks('{{test_ck}}', true));
 
-        $command->addCheck('{{test_ck_constraint}}', '{{test_ck}}', '{{int1}} > 1')->execute();
+        $command->addCheck('{{test_ck}}', '{{test_ck_constraint}}', '{{int1}} > 1')->execute();
 
         $this->assertMatchesRegularExpression(
             '/^.*int1.*>.*1.*$/',
@@ -159,7 +159,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}', true));
 
-        $command->addDefaultValue('{{test_def_constraint}}', '{{test_def}}', 'int1', 41)->execute();
+        $command->addDefaultValue('{{test_def}}', '{{test_def_constraint}}', 'int1', 41)->execute();
 
         $this->assertMatchesRegularExpression(
             '/^.*41.*$/',
@@ -206,7 +206,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableForeignKeys($tableName, true));
 
-        $command->addForeignKey($name, $tableName, $column1, $tableName, $column2)->execute();
+        $command->addForeignKey($tableName, $name, $column1, $tableName, $column2)->execute();
 
         $this->assertSame($expectedName, $schema->getTableForeignKeys($tableName, true)[0]->getName());
 
@@ -247,7 +247,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertNull($schema->getTablePrimaryKey($tableName, true));
 
-        $db->createCommand()->addPrimaryKey($name, $tableName, $column)->execute();
+        $db->createCommand()->addPrimaryKey($tableName, $name, $column)->execute();
 
         if (is_string($column)) {
             $column = [$column];
@@ -280,7 +280,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableUniques($tableName, true));
 
-        $command->addUnique($name, $tableName, $column)->execute();
+        $command->addUnique($tableName, $name, $column)->execute();
 
         if (is_string($column)) {
             $column = [$column];
@@ -509,7 +509,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableIndexes($tableName, true));
 
-        $command->createIndex($name, $tableName, $column, $indexType, $indexMethod)->execute();
+        $command->createIndex($tableName, $name, $column, $indexType, $indexMethod)->execute();
 
         if (is_string($column)) {
             $column = [$column];
@@ -680,14 +680,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableChecks('{{test_ck}}', true));
 
-        $command->addCheck('{{test_ck_constraint}}', '{{test_ck}}', '[[int1]] > 1')->execute();
+        $command->addCheck('{{test_ck}}', '{{test_ck_constraint}}', '[[int1]] > 1')->execute();
 
         $this->assertMatchesRegularExpression(
             '/^.*int1.*>.*1.*$/',
             $schema->getTableChecks('{{test_ck}}', true)[0]->getExpression(),
         );
 
-        $command->dropCheck('{{test_ck_constraint}}', '{{test_ck}}')->execute();
+        $command->dropCheck('{{test_ck}}', '{{test_ck_constraint}}')->execute();
 
         $this->assertEmpty($schema->getTableChecks('{{test_ck}}', true));
 
@@ -799,14 +799,14 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}', true));
 
-        $command->addDefaultValue('{{test_def_constraint}}', '{{test_def}}', 'int1', 41)->execute();
+        $command->addDefaultValue('{{test_def}}', '{{test_def_constraint}}', 'int1', 41)->execute();
 
         $this->assertMatchesRegularExpression(
             '/^.*41.*$/',
             $schema->getTableDefaultValues('{{test_def}}', true)[0]->getValue(),
         );
 
-        $command->dropDefaultValue('{{test_def_constraint}}', '{{test_def}}')->execute();
+        $command->dropDefaultValue('{{test_def}}', '{{test_def_constraint}}')->execute();
 
         $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}', true));
 
@@ -833,11 +833,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableForeignKeys('{{test_fk}}', true));
 
-        $command->addForeignKey('{{test_fk_constraint}}', '{{test_fk}}', 'int1', '{{test_fk}}', 'id')->execute();
+        $command->addForeignKey('{{test_fk}}', '{{test_fk_constraint}}', 'int1', '{{test_fk}}', 'id')->execute();
 
         $this->assertNotEmpty($schema->getTableForeignKeys('{{test_fk}}', true));
 
-        $command->dropForeignKey('{{test_fk_constraint}}', '{{test_fk}}')->execute();
+        $command->dropForeignKey('{{test_fk}}', '{{test_fk_constraint}}')->execute();
 
         $this->assertEmpty($schema->getTableForeignKeys('{{test_fk}}', true));
 
@@ -864,12 +864,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableIndexes('{[test_idx}}', true));
 
-        $command->createIndex('{{test_idx_constraint}}', '{{test_idx}}', ['int1', 'int2'], 'UNIQUE')->execute();
+        $command->createIndex('{{test_idx}}', '{{test_idx_constraint}}', ['int1', 'int2'], 'UNIQUE')->execute();
 
         $this->assertSame(['int1', 'int2'], $schema->getTableIndexes('{{test_idx}}', true)[0]->getColumnNames());
         $this->assertTrue($schema->getTableIndexes('{{test_idx}}', true)[0]->isUnique());
 
-        $command->dropIndex('{{test_idx_constraint}}', '{{test_idx}}')->execute();
+        $command->dropIndex('{{test_idx}}', '{{test_idx_constraint}}')->execute();
 
         $this->assertEmpty($schema->getTableIndexes('{{test_idx}}', true));
 
@@ -896,11 +896,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableSchema('{{test_pk}}', true)->getPrimaryKey());
 
-        $command->addPrimaryKey('{{test_pk_constraint}}', '{{test_pk}}', ['int1', 'int2'])->execute();
+        $command->addPrimaryKey('{{test_pk}}', '{{test_pk_constraint}}', ['int1', 'int2'])->execute();
 
         $this->assertSame(['int1', 'int2'], $schema->getTableSchema('{{test_pk}}', true)->getColumnNames());
 
-        $command->dropPrimaryKey('{{test_pk_constraint}}', '{{test_pk}}')->execute();
+        $command->dropPrimaryKey('{{test_pk}}', '{{test_pk_constraint}}')->execute();
 
         $this->assertEmpty($schema->getTableSchema('{{test_pk}}', true)->getPrimaryKey());
 
@@ -954,11 +954,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertEmpty($schema->getTableUniques('{{test_uq}}', true));
 
-        $command->addUnique('{{test_uq_constraint}}', '{{test_uq}}', ['int1'])->execute();
+        $command->addUnique('{{test_uq}}', '{{test_uq_constraint}}', ['int1'])->execute();
 
         $this->assertSame(['int1'], $schema->getTableUniques('{{test_uq}}', true)[0]->getColumnNames());
 
-        $command->dropUnique('{{test_uq_constraint}}', '{{test_uq}}')->execute();
+        $command->dropUnique('{{test_uq}}', '{{test_uq_constraint}}')->execute();
 
         $this->assertEmpty($schema->getTableUniques('{{test_uq}}', true));
 

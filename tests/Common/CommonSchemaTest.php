@@ -142,8 +142,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertSame([], $uniqueIndexes);
 
         $command->createIndex(
-            'somecolUnique',
             'uniqueIndex',
+            'somecolUnique',
             'somecol',
             SchemaInterface::INDEX_UNIQUE,
         )->execute();
@@ -161,8 +161,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
          * @link https://github.com/yiisoft/yii2/issues/10613
          */
         $command->createIndex(
-            'someCol2Unique',
             'uniqueIndex',
+            'someCol2Unique',
             'someCol2',
             SchemaInterface::INDEX_UNIQUE,
         )->execute();
@@ -176,8 +176,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         /** @link https://github.com/yiisoft/yii2/issues/13814 */
         $command->createIndex(
-            'another unique index',
             'uniqueIndex',
+            'another unique index',
             'someCol3',
             SchemaInterface::INDEX_UNIQUE,
         )->execute();
@@ -990,7 +990,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection();
 
         $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName);
-        $db->createCommand()->addUnique($constraintName, $tableName, $columnName)->execute();
+        $db->createCommand()->addUnique($tableName, $constraintName, $columnName)->execute();
 
         /** @var Constraint[] $constraints */
         $constraints = $db->getSchema()->getTableUniques($tableName, true);
@@ -1001,7 +1001,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertEquals($constraintName, $constraints[0]->getName());
         $this->assertEquals([$columnName], $constraints[0]->getColumnNames());
 
-        $db->createCommand()->dropUnique($constraintName, $tableName)->execute();
+        $db->createCommand()->dropUnique($tableName, $constraintName)->execute();
 
         $constraints = $db->getSchema()->getTableUniques($tableName, true);
 
@@ -1023,8 +1023,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName, 'int');
         $db->createCommand()->addCheck(
-            $constraintName,
             $tableName,
+            $constraintName,
             $db->getQuoter()->quoteColumnName($columnName) . ' > 0'
         )->execute();
 
@@ -1038,7 +1038,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertEquals([$columnName], $constraints[0]->getColumnNames());
         $this->assertStringContainsString($columnName, $constraints[0]->getExpression());
 
-        $db->createCommand()->dropCheck($constraintName, $tableName)->execute();
+        $db->createCommand()->dropCheck($tableName, $constraintName)->execute();
 
         $constraints = $db->getSchema()->getTableChecks($tableName, true);
 
@@ -1059,7 +1059,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection();
 
         $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName);
-        $db->createCommand()->addDefaultValue($constraintName, $tableName, $columnName, 919)->execute();
+        $db->createCommand()->addDefaultValue($tableName, $constraintName, $columnName, 919)->execute();
 
         /** @var DefaultValueConstraint[] $constraints */
         $constraints = $db->getSchema()->getTableDefaultValues($tableName, true);
@@ -1071,7 +1071,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertEquals([$columnName], $constraints[0]->getColumnNames());
         $this->assertStringContainsString('919', $constraints[0]->getValue());
 
-        $db->createCommand()->dropDefaultValue($constraintName, $tableName)->execute();
+        $db->createCommand()->dropDefaultValue($tableName, $constraintName)->execute();
 
         $constraints = $db->getSchema()->getTableDefaultValues($tableName, true);
 
@@ -1092,7 +1092,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection();
 
         $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName);
-        $db->createCommand()->addPrimaryKey($constraintName, $tableName, $columnName)->execute();
+        $db->createCommand()->addPrimaryKey($tableName, $constraintName, $columnName)->execute();
 
         $constraints = $db->getSchema()->getTablePrimaryKey($tableName, true);
 
@@ -1100,7 +1100,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertEquals($constraintName, $constraints->getName());
         $this->assertEquals([$columnName], $constraints->getColumnNames());
 
-        $db->createCommand()->dropPrimaryKey($constraintName, $tableName)->execute();
+        $db->createCommand()->dropPrimaryKey($tableName, $constraintName)->execute();
 
         $constraints = $db->getSchema()->getTablePrimaryKey($tableName, true);
 
@@ -1130,7 +1130,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->createTableForIndexAndConstraintTests($db, $tableName, $columnName, $columnType);
 
-        $indexSql = $qb->createIndex($indexName, $tableName, $columnName, $indexType, $indexMethod);
+        $indexSql = $qb->createIndex($tableName, $indexName, $columnName, $indexType, $indexMethod);
         $db->createCommand($indexSql)->execute();
 
         /** @var IndexConstraint[] $indexes */

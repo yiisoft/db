@@ -28,13 +28,13 @@ interface CommandInterface
     /**
      * Creates an SQL command for adding a `CHECK` constraint to an existing table.
      *
-     * @param string $name The name of the check constraint.
      * @param string $table The name of the table to add check constraint to.
+     * @param string $name The name of the check constraint.
      * @param string $expression The SQL of the `CHECK` constraint.
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function addCheck(string $name, string $table, string $expression): static;
+    public function addCheck(string $table, string $name, string $expression): static;
 
     /**
      * Creates an SQL command for adding a new DB column.
@@ -78,8 +78,8 @@ interface CommandInterface
     /**
      * Creates an SQL command for adding a default value constraint to an existing table.
      *
-     * @param string $name The name of the default value constraint.
      * @param string $table The name of the table to add constraint to.
+     * @param string $name The name of the default value constraint.
      * @param string $column The name of the column to add constraint to.
      * @param mixed $value Default value.
      *
@@ -88,15 +88,15 @@ interface CommandInterface
      *
      * Note: The method will quote the `name`, `table` and `column` parameters before using them in the generated SQL.
      */
-    public function addDefaultValue(string $name, string $table, string $column, mixed $value): static;
+    public function addDefaultValue(string $table, string $name, string $column, mixed $value): static;
 
     /**
      * Creates an SQL command for adding a foreign key constraint to an existing table.
      *
      * The method will quote the table and column names.
      *
-     * @param string $name The name of the foreign key constraint.
      * @param string $table The name of the table to add foreign key constraint to.
+     * @param string $name The name of the foreign key constraint.
      * @param array|string $columns The name of the column to add foreign key constraint to. If there are
      * many columns, separate them with commas.
      * @param string $refTable The name of the table that the foreign key references to.
@@ -113,8 +113,8 @@ interface CommandInterface
      * Note: The method will quote the `name`, `table`, `refTable` parameters before using them in the generated SQL.
      */
     public function addForeignKey(
-        string $name,
         string $table,
+        string $name,
         array|string $columns,
         string $refTable,
         array|string $refColumns,
@@ -127,13 +127,13 @@ interface CommandInterface
      *
      * The method will quote the table and column names.
      *
-     * @param string $name The name of the primary key constraint.
      * @param string $table The name of the table to add primary key constraint to.
+     * @param string $name The name of the primary key constraint.
      * @param array|string $columns The comma separated string or array of columns that the primary key consists of.
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
-    public function addPrimaryKey(string $name, string $table, array|string $columns): static;
+    public function addPrimaryKey(string $table, string $name, array|string $columns): static;
 
     /**
      * Creates an SQL command for changing the definition of a column.
@@ -209,14 +209,14 @@ interface CommandInterface
     /**
      * Creates an SQL command for adding a unique constraint to an existing table.
      *
-     * @param string $name The name of the unique constraint.
      * @param string $table The name of the table to add unique constraint to.
+     * @param string $name The name of the unique constraint.
      * @param array|string $columns The name of the column to add unique constraint to. If there are
      * many columns, separate them with commas.
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
-    public function addUnique(string $name, string $table, array|string $columns): static;
+    public function addUnique(string $table, string $name, array|string $columns): static;
 
     /**
      * Binds a value to a parameter.
@@ -269,8 +269,8 @@ interface CommandInterface
     /**
      * Creates an SQL command for creating a new index.
      *
-     * @param string $name The name of the index.
      * @param string $table The name of the table to create the index for.
+     * @param string $name The name of the index.
      * @param array|string $columns The column(s) to include in the index. If there are many columns,
      * separate them with commas.
      * @param string|null $indexType The type of index-supported DBMS - for example: `UNIQUE`, `FULLTEXT`, `SPATIAL`,
@@ -283,8 +283,8 @@ interface CommandInterface
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
     public function createIndex(
-        string $name,
         string $table,
+        string $name,
         array|string $columns,
         string $indexType = null,
         string $indexMethod = null
@@ -366,12 +366,12 @@ interface CommandInterface
     /**
      * Creates an SQL command for dropping a check constraint.
      *
-     * @param string $name The name of the check constraint to drop.
      * @param string $table The name of the table whose check constraint to drop.
+     * @param string $name The name of the check constraint to drop.
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function dropCheck(string $name, string $table): static;
+    public function dropCheck(string $table, string $name): static;
 
     /**
      * Creates an SQL command for dropping a DB column.
@@ -405,45 +405,45 @@ interface CommandInterface
     /**
      * Creates an SQL command for dropping a default value constraint.
      *
-     * @param string $name The name of the default value constraint to drop.
      * @param string $table The name of the table whose default value constraint to drop.
+     * @param string $name The name of the default value constraint to drop.
      *
      * @throws Exception
      * @throws NotSupportedException
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function dropDefaultValue(string $name, string $table): static;
+    public function dropDefaultValue(string $table, string $name): static;
 
     /**
      * Creates an SQL command for dropping a foreign key constraint.
      *
-     * @param string $name The name of the foreign key constraint to drop.
      * @param string $table The name of the table whose foreign is to drop.
+     * @param string $name The name of the foreign key constraint to drop.
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function dropForeignKey(string $name, string $table): static;
+    public function dropForeignKey(string $table, string $name): static;
 
     /**
      * Creates an SQL command for dropping an index.
      *
-     * @param string $name The name of the index to drop.
      * @param string $table The name of the table whose index to drop.
+     * @param string $name The name of the index to drop.
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function dropIndex(string $name, string $table): static;
+    public function dropIndex(string $table, string $name): static;
 
     /**
      * Creates an SQL command for removing a primary key constraint to an existing table.
      *
-     * @param string $name The name of the primary key constraint to remove.
      * @param string $table The name of the table to remove the primary key constraint from.
+     * @param string $name The name of the primary key constraint to remove.
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function dropPrimaryKey(string $name, string $table): static;
+    public function dropPrimaryKey(string $table, string $name): static;
 
     /**
      * Creates an SQL command for dropping a DB table.
@@ -457,12 +457,12 @@ interface CommandInterface
     /**
      * Creates an SQL command for dropping a unique constraint.
      *
-     * @param string $name The name of the unique constraint to drop.
      * @param string $table The name of the table whose unique constraint to drop.
+     * @param string $name The name of the unique constraint to drop.
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function dropUnique(string $name, string $table): static;
+    public function dropUnique(string $table, string $name): static;
 
     /**
      * Drops an SQL View.
