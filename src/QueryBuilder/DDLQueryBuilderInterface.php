@@ -21,15 +21,15 @@ interface DDLQueryBuilderInterface
     /**
      * Creates an SQL command for adding a check constraint to an existing table.
      *
-     * @param string $name The name of the check constraint.
      * @param string $table The table that the check constraint will be added to.
+     * @param string $name The name of the check constraint.
      * @param string $expression The SQL of the `CHECK` constraint.
      *
      * @return string The SQL statement for adding a check constraint to an existing table.
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function addCheck(string $name, string $table, string $expression): string;
+    public function addCheck(string $table, string $name, string $expression): string;
 
     /**
      * Builds an SQL statement for adding a new DB column.
@@ -81,8 +81,8 @@ interface DDLQueryBuilderInterface
     /**
      * Creates an SQL command for adding a default value constraint to an existing table.
      *
-     * @param string $name The name of the default value constraint.
      * @param string $table The table that the default value constraint will be added to.
+     * @param string $name The name of the default value constraint.
      * @param string $column The name of the column to that the constraint will be added on.
      * @param mixed $value The default value to be set for the column.
      *
@@ -93,13 +93,13 @@ interface DDLQueryBuilderInterface
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
-    public function addDefaultValue(string $name, string $table, string $column, mixed $value): string;
+    public function addDefaultValue(string $table, string $name, string $column, mixed $value): string;
 
     /**
      * Builds an SQL statement for adding a foreign key constraint to an existing table.
      *
-     * @param string $name The name of the foreign key constraint.
      * @param string $table The table that the foreign key constraint will be added to.
+     * @param string $name The name of the foreign key constraint.
      * @param array|string $columns The name of the column to that the constraint will be added on. If there are
      * many columns, separate them with commas or use an array to represent them.
      * @param string $refTable The table that the foreign key references to.
@@ -118,33 +118,33 @@ interface DDLQueryBuilderInterface
      * Note: The method will quote the `name`, `table`, `refTable` parameters before using them in the generated SQL.
      */
     public function addForeignKey(
-        string $name,
-        string $table,
+        string       $table,
+        string       $name,
         array|string $columns,
-        string $refTable,
+        string       $refTable,
         array|string $refColumns,
-        string|null $delete = null,
-        string|null $update = null
+        string|null  $delete = null,
+        string|null  $update = null
     ): string;
 
     /**
      * Builds an SQL statement for adding a primary key constraint to an existing table.
      *
-     * @param string $name The name of the primary key constraint.
      * @param string $table The table that the primary key constraint will be added to.
+     * @param string $name The name of the primary key constraint.
      * @param array|string $columns Comma separated string or array of columns that the primary key will consist of.
      *
      * @return string The SQL statement for adding a primary key constraint to an existing table.
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
-    public function addPrimaryKey(string $name, string $table, array|string $columns): string;
+    public function addPrimaryKey(string $table, string $name, array|string $columns): string;
 
     /**
      * Creates an SQL command for adding a unique constraint to an existing table.
      *
-     * @param string $name The name of the unique constraint.
      * @param string $table The table that the unique constraint will be added to.
+     * @param string $name The name of the unique constraint.
      * @param array|string $columns The name of the column to that the constraint will be added on. If there are many
      * columns, separate them with commas.
      *
@@ -152,7 +152,7 @@ interface DDLQueryBuilderInterface
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
-    public function addUnique(string $name, string $table, array|string $columns): string;
+    public function addUnique(string $table, string $name, array|string $columns): string;
 
     /**
      * Builds an SQL statement for changing the definition of a column.
@@ -190,8 +190,8 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for creating a new index.
      *
-     * @param string $name The name of the index.
      * @param string $table The table that the new index will be created for.
+     * @param string $name The name of the index.
      * @param array|string $columns The column(s) that should be included in the index.
      * If there are many columns, separate them with commas or use an array to represent them.
      * @param string|null $indexType Type of index-supported DBMS - for example, UNIQUE, FULLTEXT, SPATIAL, BITMAP or
@@ -206,11 +206,11 @@ interface DDLQueryBuilderInterface
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
     public function createIndex(
-        string $name,
-        string $table,
+        string       $table,
+        string       $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        string       $indexType = null,
+        string       $indexMethod = null
     ): string;
 
     /**
@@ -262,14 +262,14 @@ interface DDLQueryBuilderInterface
     /**
      * Creates an SQL command for dropping a check constraint.
      *
-     * @param string $name The name of the check constraint to be dropped.
      * @param string $table The table whose check constraint is to be dropped.
+     * @param string $name The name of the check constraint to be dropped.
      *
      * @return string The SQL statement for dropping a check constraint.
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function dropCheck(string $name, string $table): string;
+    public function dropCheck(string $table, string $name): string;
 
     /**
      * Builds an SQL statement for dropping a DB column.
@@ -309,8 +309,8 @@ interface DDLQueryBuilderInterface
     /**
      * Creates an SQL command for dropping a default value constraint.
      *
-     * @param string $name The name of the default value constraint to be dropped.
      * @param string $table The table whose default value constraint is to be dropped.
+     * @param string $name The name of the default value constraint to be dropped.
      *
      * @throws Exception
      * @throws NotSupportedException If this isn't supported by the underlying DBMS.
@@ -319,43 +319,43 @@ interface DDLQueryBuilderInterface
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function dropDefaultValue(string $name, string $table): string;
+    public function dropDefaultValue(string $table, string $name): string;
 
     /**
      * Builds an SQL statement for dropping a foreign key constraint.
      *
-     * @param string $name The name of the foreign key constraint to be dropped.
      * @param string $table The table whose foreign is to be dropped.
+     * @param string $name The name of the foreign key constraint to be dropped.
      *
      * @return string The SQL statement for dropping a foreign key constraint.
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function dropForeignKey(string $name, string $table): string;
+    public function dropForeignKey(string $table, string $name): string;
 
     /**
      * Builds an SQL statement for dropping an index.
      *
-     * @param string $name The name of the index to be dropped.
      * @param string $table The table whose index is to be dropped.
+     * @param string $name The name of the index to be dropped.
      *
      * @return string The SQL statement for dropping an index.
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function dropIndex(string $name, string $table): string;
+    public function dropIndex(string $table, string $name): string;
 
     /**
      * Builds an SQL statement for removing a primary key constraint to an existing table.
      *
-     * @param string $name The name of the primary key constraint to be removed.
      * @param string $table The table that the primary key constraint will be removed from.
+     * @param string $name The name of the primary key constraint to be removed.
      *
      * @return string The SQL statement for removing a primary key constraint from an existing table.
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function dropPrimaryKey(string $name, string $table): string;
+    public function dropPrimaryKey(string $table, string $name): string;
 
     /**
      * Builds an SQL statement for dropping a DB table.
@@ -371,14 +371,14 @@ interface DDLQueryBuilderInterface
     /**
      * Creates an SQL command for dropping a unique constraint.
      *
-     * @param string $name The name of the unique constraint to be dropped.
      * @param string $table The table whose unique constraint is to be dropped.
+     * @param string $name The name of the unique constraint to be dropped.
      *
      * @return string The SQL statement for dropping an unique constraint.
      *
      * Note: The method will quote the `name` and `table` parameters before using them in the generated SQL.
      */
-    public function dropUnique(string $name, string $table): string;
+    public function dropUnique(string $table, string $name): string;
 
     /**
      * Drops an SQL View.

@@ -93,9 +93,9 @@ abstract class AbstractCommand implements CommandInterface
     /** @var string The SQL statement to be executed */
     private string $sql = '';
 
-    public function addCheck(string $name, string $table, string $expression): static
+    public function addCheck(string $table, string $name, string $expression): static
     {
-        $sql = $this->queryBuilder()->addCheck($name, $table, $expression);
+        $sql = $this->queryBuilder()->addCheck($table, $name, $expression);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -117,15 +117,15 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function addDefaultValue(string $name, string $table, string $column, mixed $value): static
+    public function addDefaultValue(string $table, string $name, string $column, mixed $value): static
     {
-        $sql = $this->queryBuilder()->addDefaultValue($name, $table, $column, $value);
+        $sql = $this->queryBuilder()->addDefaultValue($table, $name, $column, $value);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function addForeignKey(
-        string $name,
         string $table,
+        string $name,
         array|string $columns,
         string $refTable,
         array|string $refColumns,
@@ -133,8 +133,8 @@ abstract class AbstractCommand implements CommandInterface
         string $update = null
     ): static {
         $sql = $this->queryBuilder()->addForeignKey(
-            $name,
             $table,
+            $name,
             $columns,
             $refTable,
             $refColumns,
@@ -144,15 +144,15 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function addPrimaryKey(string $name, string $table, array|string $columns): static
+    public function addPrimaryKey(string $table, string $name, array|string $columns): static
     {
-        $sql = $this->queryBuilder()->addPrimaryKey($name, $table, $columns);
+        $sql = $this->queryBuilder()->addPrimaryKey($table, $name, $columns);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function addUnique(string $name, string $table, array|string $columns): static
+    public function addUnique(string $table, string $name, array|string $columns): static
     {
-        $sql = $this->queryBuilder()->addUnique($name, $table, $columns);
+        $sql = $this->queryBuilder()->addUnique($table, $name, $columns);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -193,13 +193,13 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     public function createIndex(
-        string $name,
         string $table,
+        string $name,
         array|string $columns,
         string $indexType = null,
         string $indexMethod = null
     ): static {
-        $sql = $this->queryBuilder()->createIndex($name, $table, $columns, $indexType, $indexMethod);
+        $sql = $this->queryBuilder()->createIndex($table, $name, $columns, $indexType, $indexMethod);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -221,9 +221,9 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function dropCheck(string $name, string $table): static
+    public function dropCheck(string $table, string $name): static
     {
-        $sql = $this->queryBuilder()->dropCheck($name, $table);
+        $sql = $this->queryBuilder()->dropCheck($table, $name);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -245,27 +245,27 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropDefaultValue(string $name, string $table): static
+    public function dropDefaultValue(string $table, string $name): static
     {
-        $sql = $this->queryBuilder()->dropDefaultValue($name, $table);
+        $sql = $this->queryBuilder()->dropDefaultValue($table, $name);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropForeignKey(string $name, string $table): static
+    public function dropForeignKey(string $table, string $name): static
     {
-        $sql = $this->queryBuilder()->dropForeignKey($name, $table);
+        $sql = $this->queryBuilder()->dropForeignKey($table, $name);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropIndex(string $name, string $table): static
+    public function dropIndex(string $table, string $name): static
     {
-        $sql = $this->queryBuilder()->dropIndex($name, $table);
+        $sql = $this->queryBuilder()->dropIndex($table, $name);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropPrimaryKey(string $name, string $table): static
+    public function dropPrimaryKey(string $table, string $name): static
     {
-        $sql = $this->queryBuilder()->dropPrimaryKey($name, $table);
+        $sql = $this->queryBuilder()->dropPrimaryKey($table, $name);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -275,9 +275,9 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropUnique(string $name, string $table): static
+    public function dropUnique(string $table, string $name): static
     {
-        $sql = $this->queryBuilder()->dropUnique($name, $table);
+        $sql = $this->queryBuilder()->dropUnique($table, $name);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 

@@ -30,7 +30,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     ) {
     }
 
-    public function addCheck(string $name, string $table, string $expression): string
+    public function addCheck(string $table, string $name, string $expression): string
     {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
@@ -67,14 +67,14 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . (string) $this->quoter->quoteValue($comment);
     }
 
-    public function addDefaultValue(string $name, string $table, string $column, mixed $value): string
+    public function addDefaultValue(string $table, string $name, string $column, mixed $value): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     public function addForeignKey(
-        string $name,
         string $table,
+        string $name,
         array|string $columns,
         string $refTable,
         array|string $refColumns,
@@ -99,7 +99,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         return $sql;
     }
 
-    public function addPrimaryKey(string $name, string $table, array|string $columns): string
+    public function addPrimaryKey(string $table, string $name, array|string $columns): string
     {
         if (is_string($columns)) {
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
@@ -116,7 +116,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' PRIMARY KEY (' . implode(', ', $columns) . ')';
     }
 
-    public function addUnique(string $name, string $table, array|string $columns): string
+    public function addUnique(string $table, string $name, array|string $columns): string
     {
         if (is_string($columns)) {
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
@@ -153,8 +153,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     }
 
     public function createIndex(
-        string $name,
         string $table,
+        string $name,
         array|string $columns,
         string $indexType = null,
         string $indexMethod = null
@@ -204,7 +204,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         return 'CREATE VIEW ' . $this->quoter->quoteTableName($viewName) . ' AS ' . $subQuery;
     }
 
-    public function dropCheck(string $name, string $table): string
+    public function dropCheck(string $table, string $name): string
     {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
@@ -236,12 +236,12 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
              . ' IS NULL';
     }
 
-    public function dropDefaultValue(string $name, string $table): string
+    public function dropDefaultValue(string $table, string $name): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
-    public function dropForeignKey(string $name, string $table): string
+    public function dropForeignKey(string $table, string $name): string
     {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
@@ -249,7 +249,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . $this->quoter->quoteColumnName($name);
     }
 
-    public function dropIndex(string $name, string $table): string
+    public function dropIndex(string $table, string $name): string
     {
         return 'DROP INDEX '
             . $this->quoter->quoteTableName($name)
@@ -257,7 +257,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . $this->quoter->quoteTableName($table);
     }
 
-    public function dropPrimaryKey(string $name, string $table): string
+    public function dropPrimaryKey(string $table, string $name): string
     {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
@@ -270,7 +270,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         return 'DROP TABLE ' . $this->quoter->quoteTableName($table);
     }
 
-    public function dropUnique(string $name, string $table): string
+    public function dropUnique(string $table, string $name): string
     {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)

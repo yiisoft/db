@@ -42,7 +42,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
             'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::addDefaultValue is not supported by this DBMS.'
         );
 
-        $qb->addDefaultValue('name', 'table', 'column', 'value');
+        $qb->addDefaultValue('table', 'name', 'column', 'value');
     }
 
     /**
@@ -160,7 +160,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
             'Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder::dropDefaultValue is not supported by this DBMS.'
         );
 
-        $qb->dropDefaultValue('CN_pk', 'T_constraints_1');
+        $qb->dropDefaultValue('T_constraints_1', 'CN_pk');
     }
 
     /**

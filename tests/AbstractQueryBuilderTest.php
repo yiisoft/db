@@ -40,7 +40,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->addCheck('T_constraints_1', 'CN_check', '[[C_not_null]] > 100');
+        $sql = $qb->addCheck('CN_check', 'T_constraints_1', '[[C_not_null]] > 100');
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -122,7 +122,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->addDefaultValue('CN_pk', 'T_constraints_1', 'C_default', 1);
+        $sql = $qb->addDefaultValue('T_constraints_1', 'CN_pk', 'C_default', 1);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -154,7 +154,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete, $update);
+        $sql = $qb->addForeignKey($table, $name, $columns, $refTable, $refColumns, $delete, $update);
 
         $this->assertSame($expected, $sql);
     }
@@ -167,7 +167,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->addPrimaryKey($name, $table, $columns);
+        $sql = $qb->addPrimaryKey($table, $name, $columns);
 
         $this->assertSame($expected, $sql);
     }
@@ -180,7 +180,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->addUnique($name, $table, $columns);
+        $sql = $qb->addUnique($table, $name, $columns);
 
         $this->assertSame($expected, $sql);
     }
@@ -1572,7 +1572,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 SQL,
                 $db->getName(),
             ),
-            $qb->dropCheck('CN_check', 'T_constraints_1'),
+            $qb->dropCheck('T_constraints_1', 'CN_check'),
         );
     }
 
@@ -1644,7 +1644,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 SQL,
                 $db->getName(),
             ),
-            $qb->dropDefaultValue('CN_pk', 'T_constraints_1'),
+            $qb->dropDefaultValue('T_constraints_1', 'CN_pk'),
         );
     }
 
@@ -1661,7 +1661,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 SQL,
                 $db->getName(),
             ),
-            $qb->dropForeignKey('CN_constraints_3', 'T_constraints_3'),
+            $qb->dropForeignKey('T_constraints_3', 'CN_constraints_3'),
         );
     }
 
@@ -1678,7 +1678,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 SQL,
                 $db->getName(),
             ),
-            $qb->dropIndex('CN_constraints_2_single', 'T_constraints_2'),
+            $qb->dropIndex('T_constraints_2', 'CN_constraints_2_single'),
         );
     }
 
@@ -1695,7 +1695,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 SQL,
                 $db->getName(),
             ),
-            $qb->dropPrimaryKey('CN_pk', 'T_constraints_1'),
+            $qb->dropPrimaryKey('T_constraints_1', 'CN_pk'),
         );
     }
 
@@ -1729,7 +1729,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 SQL,
                 $db->getName(),
             ),
-            $qb->dropUnique('test_uq_constraint', 'test_uq'),
+            $qb->dropUnique('test_uq', 'test_uq_constraint'),
         );
     }
 
