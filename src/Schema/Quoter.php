@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
+
 use function addcslashes;
 use function explode;
 use function implode;
@@ -221,6 +222,7 @@ class Quoter implements QuoterInterface
 
     /**
      * @psalm-param string[] $parts Parts of table name
+     *
      * @psalm-return string[]
      */
     protected function unquoteParts(array $parts, bool $withColumn): array
