@@ -30,15 +30,15 @@ use function stream_get_contents;
 use function strncmp;
 
 /**
- * Represents an SQL statement to be executed against a database.
+ * Represents an SQL statement to execute in a database.
  *
- * A command object is usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
+ * It's usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
  *
- * The SQL statement it represents can be set via the {@see sql} property.
+ * You can get the SQL statement it represents via the {@see getSql()} method.
  *
- * To execute a non-query SQL (such as INSERT, DELETE, UPDATE), call {@see execute()}.
+ * To execute a non-query SQL (such as `INSERT`, `DELETE`, `UPDATE`), call {@see execute()}.
  *
- * To execute a SQL statement that returns a result data set (such as SELECT), use {@see queryAll()}, {@see queryOne()},
+ * To execute a SQL statement that returns a result (such as `SELECT`), use {@see queryAll()}, {@see queryOne()},
  * {@see queryColumn()}, {@see queryScalar()}, or {@see query()}.
  *
  * For example,
@@ -47,18 +47,18 @@ use function strncmp;
  * $users = $connectionInterface->createCommand('SELECT * FROM user')->queryAll();
  * ```
  *
- * Abstract command supports SQL statement preparation and parameter binding.
+ * Abstract command supports SQL prepared statements and parameter binding.
  *
  * Call {@see bindValue()} to bind a value to a SQL parameter.
  * Call {@see bindParam()} to bind a PHP variable to a SQL parameter.
  *
  * When binding a parameter, the SQL statement is automatically prepared. You may also call {@see prepare()} explicitly
- * to prepare a SQL statement.
+ * to do it.
  *
- * Abstract command also supports building SQL statements by providing methods such as {@see insert()}, {@see update()},
+ * Abstract command supports building SQL statements using methods such as {@see insert()}, {@see update()},
  * etc.
  *
- * For example, the following code will create and execute an INSERT SQL statement:
+ * For example, the following code will create and execute an `INSERT` SQL statement:
  *
  * ```php
  * $connectionInterface->createCommand()->insert(
@@ -67,30 +67,57 @@ use function strncmp;
  * )->execute();
  * ```
  *
- * To build SELECT SQL statements, please use {@see QueryInterface} instead.
+ * To build `SELECT` SQL statements, please use {@see QueryInterface} instead.
  */
 abstract class AbstractCommand implements CommandInterface
 {
-    // Query mode: return count of affected rows. {@see execute()}.
+    /**
+     * Command in this query mode returns count of affected rows.
+     * @see execute()
+     */
     protected const QUERY_MODE_EXECUTE = 1;
-    // Query mode: first row of selected data. {@see queryOne()}
+    /**
+     * Command in this query mode returns the first row of selected data.
+     * @see queryOne()
+     */
     protected const QUERY_MODE_ROW = 2;
-    // Query mode: all rows of selected data. {@see queryAll()}
+    /**
+     * Command in this query mode returns all rows of selected data.
+     * @see queryAll()
+     */
     protected const QUERY_MODE_ALL = 4;
-    // Query mode: all rows with first column of selected data. {@see queryColumns()}
+    /**
+     * Command in this query mode returns all rows with the first column of selected data.
+     * @see queryColumn()
+     */
     protected const QUERY_MODE_COLUMN = 8;
-    // Query mode: returned DataReaderInterface (abstraction of db cursor to selected data) {@see query()}
+    /**
+     * Command in this query mode returns {@see DataReaderInterface}, an abstraction for database cursor for
+     * selected data.
+     * @see query()
+     */
     protected const QUERY_MODE_CURSOR = 16;
 
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
 
+    /**
+     * @var string|null Transaction isolation level.
+     */
     protected string|null $isolationLevel = null;
-    /** @psalm-var ParamInterface[] */
+    /**
+     * @var array Parameters to use.
+     * @psalm-var ParamInterface[]
+     */
     protected array $params = [];
+    /**
+     * @var string|null Name of the table to refresh schema for. Null means not to refresh the schema.
+     */
     protected string|null $refreshTableName = null;
     protected Closure|null $retryHandler = null;
-    /** @var string The SQL statement to be executed */
+    /**
+     * @var string The SQL statement to execute.
+     */
     private string $sql = '';
 
     public function addCheck(string $table, string $name, string $expression): static
@@ -339,7 +366,7 @@ abstract class AbstractCommand implements CommandInterface
         if (!isset($params[0])) {
             return preg_replace_callback('#(:\w+)#', static function (array $matches) use ($params): string {
                 $m = $matches[1];
-                return (string) ($params[$m] ?? $m);
+                return (string)($params[$m] ?? $m);
             }, $this->sql);
         }
 
@@ -347,7 +374,7 @@ abstract class AbstractCommand implements CommandInterface
         $sql = '';
 
         foreach (explode('?', $this->sql) as $i => $part) {
-            $sql .= $part . (string) ($params[$i] ?? '');
+            $sql .= $part . (string)($params[$i] ?? '');
         }
 
         return $sql;
@@ -507,7 +534,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * Returns the query result.
      *
-     * @param int $queryMode One from modes QUERY_MODE_*.
+     * @param int $queryMode Query mode, `QUERY_MODE_*`.
      *
      * @throws Exception
      * @throws Throwable
@@ -524,14 +551,20 @@ abstract class AbstractCommand implements CommandInterface
      */
     abstract protected function internalExecute(string|null $rawSql): void;
 
+    /**
+     * Check if the value has a given flag.
+     *
+     * @param int $value Flags value to check.
+     * @param int $flag Flag to look for in the value.
+     * @return bool Whether the value has a given flag.
+     */
     protected function is(int $value, int $flag): bool
     {
         return ($value & $flag) === $flag;
     }
 
     /**
-     * Logs the current database query if query logging is enabled and returns the profiling token if profiling is
-     * enabled.
+     * Logs the current database query if query logging is on and returns the profiling token if profiling is on.
      */
     protected function logQuery(string $rawSql, string $category): void
     {
@@ -541,7 +574,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * The method is called after the query is executed.
      *
-     * @param int $queryMode One from modes QUERY_MODE_*.
+     * @param int $queryMode Query mode, `QUERY_MODE_*`.
      *
      * @throws Exception
      * @throws Throwable
@@ -595,7 +628,7 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Marks the command to be executed in transaction.
+     * Marks the command to execute in transaction.
      *
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      *
