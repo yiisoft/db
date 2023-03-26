@@ -32,7 +32,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @var array Map of chars to their replacements in LIKE conditions. By default, it's configured to escape
+     * @var array Map of chars to their replacements in `LIKE` conditions. By default, it's configured to escape
      * `%`, `_` and `\` with `\`.
      */
     protected array $escapingReplacements = [

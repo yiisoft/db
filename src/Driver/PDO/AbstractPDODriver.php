@@ -10,7 +10,7 @@ use PDO;
  * Serves as the base class for creating PDO (PHP Data Objects) drivers.
  *
  * It provides a set of common methods and properties that are implemented by the specific PDO driver classes, such as
- * MSSQL, Mysql, MariaDb, Oracle, PostgreSQL and SQLite.
+ * MSSQL, Mysql, MariaDb, Oracle, PostgreSQL, and SQLite.
  *
  * @link https://www.php.net/manual/en/book.pdo.php
  */

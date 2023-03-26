@@ -54,7 +54,7 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Builds expressions, that are stored in $condition.
+     * Builds expressions, that are stored in `$condition`.
      *
      * @throws Exception
      * @throws InvalidArgumentException

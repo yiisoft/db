@@ -152,10 +152,10 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * Prepare select-subQuery and field names for INSERT INTO ... SELECT SQL statement.
+     * Prepare select-subQuery and field names for `INSERT INTO ... SELECT` SQL statement.
      *
      * @param QueryInterface $columns Object, which represents a select query.
-     * @param array $params The parameters to be bound to the generated SQL statement. These parameters will be included
+     * @param array $params The parameters to bind to the generated SQL statement. These parameters will be included
      * in the result, with the more parameters generated during the query building process.
      *
      * @throws Exception
@@ -163,7 +163,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      *
-     * @return array Array of column names, values and params.
+     * @return array Array of column names, values, and params.
      */
     protected function prepareInsertSelectSubQuery(QueryInterface $columns, array $params = []): array
     {
@@ -198,7 +198,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * Prepare column names and placeholders for INSERT SQL statement.
+     * Prepare column names and placeholders for `INSERT` SQL statement.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -238,7 +238,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * Prepare column names and placeholders for UPDATE SQL statement.
+     * Prepare column names and placeholders for `UPDATE` SQL statement.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -272,7 +272,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * Prepare column names and placeholders for UPSERT SQL statement.
+     * Prepare column names and placeholders for "upsert" operation.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -424,17 +424,17 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Normalizes the column names for the given table.
      *
-     * @param string $table The table that data will be saved into.
-     * @param array $columns The column data (name => value) to be saved into the table or instance of
-     * {@see QueryInterface} to perform INSERT INTO ... SELECT SQL statement. Passing of {@see QueryInterface}.
+     * @param string $table The table to save the data into.
+     * @param array $columns The column data (name => value) to save into the table or instance of
+     * {@see QueryInterface} to perform `INSERT INTO ... SELECT` SQL statement. Passing of {@see QueryInterface}.
      *
      * @return array The normalized column names (name => value).
      */
     protected function normalizeColumnNames(string $table, array $columns): array
     {
-        /** @var string[] $columnsList */
-        $columnsList = array_keys($columns);
-        $mappedNames = $this->getNormalizeColumnNames($table, $columnsList);
+        /** @var string[] $columnList */
+        $columnList = array_keys($columns);
+        $mappedNames = $this->getNormalizeColumnNames($table, $columnList);
 
         /** @psalm-var array $normalizedColumns */
         $normalizedColumns = [];
@@ -455,9 +455,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Get a map of normalized columns
      *
-     * @param string $table The table that data will be saved into.
-     * @param string[] $columns The column data (name => value) to be saved into the table or instance of
-     * {@see QueryInterface} to perform INSERT INTO ... SELECT SQL statement. Passing of {@see QueryInterface}.
+     * @param string $table The table to save the data into.
+     * @param string[] $columns The column data (name => value) to save into the table or instance of
+     * {@see QueryInterface} to perform `INSERT INTO ... SELECT` SQL statement. Passing of {@see QueryInterface}.
      *
      * @return string[] Map of normalized columns.
      */

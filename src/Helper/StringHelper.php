@@ -15,7 +15,7 @@ use function str_replace;
 use function trim;
 
 /**
- * Short implementation of StringHelper from Yii2.
+ * String manipulation methods.
  */
 final class StringHelper
 {
