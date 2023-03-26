@@ -26,7 +26,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
         protected QuoterInterface $quoter,
-        protected SchemaInterface|null $schema = null,
+        protected SchemaInterface $schema
     ) {
     }
 
