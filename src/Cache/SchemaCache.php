@@ -37,6 +37,7 @@ final class SchemaCache
 
     /**
      * @param CacheInterface $psrCache PSR-16 cache implementation to use.
+     *
      * @link https://www.php-fig.org/psr/psr-16/
      */
     public function __construct(private CacheInterface $psrCache)
@@ -57,7 +58,6 @@ final class SchemaCache
         $this->psrCache->delete($stringKey);
     }
 
-
     /**
      * The method combines retrieving and setting the value identified by the `$key`.
      *
@@ -69,10 +69,11 @@ final class SchemaCache
      * the PSR cache implementation.
      * @param string|null $cacheTag Tag name to tag cache with.
      *
-     * @return mixed Result of `$callable` execution.
      * @throws InvalidArgumentException
      * @throws InvalidCallException If cache value isn't set.
      * @throws \Psr\SimpleCache\InvalidArgumentException Thrown if the `$key` or `$ttl` isn't a legal value.
+     *
+     * @return mixed Result of `$callable` execution.
      */
     public function getOrSet(
         mixed $key,
@@ -101,7 +102,7 @@ final class SchemaCache
      *
      * @param string $key The key of the item to store.
      * @param mixed $value The value of the item to store.
-     * @param null|int|DateInterval $ttl Optional. Default is to use underlying PSR implementation value.
+     * @param DateInterval|int|null $ttl Optional. Default is to use underlying PSR implementation value.
      *
      * @throws InvalidArgumentException If the $key string isn't a legal value.
      * @throws InvalidCallException

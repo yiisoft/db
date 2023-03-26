@@ -73,27 +73,32 @@ abstract class AbstractCommand implements CommandInterface
 {
     /**
      * Command in this query mode returns count of affected rows.
+     *
      * @see execute()
      */
     protected const QUERY_MODE_EXECUTE = 1;
     /**
      * Command in this query mode returns the first row of selected data.
+     *
      * @see queryOne()
      */
     protected const QUERY_MODE_ROW = 2;
     /**
      * Command in this query mode returns all rows of selected data.
+     *
      * @see queryAll()
      */
     protected const QUERY_MODE_ALL = 4;
     /**
      * Command in this query mode returns all rows with the first column of selected data.
+     *
      * @see queryColumn()
      */
     protected const QUERY_MODE_COLUMN = 8;
     /**
      * Command in this query mode returns {@see DataReaderInterface}, an abstraction for database cursor for
      * selected data.
+     *
      * @see query()
      */
     protected const QUERY_MODE_CURSOR = 16;
@@ -107,6 +112,7 @@ abstract class AbstractCommand implements CommandInterface
     protected string|null $isolationLevel = null;
     /**
      * @var array Parameters to use.
+     *
      * @psalm-var ParamInterface[]
      */
     protected array $params = [];
@@ -556,6 +562,7 @@ abstract class AbstractCommand implements CommandInterface
      *
      * @param int $value Flags value to check.
      * @param int $flag Flag to look for in the value.
+     *
      * @return bool Whether the value has a given flag.
      */
     protected function is(int $value, int $flag): bool
