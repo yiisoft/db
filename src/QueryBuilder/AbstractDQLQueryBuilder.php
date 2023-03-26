@@ -21,7 +21,6 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryExpressionBuilder;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_filter;
 use function array_merge;
@@ -87,8 +86,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
-        protected QuoterInterface $quoter,
-        protected SchemaInterface $schema
+        private QuoterInterface $quoter
     ) {
         $this->expressionBuilders = $this->defaultExpressionBuilders();
         $this->conditionClasses = $this->defaultConditionClasses();
