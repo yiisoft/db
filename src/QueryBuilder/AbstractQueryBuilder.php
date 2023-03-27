@@ -9,7 +9,7 @@ use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
-use Yiisoft\Db\Schema\ColumnSchemaBuilderInterface;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -49,9 +49,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     ) {
     }
 
-    public function addCheck(string $name, string $table, string $expression): string
+    public function addCheck(string $table, string $name, string $expression): string
     {
-        return $this->ddlBuilder->addCheck($name, $table, $expression);
+        return $this->ddlBuilder->addCheck($table, $name, $expression);
     }
 
     public function addColumn(string $table, string $column, string $type): string
@@ -69,34 +69,34 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addCommentOnTable($table, $comment);
     }
 
-    public function addDefaultValue(string $name, string $table, string $column, mixed $value): string
+    public function addDefaultValue(string $table, string $name, string $column, mixed $value): string
     {
-        return $this->ddlBuilder->addDefaultValue($name, $table, $column, $value);
+        return $this->ddlBuilder->addDefaultValue($table, $name, $column, $value);
     }
 
     public function addForeignKey(
-        string $name,
         string $table,
+        string $name,
         array|string $columns,
         string $refTable,
         array|string $refColumns,
         string $delete = null,
         string $update = null
     ): string {
-        return $this->ddlBuilder->addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete, $update);
+        return $this->ddlBuilder->addForeignKey($table, $name, $columns, $refTable, $refColumns, $delete, $update);
     }
 
-    public function addPrimaryKey(string $name, string $table, array|string $columns): string
+    public function addPrimaryKey(string $table, string $name, array|string $columns): string
     {
-        return $this->ddlBuilder->addPrimaryKey($name, $table, $columns);
+        return $this->ddlBuilder->addPrimaryKey($table, $name, $columns);
     }
 
-    public function addUnique(string $name, string $table, array|string $columns): string
+    public function addUnique(string $table, string $name, array|string $columns): string
     {
-        return $this->ddlBuilder->addUnique($name, $table, $columns);
+        return $this->ddlBuilder->addUnique($table, $name, $columns);
     }
 
-    public function alterColumn(string $table, string $column, ColumnSchemaBuilderInterface|string $type): string
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
@@ -219,13 +219,13 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     }
 
     public function createIndex(
-        string $name,
         string $table,
+        string $name,
         array|string $columns,
         string $indexType = null,
         string $indexMethod = null
     ): string {
-        return $this->ddlBuilder->createIndex($name, $table, $columns, $indexType, $indexMethod);
+        return $this->ddlBuilder->createIndex($table, $name, $columns, $indexType, $indexMethod);
     }
 
     public function createTable(string $table, array $columns, string $options = null): string
@@ -243,9 +243,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->delete($table, $condition, $params);
     }
 
-    public function dropCheck(string $name, string $table): string
+    public function dropCheck(string $table, string $name): string
     {
-        return $this->ddlBuilder->dropCheck($name, $table);
+        return $this->ddlBuilder->dropCheck($table, $name);
     }
 
     public function dropColumn(string $table, string $column): string
@@ -263,24 +263,24 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->dropCommentFromTable($table);
     }
 
-    public function dropDefaultValue(string $name, string $table): string
+    public function dropDefaultValue(string $table, string $name): string
     {
-        return $this->ddlBuilder->dropDefaultValue($name, $table);
+        return $this->ddlBuilder->dropDefaultValue($table, $name);
     }
 
-    public function dropForeignKey(string $name, string $table): string
+    public function dropForeignKey(string $table, string $name): string
     {
-        return $this->ddlBuilder->dropForeignKey($name, $table);
+        return $this->ddlBuilder->dropForeignKey($table, $name);
     }
 
-    public function dropIndex(string $name, string $table): string
+    public function dropIndex(string $table, string $name): string
     {
-        return $this->ddlBuilder->dropIndex($name, $table);
+        return $this->ddlBuilder->dropIndex($table, $name);
     }
 
-    public function dropPrimaryKey(string $name, string $table): string
+    public function dropPrimaryKey(string $table, string $name): string
     {
-        return $this->ddlBuilder->dropPrimaryKey($name, $table);
+        return $this->ddlBuilder->dropPrimaryKey($table, $name);
     }
 
     public function dropTable(string $table): string
@@ -288,9 +288,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->dropTable($table);
     }
 
-    public function dropUnique(string $name, string $table): string
+    public function dropUnique(string $table, string $name): string
     {
-        return $this->ddlBuilder->dropUnique($name, $table);
+        return $this->ddlBuilder->dropUnique($table, $name);
     }
 
     public function dropView(string $viewName): string
@@ -298,9 +298,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->dropView($viewName);
     }
 
-    public function getColumnType(ColumnSchemaBuilderInterface|string $type): string
+    public function getColumnType(ColumnInterface|string $type): string
     {
-        if ($type instanceof ColumnSchemaBuilderInterface) {
+        if ($type instanceof ColumnInterface) {
             $type = $type->asString();
         }
 

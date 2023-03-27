@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Schema;
+namespace Yiisoft\Db\Schema\Builder;
 
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\StringHelper;
+use Yiisoft\Db\Schema\SchemaInterface;
 
 use function gettype;
 use function implode;
@@ -20,13 +21,13 @@ use function strtr;
  * For example, the following code creates a column schema for an integer column:
  *
  * ```php
- * $column = (new ColumnSchemaBuilder(SchemaInterface::TYPE_INTEGER))->notNull()->defaultValue(0);
+ * $column = (new Column(SchemaInterface::TYPE_INTEGER))->notNull()->defaultValue(0);
  * ```
  *
  * Provides a fluent interface, which means that the methods can be chained together to create a column schema with
  * many properties in a single line of code.
  */
-abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterface
+abstract class AbstractColumn implements ColumnInterface
 {
     /**
      * Internally used constants representing categories that abstract column types fall under.
@@ -38,6 +39,8 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
     public const CATEGORY_NUMERIC = 'numeric';
     public const CATEGORY_TIME = 'time';
     public const CATEGORY_OTHER = 'other';
+    public const CATEGORY_UUID = 'uuid';
+    public const CATEGORY_UUID_PK = 'uuid_pk';
 
     protected bool|null $isNotNull = null;
     protected bool $isUnique = false;
@@ -71,6 +74,8 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
         SchemaInterface::TYPE_BINARY => self::CATEGORY_OTHER,
         SchemaInterface::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
         SchemaInterface::TYPE_MONEY => self::CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_UUID => self::CATEGORY_UUID,
+        SchemaInterface::TYPE_UUID_PK => self::CATEGORY_UUID_PK,
     ];
 
     /**
@@ -158,11 +163,12 @@ abstract class AbstractColumnSchemaBuilder implements ColumnSchemaBuilderInterfa
 
     public function asString(): string
     {
-        if ($this->getTypeCategory() === self::CATEGORY_PK) {
-            $format = '{type}{check}{comment}{append}';
-        } else {
-            $format = $this->format;
-        }
+        $format = match ($this->getTypeCategory()) {
+            self::CATEGORY_PK => '{type}{check}{comment}{append}',
+            self::CATEGORY_UUID => '{type}{notnull}{unique}{default}{check}{comment}{append}',
+            self::CATEGORY_UUID_PK => '{type}{notnull}{default}{check}{comment}{append}',
+            default => $this->format,
+        };
 
         return $this->buildCompleteString($format);
     }

@@ -22,8 +22,6 @@ final class ColumnTypes
      */
     public function getColumnTypes(): array
     {
-        $version = $this->db->getServerVersion();
-
         $items = [
             '$this->bigInteger()' => [
                 SchemaInterface::TYPE_BIGINT,
@@ -197,8 +195,7 @@ final class ColumnTypes
             '$this->dateTime()->notNull()' => [
                 SchemaInterface::TYPE_DATETIME . ' NOT NULL',
                 [
-                    // @todo remove
-                    'mysql' => version_compare($version, '5.6.4', '>=') ? 'datetime(0) NOT NULL' : 'datetime NOT NULL',
+                    'mysql' => 'datetime(0) NOT NULL',
                     'pgsql' => 'timestamp(0) NOT NULL',
                     'sqlite' => 'datetime NOT NULL',
                     'oci' => 'TIMESTAMP NOT NULL',
@@ -208,7 +205,7 @@ final class ColumnTypes
             '$this->dateTime()' => [
                 SchemaInterface::TYPE_DATETIME,
                 [
-                    'mysql' => version_compare($version, '5.6.4', '>=') ? 'datetime(0)' : 'datetime',
+                    'mysql' => 'datetime(0)',
                     'pgsql' => 'timestamp(0)',
                     'sqlite' => 'datetime',
                     'oci' => 'TIMESTAMP',
@@ -648,7 +645,7 @@ final class ColumnTypes
             '$this->time()->notNull()' => [
                 SchemaInterface::TYPE_TIME . ' NOT NULL',
                 [
-                    'mysql' => version_compare($version, '5.6.4', '>=') ? 'time(0) NOT NULL' : 'time NOT NULL',
+                    'mysql' => 'time(0) NOT NULL',
                     'pgsql' => 'time(0) NOT NULL',
                     'sqlite' => 'time NOT NULL',
                     'oci' => 'TIMESTAMP NOT NULL',
@@ -658,7 +655,7 @@ final class ColumnTypes
             '$this->time()' => [
                 SchemaInterface::TYPE_TIME,
                 [
-                    'mysql' => version_compare($version, '5.6.4', '>=') ? 'time(0)' : 'time',
+                    'mysql' => 'time(0)',
                     'pgsql' => 'time(0)',
                     'sqlite' => 'time',
                     'oci' => 'TIMESTAMP',
@@ -668,8 +665,7 @@ final class ColumnTypes
             '$this->timestamp()->notNull()' => [
                 SchemaInterface::TYPE_TIMESTAMP . ' NOT NULL',
                 [
-                    'mysql' => version_compare($version, '5.6.4', '>=') ? 'timestamp(0) NOT NULL'
-                        : 'timestamp NOT NULL',
+                    'mysql' => 'timestamp(0) NOT NULL',
                     'pgsql' => 'timestamp(0) NOT NULL',
                     'sqlite' => 'timestamp NOT NULL',
                     'oci' => 'TIMESTAMP NOT NULL',
@@ -679,8 +675,7 @@ final class ColumnTypes
             '$this->timestamp()->defaultValue(null)' => [
                 SchemaInterface::TYPE_TIMESTAMP . ' NULL DEFAULT NULL',
                 [
-                    'mysql' => version_compare($version, '5.6.4', '>=') ? 'timestamp(0) NULL DEFAULT NULL'
-                        : 'timestamp NULL DEFAULT NULL',
+                    'mysql' => 'timestamp(0) NULL DEFAULT NULL',
                     'pgsql' => 'timestamp(0) NULL DEFAULT NULL',
                     'sqlite' => 'timestamp NULL DEFAULT NULL',
                     'sqlsrv' => 'datetime NULL DEFAULT NULL',

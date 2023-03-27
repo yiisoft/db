@@ -10,7 +10,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 final class AndCondition extends AbstractConjunctionCondition
 {
     /**
-     * @return string The operator that is represented by this condition class, e.g. `AND`, `OR`.
+     * @return string The operator that's represented by this condition class, such as `AND`, `OR`.
      */
     public function getOperator(): string
     {

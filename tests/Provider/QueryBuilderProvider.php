@@ -864,15 +864,15 @@ class QueryBuilderProvider
                 <<<SQL
                 CREATE INDEX [[$name1]] ON {{{$tableName}}} ([[C_index_1]])
                 SQL,
-                static fn (QueryBuilderInterface $qb) => $qb->createIndex($name1, $tableName, 'C_index_1'),
+                static fn (QueryBuilderInterface $qb) => $qb->createIndex($tableName, $name1, 'C_index_1'),
             ],
             'create (2 columns)' => [
                 <<<SQL
                 CREATE INDEX [[$name2]] ON {{{$tableName}}} ([[C_index_2_1]], [[C_index_2_2]])
                 SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->createIndex(
-                    $name2,
                     $tableName,
+                    $name2,
                     'C_index_2_1,
                     C_index_2_2',
                 ),
@@ -882,8 +882,8 @@ class QueryBuilderProvider
                 CREATE UNIQUE INDEX [[$name1]] ON {{{$tableName}}} ([[C_index_1]])
                 SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->createIndex(
-                    $name1,
                     $tableName,
+                    $name1,
                     'C_index_1',
                     SchemaInterface::INDEX_UNIQUE,
                 ),
@@ -893,8 +893,8 @@ class QueryBuilderProvider
                 CREATE UNIQUE INDEX [[$name2]] ON {{{$tableName}}} ([[C_index_2_1]], [[C_index_2_2]])
                 SQL,
                 static fn (QueryBuilderInterface $qb) => $qb->createIndex(
-                    $name2,
                     $tableName,
+                    $name2,
                     'C_index_2_1, C_index_2_2',
                     SchemaInterface::INDEX_UNIQUE,
                 ),

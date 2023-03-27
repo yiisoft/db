@@ -48,7 +48,7 @@ interface ConnectionInterface
     /**
      * Create a batch query result instance.
      *
-     * @param QueryInterface $query The query to be executed.
+     * @param QueryInterface $query The query to execute.
      * @param bool $each Whether to return each row of the result set one at a time.
      *
      * @return BatchQueryResultInterface The batch query result instance.
@@ -58,8 +58,8 @@ interface ConnectionInterface
     /**
      * Creates a command for execution.
      *
-     * @param string|null $sql The SQL statement to be executed.
-     * @param array $params The parameters to be bound to the SQL statement.
+     * @param string|null $sql The SQL statement to execute.
+     * @param array $params The parameters to bind to the SQL statement.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -110,7 +110,7 @@ interface ConnectionInterface
      *
      * @return string The row ID of the last row inserted, or the last value retrieved from the sequence object.
      *
-     * @link http://php.net/manual/en/pdo.lastinsertid.php'>http://php.net/manual/en/pdo.lastinsertid.php
+     * @link https://php.net/manual/en/pdo.lastinsertid.php'>https://php.net/manual/en/pdo.lastinsertid.php
      */
     public function getLastInsertID(string $sequenceName = null): string;
 
@@ -171,21 +171,21 @@ interface ConnectionInterface
     public function getTransaction(): TransactionInterface|null;
 
     /**
-     * Returns a value indicating whether the DB connection is established.
+     * Returns a value indicating whether the DB connection is active.
      *
-     * @return bool Whether the DB connection is established.
+     * @return bool Whether the DB connection is active.
      */
     public function isActive(): bool;
 
     /**
-     * @return bool Whether this DBMS supports [savepoint](http://en.wikipedia.org/wiki/Savepoint).
+     * @return bool Whether this DBMS supports [savepoint](https://en.wikipedia.org/wiki/Savepoint).
      */
     public function isSavepointEnabled(): bool;
 
     /**
      * Establishes a DB connection.
      *
-     * It does nothing if a DB connection has already been established.
+     * It does nothing if a DB connection is active.
      *
      * @throws Exception
      * @throws InvalidConfigException If connection fails.
@@ -203,7 +203,7 @@ interface ConnectionInterface
     public function quoteValue(mixed $value): mixed;
 
     /**
-     * Whether to enable [savepoint](http://en.wikipedia.org/wiki/Savepoint).
+     * Whether to enable [savepoint](https://en.wikipedia.org/wiki/Savepoint).
      *
      * Note that if the underlying DBMS doesn't support savepoint, setting this property to be true will have no effect.
      *
@@ -219,8 +219,10 @@ interface ConnectionInterface
     public function setProfiler(ProfilerInterface|null $profiler): void;
 
     /**
-     * The common prefix or suffix for table names. If a table name is given as `{{%TableName}}`, then the percentage
-     * character `%` will be replaced with this property value. For example, `{{%post}}` becomes `{{tbl_post}}`.
+     * The common prefix or suffix for table names.
+     * If a table name is `{{%TableName}}`, then the percentage
+     * character `%` will be replaced with this property value.
+     * For example, `{{%post}}` becomes `{{tbl_post}}`.
      *
      * @param string $value The common prefix or suffix for table names.
      */

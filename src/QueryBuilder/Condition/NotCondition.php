@@ -14,7 +14,7 @@ use function is_array;
 use function is_string;
 
 /**
- * Condition that inverts passed {@see condition}.
+ * Condition that represents `NOT` operator (negation).
  */
 final class NotCondition implements NotConditionInterface
 {
@@ -30,7 +30,7 @@ final class NotCondition implements NotConditionInterface
     /**
      * Creates a condition based on the given operator and operands.
      *
-     * @throws InvalidArgumentException If the number of operands is not 1.
+     * @throws InvalidArgumentException If the number of operands isn't 1.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -38,9 +38,9 @@ final class NotCondition implements NotConditionInterface
     }
 
     /**
-     * Validate the given condition have at least 1 condition and to be arrayed, string, null or ExpressionInterface.
+     * Validate the given condition have at least 1 condition and to be `array`, `string`, `null` or `ExpressionInterface`.
      *
-     * @throws InvalidArgumentException If the number of operands is not 1.
+     * @throws InvalidArgumentException If the number of operands isn't 1.
      */
     private static function validateCondition(string $operator, array $condition): ExpressionInterface|array|null|string
     {

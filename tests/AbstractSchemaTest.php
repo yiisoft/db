@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Schema\ColumnSchemaBuilderInterface;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
@@ -22,18 +22,15 @@ abstract class AbstractSchemaTest extends TestCase
 
     public function testCreateColumnSchemaBuilder(): void
     {
-        $db = $this->getConnection();
+        $columnSchemaBuilder = $this->getConnection()->getSchema()->createColumn('string');
 
-        $schema = $db->getSchema();
-        $columnSchemaBuilder = $schema->createColumnSchemaBuilder('string');
-
-        $this->assertInstanceOf(ColumnSchemaBuilderInterface::class, $columnSchemaBuilder);
+        $this->assertInstanceOf(ColumnInterface::class, $columnSchemaBuilder);
         $this->assertSame('string', $columnSchemaBuilder->getType());
     }
 
     public function testColumnSchemaDbTypecastWithEmptyCharType(): void
     {
-        $columnSchema = new ColumnSchema();
+        $columnSchema = new ColumnSchema('new');
         $columnSchema->type(SchemaInterface::TYPE_CHAR);
 
         $this->assertSame('', $columnSchema->dbTypecast(''));

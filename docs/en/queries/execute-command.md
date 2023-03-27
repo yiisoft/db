@@ -1,12 +1,16 @@
-# Call one of the SQL executed methods to execute the command
+# Execute a command
 
-The **query methods** introduced in the [Create a command with a plain SQL query](create-command.md) all deal with SELECT queries which fetch data from databases.
+The methods introduced in the [Create a command and fetch data](create-command-fetch-data.md) all deals with
+`SELECT` queries which fetch data from databases.
 
 For queries that don't bring back data, you should call the `Yiisoft\Db\Command\CommandInterface::execute()` method.
 
-If the query is successful, `Yiisoft\Db\Command\CommandInterface::execute()` will return the number of rows affected by the SQL statement. If sql doesn't affect any row, 0 will be returned. If the query fails, a `Yiisoft\Db\Exception\Exception` exception will be thrown.
+If the query is successful, `Yiisoft\Db\Command\CommandInterface::execute()` will return the number of rows the command
+execution affected.
+It returns `0` if no rows the command affected no rows.
+If the query fails, it throws a `Yiisoft\Db\Exception\Exception`.
 
-For example, the following code executes a non-SELECT query and row count is `1`.
+For example, the following code executes a non-`SELECT` query and affected row count is `1`.
 
 ```php
 <?php
@@ -18,10 +22,10 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 /** @var ConnectionInterface $db */
 
 $command = $db->createCommand('UPDATE {{%customer}} SET [[status]] = 2 WHERE [[id]] = 1');
-$command->execute();
+$rowCount = $command->execute(); // 1
 ```
 
-Now, let's see what happens when executing a non-SELECT query and row count is `0`.
+The following query and affects now rows.
 
 ```php
 <?php
@@ -33,10 +37,10 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 /** @var ConnectionInterface $db */
 
 $command = $db->createCommand('UPDATE {{%customer}} SET [[status]] = 2 WHERE [[id]] = 1000');
-$command->execute();
+$rowCount = $command->execute(); // 0
 ```
 
-Finally, let's see what happens when executing a non-SELECT query and an exception is `thrown`.
+In case of bad SQL, there's an exception.
 
 ```php
 <?php

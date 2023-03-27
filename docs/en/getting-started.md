@@ -1,10 +1,21 @@
-# Getting Started
+# Getting started
 
-[Yii DB](https://github.com/yiisoft/db) is **DAO (Data Access Object)** layer for applications using [PHP](https://www.php.net/). It provides a set of classes that help you access relational databases. It's designed to be flexible and extensible, so that it can be used with different databases and different database schemas. Its database agnostic nature makes it easy to switch from one database to another.
+[Yii DB](https://github.com/yiisoft/db) is DAO (Data Access Object) layer for applications
+using [PHP](https://www.php.net/).
+It provides a set of classes that help you access relational databases.
+It's designed to be flexible and extensible,
+so that it can be used with different databases and different database schemas.
+Its database agnostic nature makes it easy to switch from one database to another.
 
-Built on top of [PDO](https://www.php.net/manual/en/book.pdo.php), [Yii DB](https://github.com/yiisoft/db) provides an **object-oriented API** for accessing relational databases. It's the foundation for other more advanced database access methods, including [Query Builder](query-builder.md).
+Built on top of [PDO](https://www.php.net/manual/en/book.pdo.php), [Yii DB](https://github.com/yiisoft/db) provides
+an object-oriented API for accessing relational databases.
+It's the foundation for other more advanced database access methods, including [Query Builder](query-builder.md).
 
-When using [Yii DB](https://github.com/yiisoft/db), you mainly need to deal with plain **SQLs** and **PHP arrays**. As a result, it's the most efficient way to access databases. However, because **SQL** syntax may vary for different databases, using [Yii DB](https://github.com/yiisoft/db) also means you have to take extra effort to create a database agnostic application.
+When using [Yii DB](https://github.com/yiisoft/db), you mainly need to deal with plain SQLs and PHP arrays.
+As a result, it's the most efficient way to access databases.
+However, because SQL syntax may vary for different databases,
+using [Yii DB](https://github.com/yiisoft/db) also means
+you have to take extra effort to create a database agnostic application.
 
 [Yii DB](https://github.com/yiisoft/db) supports the following databases out of the box:
 
@@ -17,33 +28,34 @@ When using [Yii DB](https://github.com/yiisoft/db), you mainly need to deal with
 
 ## Installation
 
-To install [Yii DB](https://github.com/yiisoft/db), you must select the driver you want to use and install it with a [Composer](https://getcomposer.org/).
+To install [Yii DB](https://github.com/yiisoft/db), you must select the driver you want to use and install it
+with [Composer](https://getcomposer.org/).
 
-- [Yii DB MSSQL](https://github.com/yiisoft/db-mssql)
+For [MSSQL](https://github.com/yiisoft/db-mssql):
 
 ```bash
 composer require yiisoft/db-mssql
 ```
 
-- [Yii DB MySQL/MariaDB](https://github.com/yiisoft/db-mysql)
+For [MySQL/MariaDB](https://github.com/yiisoft/db-mysql):
 
 ```bash
 composer require yiisoft/db-mysql
 ```
 
-- [Yii DB Oracle](https://github.com/yiisoft/db-oracle)
+For [Oracle](https://github.com/yiisoft/db-oracle):
 
 ```bash
 composer require yiisoft/db-oracle
 ```
 
-- [Yii DB PostgreSQL](https://github.com/yiisoft/db-pgsql)
+For [PostgreSQL](https://github.com/yiisoft/db-pgsql):
 
 ```bash
 composer require yiisoft/db-pgsql
 ```
 
-- [Yii DB SQLite](https://github.com/yiisoft/db-pgsql)
+For [SQLite](https://github.com/yiisoft/db-pgsql):
 
 ```bash
 composer require yiisoft/db-sqlite
@@ -51,9 +63,11 @@ composer require yiisoft/db-sqlite
 
 ## Prerequisites
 
-1. [Configuring SchemaCache](schema-cache.md)
+## Configure schema cache
 
-## Create Connection
+First, you need to [configure database schema cache](schema-cache.md).
+
+## Create connection
 
 You can create a database connection instance using a [DI container](https://github.com/yiisoft/di) or without it.
 
@@ -63,7 +77,8 @@ You can create a database connection instance using a [DI container](https://git
 4. [PostgreSQL Server](/docs/en/connection/pgsql.md)
 5. [SQLite Server](/docs/en/connection/sqlite.md)
 
-**Info:** *When you create a **DB** connection instance, the actual connection to the database isn't established until you execute the first **SQL** or you call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.*
+> Info: When you create a DB connection instance, the actual connection to the database isn't established until
+> you execute the first SQL or call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.
 
 ### Logger and profiler
 
@@ -72,25 +87,27 @@ Logger and profiler are optional. You can use them if you need to log and profil
 1. [Logger](/docs/en/connection/logger.md)
 2. [Profiler](/docs/en/connection/profiler.md)
 
-## Executing SQL queries
+## Execute SQL queries
 
-Once you have a database connection instance, you can execute an **SQL** query by taking the following steps:
+Once you have a database connection instance, you can execute an SQL query by taking the following steps:
 
-1. [Create a command with a plain SQL query](/docs/en/queries/create-command.md)
+1. [Create a command and fetch data](/docs/en/queries/create-command-fetch-data.md)
 2. [Bind parameters](/docs/en/queries/bind-parameters.md)
-3. [Call one of the SQL executed methods to execute the command](/docs/en/queries/execute-command.md)
+3. [Execute a command](/docs/en/queries/execute-command.md)
 
+## Quote table and column names
 
-## Quoting Table and Column Names
-
-When writing a database-agnostic code, quoting table and column names is often a headache because different databases have different names quoting rules.
+When writing a database-agnostic code, quoting table and column names is often a headache because different databases
+have different names quoting rules.
 
 To overcome this problem, you may use the following quoting syntax introduced by [Yii DB](https://github.com/yiisoft/db):
 
-- `[[column name]]`: enclose a *column name* to be quoted in *double square brackets*.
-- `{{%table name}}`: enclose a *table name* to be quoted in *double curly brackets*, and the percentage character `%` will be replaced with the *table prefix*.
+- `[[column name]]`: enclose a *column name* to quote in *double square brackets*.
+- `{{%table name}}`: enclose a *table name* to quote in *double curly brackets*, and the percentage character `%`
+  will be replaced with the *table prefix*.
 
-[Yii DB](https://github.com/yiisoft/db) will automatically convert such constructs into the corresponding quoted column or table names using the DBMS-specific syntax.
+[Yii DB](https://github.com/yiisoft/db) will automatically convert such constructs into the corresponding quoted column
+or table names using the DBMS-specific syntax.
 
 For example, the following code will generate an SQL statement that's valid for all supported databases:
 
@@ -103,12 +120,14 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 
-$result = $db->createCommand("SELECT COUNT([[id]]) FROM {{%employee}}")->queryScalar()
+$result = $db->createCommand('SELECT COUNT([[id]]) FROM {{%employee}}')->queryScalar()
 ```
 
 ## Query Builder
 
-[Yii DB](https://github.com/yiisoft/db) provides a [Query Builder](query-builder.md) that helps you create **SQL** statements in a more convenient way. It's a powerful tool that can be used to create complex **SQL** statements in a simple way.
+[Yii DB](https://github.com/yiisoft/db) provides a [Query Builder](query-builder.md) that helps you create
+SQL statements in a more convenient way.
+It's a powerful tool to create complex SQL statements in a simple way.
 
 
 ## Working with a database
@@ -121,7 +140,3 @@ You can use it to execute **SQL** statements that don't return any result set, s
 
 - [DDL commands](/docs/en/command/ddl.md)
 - [DML commands](/docs/en/command/dml.md)
-
-
-
-

@@ -9,6 +9,7 @@ use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 
 /**
  * Represents the schema for a database table.
@@ -46,10 +47,14 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const INDEX_NONCLUSTERED = 'NONCLUSTERED';
     /* Oracle */
     public const INDEX_BITMAP = 'BITMAP';
+    /* DB Types */
     public const TYPE_PK = 'pk';
     public const TYPE_UPK = 'upk';
     public const TYPE_BIGPK = 'bigpk';
     public const TYPE_UBIGPK = 'ubigpk';
+    public const TYPE_UUID_PK = 'uuid_pk';
+    public const TYPE_UUID_PK_SEQ = 'uuid_pk_seq';
+    public const TYPE_UUID = 'uuid';
     public const TYPE_CHAR = 'char';
     public const TYPE_STRING = 'string';
     public const TYPE_TEXT = 'text';
@@ -69,6 +74,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const TYPE_MONEY = 'money';
     public const TYPE_JSON = 'json';
     public const TYPE_JSONB = 'jsonb';
+    /* PHP Types */
     public const PHP_TYPE_INTEGER = 'integer';
     public const PHP_TYPE_STRING = 'string';
     public const PHP_TYPE_BOOLEAN = 'boolean';
@@ -78,6 +84,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const PHP_TYPE_NULL = 'NULL';
 
     /**
+     * @psalm-param string[]|int[]|int|string|null $length
+     */
+    public function createColumn(string $type, array|int|string $length = null): ColumnInterface;
+
+    /**
      * @return string|null The default schema name.
      */
     public function getDefaultSchema(): string|null;
@@ -85,11 +96,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Determines the PDO type for the given PHP data value.
      *
-     * @param mixed $data The data whose PDO type is to be determined
+     * @param mixed $data The data to find PDO type for.
      *
      * @return int The PDO type.
      *
-     * @link http://www.php.net/manual/en/pdo.constants.php
+     * @link https://www.php.net/manual/en/pdo.constants.php
      */
     public function getPdoType(mixed $data): int;
 
@@ -99,7 +110,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * This method will strip off curly brackets from the given table name and replace the percentage character '%' with
      * {@see ConnectionInterface::tablePrefix}.
      *
-     * @param string $name The table name to be converted.
+     * @param string $name The table name to convert.
      *
      * @return string The real name of the given table name.
      */
@@ -108,7 +119,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Returns all schema names in the database, except system schemas.
      *
-     * @param bool $refresh Whether to fetch the latest available schema names. If this is false, schema names fetched
+     * @param bool $refresh Whether to fetch the latest available schema names. If this is `false`, schema names fetched
      * before (if available) will be returned.
      *
      * @throws NotSupportedException
@@ -123,7 +134,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
      * name.
      * If not empty, the returned table names will be prefixed with the schema name.
-     * @param bool $refresh Whether to fetch the latest available table names. If this is false, table names fetched
+     * @param bool $refresh Whether to fetch the latest available table names. If this is `false`, table names fetched
      * before (if available) will be returned.
      *
      * @throws NotSupportedException
@@ -131,26 +142,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @return array All tables name in the database.
      */
     public function getTableNames(string $schema = '', bool $refresh = false): array;
-
-    /**
-     * Create a column schema builder instance giving the type and value precision.
-     *
-     * This method may be overridden by child classes to create a DBMS-specific column schema builder.
-     *
-     * @param string $type the type of the column.
-     * {@see AbstractColumnSchemaBuilder::$type} for supported types.
-     * @param array|int|string|null $length The length or precision of the column.
-     *
-     * {@see ColumnSchemaBuilderInterface::$length}.
-     *
-     * @return ColumnSchemaBuilderInterface column schema builder instance
-     *
-     * @psalm-param string[]|int[]|int|string|null $length
-     */
-    public function createColumnSchemaBuilder(
-        string $type,
-        array|int|string $length = null
-    ): ColumnSchemaBuilderInterface;
 
     /**
      * Returns all unique indexes for the given table.
@@ -228,7 +219,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function refreshTableSchema(string $name): void;
 
     /**
-     * Allows you to enable and disable the schema cache.
+     * Enable and disable the schema cache.
      *
      * @param bool $value Whether to enable or disable the schema cache.
      */

@@ -1,8 +1,7 @@
 # Connecting MSSQL
 
-To configure [Yii DB MSSQL](https://github.com/yiisoft/db-mssql) with [DI container](https://github.com/yiisoft/di) you need to create a configuration file.
-
-Create a file `config/common/di/db-mssql.php`.
+To configure [Yii DB MSSQL](https://github.com/yiisoft/db-mssql) with [DI container](https://github.com/yiisoft/di)
+you need to create `config/common/di/db-mssql.php` configuration file:
 
 ```php
 <?php
@@ -49,7 +48,8 @@ return [
 ];
 ```
 
-To configure without [DI container](https://github.com/yiisoft/di), you need to follow the following steps.
+To configure the connection without [DI container](https://github.com/yiisoft/di),
+you need to follow the following steps.
 
 ```php
 <?php

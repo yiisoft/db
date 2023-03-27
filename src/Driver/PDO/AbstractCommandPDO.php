@@ -16,7 +16,7 @@ use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Query\Data\DataReader;
 
 /**
- * Represents a database command that can be executed against a PDO (PHP Data Object) database connection.
+ * Represents a database command that can be executed using a PDO (PHP Data Object) database connection.
  *
  * It's an abstract class that provides a common interface for building and executing various types of statements
  * such as {@see cancel()}, {@see execute()}, {@see insert()}, {@see update()}, {@see delete()}, etc., using a PDO
@@ -39,7 +39,7 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
     }
 
     /**
-     * This method mainly sets {@see pdoStatement} to be null.
+     * This method mainly sets {@see pdoStatement} to be `null`.
      */
     public function cancel(): void
     {
@@ -118,7 +118,7 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
         $sql = $this->getSql();
 
         /**
-         * If sql is empty - will be {@see \ValueError} on prepare pdoStatement
+         * If SQL is empty, there will be {@see \ValueError} on prepare pdoStatement.
          *
          * @link https://php.watch/versions/8.0/ValueError
          */
@@ -141,7 +141,7 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
     }
 
     /**
-     * Binds pending parameters that were registered via {@see bindValue()} and {@see bindValues()}.
+     * Binds pending parameters registered via {@see bindValue()} and {@see bindValues()}.
      *
      * Note that this method requires an active {@see pdoStatement}.
      */
@@ -157,7 +157,7 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
      *
      * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
      *
-     * @param string|null $rawSql the rawSql if it has been created.
+     * @param string|null $rawSql The rawSql if it has been created.
      *
      * @throws Exception
      * @throws Throwable

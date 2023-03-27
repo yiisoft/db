@@ -11,7 +11,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 interface ConjunctionConditionInterface extends ConditionInterface
 {
     /**
-     * @return string The operator that's represented by this condition class, e.g. `AND`, `OR`.
+     * @return string The operator that's represented by this condition class, such as `AND`, `OR`.
      */
     public function getOperator(): string;
 

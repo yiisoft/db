@@ -11,44 +11,37 @@ namespace Yiisoft\Db\Schema;
 interface ColumnSchemaInterface
 {
     /**
-     * The allowNull can be set to either `true` or `false`, depending on whether null values should be allowed in the
-     * ColumnSchema class.
+     * Whether to allow `null` values.
      *
-     * By default, the allowNull is set to `false`, so if it isn't specified when defining a ColumnSchema class,
-     * null values won't be allowed in the ColumnSchema class.
+     * If not set explicitly with this method call, `null` values aren't allowed.
      *
      * ```php
      * $columns = [
-     *     'description' => $this->text()->allowNull(),
+     *     'description' => $this->text()->allowNull(true),
      * ];
      * ```
      */
     public function allowNull(bool $value): void;
 
     /**
-     * The autoIncrement is a column that's assigned a unique value automatically by the database management system
-     * (DBMS) whenever a new row is inserted into the table. This is useful for generating unique IDs for rows in the
-     * table, such as customer or employee numbers. The autoIncrement attribute can be specified for `INTEGER` or
-     * `BIGINT` data types.
+     * The database assigns auto incremented column a unique value automatically whenever you insert a new row into
+     * the table. This is useful for getting unique IDs for data such as customer or employee numbers.
+     * You can set the autoIncrement for `INTEGER` or `BIGINT` data types.
      *
-     * By default, the autoIncrement is set to `false`, so if it isn't specified when defining a ColumnSchema class,
-     * the autoIncrement won't be allowed in the ColumnSchema class.
+     * If not set explicitly with this method call, the column isn't auto incremented.
      *
      * ```php
      * $columns = [
-     *    'id' => $this->primaryKey()->autoIncrement(),
+     *    'id' => $this->primaryKey()->autoIncrement(true),
      * ];
      * ```
      */
     public function autoIncrement(bool $value): void;
 
     /**
-     * The comment refers to a string of text that can be added to a column in a database table.
+     * The comment for a column in a database table.
      *
      * The comment can give more information about the purpose or usage of the column.
-     *
-     * By default, the comment is set to `null`, so if it isn't specified when defining a ColumnSchema class, the
-     * comment won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -59,11 +52,9 @@ interface ColumnSchemaInterface
     public function comment(string|null $value): void;
 
     /**
-     * A computed column is a virtual column that computes its values from an expression. We can use a constant value,
-     * function, value derived from other columns, non-computed column name, or their combinations.
+     * A computed column is a virtual column that computes its values from an expression.
      *
-     * By default, the computed is set to `false`, so if it isn't specified when defining a ColumnSchema class, the
-     * computed won't be allowed in the ColumnSchema class.
+     * If not set explicitly with this method call, the column isn't computed.
      *
      * ```php
      * $columns = [
@@ -74,21 +65,11 @@ interface ColumnSchemaInterface
     public function computed(bool $value): void;
 
     /**
-     * The dbType represents the data type of column in a database table. This property is typically used when working
-     * with the database layer, which provides a set of classes and methods for interacting with databases in a
-     * consistent and abstracted way.
+     * The database data-type of column.
      *
-     * The data type can be one of the built-in data types supported by the database server (such as INTEGER, VARCHAR,
-     * DATETIME, etc.), or it can be a custom data type defined by the database server. The dbType property is used to
-     * specify the type of data that can be stored in the column and how it should be treated by the database server
-     * when performing operations on it.
-     *
-     * For example, if a column has a dbType of INTEGER, it means that it can only store integer values and the database
-     * server will perform certain optimizations and type checking when working with the column. Similarly, if a column
-     * has a dbType of VARCHAR, it means that it can store character strings of a certain length, and the database
-     * server will treat the data in the column as a character string when performing operations on it.
-     *
-     * For default dbType is null.
+     * The data type can be one of the built-in data types supported by the database server (such as `INTEGER`, `VARCHAR`,
+     * `DATETIME`, etc.), a custom data type defined by the database server, or `null` if the database
+     * allows untyped columns.
      *
      * ```php
      * $columns = [
@@ -96,28 +77,22 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function dbType(string $value): void;
+    public function dbType(string|null $value): void;
 
     /**
-     * The dbTypecast is used to convert a value from its PHP representation to a database-specific representation.
-     * It's typically used when preparing an SQL statement for execution, to ensure that the values being bound to
-     * placeholders in the statement are in a format that the database can understand.
+     * Convert a value from its PHP representation to a database-specific representation.
      *
-     * The dbTypecast method is typically called automatically by the yiisoft/db library when preparing an SQL
-     * statement for execution, so you don't usually need to call it directly in your code. However, it can be useful
-     * to understand how it works if you need to customize the way that values are converted for use in a SQL statement.
+     * yiisoft/db calls it automatically by when preparing an SQL statement, so you don't usually need to call it
+     * directly in your code.
      *
-     * If the value is null or an {@see Expression}, it won't be converted.
+     * If the value is `null` or an {@see Expression}, there will be no conversion.
      */
     public function dbTypecast(mixed $value): mixed;
 
     /**
-     * The default value is a value that's automatically assigned to a column when a new row is inserted into the
+     * A value that's automatically assigned to a column when you insert a new row into the
      * database table. The default value can be a constant value, function, value derived from other columns,
      * non-computed column name, or their combinations.
-     *
-     * By default, value is set to `null`, so if it isn't specified when defining a ColumnSchema class, the default
-     * value won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -128,12 +103,7 @@ interface ColumnSchemaInterface
     public function defaultValue(mixed $value): void;
 
     /**
-     * The enumValues is a list of possible values for the column.
-     *
-     * It's used only for `ENUM` columns.
-     *
-     * By default, the enumValues are set to `null`, so if it isn't specified when defining a ColumnSchema class, the
-     * enumValues won't be allowed in the ColumnSchema class.
+     * The list of possible values for the `ENUM` column.
      *
      * ```php
      * $columns = [
@@ -144,14 +114,10 @@ interface ColumnSchemaInterface
     public function enumValues(array|null $value): void;
 
     /**
-     * The extra column schema refers to a string attribute that can be used to specify more SQL to be appended to the
-     * generated SQL for a column.
+     * Extra SQL to append to the generated SQL for a column.
      *
      * This can be useful for adding custom constraints or other SQL statements that aren't supported by the column
      * schema itself.
-     *
-     * By default, the extra is set to `null`, so if it isn't specified when defining a ColumnSchema class, the extra
-     * won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -162,88 +128,76 @@ interface ColumnSchemaInterface
     public function extra(string|null $value): void;
 
     /**
-     * @return string|null The comment of the column. `null` if no comment has been defined.
-     * By default, it returns `null`.
+     * @return string|null The comment of the column.
      *
      * @see comment()
      */
     public function getComment(): string|null;
 
     /**
-     * @return string The dbType of the column. Empty string if no dbType has been defined.
-     * By default, it returns an empty string.
+     * @return string|null The database type of the column.
+     * Null means the column has no type in the database.
      *
      * @see dbType()
      */
-    public function getDbType(): string;
+    public function getDbType(): string|null;
 
     /**
-     * @return mixed The default value of the column. `null` if no default value has been defined.
-     * By default, it returns `null`.
+     * @return mixed The default value of the column.
      *
      * @see defaultValue()
      */
     public function getDefaultValue(): mixed;
 
     /**
-     * @return array|null The enum values of the column. `null` if no enum values have been defined.
-     * By default, it returns `null`.
+     * @return array|null The enum values of the column.
      *
      * @see enumValues()
      */
     public function getEnumValues(): array|null;
 
     /**
-     * @return string|null The extra of the column. `null` if no extra has been defined.
-     * By default, it returns `null`.
+     * @return string|null The extra SQL for the column.
      *
      * @see extra()
      */
     public function getExtra(): string|null;
 
     /**
-     * @return string The name of the column. Empty string if no name has been defined.
-     * By default, it returns an empty string.
-     *
-     * @see name()
+     * @return string The name of the column.
      */
     public function getName(): string;
 
     /**
-     * @return int|null The precision of the column. `null` if no precision has been defined.
-     * By default, it returns `null`.
+     * @return int|null The precision of the column.
      *
      * @see precision()
      */
     public function getPrecision(): int|null;
 
     /**
-     * @return string|null The phpType of the column. `null` if no phpType has been defined.
-     * By default, it returns `null`.
+     * @return string|null The PHP type of the column.
      *
      * @see phpType()
      */
     public function getPhpType(): string|null;
 
     /**
-     * @return int|null The scale of the column. `null` if no scale has been defined.
-     * By default, it returns `null`.
+     * @return int|null The scale of the column.
      *
      * @see scale()
      */
     public function getScale(): int|null;
 
     /**
-     * @return int|null The size of the column. `null` if no size has been defined.
-     * By default, it returns `null`.
+     * @return int|null The size of the column.
      *
      * @see size()
      */
     public function getSize(): int|null;
 
     /**
-     * @return string The type of the column. Empty string if no type has been defined.
-     * By default, it returns an empty string.
+     * @return string The type of the column.
      *
      * @see type()
      */
@@ -288,29 +242,12 @@ interface ColumnSchemaInterface
     public function isUnsigned(): bool;
 
     /**
-     * Represents the name of the column in the database.
+     * The PHP data type for representing the data stored in the column.
+     * It's determined based on the data type of the column as defined in the database schema.
+     * For example, if the column is a `varchar` or `text`, the `phpType()` method may return `string`.
+     * If the column is `int` or `tinyint`, the `phpType()` method may return `integer`.
      *
-     * It's used to generate the SQL statement.
-     *
-     * For default name is an empty string.
-     *
-     * The db ColumnSchema class will generate a name automatically based on the column name.
-     *
-     * ```php
-     * $columns = [
-     *     'description' => $this->text()->name('description'),
-     * ];
-     * ```
-     */
-    public function name(string $value): void;
-
-    /**
-     * The phpType is used to return the PHP data type that's most appropriate for representing the data stored in the
-     * column. This is determined based on the data type of the column as defined in the database schema. For example,
-     * if the column is defined as a varchar or text data type, the phpType() method may return string. If the column
-     * is defined as an int or tinyint, the phpType() method may return an integer.
-     *
-     * By default, the phpType is set to `null`. Db ColumnSchema class will generate phpType automatically based on the
+     * If set to `null`, the {@see ColumnSchema} will get PHP type automatically based on the
      * column type.
      *
      * ```php
@@ -324,16 +261,13 @@ interface ColumnSchemaInterface
     /**
      * Converts the input value according to {@see phpType} after retrieval from the database.
      *
-     * If the value is null or an {@see Expression}, it won't be converted.
+     * If the value is `null` or an {@see Expression}, there is no conversion.
      */
     public function phpTypecast(mixed $value): mixed;
 
     /**
-     * The precision is the total number of digits that are used to represent the value. This is only meaningful when
-     * {@see type} is `decimal`.
-     *
-     * By default, the precision is set to `null`, so if it isn't specified when defining a ColumnSchema class, the
-     * precision won't be allowed in the ColumnSchema class.
+     * The precision is the total number of digits that represent the value.
+     * This is only meaningful when {@see type} is `decimal`.
      *
      * ```php
      * $columns = [
@@ -343,16 +277,11 @@ interface ColumnSchemaInterface
     public function precision(int|null $value): void;
 
     /**
-     * The primary key is a column or set of columns that uniquely identifies each row in a table. The primaryKey of the
-     * ColumnSchema class is used to specify which column or columns should be used as the primary key for a particular
-     * table.
-     *
-     * By default, the primaryKey is set to `false`, so if it isn't specified when defining a ColumnSchema class, the
-     * primaryKey won't be allowed in the ColumnSchema class.
+     * The primary key is a column or set of columns that uniquely identifies each row in a table.
      *
      * ```php
      * $columns = [
-     *   'id' => $this->primaryKey(),
+     *   'id' => $this->primaryKey(true),
      * ];
      * ```
      */
@@ -361,9 +290,6 @@ interface ColumnSchemaInterface
     /**
      * The scale is the number of digits to the right of the decimal point and is only meaningful when {@see type} is
      * `decimal`.
-     *
-     * By default, the scale is set to `null`, so if it isn't specified when defining a ColumnSchema class, the scale
-     * won't be allowed in the ColumnSchema class.
      *
      * ```php
      * $columns = [
@@ -375,11 +301,8 @@ interface ColumnSchemaInterface
 
     /**
      * The size refers to the number of characters or digits allowed in a column of a database table. The size is
-     * typically used for character or numeric data types, such as VARCHAR or INT, to specify the maximum length or
-     * precision of the data that can be stored in the column.
-     *
-     * By default, the size is set to `null`, so if it isn't specified when defining a ColumnSchema class, the size
-     * won't be allowed in the ColumnSchema class.
+     * typically used for character or numeric data types, such as `VARCHAR` or `INT`, to specify the maximum length or
+     * precision of the data in the column.
      *
      * ```php
      * $columns = [
@@ -390,14 +313,7 @@ interface ColumnSchemaInterface
     public function size(int|null $value): void;
 
     /**
-     * The type of the ColumnSchema class that's used to set the data type of column in a database table.
-     *
-     * The data type of column specifies the kind of values that can be stored in that column, such as integers,
-     * strings, dates, or floating point numbers.
-     *
-     * By default, the type is set to empty strings.
-     *
-     * The db ColumnSchema class will generate setType automatically based on the column type.
+     * The database type of the column.
      *
      * ```php
      * $columns = [
@@ -407,12 +323,8 @@ interface ColumnSchemaInterface
     public function type(string $value): void;
 
     /**
-     * The unsigned is used to specify that a column in a database table should be an unsigned integer. An unsigned
-     * integer is a data type that can only represent positive whole numbers, and can't represent negative numbers
-     * or decimal values.
-     *
-     * By default, the unsigned is set to `false`, so if it isn't specified, when defining a ColumnSchema class, the
-     * unsigned won't be allowed in the ColumnSchema class.
+     * Whether the column type is an unsigned integer.
+     * It's a data type that can only represent positive whole numbers only.
      *
      * ```php
      * $columns = [

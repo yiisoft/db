@@ -1,8 +1,7 @@
 # Connecting PostgreSQL
 
-To configure [Yii DB PostgreSQL](https://github.com/yiisoft/db-pgsql) with a [DI container](https://github.com/yiisoft/di), you need to create a configuration file.
-
-Create a file `config/common/di/db-pgsql.php`.
+To configure [Yii DB PostgreSQL](https://github.com/yiisoft/db-pgsql) with
+a [DI container](https://github.com/yiisoft/di), you need to create `config/common/di/db-pgsql.php` configuration file:
 
 ```php
 <?php

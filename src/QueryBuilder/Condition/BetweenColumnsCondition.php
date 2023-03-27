@@ -14,7 +14,7 @@ use function is_int;
 use function is_string;
 
 /**
- * Class BetweenColumnCondition represents a `BETWEEN` condition where values are between two columns.
+ * Represents a `BETWEEN` operator where values are between two columns.
  *
  * For example:.
  *
@@ -71,7 +71,7 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
     /**
      * Creates a condition based on the given operator and operands.
      *
-     * @throws InvalidArgumentException If the number of operands is not 3.
+     * @throws InvalidArgumentException If the number of operands isn't 3.
      */
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
@@ -88,9 +88,9 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
     }
 
     /**
-     * Validates the given value to be arrayed, int, string, Iterator or ExpressionInterface.
+     * Validates the given value to be `array`, `int`, `string`, `Iterator` or `ExpressionInterface`.
      *
-     * @throws InvalidArgumentException If the value is not arrayed, int, string, Iterator or ExpressionInterface.
+     * @throws InvalidArgumentException If the value isn't `array`, `int`, `string`, `Iterator` or `ExpressionInterface`.
      */
     private static function validateValue(
         string $operator,
@@ -112,9 +112,9 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
     }
 
     /**
-     * Validates the given interval start column to be string or ExpressionInterface.
+     * Validates the given interval start column to be string or `ExpressionInterface`.
      *
-     * @throws InvalidArgumentException If the interval start column is not string or ExpressionInterface.
+     * @throws InvalidArgumentException If the interval start column isn't string or `ExpressionInterface`.
      */
     private static function validateIntervalStartColumn(
         string $operator,
@@ -135,7 +135,7 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
     /**
      * Validates the given interval end column to be string or ExpressionInterface.
      *
-     * @throws InvalidArgumentException If the interval end column is not string or ExpressionInterface.
+     * @throws InvalidArgumentException If the interval end column isn't a string or ExpressionInterface.
      */
     private static function validateIntervalEndColumn(
         string $operator,

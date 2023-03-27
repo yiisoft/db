@@ -1,8 +1,7 @@
 # Connecting SQLite
 
-To configure [Yii DB SQLite](https://github.com/yiisoft/db-pgsql) with a [DI container](https://github.com/yiisoft/di), you need to create a configuration file.
-
-Create a file `config/common/di/db-sqlite.php`.
+To configure [Yii DB SQLite](https://github.com/yiisoft/db-pgsql) with
+a [DI container](https://github.com/yiisoft/di), you need to create `config/common/di/db-sqlite.php` configuration file.
 
 ```php
 <?php

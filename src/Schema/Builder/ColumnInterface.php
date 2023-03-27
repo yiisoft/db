@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Schema;
+namespace Yiisoft\Db\Schema\Builder;
 
 /**
  * This interface defines the methods that must be implemented by classes that build the schema of a database column.
@@ -10,16 +10,14 @@ namespace Yiisoft\Db\Schema;
  * It provides methods for setting the column name, type, length, precision, scale, default value, and other properties
  * of the column, as well as methods for adding constraints, such as a primary key, unique, and not null.
  */
-interface ColumnSchemaBuilderInterface
+interface ColumnInterface
 {
     /**
-     * Specify more SQL to be appended to column definition.
+     * Specify more SQL to append to column definition.
      *
-     * Position modifiers will be appended after column definition in databases that support them.
+     * Position modifiers will append after column definition in databases that support them.
      *
-     * @param string $sql The SQL string to be appended.
-     *
-     * @return self The column schema builder instance itself.
+     * @param string $sql The SQL string to append.
      */
     public function append(string $sql): self;
 
@@ -32,48 +30,40 @@ interface ColumnSchemaBuilderInterface
      * Builds the full string for the column's schema including type, length, default value, not null and another SQL
      * fragment.
      *
-     * @return string The SQL fragment that will be used for creating the column.
+     * @return string The SQL fragment to use for creating the column.
      */
     public function asString(): string;
 
     /**
      * Specify a `CHECK` constraint for the column.
      *
-     * @param string|null $check The SQL of the `CHECK` constraint to be added.
-     *
-     * @return self The column schema builder instance itself.
+     * @param string|null $check The SQL of the `CHECK` constraint to add.
      */
     public function check(string|null $check): self;
 
     /**
      * Specifies the comment for column.
      *
-     * @param string|null $comment The comment to be added.
-     *
-     * @return self The column schema builder instance itself.
+     * @param string|null $comment The comment to add.
      */
     public function comment(string|null $comment): self;
 
     /**
      * Specify the default SQL expression for the column.
      *
-     * @param string $default The SQL expression to be used as default value.
-     *
-     * @return self The column schema builder instance itself.
+     * @param string $default The SQL expression to use as default value.
      */
     public function defaultExpression(string $default): self;
 
     /**
      * Specify the default value for the column.
      *
-     * @param mixed $default The default value to be used.
-     *
-     * @return self The column schema builder instance itself.
+     * @param mixed $default The default value to use.
      */
     public function defaultValue(mixed $default): self;
 
     /**
-     * @return string|null The SQL string to be appended to column schema definition.
+     * @return string|null The SQL string to append to column schema definition.
      */
     public function getAppend(): string|null;
 
@@ -105,7 +95,7 @@ interface ColumnSchemaBuilderInterface
     public function getLength(): array|int|string|null;
 
     /**
-     * @return string|null The column type definition such as INTEGER, VARCHAR, DATETIME, etc.
+     * @return string|null The column type definition such as `INTEGER`, `VARCHAR`, `DATETIME`, etc.
      */
     public function getType(): string|null;
 
@@ -129,16 +119,12 @@ interface ColumnSchemaBuilderInterface
     /**
      * Adds a `NOT NULL` constraint to the column.
      *
-     * @return static The column schema builder instance itself.
-     *
      * @see isNotNull
      */
     public function notNull(): self;
 
     /**
      * Adds a `NULL` constraint to the column.
-     *
-     * @return static The column schema builder instance itself.
      *
      * @see isNotNull
      */
@@ -147,16 +133,12 @@ interface ColumnSchemaBuilderInterface
     /**
      * Adds a `UNIQUE` constraint to the column.
      *
-     * @return static The column schema builder instance itself.
-     *
      * @see isUnique
      */
     public function unique(): self;
 
     /**
      * Marks column as unsigned.
-     *
-     * @return self The column schema builder instance itself.
      */
     public function unsigned(): self;
 }

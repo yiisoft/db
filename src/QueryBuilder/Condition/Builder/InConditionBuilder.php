@@ -35,7 +35,7 @@ use function strtoupper;
  */
 class InConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(protected QueryBuilderInterface $queryBuilder)
     {
     }
 
@@ -127,9 +127,12 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Builds `$values` to be used in {@see InCondition}.
+     * Builds `$values` to use in {@see InCondition}.
      *
-     * @throws Exception|InvalidArgumentException|InvalidConfigException|NotSupportedException
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
      *
      * @psalm-return string[]
      *
@@ -177,7 +180,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for composite IN condition.
+     * Build SQL for composite `IN` condition.
      *
      * @throws Exception
      * @throws InvalidArgumentException

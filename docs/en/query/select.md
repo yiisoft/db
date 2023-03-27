@@ -1,6 +1,8 @@
 # Select
 
-The `Yiisoft\Db\Query\Query::select()` method specifies the `SELECT` fragment of a **SQL statement**. You can specify **columns** to be selected in either an array or a string, like the following. The column names being selected will be automatically quoted when the **SQL statement** is being generated from a **query object**.
+The `Yiisoft\Db\Query\Query::select()` method specifies the `SELECT` fragment of a SQL statement.
+You can specify columns to select either as an array or as a string.
+The column names selected will be automatically quoted during the generation of the SQL statement.
 
 ```php
 $query->select(['id', 'email']);
@@ -10,7 +12,7 @@ $query->select(['id', 'email']);
 $query->select('id, email');
 ```
 
-The column names being selected may include table prefixes and/or column aliases, like you do when writing raw SQL queries.
+The column names selected may include table prefixes and/or column aliases, like you do when writing raw SQL queries.
 
 For example, the following code will select the `id` and `email` columns from the `user` table.
 
@@ -30,19 +32,23 @@ For example, the above code can be rewritten as follows.
 $query->select(['user_id' => 'user.id', 'email']);
 ```
 
-If you don't call the `Yiisoft\Db\Query\Query::select()` method when building a query, `*` will be selected, which means selecting all columns.
+If you don't call the `Yiisoft\Db\Query\Query::select()` method when building a query,
+it assumes to select `*` which means selecting all columns.
 
-Besides column names, you can also select **DB expressions**. You must use the array format when selecting a **DB expression** that has commas to avoid wrong automatic name quoting. 
+Besides column names, you can also select DB expressions.
+In this case, you must use the array format to avoid wrong automatic name quoting. 
 
-For example, the following code will select columns `CONCAT(first_name, ' ', last_name)` with alias `full_name` and column `email`.
+For example, the following code will select columns `CONCAT(first_name, ' ', last_name)` with alias `full_name`
+and column `email`.
 
 ```php
 $query->select(["CONCAT(first_name, ' ', last_name) AS full_name", 'email']); 
 ```
 
-As with all places where **raw SQL** is involved, you may use the DBMS agnostic quoting syntax for table and column names when writing DB expressions in select.
+As with all places with raw SQL involved,
+you may use the DBMS agnostic quoting syntax for table and column names when writing DB expressions in select.
 
-You may also select **sub-queries**. You should specify each **sub-query** in terms of a `Yiisoft\Db\Query\Query` object.
+You may also select sub-queries. You should specify each sub-query in terms of a `Yiisoft\Db\Query\Query` object.
 
 For example, the following code will select count of users in each post.
 
@@ -62,7 +68,7 @@ $subQuery = (new Query($db))->select('COUNT(*)')->from('{{%user}}');
 $query = (new Query($db))->select(['id', 'count' => $subQuery])->from('{{%post}}');
 ```
 
-To select distinct rows, you may call distinct(), like the following.
+To select distinct rows, you may call `distinct()`, like the following.
 
 ```php
 // SELECT DISTINCT `user_id` ...

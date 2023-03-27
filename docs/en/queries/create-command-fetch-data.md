@@ -1,8 +1,6 @@
-# Create a command with a plain SQL query
+# Create a command and fetch data
 
-To create a command with a plain **SQL query**, you can use the `Yiisoft\Db\Connection\ConnectionInterface::createCommand()` method.
-
-The following example shows how to create a command.
+To create a command, you can use the `Yiisoft\Db\Connection\ConnectionInterface::createCommand()` method:
 
 ```php
 <?php
@@ -15,15 +13,23 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $command = $db->createCommand('SELECT * FROM {{%customer}}');
 ```
 
-## Fetching Data
+In the command, there are different methods to **fetch data**:
 
-To **fetch data** from a **table**, you can use the `Yiisoft\Db\Command\CommandInterface::queryAll()`, `Yiisoft\Db\Command\CommandInterface::queryOne()`, `Yiisoft\Db\Command\CommandInterface::queryColumn()`, `Yiisoft\Db\Command\CommandInterface::queryScalar()` and `Yiisoft\Db\Command\CommandInterface::query()`.
+- `queryAll()`
+- `queryOne()`
+- `queryColumn()`
+- `queryScalar()`
+- `query()`
 
-**Note:** *To preserve precision, the data fetched from databases are all represented as strings, even if the corresponding database column types are numerical. You may need to use type conversion to convert them into the corresponding PHP types.*
+> Note: To preserve precision, the data fetched from databases are always strings, even if the corresponding
+> database column types are numerical.
+> You may need to use type conversion to convert them into the corresponding PHP types.
 
 ### Query all
 
-Returns an array of all rows in the result set. Each array element is an array representing a row of data, with the array keys as column names. An empty array is returned if the query results in nothing.
+Returns an array of all rows in the result set.
+Each array element is an array representing a row of data, with the array keys as column names.
+It returns an empty array if the query results in nothing.
 
 For example, the following code fetches all rows from the `customer` table.
 
@@ -38,7 +44,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $result = $db->createCommand('SELECT * FROM {{%customer}}')->queryAll();
 ```
 
-The result of the above example is.
+The result is:
 
 ```php
 [
@@ -71,7 +77,9 @@ The result of the above example is.
 
 ### Query one
 
-Returns a single row of data. The return value is an array representing the first row of the query result. An `null` is returned if the query results in nothing.
+Returns a single row of data.
+The return value is an array representing the first row of the query result.
+It returns `null` if the query results in nothing.
 
 For example, the following code fetches the first row from the `customer` table.
 
@@ -86,7 +94,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $result = $db->createCommand('SELECT * FROM {{%customer}}')->queryOne();
 ```
 
-The result of the above example is.
+The result is:
 
 ```php
 [
@@ -101,7 +109,8 @@ The result of the above example is.
 
 ### Query column
 
-Returns the values of the first column in the query result. An empty array is returned if the query results in nothing.
+Returns the values of the first column in the query result.
+It returns an empty array if the query results in nothing.
 
 For example, the following code fetches the values of the first column from the `customer` table.
 
@@ -117,7 +126,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $result = $db->createCommand('SELECT * FROM {{%customer}}')->queryColumn();
 ```
 
-The result of the above example is.
+The result is:
 
 ```php
 [
@@ -129,7 +138,8 @@ The result of the above example is.
 
 ### Query scalar
 
-Returns the value of the first column in the first row of the query result. `false` is returned if there is no value.
+Returns the value of the first column in the first row of the query result.
+It returns `false` if there is no value.
 
 For example, the following code fetches the value of the first column from the first row from the `customer` table.
 
@@ -145,7 +155,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $result = $db->createCommand('SELECT * FROM {{%customer}}')->queryScalar();
 ```
 
-The result of the above example is.
+The result is:
 
 ```php
 '1'
@@ -173,7 +183,7 @@ foreach ($command as $row) {
 }
 ```
 
-The result of the above example is.
+The result is:
 
 ```php
 Yiisoft\Db\Query\Data\DataReader#4710

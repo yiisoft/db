@@ -7,14 +7,14 @@ namespace Yiisoft\Db\Connection;
 /**
  * Represents a Data Source Name (DSN) that's used to configure a {@see ConnectionInterface} instance.
  *
- * The DSN string format is described in {@see asString()}.
+ * For DSN string format see {@see DsnInterface::asString()}.
  */
 interface DsnInterface
 {
     /**
      * @return string The Data Source Name, or DSN, has the information required to connect to the database.
      *
-     * Please refer to the [PHP manual](http://php.net/manual/en/pdo.construct.php) on the format of the DSN string.
+     * Please refer to the [PHP manual](https://php.net/manual/en/pdo.construct.php) on the format of the DSN string.
      *
      * The `driver` array key is used as the driver prefix of the DSN, all further key-value pairs are rendered as
      * `key=value` and concatenated by `;`. For example:

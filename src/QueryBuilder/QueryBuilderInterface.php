@@ -7,7 +7,7 @@ namespace Yiisoft\Db\QueryBuilder;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Schema\ColumnSchemaBuilderInterface;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 
 /**
@@ -60,7 +60,7 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * - `money`: money type, will be converted into "decimal(19,4)"
      * - `binary`: binary data type, will be converted into "blob"
      *
-     * If the abstract type has two or more parts separated by spaces (e.g. "string NOT NULL"), then only the first
+     * If the abstract type has two or more parts separated by spaces (such as "string NOT NULL"), then only the first
      * part will be converted, and the rest of the parts will be appended to the converted result.
      *
      * For example, 'string NOT NULL' is converted to 'varchar(255) NOT NULL'.
@@ -73,11 +73,11 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      *
      * If a type can't be found in {@see typeMap}, it will be returned without any change.
      *
-     * @param ColumnSchemaBuilderInterface|string $type Abstract column type.
+     * @param ColumnInterface|string $type Abstract column type.
      *
      * @return string Physical column type.
      */
-    public function getColumnType(ColumnSchemaBuilderInterface|string $type): string;
+    public function getColumnType(ColumnInterface|string $type): string;
 
     /**
      * Gets an object of {@see ExpressionBuilderInterface} that's suitable for $expression.

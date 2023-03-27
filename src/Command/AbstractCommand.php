@@ -30,15 +30,15 @@ use function stream_get_contents;
 use function strncmp;
 
 /**
- * Represents an SQL statement to be executed against a database.
+ * Represents an SQL statement to execute in a database.
  *
- * A command object is usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
+ * It's usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
  *
- * The SQL statement it represents can be set via the {@see sql} property.
+ * You can get the SQL statement it represents via the {@see getSql()} method.
  *
- * To execute a non-query SQL (such as INSERT, DELETE, UPDATE), call {@see execute()}.
+ * To execute a non-query SQL (such as `INSERT`, `DELETE`, `UPDATE`), call {@see execute()}.
  *
- * To execute a SQL statement that returns a result data set (such as SELECT), use {@see queryAll()}, {@see queryOne()},
+ * To execute a SQL statement that returns a result (such as `SELECT`), use {@see queryAll()}, {@see queryOne()},
  * {@see queryColumn()}, {@see queryScalar()}, or {@see query()}.
  *
  * For example,
@@ -47,18 +47,18 @@ use function strncmp;
  * $users = $connectionInterface->createCommand('SELECT * FROM user')->queryAll();
  * ```
  *
- * Abstract command supports SQL statement preparation and parameter binding.
+ * Abstract command supports SQL prepared statements and parameter binding.
  *
  * Call {@see bindValue()} to bind a value to a SQL parameter.
  * Call {@see bindParam()} to bind a PHP variable to a SQL parameter.
  *
  * When binding a parameter, the SQL statement is automatically prepared. You may also call {@see prepare()} explicitly
- * to prepare a SQL statement.
+ * to do it.
  *
- * Abstract command also supports building SQL statements by providing methods such as {@see insert()}, {@see update()},
+ * Abstract command supports building SQL statements using methods such as {@see insert()}, {@see update()},
  * etc.
  *
- * For example, the following code will create and execute an INSERT SQL statement:
+ * For example, the following code will create and execute an `INSERT` SQL statement:
  *
  * ```php
  * $connectionInterface->createCommand()->insert(
@@ -67,24 +67,68 @@ use function strncmp;
  * )->execute();
  * ```
  *
- * To build SELECT SQL statements, please use {@see QueryInterface} instead.
+ * To build `SELECT` SQL statements, please use {@see QueryInterface} instead.
  */
 abstract class AbstractCommand implements CommandInterface
 {
+    /**
+     * Command in this query mode returns count of affected rows.
+     *
+     * @see execute()
+     */
+    protected const QUERY_MODE_EXECUTE = 1;
+    /**
+     * Command in this query mode returns the first row of selected data.
+     *
+     * @see queryOne()
+     */
+    protected const QUERY_MODE_ROW = 2;
+    /**
+     * Command in this query mode returns all rows of selected data.
+     *
+     * @see queryAll()
+     */
+    protected const QUERY_MODE_ALL = 4;
+    /**
+     * Command in this query mode returns all rows with the first column of selected data.
+     *
+     * @see queryColumn()
+     */
+    protected const QUERY_MODE_COLUMN = 8;
+    /**
+     * Command in this query mode returns {@see DataReaderInterface}, an abstraction for database cursor for
+     * selected data.
+     *
+     * @see query()
+     */
+    protected const QUERY_MODE_CURSOR = 16;
+
     use LoggerAwareTrait;
     use ProfilerAwareTrait;
 
+    /**
+     * @var string|null Transaction isolation level.
+     */
     protected string|null $isolationLevel = null;
-    /** @psalm-var ParamInterface[] */
+    /**
+     * @var array Parameters to use.
+     *
+     * @psalm-var ParamInterface[]
+     */
     protected array $params = [];
+    /**
+     * @var string|null Name of the table to refresh schema for. Null means not to refresh the schema.
+     */
     protected string|null $refreshTableName = null;
     protected Closure|null $retryHandler = null;
-    /** @var string The SQL statement to be executed */
+    /**
+     * @var string The SQL statement to execute.
+     */
     private string $sql = '';
 
-    public function addCheck(string $name, string $table, string $expression): static
+    public function addCheck(string $table, string $name, string $expression): static
     {
-        $sql = $this->queryBuilder()->addCheck($name, $table, $expression);
+        $sql = $this->queryBuilder()->addCheck($table, $name, $expression);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -106,15 +150,15 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function addDefaultValue(string $name, string $table, string $column, mixed $value): static
+    public function addDefaultValue(string $table, string $name, string $column, mixed $value): static
     {
-        $sql = $this->queryBuilder()->addDefaultValue($name, $table, $column, $value);
+        $sql = $this->queryBuilder()->addDefaultValue($table, $name, $column, $value);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
     public function addForeignKey(
-        string $name,
         string $table,
+        string $name,
         array|string $columns,
         string $refTable,
         array|string $refColumns,
@@ -122,8 +166,8 @@ abstract class AbstractCommand implements CommandInterface
         string $update = null
     ): static {
         $sql = $this->queryBuilder()->addForeignKey(
-            $name,
             $table,
+            $name,
             $columns,
             $refTable,
             $refColumns,
@@ -133,15 +177,15 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function addPrimaryKey(string $name, string $table, array|string $columns): static
+    public function addPrimaryKey(string $table, string $name, array|string $columns): static
     {
-        $sql = $this->queryBuilder()->addPrimaryKey($name, $table, $columns);
+        $sql = $this->queryBuilder()->addPrimaryKey($table, $name, $columns);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function addUnique(string $name, string $table, array|string $columns): static
+    public function addUnique(string $table, string $name, array|string $columns): static
     {
-        $sql = $this->queryBuilder()->addUnique($name, $table, $columns);
+        $sql = $this->queryBuilder()->addUnique($table, $name, $columns);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -182,13 +226,13 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     public function createIndex(
-        string $name,
         string $table,
+        string $name,
         array|string $columns,
         string $indexType = null,
         string $indexMethod = null
     ): static {
-        $sql = $this->queryBuilder()->createIndex($name, $table, $columns, $indexType, $indexMethod);
+        $sql = $this->queryBuilder()->createIndex($table, $name, $columns, $indexType, $indexMethod);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -210,9 +254,9 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function dropCheck(string $name, string $table): static
+    public function dropCheck(string $table, string $name): static
     {
-        $sql = $this->queryBuilder()->dropCheck($name, $table);
+        $sql = $this->queryBuilder()->dropCheck($table, $name);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -234,27 +278,27 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropDefaultValue(string $name, string $table): static
+    public function dropDefaultValue(string $table, string $name): static
     {
-        $sql = $this->queryBuilder()->dropDefaultValue($name, $table);
+        $sql = $this->queryBuilder()->dropDefaultValue($table, $name);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropForeignKey(string $name, string $table): static
+    public function dropForeignKey(string $table, string $name): static
     {
-        $sql = $this->queryBuilder()->dropForeignKey($name, $table);
+        $sql = $this->queryBuilder()->dropForeignKey($table, $name);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropIndex(string $name, string $table): static
+    public function dropIndex(string $table, string $name): static
     {
-        $sql = $this->queryBuilder()->dropIndex($name, $table);
+        $sql = $this->queryBuilder()->dropIndex($table, $name);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropPrimaryKey(string $name, string $table): static
+    public function dropPrimaryKey(string $table, string $name): static
     {
-        $sql = $this->queryBuilder()->dropPrimaryKey($name, $table);
+        $sql = $this->queryBuilder()->dropPrimaryKey($table, $name);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -264,9 +308,9 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropUnique(string $name, string $table): static
+    public function dropUnique(string $table, string $name): static
     {
-        $sql = $this->queryBuilder()->dropUnique($name, $table);
+        $sql = $this->queryBuilder()->dropUnique($table, $name);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -328,7 +372,7 @@ abstract class AbstractCommand implements CommandInterface
         if (!isset($params[0])) {
             return preg_replace_callback('#(:\w+)#', static function (array $matches) use ($params): string {
                 $m = $matches[1];
-                return (string) ($params[$m] ?? $m);
+                return (string)($params[$m] ?? $m);
             }, $this->sql);
         }
 
@@ -336,7 +380,7 @@ abstract class AbstractCommand implements CommandInterface
         $sql = '';
 
         foreach (explode('?', $this->sql) as $i => $part) {
-            $sql .= $part . (string) ($params[$i] ?? '');
+            $sql .= $part . (string)($params[$i] ?? '');
         }
 
         return $sql;
@@ -496,7 +540,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * Returns the query result.
      *
-     * @param int $queryMode One from modes QUERY_MODE_*.
+     * @param int $queryMode Query mode, `QUERY_MODE_*`.
      *
      * @throws Exception
      * @throws Throwable
@@ -513,14 +557,21 @@ abstract class AbstractCommand implements CommandInterface
      */
     abstract protected function internalExecute(string|null $rawSql): void;
 
+    /**
+     * Check if the value has a given flag.
+     *
+     * @param int $value Flags value to check.
+     * @param int $flag Flag to look for in the value.
+     *
+     * @return bool Whether the value has a given flag.
+     */
     protected function is(int $value, int $flag): bool
     {
         return ($value & $flag) === $flag;
     }
 
     /**
-     * Logs the current database query if query logging is enabled and returns the profiling token if profiling is
-     * enabled.
+     * Logs the current database query if query logging is on and returns the profiling token if profiling is on.
      */
     protected function logQuery(string $rawSql, string $category): void
     {
@@ -530,7 +581,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * The method is called after the query is executed.
      *
-     * @param int $queryMode One from modes QUERY_MODE_*.
+     * @param int $queryMode Query mode, `QUERY_MODE_*`.
      *
      * @throws Exception
      * @throws Throwable
@@ -584,7 +635,7 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Marks the command to be executed in transaction.
+     * Marks the command to execute in transaction.
      *
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      *

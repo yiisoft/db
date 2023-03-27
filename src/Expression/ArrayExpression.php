@@ -58,7 +58,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     }
 
     /**
-     * @return int The number of indices needed to select an element
+     * @return int The number of indices needed to select an element.
      */
     public function getDimension(): int
     {
@@ -68,7 +68,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     /**
      * Whether an offset exists.
      *
-     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+     * @link https://php.net/manual/en/arrayaccess.offsetexists.php
      *
      * @param mixed $offset An offset to check for.
      *
@@ -86,7 +86,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     /**
      * Offset to retrieve.
      *
-     * @link http://php.net/manual/en/arrayaccess.offsetget.php
+     * @link https://php.net/manual/en/arrayaccess.offsetget.php
      *
      * @param mixed $offset The offset to retrieve.
      *
@@ -104,7 +104,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     /**
      * Offset to set.
      *
-     * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     * @link https://php.net/manual/en/arrayaccess.offsetset.php
      *
      * @param mixed $offset The offset to assign the value to.
      * @param mixed $value The value to set.
@@ -123,7 +123,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @throws InvalidConfigException If offset isn't an integer.
      *
-     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+     * @link https://php.net/manual/en/arrayaccess.offsetunset.php
      */
     public function offsetUnset(mixed $offset): void
     {
@@ -135,7 +135,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     /**
      * Count elements of an object.
      *
-     * @link http://php.net/manual/en/countable.count.php
+     * @link https://php.net/manual/en/countable.count.php
      *
      * @return int The custom count as an integer.
      */
@@ -147,7 +147,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     /**
      * Retrieve an external iterator.
      *
-     * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
+     * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
      *
      * @throws InvalidConfigException If value isn't an array.
      *

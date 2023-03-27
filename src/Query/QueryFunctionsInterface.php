@@ -9,12 +9,10 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
 /**
- * This defines an interface for query functions.
- *
- * A query function is a function that can be called in a query to perform some operation on the data being selected or
+ * A query function is a function that's called in a query to perform operation on the data selected or
  * updated.
  *
- * Examples of query functions might include `COUNT()`, `SUM()`, `AVG()`, and `MAX()`.
+ * Examples of query functions might include {@see count()}, {@see sum()}, {@see average()}, and {@see max()}.
  */
 interface QueryFunctionsInterface
 {
@@ -34,7 +32,7 @@ interface QueryFunctionsInterface
     /**
      * Returns the number of records.
      *
-     * @param string $q The COUNT expression. Defaults to '*'.
+     * @param string $q The `COUNT` expression. Defaults to '*'.
      *
      * @throws Exception
      * @throws InvalidConfigException

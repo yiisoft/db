@@ -6,8 +6,9 @@ namespace Yiisoft\Db\Cache;
 
 use DateInterval;
 use Psr\SimpleCache\CacheInterface;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidCallException;
+use Psr\SimpleCache\InvalidArgumentException;
+use RuntimeException;
+use Yiisoft\Db\Exception\PsrInvalidArgumentException;
 
 use function in_array;
 use function is_int;
@@ -23,11 +24,11 @@ use function strpbrk;
  *
  * The {@see \Yiisoft\Db\Schema\AbstractSchema} retrieves information about the database schema from the database server
  * and stores it in the cache for faster access. When the {@see \Yiisoft\Db\Schema\AbstractSchema} needs to retrieve
- * information about the database schema, it first checks the cache using the {@see SchemaCache}. If the information is
+ * information about the database schema, it first checks the cache using {@see SchemaCache}. If the information is
  * not in the cache, the Schema retrieves it from the database server and stores it in the cache using the
  * {@see SchemaCache}.
  *
- * This implementation is used by {@see \Yiisoft\Db\Schema\AbstractSchema} to cache table metadata.
+ * {@see \Yiisoft\Db\Schema\AbstractSchema} uses this implementation to cache table metadata.
  */
 final class SchemaCache
 {
@@ -35,6 +36,11 @@ final class SchemaCache
     private bool $enabled = true;
     private array $exclude = [];
 
+    /**
+     * @param CacheInterface $psrCache PSR-16 cache implementation to use.
+     *
+     * @link https://www.php-fig.org/psr/psr-16/
+     */
     public function __construct(private CacheInterface $psrCache)
     {
     }
@@ -42,10 +48,9 @@ final class SchemaCache
     /**
      * Remove a value with the specified key from cache.
      *
-     * @param mixed $key A key identifying the value to be deleted from cache.
+     * @param mixed $key A key identifying the value to delete from cache.
      *
      * @throws InvalidArgumentException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function remove(mixed $key): void
     {
@@ -54,9 +59,20 @@ final class SchemaCache
     }
 
     /**
-     * @throws InvalidArgumentException
-     * @throws InvalidCallException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * The method combines retrieving and setting the value identified by the `$key`.
+     *
+     * It will save the result of `$callable` execution if there is no cache available for the `$key`.
+     *
+     * @param mixed $key The key identifying the value to cache.
+     * @param mixed $value The value to cache.
+     * @param DateInterval|int|null $ttl The TTL of this value. If not set, it uses the default value of
+     * the PSR cache implementation.
+     * @param string|null $cacheTag Tag name to tag cache with.
+     *
+     * @throws InvalidArgumentException Thrown if the `$key` or `$ttl` isn't a legal value.
+     * @throws RuntimeException If cache value isn't set.
+     *
+     * @return mixed Result of `$callable` execution.
      */
     public function getOrSet(
         mixed $key,
@@ -77,13 +93,18 @@ final class SchemaCache
             return $value;
         }
 
-        throw new InvalidCallException('Cache value not set.');
+        throw new RuntimeException('Cache value not set.');
     }
 
     /**
-     * @throws InvalidArgumentException
-     * @throws InvalidCallException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.
+     *
+     * @param mixed $key The key of the item to store.
+     * @param mixed $value The value of the item to store.
+     * @param DateInterval|int|null $ttl Optional. Default is to use underlying PSR implementation value.
+     *
+     * @throws InvalidArgumentException If the $key string isn't a legal value.
+     * @throws RuntimeException If cache value isn't set.
      */
     public function set(
         mixed $key,
@@ -106,7 +127,7 @@ final class SchemaCache
     /**
      * @param string $value The table name.
      *
-     * @return bool Whether the table is excluded from caching.
+     * @return bool Whether to exclude the table from caching.
      */
     public function isExcluded(string $value): bool
     {
@@ -114,11 +135,11 @@ final class SchemaCache
     }
 
     /**
-     * Invalidates all the cached values that are associated with any of the specified.
+     * Invalidates all the cached values associated with any of the specified tags.
      *
-     * @param string $cacheTag The cache tag used to identify the values to be invalidated.
+     * @param string $cacheTag The cache tag used to identify the values to invalidate.
      *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function invalidate(string $cacheTag): void
     {
@@ -145,8 +166,6 @@ final class SchemaCache
     /**
      * Whether to enable schema caching.
      *
-     * Note that to enable truly schema caching, a valid cache part as specified must be enabled and must be set true.
-     *
      * @param bool $value Whether to enable schema caching.
      *
      * @see setDuration()
@@ -171,7 +190,7 @@ final class SchemaCache
     }
 
     /**
-     * List of tables whose metadata shouldn't be cached.
+     * List of tables not to cache metadata for.
      *
      * Defaults to an empty array. The table names may contain schema prefix, if any. Don't quote the table names.
      *
@@ -190,11 +209,11 @@ final class SchemaCache
      * If the given key is a string that doesn't contain characters `{}()/\@:` and no more than 64 characters, then the
      * key will be returned back as it's, integers will be converted to strings.
      *
-     * Otherwise, a normalized key is generated by serializing the given key and applying MD5 hashing.
+     * Otherwise, a normalized key is generated by encoding the given key into JSON and applying MD5 hashing.
      *
      * @link https://www.php-fig.org/psr/psr-16/#12-definitions
      *
-     * @param mixed $key The key to be normalized.
+     * @param mixed $key A key to normalize.
      *
      * @throws InvalidArgumentException For invalid key.
      *
@@ -203,7 +222,7 @@ final class SchemaCache
     private function normalize(mixed $key): string
     {
         if (is_string($key) || is_int($key)) {
-            $key = (string) $key;
+            $key = (string)$key;
             $length = mb_strlen($key, '8bit');
             return (strpbrk($key, '{}()/\@:') || $length < 1 || $length > 64) ? md5($key) : $key;
         }
@@ -211,7 +230,7 @@ final class SchemaCache
         $key = json_encode($key);
 
         if (!$key) {
-            throw new InvalidArgumentException('Invalid key. ' . json_last_error_msg());
+            throw new PsrInvalidArgumentException('Invalid key. ' . json_last_error_msg());
         }
 
         return md5($key);
@@ -220,7 +239,7 @@ final class SchemaCache
     /**
      * Add key to tag. If tag is empty, do nothing.
      *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     private function addToTag(string $key, string $cacheTag = null): void
     {
