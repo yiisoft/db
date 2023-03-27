@@ -69,10 +69,10 @@ final class SchemaCache
      * the PSR cache implementation.
      * @param string|null $cacheTag Tag name to tag cache with.
      *
-     * @return mixed Result of `$callable` execution.
-     *
      * @throws InvalidArgumentException Thrown if the `$key` or `$ttl` isn't a legal value.
      * @throws RuntimeException If cache value isn't set.
+     *
+     * @return mixed Result of `$callable` execution.
      */
     public function getOrSet(
         mixed $key,
