@@ -1,13 +1,17 @@
 # Query builder
 
-Built on top of [Yii DB](https://github.com/yiisoft/db), query builder allows you to construct an **SQL query** in a programmatic and **DBMS-agnostic** way.
+Built on top of [Yii DB](https://github.com/yiisoft/db), query builder allows you to construct an SQL query
+in a programmatic and DBMS-agnostic way.
 
-Compared to writing **raw SQL statements**, using query builder will help you write more readable **SQL-related** code and generate more secure **SQL statements**.
+Compared to writing raw SQL statements, using query builder will help you write more readable SQL-related code
+and generate more secure SQL statements.
 
 Using a query builder usually involves two steps:
 
-1. Build a `Yiisoft\Db\Query\Query` class to represent different parts (e.g. `SELECT`, `FROM`) of a `SELECT` **SQL statement**.
-2. Execute a **query method** for example, `all()`, `one()`, `scalar()`, `column()`, `query()` of `Yiisoft\Db\Query\Query` to retrieve data from the database.
+1. Build a `Yiisoft\Db\Query\Query` class to represent different parts (such as `SELECT`, `FROM`) of a `SELECT`
+   SQL statement.
+2. Execute a **query method** for example, `all()`, `one()`, `scalar()`, `column()`, `query()` of
+   `Yiisoft\Db\Query\Query` to retrieve data from the database.
 
 The following code shows a typical way of using a query builder.
 
@@ -29,7 +33,8 @@ $rows = (new Query($db))
     ->all();
 ```
 
-The above code generates and executes the following SQL query, where the `:last_name` parameter is bound with the string 'Smith'.
+The above code generates and executes the following SQL query, where the `:last_name` parameter is bound with
+the string 'Smith'.
 
 ```sql
 SELECT `id`, `email` 
@@ -38,8 +43,11 @@ WHERE `last_name` = :last_name
 LIMIT 10
 ```
 
-**Info:** *You usually mainly work with `Yiisoft\Db\Query\Query` instead of `Yiisoft\Db\QueryBuilder\QueryBuilder`. The latter is invoked by the former implicitly when you call one of the query methods. `Yiisoft\Db\QueryBuilder\QueryBuilder` is the class responsible for generating DBMS-dependent SQL statements (e.g. `SELECT`, `FROM`, `WHERE`, `ORDERBY`) from `Yiisoft\Db\Query\Query`.*
+> Info: You usually mainly work with `Yiisoft\Db\Query\Query` instead of `Yiisoft\Db\QueryBuilder\QueryBuilder`.
+> The former invokes the latter implicitly when you call one of the query methods.
+> `Yiisoft\Db\QueryBuilder\QueryBuilder` is the class responsible for generating DBMS-dependent SQL statements such as
+> `SELECT`, `FROM`, `WHERE`, `ORDERBY` from `Yiisoft\Db\Query\Query`.
 
-## Using 
+## Usage
 
-- [Building a queries](/docs/en/query-builder/building-queries.md).
+- [Building queries](/docs/en/query-builder/building-queries.md).
