@@ -24,9 +24,9 @@ use function preg_split;
 abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
 {
     public function __construct(
-        private QueryBuilderInterface $queryBuilder,
-        private QuoterInterface $quoter,
-        private SchemaInterface $schema
+        protected QueryBuilderInterface $queryBuilder,
+        protected QuoterInterface $quoter,
+        protected SchemaInterface $schema
     ) {
     }
 
