@@ -100,7 +100,7 @@ final class SchemaCache
     /**
      * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.
      *
-     * @param string $key The key of the item to store.
+     * @param mixed $key The key of the item to store.
      * @param mixed $value The value of the item to store.
      * @param DateInterval|int|null $ttl Optional. Default is to use underlying PSR implementation value.
      *
