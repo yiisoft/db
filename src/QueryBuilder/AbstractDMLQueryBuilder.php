@@ -46,9 +46,9 @@ use function sort;
 abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 {
     public function __construct(
-        private QueryBuilderInterface $queryBuilder,
-        private QuoterInterface $quoter,
-        private SchemaInterface $schema
+        protected QueryBuilderInterface $queryBuilder,
+        protected QuoterInterface $quoter,
+        protected SchemaInterface $schema
     ) {
     }
 
