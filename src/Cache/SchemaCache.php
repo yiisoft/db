@@ -6,8 +6,9 @@ namespace Yiisoft\Db\Cache;
 
 use DateInterval;
 use Psr\SimpleCache\CacheInterface;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidCallException;
+use Psr\SimpleCache\InvalidArgumentException;
+use RuntimeException;
+use Yiisoft\Db\Exception\PsrInvalidArgumentException;
 
 use function in_array;
 use function is_int;
@@ -50,7 +51,6 @@ final class SchemaCache
      * @param mixed $key A key identifying the value to delete from cache.
      *
      * @throws InvalidArgumentException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function remove(mixed $key): void
     {
@@ -69,11 +69,10 @@ final class SchemaCache
      * the PSR cache implementation.
      * @param string|null $cacheTag Tag name to tag cache with.
      *
-     * @throws InvalidArgumentException
-     * @throws InvalidCallException If cache value isn't set.
-     * @throws \Psr\SimpleCache\InvalidArgumentException Thrown if the `$key` or `$ttl` isn't a legal value.
-     *
      * @return mixed Result of `$callable` execution.
+     *
+     * @throws InvalidArgumentException Thrown if the `$key` or `$ttl` isn't a legal value.
+     * @throws RuntimeException If cache value isn't set.
      */
     public function getOrSet(
         mixed $key,
@@ -94,7 +93,7 @@ final class SchemaCache
             return $value;
         }
 
-        throw new InvalidCallException('Cache value not set.');
+        throw new RuntimeException('Cache value not set.');
     }
 
     /**
@@ -105,8 +104,7 @@ final class SchemaCache
      * @param DateInterval|int|null $ttl Optional. Default is to use underlying PSR implementation value.
      *
      * @throws InvalidArgumentException If the $key string isn't a legal value.
-     * @throws InvalidCallException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws RuntimeException If cache value isn't set.
      */
     public function set(
         mixed $key,
@@ -141,7 +139,7 @@ final class SchemaCache
      *
      * @param string $cacheTag The cache tag used to identify the values to invalidate.
      *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function invalidate(string $cacheTag): void
     {
@@ -232,7 +230,7 @@ final class SchemaCache
         $key = json_encode($key);
 
         if (!$key) {
-            throw new InvalidArgumentException('Invalid key. ' . json_last_error_msg());
+            throw new PsrInvalidArgumentException('Invalid key. ' . json_last_error_msg());
         }
 
         return md5($key);
@@ -241,7 +239,7 @@ final class SchemaCache
     /**
      * Add key to tag. If tag is empty, do nothing.
      *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     private function addToTag(string $key, string $cacheTag = null): void
     {

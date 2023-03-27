@@ -10,7 +10,6 @@ use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
-use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 use function array_change_key_case;
@@ -162,9 +161,7 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
      * @throws NotSupportedException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata for check constraints.
      */
@@ -175,9 +172,7 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
      * @throws NotSupportedException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata for default values constraints.
      */
@@ -188,9 +183,7 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
      * @throws NotSupportedException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata for foreign keys constraints.
      */
@@ -201,9 +194,7 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
      * @throws NotSupportedException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata for indexes constraints.
      */
@@ -228,9 +219,7 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
      * @throws NotSupportedException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata for primary keys constraints.
      */
@@ -241,9 +230,7 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
      * @throws NotSupportedException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata for unique constraints.
      */
@@ -254,8 +241,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata for table checks constraints.
      */
@@ -267,9 +252,7 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * @throws InvalidCallException
      * @throws InvalidArgumentException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata for table default values constraints.
      */
@@ -282,8 +265,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata for table foreign keys constraints.
      */
@@ -296,8 +277,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata for table indexes constraints.
      */
@@ -323,9 +302,7 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * @throws InvalidCallException
      * @throws InvalidArgumentException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return Constraint|null The metadata for table primary key constraint.
      */
@@ -338,8 +315,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return TableSchemaInterface|null The table schema information. Null if the named table doesn't exist.
      */
@@ -353,8 +328,6 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * @throws NotSupportedException
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The list of table schemas in the database.
      */
@@ -367,9 +340,7 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * @throws InvalidCallException
      * @throws InvalidArgumentException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata for table unique constraints.
      */
@@ -402,7 +373,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      */
     public function refreshTableSchema(string $name): void
     {
@@ -505,9 +475,7 @@ abstract class AbstractSchema implements SchemaInterface
      * returned if available.
      *
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
      * @throws NotSupportedException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return array The metadata of the given type for all tables in the given schema.
      */
@@ -542,9 +510,7 @@ abstract class AbstractSchema implements SchemaInterface
      * @param string $type The metadata type.
      * @param bool $refresh whether to reload the table metadata even if it's found in the cache.
      *
-     * @throws InvalidCallException
      * @throws InvalidArgumentException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      *
      * @return mixed The metadata of the given type for the given table.
      */
@@ -587,8 +553,6 @@ abstract class AbstractSchema implements SchemaInterface
      * This method returns the desired metadata type for table name (with refresh if needed).
      *
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      */
     protected function getTableTypeMetadata(
         string $type,
@@ -656,9 +620,7 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * Tries to load and populate table metadata from cache.
      *
-     * @throws InvalidCallException
      * @throws InvalidArgumentException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      */
     private function loadTableMetadataFromCache(string $rawName): void
     {
@@ -691,8 +653,6 @@ abstract class AbstractSchema implements SchemaInterface
      * Saves table metadata to cache.
      *
      * @throws InvalidArgumentException
-     * @throws InvalidCallException
-     * @throws \Yiisoft\Db\Exception\InvalidArgumentException
      */
     private function saveTableMetadataToCache(string $rawName): void
     {
