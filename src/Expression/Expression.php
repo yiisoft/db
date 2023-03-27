@@ -38,7 +38,7 @@ class Expression implements ExpressionInterface, Stringable
     }
 
     /**
-     * @return array List of parameters that should be bound for this expression. The keys are placeholders appearing in
+     * @return array List of parameters to bind to this expression. The keys are placeholders appearing in
      * {@see expression} and the values are the corresponding parameter values.
      */
     public function getParams(): array

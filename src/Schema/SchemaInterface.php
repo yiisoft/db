@@ -96,7 +96,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Determines the PDO type for the given PHP data value.
      *
-     * @param mixed $data The data whose PDO type is to be determined
+     * @param mixed $data The data to find PDO type for.
      *
      * @return int The PDO type.
      *
@@ -110,7 +110,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * This method will strip off curly brackets from the given table name and replace the percentage character '%' with
      * {@see ConnectionInterface::tablePrefix}.
      *
-     * @param string $name The table name to be converted.
+     * @param string $name The table name to convert.
      *
      * @return string The real name of the given table name.
      */
@@ -119,7 +119,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Returns all schema names in the database, except system schemas.
      *
-     * @param bool $refresh Whether to fetch the latest available schema names. If this is false, schema names fetched
+     * @param bool $refresh Whether to fetch the latest available schema names. If this is `false`, schema names fetched
      * before (if available) will be returned.
      *
      * @throws NotSupportedException
@@ -134,7 +134,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
      * name.
      * If not empty, the returned table names will be prefixed with the schema name.
-     * @param bool $refresh Whether to fetch the latest available table names. If this is false, table names fetched
+     * @param bool $refresh Whether to fetch the latest available table names. If this is `false`, table names fetched
      * before (if available) will be returned.
      *
      * @throws NotSupportedException
@@ -219,7 +219,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function refreshTableSchema(string $name): void;
 
     /**
-     * Allows you to enable and disable the schema cache.
+     * Enable and disable the schema cache.
      *
      * @param bool $value Whether to enable or disable the schema cache.
      */

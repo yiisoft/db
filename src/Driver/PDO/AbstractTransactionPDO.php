@@ -26,7 +26,7 @@ use Yiisoft\Db\Transaction\TransactionInterface;
  * try {
  *     $connection->createCommand($sql1)->execute();
  *     $connection->createCommand($sql2)->execute();
- *     //.... other SQL executions
+ *     // ... other SQL executions
  *     $transaction->commit();
  * } catch (\Throwable $e) {
  *     $transaction->rollBack();
@@ -117,7 +117,7 @@ abstract class AbstractTransactionPDO implements TransactionInterface
 
     public function isActive(): bool
     {
-        /** Additional check pdo->inTransaction {@link https://github.com/yiisoft/yii2/pull/18407/} */
+        /** Extra check pdo->inTransaction {@link https://github.com/yiisoft/yii2/pull/18407/} */
         return $this->level > 0 && $this->db->isActive() && $this->db->getPDO()?->inTransaction();
     }
 

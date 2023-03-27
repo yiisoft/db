@@ -19,7 +19,7 @@ use function strrpos;
 use function substr;
 
 /**
- * Short implementation of ArrayHelper from Yii2.
+ * Array manipulation methods.
  */
 final class ArrayHelper
 {

@@ -58,7 +58,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
     }
 
     /**
-     * @return int The number of indices needed to select an element
+     * @return int The number of indices needed to select an element.
      */
     public function getDimension(): int
     {

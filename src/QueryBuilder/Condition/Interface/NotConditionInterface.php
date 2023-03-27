@@ -12,7 +12,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 interface NotConditionInterface extends ConditionInterface
 {
     /**
-     * @return array|ExpressionInterface|string|null the condition to be negated.
+     * @return array|ExpressionInterface|string|null the condition to negate.
      */
     public function getCondition(): ExpressionInterface|array|null|string;
 }

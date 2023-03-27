@@ -60,7 +60,7 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * - `money`: money type, will be converted into "decimal(19,4)"
      * - `binary`: binary data type, will be converted into "blob"
      *
-     * If the abstract type has two or more parts separated by spaces (e.g. "string NOT NULL"), then only the first
+     * If the abstract type has two or more parts separated by spaces (such as "string NOT NULL"), then only the first
      * part will be converted, and the rest of the parts will be appended to the converted result.
      *
      * For example, 'string NOT NULL' is converted to 'varchar(255) NOT NULL'.

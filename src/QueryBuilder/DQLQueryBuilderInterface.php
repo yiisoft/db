@@ -25,7 +25,7 @@ interface DQLQueryBuilderInterface
      *
      * @param QueryInterface $query The {@see \Yiisoft\Db\Query\Query} object from which the SQL statement will
      * generated.
-     * @param array $params The parameters to be bound to the generated SQL statement.
+     * @param array $params The parameters to bind to the generated SQL statement.
      * These parameters will be included in the result, with the more parameters generated during the query building
      * process.
      *
@@ -34,7 +34,7 @@ interface DQLQueryBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      *
-     * @return array The generated SQL statement (the first array element) and the corresponding parameters to be bound
+     * @return array The generated SQL statement (the first array element) and the corresponding parameters to bind
      * to the SQL statement (the second array element). The parameters returned include those provided in `$params`.
      *
      * @psalm-return array{0: string, 1: array}
@@ -46,7 +46,7 @@ interface DQLQueryBuilderInterface
      *
      * It will join all columns into a string with comma as separators.
      *
-     * @param array|string $columns The columns to be processed.
+     * @param array|string $columns The columns to process.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -58,7 +58,7 @@ interface DQLQueryBuilderInterface
      *
      * @param array|ExpressionInterface|string|null $condition The condition specification.
      * Please refer to {@see \Yiisoft\Db\Query\Query::where()} on how to specify a condition.
-     * @param array $params The binding parameters to be populated.
+     * @param array $params The binding parameters to populate.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -70,8 +70,8 @@ interface DQLQueryBuilderInterface
     /**
      * Builds given $expression.
      *
-     * @param ExpressionInterface $expression The expression to be built.
-     * @param array $params The parameters to be bound to the generated SQL statement.
+     * @param ExpressionInterface $expression The expression to build.
+     * @param array $params The parameters to bind to the generated SQL statement.
      * These parameters will be included in the result with the more parameters generated during the expression building
      * process.
      *
@@ -89,8 +89,8 @@ interface DQLQueryBuilderInterface
     public function buildExpression(ExpressionInterface $expression, array &$params = []): string;
 
     /**
-     * @param array|null $tables The tables to be processed.
-     * @param array $params The binding parameters to be populated.
+     * @param array|null $tables The tables to process.
+     * @param array $params The binding parameters to populate.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -101,10 +101,10 @@ interface DQLQueryBuilderInterface
     public function buildFrom(array|null $tables, array &$params): string;
 
     /**
-     * @param array $columns The columns to be grouped by.
+     * @param array $columns The columns to group by.
      * Each column can be a string representing a column name or an array representing a column specification.
      * Please refer to {@see Query::groupBy()} on how to specify this parameter.
-     * @param array $params The binding parameters to be populated.
+     * @param array $params The binding parameters to populate.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -115,7 +115,7 @@ interface DQLQueryBuilderInterface
 
     /**
      * @param array|ExpressionInterface|string|null $condition The condition specification.
-     * @param array $params The binding parameters to be populated.
+     * @param array $params The binding parameters to populate.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -127,8 +127,8 @@ interface DQLQueryBuilderInterface
     public function buildHaving(array|ExpressionInterface|string|null $condition, array &$params = []): string;
 
     /**
-     * @param array $joins The joins to be processed.
-     * @param array $params The binding parameters to be populated.
+     * @param array $joins The joins to process.
+     * @param array $params The binding parameters to populate.
      *
      * @throws Exception If the `$joins` parameter isn't in proper format.
      *
@@ -152,10 +152,10 @@ interface DQLQueryBuilderInterface
     public function buildLimit(ExpressionInterface|int|null $limit, ExpressionInterface|int|null $offset): string;
 
     /**
-     * @param array $columns The columns to be ordered by.
+     * @param array $columns The columns to order by.
      * Each column can be a string representing a column name or an array representing a column specification.
      * Please refer to {@see Query::orderBy()} on how to specify this parameter.
-     * @param array $params The binding parameters to be populated.
+     * @param array $params The binding parameters to populate.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -174,7 +174,7 @@ interface DQLQueryBuilderInterface
      * {@see \Yiisoft\Db\Query\Query::limit()} For more details.
      * @param ExpressionInterface|int|null $offset The offset number.
      * {@see \Yiisoft\Db\Query\Query::offset()} For more details.
-     * @param array $params The binding parameters to be populated.
+     * @param array $params The binding parameters to populate.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -190,10 +190,10 @@ interface DQLQueryBuilderInterface
     ): string;
 
     /**
-     * @param array $columns The columns to be selected.
+     * @param array $columns The columns to select.
      * Each column can be a string representing a column name or an array representing a column specification.
      * Please refer to {@see \Yiisoft\Db\Query\Query::select()} on how to specify this parameter.
-     * @param array $params The binding parameters to be populated.
+     * @param array $params The binding parameters to populate.
      * @param bool|null $distinct  Whether to add `DISTINCT` or not.
      * @param string|null $selectOption The `SELECT` option to use (for example, `SQL_CALC_FOUND_ROWS`).
      *
@@ -212,8 +212,8 @@ interface DQLQueryBuilderInterface
     ): string;
 
     /**
-     * @param array $unions The UNION queries to be processed.
-     * @param array $params The binding parameters to be populated
+     * @param array $unions The `UNION` queries to process.
+     * @param array $params The binding parameters to populate.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -227,7 +227,7 @@ interface DQLQueryBuilderInterface
     /**
      * @param array|ConditionInterface|ExpressionInterface|string|null $condition The condition built from
      * {@see \Yiisoft\Db\Query\Query::where()}.
-     * @param array $params The binding parameters to be populated.
+     * @param array $params The binding parameters to populate.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -242,8 +242,8 @@ interface DQLQueryBuilderInterface
     ): string;
 
     /**
-     * @param array $withs The `WITH` queries to be processed.
-     * @param array $params The binding parameters to be populated
+     * @param array $withs The `WITH` queries to process.
+     * @param array $params The binding parameters to populate.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -298,7 +298,7 @@ interface DQLQueryBuilderInterface
     /**
      * Setter for {@see AbstractDQLQueryBuilder::expressionBuilders} property.
      *
-     * @param string[] $builders Array of builders that should be merged with the pre-defined ones in property.
+     * @param string[] $builders Array of builders to merge with the pre-defined ones in property.
      *
      * @psalm-param array<string, class-string<ExpressionBuilderInterface>> $builders
      */

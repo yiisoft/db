@@ -127,7 +127,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Builds `$values` to be used in {@see InCondition}.
+     * Builds `$values` to use in {@see InCondition}.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -180,7 +180,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for composite IN condition.
+     * Build SQL for composite `IN` condition.
      *
      * @throws Exception
      * @throws InvalidArgumentException

@@ -56,9 +56,9 @@ final class BetweenCondition implements BetweenConditionInterface
     }
 
     /**
-     * Validates the given column to be string or ExpressionInterface.
+     * Validates the given column to be string or `ExpressionInterface`.
      *
-     * @throws InvalidArgumentException If the column isn't a string or ExpressionInterface.
+     * @throws InvalidArgumentException If the column isn't a string or `ExpressionInterface`.
      */
     private static function validateColumn(string $operator, mixed $column): string|ExpressionInterface
     {

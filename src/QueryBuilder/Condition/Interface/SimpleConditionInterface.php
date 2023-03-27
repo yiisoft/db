@@ -18,12 +18,12 @@ interface SimpleConditionInterface extends ConditionInterface
     public function getColumn(): string|ExpressionInterface;
 
     /**
-     * @return string The operator to use. Anything could be used e.g. `>`, `<=`, etc.
+     * @return string The operator to use such as `>` or `<=`.
      */
     public function getOperator(): string;
 
     /**
-     * @return mixed The value to the right of the {@see operator}.
+     * @return mixed The value to the right of {@see operator}.
      */
     public function getValue(): mixed;
 }

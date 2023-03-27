@@ -16,7 +16,7 @@ interface ProfilerInterface
      *
      * There should be a matching call to {@see end()} with the same category name.
      *
-     * The `begin()` and `end()` calls must also be properly nested.
+     * You must also properly nest the `begin()` and `end()` calls.
      *
      * @param string $token Token for the code block.
      * @param array|ContextInterface $context The context data of this profile block.
@@ -28,7 +28,7 @@ interface ProfilerInterface
      *
      * There should be a matching call to {@see begin()} with the same category name.
      *
-     * The `begin()` and `end()` calls must also be properly nested.
+     * You must also properly nest the `begin()` and `end()` calls.
      *
      * @param string $token Token for the code block.
      * @param array|ContextInterface $context The context data of this profile block.

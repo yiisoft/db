@@ -56,9 +56,9 @@ final class InCondition implements InConditionInterface
     }
 
     /**
-     * Validates the given column to be string, array or ExpressionInterface.
+     * Validates the given column to be `string`, `array` or `ExpressionInterface`.
      *
-     * @throws InvalidArgumentException If the column isn't a string, array or ExpressionInterface.
+     * @throws InvalidArgumentException If the column isn't a `string`, `array` or `ExpressionInterface`.
      */
     private static function validateColumn(string $operator, mixed $column): array|string|Iterator|ExpressionInterface
     {
@@ -70,9 +70,9 @@ final class InCondition implements InConditionInterface
     }
 
     /**
-     * Validates the given values to be arrayed, Iterator, int or QueryInterface.
+     * Validates the given values to be `array`, `Iterator`, `int` or `QueryInterface`.
      *
-     * @throws InvalidArgumentException If the values aren't an array, Iterator, int or QueryInterface.
+     * @throws InvalidArgumentException If the values aren't an `array`, `Iterator`, `int` or `QueryInterface`.
      */
     private static function validateValues(string $operator, mixed $values): int|iterable|Iterator|QueryInterface
     {

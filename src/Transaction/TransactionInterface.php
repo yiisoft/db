@@ -108,7 +108,7 @@ interface TransactionInterface extends LoggerAwareInterface
     /**
      * Sets the transaction isolation level for this transaction.
      *
-     * This method can be used to set the isolation level while the transaction is already active.
+     * You can use this method to set the isolation level while the transaction is already active.
      * However, this isn't supported by all DBMS, so you might rather specify the isolation level directly when calling
      * {@see begin()}.
      *

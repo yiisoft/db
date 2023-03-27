@@ -24,8 +24,7 @@ use function substr;
  * It provides a set of methods for quoting different types of names, such as table names, column names, and schema
  * names.
  *
- * The Quoter class is used by {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} to quote names that need to be
- * quoted.
+ * The Quoter class is used by {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} to quote names.
  *
  * It's also used by {@see \Yiisoft\Db\Command\AbstractCommand} to quote names in SQL statements before passing them to
  * database servers.
