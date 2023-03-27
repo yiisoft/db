@@ -55,14 +55,14 @@ final class UuidHelperTest extends TestCase
         $this->assertEquals($expected, $uuid);
     }
 
-    public function successUuids(): array
+    public static function successUuids(): array
     {
         return [
             ['738146be-87b1-49f2-9913-36142fb6fcbe'],
         ];
     }
 
-    public function incorrectUuids(): array
+    public static function incorrectUuids(): array
     {
         return [
             ['738146be-87b149f2-9913-36142fb6fcbe'],
@@ -71,7 +71,7 @@ final class UuidHelperTest extends TestCase
         ];
     }
 
-    public function blobUuids(): array
+    public static function blobUuids(): array
     {
         return [
             ['738146be-87b1-49f2-9913-36142fb6fcbe', '738146be-87b1-49f2-9913-36142fb6fcbe'],
@@ -80,7 +80,7 @@ final class UuidHelperTest extends TestCase
         ];
     }
 
-    public function incorrectBlobUuids(): array
+    public static function incorrectBlobUuids(): array
     {
         return [
             ['738146be-87b1-49f2-9913-36142fbfcbe', '738146be-87b1-49f2-9913-36142fb6fcbe'],
