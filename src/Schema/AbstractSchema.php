@@ -645,7 +645,7 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $name The table name.
      * @param string $type The metadata type.
-     * @param mixed $data The metadata to be set.
+     * @param mixed $data The metadata to set.
      */
     protected function setTableMetadata(string $name, string $type, mixed $data): void
     {

@@ -78,7 +78,7 @@ final class LikeCondition implements LikeConditionInterface
     }
 
     /**
-     * Validates the given column to be string or ExpressionInterface.
+     * Validates the given column to be `string` or `ExpressionInterface`.
      *
      * @throws InvalidArgumentException
      */
@@ -92,9 +92,9 @@ final class LikeCondition implements LikeConditionInterface
     }
 
     /**
-     * Validates the given values to be string, array, Iterator or ExpressionInterface.
+     * Validates the given values to be `string`, `array`, `Iterator` or `ExpressionInterface`.
      *
-     * @throws InvalidArgumentException If the values aren't string, array, Iterator or ExpressionInterface.
+     * @throws InvalidArgumentException If the values aren't `string`, `array`, `Iterator` or `ExpressionInterface`.
      */
     private static function validateValue(
         string $operator,

@@ -13,11 +13,11 @@ namespace Yiisoft\Db\Schema\Builder;
 interface ColumnInterface
 {
     /**
-     * Specify more SQL to be appended to column definition.
+     * Specify more SQL to append to column definition.
      *
-     * Position modifiers will be appended after column definition in databases that support them.
+     * Position modifiers will append after column definition in databases that support them.
      *
-     * @param string $sql The SQL string to be appended.
+     * @param string $sql The SQL string to append.
      */
     public function append(string $sql): self;
 
@@ -30,40 +30,40 @@ interface ColumnInterface
      * Builds the full string for the column's schema including type, length, default value, not null and another SQL
      * fragment.
      *
-     * @return string The SQL fragment that will be used for creating the column.
+     * @return string The SQL fragment to use for creating the column.
      */
     public function asString(): string;
 
     /**
      * Specify a `CHECK` constraint for the column.
      *
-     * @param string|null $check The SQL of the `CHECK` constraint to be added.
+     * @param string|null $check The SQL of the `CHECK` constraint to add.
      */
     public function check(string|null $check): self;
 
     /**
      * Specifies the comment for column.
      *
-     * @param string|null $comment The comment to be added.
+     * @param string|null $comment The comment to add.
      */
     public function comment(string|null $comment): self;
 
     /**
      * Specify the default SQL expression for the column.
      *
-     * @param string $default The SQL expression to be used as default value.
+     * @param string $default The SQL expression to use as default value.
      */
     public function defaultExpression(string $default): self;
 
     /**
      * Specify the default value for the column.
      *
-     * @param mixed $default The default value to be used.
+     * @param mixed $default The default value to use.
      */
     public function defaultValue(mixed $default): self;
 
     /**
-     * @return string|null The SQL string to be appended to column schema definition.
+     * @return string|null The SQL string to append to column schema definition.
      */
     public function getAppend(): string|null;
 
@@ -95,7 +95,7 @@ interface ColumnInterface
     public function getLength(): array|int|string|null;
 
     /**
-     * @return string|null The column type definition such as INTEGER, VARCHAR, DATETIME, etc.
+     * @return string|null The column type definition such as `INTEGER`, `VARCHAR`, `DATETIME`, etc.
      */
     public function getType(): string|null;
 

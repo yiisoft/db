@@ -60,7 +60,7 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Prepares column name to be used in SQL statement.
+     * Prepares column name to use in SQL statement.
      *
      * @throws Exception
      * @throws InvalidArgumentException

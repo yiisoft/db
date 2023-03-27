@@ -38,7 +38,7 @@ final class NotCondition implements NotConditionInterface
     }
 
     /**
-     * Validate the given condition have at least 1 condition and to be arrayed, string, null or ExpressionInterface.
+     * Validate the given condition have at least 1 condition and to be `array`, `string`, `null` or `ExpressionInterface`.
      *
      * @throws InvalidArgumentException If the number of operands isn't 1.
      */

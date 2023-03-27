@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Constraint;
 
 /**
- * Represents a CHECK constraint in a database.
+ * Represents a `CHECK` constraint in a database.
  *
- * A CHECK constraint is a constraint that allows you to specify a condition that must be met for the data to be
+ * A `CHECK` constraint is a constraint that allows you to specify a condition that must be met for the data to be
  * inserted or updated.
  *
  * The constraint checks that the value of a specified column or expression meets a certain condition, if the condition

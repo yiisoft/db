@@ -39,14 +39,14 @@ use function substr;
 use function trim;
 
 /**
- * Represents a SELECT SQL statement in a way that's independent of DBMS.
+ * Represents a `SELECT` SQL statement in a way that's independent of DBMS.
  *
- * Provides a set of methods to ease the specification of different clauses in a SELECT statement.
+ * Provides a set of methods to ease the specification of different clauses in a `SELECT` statement.
  *
- * These methods can be chained together.
+ * You can chain these methods together.
  *
- * By calling {@see createCommand()}, we can get a {@see CommandInterface} instance which can be further used to
- * perform/execute the DB query against a database.
+ * By calling {@see createCommand()}, you can get a {@see CommandInterface} instance which can be further used to
+ * perform/execute the DB query in a database.
  *
  * For example,
  *
@@ -813,14 +813,14 @@ class Query implements QueryInterface
     /**
      * Returns a value indicating whether the give value is "empty".
      *
-     * The value is considered "empty" if one of the following conditions is satisfied:
+     * The value is "empty" if one of the following conditions is satisfied:
      *
      * - It's `null`,
      * - an empty string (`''`),
      * - a string containing only space characters,
      * - or an empty array.
      *
-     * @param mixed $value The value to be checked.
+     * @param mixed $value The value to check.
      *
      * @return bool If the value is empty.
      */
@@ -830,7 +830,7 @@ class Query implements QueryInterface
     }
 
     /**
-     * Normalizes a format of ORDER BY data.
+     * Normalizes a format of `ORDER BY` data.
      *
      * @param array|ExpressionInterface|string $columns The columns value to normalize.
      *
@@ -861,7 +861,7 @@ class Query implements QueryInterface
     }
 
     /**
-     * Normalizes the SELECT columns passed to {@see select()} or {@see addSelect()}.
+     * Normalizes the `SELECT` columns passed to {@see select()} or {@see addSelect()}.
      */
     private function normalizeSelect(array|ExpressionInterface|string $columns): array
     {

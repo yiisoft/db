@@ -35,12 +35,12 @@ interface LikeConditionInterface extends ConditionInterface
     public function setEscapingReplacements(array|null $escapingReplacements): void;
 
     /**
-     * @return string The operator to use. Anything could be used e.g. `>`, `<=`, etc.
+     * @return string The operator to use such as `>` or `<=`.
      */
     public function getOperator(): string;
 
     /**
-     * @return array|ExpressionInterface|int|Iterator|string|null The value to the right of the {@see operator}.
+     * @return array|ExpressionInterface|int|Iterator|string|null The value to the right of {@see operator}.
      */
     public function getValue(): array|int|string|Iterator|ExpressionInterface|null;
 }
