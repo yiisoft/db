@@ -1,14 +1,12 @@
-# Data Manipulation Language (DML) Commands
+# Data Manipulation Language (DML) commands
 
-DML is a set of SQL statements that are used to manipulate data in a database.
+DML is a set of SQL statements to manipulate data in a database.
 
-The DML statements are used to perform the following operations.
+You can use the DML statements to perform the following operations.
 
 ## Batch insert
 
-To insert many rows into a table, you can use the `Yiisoft\Db\Command\CommandInterface::batchInsert()` method.
-
-The following example shows how to insert many rows into a table.
+To insert many rows into a table, you can use the `Yiisoft\Db\Command\CommandInterface::batchInsert()` method:~~~~
 
 ```php
 <?php
@@ -31,9 +29,7 @@ $db->createCommand()->batchInsert(
 
 ## Delete rows
 
-To delete rows from a table, you can use the `Yiisoft\Db\Command\CommandInterface::delete()` method.
-
-The following example shows how to delete rows from a table.
+To delete rows from a table, you can use the `Yiisoft\Db\Command\CommandInterface::delete()` method:
 
 ```php
 <?php
@@ -48,9 +44,7 @@ $db->createCommand()->delete('{{%customer}}', ['id' => 1])->execute();
 
 ## Reset sequence
 
-To reset the sequence of a table, you can use the `Yiisoft\Db\Command\CommandInterface::resetSequence()` method.
-
-The following example shows how to reset the sequence of a table.
+To reset the sequence of a table, you can use the `Yiisoft\Db\Command\CommandInterface::resetSequence()` method:
 
 ```php
 <?php
@@ -65,9 +59,7 @@ $db->createCommand()->resetSequence('{{%customer}}', 1)->execute();
 
 ## Update
 
-To update rows in a table, you can use the `Yiisoft\Db\Command\CommandInterface::update()` method.
-
-The following example shows how to update rows in a table.
+To update rows in a table, you can use the `Yiisoft\Db\Command\CommandInterface::update()` method:
 
 ```php
 <?php
@@ -82,9 +74,8 @@ $db->createCommand()->update('{{%customer}}', ['status' => 2], ['id' > 1])->exec
 
 ## Upsert
 
-To upsert rows in a table, you can use the `Yiisoft\Db\Command\CommandInterface::upsert()` method.
-
-The following example shows how to upsert rows in a table.
+To atomically update existing rows and insert non-existing ones,
+you can use the `Yiisoft\Db\Command\CommandInterface::upsert()` method:
 
 ```php
 <?php
@@ -98,7 +89,7 @@ $db->createCommand()->upsert(
     'pages',
     [
         'name' => 'Front page',
-        'url' => 'http://example.com/', // url is unique
+        'url' => 'https://example.com/', // URL is unique
         'visits' => 0,
     ],
     [

@@ -5,13 +5,21 @@
     <h1 align="center">Yii DataBase Library</h1>
 </p>
 
-Yii is an open-source PHP framework for developing web applications. Yii Database Library is a database extension for the [Yii Framework] that provides a set of database utilities and a database-agnostic, [ActiveRecord] implementation for working with databases in Yii applications.
+Yii Database Library is a database extension for the [Yii Framework]
+that provides a set of database utilities and a database-agnostic, [ActiveRecord] implementation 
+for working with databases in Yii applications.
 
-The package contains a number of classes that can be used to connect to and query different types of databases, such as [MariaDB], [MSSQL], [MySQL], [Oracle], [PostgreSQL], and [SQLite]. It also provides an [ActiveRecord] implementation that allows you to interact with database tables using objects, similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
+The package has a number of classes that you can use to connect to and query different types of databases,
+such as [MariaDB], [MSSQL], [MySQL], [Oracle], [PostgreSQL], and [SQLite].
+It also provides an [ActiveRecord] implementation to interact with database tables using objects,
+similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
 
-Using the Yii Database Library, you can perform common database tasks such as creating, reading, updating, and deleting records in a database table, as well as executing raw SQL queries. The package is designed to be flexible and can be easily extended to support additional database types or to customize the way it interacts with databases.
+Using the Yii Database Library, you can perform common database tasks such as creating, reading, updating, and deleting
+records in a database table, as well as executing raw SQL queries.
+The package is designed to be flexible
+and can be extended to support extra database types or to customize the way it interacts with databases.
 
-It is used in [Yii Framework] but can be used separately.
+It's used in [Yii Framework], but you can use it as a standalone library.
 
 [ActiveRecord]: https://github.com/yiisoft/active-record
 [MariaDB]: https://mariadb.org
@@ -92,7 +100,7 @@ To run the checker, execute the following command:
 
 ## License
 
-The Yii DataBase Library is free software. It is released under the terms of the BSD License.
+The Yii DataBase Library is free software. It's released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).

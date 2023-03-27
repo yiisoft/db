@@ -1,16 +1,21 @@
-# Binding parameters
+# Bind parameters
 
-When creating a **DB** command from an **SQL with parameters**, you should almost always use the approach of binding parameters to prevent **SQL injection attacks**.
+There are two use-cases for biding parameters:
 
-You can **bind parameters** to an **SQL statement** by using named placeholders or question mark placeholders. Named placeholders are of the form `:name` and question mark placeholders are of the form `?`.
+- When you do the same query with different data many times.
+- When you need to insert values into SQL string to prevent **SQL injection attacks**.
 
-**Info:** *Parameter binding is only used in places where values need to be inserted into strings that contain plain **SQL**. In many places in higher abstraction layers, like **query builder**, you often specify an **array of values** which will be transformed into **SQL**. In these places parameter binding is done by Yii internally, so there is no need to specify params manually.*
+You can do binding by using named placeholders (`:name`) or positional placeholders (`?`) in place of values and
+pass values as a separate argument.
 
-## Bind value
+> Info: In many places in higher abstraction layers, like **query builder**, you often specify an
+**array of values** and Yii does parameter binding for you, so there is no need to specify
+parameters manually.
 
-`BindValue()` binds a value to a parameter. It's recommended to use this method to bind parameter values to ensure the security of your application.
+## Bind a single value
 
-For example, the following code binds the value `1` to the named placeholder `:id`.
+You can use `bindValue()` to bind a value to a parameter.
+For example, the following code binds the value `42` to the named placeholder `:id`.
 
 ```php
 <?php
@@ -22,11 +27,11 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 /** @var ConnectionInterface $db */
 
 $command = $db->createCommand('SELECT * FROM {{%customer}} WHERE [[id]] = :id');
-$command->bindValue(':id', 1);
+$command->bindValue(':id', 42);
 $command->queryOne();
 ```
 
-The result of the above example is.
+The result is:
 
 ```php
 [
@@ -39,9 +44,9 @@ The result of the above example is.
 ]
 ```
 
-## Bind values
+## Bind many values at once
 
-`BindValues()` binds a list of values to the corresponding named placeholders in the **SQL statement**. It's recommended to use this method to bind parameter values to ensure the security of your application.
+`bindValues()` binds a list of values to the corresponding named placeholders in the SQL statement.
 
 For example, the following code binds the values `3` and `user3` to the named placeholders `:id` and `:name`.
 
@@ -59,24 +64,26 @@ $command->bindValues([':id' => 3, ':name' => 'user3']);
 $command->queryOne();
 ```
 
-The result of the above example is.
+The result is:
 
 ```php
 [
-    'id' => '3'
-    'email' => 'user3@example.com'
-    'name' => 'user3'
-    'address' => 'address3'
-    'status' => '2'
-    'profile_id' => '2'
+    'id' => '3',
+    'email' => 'user3@example.com',
+    'name' => 'user3',
+    'address' => 'address3',
+    'status' => '2',
+    'profile_id' => '2',
 ]
 ```
 
-## Bind parameter
+## Bind a parameter
 
-`bindParam()` binds a parameter to the specified variable name. It's recommended to use this method to bind parameter values to ensure the security of your application.
+`bindParam()` binds a parameter to the specified **variable**.
+The difference with `bindValue()` is that the variable may change. 
 
-For example, the following code binds the value `2` and `user2` to the named placeholders `:id` and `:name`.
+For example, the following code binds the value `2` and `user2` to the named placeholders `:id` and `:name` and
+then it's changing the value:
 
 ```php
 <?php
@@ -92,18 +99,31 @@ $id = 2;
 $name = 'user2';
 $command->bindParam(':id', $id);
 $command->bindParam(':name', $name);
-$command->queryOne();
+$user2 = $command->queryOne();
+
+$id = 3;
+$name = 'user3';
+$user3 = $command->queryOne();
 ```
 
-The result of the above example is.
+The results are:
 
 ```php
 [
-    'id' => '2'
-    'email' => 'user2@example.com'
-    'name' => 'user2'
-    'address' => 'address2'
-    'status' => '1'
-    'profile_id' => NULL
+    'id' => '2',
+    'email' => 'user2@example.com',
+    'name' => 'user2',
+    'address' => 'address2',
+    'status' => '1',
+    'profile_id' => '1',
+]
+
+[
+    'id' => '3',
+    'email' => 'user3@example.com',
+    'name' => 'user3',
+    'address' => 'address3',
+    'status' => '2',
+    'profile_id' => '2',
 ]
 ```

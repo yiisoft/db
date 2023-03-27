@@ -1,12 +1,15 @@
 # Connecting with profiler
 
-[Yii DB](https://github.com/yiisoft/db) used [Yii Profiler](https://github.com/yiisoft/profiler), a tool for collecting and analyzing database queries. This can be useful for debugging and optimizing database performance.
+[Yii DB](https://github.com/yiisoft/db) used [Yii Profiler](https://github.com/yiisoft/profiler), a tool for collecting
+and analyzing database queries useful for debugging and optimizing database performance.
 
-When we install [Yii Profiler](https://github.com/yiisoft/profiler) it's automatically configured in the [DI container](https://github.com/yiisoft/di) for [Yii Config](https://github.com/yiisoft/config), so we can use it in our application. 
+When you install [Yii Profiler](https://github.com/yiisoft/profiler) it's automatically configured in the
+[DI container](https://github.com/yiisoft/di) for [Yii Config](https://github.com/yiisoft/config),
+so you can use it in your application.
 
-But we will leave an example of how to configure it manually.
+The following describes how to configure it manually.
 
-Create a file `config/common/di/profiler.php` for Profiler.
+Create a file `config/common/di/profiler.php`.
 
 ```php
 <?php

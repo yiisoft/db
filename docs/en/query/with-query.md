@@ -1,6 +1,8 @@
 # With query
 
-The `\Yiisoft\Db\Query\Query::withQuery()` method specifies the `WITH` prefix of a SQL query. You can use it instead of sub-query for more readability and some unique features (recursive CTE). Read more at modern-sql.
+The `\Yiisoft\Db\Query\Query::withQuery()` method specifies the `WITH` prefix of a SQL query.
+You can use it instead of sub-query for more readability and some unique features (recursive CTE).
+[Read more at modern SQL](https://modern-sql.com/).
 
 For example, this query will select all nested permissions of admin with their children recursively.
 
@@ -30,4 +32,6 @@ $mainQuery = (new Query($db))
     ->withQuery($initialQuery->union($recursiveQuery), 't1', true);
 ```
 
-`\Yiisoft\Db\Query\Query::withQuery()` can be called many times to prepend more CTE's to the main query. Queries will be prepended in the same order as they attached. If one of the queries is recursive, then the whole CTE becomes recursive.
+`\Yiisoft\Db\Query\Query::withQuery()` can be called many times to prepend more CTEs to the main query.
+Queries will be prepended in the same order as they attached.
+If one of the queries is recursive, then the whole CTE becomes recursive.

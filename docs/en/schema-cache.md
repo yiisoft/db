@@ -1,18 +1,26 @@
 # Configuring schema cache
 
-The [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php) is used to **cache** database schema information.
- 
-The [Schema](https://github.com/yiisoft/db/blob/master/src/Schema/AbstractSchema.php) retrieves information about the **database schema** from the **database server** and stores it in the **cache** for faster access. When the [Schema](https://github.com/yiisoft/db/blob/master/src/Schema/AbstractSchema.php) needs to retrieve information about the database **schema**, it first checks the **cache** using the [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php).
+The information about the database schema that's needed for ORM comes from
+the [Schema](https://github.com/yiisoft/db/blob/master/src/Schema/AbstractSchema.php) that retrieves it from the
+database server.
 
-If the information isn't in the **cache**, the [Schema](https://github.com/yiisoft/db/blob/master/src/Schema/AbstractSchema.php) retrieves it from the database server and stores it in the **cache** using the [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php).
+For faster access, [Schema](https://github.com/yiisoft/db/blob/master/src/Schema/AbstractSchema.php) stores database
+schema information in [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php).
 
-For the configuration of [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php), you can do it in two ways. 
- 
-The first is configured [PSR-16](https://github.com/php-fig/simple-cache) **cache** in the [DI container](https://github.com/yiisoft/di), and it's **configured automatically** by **autowired** in the **application controller**, the second is configuring it **manually in the configuration file**.
+When the [Schema](https://github.com/yiisoft/db/blob/master/src/Schema/AbstractSchema.php) needs
+to retrieve information about the database schema, it first checks the cache.
 
-## Configuration file with autowired cache
+You can configure [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php) to use
+[PSR-16 cache implementation](https://github.com/php-fig/simple-cache) in two ways:
 
-Create a file `config/common/di/psr16.php` for cache:
+- Use [DI container](https://github.com/yiisoft/di) autowiring.
+- Configure it manually.
+
+## Autowired PSR-16 cache
+
+This configuration is suitable if you want to use the same cache driver for the whole application.
+
+Create a file `config/common/di/cache.php` for cache:
 
 ```php
 <?php
@@ -34,7 +42,11 @@ return [
 ];
 ```
 
-## Configuration file with manual cache configuration
+The `SchemaCache` requires `CacheInterface` and DI container will automatically resolve it.
+
+## Manual cache configuration
+
+This configuration is suitable if you want to use a different cache driver for caching schema.
 
 Create a file `config/common/di/db-schema-cache.php` for cache:
 
