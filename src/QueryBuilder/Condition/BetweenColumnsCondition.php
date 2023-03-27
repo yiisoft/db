@@ -88,9 +88,9 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
     }
 
     /**
-     * Validates the given value to be arrayed, int, string, Iterator or ExpressionInterface.
+     * Validates the given value to be `array`, `int`, `string`, `Iterator` or `ExpressionInterface`.
      *
-     * @throws InvalidArgumentException If the value isn't arrayed, int, string, Iterator or ExpressionInterface.
+     * @throws InvalidArgumentException If the value isn't `array`, `int`, `string`, `Iterator` or `ExpressionInterface`.
      */
     private static function validateValue(
         string $operator,
@@ -112,9 +112,9 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
     }
 
     /**
-     * Validates the given interval start column to be string or ExpressionInterface.
+     * Validates the given interval start column to be string or `ExpressionInterface`.
      *
-     * @throws InvalidArgumentException If the interval start column isn't string or ExpressionInterface.
+     * @throws InvalidArgumentException If the interval start column isn't string or `ExpressionInterface`.
      */
     private static function validateIntervalStartColumn(
         string $operator,

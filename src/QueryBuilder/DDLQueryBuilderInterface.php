@@ -21,7 +21,7 @@ interface DDLQueryBuilderInterface
     /**
      * Creates an SQL command for adding a check constraint to an existing table.
      *
-     * @param string $table The table that the check constraint will be added to.
+     * @param string $table The table to add the check constraint to.
      * @param string $name The name of the check constraint.
      * @param string $expression The SQL of the `CHECK` constraint.
      *
@@ -34,7 +34,7 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for adding a new DB column.
      *
-     * @param string $table The table that the new column will be added to.
+     * @param string $table The table to add the new column will to.
      * @param string $column The name of the new column.
      * @param string $type The column type.
      * {@see getColumnType()} Method will be invoked to convert an abstract column type (if any) into the physical one.
@@ -51,9 +51,9 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL command for adding comment to column.
      *
-     * @param string $table The table whose column is to be commented.
-     * @param string $column The name of the column to be commented.
-     * @param string $comment The text of the comment to be added.
+     * @param string $table The table whose column to be comment.
+     * @param string $column The name of the column to comment.
+     * @param string $comment The text of the comment to add.
      *
      * @throws Exception
      *
@@ -67,8 +67,8 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL command for adding comment to the table.
      *
-     * @param string $table The table whose column is to be commented.
-     * @param string $comment The text of the comment to be added.
+     * @param string $table The table whose column is to comment.
+     * @param string $comment The text of the comment to add.
      *
      * @throws Exception
      *
@@ -81,10 +81,10 @@ interface DDLQueryBuilderInterface
     /**
      * Creates an SQL command for adding a default value constraint to an existing table.
      *
-     * @param string $table The table that the default value constraint will be added to.
+     * @param string $table The table toi add the default value constraint to.
      * @param string $name The name of the default value constraint.
-     * @param string $column The name of the column to that the constraint will be added on.
-     * @param mixed $value The default value to be set for the column.
+     * @param string $column The name of the column to add constraint on.
+     * @param mixed $value The default value to set for the column.
      *
      * @throws Exception
      * @throws NotSupportedException If this isn't supported by the underlying DBMS.
@@ -98,17 +98,17 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for adding a foreign key constraint to an existing table.
      *
-     * @param string $table The table that the foreign key constraint will be added to.
+     * @param string $table The table to add the foreign key constraint will to.
      * @param string $name The name of the foreign key constraint.
-     * @param array|string $columns The name of the column to that the constraint will be added on. If there are
+     * @param array|string $columns The name of the column to add the constraint will on. If there are
      * many columns, separate them with commas or use an array to represent them.
      * @param string $refTable The table that the foreign key references to.
      * @param array|string $refColumns The name of the column that the foreign key references to. If there are many
      * columns, separate them with commas or use an array to represent them.
-     * @param string|null $delete The ON DELETE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION,
-     * SET DEFAULT, SET NULL.
-     * @param string|null $update The ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION,
-     * SET DEFAULT, SET NULL.
+     * @param string|null $delete The `ON DELETE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
+     * `SET DEFAULT`, `SET NULL`.
+     * @param string|null $update The `ON UPDATE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
+     * `SET DEFAULT`, `SET NULL`.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -130,7 +130,7 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for adding a primary key constraint to an existing table.
      *
-     * @param string $table The table that the primary key constraint will be added to.
+     * @param string $table The table to add the primary key constraint will to.
      * @param string $name The name of the primary key constraint.
      * @param array|string $columns Comma separated string or array of columns that the primary key will consist of.
      *
@@ -143,9 +143,9 @@ interface DDLQueryBuilderInterface
     /**
      * Creates an SQL command for adding a unique constraint to an existing table.
      *
-     * @param string $table The table that the unique constraint will be added to.
+     * @param string $table The table to add the unique constraint to.
      * @param string $name The name of the unique constraint.
-     * @param array|string $columns The name of the column to that the constraint will be added on. If there are many
+     * @param array|string $columns The name of the column to add the constraint on. If there are many
      * columns, separate them with commas.
      *
      * @return string The SQL statement for adding a unique constraint to an existing table.
@@ -157,8 +157,8 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for changing the definition of a column.
      *
-     * @param string $table The table whose column is to be changed.
-     * @param string $column The name of the column to be changed.
+     * @param string $table The table whose column is to change.
+     * @param string $column The name of the column to change.
      * @param ColumnInterface|string $type The new column type.
      * {@see getColumnType()} Method will be invoked to convert an abstract column type (if any) into the physical one.
      * Anything that isn't recognized as an abstract type will be kept in the generated SQL.
@@ -190,13 +190,13 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for creating a new index.
      *
-     * @param string $table The table that the new index will be created for.
+     * @param string $table The table to create the new index for.
      * @param string $name The name of the index.
-     * @param array|string $columns The column(s) that should be included in the index.
+     * @param array|string $columns The column(s) to include in the index.
      * If there are many columns, separate them with commas or use an array to represent them.
-     * @param string|null $indexType Type of index-supported DBMS - for example, UNIQUE, FULLTEXT, SPATIAL, BITMAP or
-     * null as default
-     * @param string|null $indexMethod For setting index organization method (with 'USING', not all DBMS)
+     * @param string|null $indexType Type of index-supported DBMS - for example, `UNIQUE`, `FULLTEXT`, `SPATIAL`, `BITMAP` or
+     * `null` as default
+     * @param string|null $indexMethod For setting index organization method (with `USING`, not all DBMS)
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -216,13 +216,13 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for creating a new DB table.
      *
-     * The columns in the new table should be specified as name-definition pairs (e.g. 'name' => 'string'), where name
+     * The columns in the new table should be specified as name-definition pairs ('name' => 'string'), where name
      * stands for a column name which will be quoted by the method, and definition stands for the column type which can
      * contain an abstract DB type.
      *
      * The {@see getColumnType()} method will be invoked to convert any abstract type into a physical one.
      *
-     * If a column is specified with definition only (e.g. 'PRIMARY KEY (name, type)'), it will be directly inserted
+     * If a column is specified with definition only ('PRIMARY KEY (name, type)'), it will be directly inserted
      * into the generated SQL.
      *
      * For example,
@@ -231,9 +231,9 @@ interface DDLQueryBuilderInterface
      * $sql = $queryBuilder->createTable('user', ['id' => 'pk', 'name' => 'string', 'age' => 'integer']);
      * ```
      *
-     * @param string $table The name of the table to be created.
+     * @param string $table The name of the table to create.
      * @param array $columns The columns (name => definition) in the new table.
-     * @param string|null $options More SQL fragments that will be appended to the generated SQL.
+     * @param string|null $options More SQL fragments to append to the generated SQL.
      *
      * @return string The SQL statement for creating a new DB table.
      *
@@ -244,7 +244,7 @@ interface DDLQueryBuilderInterface
     /**
      * Creates an SQL View.
      *
-     * @param string $viewName The name of the view to be created.
+     * @param string $viewName The name of the view to create.
      * @param QueryInterface|string $subQuery The select statement which defines the view.
      * This can be either a string or a {@see Query} object.
      *
@@ -262,8 +262,8 @@ interface DDLQueryBuilderInterface
     /**
      * Creates an SQL command for dropping a check constraint.
      *
-     * @param string $table The table whose check constraint is to be dropped.
-     * @param string $name The name of the check constraint to be dropped.
+     * @param string $table The table whose check constraint is to drop.
+     * @param string $name The name of the check constraint to drop.
      *
      * @return string The SQL statement for dropping a check constraint.
      *
@@ -274,8 +274,8 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for dropping a DB column.
      *
-     * @param string $table The table whose column is to be dropped.
-     * @param string $column The name of the column to be dropped.
+     * @param string $table The table whose column is to dropp.
+     * @param string $column The name of the column to dropp.
      *
      * @return string The SQL statement for dropping a DB column.
      *
@@ -286,8 +286,8 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL command for adding comment to column.
      *
-     * @param string $table The table whose column is to be commented.
-     * @param string $column The name of the column to be commented.
+     * @param string $table The table whose column is to comment.
+     * @param string $column The name of the column to comment.
      *
      * @return string The SQL statement for adding comment on column.
      *
@@ -298,7 +298,7 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL command for adding comment to the table.
      *
-     * @param string $table The table whose column is to be commented.
+     * @param string $table The table whose column is to comment.
      *
      * @return string The SQL statement for adding comment on column.
      *
@@ -309,8 +309,8 @@ interface DDLQueryBuilderInterface
     /**
      * Creates an SQL command for dropping a default value constraint.
      *
-     * @param string $table The table whose default value constraint is to be dropped.
-     * @param string $name The name of the default value constraint to be dropped.
+     * @param string $table The table whose default value constraint is to drop.
+     * @param string $name The name of the default value constraint to drop.
      *
      * @throws Exception
      * @throws NotSupportedException If this isn't supported by the underlying DBMS.
@@ -324,8 +324,8 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for dropping a foreign key constraint.
      *
-     * @param string $table The table whose foreign is to be dropped.
-     * @param string $name The name of the foreign key constraint to be dropped.
+     * @param string $table The table whose foreign is to drop.
+     * @param string $name The name of the foreign key constraint to drop.
      *
      * @return string The SQL statement for dropping a foreign key constraint.
      *
@@ -336,8 +336,8 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for dropping an index.
      *
-     * @param string $table The table whose index is to be dropped.
-     * @param string $name The name of the index to be dropped.
+     * @param string $table The table whose index is to drop.
+     * @param string $name The name of the index to drop.
      *
      * @return string The SQL statement for dropping an index.
      *
@@ -348,8 +348,8 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for removing a primary key constraint to an existing table.
      *
-     * @param string $table The table that the primary key constraint will be removed from.
-     * @param string $name The name of the primary key constraint to be removed.
+     * @param string $table The table to remove the primary key constraint from.
+     * @param string $name The name of the primary key constraint to remove.
      *
      * @return string The SQL statement for removing a primary key constraint from an existing table.
      *
@@ -360,7 +360,7 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for dropping a DB table.
      *
-     * @param string $table The table to be dropped.
+     * @param string $table The table to drop.
      *
      * @return string The SQL statement for dropping a DB table.
      *
@@ -371,8 +371,8 @@ interface DDLQueryBuilderInterface
     /**
      * Creates an SQL command for dropping a unique constraint.
      *
-     * @param string $table The table whose unique constraint is to be dropped.
-     * @param string $name The name of the unique constraint to be dropped.
+     * @param string $table The table whose unique constraint is to drop.
+     * @param string $name The name of the unique constraint to drop.
      *
      * @return string The SQL statement for dropping an unique constraint.
      *
@@ -383,7 +383,7 @@ interface DDLQueryBuilderInterface
     /**
      * Drops an SQL View.
      *
-     * @param string $viewName The name of the view to be dropped.
+     * @param string $viewName The name of the view to drop.
      *
      * @return string The `DROP VIEW` SQL statement.
      *
@@ -394,7 +394,7 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for renaming a column.
      *
-     * @param string $table The table whose column is to be renamed.
+     * @param string $table The table whose column is to rename.
      * @param string $oldName The old name of the column.
      * @param string $newName The new name of the column.
      *
@@ -408,7 +408,7 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for renaming a DB table.
      *
-     * @param string $oldName The table to be renamed.
+     * @param string $oldName The table to rename.
      * @param string $newName The new table name.
      *
      * @return string The SQL statement for renaming a DB table.
@@ -420,7 +420,7 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for truncating a DB table.
      *
-     * @param string $table The table to be truncated.
+     * @param string $table The table to truncate.
      *
      * @return string The SQL statement for truncating a DB table.
      *

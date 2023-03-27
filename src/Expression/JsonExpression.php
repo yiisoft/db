@@ -9,7 +9,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**
- * Represents data that should be encoded to JSON.
+ * Represents data to encode to JSON.
  *
  * For example:
  *

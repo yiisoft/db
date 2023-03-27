@@ -18,7 +18,7 @@ final class IndexConstraint extends Constraint
     private bool $isPrimary = false;
 
     /**
-     * @return bool whether the index is unique.
+     * @return bool Whether the index is unique.
      */
     public function isUnique(): bool
     {
@@ -26,7 +26,7 @@ final class IndexConstraint extends Constraint
     }
 
     /**
-     * @return bool whether the index was created for a primary key.
+     * @return bool Whether the index was created for a primary key.
      */
     public function isPrimary(): bool
     {
@@ -36,7 +36,7 @@ final class IndexConstraint extends Constraint
     /**
      * Set whether the index is unique.
      *
-     * @param bool $value whether the index is unique.
+     * @param bool $value Whether the index is unique.
      */
     public function unique(bool $value): self
     {
