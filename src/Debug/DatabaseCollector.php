@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Debug;
 
 use Throwable;
-use Yiisoft\Yii\Debug\Collector\CollectorInterface;
 use Yiisoft\Yii\Debug\Collector\CollectorTrait;
-use Yiisoft\Yii\Debug\Collector\IndexCollectorInterface;
+use Yiisoft\Yii\Debug\Collector\SummaryCollectorInterface;
 
-final class DatabaseCollector implements CollectorInterface, IndexCollectorInterface
+final class DatabaseCollector implements SummaryCollectorInterface
 {
     use CollectorTrait;
 
@@ -133,7 +132,7 @@ final class DatabaseCollector implements CollectorInterface, IndexCollectorInter
         ];
     }
 
-    public function getIndexData(): array
+    public function getSummary(): array
     {
         return [
             'db' => [
