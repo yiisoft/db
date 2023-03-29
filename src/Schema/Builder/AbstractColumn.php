@@ -30,17 +30,33 @@ use function strtr;
 abstract class AbstractColumn implements ColumnInterface
 {
     /**
-     * Internally used constants representing categories that abstract column types fall under.
-     *
-     * {@see $categoryMap} For mappings of abstract column types to category.
+     * Define the type of the column as a primary key.
      */
-    public const CATEGORY_PK = 'pk';
-    public const CATEGORY_STRING = 'string';
-    public const CATEGORY_NUMERIC = 'numeric';
-    public const CATEGORY_TIME = 'time';
-    public const CATEGORY_OTHER = 'other';
-    public const CATEGORY_UUID = 'uuid';
-    public const CATEGORY_UUID_PK = 'uuid_pk';
+    protected const CATEGORY_PK = 'pk';
+    /**
+     * Define the type of the column as a string.
+     */
+    protected const CATEGORY_STRING = 'string';
+    /**
+     * Define the type of the column as a numeric.
+     */
+    protected const CATEGORY_NUMERIC = 'numeric';
+    /**
+     * Define the type of the column as a time.
+     */
+    protected const CATEGORY_TIME = 'time';
+    /**
+     * Define the type of the column as a other, like `binary`, `json`, `xml`, etc.
+     */
+    protected const CATEGORY_OTHER = 'other';
+    /**
+     * Define the type of the column as a uuid.
+     */
+    protected const CATEGORY_UUID = 'uuid';
+    /**
+     * Define the type of the column as a uuid primary key.
+     */
+    protected const CATEGORY_UUID_PK = 'uuid_pk';
 
     protected bool|null $isNotNull = null;
     protected bool $isUnique = false;
