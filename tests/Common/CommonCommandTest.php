@@ -391,7 +391,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $this->assertEquals(1, $data[0]['bool_col']);
             Assert::isOneOf($data[1]['bool_col'], ['0', false]);
             Assert::isOneOf($data[2]['bool_col'], ['0', false]);
-        } catch (Exception | Throwable $e) {
+        } catch (Exception|Throwable $e) {
             setlocale(LC_NUMERIC, $locale);
 
             throw $e;
