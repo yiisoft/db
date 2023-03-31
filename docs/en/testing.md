@@ -7,7 +7,6 @@ This package can be tested globally or individually for each dbms.
 3. [Oracle](https://github.com/yiisoft/db-oracle)
 4. [PostgreSQL](https://github.com/yiisoft/db-pgsql)
 5. [SQLite](https://github.com/yiisoft/db-sqlite)
-6. [Active Record](https://github.com/yiisoft/active-record)
 
 For greater ease it is recommended to use docker containers for each dbms, for this you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the docs folder.
 
@@ -60,7 +59,6 @@ vendor/bin/phpunit --testsuite=Pgsql
 ```
 
 Suites available:
-- ActiveRecord
 - Mssql
 - Mysql
 - Oracle
