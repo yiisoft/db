@@ -16,13 +16,13 @@ Since Yii 3 consists of many packages, we have a [special development tool](http
 
 3. Now you are ready. Fork any package listed in `packages.php` and do `./yii-dev install username/package`.
 
-4. Create a new branch for your changes
+4. Create a new branch for your changes.
 
 If you are only going to make a pull request in a single repository, simply create the new branch, where the name correctly identifies the fix or feature to be made.
 
 if you are going to make a pull request in multiple repositories, create a **new branch with the same name in all repositories**, this allows our github actions workflow to sync all branches, and tests to run correctly.
 
-5. [Check your changes](/docs/en/testing.md)
+5. [Check your changes](/docs/en/testing.md).
 
 ## Reporting issues
 
