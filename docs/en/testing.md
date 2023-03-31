@@ -8,17 +8,17 @@ This package can be tested globally or individually for each DBMS.
 4. [PostgreSQL](https://github.com/yiisoft/db-pgsql)
 5. [SQLite](https://github.com/yiisoft/db-sqlite)
 
-For greater ease it is recommended to use docker containers for each DBMS, for this you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the docs folder.
+For greater ease it is recommended to use docker containers for each DBMS, for this you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the `/tests/Support/docker` folder.
 
 ## Docker images
 
-To test all dbms at once, you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the docs folder.
+To test all dbms at once, you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the `/tests/Support/docker` folder.
 
-1. [MSSQL 2022](/docs/en/docker/mssql/docker-compose.yml)
-2. [MySQL 8](/docs/en/docker/mysql/docker-compose.yml)
-3. [MariaDB 10.11](/docs/en/docker/mariadb/docker-compose.yml)
-4. [Oracle 21](/docs/en/docker/oracle/docker-compose.yml)
-5. [PostgreSQL 15](/docs/en/docker/pgsql/docker-compose.yml)
+1. [MSSQL 2022](/tests/Support/docker/mssql/docker-compose.yml)
+2. [MySQL 8](/tests/Support/docker/mysql/docker-compose.yml)
+3. [MariaDB 10.11](/tests/Support/docker/mariadb/docker-compose.yml)
+4. [Oracle 21](/tests/Support/docker/oracle/docker-compose.yml)
+5. [PostgreSQL 15](/tests/Support/docker/pgsql/docker-compose.yml)
 
 For running the docker containers you can use the following command:
 
@@ -32,7 +32,7 @@ The package is tested with [PHPUnit](https://phpunit.de/).
 
 ### Global testing
 
-To test all dbms at once, you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the docs folder.
+To test all dbms at once, you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the `/tests/Support/docker` folder.
 
 The following steps are required to run the tests:
 
@@ -46,7 +46,7 @@ vendor/bin/phpunit
 
 ### Individual testing
 
-To test each dbms individually, you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the docs folder.
+To test each dbms individually, you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the `/tests/Support/docker` folder.
 
 The following steps are required to run the tests:
 
@@ -75,8 +75,7 @@ The code is statically analyzed with [Psalm](https://psalm.dev/). To run static 
 
 ## Rector
 
-Use [Rector](https://github.com/rectorphp/rector) to make codebase follow some specific rules or 
-use either newest or any specific version of PHP: 
+Use [Rector](https://github.com/rectorphp/rector) to make codebase follow some specific rules or use either newest or any specific version of PHP: 
 
 ```shell
 ./vendor/bin/rector
