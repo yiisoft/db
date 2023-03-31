@@ -8,7 +8,7 @@ This package can be tested globally or individually for each DBMS.
 4. [PostgreSQL](https://github.com/yiisoft/db-pgsql)
 5. [SQLite](https://github.com/yiisoft/db-sqlite)
 
-For greater ease it is recommended to use docker containers for each dbms, for this you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the docs folder.
+For greater ease it is recommended to use docker containers for each DBMS, for this you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the docs folder.
 
 ## Docker images
 
