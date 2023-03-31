@@ -51,9 +51,9 @@ To test each dbms individually, you can use the [docker-compose.yml](https://doc
 
 The following steps are required to run the tests:
 
-1.- Run the docker container for the dbms you want to test.
-2.- Install the dependencies of the project with composer.
-3.- Run the tests.
+1. Run the docker container for the dbms you want to test.
+2. Install the dependencies of the project with composer.
+3. Run the tests.
 
 ```shell
 vendor/bin/phpunit --testsuite=Pgsql
