@@ -19,7 +19,7 @@ To test all dbms at once, you can use the [docker-compose.yml](https://docs.dock
 2. [MySQL 8](/docs/en/docker/mysql/docker-compose.yml)
 3. [MariaDB 10.11](/docs/en/docker/mariadb/docker-compose.yml)
 4. [Oracle 21](/docs/en/docker/oracle/docker-compose.yml)
-5. [PostgreSQL 15](/docs/en/docker/postgres/docker-compose.yml)
+5. [PostgreSQL 15](/docs/en/docker/pgsql/docker-compose.yml)
 
 For running the docker containers you can use the following command:
 
