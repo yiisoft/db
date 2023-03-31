@@ -58,4 +58,4 @@ If you are only going to make a pull request in a single repository, simply crea
 if you are going to make a pull request in multiple repositories, create a **new branch with the same name in all repositories**, this allows our github actions workflow to sync all branches, and tests to run correctly.
 
 
-4. [Check yoour changes](/docs/en/testing.md)
+4. [Check your changes](/docs/en/testing.md)
