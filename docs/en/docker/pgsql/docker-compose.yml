@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  pgsql:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: yiitest
+    ports:
+      # <Port exposed> : < PGSQL Port running inside container>
+      - '5432:5432'
+    expose:
+      # Opens port 5432 on the container
+      - '5432'

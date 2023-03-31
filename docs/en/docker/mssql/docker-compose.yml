@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - SA_PASSWORD=YourStrong!Passw0rd
+      - ACCEPT_EULA=Y
+    ports:
+      # <Port exposed> : < MSSQL Port running inside container>
+      - "1433:1433"
+    expose:
+      # Opens port 1433 on the container
+      - '1433'

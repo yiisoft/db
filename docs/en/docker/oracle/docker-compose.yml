@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  oracle:
+    image: gvenzl/oracle-xe:21
+    ports:
+      - 1521:1521
+    environment:
+      ORACLE_PASSWORD : root
+      ORACLE_DATABASE : yiitest
+      APP_USER: yiitest
+      APP_USER_PASSWORD: root
