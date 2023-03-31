@@ -37,9 +37,9 @@ To test all dbms at once, you can use the [docker-compose.yml](https://docs.dock
 
 The following steps are required to run the tests:
 
-1.- Run all docker containers for each dbms.
-2.- Install the dependencies of the project with composer.
-3.- Run the tests.
+1. Run all docker containers for each dbms.
+2. Install the dependencies of the project with composer.
+3. Run the tests.
 
 ```shell
 vendor/bin/phpunit
