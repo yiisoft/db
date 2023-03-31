@@ -43,7 +43,7 @@ It's used in [Yii Framework], but you can use it as a standalone library.
 
 ## Testing
 
-[Check the documentation testing](/docs/en/testing.md) to learn about testing.
+[Check the documentation](/docs/en/testing.md) to learn about testing.
 
 ## Support the project
 
