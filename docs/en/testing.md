@@ -1,6 +1,6 @@
 # Testing
 
-This package can be tested globally or individually for each dbms.
+This package can be tested globally or individually for each DBMS.
 
 1. [MSSQL](https://github.com/yiisoft/db-mssql)
 2. [MySQL/MariaDB](https://github.com/yiisoft/db-mysql)
