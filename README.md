@@ -2,24 +2,20 @@
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px" alt="YiiFramework">
     </a>
-    <h1 align="center">Yii DataBase Library</h1>
+    <h1 align="center">Yii Database</h1>
 </p>
 
-Yii Database Library is a database extension for the [Yii Framework]
-that provides a set of database utilities and a database-agnostic, [ActiveRecord] implementation 
-for working with databases in Yii applications.
-
-The package has a number of classes that you can use to connect to and query different types of databases,
+Yii Database is a framework-agnostic package to work with different types of databases,
 such as [MariaDB], [MSSQL], [MySQL], [Oracle], [PostgreSQL], and [SQLite].
-It also provides an [ActiveRecord] implementation to interact with database tables using objects,
-similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
 
-Using the Yii Database Library, you can perform common database tasks such as creating, reading, updating, and deleting
+Using the package, you can perform common database tasks such as creating, reading, updating, and deleting
 records in a database table, as well as executing raw SQL queries.
 The package is designed to be flexible
 and can be extended to support extra database types or to customize the way it interacts with databases.
 
-It's used in [Yii Framework], but you can use it as a standalone library.
+There is an [ActiveRecord] implementation built on top of it.
+It allows interacting with database tables using objects,
+similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
 
 [ActiveRecord]: https://github.com/yiisoft/active-record
 [MariaDB]: https://mariadb.org
@@ -28,7 +24,6 @@ It's used in [Yii Framework], but you can use it as a standalone library.
 [Oracle]: https://www.oracle.com/database
 [PostgreSQL]: https://www.postgresql.org
 [SQLite]: https://www.sqlite.org
-[Yii Framework]: https://www.yiiframework.com
 
 [![Latest Stable Version](https://poser.pugx.org/yiisoft/db/v/stable.png)](https://packagist.org/packages/yiisoft/db)
 [![Total Downloads](https://poser.pugx.org/yiisoft/db/downloads.png)](https://packagist.org/packages/yiisoft/db)
@@ -43,48 +38,7 @@ It's used in [Yii Framework], but you can use it as a standalone library.
 
 ## Testing
 
-### Unit testing
-
-The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
-
-```shell
-./vendor/bin/phpunit
-```
-
-### Mutation testing
-
-The package tests are checked with [Infection](https://infection.github.io/) mutation framework. To run it:
-
-```shell
-./vendor/bin/infection
-```
-
-### Static analysis
-
-The code is statically analyzed with [Psalm](https://psalm.dev/). To run static analysis:
-
-```shell
-./vendor/bin/psalm
-```
-
-### Rector
-
-Use [Rector](https://github.com/rectorphp/rector) to make codebase follow some specific rules or 
-use either newest or any specific version of PHP: 
-
-```shell
-./vendor/bin/rector
-```
-
-### Composer require checker
-
-This package uses [composer-require-checker](https://github.com/maglnet/ComposerRequireChecker) to check if all dependencies are correctly defined in `composer.json`.
-
-To run the checker, execute the following command:
-
-```shell
-./vendor/bin/composer-require-checker
-```
+[Check the documentation](/docs/en/testing.md) to learn about testing.
 
 ## Support the project
 
