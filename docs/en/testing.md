@@ -10,7 +10,7 @@ This package can be tested globally or individually for each DBMS.
 
 ## Docker images
 
-For greater ease it is recommended to use docker containers for each DBMS, for this you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the root directory of each package.
+For greater ease it is recommended to use docker containers for each DBMS, for this you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that in the root directory of each package.
 
 1. [MSSQL 2022](https://github.com/yiisoft/db-mssql/blob/master/docker-compose.yml)
 2. [MySQL 8](https://github.com/yiisoft/db-mysql/blob/master/docker-compose.yml)
@@ -30,7 +30,7 @@ The package is tested with [PHPUnit](https://phpunit.de/).
 
 ### Global testing
 
-To test all dbms at once, you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the `/tests/Support/docker` folder.
+To test all dbms at once, you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that in the root directory of each package.
 
 The following steps are required to run the tests:
 
@@ -44,7 +44,7 @@ vendor/bin/phpunit
 
 ### Individual testing
 
-To test each dbms individually, you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the `/tests/Support/docker` folder.
+To test each dbms individually, you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that in the root directory of each package.
 
 The following steps are required to run the tests:
 
