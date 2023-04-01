@@ -153,7 +153,7 @@ jobs:
         run: composer require yiisoft/cache
 
       - name: Install active-record.
-        uses: yiisoft/actions/db/subpackage-install@master
+        uses: yiisoft/actions/db/subpackage-install@debug-subpackge-install
         with:
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
