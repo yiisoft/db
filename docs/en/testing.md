@@ -13,7 +13,7 @@ This package can be tested globally or individually for each DBMS.
 For greater ease it is recommended to use docker containers for each DBMS, for this you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that is in the root directory of each package.
 
 1. [MSSQL 2022](https://github.com/yiisoft/db-mssql/blob/master/docker-compose.yml)
-2. [MySQL 8](https://github.com/yiisoft/db-mysql/blob/master/composer.json)
+2. [MySQL 8](https://github.com/yiisoft/db-mysql/blob/master/docker-compose.yml)
 3. [MariaDB 10.11](https://github.com/yiisoft/db-mysql/blob/master/docker-compose-mariadb.yml)
 4. [Oracle 21](https://github.com/yiisoft/db-oracle/blob/master/docker-compose.yml)
 5. [PostgreSQL 15](https://github.com/yiisoft/db-pgsql/blob/master/docker-compose.yml)
