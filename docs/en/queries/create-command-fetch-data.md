@@ -15,14 +15,14 @@ $command = $db->createCommand('SELECT * FROM {{%customer}}');
 
 In the command, there are different methods to **fetch data**:
 
-- `queryAll()`
-- `queryOne()`
-- `queryColumn()`
-- `queryScalar()`
-- `query()`
+- [queryAll()](#query-all)
+- [queryOne()](#query-one)
+- [queryColumn()](#query-column)
+- [queryScalar()](#query-scalar)
+- [query()](#query)
 
-> Note: To preserve precision, the data fetched from databases are always strings, even if the corresponding
-> database column types are numerical.
+> **Note:** To preserve precision, all data fetched from databases in the string type, even if the corresponding 
+> database column types are different, numerical for example.
 > You may need to use type conversion to convert them into the corresponding PHP types.
 
 ### Query all
@@ -181,17 +181,4 @@ $result = $db->createCommand('SELECT * FROM {{%customer}}')->query();
 foreach ($command as $row) {
     // do something with $row
 }
-```
-
-The result is:
-
-```php
-Yiisoft\Db\Query\Data\DataReader#4710
-(
-    [Yiisoft\Db\Query\Data\DataReader:index] => -1
-    [Yiisoft\Db\Query\Data\DataReader:statement] => PDOStatement#4711
-    (
-        [queryString] => 'SELECT * FROM customer'
-    )
-)
 ```

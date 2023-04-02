@@ -3,7 +3,7 @@
 Data Definition Language (DDL) is a set of SQL statements to define the database structure.
 
 DDL statements are used to create and change the database objects in a database.
-These objects can be tables, indexes, views, stored procedures, triggers, and more.
+These objects can be tables, indexes, views, stored procedures, triggers, and so on.
 
 ## Tables
 
@@ -58,7 +58,8 @@ CREATE TABLE `customer` (
 
 ### Drop a table
 
-To drop a table, you can use the `Yiisoft\Db\Command\CommandInterface::dropTable()` method:
+To drop a table with schema declaration and and all its data, you can use the 
+`Yiisoft\Db\Command\CommandInterface::dropTable()` method:
 
 ```php
 <?php
@@ -71,9 +72,12 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->dropTable('{{%customer}}')->execute();
 ```
 
+> **Warning**: All existing data will be deleted.
+
 ### Truncate a table
 
-To clear all data of a table, you can use the `Yiisoft\Db\Command\CommandInterface::truncateTable()` method:
+To clear just the data of a table without removing schema declaration, you can use the 
+`Yiisoft\Db\Command\CommandInterface::truncateTable()` method:
 
 ```php
 <?php
@@ -85,6 +89,8 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 /** @var ConnectionInterface $db */
 $db->createCommand()->truncateTable('{{%customer}}')->execute();
 ```
+
+> **Warning**: All existing data will be deleted.
 
 ## Columns
 
@@ -263,7 +269,9 @@ $db->createCommand()->dropForeignKey('{{%customer}}', 'fk-customer-profile_id')-
 
 ## Indexes
 
-### Add an index
+### Database agnostic
+
+#### Add an index
 
 To add an index to an existing table, you can use the `Yiisoft\Db\Command\CommandInterface::createIndex()` method:
 
@@ -278,7 +286,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('{{%customer}}', 'idx-customer-name', 'name')->execute();
 ```
 
-### Drop an index
+#### Drop an index
 
 To drop an existing index, you can use the `Yiisoft\Db\Command\CommandInterface::dropIndex()` method:
 
@@ -293,7 +301,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->dropIndex('{{%customer}}', 'idx-customer-name')->execute();
 ```
 
-### Add unique index
+#### Add unique index
 
 You can create a unique index by specifying the `UNIQUE` option in the `$indexType` parameter, it's supported by all
 DBMS:
@@ -309,7 +317,9 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'UNIQUE')->execute();
 ```
 
-### Add clustered index
+### Database specific
+
+#### Add clustered index
 
 In MSSQL, you can create a clustered index by specifying the `CLUSTERED` option in the `$indexType` parameter:
 
@@ -324,7 +334,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'CLUSTERED')->execute();
 ```
 
-### Add non-clustered index
+#### Add non-clustered index
 
 In MSSQL, you can create a non-clustered index by specifying the `NONCLUSTERED` option in the `$indexType` parameter:
 
@@ -339,7 +349,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'NONCLUSTERED')->execute();
 ```
 
-### Add fulltext index
+#### Add fulltext index
 
 In MySQL and MariaDB, you can create a fulltext index by specifying the `FULLTEXT` option in the `$indexType`
 parameter.
@@ -355,7 +365,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'name', 'FULLTEXT')->execute();
 ```
 
-### Add bitmap index
+#### Add bitmap index
 
 In `Oracle`, you can create a bitmap index by specifying the `BITMAP` option in the `$indexType` parameter:
 
@@ -435,7 +445,6 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 /** @var ConnectionInterface $db */
 $db->createCommand()->dropCheck('{{%customer}}', 'ck-customer-status')->execute();
 ```
-
 
 ## Comments
 

@@ -1,12 +1,18 @@
 # Data Manipulation Language (DML) commands
 
-DML is a set of SQL statements to manipulate data in a database.
+DML is a set of SQL statements used to manipulate data in a database.
 
-You can use the DML statements to perform the following operations.
+You can use the DML to perform the following operations:
+
+- [Batch insert](#batch-insert)
+- [Delete rows](#delete-rows)
+- [Reset sequence](#reset-sequence)
+- [Update](#update)
+- [Upsert](#upsert)
 
 ## Batch insert
 
-To insert many rows into a table, you can use the `Yiisoft\Db\Command\CommandInterface::batchInsert()` method:~~~~
+To insert multiple rows into a table, you can use the `Yiisoft\Db\Command\CommandInterface::batchInsert()` method:
 
 ```php
 <?php
