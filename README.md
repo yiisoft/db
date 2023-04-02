@@ -34,7 +34,7 @@ similar to the way you would use ORM (Object-Relational Mapping) frameworks like
 
 ## Usage 
 
-[Check the documentation docs](/docs/en/getting-started.md) to learn about usage.
+[Check the documentation docs](/docs/en/README.md) to learn about usage.
 
 ## Testing
 
