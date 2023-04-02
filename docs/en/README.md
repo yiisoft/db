@@ -130,7 +130,7 @@ SQL statements in a more convenient way.
 It's a powerful tool to create complex SQL statements in a simple way.
 
 
-## Working with a database
+## Commands
 
 [Yii DB](https://github.com/yiisoft/db) provides a `Command` class that represents an **SQL** statement to be executed
 against a database.
