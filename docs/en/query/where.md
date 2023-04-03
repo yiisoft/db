@@ -258,7 +258,7 @@ When building `WHERE` conditions based on input from end users, you usually want
 that are empty.
 
 For example, in a search form which allows you to search by username and email, you would like
-to ignore the username/email condition if the user didn't enter anything in the username/email input field.
+to ignore the username/email condition if the user didn't enter anything in the corresponding input field.
 
 You can achieve this goal by using the `Yiisoft\Db\Query\Query::filterWhere()` method:
 
