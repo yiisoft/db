@@ -83,7 +83,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $fk = $table->getForeignKeys();
 
-        $expectedKey = match ($db->getName()) {
+        $expectedKey = match ($db->getDriverName()) {
             'mysql', 'sqlsrv' => $fk['FK_composite_fk_order_item'],
             default => $fk['fk_composite_fk_order_item'],
         };
@@ -248,7 +248,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 <<<SQL
                 SELECT [[id]] FROM [[animal]] WHERE [[type]] = 'cat'
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             )
         )->queryOne();
 

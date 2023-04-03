@@ -109,7 +109,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 \tUNIQUE test_email_unique (email)
                 )
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->createTable(
                 'test',

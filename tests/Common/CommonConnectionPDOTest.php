@@ -312,7 +312,7 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
             'createCommand',
             'close',
             'getCacheKey',
-            'getName',
+            'getDriverName',
             'getLastInsertID',
             'getQueryBuilder',
             'getQuoter',

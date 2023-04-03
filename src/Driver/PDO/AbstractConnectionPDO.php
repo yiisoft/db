@@ -148,7 +148,7 @@ abstract class AbstractConnectionPDO extends AbstractConnection implements Conne
         throw new InvalidCallException('DB Connection is not active.');
     }
 
-    public function getName(): string
+    public function getDriverName(): string
     {
         return $this->driver->getDriverName();
     }

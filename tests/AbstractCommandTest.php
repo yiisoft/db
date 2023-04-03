@@ -44,7 +44,7 @@ abstract class AbstractCommandTest extends TestCase
                 <<<SQL
                 SELECT [[id]], [[t]].[[name]] FROM [[customer]] t
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $command->getSql(),
         );
