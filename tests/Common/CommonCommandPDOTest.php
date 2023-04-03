@@ -207,11 +207,11 @@ abstract class CommonCommandPDOTest extends TestCase
                 $this->internalGetQueryResult(1024);
             }
 
-            protected function internalExecute(?string $rawSql): void
+            protected function getQueryBuilder(): QueryBuilderInterface
             {
             }
 
-            public function queryBuilder(): QueryBuilderInterface
+            protected function internalExecute(?string $rawSql): void
             {
             }
         };

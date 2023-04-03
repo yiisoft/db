@@ -16,7 +16,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
  * This interface represents a database command, such as a `SELECT`, `INSERT`, `UPDATE`, or `DELETE`.
@@ -606,13 +605,6 @@ interface CommandInterface
      * Empty array if the query results in nothing.
      */
     public function queryAll(): array;
-
-    /**
-     * Create query builder instance.
-     *
-     * @return QueryBuilderInterface The query builder instance.
-     */
-    public function queryBuilder(): QueryBuilderInterface;
 
     /**
      * Execute the SQL statement and returns the first column of the result.
