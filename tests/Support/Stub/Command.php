@@ -15,7 +15,7 @@ final class Command extends AbstractCommandPDO
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
-    public function queryBuilder(): QueryBuilderInterface
+    protected function getQueryBuilder(): QueryBuilderInterface
     {
         return $this->db->getQueryBuilder();
     }
