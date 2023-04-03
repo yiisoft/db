@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
-use Stringable;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\Exception;
@@ -27,7 +26,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  *
  * Sorting is supported via {@see orderBy()} and items can be limited to match some conditions using {@see where()}.
  */
-interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface, Stringable
+interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
     /**
      * Adds more parameters to biun to the query.

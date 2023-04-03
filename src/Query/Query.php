@@ -93,14 +93,6 @@ class Query implements QueryInterface
     {
     }
 
-    /**
-     * Returns the SQL representation of Query.
-     */
-    public function __toString(): string
-    {
-        return serialize($this);
-    }
-
     public function addGroupBy(array|string|ExpressionInterface $columns): static
     {
         if ($columns instanceof ExpressionInterface) {
