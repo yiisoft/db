@@ -269,9 +269,7 @@ $db->createCommand()->dropForeignKey('{{%customer}}', 'fk-customer-profile_id')-
 
 ## Indexes
 
-### Database agnostic
-
-#### Add an index
+### Add an index
 
 To add an index to an existing table, you can use the `Yiisoft\Db\Command\CommandInterface::createIndex()` method:
 
@@ -286,7 +284,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('{{%customer}}', 'idx-customer-name', 'name')->execute();
 ```
 
-#### Drop an index
+### Drop an index
 
 To drop an existing index, you can use the `Yiisoft\Db\Command\CommandInterface::dropIndex()` method:
 
@@ -301,7 +299,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->dropIndex('{{%customer}}', 'idx-customer-name')->execute();
 ```
 
-#### Add unique index
+### Add unique index
 
 You can create a unique index by specifying the `UNIQUE` option in the `$indexType` parameter, it's supported by all
 DBMS:
@@ -317,9 +315,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'UNIQUE')->execute();
 ```
 
-### Database specific
-
-#### Add clustered index
+### Add clustered index
 
 In MSSQL, you can create a clustered index by specifying the `CLUSTERED` option in the `$indexType` parameter:
 
@@ -334,7 +330,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'CLUSTERED')->execute();
 ```
 
-#### Add non-clustered index
+### Add non-clustered index
 
 In MSSQL, you can create a non-clustered index by specifying the `NONCLUSTERED` option in the `$indexType` parameter:
 
@@ -349,7 +345,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'NONCLUSTERED')->execute();
 ```
 
-#### Add fulltext index
+### Add fulltext index
 
 In MySQL and MariaDB, you can create a fulltext index by specifying the `FULLTEXT` option in the `$indexType`
 parameter.
@@ -365,7 +361,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'name', 'FULLTEXT')->execute();
 ```
 
-#### Add bitmap index
+### Add bitmap index
 
 In `Oracle`, you can create a bitmap index by specifying the `BITMAP` option in the `$indexType` parameter:
 
