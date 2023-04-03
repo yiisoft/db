@@ -24,7 +24,7 @@ final class SchemaCacheTest extends TestCase
     {
         $schemaCache = new SchemaCache(DbHelper::getPsrCache());
 
-        $schemaCache->set('key', 'value', 3600, 'tag');
+        $schemaCache->set('key', 'value', 'tag');
 
         $this->assertSame('value', $schemaCache->getOrSet('key'));
 
@@ -37,7 +37,7 @@ final class SchemaCacheTest extends TestCase
     {
         $schemaCache = new SchemaCache(DbHelper::getPsrCache());
 
-        $schemaCache->set('key', 'value', 3600, '');
+        $schemaCache->set('key', 'value');
 
         $this->assertSame('value', $schemaCache->getOrSet('key'));
 
