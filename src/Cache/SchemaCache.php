@@ -106,9 +106,9 @@ final class SchemaCache
     }
 
     /**
-     * @return int|null The number of seconds that table metadata can remain valid in cache.
+     * @return int|null|DateInterval The number of seconds that table metadata can remain valid in cache.
      */
-    public function getDuration(): int|null
+    public function getDuration(): int|null|DateInterval
     {
         return $this->duration;
     }
