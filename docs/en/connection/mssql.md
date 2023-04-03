@@ -49,7 +49,7 @@ return [
 ```
 
 To configure the connection without [DI container](https://github.com/yiisoft/di),
-you need to follow the following steps.
+you need to follow these steps.
 
 ```php
 <?php

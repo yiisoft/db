@@ -19,12 +19,12 @@ you have to take extra effort to create a database agnostic application.
 
 [Yii DB](https://github.com/yiisoft/db) supports the following databases out of the box:
 
-1. [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) version **2017, 2019, 2022**.
-2. [MySQL](https://www.mysql.com/) version **5.7 - 8.0**.
-3. [MariaDB](https://mariadb.org/) version **10.4 - 10.9**.
-4. [Oracle](https://www.oracle.com/database/) version **18c - 21c**.
-5. [PostgreSQL](https://www.postgresql.org/) version **9.6 - 15**. 
-6. [SQLite](https://www.sqlite.org/index.html) version **3.3 and above**.
+- [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) of versions **2017, 2019, 2022**.
+- [MySQL](https://www.mysql.com/) of versions **5.7 - 8.0**.
+- [MariaDB](https://mariadb.org/) of versions **10.4 - 10.9**.
+- [Oracle](https://www.oracle.com/database/) of versions **18c - 21c**.
+- [PostgreSQL](https://www.postgresql.org/) of versions **9.6 - 15**. 
+- [SQLite](https://www.sqlite.org/index.html) of version **3.3 and above**.
 
 ## Installation
 
@@ -71,11 +71,11 @@ First, you need to [configure database schema cache](schema-cache.md).
 
 You can create a database connection instance using a [DI container](https://github.com/yiisoft/di) or without it.
 
-1. [MSSQL Server](/docs/en/connection/mssql.md)
-2. [MySQL/MariaDB Server](/docs/en/connection/mysql.md)
-3. [Oracle Server](/docs/en/connection/oracle.md)
-4. [PostgreSQL Server](/docs/en/connection/pgsql.md)
-5. [SQLite Server](/docs/en/connection/sqlite.md)
+- [MSSQL Server](/docs/en/connection/mssql.md)
+- [MySQL/MariaDB Server](/docs/en/connection/mysql.md)
+- [Oracle Server](/docs/en/connection/oracle.md)
+- [PostgreSQL Server](/docs/en/connection/pgsql.md)
+- [SQLite Server](/docs/en/connection/sqlite.md)
 
 > Info: When you create a DB connection instance, the actual connection to the database isn't established until
 > you execute the first SQL or call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.
@@ -84,8 +84,8 @@ You can create a database connection instance using a [DI container](https://git
 
 Logger and profiler are optional. You can use them if you need to log and profile your queries.
 
-1. [Logger](/docs/en/connection/logger.md)
-2. [Profiler](/docs/en/connection/profiler.md)
+- [Logger](/docs/en/connection/logger.md)
+- [Profiler](/docs/en/connection/profiler.md)
 
 ## Execute SQL queries
 
