@@ -89,6 +89,7 @@ you can use the `Yiisoft\Db\Command\CommandInterface::upsert()` method:
 declare(strict_types=1);
 
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Expression\Expression;
 
 /** @var ConnectionInterface $db */
 $db->createCommand()->upsert(
@@ -98,9 +99,9 @@ $db->createCommand()->upsert(
         'url' => 'https://example.com/', // URL is unique
         'visits' => 0,
     ],
-    [
-        'visits' => new \Yiisoft\Db\Expression\Expression('visits + 1'),
+    updateColumns: [
+        'visits' => new Expression('visits + 1'),
     ],
-    $params,
+    params: $params,
 )->execute();
 ```
