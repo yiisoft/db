@@ -4,9 +4,14 @@ The `\Yiisoft\Db\Query\Query::groupBy()` method specifies the `GROUP BY` fragmen
 
 For example, the following code will generate a query that groups the results by the `id` column and the `status` column.
 
-```php
-// ... GROUP BY `id`, `status`
+```php 
 $query->groupBy(['id', 'status']);
+```
+
+The relevant part of SQL is:
+
+```sql
+GROUP BY `id`, `status`
 ```
 
 If a `GROUP BY` only involves simple column names, you can specify it using a string, just like you do when writing
