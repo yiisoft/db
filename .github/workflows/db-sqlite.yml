@@ -68,7 +68,7 @@ jobs:
         uses: yiisoft/actions/db/environment-windows@master
 
       - name: Install db.
-        uses: yiisoft/actions/db/subpackage-install@master
+        uses: yiisoft/actions/db/subpackage-install@fixed-subpackage-install
         with:
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
