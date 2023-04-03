@@ -608,13 +608,6 @@ interface CommandInterface
     public function queryAll(): array;
 
     /**
-     * Create query builder instance.
-     *
-     * @return QueryBuilderInterface The query builder instance.
-     */
-    public function queryBuilder(): QueryBuilderInterface;
-
-    /**
      * Execute the SQL statement and returns the first column of the result.
      *
      * This method is best used when you need only the first column of a result
