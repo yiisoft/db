@@ -4,7 +4,10 @@
     "description": "Yii DataBase Library",
     "keywords": [
         "yii",
-        "database"
+        "sql",
+        "database",
+        "query-builder",
+        "dbal"
     ],
     "homepage": "https://www.yiiframework.com/",
     "license": "BSD-3-Clause",
@@ -16,8 +19,6 @@
         "chat": "https://t.me/yii3en",
         "source": "https://github.com/yiisoft/db"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "require": {
         "php": "^8.0",
         "ext-ctype": "*",
@@ -60,9 +61,6 @@
         }
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "3.0.x-dev"
-        },
         "config-plugin-options": {
             "source-directory": "config"
         },

@@ -30,17 +30,33 @@ use function strtr;
 abstract class AbstractColumn implements ColumnInterface
 {
     /**
-     * Internally used constants representing categories that abstract column types fall under.
-     *
-     * {@see $categoryMap} For mappings of abstract column types to category.
+     * Allows you to group and define the abstract column type as primary key.
      */
-    public const CATEGORY_PK = 'pk';
-    public const CATEGORY_STRING = 'string';
-    public const CATEGORY_NUMERIC = 'numeric';
-    public const CATEGORY_TIME = 'time';
-    public const CATEGORY_OTHER = 'other';
-    public const CATEGORY_UUID = 'uuid';
-    public const CATEGORY_UUID_PK = 'uuid_pk';
+    public const TYPE_CATEGORY_PK = 'pk';
+    /**
+     * Allows you to group and define the abstract column type as `string`.
+     */
+    public const TYPE_CATEGORY_STRING = 'string';
+    /**
+     * Allows you to group and define the abstract column type as `numeric`.
+     */
+    public const TYPE_CATEGORY_NUMERIC = 'numeric';
+    /**
+     * Allows you to group and define the abstract column type as `time`.
+     */
+    public const TYPE_CATEGORY_TIME = 'time';
+    /**
+     * Allows you to group and define the abstract column type as `other`.
+     */
+    public const TYPE_CATEGORY_OTHER = 'other';
+    /**
+     * Allows you to group and define the abstract column type as `uuid`.
+     */
+    public const TYPE_CATEGORY_UUID = 'uuid';
+    /**
+     * Allows you to group and define the abstract column type as `uuid` primary key.
+     */
+    public const TYPE_CATEGORY_UUID_PK = 'uuid_pk';
 
     protected bool|null $isNotNull = null;
     protected bool $isUnique = false;
@@ -53,29 +69,29 @@ abstract class AbstractColumn implements ColumnInterface
 
     /** @psalm-var string[] */
     private array $categoryMap = [
-        SchemaInterface::TYPE_PK => self::CATEGORY_PK,
-        SchemaInterface::TYPE_UPK => self::CATEGORY_PK,
-        SchemaInterface::TYPE_BIGPK => self::CATEGORY_PK,
-        SchemaInterface::TYPE_UBIGPK => self::CATEGORY_PK,
-        SchemaInterface::TYPE_CHAR => self::CATEGORY_STRING,
-        SchemaInterface::TYPE_STRING => self::CATEGORY_STRING,
-        SchemaInterface::TYPE_TEXT => self::CATEGORY_STRING,
-        SchemaInterface::TYPE_TINYINT => self::CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_SMALLINT => self::CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_INTEGER => self::CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_BIGINT => self::CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_FLOAT => self::CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_DOUBLE => self::CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_DECIMAL => self::CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_DATETIME => self::CATEGORY_TIME,
-        SchemaInterface::TYPE_TIMESTAMP => self::CATEGORY_TIME,
-        SchemaInterface::TYPE_TIME => self::CATEGORY_TIME,
-        SchemaInterface::TYPE_DATE => self::CATEGORY_TIME,
-        SchemaInterface::TYPE_BINARY => self::CATEGORY_OTHER,
-        SchemaInterface::TYPE_BOOLEAN => self::CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_MONEY => self::CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_UUID => self::CATEGORY_UUID,
-        SchemaInterface::TYPE_UUID_PK => self::CATEGORY_UUID_PK,
+        SchemaInterface::TYPE_PK => self::TYPE_CATEGORY_PK,
+        SchemaInterface::TYPE_UPK => self::TYPE_CATEGORY_PK,
+        SchemaInterface::TYPE_BIGPK => self::TYPE_CATEGORY_PK,
+        SchemaInterface::TYPE_UBIGPK => self::TYPE_CATEGORY_PK,
+        SchemaInterface::TYPE_CHAR => self::TYPE_CATEGORY_STRING,
+        SchemaInterface::TYPE_STRING => self::TYPE_CATEGORY_STRING,
+        SchemaInterface::TYPE_TEXT => self::TYPE_CATEGORY_STRING,
+        SchemaInterface::TYPE_TINYINT => self::TYPE_CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_SMALLINT => self::TYPE_CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_INTEGER => self::TYPE_CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_BIGINT => self::TYPE_CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_FLOAT => self::TYPE_CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_DOUBLE => self::TYPE_CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_DECIMAL => self::TYPE_CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_DATETIME => self::TYPE_CATEGORY_TIME,
+        SchemaInterface::TYPE_TIMESTAMP => self::TYPE_CATEGORY_TIME,
+        SchemaInterface::TYPE_TIME => self::TYPE_CATEGORY_TIME,
+        SchemaInterface::TYPE_DATE => self::TYPE_CATEGORY_TIME,
+        SchemaInterface::TYPE_BINARY => self::TYPE_CATEGORY_OTHER,
+        SchemaInterface::TYPE_BOOLEAN => self::TYPE_CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_MONEY => self::TYPE_CATEGORY_NUMERIC,
+        SchemaInterface::TYPE_UUID => self::TYPE_CATEGORY_UUID,
+        SchemaInterface::TYPE_UUID_PK => self::TYPE_CATEGORY_UUID_PK,
     ];
 
     /**
@@ -164,9 +180,9 @@ abstract class AbstractColumn implements ColumnInterface
     public function asString(): string
     {
         $format = match ($this->getTypeCategory()) {
-            self::CATEGORY_PK => '{type}{check}{comment}{append}',
-            self::CATEGORY_UUID => '{type}{notnull}{unique}{default}{check}{comment}{append}',
-            self::CATEGORY_UUID_PK => '{type}{notnull}{default}{check}{comment}{append}',
+            self::TYPE_CATEGORY_PK => '{type}{check}{comment}{append}',
+            self::TYPE_CATEGORY_UUID => '{type}{notnull}{unique}{default}{check}{comment}{append}',
+            self::TYPE_CATEGORY_UUID_PK => '{type}{notnull}{default}{check}{comment}{append}',
             default => $this->format,
         };
 

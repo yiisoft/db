@@ -19,68 +19,236 @@ use Yiisoft\Db\Schema\Builder\ColumnInterface;
  */
 interface SchemaInterface extends ConstraintSchemaInterface
 {
+    /**
+     * The metadata type for retrieving the table schema.
+     */
     public const SCHEMA = 'schema';
+    /**
+     * The metadata type for retrieving the primary keys constraint.
+     */
     public const PRIMARY_KEY = 'primaryKey';
+    /**
+     * The metadata type for retrieving the indexes constraint.
+     */
     public const INDEXES = 'indexes';
+    /**
+     * The metadata type for retrieving the check constraint.
+     */
     public const CHECKS = 'checks';
+    /**
+     * The metadata type for retrieving the foreign keys constraint.
+     */
     public const FOREIGN_KEYS = 'foreignKeys';
+    /**
+     * The metadata type for retrieving the default values constraint.
+     */
     public const DEFAULT_VALUES = 'defaultValues';
+    /**
+     * The metadata type for retrieving the unique constraint.
+     */
     public const UNIQUES = 'uniques';
+    /**
+     * The metadata type for retrieving the default constraint.
+     */
     public const DEFAULTS = 'defaults';
     /**
-     * Types of supported indexes {@see QueryBuilderInterface::createIndex()}.
-     * MySQL, MSSQL, Oracle, PostgreSQL, SQLite
+     * Define the type of the index as `UNIQUE`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     *
+     * Supported by `MySQL`, `MariaDB`, `MSSQL`, `Oracle`, `PostgreSQL`, `SQLite`.
      */
     public const INDEX_UNIQUE = 'UNIQUE';
-    /* MySQL, PostgreSQL */
+    /**
+     * Define the type of the index as `BTREE`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     *
+     * Supported by `MySQL`, `PostgreSQL`.
+     */
     public const INDEX_BTREE = 'BTREE';
+    /**
+     * Define the type of the index as `HASH`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     *
+     * Supported by `MySQL`, `PostgreSQL`.
+     */
     public const INDEX_HASH = 'HASH';
-    /* MySQL */
+    /**
+     * Define the type of the index as `FULLTEXT`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     *
+     * Supported by `MySQL`.
+     */
     public const INDEX_FULLTEXT = 'FULLTEXT';
+    /**
+     * Define the type of the index as `SPATIAL`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     *
+     * Supported by `MySQL`.
+     */
     public const INDEX_SPATIAL = 'SPATIAL';
-    /* PostgreSQL */
+    /**
+     * Define the type of the index as `GIST`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     *
+     * Supported by `PostgreSQL`.
+     */
     public const INDEX_GIST = 'GIST';
+    /**
+     * Define the type of the index as `GIN`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     *
+     * Supported by `PostgreSQL`.
+     */
     public const INDEX_GIN = 'GIN';
+    /**
+     * Define the type of the index as `BRIN`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     *
+     * Supported by `PostgreSQL`.
+     */
     public const INDEX_BRIN = 'BRIN';
-    /* MS SQL */
+    /**
+     * Define the type of the index as `CLUSTERED`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     *
+     * Supported by `MSSQL`.
+     */
     public const INDEX_CLUSTERED = 'CLUSTERED';
+    /**
+     * Define the type of the index as `NONCLUSTERED`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     *
+     * Supported by `MSSQL`.
+     */
     public const INDEX_NONCLUSTERED = 'NONCLUSTERED';
-    /* Oracle */
+    /**
+     * Define the type of the index as `BITMAP`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     *
+     * Supported by `Oracle`.
+     */
     public const INDEX_BITMAP = 'BITMAP';
-    /* DB Types */
+    /**
+     * Define the abstract column type as primary key.
+     */
     public const TYPE_PK = 'pk';
+    /**
+     * Define the abstract column type as `unsigned` primary key.
+     */
     public const TYPE_UPK = 'upk';
+    /**
+     * Define the abstract column type as big primary key.
+     */
     public const TYPE_BIGPK = 'bigpk';
+    /**
+     * Define the abstract column type as `unsigned` big primary key.
+     */
     public const TYPE_UBIGPK = 'ubigpk';
+    /**
+     * Define the abstract column type as `uuid` primary key.
+     */
     public const TYPE_UUID_PK = 'uuid_pk';
+    /**
+     * Define the abstract column type as `uuid` primary key with sequence.
+     */
     public const TYPE_UUID_PK_SEQ = 'uuid_pk_seq';
+    /**
+     * Define the abstract column type as `uuid`.
+     */
     public const TYPE_UUID = 'uuid';
+    /**
+     * Define the abstract column type as `char`.
+     */
     public const TYPE_CHAR = 'char';
+    /**
+     * Define the abstract column type as `string`.
+     */
     public const TYPE_STRING = 'string';
+    /**
+     * Define the abstract column type as `text`.
+     */
     public const TYPE_TEXT = 'text';
+    /**
+     * Define the abstract column type as `tinyint`.
+     */
     public const TYPE_TINYINT = 'tinyint';
+    /**
+     * Define the abstract column type as `smallint`.
+     */
     public const TYPE_SMALLINT = 'smallint';
+    /**
+     * Define the abstract column type as `integer`.
+     */
     public const TYPE_INTEGER = 'integer';
+    /**
+     * Define the abstract column type as `bigint`.
+     */
     public const TYPE_BIGINT = 'bigint';
+    /**
+     * Define the abstract column type as `float`.
+     */
     public const TYPE_FLOAT = 'float';
+    /**
+     * Define the abstract column type as `double`.
+     */
     public const TYPE_DOUBLE = 'double';
+    /**
+     * Define the abstract column type as `decimal`.
+     */
     public const TYPE_DECIMAL = 'decimal';
+    /**
+     * Define the abstract column type as `datetime`.
+     */
     public const TYPE_DATETIME = 'datetime';
+    /**
+     * Define the abstract column type as `timestamp`.
+     */
     public const TYPE_TIMESTAMP = 'timestamp';
+    /**
+     * Define the abstract column type as `time`.
+     */
     public const TYPE_TIME = 'time';
+    /**
+     * Define the abstract column type as `date`.
+     */
     public const TYPE_DATE = 'date';
+    /**
+     * Define the abstract column type as `binary`.
+     */
     public const TYPE_BINARY = 'binary';
+    /**
+     * Define the abstract column type as `boolean`.
+     */
     public const TYPE_BOOLEAN = 'boolean';
+    /**
+     * Define the abstract column type as `money`.
+     */
     public const TYPE_MONEY = 'money';
+    /**
+     * Define the abstract column type as `json`.
+     */
     public const TYPE_JSON = 'json';
+    /**
+     * Define the abstract column type as `jsonb`.
+     */
     public const TYPE_JSONB = 'jsonb';
-    /* PHP Types */
+
+    /**
+     * Define the php type as `integer` for cast to php value.
+     */
     public const PHP_TYPE_INTEGER = 'integer';
+    /**
+     * Define the php type as `string` for cast to php value.
+     */
     public const PHP_TYPE_STRING = 'string';
+    /**
+     * Define the php type as `boolean` for cast to php value.
+     */
     public const PHP_TYPE_BOOLEAN = 'boolean';
+    /**
+     * Define the php type as `double` for cast to php value.
+     */
     public const PHP_TYPE_DOUBLE = 'double';
+    /**
+     * Define the php type as `resource` for cast to php value.
+     */
     public const PHP_TYPE_RESOURCE = 'resource';
+    /**
+     * Define the php type as `array` for cast to php value.
+     */
     public const PHP_TYPE_ARRAY = 'array';
+    /**
+     * Define the php type as `null` for cast to php value.
+     */
     public const PHP_TYPE_NULL = 'NULL';
 
     /**
