@@ -72,7 +72,8 @@ final class SchemaCache
      *
      * @return mixed Result of `$callable` execution.
      */
-    public function getOrSet(mixed $key, mixed $value = null, string $cacheTag = null): mixed {
+    public function getOrSet(mixed $key, mixed $value = null, string $cacheTag = null): mixed
+    {
         $stringKey = $this->normalize($key);
 
         if ($this->psrCache->has($stringKey)) {
@@ -168,7 +169,7 @@ final class SchemaCache
      * Number of seconds that table metadata can remain valid in cache. Use 'null' to indicate that the cached data will
      * never expire.
      *
-     * @param int|null|DateInterval $value The number of seconds that table metadata can remain valid in cache.
+     * @param DateInterval|int|null $value The number of seconds that table metadata can remain valid in cache.
      *
      * @see setEnable()
      */
