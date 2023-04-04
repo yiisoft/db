@@ -32,7 +32,7 @@ abstract class AbstractDsn implements DsnInterface, Stringable
     {
         $dsn = "$this->driver:" . "host=$this->host";
 
-        if (!empty($this->databaseName)) {
+        if ($this->databaseName !== null && $this->databaseName !== '') {
             $dsn .= ';' . "dbname=$this->databaseName";
         }
 
