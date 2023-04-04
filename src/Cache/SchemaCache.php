@@ -32,7 +32,7 @@ use function strpbrk;
  */
 final class SchemaCache
 {
-    private int|null $duration = 3600;
+    private int|null|DateInterval $duration = 3600;
     private bool $enabled = true;
     private array $exclude = [];
 
@@ -65,8 +65,6 @@ final class SchemaCache
      *
      * @param mixed $key The key identifying the value to cache.
      * @param mixed $value The value to cache.
-     * @param DateInterval|int|null $ttl The TTL of this value. If not set, it uses the default value of
-     * the PSR cache implementation.
      * @param string|null $cacheTag Tag name to tag cache with.
      *
      * @throws InvalidArgumentException Thrown if the `$key` or `$ttl` isn't a legal value.
@@ -74,19 +72,15 @@ final class SchemaCache
      *
      * @return mixed Result of `$callable` execution.
      */
-    public function getOrSet(
-        mixed $key,
-        mixed $value = null,
-        DateInterval|int $ttl = null,
-        string $cacheTag = null
-    ): mixed {
+    public function getOrSet(mixed $key, mixed $value = null, string $cacheTag = null): mixed
+    {
         $stringKey = $this->normalize($key);
 
         if ($this->psrCache->has($stringKey)) {
             return $this->psrCache->get($stringKey);
         }
 
-        $result = $this->psrCache->set($stringKey, $value, $ttl);
+        $result = $this->psrCache->set($stringKey, $value, $this->duration);
 
         if ($result) {
             $this->addToTag($stringKey, $cacheTag);
@@ -101,25 +95,20 @@ final class SchemaCache
      *
      * @param mixed $key The key of the item to store.
      * @param mixed $value The value of the item to store.
-     * @param DateInterval|int|null $ttl Optional. Default is to use underlying PSR implementation value.
      *
      * @throws InvalidArgumentException If the $key string isn't a legal value.
      * @throws RuntimeException If cache value isn't set.
      */
-    public function set(
-        mixed $key,
-        mixed $value,
-        DateInterval|int $ttl = null,
-        string $cacheTag = null
-    ): void {
+    public function set(mixed $key, mixed $value, string $cacheTag = null): void
+    {
         $this->remove($key);
-        $this->getOrSet($key, $value, $ttl, $cacheTag);
+        $this->getOrSet($key, $value, $cacheTag);
     }
 
     /**
-     * @return int|null The number of seconds that table metadata can remain valid in cache.
+     * @return DateInterval|int|null The number of seconds that table metadata can remain valid in cache.
      */
-    public function getDuration(): int|null
+    public function getDuration(): int|null|DateInterval
     {
         return $this->duration;
     }
@@ -180,11 +169,11 @@ final class SchemaCache
      * Number of seconds that table metadata can remain valid in cache. Use 'null' to indicate that the cached data will
      * never expire.
      *
-     * @param int|null $value The number of seconds that table metadata can remain valid in cache.
+     * @param DateInterval|int|null $value The number of seconds that table metadata can remain valid in cache.
      *
      * @see setEnable()
      */
-    public function setDuration(int|null $value): void
+    public function setDuration(int|null|DateInterval $value): void
     {
         $this->duration = $value;
     }

@@ -629,12 +629,7 @@ abstract class AbstractSchema implements SchemaInterface
             return;
         }
 
-        $metadata = $this->schemaCache->getOrSet(
-            $this->getCacheKey($rawName),
-            null,
-            $this->schemaCache->getDuration(),
-            $this->getCacheTag()
-        );
+        $metadata = $this->schemaCache->getOrSet($this->getCacheKey($rawName), null, $this->getCacheTag());
 
         if (
             !is_array($metadata) ||
@@ -665,12 +660,7 @@ abstract class AbstractSchema implements SchemaInterface
         /** @psalm-var int */
         $metadata[self::CACHE_VERSION] = static::SCHEMA_CACHE_VERSION;
 
-        $this->schemaCache->set(
-            $this->getCacheKey($rawName),
-            $metadata,
-            $this->schemaCache->getDuration(),
-            $this->getCacheTag()
-        );
+        $this->schemaCache->set($this->getCacheKey($rawName), $metadata, $this->getCacheTag());
     }
 
     /**
