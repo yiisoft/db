@@ -36,4 +36,23 @@ final class StringHelperTest extends TestCase
     {
         $this->assertEquals($expectedResult, StringHelper::pascalCaseToId($input));
     }
+
+    public function testNormalizeFloat()
+    {
+        $this->assertSame('123', StringHelper::normalizeFloat(123));
+        $this->assertSame('-123', StringHelper::normalizeFloat(-123));
+        $this->assertSame('-2.5479E-70', StringHelper::normalizeFloat(-2.5479E-70));
+        $this->assertSame('2.5479E-70', StringHelper::normalizeFloat(2.5479E-70));
+        $this->assertSame('123.42', StringHelper::normalizeFloat(123.42));
+        $this->assertSame('-123.42', StringHelper::normalizeFloat(-123.42));
+        $this->assertSame('123.42', StringHelper::normalizeFloat('123.42'));
+        $this->assertSame('-123.42', StringHelper::normalizeFloat('-123.42'));
+        $this->assertSame('123.42', StringHelper::normalizeFloat('123,42'));
+        $this->assertSame('-123.42', StringHelper::normalizeFloat('-123,42'));
+        $this->assertSame('123123123.123', StringHelper::normalizeFloat('123.123.123,123'));
+        $this->assertSame('123123123.123', StringHelper::normalizeFloat('123,123,123.123'));
+        $this->assertSame('123123123.123', StringHelper::normalizeFloat('123 123 123,123'));
+        $this->assertSame('123123123.123', StringHelper::normalizeFloat('123 123 123.123'));
+        $this->assertSame('-123123123.123', StringHelper::normalizeFloat('-123 123 123.123'));
+    }
 }
