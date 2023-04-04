@@ -22,7 +22,7 @@ abstract class AbstractDsn implements DsnInterface, Stringable
     public function __construct(
         private string $driver,
         private string $host,
-        private string $databaseName = '',
+        private string|null $databaseName = null,
         private string|null $port = null,
         private array $options = []
     ) {
@@ -32,7 +32,7 @@ abstract class AbstractDsn implements DsnInterface, Stringable
     {
         $dsn = "$this->driver:" . "host=$this->host";
 
-        if ($this->databaseName !== '') {
+        if (!empty($this->databaseName)) {
             $dsn .= ';' . "dbname=$this->databaseName";
         }
 
@@ -62,9 +62,9 @@ abstract class AbstractDsn implements DsnInterface, Stringable
     }
 
     /**
-     * @return string The database name to connect to.
+     * @return string|null The database name to connect to.
      */
-    public function getDatabaseName(): string
+    public function getDatabaseName(): string|null
     {
         return $this->databaseName;
     }
