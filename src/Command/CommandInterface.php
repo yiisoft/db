@@ -688,6 +688,11 @@ interface CommandInterface
     public function resetSequence(string $table, int|string $value = null): static;
 
     /**
+     * Show all databases in the current connection.
+     */
+    public function showDatabases(): array;
+
+    /**
      * Sets the profiler instance.
      *
      * @param ProfilerInterface|null $profiler The profiler instance.
