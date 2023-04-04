@@ -18,7 +18,7 @@ use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**
- * This interface represents a database command, such as a `SELECT`, `INSERT`, `UPDATE`, or `DELETE`.
+ * This interface represents a database command, such as a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement.
  *
  * A command instance is usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
  */

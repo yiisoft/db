@@ -133,20 +133,22 @@ class Query implements QueryInterface
 
     public function addParams(array $params): static
     {
-        if (!empty($params)) {
-            if (empty($this->params)) {
-                $this->params = $params;
-            } else {
-                /**
-                 * @psalm-var array $params
-                 * @psalm-var mixed $value
-                 */
-                foreach ($params as $name => $value) {
-                    if (is_int($name)) {
-                        $this->params[] = $value;
-                    } else {
-                        $this->params[$name] = $value;
-                    }
+        if (empty($params)) {
+            return $this;
+        }
+
+        if (empty($this->params)) {
+            $this->params = $params;
+        } else {
+            /**
+             * @psalm-var array $params
+             * @psalm-var mixed $value
+             */
+            foreach ($params as $name => $value) {
+                if (is_int($name)) {
+                    $this->params[] = $value;
+                } else {
+                    $this->params[$name] = $value;
                 }
             }
         }

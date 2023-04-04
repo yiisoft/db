@@ -56,7 +56,7 @@ use function strncmp;
  * When binding a parameter, the SQL statement is automatically prepared. You may also call {@see prepare()} explicitly
  * to do it.
  *
- * Abstract command supports building SQL statements using methods such as {@see insert()}, {@see update()},
+ * Abstract command supports building some SQL statements using methods such as {@see insert()}, {@see update()}, {@see delete()},
  * etc.
  *
  * For example, the following code will create and execute an `INSERT` SQL statement:
@@ -68,7 +68,7 @@ use function strncmp;
  * )->execute();
  * ```
  *
- * To build `SELECT` SQL statements, please use {@see QueryInterface} instead.
+ * To build `SELECT` SQL statements, please use {@see QueryInterface} and its implementations instead.
  */
 abstract class AbstractCommand implements CommandInterface
 {
