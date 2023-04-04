@@ -187,8 +187,8 @@ interface ConnectionInterface
      *
      * It does nothing if a DB connection is active.
      *
-     * @throws Exception
-     * @throws InvalidConfigException If connection fails.
+     * @throws Exception If connection fails.
+     * @throws InvalidConfigException If connection can not be established because of incomplete configuration.
      */
     public function open(): void;
 
