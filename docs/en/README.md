@@ -140,3 +140,15 @@ You can use it to execute **SQL** statements that don't return any result set, s
 
 - [DDL commands](/docs/en/command/ddl.md)
 - [DML commands](/docs/en/command/dml.md)
+
+## Extensions
+
+The following extensions are available for Yii DB.
+
+- [Active Record](https://github.com/yiisoft/active-record).
+- [Cache DB](https://github.com/yiisoft/cache-db)
+- [Data DB](https://github.com/yiisoft/data-db)
+- [Log Target DB](https://github.com/yiisoft/log-target-db)
+- [Rbac DB](https://github.com/yiisoft/rbac-db)
+- [Translator Message DB](https://github.com/yiisoft/translator-message-db)
+- [Yii DB Migration](https://github.com/yiisoft/yii-db-migration)
