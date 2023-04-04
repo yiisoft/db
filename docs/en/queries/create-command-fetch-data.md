@@ -21,7 +21,7 @@ In the command, there are different methods to **fetch data**:
 - [queryScalar()](#query-scalar)
 - [query()](#query)
 
-> **Note:** To preserve precision, all data fetched from databases in the string type, even if the corresponding 
+> Note: To preserve precision, all data fetched from databases in the string type, even if the corresponding 
 > database column types are different, numerical for example.
 > You may need to use type conversion to convert them into the corresponding PHP types.
 

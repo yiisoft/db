@@ -25,7 +25,7 @@ $query->from(['{{public.%user}} u', '{{public.%post}} p']);
 $query->from('{{public.%user}} u, {{public.%post}} p');
 ```
 
-> **Tip:** Prefer the array format since it leaves less space for mistakes and is cleaner overall.
+> Tip: Prefer the array format since it leaves less space for mistakes and is cleaner overall.
 
 If you're using the array format, you can also specify the table aliases in array keys, like the following.
 

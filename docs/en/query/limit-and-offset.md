@@ -17,5 +17,5 @@ LIMIT 10 OFFSET 20
 
 The query ignores invalid limit or offset such as a negative value.
 
-> **Note:** For DBMS that don't support `LIMIT` and `OFFSET` such as `MSSQL`, query builder will generate a SQL 
+> Note: For DBMS that don't support `LIMIT` and `OFFSET` such as `MSSQL`, query builder will generate a SQL 
 > statement that emulates this behavior.

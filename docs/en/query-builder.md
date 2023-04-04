@@ -43,7 +43,7 @@ WHERE `last_name` = :last_name
 LIMIT 10
 ```
 
-> **Note**: `Yiisoft\Db\Query\Query` is intended to be used more instead of `Yiisoft\Db\QueryBuilder\QueryBuilder`.
+> Note: `Yiisoft\Db\Query\Query` is intended to be used more instead of `Yiisoft\Db\QueryBuilder\QueryBuilder`.
 > The former invokes the latter implicitly when you call one of the query methods.
 > `Yiisoft\Db\QueryBuilder\QueryBuilder` is the class responsible for generating DBMS-dependent SQL statements such as
 > `SELECT`, `FROM`, `WHERE`, `ORDER BY` from `Yiisoft\Db\Query\Query`.

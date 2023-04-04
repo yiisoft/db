@@ -72,7 +72,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->dropTable('{{%customer}}')->execute();
 ```
 
-> **Warning**: All existing data will be deleted.
+> Warning: All existing data will be deleted.
 
 ### Truncate a table
 
@@ -90,7 +90,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->truncateTable('{{%customer}}')->execute();
 ```
 
-> **Warning**: All existing data will be deleted.
+> Warning: All existing data will be deleted.
 
 ## Columns
 
