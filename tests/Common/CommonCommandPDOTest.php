@@ -207,6 +207,11 @@ abstract class CommonCommandPDOTest extends TestCase
                 $this->internalGetQueryResult(1024);
             }
 
+            public function showDatabases(): array
+            {
+                $this->showDatabases();
+            }
+
             protected function getQueryBuilder(): QueryBuilderInterface
             {
             }
