@@ -21,12 +21,12 @@ $query->where('status = 1');
 // or use parameter binding to bind dynamic parameter values
 $query->where('status = :status', [':status' => $status]);
 
-// raw SQL using MySQL YEAR() function on a date field
+// raw SQL using MySQL "YEAR()" function on a date field
 $query->where('YEAR(somedate) = 2015');
 ```
 
 Don't embed variables directly in the condition like the following, especially if the variable values come
-from end user inputs, because this will make your application subject to SQL injection attacks.
+from end user inputs, because this will make your application a subject to SQL injection attacks.
 
 ```php
 // Dangerous! Don't do this unless you are certain $status must be an integer.
@@ -45,17 +45,22 @@ you may use the DBMS agnostic quoting syntax for table and column names when wri
 
 ## Hash format
 
-Hash format is best used to specify many `AND`-concatenated sub-conditions each being a simple equality assertion.
-It's written as an array whose keys are column names and values the corresponding values that the columns should be.
+Hash format is best used to specify many `AND`-concatenated subconditions each being a simple equality assertion.
+It's written as an array whose keys are column names and values are their corresponding values.
 
 ```php
-// ...WHERE (`status` = 10) AND (`type` IS NULL) AND (`id` IN (4, 8, 15))
 $query->where(['status' => 10, 'type' => null, 'id' => [4, 8, 15]]);
+```
+
+The relevant part of SQL is:
+
+```sql
+WHERE (`status` = 10) AND (`type` IS NULL) AND (`id` IN (4, 8, 15))
 ```
 
 As you can see, the query builder is intelligent enough to handle values that are nulls or arrays.
 
-You can also use sub-queries with hash format like the following.
+You can also use subqueries with hash format like the following.
 
 ```php
 <?php
@@ -68,9 +73,13 @@ use Yiisoft\Db\Query\Query;
 /** @var ConnectionInterface $db */
 
 $userQuery = (new Query($db))->select('id')->from('user');
-
-// ...WHERE `id` IN (SELECT `id` FROM `user`)
 $query->where(['id' => $userQuery]);
+```
+
+The relevant part of SQL is:
+
+```sql
+WHERE `id` IN (SELECT `id` FROM `user`)
 ```
 
 Using the hash format, [Yii DB](https://github.com/yiisoft/db) internally applies parameter binding for values,
@@ -78,9 +87,9 @@ so in contrast to the string format, here you don't have to add parameters manua
 
 However, note that [Yii DB](https://github.com/yiisoft/db) never escapes column names, so if you pass a variable
 obtained from the user side as a column name without any more checks, the application will become vulnerable
-to SQL injection attack.
+to SQL injection attacks.
 
-To keep the application secure, either don't use variables as column names or filter variables with allow-list.
+To keep the application secure, either don't use variables as column names or filter variables with whitelist.
 
 For example, the following code is vulnerable.
 
@@ -109,9 +118,9 @@ while the operator can be one of the following:
   For example, `['and', 'type=1', ['or', 'id=1', 'id=2']]` will generate `type=1 AND (id=1 OR id=2)`.
   The method won't do any quoting or escaping.
 - `or`: Similar to the `and` operator except that the operands are concatenated using `OR`.
-- `not`: Requires only operand 1, which will be wrapped in `NOT()`.
+- `not`: Requires only 1 operand, which will be wrapped in `NOT()`.
   For example, `['not', 'id=1']` will generate `NOT (id=1)`.
-  Operand 1 may also be an array to describe many expressions.
+  Operand may also be an array to describe many expressions.
   For example `['not', ['status' => 'draft', 'name' => 'example']]` will generate
   `NOT ((status='draft') AND (name='example'))`.
 - `between`: Operand 1 should be the column name, and operand 2 and 3 should be the starting and ending values of
@@ -125,7 +134,7 @@ while the operator can be one of the following:
   It will generate an `IN` condition.
   If Operand 2 is an array, it will represent the range of the values that the column or DB expression should be;
   If Operand 2 is a `Yiisoft\Db\Query\Query` object,
-  a sub-query will be generated and used as the range of the column or DB expression.
+  a subquery will be generated and used as the range of the column or DB expression.
   For example, `['in', 'id', [1, 2, 3]]` will generate id `IN (1, 2, 3)`.
   The method will quote the column name and escape values in the range.
   The in operator also supports composite columns.
@@ -178,17 +187,16 @@ $query->where(['=', $column, $value]);
 
 ## Object format
 
-Object Form most powerful and most complex way to define conditions.
+Object format is most powerful yet the most complex way to define conditions.
 You need to follow it either if you want to build your own abstraction over query builder
 or if you want to implement your own complex conditions.
 
 Instances of condition classes are immutable.
-Their only purpose is to store condition data and give getters for condition builders.
+Their only purpose is to store condition data and provide getters for condition builders.
 Condition builder is a class that holds the logic that transforms data stored in condition into the SQL expression.
 
 Internally, the formats described are implicitly converted to object format before building raw SQL,
 so it's possible to combine formats in a single condition:
-
 
 ```php
 <?php
@@ -224,7 +232,8 @@ that maps operator names to representative class names.
 ## Appending conditions
 
 You can use `Yiisoft\Db\Query\Query::andWhere()` or `Yiisoft\Db\Query\Query::orWhere()` to append more conditions
-to an existing one. You can call them many times to append many conditions.
+to an existing one. You can call them multiple times to append many conditions. This is useful for conditional logic
+for example:
 
 ```php
 $status = 10;
@@ -249,9 +258,9 @@ When building `WHERE` conditions based on input from end users, you usually want
 that are empty.
 
 For example, in a search form which allows you to search by username and email, you would like
-to ignore the username/email condition if the user doesn't enter anything in the username/email input field.
+to ignore the username/email condition if the user didn't enter anything in the corresponding input field.
 
-You can achieve this goal by using the `Yiisoft\Db\Query\Query::filterWhere()` method.
+You can achieve this goal by using the `Yiisoft\Db\Query\Query::filterWhere()` method:
 
 ```php	
 // $username and $email are from user inputs
@@ -264,22 +273,24 @@ is that the former will ignore empty values provided in the condition in hash fo
 So, if `$email` is empty while `$username` isn't,
 the above code will result in the SQL condition `WHERE username=:username`.
 
-> Info: A value is considered empty if it's `null`, an empty array, an empty string or a string consisting of space only.
+> **Note:** A value is considered empty if it's either `null`, an empty array, an empty string or a string containing 
+> whitespaces only.
 
-Like `Yiisoft\Db\Query\Query::andWhere()` and `Yiisoft\Db\Query\Query::orWhere()`,
+Like with `Yiisoft\Db\Query\Query::andWhere()` and `Yiisoft\Db\Query\Query::orWhere()`,
 you can use `Yiisoft\Db\Query\Query::andFilterWhere()`
 and `Yiisoft\Db\Query\Query::orFilterWhere()` to append more filter conditions to the existing one.
 
-Additionally, there is `Yiisoft\Db\Query\Query::andFilterCompare()` that can intelligently decide operator based on
+Additionally, there is `Yiisoft\Db\Query\Query::andFilterCompare()` that can intelligently determine operator based on
 what's in the value.
 
 ```php
-$query->andFilterCompare('name', 'John Doe');
-$query->andFilterCompare('rating', '>9');
-$query->andFilterCompare('value', '<=100');
+$query
+    ->andFilterCompare('name', 'John Doe');
+    ->andFilterCompare('rating', '>9');
+    ->andFilterCompare('value', '<=100');
 ```
 
-You can also specify the operator explicitly.
+You can also specify the operator explicitly:
 
 ```php
 $query->andFilterCompare('name', 'Doe', 'like');

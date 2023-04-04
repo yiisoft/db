@@ -63,21 +63,31 @@ use Yiisoft\Db\Query\Query;
 /** @var ConnectionInterface $db */
 
 $subQuery = (new Query($db))->select('COUNT(*)')->from('{{%user}}');
-
-// SELECT `id`, (SELECT COUNT(*) FROM `user`) AS `count` FROM `post`
 $query = (new Query($db))->select(['id', 'count' => $subQuery])->from('{{%post}}');
+```
+
+The equivalent SQL is:
+
+```sql
+SELECT `id`, (SELECT COUNT(*) FROM `user`) AS `count` FROM `post`
 ```
 
 To select distinct rows, you may call `distinct()`, like the following.
 
 ```php
-// SELECT DISTINCT `user_id` ...
 $query->select('user_id')->distinct();
+```
+
+The relevant part of SQL is:
+
+```sql
+SELECT DISTINCT `user_id`
 ```
 
 You can call `Yiisoft\Db\Query\Query::addSelect()` to select more columns.
 
-For example, the following code will select `id` and `username` columns, additionally to the `email` column. 
+For example, the following code will select `email` column, additionally to `id` and `username` columns specified 
+initially: 
 
 ```php
 $query->select(['id', 'username'])->addSelect(['email']);

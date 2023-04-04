@@ -3,7 +3,7 @@
 Data Definition Language (DDL) is a set of SQL statements to define the database structure.
 
 DDL statements are used to create and change the database objects in a database.
-These objects can be tables, indexes, views, stored procedures, triggers, and more.
+These objects can be tables, indexes, views, stored procedures, triggers, and so on.
 
 ## Tables
 
@@ -58,7 +58,8 @@ CREATE TABLE `customer` (
 
 ### Drop a table
 
-To drop a table, you can use the `Yiisoft\Db\Command\CommandInterface::dropTable()` method:
+To drop a table with schema declaration and and all its data, you can use the 
+`Yiisoft\Db\Command\CommandInterface::dropTable()` method:
 
 ```php
 <?php
@@ -71,9 +72,12 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->dropTable('{{%customer}}')->execute();
 ```
 
+> Warning: All existing data will be deleted.
+
 ### Truncate a table
 
-To clear all data of a table, you can use the `Yiisoft\Db\Command\CommandInterface::truncateTable()` method:
+To clear just the data of a table without removing schema declaration, you can use the 
+`Yiisoft\Db\Command\CommandInterface::truncateTable()` method:
 
 ```php
 <?php
@@ -85,6 +89,8 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 /** @var ConnectionInterface $db */
 $db->createCommand()->truncateTable('{{%customer}}')->execute();
 ```
+
+> Warning: All existing data will be deleted.
 
 ## Columns
 
@@ -435,7 +441,6 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 /** @var ConnectionInterface $db */
 $db->createCommand()->dropCheck('{{%customer}}', 'ck-customer-status')->execute();
 ```
-
 
 ## Comments
 

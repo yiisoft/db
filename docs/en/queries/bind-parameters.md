@@ -1,6 +1,6 @@
 # Bind parameters
 
-There are two use-cases for biding parameters:
+There are two use-cases for binding parameters:
 
 - When you do the same query with different data many times.
 - When you need to insert values into SQL string to prevent **SQL injection attacks**.
@@ -9,7 +9,7 @@ You can do binding by using named placeholders (`:name`) or positional placehold
 pass values as a separate argument.
 
 > Info: In many places in higher abstraction layers, like **query builder**, you often specify an
-**array of values** and Yii does parameter binding for you, so there is no need to specify
+**array of values** and Yii DB does parameter binding for you, so there is no need to specify
 parameters manually.
 
 ## Bind a single value

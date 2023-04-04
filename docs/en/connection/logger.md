@@ -6,6 +6,7 @@ You can configure a logger that implements `Psr\Log\LoggerInterface::class` in t
 
 In the following example, you configure [Yii Logging Library](https://github.com/yiisoft/log) with a
 [file target](https://github.com/yiisoft/log-target-file).
+
 Create a file `config/common/di/logger.php`:
 
 ```php
@@ -28,7 +29,8 @@ return [
 ];
 ```
 
-Create a file `config/common/di/db-pgsql.php`:
+Depending on used DBMS, create a file with database connection configuration. For example, when using PostgreSQL, it 
+will be `config/common/di/db-pgsql.php`:
 
 ```php
 <?php
@@ -57,3 +59,5 @@ return [
     ],
 ];
 ```
+
+For other DBMS refer to ["Create connecton"](/docs/en/README.md#create-connection) section.

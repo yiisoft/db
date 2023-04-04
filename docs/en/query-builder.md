@@ -8,7 +8,7 @@ and generate more secure SQL statements.
 
 Using a query builder usually involves two steps:
 
-1. Build a `Yiisoft\Db\Query\Query` class to represent different parts (such as `SELECT`, `FROM`) of a `SELECT`
+1. Build a `Yiisoft\Db\Query\Query` class instance to represent different parts (such as `SELECT`, `FROM`) of a `SELECT`
    SQL statement.
 2. Execute a **query method** for example, `all()`, `one()`, `scalar()`, `column()`, `query()` of
    `Yiisoft\Db\Query\Query` to retrieve data from the database.
@@ -34,7 +34,7 @@ $rows = (new Query($db))
 ```
 
 The above code generates and executes the following SQL query, where the `:last_name` parameter is bound with
-the string 'Smith'.
+the string `Smith`:
 
 ```sql
 SELECT `id`, `email` 
@@ -43,10 +43,10 @@ WHERE `last_name` = :last_name
 LIMIT 10
 ```
 
-> Info: You usually mainly work with `Yiisoft\Db\Query\Query` instead of `Yiisoft\Db\QueryBuilder\QueryBuilder`.
+> Note: `Yiisoft\Db\Query\Query` is intended to be used more instead of `Yiisoft\Db\QueryBuilder\QueryBuilder`.
 > The former invokes the latter implicitly when you call one of the query methods.
 > `Yiisoft\Db\QueryBuilder\QueryBuilder` is the class responsible for generating DBMS-dependent SQL statements such as
-> `SELECT`, `FROM`, `WHERE`, `ORDERBY` from `Yiisoft\Db\Query\Query`.
+> `SELECT`, `FROM`, `WHERE`, `ORDER BY` from `Yiisoft\Db\Query\Query`.
 
 ## Usage
 
