@@ -47,7 +47,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 ALTER TABLE [[CN_check]] ADD CONSTRAINT [[T_constraints_1]] CHECK ([[C_not_null]] > 100)
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -65,7 +65,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
                 SQL . ' ' . $qb->getColumnType(SchemaInterface::TYPE_STRING),
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -86,7 +86,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 COMMENT ON COLUMN [[customer]].[[id]] IS 'Primary key.'
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -107,7 +107,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 COMMENT ON TABLE [[customer]] IS 'Customer table.'
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -129,7 +129,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 ALTER TABLE [[T_constraints_1]] ALTER COLUMN [[C_default]] SET DEFAULT 1
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -197,7 +197,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 ALTER TABLE [[customer]] CHANGE [[email]] [[email]]
                 SQL . ' ' . $qb->getColumnType(SchemaInterface::TYPE_STRING),
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -240,7 +240,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $db->getQueryBuilder()->build($query);
 
-        $replacedQuotes = DbHelper::replaceQuotes((string) $expected, $db->getName());
+        $replacedQuotes = DbHelper::replaceQuotes((string) $expected, $db->getDriverName());
 
         $this->assertIsString($replacedQuotes);
         $this->assertEquals('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $replacedQuotes), $sql);
@@ -271,7 +271,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame(
-            DbHelper::replaceQuotes('[[id]], [[name]], [[email]], [[address]], [[status]]', $db->getName()),
+            DbHelper::replaceQuotes('[[id]], [[name]], [[email]], [[address]], [[status]]', $db->getDriverName()),
             $qb->buildColumns(['id', 'name', 'email', 'address', 'status']),
         );
     }
@@ -289,7 +289,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 '[[id]], [[name]], [[email]], [[address]], [[status]], COUNT(*)',
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->buildColumns(['id', 'name', 'email', 'address', 'status', new Expression('COUNT(*)')]),
         );
@@ -318,7 +318,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[admin_user]] WHERE [[id]] IN (:qp0, :qp1)
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -344,7 +344,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame(
             'SELECT *' . (
-                empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getName())
+                empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())
             ),
             $sql,
         );
@@ -369,7 +369,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 FROM [[admin_user]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->buildFrom($query->getFrom(), $params),
         );
@@ -392,7 +392,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 GROUP BY [[id]], [[name]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->buildGroupBy($query->getGroupBy(), $params),
         );
@@ -417,7 +417,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 HAVING [[id]]=:qp0
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->buildHaving($query->getHaving(), $params),
         );
@@ -441,7 +441,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 INNER JOIN [[admin_profile]] ON admin_user.id = admin_profile.user_id
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->buildJoin($query->getJoin(), $params),
         );
@@ -466,7 +466,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $db->getQueryBuilder()->build($query);
 
-        $replacedQuotes = DbHelper::replaceQuotes($expected, $db->getName());
+        $replacedQuotes = DbHelper::replaceQuotes($expected, $db->getDriverName());
 
         $this->assertIsString($replacedQuotes);
         $this->assertSame('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $replacedQuotes), $sql);
@@ -510,7 +510,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 ORDER BY [[id]], [[name]] DESC
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->buildOrderBy($query->getOrderBy(), $params),
         );
@@ -536,14 +536,14 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[admin_user]] ORDER BY [[id]], [[name]] DESC LIMIT 10 OFFSET 5
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->buildOrderByAndLimit(
                 DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[admin_user]]
                     SQL,
-                    $db->getName(),
+                    $db->getDriverName(),
                 ),
                 $query->getOrderBy(),
                 $query->getLimit(),
@@ -571,7 +571,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT [[id]], [[name]], [[email]], [[address]], [[status]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->buildSelect($query->getSelect(), $params),
         );
@@ -595,7 +595,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT [[id]] AS [[a]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->buildSelect(['id as a'], $params),
         );
@@ -620,7 +620,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT DISTINCT [[id]], [[name]], [[email]], [[address]], [[status]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->buildSelect($query->getSelect(), $params, true),
         );
@@ -645,7 +645,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 UNION ( SELECT * FROM [[admin_profile]] )
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->buildUnion($query->getUnion(), $params),
         );
@@ -670,7 +670,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 WITH cte AS (SELECT * FROM [[admin_profile]])
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->buildWithQueries($query->getWithQueries(), $params),
         );
@@ -691,7 +691,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             <<<SQL
             case t.Status_Id when 1 then 'Acknowledge' when 2 then 'No Action' else 'Unknown Action' END as [[Next Action]]
             SQL,
-            $db->getName(),
+            $db->getDriverName(),
         );
 
         $this->assertIsString($expressionString);
@@ -716,7 +716,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT [[t]].[[id]] AS [[ID]], [[gsm]].[[username]] AS [[GSM]], [[part]].[[Part]], [[t]].[[Part_Cost]] AS [[Part Cost]], st_x(location::geometry) AS [[lon]], case t.Status_Id when 1 then 'Acknowledge' when 2 then 'No Action' else 'Unknown Action' END as [[Next Action]] FROM [[tablename]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -767,7 +767,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[no_exist_table]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -797,7 +797,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM {{%user}} USE INDEX (primary)
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -815,7 +815,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM {{user}} {{t}} FORCE INDEX (primary) IGNORE INDEX FOR ORDER BY (i1) LEFT JOIN [[profile]] [[p]] ON user.id = profile.user_id USE INDEX (i2)
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -847,7 +847,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM (SELECT * FROM [[user]] WHERE account_id = accounts.id) [[activeusers]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -865,7 +865,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM (SELECT * FROM [[user]] WHERE account_id = :id) [[activeusers]] WHERE abc = :abc
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -883,7 +883,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM (SELECT * FROM user WHERE account_id = accounts.id) [[activeusers]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -912,7 +912,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[operations]] GROUP BY [[name]], [[date]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -928,7 +928,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[operations]] GROUP BY [[name]], [[date]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -948,7 +948,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[operations]] WHERE account_id = accounts.id GROUP BY SUBSTR(name, 0, 1), x
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -967,7 +967,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[operations]] GROUP BY SUBSTR(name, 0, :to), x
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1045,7 +1045,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[operations]] ORDER BY [[name]], [[date]] DESC
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1061,7 +1061,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[operations]] ORDER BY [[name]], [[date]] DESC
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1081,7 +1081,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[operations]] WHERE account_id = accounts.id ORDER BY SUBSTR(name, 3, 4) DESC, x ASC
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1100,7 +1100,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[operations]] ORDER BY SUBSTR(name, 3, :to) DESC, x ASC
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1133,7 +1133,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 WITH a1 AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1), a2 AS ((SELECT [[id]] FROM [[t2]] INNER JOIN [[a1]] ON t2.id = a1.id WHERE expr = 2) UNION ( SELECT [[id]] FROM [[t3]] WHERE expr = 3 )) SELECT * FROM [[a2]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1162,7 +1162,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 WITH RECURSIVE a1 AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1) SELECT * FROM [[a1]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1189,7 +1189,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT 1 AS ab FROM [[tablename]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1208,7 +1208,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT 1 AS ab, 2 AS cd, 3 AS [[ef]] FROM [[tablename]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1225,7 +1225,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT SUBSTR(name, 0, :len) FROM [[tablename]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1253,7 +1253,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT *, (SELECT COUNT(*) FROM [[operations]] WHERE account_id = accounts.id) AS [[operations_count]] FROM [[accounts]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1304,7 +1304,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[table]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql
         );
@@ -1319,7 +1319,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 SELECT *
                 FROM [[table]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1354,7 +1354,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 (SELECT [[id]] FROM [[TotalExample]] [[t1]] WHERE (w > 0) AND (x < 2)) UNION ( SELECT [[id]] FROM [[TotalTotalExample]] [[t2]] WHERE w > 5 ) UNION ALL ( SELECT [[id]] FROM [[TotalTotalExample]] [[t3]] WHERE w = 3 )
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1415,7 +1415,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (([[w]].[[merchant_id]]=:qp0) AND ([[w]].[[user_id]]=:qp1)))) AND ([[t]].[[some_column]]=:qp2)
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1451,7 +1451,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (w.merchant_id = :merchant_id))) AND (t.some_column = :some_value)
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1535,7 +1535,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 CREATE VIEW [[animal_view]] AS SELECT [[1]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->createView('animal_view', (new query($db))->select('1')),
         );
@@ -1570,7 +1570,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 ALTER TABLE [[T_constraints_1]] DROP CONSTRAINT [[CN_check]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->dropCheck('T_constraints_1', 'CN_check'),
         );
@@ -1587,7 +1587,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 ALTER TABLE [[customer]] DROP COLUMN [[id]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->dropColumn('customer', 'id'),
         );
@@ -1604,7 +1604,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 COMMENT ON COLUMN [customer].[id] IS NULL
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->dropCommentFromColumn('customer', 'id'),
         );
@@ -1621,7 +1621,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 COMMENT ON TABLE [[customer]] IS NULL
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->dropCommentFromTable('customer'),
         );
@@ -1642,7 +1642,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 ALTER TABLE [[T_constraints_1]] ALTER COLUMN [[C_default]] DROP DEFAULT
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->dropDefaultValue('T_constraints_1', 'CN_pk'),
         );
@@ -1659,7 +1659,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 ALTER TABLE [[T_constraints_3]] DROP CONSTRAINT [[CN_constraints_3]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->dropForeignKey('T_constraints_3', 'CN_constraints_3'),
         );
@@ -1676,7 +1676,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 DROP INDEX [[CN_constraints_2_single]] ON [[T_constraints_2]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->dropIndex('T_constraints_2', 'CN_constraints_2_single'),
         );
@@ -1693,7 +1693,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 ALTER TABLE [[T_constraints_1]] DROP CONSTRAINT [[CN_pk]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->dropPrimaryKey('T_constraints_1', 'CN_pk'),
         );
@@ -1710,7 +1710,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 DROP TABLE [[customer]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->dropTable('customer'),
         );
@@ -1727,7 +1727,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 ALTER TABLE [[test_uq]] DROP CONSTRAINT [[test_uq_constraint]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->dropUnique('test_uq', 'test_uq_constraint'),
         );
@@ -1744,7 +1744,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 DROP VIEW [[animal_view]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $qb->dropview('animal_view'),
         );
@@ -1859,7 +1859,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 ALTER TABLE [[alpha]] RENAME COLUMN [[string_identifier]] TO [[string_identifier_test]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1877,7 +1877,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 RENAME TABLE [[alpha]] TO [[alpha-test]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -1917,7 +1917,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
 
-        if ($db->getName() === 'db') {
+        if ($db->getDriverName() === 'db') {
             $this->expectException(NotSupportedException::class);
             $this->expectExceptionMessage(
                 'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.'
@@ -1941,7 +1941,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
 
-        if ($db->getName() === 'db') {
+        if ($db->getDriverName() === 'db') {
             $this->expectException(NotSupportedException::class);
             $this->expectExceptionMessage(
                 'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.'
@@ -1986,7 +1986,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             <<<SQL
             SELECT 1 AS ab FROM [[tablename]]
             SQL,
-            $db->getName(),
+            $db->getDriverName(),
         );
 
         $this->assertSame($expected, $sql);
@@ -2004,7 +2004,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             <<<SQL
             SELECT 1 AS ab, 2 AS cd, 3 AS [[ef]] FROM [[tablename]]
             SQL,
-            $db->getName(),
+            $db->getDriverName(),
         );
 
         $this->assertSame($expected, $sql);
@@ -2020,7 +2020,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             <<<SQL
             SELECT SUBSTR(name, 0, :len) FROM [[tablename]]
             SQL,
-            $db->getName(),
+            $db->getDriverName(),
         );
 
         $this->assertSame($expected, $sql);
@@ -2042,7 +2042,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             <<<SQL
             SELECT *, (SELECT COUNT(*) FROM [[operations]] WHERE account_id = accounts.id) AS [[operations_count]] FROM [[accounts]]
             SQL,
-            $db->getName(),
+            $db->getDriverName(),
         );
         $subquery = (new Query($db))->select('COUNT(*)')->from('operations')->where('account_id = accounts.id');
         $query = (new Query($db))->select('*')->from('accounts')->addSelect(['operations_count' => $subquery]);
@@ -2096,7 +2096,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 SELECT * FROM [[table]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql
         );
@@ -2111,7 +2111,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 SELECT *
                 FROM [[table]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -2130,7 +2130,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 TRUNCATE TABLE [[customer]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -2142,7 +2142,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 <<<SQL
                 TRUNCATE TABLE [[T_constraints_1]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -2254,7 +2254,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals(
             DbHelper::replaceQuotes(
                 'SELECT * FROM [[animal]] WHERE (id = 1 AND type = (select type from {{%animal}}) where id=1) AND ([[type]]=\'test1\')',
-                $db->getName()
+                $db->getDriverName()
             ),
             $command->getRawSql()
         );
@@ -2285,7 +2285,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals(
             DbHelper::replaceQuotes(
                 'SELECT * FROM [[animal]] WHERE (id = 1) AND ([[type]]=\'test2\')',
-                $db->getName()
+                $db->getDriverName()
             ),
             $command->getRawSql()
         );

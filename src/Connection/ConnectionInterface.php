@@ -98,7 +98,7 @@ interface ConnectionInterface
      *
      * @return string The name of the DB driver for the current `dsn`.
      */
-    public function getName(): string;
+    public function getDriverName(): string;
 
     /**
      * Returns the ID of the last inserted row or sequence value.

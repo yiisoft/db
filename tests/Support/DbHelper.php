@@ -47,7 +47,7 @@ final class DbHelper
 
         $db->open();
 
-        if ($db->getName() === 'oci') {
+        if ($db->getDriverName() === 'oci') {
             [$drops, $creates] = explode('/* STATEMENTS */', file_get_contents($fixture), 2);
             [$statements, $triggers, $data] = explode('/* TRIGGERS */', $creates, 3);
             $lines = array_merge(

@@ -53,9 +53,9 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
 
         $uuidValue = $uuidSource = '738146be-87b1-49f2-9913-36142fb6fcbe';
 
-        if ($db->getName() === 'oci') {
+        if ($db->getDriverName() === 'oci') {
             $uuidValue = new Expression('HEXTORAW(REGEXP_REPLACE(:uuid, \'-\', \'\'))', [':uuid' => $uuidValue]);
-        } elseif ($db->getName() === 'mysql') {
+        } elseif ($db->getDriverName() === 'mysql') {
             $uuidValue = UuidHelper::uuidToBlob($uuidValue);
         }
 

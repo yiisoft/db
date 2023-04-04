@@ -37,7 +37,7 @@ abstract class CommonCommandPDOTest extends TestCase
             <<<SQL
             SELECT * FROM [[customer]] WHERE $field = $name
             SQL,
-            $db->getName(),
+            $db->getDriverName(),
         );
         $command = $db->createCommand();
         $command->setSql($sql);
