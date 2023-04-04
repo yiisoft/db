@@ -107,11 +107,6 @@ abstract class AbstractConnectionPDO extends AbstractConnection implements Conne
         }
     }
 
-    public function getCacheKey(): array
-    {
-        return [$this->driver->getDsn(), $this->driver->getUsername()];
-    }
-
     public function getDriver(): PDODriverInterface
     {
         return $this->driver;
