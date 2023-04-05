@@ -1945,6 +1945,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->expects(self::never())->method('getActivePDO');
 
         $command = new class ($db) extends AbstractCommandPDO {
+            public function showDatabases(): array
+            {
+                return $this->showDatabases();
+            }
+
             protected function getQueryBuilder(): QueryBuilderInterface
             {
             }

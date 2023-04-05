@@ -13,10 +13,7 @@ trait TestTrait
 
     protected function getConnection(bool $fixture = false): ConnectionPDOInterface
     {
-        $db = new Stub\Connection(
-            new PDODriver($this->dsn),
-            DbHelper::getSchemaCache()
-        );
+        $db = new Stub\Connection(new PDODriver($this->dsn), DbHelper::getSchemaCache());
 
         if ($fixture) {
             DbHelper::loadFixture($db, __DIR__ . '/Fixture/db.sql');
@@ -27,10 +24,7 @@ trait TestTrait
 
     protected static function getDb(): ConnectionPDOInterface
     {
-        return new Stub\Connection(
-            new PDODriver('sqlite::memory:'),
-            DbHelper::getSchemaCache(),
-        );
+        return new Stub\Connection(new PDODriver('sqlite::memory:'), DbHelper::getSchemaCache());
     }
 
     protected function getDriverName(): string
