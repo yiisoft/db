@@ -65,7 +65,7 @@ $dsn = (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->a
 // PSR-16 cache implementation.
 $arrayCache = new ArrayCache();
 
-// Cache PSR-6 implementation.
+// Schema cache.
 $schemaCache = new SchemaCache($cache);
 
 // PDO driver.

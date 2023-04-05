@@ -68,7 +68,7 @@ $dsn = (new Dsn('sqlsrv', 'localhost', 'yiitest'))->asString();
 // PSR-16 cache implementation.
 $arrayCache = new ArrayCache();
 
-// Cache PSR-6 implementation.
+// Schema cache.
 $schemaCache = new SchemaCache($cache);
 
 // PDO driver.
