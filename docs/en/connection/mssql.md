@@ -10,17 +10,17 @@ declare(strict_types=1);
 
 use Psr\Log\LoggerInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Mssql\ConnectionPDO;
-use Yiisoft\Db\Mssql\PDODriver;
+use Yiisoft\Db\Mssql\PdoConnection;
+use Yiisoft\Db\Mssql\PdoDriver;
 use Yiisoft\Profiler\ProfilerInterface;
 
 /** @var array $params */
 
 return [
     ConnectionInterface::class => [
-        'class' => ConnectionPDO::class,
+        'class' => PdoConnection::class,
         '__construct()' => [
-            'driver' => new PDODriver(
+            'driver' => new PdoDriver(
                 $params['yiisoft/db-mssql']['dsn'],
                 $params['yiisoft/db-mssql']['username'],
                 $params['yiisoft/db-mssql']['password'],
@@ -58,9 +58,9 @@ declare(strict_types=1);
 
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Mssql\ConnectionPDO;
 use Yiisoft\Db\Mssql\Dsn;
-use Yiisoft\Db\Mssql\PDODriver;
+use Yiisoft\Db\Mssql\PdoConnection;
+use Yiisoft\Db\Mssql\PdoDriver;
 
 // Dsn.
 $dsn = (new Dsn('sqlsrv', 'localhost', 'yiitest'))->asString();
@@ -72,8 +72,8 @@ $arrayCache = new ArrayCache();
 $schemaCache = new SchemaCache($cache);
 
 // PDO driver.
-$pdoDriver = new PDODriver($dsn, 'user', 'password'); 
+$pdoDriver = new PdoDriver($dsn, 'user', 'password'); 
 
 // Connection.
-$db = new ConnectionPDO($pdoDriver, $schemaCache);
+$db = new PdoConnection($pdoDriver, $schemaCache);
 ```

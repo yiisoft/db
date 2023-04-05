@@ -9,16 +9,16 @@ a [DI container](https://github.com/yiisoft/di), you need to create `config/comm
 declare(strict_types=1);
 
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Pgsql\ConnectionPDO;
-use Yiisoft\Db\Pgsql\PDODriver;
+use Yiisoft\Db\Pgsql\PdoConnection;
+use Yiisoft\Db\Pgsql\PdoDriver;
 
 /** @var array $params */
 
 return [
     ConnectionInterface::class => [
-        'class' => ConnectionPDO::class,
+        'class' => PdoConnection::class,
         '__construct()' => [
-            'driver' => new PDODriver(
+            'driver' => new PdoDriver(
                 $params['yiisoft/db-pgsql']['dsn'],
                 $params['yiisoft/db-pgsql']['username'],
                 $params['yiisoft/db-pgsql']['password'],
@@ -55,9 +55,9 @@ declare(strict_types=1);
 
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Pgsql\ConnectionPDO;
+use Yiisoft\Db\Pgsql\PdoConnection;
 use Yiisoft\Db\Pgsql\Dsn;
-use Yiisoft\Db\Pgsql\PDODriver;
+use Yiisoft\Db\Pgsql\PdoDriver;
 
 // Dsn.
 $dsn = (new Dsn('pgsql', '127.0.0.1', 'yiitest', '5432'))->asString();
@@ -69,8 +69,8 @@ $arrayCache = new ArrayCache();
 $schemaCache = new SchemaCache($cache);
 
 // PDO driver.
-$pdoDriver = new PDODriver($dsn, 'user', 'password'); 
+$pdoDriver = new PdoDriver($dsn, 'user', 'password'); 
 
 // Connection.
-$db = new ConnectionPDO($pdoDriver, $schemaCache);
+$db = new PdoConnection($pdoDriver, $schemaCache);
 ```

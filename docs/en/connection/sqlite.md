@@ -9,16 +9,16 @@ a [DI container](https://github.com/yiisoft/di), you need to create `config/comm
 declare(strict_types=1);
 
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Sqlite\ConnectionPDO;
-use Yiisoft\Db\Sqlite\PDODriver;
+use Yiisoft\Db\Sqlite\PdoConnection;
+use Yiisoft\Db\Sqlite\PdoDriver;
 
 /** @var array $params */
 
 return [
     ConnectionInterface::class => [
-        'class' => ConnectionPDO::class,
+        'class' => PdoConnection::class,
         '__construct()' => [
-            'driver' => new PDODriver($params['yiisoft/db-sqlite']['dsn']),
+            'driver' => new PdoDriver($params['yiisoft/db-sqlite']['dsn']),
         ],
     ],
 ];
@@ -49,9 +49,9 @@ declare(strict_types=1);
 
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Sqlite\ConnectionPDO;
 use Yiisoft\Db\Sqlite\Dsn;
-use Yiisoft\Db\Sqlite\PDODriver;
+use Yiisoft\Db\Sqlite\PdoConnection;
+use Yiisoft\Db\Sqlite\PdoDriver;
 
 // Dsn.
 $dsn = (new Dsn('sqlite', 'memory'))->asString();
@@ -63,8 +63,8 @@ $arrayCache = new ArrayCache();
 $schemaCache = new SchemaCache($cache);
 
 // PDO driver.
-$pdoDriver = new PDODriver($dsn); 
+$pdoDriver = new PdoDriver($dsn); 
 
 // Connection.
-$db = new ConnectionPDO($pdoDriver, $schemaCache);
+$db = new PdoConnection($pdoDriver, $schemaCache);
 ```

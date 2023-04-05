@@ -1,6 +1,6 @@
 # Connecting with logger
 
-[Yii DB](https://github.com/yiisoft/db) uses [PSR-3](https://www.php-fig.org/psr/psr-3/) for logging.
+Yii DB uses [PSR-3](https://www.php-fig.org/psr/psr-3/) for logging.
 You can configure a logger that implements `Psr\Log\LoggerInterface::class` in the
 [DI container](https://github.com/yiisoft/di).
 
@@ -39,17 +39,17 @@ declare(strict_types=1);
 
 use Psr\Log\LoggerInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Pgsql\ConnectionPDO;
-use Yiisoft\Db\Pgsql\PDODriver;
+use Yiisoft\Db\Pgsql\PdoConnection;
+use Yiisoft\Db\Pgsql\PdoDriver;
 use Yiisoft\Definitions\Reference;
 
 /** @var array $params */
 
 return [
     ConnectionInterface::class => [
-        'class' => ConnectionPDO::class,
+        'class' => PdoConnection::class,
         '__construct()' => [
-            'driver' => new PDODriver(
+            'driver' => new PdoDriver(
                 $params['yiisoft/db-pgsql']['dsn'],
                 $params['yiisoft/db-pgsql']['username'],
                 $params['yiisoft/db-pgsql']['password'],

@@ -1,7 +1,6 @@
 # Query builder
 
-Built on top of [Yii DB](https://github.com/yiisoft/db), query builder allows you to construct an SQL query
-in a programmatic and DBMS-agnostic way.
+Built on top of Yii DB, query builder allows you to construct an SQL query in a programmatic and DBMS-agnostic way.
 
 Compared to writing raw SQL statements, using query builder will help you write more readable SQL-related code
 and generate more secure SQL statements.
