@@ -6,20 +6,20 @@ namespace Yiisoft\Db\Tests\Db\Helper;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Helper\UuidHelper;
+use Yiisoft\Db\Helper\DbUuidHelper;
 
 /**
  * @group db
  */
-final class UuidHelperTest extends TestCase
+final class DbUuidHelperTest extends TestCase
 {
     /**
      * @dataProvider successUuids
      */
     public function testConvert(string $uuid): void
     {
-        $blobUuid = UuidHelper::uuidToBlob($uuid);
-        $this->assertEquals($uuid, UuidHelper::toUuid($blobUuid));
+        $blobUuid = DbUuidHelper::uuidToBlob($uuid);
+        $this->assertEquals($uuid, DbUuidHelper::toUuid($blobUuid));
     }
 
     /**
@@ -30,8 +30,8 @@ final class UuidHelperTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Incorrect UUID.');
 
-        $blobUuid = UuidHelper::uuidToBlob($uuid);
-        $this->assertEquals($uuid, UuidHelper::toUuid($blobUuid));
+        $blobUuid = DbUuidHelper::uuidToBlob($uuid);
+        $this->assertEquals($uuid, DbUuidHelper::toUuid($blobUuid));
     }
 
     /**
@@ -39,7 +39,7 @@ final class UuidHelperTest extends TestCase
      */
     public function testToUuid($blobUuid, $expected): void
     {
-        $uuid = UuidHelper::toUuid($blobUuid);
+        $uuid = DbUuidHelper::toUuid($blobUuid);
         $this->assertEquals($expected, $uuid);
     }
 
@@ -51,7 +51,7 @@ final class UuidHelperTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Length of source data is should be 16 or 32 bytes.');
 
-        $uuid = UuidHelper::toUuid($blobUuid);
+        $uuid = DbUuidHelper::toUuid($blobUuid);
         $this->assertEquals($expected, $uuid);
     }
 

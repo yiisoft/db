@@ -11,7 +11,7 @@ use function hex2bin;
 use function preg_match;
 use function str_replace;
 
-final class UuidHelper
+final class DbUuidHelper
 {
     public static function toUuid(string $blobString): string
     {

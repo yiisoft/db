@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Helper\UuidHelper;
+use Yiisoft\Db\Helper\DbUuidHelper;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -56,7 +56,7 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
         if ($db->getDriverName() === 'oci') {
             $uuidValue = new Expression('HEXTORAW(REGEXP_REPLACE(:uuid, \'-\', \'\'))', [':uuid' => $uuidValue]);
         } elseif ($db->getDriverName() === 'mysql') {
-            $uuidValue = UuidHelper::uuidToBlob($uuidValue);
+            $uuidValue = DbUuidHelper::uuidToBlob($uuidValue);
         }
 
         $db->createCommand()->insert($tableName, [
@@ -71,7 +71,7 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
             ->scalar()
         ;
 
-        $uuidString = strtolower(UuidHelper::toUuid($uuid));
+        $uuidString = strtolower(DbUuidHelper::toUuid($uuid));
 
         $this->assertEquals($uuidSource, $uuidString);
 

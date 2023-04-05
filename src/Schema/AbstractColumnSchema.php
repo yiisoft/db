@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Schema;
 use PDO;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Helper\StringHelper;
+use Yiisoft\Db\Helper\DbStringHelper;
 
 use function count;
 use function gettype;
@@ -289,7 +289,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
 
                 if (is_float($value)) {
                     /** ensure type cast always has . as decimal separator in all locales */
-                    return StringHelper::normalizeFloat($value);
+                    return DbStringHelper::normalizeFloat($value);
                 }
 
                 if (is_bool($value)) {

@@ -13,7 +13,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Helper\ArrayHelper;
+use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function array_key_exists;
@@ -226,7 +226,7 @@ class Query implements QueryInterface
             return [];
         }
 
-        return ArrayHelper::populate($this->createCommand()->queryAll(), $this->indexBy);
+        return DbArrayHelper::populate($this->createCommand()->queryAll(), $this->indexBy);
     }
 
     public function average(string $q): int|float|null|string
@@ -242,7 +242,7 @@ class Query implements QueryInterface
         return $this->db
             ->createBatchQueryResult($this)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => ArrayHelper::populate($rows, $indexBy))
+            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::populate($rows, $indexBy))
         ;
     }
 
@@ -316,7 +316,7 @@ class Query implements QueryInterface
         return $this->db
             ->createBatchQueryResult($this, true)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => ArrayHelper::populate($rows, $indexBy))
+            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::populate($rows, $indexBy))
         ;
     }
 
