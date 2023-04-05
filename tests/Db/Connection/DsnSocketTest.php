@@ -52,6 +52,14 @@ final class DsnSocketTest extends TestCase
         );
     }
 
+    public function testGetDsnWithoutDatabaseName(): void
+    {
+        $dsn = new DsnSocket('mysql', '/var/run/mysqld/mysqld.sock');
+
+        $this->assertSame('mysql:unix_socket=/var/run/mysqld/mysqld.sock', $dsn->asString());
+        $this->assertSame('mysql:unix_socket=/var/run/mysqld/mysqld.sock', $dsn->__toString());
+    }
+
     public function testGetOptions(): void
     {
         $dsn = new DsnSocket('mysql', '/var/run/mysqld/mysqld.sock', 'yiitest', ['charset' => 'utf8']);
