@@ -311,7 +311,6 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
             'createTransaction',
             'createCommand',
             'close',
-            'getCacheKey',
             'getDriverName',
             'getLastInsertID',
             'getQueryBuilder',
