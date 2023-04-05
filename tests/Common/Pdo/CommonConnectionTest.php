@@ -2,22 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Common;
+namespace Yiisoft\Db\Tests\Common\Pdo;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Db\Connection\AbstractConnection;
-use Yiisoft\Db\Driver\PDO\AbstractConnectionPDO;
+use Yiisoft\Db\Driver\Pdo\AbstractConnection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\ProfilerInterface;
-use Yiisoft\Db\Tests\AbstractConnectionPDOTest;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
-abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
+abstract class CommonConnectionTest extends \Yiisoft\Db\Tests\Pdo\AbstractConnectionTest
 {
     /**
      * @throws Exception
@@ -226,7 +224,7 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
             ->method('log')
             ->with(
                 LogLevel::INFO,
-                'Transaction not committed: nested transaction not supported Yiisoft\Db\Driver\PDO\AbstractTransactionPDO::commit'
+                'Transaction not committed: nested transaction not supported Yiisoft\Db\Driver\Pdo\AbstractTransaction::commit'
             );
 
         $db->beginTransaction();
@@ -264,7 +262,7 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
             ->method('log')
             ->with(
                 LogLevel::INFO,
-                'Transaction not rolled back: nested transaction not supported Yiisoft\Db\Driver\PDO\AbstractTransactionPDO::rollBack'
+                'Transaction not rolled back: nested transaction not supported Yiisoft\Db\Driver\Pdo\AbstractTransaction::rollBack'
             );
 
         $db->beginTransaction();
@@ -293,54 +291,9 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
         $transaction->setIsolationLevel(TransactionInterface::SERIALIZABLE);
     }
 
-    public function testTransactionRollbackTransactionOnLevel(): void
-    {
-        $transactionMock = $this->createMock(TransactionInterface::class);
-        $transactionMock->expects(self::once())
-            ->method('isActive')
-            ->willReturn(true);
-        $transactionMock->expects(self::exactly(2))
-            ->method('getLevel')
-            ->willReturn(0);
-        $transactionMock->expects(self::once())
-            ->method('rollBack')
-            ->willThrowException(new Exception('rollbackTransactionOnLevel'))
-        ;
-
-        $db = $this->getMockBuilder(AbstractConnection::class)->onlyMethods([
-            'createTransaction',
-            'createCommand',
-            'close',
-            'getDriverName',
-            'getLastInsertID',
-            'getQueryBuilder',
-            'getQuoter',
-            'getSchema',
-            'getServerVersion',
-            'isActive',
-            'open',
-            'quoteValue',
-        ])->getMock();
-        $db->expects(self::once())
-            ->method('createTransaction')
-            ->willReturn($transactionMock);
-
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects(self::once())
-            ->method('log')
-            ->with(LogLevel::ERROR);
-
-        $db->setLogger($logger);
-
-        $this->expectException(Exception::class);
-        $db->transaction(static function () {
-            throw new Exception('Test');
-        });
-    }
-
     public function testGetActivePdo(): void
     {
-        $db = $this->getMockBuilder(AbstractConnectionPDO::class)->onlyMethods([
+        $db = $this->getMockBuilder(AbstractConnection::class)->onlyMethods([
             'createCommand',
             'createTransaction',
             'getPdo',

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
-use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_key_exists;
@@ -12,7 +12,7 @@ use function array_values;
 
 final class ColumnTypes
 {
-    public function __construct(private ConnectionPDOInterface $db)
+    public function __construct(private ConnectionInterface $db)
     {
     }
 

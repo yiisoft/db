@@ -6,8 +6,7 @@ namespace Yiisoft\Db\Tests\Common;
 
 use ReflectionException;
 use Throwable;
-use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
-use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -20,9 +19,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
-use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
@@ -30,7 +27,7 @@ use function call_user_func_array;
 use function is_string;
 use function setlocale;
 
-abstract class CommonCommandTest extends AbstractCommandTest
+abstract class CommonCommandTest extends \Yiisoft\Db\Tests\AbstractCommandTest
 {
     /**
      * @throws Exception
@@ -1939,35 +1936,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    public function testPrepareWithEmptySql()
-    {
-        $db = $this->createMock(ConnectionPDOInterface::class);
-        $db->expects(self::never())->method('getActivePDO');
-
-        $command = new class ($db) extends AbstractCommandPDO {
-            public function showDatabases(): array
-            {
-                return $this->showDatabases();
-            }
-
-            protected function getQueryBuilder(): QueryBuilderInterface
-            {
-            }
-
-            protected function internalExecute(string|null $rawSql): void
-            {
-            }
-        };
-
-        $command->prepare();
-    }
-
     /**
      * @throws Exception
      * @throws InvalidConfigException
      * @throws Throwable
      */
-    protected function performAndCompareUpsertResult(ConnectionPDOInterface $db, array $data): void
+    protected function performAndCompareUpsertResult(ConnectionInterface $db, array $data): void
     {
         $params = [];
 

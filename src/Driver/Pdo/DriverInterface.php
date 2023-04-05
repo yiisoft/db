@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Driver\PDO;
+namespace Yiisoft\Db\Driver\Pdo;
 
 use PDO;
-use Yiisoft\Db\Driver\DriverInterface;
 
 /**
  * This interface provides a set of methods to implement by {@see PDO} (PHP Data Objects) driver classes.
  *
  * @link https://www.php.net/manual/en/book.pdo.php
  */
-interface PDODriverInterface extends DriverInterface
+interface DriverInterface extends \Yiisoft\Db\Driver\DriverInterface
 {
     /**
      * Set {@see PDO} attributes (name => value) to set when calling {@see open()} to establish a DB

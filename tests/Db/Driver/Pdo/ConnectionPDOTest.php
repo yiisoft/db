@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Connection;
+namespace Yiisoft\Db\Tests\Db\Driver\Pdo;
 
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Tests\AbstractConnectionPDOTest;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -14,7 +13,7 @@ use Yiisoft\Db\Tests\Support\TestTrait;
  *
  * @psalm-suppress PropertyNotSetInConstructor
  */
-final class ConnectionPDOTest extends AbstractConnectionPDOTest
+final class ConnectionPDOTest extends \Yiisoft\Db\Tests\Pdo\AbstractConnectionTest
 {
     use TestTrait;
 

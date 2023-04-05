@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Common;
+namespace Yiisoft\Db\Tests\Common\Pdo;
 
 use PDO;
-use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
-use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
+use Yiisoft\Db\Driver\Pdo\AbstractCommand;
+use Yiisoft\Db\Driver\Pdo\ConnectionInterface;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
-abstract class CommonCommandPDOTest extends TestCase
+abstract class CommonCommandTest extends \PHPUnit\Framework\TestCase
 {
     use TestTrait;
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandPDOProvider::bindParam
+     * @dataProvider \Yiisoft\Db\Tests\Provider\Pdo\CommandProvider::bindParam
      */
     public function testBindParam(
         string $field,
@@ -52,7 +52,7 @@ abstract class CommonCommandPDOTest extends TestCase
     /**
      * Test whether param binding works in other places than WHERE.
      *
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandPDOProvider::bindParamsNonWhere
+     * @dataProvider \Yiisoft\Db\Tests\Provider\Pdo\CommandProvider::bindParamsNonWhere
      */
     public function testBindParamsNonWhere(string $sql): void
     {
@@ -201,7 +201,7 @@ abstract class CommonCommandPDOTest extends TestCase
     {
         $db = $this->getConnection(true);
 
-        $command = new class ($db) extends AbstractCommandPDO {
+        $command = new class ($db) extends AbstractCommand {
             public function testExecute(): void
             {
                 $this->internalGetQueryResult(1024);
@@ -226,5 +226,28 @@ abstract class CommonCommandPDOTest extends TestCase
         $command->testExecute();
 
         $db->close();
+    }
+
+    public function testPrepareWithEmptySql()
+    {
+        $db = $this->createMock(ConnectionInterface::class);
+        $db->expects(self::never())->method('getActivePDO');
+
+        $command = new class ($db) extends AbstractCommand {
+            public function showDatabases(): array
+            {
+                return $this->showDatabases();
+            }
+
+            protected function getQueryBuilder(): QueryBuilderInterface
+            {
+            }
+
+            protected function internalExecute(string|null $rawSql): void
+            {
+            }
+        };
+
+        $command->prepare();
     }
 }

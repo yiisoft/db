@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use Yiisoft\Db\Schema\SchemaInterface;
-use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\ColumnTypes;
 
 use function str_replace;
@@ -13,7 +12,7 @@ use function str_starts_with;
 use function strncmp;
 use function substr;
 
-abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
+abstract class CommonQueryBuilderTest extends \Yiisoft\Db\Tests\AbstractQueryBuilderTest
 {
     public function testCreateTableWithGetColumnTypes(): void
     {

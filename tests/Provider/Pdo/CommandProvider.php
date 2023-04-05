@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Provider;
+namespace Yiisoft\Db\Tests\Provider\Pdo;
 
 use PDO;
 
-class CommandPDOProvider
+class CommandProvider
 {
     public static function bindParam(): array
     {

@@ -8,7 +8,7 @@ use Countable;
 use Iterator;
 use PDO;
 use PDOStatement;
-use Yiisoft\Db\Driver\PDO\CommandPDOInterface;
+use Yiisoft\Db\Driver\Pdo\CommandInterface;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidParamException;
 
@@ -31,7 +31,7 @@ final class DataReader implements DataReaderInterface
     /**
      * @throws InvalidParamException If the PDOStatement is null.
      */
-    public function __construct(CommandPDOInterface $command)
+    public function __construct(CommandInterface $command)
     {
         $statement = $command->getPDOStatement();
 

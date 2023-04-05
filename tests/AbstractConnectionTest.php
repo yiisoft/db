@@ -7,16 +7,16 @@ namespace Yiisoft\Db\Tests;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use Throwable;
-use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\Context\ConnectionContext;
 use Yiisoft\Db\Profiler\ContextInterface;
+use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\TestTrait;
-use Yiisoft\Db\Profiler\ProfilerInterface;
 
 abstract class AbstractConnectionTest extends TestCase
 {
@@ -27,7 +27,7 @@ abstract class AbstractConnectionTest extends TestCase
      */
     public function testConnection(): void
     {
-        $this->assertInstanceOf(ConnectionPDOInterface::class, $this->getConnection());
+        $this->assertInstanceOf(ConnectionInterface::class, $this->getConnection());
     }
 
     public function testCreateBatchQueryResult(): void
@@ -77,7 +77,7 @@ abstract class AbstractConnectionTest extends TestCase
         $this->assertFalse($db->isSavepointEnabled());
 
         $db->transaction(
-            function (ConnectionPDOInterface $db) {
+            function (ConnectionInterface $db) {
                 $this->assertNotNull($db->getTransaction());
                 $this->expectException(NotSupportedException::class);
 
@@ -147,7 +147,7 @@ abstract class AbstractConnectionTest extends TestCase
         $this->assertNotNull($connection->getPDO());
 
         $unserialized = unserialize($serialized);
-        $this->assertInstanceOf(ConnectionPDOInterface::class, $unserialized);
+        $this->assertInstanceOf(ConnectionInterface::class, $unserialized);
         $this->assertNull($unserialized->getPDO());
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
         $this->assertNotNull($connection->getPDO());

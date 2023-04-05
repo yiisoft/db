@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Driver\PDO;
+namespace Yiisoft\Db\Driver\Pdo;
 
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\AbstractSchema;
 
 /**
  * Represents a schema for a PDO (PHP Data Object) connection.
  */
-abstract class PdoAbstractSchema extends AbstractSchema
+abstract class AbstractSchema extends \Yiisoft\Db\Schema\AbstractSchema
 {
     /**
      * Generates the cache key for the current connection.
@@ -23,7 +22,7 @@ abstract class PdoAbstractSchema extends AbstractSchema
     {
         $cacheKey = [];
 
-        if ($this->db instanceof ConnectionPDOInterface) {
+        if ($this->db instanceof ConnectionInterface) {
             $cacheKey = [$this->db->getDriver()->getDsn(), $this->db->getDriver()->getUsername()];
         } else {
             throw new NotSupportedException('Only PDO connections are supported.');

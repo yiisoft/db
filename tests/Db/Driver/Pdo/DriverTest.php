@@ -2,24 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Driver\PDO;
+namespace Yiisoft\Db\Tests\Db\Driver\Pdo;
 
 use PDO;
-use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\Stub\PDODriver;
+use Yiisoft\Db\Tests\Support\Stub\Driver;
 
 /**
  * @group db
  *
  * @psalm-suppress PropertyNotSetInConstructor
  */
-final class PDODriverTest extends TestCase
+final class DriverTest extends \PHPUnit\Framework\TestCase
 {
     public function testAttributes(): void
     {
         $dsn = 'sqlite::memory:';
-        $pdoDriver = new PDODriver($dsn);
+        $pdoDriver = new Driver($dsn);
         $pdoDriver->attributes([PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 
         $this->assertSame(
@@ -31,7 +30,7 @@ final class PDODriverTest extends TestCase
     public function testGetDriverName(): void
     {
         $dsn = 'sqlite::memory:';
-        $pdoDriver = new PDODriver($dsn);
+        $pdoDriver = new Driver($dsn);
 
         $this->assertSame('db', $pdoDriver->getDriverName());
     }
@@ -39,7 +38,7 @@ final class PDODriverTest extends TestCase
     public function testSetCharSet(): void
     {
         $dsn = 'sqlite::memory:';
-        $pdoDriver = new PDODriver($dsn);
+        $pdoDriver = new Driver($dsn);
         $pdoDriver->charset('utf8');
 
         $this->assertSame('utf8', $pdoDriver->getCharSet());
@@ -48,7 +47,7 @@ final class PDODriverTest extends TestCase
     public function testGetPassword(): void
     {
         $dsn = 'sqlite::memory:';
-        $pdoDriver = new PDODriver($dsn);
+        $pdoDriver = new Driver($dsn);
         $pdoDriver->password('password');
 
         $this->assertSame('password', $pdoDriver->getPassword());
@@ -57,7 +56,7 @@ final class PDODriverTest extends TestCase
     public function testGetUsername(): void
     {
         $dsn = 'sqlite::memory:';
-        $pdoDriver = new PDODriver($dsn);
+        $pdoDriver = new Driver($dsn);
         $pdoDriver->username('username');
 
         $this->assertSame('username', $pdoDriver->getUsername());

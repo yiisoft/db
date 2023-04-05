@@ -14,10 +14,10 @@
       <file>./src/Connection/ConnectionPoolInterface.php</file>
       <file>./src/Constraint/ConstraintSchemaInterface.php</file>
       <file>./src/Driver/DriverInterface.php</file>
-      <file>./src/Driver/PDO/CommandPDOInterface.php</file>
-      <file>./src/Driver/PDO/ConnectionPDOInterface.php</file>
-      <file>./src/Driver/PDO/ConnectionPDOPoolInterface.php</file>
-      <file>./src/Driver/PDO/PDODriverInterface.php</file>
+      <file>./src/Driver/Pdo/CommandPDOInterface.php</file>
+      <file>./src/Driver/Pdo/ConnectionPDOInterface.php</file>
+      <file>./src/Driver/Pdo/ConnectionPDOPoolInterface.php</file>
+      <file>./src/Driver/Pdo/PDODriverInterface.php</file>
       <file>./src/Expression/ExpressionBuilderInterface.php</file>
       <file>./src/Expression/ExpressionInterface.php</file>
       <file>./src/Profiler/ProfilerInterface.php</file>

@@ -6,14 +6,13 @@ namespace Yiisoft\Db\Tests\Support\Stub;
 
 use PDO;
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Driver\PDO\AbstractConnectionPDO;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Quoter;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
-final class Connection extends AbstractConnectionPDO
+final class Connection extends \Yiisoft\Db\Driver\Pdo\AbstractConnection
 {
     protected QueryBuilderInterface|null $queryBuilder = null;
     protected SchemaInterface|null $schema = null;

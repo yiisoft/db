@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests\Support;
 use Psr\SimpleCache\CacheInterface;
 use Yiisoft\Cache\File\FileCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
+use Yiisoft\Db\Driver\Pdo\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
@@ -40,7 +40,7 @@ final class DbHelper
      * @throws Exception
      * @throws InvalidConfigException
      */
-    public static function loadFixture(ConnectionPDOInterface $db, string $fixture): void
+    public static function loadFixture(ConnectionInterface $db, string $fixture): void
     {
         // flush cache to new import data to dbms.
         self::getPsrCache()->clear();

@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Driver\PDO;
+namespace Yiisoft\Db\Driver\Pdo;
 
 use PDO;
 use PDOException;
 use Psr\Log\LogLevel;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Connection\AbstractConnection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -30,7 +29,7 @@ use function is_string;
  *
  * It implements the ConnectionInterface, which defines the interface for interacting with a database connection.
  */
-abstract class AbstractConnectionPDO extends AbstractConnection implements ConnectionPDOInterface
+abstract class AbstractConnection extends \Yiisoft\Db\Connection\AbstractConnection implements ConnectionInterface
 {
     protected PDO|null $pdo = null;
     protected string $serverVersion = '';
@@ -39,7 +38,7 @@ abstract class AbstractConnectionPDO extends AbstractConnection implements Conne
     protected QuoterInterface|null $quoter = null;
     protected SchemaInterface|null $schema = null;
 
-    public function __construct(protected PDODriverInterface $driver, protected SchemaCache $schemaCache)
+    public function __construct(protected DriverInterface $driver, protected SchemaCache $schemaCache)
     {
     }
 
@@ -107,7 +106,7 @@ abstract class AbstractConnectionPDO extends AbstractConnection implements Conne
         }
     }
 
-    public function getDriver(): PDODriverInterface
+    public function getDriver(): DriverInterface
     {
         return $this->driver;
     }

@@ -21,7 +21,7 @@ interface DsnInterface
      *
      * ```php
      * $dsn = new Dsn('mysql', '127.0.0.1', 'yiitest', '3306', ['charset' => 'utf8mb4']);
-     * $pdoDriver = new PDODriver($dsn->asString(), 'username', 'password');
+     * $pdoDriver = new Driver($dsn->asString(), 'username', 'password');
      * $connection = new Connection($pdoDriver, $schemaCache);
      * ```
      *
@@ -31,7 +31,7 @@ interface DsnInterface
      *
      * ```php
      * $dsn = new DsnSocket('mysql', '/var/run/mysqld/mysqld.sock', 'yiitest', '', ['charset' => 'utf8mb4']);
-     * $pdoDriver = new PDODriver($dsn->asString(), 'username', 'password');
+     * $pdoDriver = new Driver($dsn->asString(), 'username', 'password');
      * $connection = new Connection($pdoDriver, $schemaCache);
      * ```
      *
