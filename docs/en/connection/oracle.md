@@ -9,16 +9,16 @@ you need to create `config/common/di/db-oracle.php` configuration file.
 declare(strict_types=1);
 
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Oracle\PdoConnection;
-use Yiisoft\Db\Oracle\PdoDriver;
+use Yiisoft\Db\Oracle\Connection;
+use Yiisoft\Db\Oracle\Driver;
 
 /** @var array $params */
 
 return [
     ConnectionInterface::class => [
-        'class' => PdoConnection::class,
+        'class' => Connection::class,
         '__construct()' => [
-            'driver' => new PdoDriver(
+            'driver' => new Driver(
                 $params['yiisoft/db-oracle']['dsn'],
                 $params['yiisoft/db-oracle']['username'],
                 $params['yiisoft/db-oracle']['password'],
@@ -55,9 +55,9 @@ declare(strict_types=1);
 
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Db\Cache\SchemaCache;
+use Yiisoft\Db\Oracle\Connection;
+use Yiisoft\Db\Oracle\Driver;
 use Yiisoft\Db\Oracle\Dsn;
-use Yiisoft\Db\Oracle\PdoConnection;
-use Yiisoft\Db\Oracle\PdoDriver;
 
 // Dsn.
 $dsn = (new Dsn('oci', 'localhost', 'XE', '1521', ['charset' => 'AL32UTF8']))->asString();
@@ -69,8 +69,8 @@ $arrayCache = new ArrayCache();
 $schemaCache = new SchemaCache($cache);
 
 // PDO driver.
-$pdoDriver = new PdoDriver($dsn, 'user', 'password'); 
+$pdoDriver = new Driver($dsn, 'user', 'password'); 
 
 // Connection.
-$db = new PdoConnection($pdoDriver, $schemaCache);
+$db = new Connection($pdoDriver, $schemaCache);
 ```
