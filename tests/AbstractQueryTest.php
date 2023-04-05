@@ -696,16 +696,6 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertTrue($query->shouldEmulateExecution());
     }
 
-    public function testToString(): void
-    {
-        $db = $this->getConnection();
-
-        $query = new Query($db);
-        $query->select('id')->from('user')->where(['id' => 1]);
-
-        $this->assertSame(serialize($query), (string)$query);
-    }
-
     public function testWhere(): void
     {
         $db = $this->getConnection();

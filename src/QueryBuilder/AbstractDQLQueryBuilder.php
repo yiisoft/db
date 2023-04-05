@@ -382,14 +382,13 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
         $result = '';
 
-        /** @psalm-var array<array{query:Query|string, all:bool}> $unions */
-        foreach ($unions as $i => $union) {
-            $query = $union['query'];
-            if ($query instanceof QueryInterface) {
-                [$unions[$i]['query'], $params] = $this->build($query, $params);
+        /** @psalm-var array<array{query:string|Query, all:bool}> $unions */
+        foreach ($unions as $union) {
+            if ($union['query'] instanceof QueryInterface) {
+                [$union['query'], $params] = $this->build($union['query'], $params);
             }
 
-            $result .= 'UNION ' . ($union['all'] ? 'ALL ' : '') . '( ' . $unions[$i]['query'] . ' ) ';
+            $result .= 'UNION ' . ($union['all'] ? 'ALL ' : '') . '( ' . $union['query'] . ' ) ';
         }
 
         return trim($result);
@@ -418,9 +417,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                 $recursive = true;
             }
 
-            $query = $with['query'];
-            if ($query instanceof QueryInterface) {
-                [$with['query'], $params] = $this->build($query, $params);
+            if ($with['query'] instanceof QueryInterface) {
+                [$with['query'], $params] = $this->build($with['query'], $params);
             }
 
             $result[] = $with['alias'] . ' AS (' . $with['query'] . ')';

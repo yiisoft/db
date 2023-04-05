@@ -83,22 +83,13 @@ interface ConnectionInterface
     public function close(): void;
 
     /**
-     * Return a cache key as an array.
-     *
-     * For example, in PDO implementation: `[$dsn, $username]`.
-     *
-     * @return array The cache key as an array.
-     */
-    public function getCacheKey(): array;
-
-    /**
      * Returns the name of the DB driver for the current `dsn`.
      *
      * Use this method for information only.
      *
      * @return string The name of the DB driver for the current `dsn`.
      */
-    public function getName(): string;
+    public function getDriverName(): string;
 
     /**
      * Returns the ID of the last inserted row or sequence value.
@@ -187,8 +178,8 @@ interface ConnectionInterface
      *
      * It does nothing if a DB connection is active.
      *
-     * @throws Exception
-     * @throws InvalidConfigException If connection fails.
+     * @throws Exception If connection fails.
+     * @throws InvalidConfigException If connection can not be established because of incomplete configuration.
      */
     public function open(): void;
 

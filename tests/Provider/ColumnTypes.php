@@ -739,7 +739,7 @@ final class ColumnTypes
             ],
         ];
 
-        $driverName = $this->db->getName();
+        $driverName = $this->db->getDriverName();
 
         foreach ($items as $i => $item) {
             if (array_key_exists($driverName, $item[1])) {

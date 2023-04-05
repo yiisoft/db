@@ -46,7 +46,7 @@ return [
 ];
 ```
 
-To configure without a [DI container](https://github.com/yiisoft/di), you need to follow the following steps.
+To configure without a [DI container](https://github.com/yiisoft/di), you need to follow these steps.
 
 ```php
 <?php

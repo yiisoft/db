@@ -13,7 +13,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Helper\ArrayHelper;
+use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function array_key_exists;
@@ -29,7 +29,6 @@ use function key;
 use function preg_match;
 use function preg_split;
 use function reset;
-use function serialize;
 use function str_contains;
 use function strcasecmp;
 use function strlen;
@@ -93,14 +92,6 @@ class Query implements QueryInterface
     {
     }
 
-    /**
-     * Returns the SQL representation of Query.
-     */
-    public function __toString(): string
-    {
-        return serialize($this);
-    }
-
     public function addGroupBy(array|string|ExpressionInterface $columns): static
     {
         if ($columns instanceof ExpressionInterface) {
@@ -133,20 +124,22 @@ class Query implements QueryInterface
 
     public function addParams(array $params): static
     {
-        if (!empty($params)) {
-            if (empty($this->params)) {
-                $this->params = $params;
-            } else {
-                /**
-                 * @psalm-var array $params
-                 * @psalm-var mixed $value
-                 */
-                foreach ($params as $name => $value) {
-                    if (is_int($name)) {
-                        $this->params[] = $value;
-                    } else {
-                        $this->params[$name] = $value;
-                    }
+        if (empty($params)) {
+            return $this;
+        }
+
+        if (empty($this->params)) {
+            $this->params = $params;
+        } else {
+            /**
+             * @psalm-var array $params
+             * @psalm-var mixed $value
+             */
+            foreach ($params as $name => $value) {
+                if (is_int($name)) {
+                    $this->params[] = $value;
+                } else {
+                    $this->params[$name] = $value;
                 }
             }
         }
@@ -233,7 +226,7 @@ class Query implements QueryInterface
             return [];
         }
 
-        return ArrayHelper::populate($this->createCommand()->queryAll(), $this->indexBy);
+        return DbArrayHelper::populate($this->createCommand()->queryAll(), $this->indexBy);
     }
 
     public function average(string $q): int|float|null|string
@@ -249,7 +242,7 @@ class Query implements QueryInterface
         return $this->db
             ->createBatchQueryResult($this)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => ArrayHelper::populate($rows, $indexBy))
+            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::populate($rows, $indexBy))
         ;
     }
 
@@ -323,7 +316,7 @@ class Query implements QueryInterface
         return $this->db
             ->createBatchQueryResult($this, true)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => ArrayHelper::populate($rows, $indexBy))
+            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::populate($rows, $indexBy))
         ;
     }
 

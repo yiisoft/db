@@ -47,6 +47,21 @@ final class DsnTest extends TestCase
         $this->assertSame('mysql:host=localhost;dbname=yiitest;port=3306;charset=utf8', $dsn->__toString());
     }
 
+    public function testGetDsnWithoutDatabaseName(): void
+    {
+        $dsn = new Dsn('mysql', 'localhost', '', '3306', ['charset' => 'utf8']);
+
+        $this->assertSame('mysql:host=localhost;port=3306;charset=utf8', $dsn->asString());
+        $this->assertSame('mysql:host=localhost;port=3306;charset=utf8', $dsn->__toString());
+        $this->assertEmpty($dsn->getDatabaseName());
+
+        $dsn = new Dsn('mysql', 'localhost', null, '3306', ['charset' => 'utf8']);
+
+        $this->assertSame('mysql:host=localhost;port=3306;charset=utf8', $dsn->asString());
+        $this->assertSame('mysql:host=localhost;port=3306;charset=utf8', $dsn->__toString());
+        $this->assertNull($dsn->getDatabaseName());
+    }
+
     public function testGetHost(): void
     {
         $dsn = new Dsn('mysql', 'localhost', 'yiitest', '3306', ['charset' => 'utf8']);

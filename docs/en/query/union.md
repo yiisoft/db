@@ -2,7 +2,7 @@
 
 The `Yiisoft\Db\Query\Query::union()` method specifies the `UNION` fragment of a SQL query.
 
-For example.
+For example:
 
 ```php
 <?php
@@ -19,4 +19,4 @@ $query2 = (new Query($db))->select('id, type, name')->from('{{%user}}')->limit(1
 $query1->union($query2);
 ```
 
-You can call `Yiisoft\Db\Query\Query::union()` many times to append more `UNION` fragments.
+Further calls to `Yiisoft\Db\Query\Query::union()` will append other `UNION` fragments.

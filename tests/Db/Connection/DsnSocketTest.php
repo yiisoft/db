@@ -31,6 +31,21 @@ final class DsnSocketTest extends TestCase
         $this->assertSame('yiitest', $dsn->getDatabaseName());
     }
 
+    public function testGetDsnWithoutDatabaseName(): void
+    {
+        $dsn = new DsnSocket('mysql', '/var/run/mysqld/mysqld.sock', '', ['charset' => 'utf8']);
+
+        $this->assertSame('mysql:unix_socket=/var/run/mysqld/mysqld.sock;charset=utf8', $dsn->asString());
+        $this->assertSame('mysql:unix_socket=/var/run/mysqld/mysqld.sock;charset=utf8', $dsn->__toString());
+        $this->assertEmpty($dsn->getDatabaseName());
+
+        $dsn = new DsnSocket('mysql', '/var/run/mysqld/mysqld.sock', null, ['charset' => 'utf8']);
+
+        $this->assertSame('mysql:unix_socket=/var/run/mysqld/mysqld.sock;charset=utf8', $dsn->asString());
+        $this->assertSame('mysql:unix_socket=/var/run/mysqld/mysqld.sock;charset=utf8', $dsn->__toString());
+        $this->assertNull($dsn->getDatabaseName());
+    }
+
     public function testGetDriver(): void
     {
         $dsn = new DsnSocket('mysql', '/var/run/mysqld/mysqld.sock', 'yiitest', ['charset' => 'utf8']);

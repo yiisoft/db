@@ -39,10 +39,10 @@ abstract class AbstractSchema implements SchemaInterface
      * @var string|null $defaultSchema The default schema name used for the current session.
      */
     protected string|null $defaultSchema = null;
+    protected array $viewNames = [];
     private array $schemaNames = [];
     /** @psalm-var string[]|array */
     private array $tableNames = [];
-    protected array $viewNames = [];
     private array $tableMetadata = [];
 
     public function __construct(protected ConnectionInterface $db, private SchemaCache $schemaCache)
@@ -629,12 +629,7 @@ abstract class AbstractSchema implements SchemaInterface
             return;
         }
 
-        $metadata = $this->schemaCache->getOrSet(
-            $this->getCacheKey($rawName),
-            null,
-            $this->schemaCache->getDuration(),
-            $this->getCacheTag()
-        );
+        $metadata = $this->schemaCache->getOrSet($this->getCacheKey($rawName), null, $this->getCacheTag());
 
         if (
             !is_array($metadata) ||
@@ -665,12 +660,7 @@ abstract class AbstractSchema implements SchemaInterface
         /** @psalm-var int */
         $metadata[self::CACHE_VERSION] = static::SCHEMA_CACHE_VERSION;
 
-        $this->schemaCache->set(
-            $this->getCacheKey($rawName),
-            $metadata,
-            $this->schemaCache->getDuration(),
-            $this->getCacheTag()
-        );
+        $this->schemaCache->set($this->getCacheKey($rawName), $metadata, $this->getCacheTag());
     }
 
     /**

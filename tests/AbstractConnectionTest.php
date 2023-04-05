@@ -22,15 +22,6 @@ abstract class AbstractConnectionTest extends TestCase
 {
     use TestTrait;
 
-    public function testCacheKey(): void
-    {
-        $db = $this->getConnection();
-
-        $driver = $db->getDriver();
-
-        $this->assertEquals([$driver->getDsn(), $driver->getUsername()], $db->getCacheKey());
-    }
-
     /**
      * @throws Exception
      */
@@ -67,11 +58,11 @@ abstract class AbstractConnectionTest extends TestCase
         $this->assertSame($params, $command->getParams());
     }
 
-    public function testGetName(): void
+    public function testGetDriverName(): void
     {
         $db = $this->getConnection();
 
-        $this->assertSame($db->getName(), $db->getDriver()->getDriverName());
+        $this->assertSame($this->getDriverName(), $db->getDriverName());
     }
 
     /**

@@ -37,7 +37,7 @@ abstract class CommonCommandPDOTest extends TestCase
             <<<SQL
             SELECT * FROM [[customer]] WHERE $field = $name
             SQL,
-            $db->getName(),
+            $db->getDriverName(),
         );
         $command = $db->createCommand();
         $command->setSql($sql);
@@ -207,11 +207,16 @@ abstract class CommonCommandPDOTest extends TestCase
                 $this->internalGetQueryResult(1024);
             }
 
-            protected function internalExecute(?string $rawSql): void
+            public function showDatabases(): array
+            {
+                $this->showDatabases();
+            }
+
+            protected function getQueryBuilder(): QueryBuilderInterface
             {
             }
 
-            public function queryBuilder(): QueryBuilderInterface
+            protected function internalExecute(?string $rawSql): void
             {
             }
         };

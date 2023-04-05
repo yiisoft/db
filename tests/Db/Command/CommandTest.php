@@ -33,7 +33,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 ALTER TABLE [[table]] ADD CONSTRAINT [[name]] CHECK (id > 0)
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -51,7 +51,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]] integer
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -69,7 +69,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 COMMENT ON COLUMN [[customer]].[[id]] IS 'Primary key.'
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -87,7 +87,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 COMMENT ON TABLE [[table]] IS 'comment'
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -166,7 +166,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 ALTER TABLE [[table]] CHANGE [[column]] [[column]] integer
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -272,7 +272,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 CREATE VIEW [[view]] AS SELECT * FROM [[table]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -290,7 +290,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 DELETE FROM [[table]] WHERE [[column]]=:qp0
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -308,7 +308,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -326,7 +326,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 ALTER TABLE [[table]] DROP COLUMN [[column]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -344,7 +344,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 COMMENT ON COLUMN [[table]].[[column]] IS NULL
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -362,7 +362,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 COMMENT ON TABLE [[table]] IS NULL
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -394,7 +394,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -412,7 +412,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 DROP INDEX [[name]] ON [[table]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -430,7 +430,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -448,7 +448,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 DROP VIEW [[view]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -466,7 +466,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 DROP TABLE [[table]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -484,7 +484,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 ALTER TABLE [[table]] DROP CONSTRAINT [[name]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -620,7 +620,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 ALTER TABLE [[table]] RENAME COLUMN [[oldname]] TO [[newname]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -637,7 +637,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 RENAME TABLE [[table]] TO [[newname]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );
@@ -678,7 +678,7 @@ final class CommandTest extends AbstractCommandTest
                 <<<SQL
                 TRUNCATE TABLE [[table]]
                 SQL,
-                $db->getName(),
+                $db->getDriverName(),
             ),
             $sql,
         );

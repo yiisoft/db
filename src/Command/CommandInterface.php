@@ -16,10 +16,9 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * This interface represents a database command, such as a `SELECT`, `INSERT`, `UPDATE`, or `DELETE`.
+ * This interface represents a database command, such as a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement.
  *
  * A command instance is usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
  */
@@ -608,13 +607,6 @@ interface CommandInterface
     public function queryAll(): array;
 
     /**
-     * Create query builder instance.
-     *
-     * @return QueryBuilderInterface The query builder instance.
-     */
-    public function queryBuilder(): QueryBuilderInterface;
-
-    /**
      * Execute the SQL statement and returns the first column of the result.
      *
      * This method is best used when you need only the first column of a result
@@ -694,6 +686,11 @@ interface CommandInterface
      * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
     public function resetSequence(string $table, int|string $value = null): static;
+
+    /**
+     * List all database names in the current connection.
+     */
+    public function showDatabases(): array;
 
     /**
      * Sets the profiler instance.

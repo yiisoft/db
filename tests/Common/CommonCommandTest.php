@@ -360,7 +360,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->delete('{{type}}')->execute();
 
             /* change, for point oracle. */
-            if ($db->getName() === 'oci') {
+            if ($db->getDriverName() === 'oci') {
                 $command->setSql(
                     <<<SQL
                     ALTER SESSION SET NLS_NUMERIC_CHARACTERS='.,'
@@ -1015,7 +1015,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertEquals(1, $command->queryScalar());
 
         $command->setSql('bad SQL');
-        $message = match ($db->getName()) {
+        $message = match ($db->getDriverName()) {
             'pgsql' => 'SQLSTATE[42601]',
             'sqlite', 'oci' => 'SQLSTATE[HY000]',
             default => 'SQLSTATE[42000]',
@@ -1149,7 +1149,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $db->createCommand();
 
-        $expected = match ($db->getName()) {
+        $expected = match ($db->getDriverName()) {
             'pgsql' => ['id' => 4],
             default => ['id' => '4'],
         };
@@ -1188,7 +1188,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $db->createCommand();
         $command->delete('{{order_with_null_fk}}')->execute();
-        $expression = match ($db->getName()) {
+        $expression = match ($db->getDriverName()) {
             'mysql' => 'YEAR(NOW())',
             'oci' => "TO_CHAR(SYSDATE, 'YYYY')",
             'pgsql' => "EXTRACT(YEAR FROM TIMESTAMP 'now')",
@@ -1239,7 +1239,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         )->execute();
         $command->insert('{{order}}', ['customer_id' => 1, 'created_at' => $time, 'total' => 42])->execute();
 
-        if ($db->getName() === 'pgsql') {
+        if ($db->getDriverName() === 'pgsql') {
             $orderId = $db->getLastInsertID('public.order_id_seq');
         } else {
             $orderId = $db->getLastInsertID();
@@ -1468,7 +1468,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ['name' => 'Some {{weird}} name', 'email' => 'test@example.com', 'address' => 'Some {{%weird}} address']
         )->execute();
 
-        if ($db->getName() === 'pgsql') {
+        if ($db->getDriverName() === 'pgsql') {
             $customerId = $db->getLastInsertID('public.customer_id_seq');
         } else {
             $customerId = $db->getLastInsertID();
@@ -1528,7 +1528,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $expectedRow = 6;
 
-        if ($db->getName() === 'oci' || $db->getName() === 'pgsql') {
+        if ($db->getDriverName() === 'oci' || $db->getDriverName() === 'pgsql') {
             $expectedRow = 7;
         }
 
@@ -1562,7 +1562,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $rows = $command->queryAll();
         $expectedRow = 6;
 
-        if ($db->getName() === 'oci' || $db->getName() === 'pgsql') {
+        if ($db->getDriverName() === 'oci' || $db->getDriverName() === 'pgsql') {
             $expectedRow = 7;
         }
 
@@ -1945,11 +1945,16 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->expects(self::never())->method('getActivePDO');
 
         $command = new class ($db) extends AbstractCommandPDO {
-            protected function internalExecute(string|null $rawSql): void
+            public function showDatabases(): array
+            {
+                return $this->showDatabases();
+            }
+
+            protected function getQueryBuilder(): QueryBuilderInterface
             {
             }
 
-            public function queryBuilder(): QueryBuilderInterface
+            protected function internalExecute(string|null $rawSql): void
             {
             }
         };
