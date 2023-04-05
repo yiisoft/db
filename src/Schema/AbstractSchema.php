@@ -39,10 +39,10 @@ abstract class AbstractSchema implements SchemaInterface
      * @var string|null $defaultSchema The default schema name used for the current session.
      */
     protected string|null $defaultSchema = null;
+    protected array $viewNames = [];
     private array $schemaNames = [];
     /** @psalm-var string[]|array */
     private array $tableNames = [];
-    protected array $viewNames = [];
     private array $tableMetadata = [];
 
     public function __construct(protected ConnectionInterface $db, private SchemaCache $schemaCache)
