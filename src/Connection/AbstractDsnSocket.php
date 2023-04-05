@@ -22,14 +22,18 @@ abstract class AbstractDsnSocket implements DsnInterface, Stringable
     public function __construct(
         private string $driver,
         private string $unixSocket,
-        private string $databaseName,
+        private string|null $databaseName = null,
         private array $options = []
     ) {
     }
 
     public function asString(): string
     {
-        $dsn = "$this->driver:" . "unix_socket=$this->unixSocket" . ';' . "dbname=$this->databaseName";
+        $dsn = "$this->driver:" . "unix_socket=$this->unixSocket";
+
+        if ($this->databaseName !== null && $this->databaseName !== '') {
+            $dsn .= ';' . "dbname=$this->databaseName";
+        }
 
         $parts = [];
 
@@ -53,9 +57,9 @@ abstract class AbstractDsnSocket implements DsnInterface, Stringable
     }
 
     /**
-     * @return string The database name to connect to.
+     * @return string|null The database name to connect to.
      */
-    public function getDatabaseName(): string
+    public function getDatabaseName(): string|null
     {
         return $this->databaseName;
     }
