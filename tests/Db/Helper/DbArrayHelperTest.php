@@ -6,18 +6,18 @@ namespace Yiisoft\Db\Tests\Db\Helper;
 
 use Closure;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Helper\ArrayHelper;
+use Yiisoft\Db\Helper\DbArrayHelper;
 
 /**
  * @group db
  */
-final class ArrayHelperTest extends TestCase
+final class DbArrayHelperTest extends TestCase
 {
     public function testIsAssociative(): void
     {
-        $this->assertFalse(ArrayHelper::isAssociative([]));
-        $this->assertTrue(ArrayHelper::isAssociative(['test' => 1]));
-        $this->assertFalse(ArrayHelper::isAssociative([1]));
+        $this->assertFalse(DbArrayHelper::isAssociative([]));
+        $this->assertTrue(DbArrayHelper::isAssociative(['test' => 1]));
+        $this->assertFalse(DbArrayHelper::isAssociative([1]));
     }
 
     /**
@@ -25,7 +25,7 @@ final class ArrayHelperTest extends TestCase
      */
     public function testPopulate(array $rows): void
     {
-        $this->assertSame($rows, ArrayHelper::populate($rows));
+        $this->assertSame($rows, DbArrayHelper::populate($rows));
     }
 
     /**
@@ -35,7 +35,7 @@ final class ArrayHelperTest extends TestCase
      */
     public function testPopulateWithIndexBy(Closure|string|null $indexBy, array $rows, array $populated): void
     {
-        $this->assertSame($populated, ArrayHelper::populate($rows, $indexBy));
+        $this->assertSame($populated, DbArrayHelper::populate($rows, $indexBy));
     }
 
     /**
@@ -44,7 +44,7 @@ final class ArrayHelperTest extends TestCase
     public function testPopulateWithIndexByWithObject(Closure|string|null $indexBy, array $rows, array $expectedPopulated): void
     {
         $rows = json_decode(json_encode($rows));
-        $populated = json_decode(json_encode(ArrayHelper::populate($rows, $indexBy)), true);
+        $populated = json_decode(json_encode(DbArrayHelper::populate($rows, $indexBy)), true);
 
         $this->assertSame($expectedPopulated, $populated);
     }
@@ -62,7 +62,7 @@ final class ArrayHelperTest extends TestCase
 
         $this->expectExceptionMessageMatches('/^E_WARNING: /');
 
-        ArrayHelper::populate($rows, $indexBy);
+        DbArrayHelper::populate($rows, $indexBy);
 
         restore_error_handler();
     }

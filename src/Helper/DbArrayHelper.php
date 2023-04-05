@@ -21,7 +21,7 @@ use function substr;
 /**
  * Array manipulation methods.
  */
-final class ArrayHelper
+final class DbArrayHelper
 {
     /**
      * Returns the values of a specified column in an array.
@@ -35,11 +35,11 @@ final class ArrayHelper
      *     ['id' => '123', 'data' => 'abc'],
      *     ['id' => '345', 'data' => 'def'],
      * ];
-     * $result = ArrayHelper::getColumn($array, 'id');
+     * $result = DbArrayHelper::getColumn($array, 'id');
      * // the result is: ['123', '345']
      *
      * // using anonymous function
-     * $result = ArrayHelper::getColumn($array, function ($element) {
+     * $result = DbArrayHelper::getColumn($array, function ($element) {
      *     return $element['id'];
      * });
      * ```
@@ -83,17 +83,17 @@ final class ArrayHelper
      *
      * ```php
      * // working with array
-     * $username = ArrayHelper::getValueByPath($_POST, 'username');
+     * $username = DbArrayHelper::getValueByPath($_POST, 'username');
      * // working with object
-     * $username = ArrayHelper::getValueByPath($user, 'username');
+     * $username = DbArrayHelper::getValueByPath($user, 'username');
      * // working with anonymous function
-     * $fullName = ArrayHelper::getValueByPath($user, function ($user, $defaultValue) {
+     * $fullName = DbArrayHelper::getValueByPath($user, function ($user, $defaultValue) {
      *     return $user->firstName . ' ' . $user->lastName;
      * });
      * // using dot format to retrieve the property of embedded object
-     * $street = \yii\helpers\ArrayHelper::getValue($users, 'address.street');
+     * $street = \yii\helpers\DbArrayHelper::getValue($users, 'address.street');
      * // using an array of keys to retrieve the value
-     * $value = \yii\helpers\ArrayHelper::getValue($versions, ['1.0', 'date']);
+     * $value = \yii\helpers\DbArrayHelper::getValue($versions, ['1.0', 'date']);
      * ```
      *
      * @param array|object $array Array or object to extract value from.
@@ -162,7 +162,7 @@ final class ArrayHelper
      *     ['id' => '345', 'data' => 'def', 'device' => 'tablet'],
      *     ['id' => '345', 'data' => 'hgi', 'device' => 'smartphone'],
      * ];
-     * $result = ArrayHelper::index($array, 'id');
+     * $result = DbArrayHelper::index($array, 'id');
      * ```
      *
      * The result will be an associative array, where the key is the value of `id` attribute
@@ -178,7 +178,7 @@ final class ArrayHelper
      * Passing `id` as a third argument will group `$array` by `id`:
      *
      * ```php
-     * $result = ArrayHelper::index($array, null, 'id');
+     * $result = DbArrayHelper::index($array, null, 'id');
      * ```
      *
      * The result will be a multidimensional array grouped by `id` on the first level, by `device` on the second level

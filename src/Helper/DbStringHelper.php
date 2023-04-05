@@ -17,7 +17,7 @@ use function trim;
 /**
  * String manipulation methods.
  */
-final class StringHelper
+final class DbStringHelper
 {
     /**
      * Returns the trailing name part of a path.
