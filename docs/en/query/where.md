@@ -210,7 +210,7 @@ Similar to the `like` operator except that `LIKE` is replaced with `NOT LIKE` in
 
 Similar to the `not like` operator except that `OR` is used to concatenate the `NOT LIKE` predicates.
 
-### rxist
+### exists
 
 Requires one operand which must be an instance of `Yiisoft\Db\Query\Query` representing the sub-query.
 It will build an `EXISTS` (sub-query) expression.
