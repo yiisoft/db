@@ -8,6 +8,12 @@ This package can be tested globally or individually for each DBMS.
 - [PostgreSQL](https://github.com/yiisoft/db-pgsql)
 - [SQLite](https://github.com/yiisoft/db-sqlite)
 
+## Github actions
+
+All our packages have github actions by default, so you can test for your [contribution](https://github.com/yiisoft/db/blob/master/.github/CONTRIBUTING.md) in the cloud.
+
+**Note:** Recomended pull request in draft mode until all tests pass.
+
 ## Docker images
 
 For greater ease it is recommended to use Docker containers for each DBMS, for this you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that in the root directory of each package.
@@ -30,9 +36,7 @@ The package is tested with [PHPUnit](https://phpunit.de/).
 
 ### Global testing
 
-To test all dbms at once, you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that in the root directory of each package.
-
-The following steps are required to run the tests:
+The following steps are required to run the tests.
 
 1. Run all Docker containers for each dbms.
 2. Install the dependencies of the project with composer.
@@ -44,9 +48,7 @@ vendor/bin/phpunit
 
 ### Individual testing
 
-To test each dbms individually, you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that in the root directory of each package.
-
-The following steps are required to run the tests:
+The following steps are required to run the tests.
 
 1. Run the Docker container for the dbms you want to test.
 2. Install the dependencies of the project with composer.
