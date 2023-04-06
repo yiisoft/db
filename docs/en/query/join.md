@@ -18,7 +18,7 @@ The `Yiisoft\Db\Query\Query::join()` method takes four parameters:
 - `table`: the name of the table to join.
 - `on`: optional join condition, that's the `ON` fragment.
   Refer to `Yiisoft\Db\Query\Query::where()` for details about specifying a condition.
-  > **Note:** The array syntax doesn't work for specifying a column based condition.
+  > Note: The array syntax doesn't work for specifying a column based condition.
   > `['user.id' => 'comment.userId']` will result in a condition
   > where the user id must be equal to the string `comment.userId`.
   > You should use the string syntax instead and specify the condition as `user.id = comment.userId`.

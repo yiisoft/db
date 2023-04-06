@@ -134,6 +134,13 @@ You can use it to execute **SQL** statements that don't return any result set, s
 - [DDL commands](/docs/en/command/ddl.md)
 - [DML commands](/docs/en/command/dml.md)
 
+## Schema
+
+Yii DB provides a `Schema` class that represents the metadata of a database, such as table names, column names, etc.
+
+- [Table schema](/docs/en/schema/table-schema.md)
+
+
 ## Extensions
 
 The following extensions are available for Yii DB.
