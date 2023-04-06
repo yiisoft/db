@@ -147,7 +147,7 @@ $tableFullName = $tableSchema->getFullName();
 ```
 
 > Note: The full name includes the schema name prefix, if any. 
-> That if the schema name is the same as the `Schema::defaultSchema`, the schema name won't be included.
+> If the schema name is the same as the `Schema::defaultSchema`, the schema name won't be included.
 
 ### Retrieving comment
 
