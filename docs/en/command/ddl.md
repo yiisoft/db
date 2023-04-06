@@ -398,9 +398,9 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'BITMAP')->execute();
 ```
 
-> A bitmap index is a special kind of database index which uses bitmaps or bit array. In a bitmap index, Oracle stores a
+> Info: A bitmap index is a special kind of database index which uses bitmaps or bit array. In a bitmap index, Oracle stores a
 > bitmap for each index key.
-
+> 
 > Each index key stores pointers to multiple rows. For example, if you create a bitmap index on the gender column of the members table.
 
 ## Constraints
