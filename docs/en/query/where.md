@@ -111,7 +111,7 @@ Operator format allows you to specify arbitrary conditions in a programmatic way
 Where the operands can each be specified in string format, hash format or operator format recursively,
 while the operator can be one of the following:
 
-### And
+### and
 
 The operands should be concatenated together using `and`.
 
@@ -123,11 +123,11 @@ For example, `['and', 'type=1', ['or', 'id=1', 'id=2']]` will generate `type=1 A
 
 > Note:The method won't do any quoting or escaping.
 
-### Or
+### or
 
 Similar to the `and` operator except that the operands are concatenated using `or`.
 
-### Not
+### not
 
 Requires only 1 operand, which will be wrapped in `NOT()`.
 
@@ -137,7 +137,7 @@ Operand may also be an array to describe many expressions.
 
 For example `['not', ['status' => 'draft', 'name' => 'example']]` will generate `NOT ((status='draft') AND (name='example'))`.
 
-### Between
+### between
 
 Operand 1 should be the column name, and operand 2 and 3 should be the starting and ending values of the range that the column is in.
 
@@ -147,11 +147,11 @@ In case you need to build a condition where value is between two columns `(like 
 
 you should use `Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition`.
 
-### Not between
+### not between
 
 Similar to `between` except the `BETWEEN` is replaced with `NOT BETWEEN` in the generated condition.
 
-### In	
+### in	
 
 Operand 1 should be a column or DB expression.
 Operand 2 can be either an array or a `Yiisoft\Db\Query\Query`. 
@@ -170,11 +170,11 @@ while operand 2 should be an array of arrays or a `Yiisoft\Db\Query\Query` objec
 
 For example, `['in', ['id', 'name'], [['id' => 1, 'name' => 'oy']]]` will generate `(id, name) IN ((1, 'oy'))`.
 
-### Not in
+### not in
 
 Similar to the in operator except that `IN` is replaced with `NOT IN` in the generated condition.
 
-### Like
+### like
 
 Operand 1 should be a column or DB expression, and operand 2 be a string or an array representing the values
 that the column or DB expression should be like.
@@ -197,29 +197,29 @@ the values will be automatically inside within a pair of percentage characters.
 
 > Note: When using PostgreSQL, you may also use `ilike` instead of `like` for case-insensitive matching.
 
-### Or like
+### or like
 
 Similar to the `like` operator except that `OR` is used to concatenate the `LIKE` predicates when second
 operand is an array.
 
-### Not like
+### not like
 
 Similar to the `like` operator except that `LIKE` is replaced with `NOT LIKE` in the generated condition.
 
-### Or not like
+### or not like
 
 Similar to the `not like` operator except that `OR` is used to concatenate the `NOT LIKE` predicates.
 
-### Exist
+### rxist
 
 Requires one operand which must be an instance of `Yiisoft\Db\Query\Query` representing the sub-query.
 It will build an `EXISTS` (sub-query) expression.
 
-## Not exist
+## not exist
 
 Similar to the `exists` operator and builds a `NOT EXISTS` (sub-query) expression.
 
-### Comparison
+### comparison
 
 `>`, `<=`, or any other valid DB operator that takes two operands: The first operand must be a `column name` while
 the second operand a `value`. For example, `['>', 'age', 10]` will generate `age > 10`.

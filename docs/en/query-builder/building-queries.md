@@ -26,7 +26,7 @@ All the query building methods return the query object itself, which allows you 
     - [or not like](/docs/en/query/where.md#or-not-like)
     - [exists](/docs/en/query/where.md#exists)
     - [not exists](/docs/en/query/where.md#not-exists)
-    - [Comparison](/docs/en/query/where.md#comparison)
+    - [comparison](/docs/en/query/where.md#comparison)
   - [Object format](/docs/en/query/where.md#object-format)
   - [Appending conditions](/docs/en/query/where.md#appending-conditions)
   - [Filter conditions](/docs/en/query/where.md#filter-conditions)
