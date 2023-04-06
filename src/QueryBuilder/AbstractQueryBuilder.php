@@ -78,12 +78,20 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         string $table,
         string $name,
         array|string $columns,
-        string $refTable,
-        array|string $refColumns,
+        string $referenceTable,
+        array|string $referenceColumns,
         string $delete = null,
         string $update = null
     ): string {
-        return $this->ddlBuilder->addForeignKey($table, $name, $columns, $refTable, $refColumns, $delete, $update);
+        return $this->ddlBuilder->addForeignKey(
+            $table,
+            $name,
+            $columns,
+            $referenceTable,
+            $referenceColumns,
+            $delete,
+            $update,
+        );
     }
 
     public function addPrimaryKey(string $table, string $name, array|string $columns): string

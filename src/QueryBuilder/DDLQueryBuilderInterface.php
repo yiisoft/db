@@ -102,9 +102,9 @@ interface DDLQueryBuilderInterface
      * @param string $name The name of the foreign key constraint.
      * @param array|string $columns The name of the column to add the constraint will on. If there are
      * many columns, separate them with commas or use an array to represent them.
-     * @param string $refTable The table that the foreign key references to.
-     * @param array|string $refColumns The name of the column that the foreign key references to. If there are many
-     * columns, separate them with commas or use an array to represent them.
+     * @param string $referenceTable The table that the foreign key references to.
+     * @param array|string $referenceColumns The name of the column that the foreign key references to.
+     * If there are many columns, separate them with commas or use an array to represent them.
      * @param string|null $delete The `ON DELETE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
      * `SET DEFAULT`, `SET NULL`.
      * @param string|null $update The `ON UPDATE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
@@ -115,14 +115,14 @@ interface DDLQueryBuilderInterface
      *
      * @return string The SQL statement for adding a foreign key constraint to an existing table.
      *
-     * Note: The method will quote the `name`, `table`, `refTable` parameters before using them in the generated SQL.
+     * Note: The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated SQL.
      */
     public function addForeignKey(
         string $table,
         string $name,
         array|string $columns,
-        string $refTable,
-        array|string $refColumns,
+        string $referenceTable,
+        array|string $referenceColumns,
         string|null $delete = null,
         string|null $update = null
     ): string;
