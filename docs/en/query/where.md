@@ -215,7 +215,7 @@ Similar to the `not like` operator except that `OR` is used to concatenate the `
 Requires one operand which must be an instance of `Yiisoft\Db\Query\Query` representing the sub-query.
 It will build an `EXISTS` (sub-query) expression.
 
-## not exist
+## not exists
 
 Similar to the `exists` operator and builds a `NOT EXISTS` (sub-query) expression.
 
