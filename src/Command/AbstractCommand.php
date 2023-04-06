@@ -161,8 +161,8 @@ abstract class AbstractCommand implements CommandInterface
         string $table,
         string $name,
         array|string $columns,
-        string $refTable,
-        array|string $refColumns,
+        string $referenceTable,
+        array|string $referenceColumns,
         string $delete = null,
         string $update = null
     ): static {
@@ -170,8 +170,8 @@ abstract class AbstractCommand implements CommandInterface
             $table,
             $name,
             $columns,
-            $refTable,
-            $refColumns,
+            $referenceTable,
+            $referenceColumns,
             $delete,
             $update
         );

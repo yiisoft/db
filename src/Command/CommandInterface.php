@@ -98,9 +98,9 @@ interface CommandInterface
      * @param string $name The name of the foreign key constraint.
      * @param array|string $columns The name of the column to add foreign key constraint to. If there are
      * many columns, separate them with commas.
-     * @param string $refTable The name of the table that the foreign key references to.
-     * @param array|string $refColumns The name of the column that the foreign key references to. If there are many
-     * columns, separate them with commas.
+     * @param string $referenceTable The name of the table that the foreign key references to.
+     * @param array|string $referenceColumns The name of the column that the foreign key references to. If there are
+     * many columns, separate them with commas.
      * @param string|null $delete The `ON DELETE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
      * `SET DEFAULT`, `SET NULL`.
      * @param string|null $update The `ON UPDATE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
@@ -109,14 +109,15 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * Note: The method will quote the `name`, `table`, `refTable` parameters before using them in the generated SQL.
+     * Note: The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated
+     * SQL.
      */
     public function addForeignKey(
         string $table,
         string $name,
         array|string $columns,
-        string $refTable,
-        array|string $refColumns,
+        string $referenceTable,
+        array|string $referenceColumns,
         string $delete = null,
         string $update = null
     ): static;

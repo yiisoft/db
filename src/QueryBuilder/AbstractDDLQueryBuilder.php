@@ -76,8 +76,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         string $table,
         string $name,
         array|string $columns,
-        string $refTable,
-        array|string $refColumns,
+        string $referenceTable,
+        array|string $referenceColumns,
         string|null $delete = null,
         string|null $update = null
     ): string {
@@ -85,8 +85,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . $this->quoter->quoteTableName($table)
             . ' ADD CONSTRAINT ' . $this->quoter->quoteColumnName($name)
             . ' FOREIGN KEY (' . $this->queryBuilder->buildColumns($columns) . ')'
-            . ' REFERENCES ' . $this->quoter->quoteTableName($refTable)
-            . ' (' . $this->queryBuilder->buildColumns($refColumns) . ')';
+            . ' REFERENCES ' . $this->quoter->quoteTableName($referenceTable)
+            . ' (' . $this->queryBuilder->buildColumns($referenceColumns) . ')';
 
         if ($delete !== null) {
             $sql .= ' ON DELETE ' . $delete;
