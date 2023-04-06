@@ -357,7 +357,7 @@ $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'NONCLUSTERED')
 > Info: A non-clustered index is also used to speed up search operations. Unlike a clustered index, a non-clustered index doesn’t
 > physically define the order in which records are inserted into a table. In fact, a non-clustered index is stored in a 
 > separate location from the data table.
-
+> 
 > A non-clustered index is like a book index, which is located separately from the main contents of the book. Since non-clustered
 > indexes are located in a separate location, there can be multiple non-clustered indexes per table.
 
