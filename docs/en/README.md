@@ -138,7 +138,7 @@ You can use it to execute **SQL** statements that don't return any result set, s
 
 Yii DB provides a `Schema` class that represents the metadata of a database, such as table names, column names, etc.
 
-- [table schema](/docs/en/schema/table-schema.md)
+- [Table schema](/docs/en/schema/table-schema.md)
 
 
 ## Extensions

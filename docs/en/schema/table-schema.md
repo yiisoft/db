@@ -91,6 +91,23 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $tableSchema = $db->getTableSchema('customer', true);
 ```
 
+```php
+<?php
+
+declare(strict_types=1);
+
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+if ($db->getTableSchema('customer') !== null) {
+    // table exists
+    // ...your code here
+} else {
+    // table does not exist
+    // ...your code here
+}
+```
+
 > Note: If `$db->getTableSchema()` return `null`, then the table does not exist.
 
 ### Retrieving table name
