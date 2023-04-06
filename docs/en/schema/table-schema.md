@@ -98,7 +98,11 @@ declare(strict_types=1);
 
 use Yiisoft\Db\Connection\ConnectionInterface;
 
-/** @var ConnectionInterface $db */
+/**
+ * Check if table exists or not.
+ *  
+ * @var ConnectionInterface $db
+ */
 if ($db->getTableSchema('customer') !== null) {
     // table exists
     // ...your code here
