@@ -354,7 +354,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'NONCLUSTERED')->execute();
 ```
 
-> A non-clustered index is also used to speed up search operations. Unlike a clustered index, a non-clustered index doesn’t
+> Info: A non-clustered index is also used to speed up search operations. Unlike a clustered index, a non-clustered index doesn’t
 > physically define the order in which records are inserted into a table. In fact, a non-clustered index is stored in a 
 > separate location from the data table.
 
