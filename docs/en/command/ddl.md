@@ -227,13 +227,13 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 $db->createCommand()->addForeignKey(
-    '{{%customer}}',
-    'fk-customer-profile_id',
-    'profile_id',
-    '{{%profile}}',
-    'id',
-    'CASCADE',
-    'CASCADE'
+    table: '{{%customer}}',
+    name: 'fk-customer-profile_id',
+    columns: 'profile_id',
+    refTable: '{{%profile}}',
+    refColumns: 'id',
+    delete: 'CASCADE',
+    update: 'CASCADE',
 )->execute();
 ```
 

@@ -66,10 +66,10 @@ interface TableSchemaInterface
     public function getPrimaryKey(): array;
 
     /**
-     * @return array The column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object,
-     * indexed by column names.
+     * @return array The column metadata of this table. Array of {@see ColumnSchemaInterface} objects indexed by column
+     * names.
      *
-     * @psalm-return ColumnSchemaInterface[]
+     * @psalm-return array<string, ColumnSchemaInterface>
      */
     public function getColumns(): array;
 
@@ -121,8 +121,7 @@ interface TableSchemaInterface
     public function primaryKey(string $value): void;
 
     /**
-     * Set one column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object, indexed by
-     * column names.
+     * Set one column metadata of this table.
      *
      * @param string $index The column name.
      */
