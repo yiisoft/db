@@ -68,7 +68,7 @@ declare(strict_types=1);
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /**
- * Shortcout for $db->getSchema()->getTableSchema('customer');
+ * Shortcut for $db->getSchema()->getTableSchema('customer');
  * 
  * @var ConnectionInterface $db
  */
@@ -84,7 +84,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /**
  * When `refresh` is `true`, the table schema will be re-created even if it is found in the cache.
- * Shortcout for $db->getSchema()->getTableSchema('customer', true);
+ * Shortcut for $db->getSchema()->getTableSchema('customer', true);
  * 
  * @var ConnectionInterface $db
  */
@@ -112,7 +112,7 @@ if ($db->getTableSchema('customer') !== null) {
 }
 ```
 
-> Note: If `$db->getTableSchema()` return `null`, then the table does not exist.
+> Info: `getTableSchema()` returned object instance of `TableSchemaInterface` class or `null` if table does not exist.
 
 ### Retrieving table name
 
