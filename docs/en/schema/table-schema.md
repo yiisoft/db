@@ -130,7 +130,7 @@ $tableSchema = $db->getTableSchema('customer');
 $tableName = $tableSchema->getName();
 ```
 
-### Retrieving table full name
+### Retrieving full table name
 
 You can retrieve the table full name for a given table using the `getFullName()` method of `TableSchema` class.
 
