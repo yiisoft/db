@@ -175,6 +175,7 @@ For example, `['in', ['id', 'name'], [['id' => 1, 'name' => 'oy']]]` will genera
 Similar to the in operator except that `IN` is replaced with `NOT IN` in the generated condition.
 
 ### Like
+
 Operand 1 should be a column or DB expression, and operand 2 be a string or an array representing the values
 that the column or DB expression should be like.
 
@@ -218,8 +219,7 @@ It will build an `EXISTS` (sub-query) expression.
 
 Similar to the `exists` operator and builds a `NOT EXISTS` (sub-query) expression.
 
-
-### >, <=
+### Comparison
 
 `>`, `<=`, or any other valid DB operator that takes two operands: The first operand must be a `column name` while
 the second operand a `value`. For example, `['>', 'age', 10]` will generate `age > 10`.
