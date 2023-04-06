@@ -1,23 +1,21 @@
 # Getting started
 
-[Yii DB](https://github.com/yiisoft/db) is DAO (Data Access Object) layer for applications
-using [PHP](https://www.php.net/).
+Yii DB is DAO (Data Access Object) layer for applications using [PHP](https://www.php.net/).
 It provides a set of classes that help you access relational databases.
 It's designed to be flexible and extensible,
 so that it can be used with different databases and different database schemas.
 Its database agnostic nature makes it easy to switch from one database to another.
 
-Built on top of [PDO](https://www.php.net/manual/en/book.pdo.php), [Yii DB](https://github.com/yiisoft/db) provides
-an object-oriented API for accessing relational databases.
+Built on top of [PDO](https://www.php.net/manual/en/book.pdo.php), Yii DB provides an object-oriented API for accessing
+relational databases.
 It's the foundation for other more advanced database access methods, including [Query Builder](query-builder.md).
 
-When using [Yii DB](https://github.com/yiisoft/db), you mainly need to deal with plain SQLs and PHP arrays.
+When using Yii DB, you mainly need to deal with plain SQLs and PHP arrays.
 As a result, it's the most efficient way to access databases.
-However, because SQL syntax may vary for different databases,
-using [Yii DB](https://github.com/yiisoft/db) also means
-you have to take extra effort to create a database agnostic application.
+However, because SQL syntax may vary for different databases, using Yii DB also means you have to take extra effort to
+create a database agnostic application.
 
-[Yii DB](https://github.com/yiisoft/db) supports the following databases out of the box:
+Yii DB supports the following databases out of the box:
 
 - [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) of versions **2017, 2019, 2022**.
 - [MySQL](https://www.mysql.com/) of versions **5.7 - 8.0**.
@@ -28,8 +26,7 @@ you have to take extra effort to create a database agnostic application.
 
 ## Installation
 
-To install [Yii DB](https://github.com/yiisoft/db), you must select the driver you want to use and install it
-with [Composer](https://getcomposer.org/).
+To install Yii DB, you must select the driver you want to use and install it with [Composer](https://getcomposer.org/).
 
 For [MSSQL](https://github.com/yiisoft/db-mssql):
 
@@ -100,14 +97,13 @@ Once you have a database connection instance, you can execute an SQL query by ta
 When writing a database-agnostic code, quoting table and column names is often a headache because different databases
 have different names quoting rules.
 
-To overcome this problem, you may use the following quoting syntax introduced by [Yii DB](https://github.com/yiisoft/db):
+To overcome this problem, you may use the following quoting syntax introduced by Yii DB:
 
 - `[[column name]]`: enclose a *column name* to quote in *double square brackets*.
 - `{{%table name}}`: enclose a *table name* to quote in *double curly brackets*, and the percentage character `%`
   will be replaced with the *table prefix*.
 
-[Yii DB](https://github.com/yiisoft/db) will automatically convert such constructs into the corresponding quoted column
-or table names using the DBMS-specific syntax.
+Yii DB will automatically convert such constructs into the corresponding quoted column or table names using the DBMS-specific syntax.
 
 For example, the following code will generate an SQL statement that's valid for all supported databases:
 
@@ -125,15 +121,12 @@ $result = $db->createCommand('SELECT COUNT([[id]]) FROM {{%employee}}')->querySc
 
 ## Query Builder
 
-[Yii DB](https://github.com/yiisoft/db) provides a [Query Builder](query-builder.md) that helps you create
-SQL statements in a more convenient way.
+Yii DB provides a [Query Builder](query-builder.md) that helps you create SQL statements in a more convenient way.
 It's a powerful tool to create complex SQL statements in a simple way.
-
 
 ## Commands
 
-[Yii DB](https://github.com/yiisoft/db) provides a `Command` class that represents an **SQL** statement to be executed
-against a database.
+Yii DB provides a `Command` class that represents an **SQL** statement to be executed against a database.
 
 You can use it to execute **SQL** statements that don't return any result set, such as `INSERT`, `UPDATE`, `DELETE`,
 `CREATE TABLE`, `DROP TABLE`, `CREATE INDEX`, `DROP INDEX`, etc.

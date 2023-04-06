@@ -82,12 +82,11 @@ The relevant part of SQL is:
 WHERE `id` IN (SELECT `id` FROM `user`)
 ```
 
-Using the hash format, [Yii DB](https://github.com/yiisoft/db) internally applies parameter binding for values,
-so in contrast to the string format, here you don't have to add parameters manually.
+Using the hash format, Yii DB internally applies parameter binding for values, so in contrast to the string format,
+here you don't have to add parameters manually.
 
-However, note that [Yii DB](https://github.com/yiisoft/db) never escapes column names, so if you pass a variable
-obtained from the user side as a column name without any more checks, the application will become vulnerable
-to SQL injection attacks.
+However, note that Yii DB never escapes column names, so if you pass a variable obtained from the user side as a column
+name without any more checks, the application will become vulnerable to SQL injection attacks.
 
 To keep the application secure, either don't use variables as column names or filter variables with whitelist.
 
@@ -166,11 +165,11 @@ while the operator can be one of the following:
 - `>`, `<=`, or any other valid DB operator that takes two operands: The first operand must be a `column name` while
   the second operand a `value`. For example, `['>', 'age', 10]` will generate `age > 10`.
 
-Using the operator format, [Yii DB](https://github.com/yiisoft/db) internally uses parameter binding for values,
-so in contrast to the string format, here you don't have to add parameters manually.
+Using the operator format, Yii DB internally uses parameter binding for values, so in contrast to the string format,
+here you don't have to add parameters manually.
 
-However, note that [Yii DB](https://github.com/yiisoft/db) never escapes column names, so if you pass a variable as
-a column name, the application will likely become vulnerable to SQL injection attack.
+However, note that Yii DB never escapes column names, so if you pass a variable as a column name, the application will
+likely become vulnerable to SQL injection attack.
 
 To keep application secure, either don't use variables as column names or filter variables against allow-list.
 In case you need to get a column name from user.
