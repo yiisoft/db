@@ -121,7 +121,7 @@ If an operand is an array, it will be converted into a string using the rules de
 
 For example, `['and', 'type=1', ['or', 'id=1', 'id=2']]` will generate `type=1 AND (id=1 OR id=2)`.
 
-> Note:The method won't do any quoting or escaping.
+> Note: The method won't do any quoting or escaping.
 
 ### or
 
@@ -192,8 +192,8 @@ If this operand isn't provided, a default escape mapping will be used.
 
 You may use false or an empty array to indicate the values are already escaped and no escape should be applied.
 
-> Note that when using an escape mapping (or the third operand isn't provided), 
-the values will be automatically inside within a pair of percentage characters.
+> Note: That when using an escape mapping (or the third operand isn't provided), 
+> the values will be automatically inside within a pair of percentage characters.
 
 > Note: When using PostgreSQL, you may also use `ilike` instead of `like` for case-insensitive matching.
 
@@ -331,7 +331,7 @@ is that the former will ignore empty values provided in the condition in hash fo
 So, if `$email` is empty while `$username` isn't,
 the above code will result in the SQL condition `WHERE username=:username`.
 
-> **Note:** A value is considered empty if it's either `null`, an empty array, an empty string or a string containing 
+> Note: A value is considered empty if it's either `null`, an empty array, an empty string or a string containing 
 > whitespaces only.
 
 Like with `Yiisoft\Db\Query\Query::andWhere()` and `Yiisoft\Db\Query\Query::orWhere()`,
