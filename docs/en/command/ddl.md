@@ -377,9 +377,9 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'name', 'FULLTEXT')->execute();
 ```
 
-> Full-text indexes are created on text-based columns (`CHAR`, `VARCHAR`, or `TEXT` columns) to speed up queries and DML operations
+> Info: Full-text indexes are created on text-based columns (`CHAR`, `VARCHAR`, or `TEXT` columns) to speed up queries and DML operations
 > on data contained within those columns. 
-
+> 
 > A full-text index is defined as part of a `CREATE TABLE` statement or added to an existing table using `ALTER TABLE` or `CREATE INDEX`.
 
 ### Add bitmap index
