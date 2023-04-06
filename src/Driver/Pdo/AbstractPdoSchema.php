@@ -10,7 +10,7 @@ use Yiisoft\Db\Schema\AbstractSchema;
 /**
  * Represents a schema for a PDO (PHP Data Object) connection.
  */
-abstract class PdoAbstractSchema extends AbstractSchema
+abstract class AbstractPdoSchema extends AbstractSchema
 {
     /**
      * Generates the cache key for the current connection.
