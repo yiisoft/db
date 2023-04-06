@@ -216,7 +216,7 @@ $columns = $tableSchema->getColumns();
 
 ### Retrieving column
 
-You can retrieve the column metadata for a given table using the `getColumn()` method of `TableSchema` class.
+You can retrieve the metadata for a given table column using the `getColumn()` method of `TableSchema` class.
 
 ```php
 <?php
