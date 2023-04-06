@@ -335,7 +335,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'CLUSTERED')->execute();
 ```
 
-> A clustered index is an index which defines the physical order in which table records are stored in a database.
+> Info: A clustered index is an index which defines the physical order in which table records are stored in a database.
 > Since there can be only one way in which records are physically stored in a database table, there can be only one
 > clustered index per table. By default a clustered index is created on a primary key column.
 
