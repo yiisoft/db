@@ -8,13 +8,13 @@ use PDO;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
-use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
+use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
-abstract class CommonCommandPDOTest extends TestCase
+abstract class CommonPdoCommandTest extends TestCase
 {
     use TestTrait;
 
@@ -201,7 +201,7 @@ abstract class CommonCommandPDOTest extends TestCase
     {
         $db = $this->getConnection(true);
 
-        $command = new class ($db) extends AbstractCommandPDO {
+        $command = new class ($db) extends AbstractPdoCommand {
             public function testExecute(): void
             {
                 $this->internalGetQueryResult(1024);
