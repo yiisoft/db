@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support\Stub;
 
-use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
+use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
-final class Command extends AbstractCommandPDO
+final class Command extends AbstractPdoCommand
 {
     public function insertWithReturningPks(string $table, array $columns): bool|array
     {

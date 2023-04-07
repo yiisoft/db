@@ -6,8 +6,8 @@ namespace Yiisoft\Db\Tests\Common;
 
 use ReflectionException;
 use Throwable;
-use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
-use Yiisoft\Db\Driver\PDO\ConnectionPDOInterface;
+use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
+use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -1941,10 +1941,10 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
     public function testPrepareWithEmptySql()
     {
-        $db = $this->createMock(ConnectionPDOInterface::class);
+        $db = $this->createMock(PdoConnectionInterface::class);
         $db->expects(self::never())->method('getActivePDO');
 
-        $command = new class ($db) extends AbstractCommandPDO {
+        $command = new class ($db) extends AbstractPdoCommand {
             public function showDatabases(): array
             {
                 return $this->showDatabases();
@@ -1967,7 +1967,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
      * @throws InvalidConfigException
      * @throws Throwable
      */
-    protected function performAndCompareUpsertResult(ConnectionPDOInterface $db, array $data): void
+    protected function performAndCompareUpsertResult(PdoConnectionInterface $db, array $data): void
     {
         $params = [];
 

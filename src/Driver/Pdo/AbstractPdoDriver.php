@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Driver\PDO;
+namespace Yiisoft\Db\Driver\Pdo;
 
 use PDO;
 
@@ -14,7 +14,7 @@ use PDO;
  *
  * @link https://www.php.net/manual/en/book.pdo.php
  */
-abstract class AbstractPDODriver implements PDODriverInterface
+abstract class AbstractPdoDriver implements PdoDriverInterface
 {
     protected string|null $charset = null;
 
