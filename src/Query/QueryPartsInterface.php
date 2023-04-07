@@ -518,22 +518,6 @@ interface QueryPartsInterface
     public function selectOption(string|null $value): static;
 
     /**
-     * Specify the joins for a SELECT statement in a database query.
-     *
-     * @param array $value The joins to be performed in the query.
-     * Please refer to {@see join()} on how to specify this parameter.
-     */
-    public function setJoin(array $value): static;
-
-    /**
-     * Specify the unions for a SELECT statement in a database query.
-     *
-     * @param array $value The unions to be performed in the query.
-     * Please refer to {@see union()} on how to specify this parameter.
-     */
-    public function setUnion(array $value): static;
-
-    /**
      * Appends an SQL statement using UNION operator.
      *
      * @param QueryInterface|string $sql $sql The SQL statement to be appended using UNION.

@@ -663,26 +663,6 @@ abstract class AbstractQueryTest extends TestCase
         );
     }
 
-    public function testSetJoin(): void
-    {
-        $db = $this->getConnection();
-
-        $query = new Query($db);
-        $query->setJoin(['INNER JOIN', 'table1', 'table1.id = table2.id']);
-
-        $this->assertSame(['INNER JOIN', 'table1', 'table1.id = table2.id'], $query->getJoin());
-    }
-
-    public function testSetUnion(): void
-    {
-        $db = $this->getConnection();
-
-        $query = new Query($db);
-        $query->setUnion(['SELECT * FROM table1', 'SELECT * FROM table2']);
-
-        $this->assertSame(['SELECT * FROM table1', 'SELECT * FROM table2'], $query->getUnion());
-    }
-
     public function testShouldEmulateExecution(): void
     {
         $db = $this->getConnection();

@@ -624,18 +624,6 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function setJoin(array $value): static
-    {
-        $this->join = $value;
-        return $this;
-    }
-
-    public function setUnion(array $value): static
-    {
-        $this->union = $value;
-        return $this;
-    }
-
     public function shouldEmulateExecution(): bool
     {
         return $this->emulateExecution;
