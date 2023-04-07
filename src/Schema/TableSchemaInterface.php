@@ -124,9 +124,9 @@ interface TableSchemaInterface
      * Set one column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object, indexed by
      * column names.
      *
-     * @param string $index The column name.
+     * @param string $name The column name.
      */
-    public function columns(string $index, ColumnSchemaInterface $value): void;
+    public function column(string $name, ColumnSchemaInterface $value): void;
 
     /**
      * @return string|null The name of the catalog (database) that this table belongs to. Defaults to null, meaning no
