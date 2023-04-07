@@ -248,7 +248,9 @@ interface DDLQueryBuilderInterface
      * @param QueryInterface|string $subQuery The select statement which defines the view.
      * This can be either a string or a {@see Query} object.
      *
-     *@throws InvalidArgumentException
+     * @return string The `CREATE VIEW` SQL statement.
+     *
+     * Note: The method will quote the `viewName` parameter before using it in the generated SQL.
      * @throws InvalidConfigException
      * @throws NotSupportedException If this isn't supported by the underlying DBMS.
      * @throws Exception
