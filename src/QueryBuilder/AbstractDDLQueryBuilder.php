@@ -187,7 +187,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         return $options === null ? $sql : $sql . ' ' . $options;
     }
 
-    public function createView(string $view, QueryInterface|string $subQuery): string
+    public function createView(string $viewName, QueryInterface|string $subQuery): string
     {
         if ($subQuery instanceof QueryInterface) {
             [$rawQuery, $params] = $this->queryBuilder->build($subQuery);
@@ -201,7 +201,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             $subQuery = strtr($rawQuery, $params);
         }
 
-        return 'CREATE VIEW ' . $this->quoter->quoteTableName($view) . ' AS ' . $subQuery;
+        return 'CREATE VIEW ' . $this->quoter->quoteTableName($viewName) . ' AS ' . $subQuery;
     }
 
     public function dropCheck(string $table, string $name): string

@@ -241,9 +241,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->createTable($table, $columns, $options);
     }
 
-    public function createView(string $view, QueryInterface|string $subQuery): string
+    public function createView(string $viewName, QueryInterface|string $subQuery): string
     {
-        return $this->ddlBuilder->createView($view, $subQuery);
+        return $this->ddlBuilder->createView($viewName, $subQuery);
     }
 
     public function delete(string $table, array|string $condition, array &$params): string
