@@ -56,7 +56,7 @@ abstract class AbstractTableSchemaTest extends TestCase
 
         $this->assertNull($tableSchema->getColumn('id'));
 
-        $tableSchema->columns('id', $columnSchema);
+        $tableSchema->column('id', $columnSchema);
 
         $this->assertSame($columnSchema, $tableSchema->getColumn('id'));
     }
@@ -71,7 +71,7 @@ abstract class AbstractTableSchemaTest extends TestCase
 
         $this->assertSame([], $tableSchema->getColumns());
 
-        $tableSchema->columns('id', $columnSchema);
+        $tableSchema->column('id', $columnSchema);
 
         $this->assertSame(['id' => $columnSchema], $tableSchema->getColumns());
     }
@@ -86,7 +86,7 @@ abstract class AbstractTableSchemaTest extends TestCase
 
         $this->assertNull($tableSchema->getColumn('id'));
 
-        $tableSchema->columns('id', $columnSchema);
+        $tableSchema->column('id', $columnSchema);
 
         $this->assertSame(['id'], $tableSchema->getColumnNames());
     }
