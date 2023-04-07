@@ -262,6 +262,14 @@ final class ColumnSchemaBuilderTest extends TestCase
         $this->assertSame('string UNIQUE', $column->unique()->buildString());
     }
 
+    public function testPrimarykey(): void
+    {
+        $column = new Column('string');
+
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string PRIMARY KEY', $column->primaryKey()->buildString());
+    }
+
     public function testUnsignedTypePk(): void
     {
         $column = new Column(SchemaInterface::TYPE_PK);

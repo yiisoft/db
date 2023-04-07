@@ -60,12 +60,13 @@ abstract class AbstractColumn implements ColumnInterface
 
     protected bool|null $isNotNull = null;
     protected bool $isUnique = false;
+    protected bool $isPrimaryKey = false;
     protected string|null $check = null;
     protected mixed $default = null;
     protected string|null $append = null;
     protected bool $isUnsigned = false;
     protected string|null $comment = null;
-    protected string $format = '{type}{length}{notnull}{unique}{default}{check}{comment}{append}';
+    protected string $format = '{type}{length}{notnull}{primarykey}{unique}{default}{check}{comment}{append}';
 
     /** @psalm-var string[] */
     private array $categoryMap = [
@@ -112,6 +113,12 @@ abstract class AbstractColumn implements ColumnInterface
     public function null(): static
     {
         $this->isNotNull = false;
+        return $this;
+    }
+
+    public function primaryKey(): static
+    {
+        $this->isPrimaryKey = true;
         return $this;
     }
 
@@ -204,6 +211,11 @@ abstract class AbstractColumn implements ColumnInterface
         return $this->isNotNull;
     }
 
+    public function isPrimaryKey(): bool
+    {
+        return $this->isPrimaryKey;
+    }
+
     public function isUnique(): bool
     {
         return $this->isUnique;
@@ -274,6 +286,14 @@ abstract class AbstractColumn implements ColumnInterface
         }
 
         return '';
+    }
+
+    /**
+     * Builds the primary key constraint for the column.
+     */
+    protected function buildPrimaryKeyString(): string
+    {
+        return $this->isPrimaryKey ? ' PRIMARY KEY' : '';
     }
 
     /**
@@ -382,6 +402,7 @@ abstract class AbstractColumn implements ColumnInterface
             '{length}' => $this->buildLengthString(),
             '{unsigned}' => $this->buildUnsignedString(),
             '{notnull}' => $this->buildNotNullString(),
+            '{primarykey}' => $this->buildPrimaryKeyString(),
             '{unique}' => $this->buildUniqueString(),
             '{default}' => $this->buildDefaultString(),
             '{check}' => $this->buildCheckString(),
