@@ -90,7 +90,7 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
             call_user_func_array([$builder, $method], $call);
         }
 
-        $this->assertSame($expected, $builder->asString());
+        $this->assertSame($expected, $builder->buildString());
 
         $db->close();
     }

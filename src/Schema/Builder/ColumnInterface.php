@@ -32,7 +32,7 @@ interface ColumnInterface
      *
      * @return string The SQL fragment to use for creating the column.
      */
-    public function asString(): string;
+    public function buildString(): string;
 
     /**
      * Specify a `CHECK` constraint for the column.

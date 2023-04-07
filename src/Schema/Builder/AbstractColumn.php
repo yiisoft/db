@@ -98,7 +98,7 @@ abstract class AbstractColumn implements ColumnInterface
      * @psalm-param string[]|int[]|int|string|null $length
      */
     public function __construct(
-        protected string $type,
+        protected string|null $type = null,
         protected int|string|array|null $length = null
     ) {
     }
@@ -177,7 +177,7 @@ abstract class AbstractColumn implements ColumnInterface
         return $this;
     }
 
-    public function asString(): string
+    public function buildString(): string
     {
         $format = match ($this->getTypeCategory()) {
             self::TYPE_CATEGORY_PK => '{type}{check}{comment}{append}',

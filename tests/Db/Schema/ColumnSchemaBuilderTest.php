@@ -20,105 +20,105 @@ final class ColumnSchemaBuilderTest extends TestCase
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string bar', $column->append('bar')->asString());
-        $this->assertSame('string foo', $column->append('foo')->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string bar', $column->append('bar')->buildString());
+        $this->assertSame('string foo', $column->append('foo')->buildString());
     }
 
     public function testAppendWithEmptyString(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string', $column->append('')->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string', $column->append('')->buildString());
     }
 
     public function testCheck(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string CHECK (value > 5)', $column->check('value > 5')->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string CHECK (value > 5)', $column->check('value > 5')->buildString());
     }
 
     public function testCheckWithEmptyString(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string', $column->check('')->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string', $column->check('')->buildString());
     }
 
     public function testCheckWithNull(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string', $column->check(null)->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string', $column->check(null)->buildString());
     }
 
     public function testComment(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string', $column->comment('comment')->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string', $column->comment('comment')->buildString());
     }
 
     public function testCommentWithEmptyString(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string', $column->comment('')->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string', $column->comment('')->buildString());
     }
 
     public function testCommentWithNull(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string', $column->comment(null)->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string', $column->comment(null)->buildString());
     }
 
     public function testDefaultExpression(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame("string DEFAULT 'expression'", $column->defaultExpression("'expression'")->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame("string DEFAULT 'expression'", $column->defaultExpression("'expression'")->buildString());
     }
 
     public function testDefaultExpressionWithEmptyString(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string DEFAULT ', $column->defaultExpression('')->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string DEFAULT ', $column->defaultExpression('')->buildString());
     }
 
     public function testDefaultValue(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame("string DEFAULT ''value''", $column->defaultValue("'value'")->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame("string DEFAULT ''value''", $column->defaultValue("'value'")->buildString());
     }
 
     public function testDefaultValueWithEmptyString(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame("string DEFAULT ''", $column->defaultValue('')->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame("string DEFAULT ''", $column->defaultValue('')->buildString());
     }
 
     public function testDefaultValueWithNull(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string NULL DEFAULT NULL', $column->defaultValue(null)->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string NULL DEFAULT NULL', $column->defaultValue(null)->buildString());
     }
 
     public function testGetAppend(): void
@@ -235,46 +235,46 @@ final class ColumnSchemaBuilderTest extends TestCase
     {
         $column = new Column('integer', [10, 2]);
 
-        $this->assertSame('integer(10,2)', $column->asString());
+        $this->assertSame('integer(10,2)', $column->buildString());
     }
 
     public function testNotnull(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string NOT NULL', $column->notNull()->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string NOT NULL', $column->notNull()->buildString());
     }
 
     public function testNull(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string NULL DEFAULT NULL', $column->null()->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string NULL DEFAULT NULL', $column->null()->buildString());
     }
 
     public function testUnique(): void
     {
         $column = new Column('string');
 
-        $this->assertSame('string', $column->asString());
-        $this->assertSame('string UNIQUE', $column->unique()->asString());
+        $this->assertSame('string', $column->buildString());
+        $this->assertSame('string UNIQUE', $column->unique()->buildString());
     }
 
     public function testUnsignedTypePk(): void
     {
         $column = new Column(SchemaInterface::TYPE_PK);
 
-        $this->assertSame('pk', $column->asString());
-        $this->assertSame('upk', $column->unsigned()->asString());
+        $this->assertSame('pk', $column->buildString());
+        $this->assertSame('upk', $column->unsigned()->buildString());
     }
 
     public function testUnsignedTypeUbigPk(): void
     {
         $column = new Column(SchemaInterface::TYPE_BIGPK);
 
-        $this->assertSame('bigpk', $column->asString());
-        $this->assertSame('ubigpk', $column->unsigned()->asString());
+        $this->assertSame('bigpk', $column->buildString());
+        $this->assertSame('ubigpk', $column->unsigned()->buildString());
     }
 }
