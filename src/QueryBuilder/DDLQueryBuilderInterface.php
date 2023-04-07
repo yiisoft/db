@@ -274,8 +274,8 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for dropping a DB column.
      *
-     * @param string $table The table whose column is to dropp.
-     * @param string $column The name of the column to dropp.
+     * @param string $table The table whose column is to drop.
+     * @param string $column The name of the column to drop.
      *
      * @return string The SQL statement for dropping a DB column.
      *

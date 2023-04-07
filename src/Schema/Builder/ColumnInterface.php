@@ -22,7 +22,7 @@ interface ColumnInterface
     public function append(string $sql): self;
 
     /**
-     * Changes default format string
+     * Change default format string of a column.
      */
     public function setFormat(string $format): void;
 
@@ -37,9 +37,9 @@ interface ColumnInterface
     /**
      * Specify a `CHECK` constraint for the column.
      *
-     * @param string|null $check The SQL of the `CHECK` constraint to add.
+     * @param string|null $sql The SQL of the `CHECK` constraint to add.
      */
-    public function check(string|null $check): self;
+    public function check(string|null $sql): self;
 
     /**
      * Specifies the comment for column.
@@ -51,9 +51,9 @@ interface ColumnInterface
     /**
      * Specify the default SQL expression for the column.
      *
-     * @param string $default The SQL expression to use as default value.
+     * @param string $sql The SQL expression to use as default value.
      */
-    public function defaultExpression(string $default): self;
+    public function defaultExpression(string $sql): self;
 
     /**
      * Specify the default value for the column.

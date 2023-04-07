@@ -24,11 +24,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const SCHEMA = 'schema';
     /**
-     * The metadata type for retrieving the primary keys constraint.
+     * The metadata type for retrieving the primary key constraint.
      */
     public const PRIMARY_KEY = 'primaryKey';
     /**
-     * The metadata type for retrieving the indexes constraint.
+     * The metadata type for retrieving the index constraints.
      */
     public const INDEXES = 'indexes';
     /**
@@ -36,7 +36,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const CHECKS = 'checks';
     /**
-     * The metadata type for retrieving the foreign keys constraint.
+     * The metadata type for retrieving the foreign key constraints.
      */
     public const FOREIGN_KEYS = 'foreignKeys';
     /**
@@ -44,7 +44,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const DEFAULT_VALUES = 'defaultValues';
     /**
-     * The metadata type for retrieving the unique constraint.
+     * The metadata type for retrieving the unique constraints.
      */
     public const UNIQUES = 'uniques';
     /**
@@ -52,77 +52,77 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const DEFAULTS = 'defaults';
     /**
-     * Define the type of the index as `UNIQUE`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `UNIQUE`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`, `MariaDB`, `MSSQL`, `Oracle`, `PostgreSQL`, `SQLite`.
      */
     public const INDEX_UNIQUE = 'UNIQUE';
     /**
-     * Define the type of the index as `BTREE`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `BTREE`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`, `PostgreSQL`.
      */
     public const INDEX_BTREE = 'BTREE';
     /**
-     * Define the type of the index as `HASH`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `HASH`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`, `PostgreSQL`.
      */
     public const INDEX_HASH = 'HASH';
     /**
-     * Define the type of the index as `FULLTEXT`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `FULLTEXT`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`.
      */
     public const INDEX_FULLTEXT = 'FULLTEXT';
     /**
-     * Define the type of the index as `SPATIAL`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `SPATIAL`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`.
      */
     public const INDEX_SPATIAL = 'SPATIAL';
     /**
-     * Define the type of the index as `GIST`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `GIST`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `PostgreSQL`.
      */
     public const INDEX_GIST = 'GIST';
     /**
-     * Define the type of the index as `GIN`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `GIN`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `PostgreSQL`.
      */
     public const INDEX_GIN = 'GIN';
     /**
-     * Define the type of the index as `BRIN`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `BRIN`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `PostgreSQL`.
      */
     public const INDEX_BRIN = 'BRIN';
     /**
-     * Define the type of the index as `CLUSTERED`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `CLUSTERED`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MSSQL`.
      */
     public const INDEX_CLUSTERED = 'CLUSTERED';
     /**
-     * Define the type of the index as `NONCLUSTERED`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `NONCLUSTERED`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MSSQL`.
      */
     public const INDEX_NONCLUSTERED = 'NONCLUSTERED';
     /**
-     * Define the type of the index as `BITMAP`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `BITMAP`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `Oracle`.
      */
     public const INDEX_BITMAP = 'BITMAP';
     /**
-     * Define the abstract column type as primary key.
+     * Define the abstract column type as a primary key.
      */
     public const TYPE_PK = 'pk';
     /**
-     * Define the abstract column type as `unsigned` primary key.
+     * Define the abstract column type as an `unsigned` primary key.
      */
     public const TYPE_UPK = 'upk';
     /**
@@ -134,11 +134,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const TYPE_UBIGPK = 'ubigpk';
     /**
-     * Define the abstract column type as `uuid` primary key.
+     * Define the abstract column type as an `uuid` primary key.
      */
     public const TYPE_UUID_PK = 'uuid_pk';
     /**
-     * Define the abstract column type as `uuid` primary key with sequence.
+     * Define the abstract column type as an`uuid` primary key with a sequence.
      */
     public const TYPE_UUID_PK_SEQ = 'uuid_pk_seq';
     /**

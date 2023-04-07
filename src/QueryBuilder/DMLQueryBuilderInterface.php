@@ -126,18 +126,18 @@ interface DMLQueryBuilderInterface
      * The sequence will be reset such that the primary key of the next new row inserted will have the specified value
      * or 1.
      *
-     * @param string $tableName The name of the table whose primary key sequence will be reset.
+     * @param string $table The name of the table whose primary key sequence will be reset.
      * @param int|string|null $value The value for the primary key of the next new row inserted.
      * If this isn't set, the next new row's primary key will have value 1.
-     *
-     * @throws Exception
-     * @throws NotSupportedException If this isn't supported by the underlying DBMS.
      *
      * @return string The SQL statement for a resetting sequence.
      *
      * Note: The method will escape the table and column names.
+     *
+     * @throws NotSupportedException If this isn't supported by the underlying DBMS.
+     * @throws Exception
      */
-    public function resetSequence(string $tableName, int|string|null $value = null): string;
+    public function resetSequence(string $table, int|string|null $value = null): string;
 
     /**
      * Creates an UPDATE SQL statement.
