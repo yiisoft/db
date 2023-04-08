@@ -266,6 +266,8 @@ final class ColumnSchemaBuilderTest extends TestCase
     {
         $column = new Column(SchemaInterface::TYPE_PK);
 
+        (new Column(SchemaInterface::TYPE_STRING))->unique()->notNull()->append('PRIMARY KEY');
+
         $this->assertSame('pk', $column->asString());
         $this->assertSame('upk', $column->unsigned()->asString());
     }

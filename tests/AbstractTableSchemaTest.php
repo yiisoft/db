@@ -21,7 +21,7 @@ abstract class AbstractTableSchemaTest extends TestCase
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage('Yiisoft\Db\Tests\Support\Stub\TableSchema does not support composite FK.');
 
-        $tableSchema->compositeFk(1, 'from', 'to');
+        $tableSchema->compositeForeignKey(1, 'from', 'to');
     }
 
     public function testGetCatalogName(): void
