@@ -212,5 +212,5 @@ interface TableSchemaInterface
      *
      * @throws NotSupportedException
      */
-    public function compositeFK(int $id, string $from, string $to): void;
+    public function compositeForeignKey(int $id, string $from, string $to): void;
 }

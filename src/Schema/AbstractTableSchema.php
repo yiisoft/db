@@ -153,7 +153,7 @@ abstract class AbstractTableSchema implements TableSchemaInterface
         $this->foreignKeys[$id] = $to;
     }
 
-    public function compositeFK(int $id, string $from, string $to): void
+    public function compositeForeignKey(int $id, string $from, string $to): void
     {
         throw new NotSupportedException(static::class . ' does not support composite FK.');
     }
