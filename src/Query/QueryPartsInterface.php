@@ -88,14 +88,14 @@ interface QueryPartsInterface
      * - `=`: the column must be equal to the given value.
      * - If operator isn't regognized, the `$defaultOperator` is used.
      *
-     * @param string $name The column name.
+     * @param string $column The column name.
      * @param string|null $value The column value optionally prepended with the comparison operator.
      * @param string $defaultOperator The operator to use when no operator is given in `$value`.
      * Defaults to `=`, performing an exact match.
      *
      * @throws NotSupportedException If this query doesn't support filtering.
      */
-    public function andFilterCompare(string $name, string|null $value, string $defaultOperator = '='): static;
+    public function andFilterCompare(string $column, string|null $value, string $defaultOperator = '='): static;
 
     /**
      * Adds HAVING condition to the existing one but ignores {@see Query::isEmpty()}.
@@ -107,7 +107,7 @@ interface QueryPartsInterface
      *
      * As a result, this method is best suited for building query conditions based on filter values entered by users.
      *
-     * @param array $condition The new HAVING condition.
+     * @param array $condition The new `HAVING` condition.
      * Please refer to {@see having()} on how to specify this parameter.
      *
      * @throws NotSupportedException If this query doesn't support filtering.
@@ -134,7 +134,7 @@ interface QueryPartsInterface
     /**
      * Adds `WHERE` condition to the existing one but ignores {@see Query::isEmpty()}.
      *
-     * The new condition and the existing one will be joined using the 'AND' operator.
+     * The new condition and the existing one will be joined using the `AND` operator.
      *
      * This method is similar to {@see andWhere()}. The main difference is that this method will remove
      * {@see Query::isEmpty()}.
@@ -478,7 +478,7 @@ interface QueryPartsInterface
      *
      * @param array|string $table The table to be joined.
      * Use a string to represent the name of the table to be joined.
-     * The table name can contain a schema prefix (e.g. 'public.user') and/or table alias (e.g. 'user u').
+     * The table name can contain a schema prefix (such as `public.user`) and/or table alias (such as `user u`).
      * The method will automatically quote the table name unless it has some parenthesis (which means the table is
      * given as a sub-query or DB expression).
      * Use an array to represent joining with a sub-query. The array must contain only one element.
@@ -491,12 +491,12 @@ interface QueryPartsInterface
     public function rightJoin(array|string $table, array|string $on = '', array $params = []): static;
 
     /**
-     * Sets the SELECT part of the query.
+     * Sets the `SELECT` part of the query.
      *
      * @param array|ExpressionInterface|string $columns The columns to be selected.
-     * Columns can be specified in either a string (for example "id, name") or an array (e.g. ['id', 'name']).
-     * Columns can be prefixed with table names (e.g. "user.id") and/or contain column aliases
-     * (for example "user.id AS user_id").
+     * Columns can be specified in either a string (for example `id, name`) or an array (such as `['id', 'name']`).
+     * Columns can be prefixed with table names (such as `user.id`) and/or contain column aliases
+     * (for example `user.id AS user_id`).
      * The method will automatically quote the column names unless a column has some parenthesis (which means the
      * column has a DB expression).
      * A DB expression may also be passed in form of an {@see ExpressionInterface} object.
@@ -510,15 +510,15 @@ interface QueryPartsInterface
     public function select(array|string|ExpressionInterface $columns, string $option = null): static;
 
     /**
-     * It allows you to specify more options for the SELECT clause of an SQL statement.
+     * It allows you to specify more options for the `SELECT` clause of an SQL statement.
      *
      * @param string|null $value More option that should be appended to the 'SELECT' keyword.
-     * For example, in MySQL, the option 'SQL_CALC_FOUND_ROWS' can be used.
+     * For example, in MySQL, the option `SQL_CALC_FOUND_ROWS` can be used.
      */
     public function selectOption(string|null $value): static;
 
     /**
-     * Specify the joins for a SELECT statement in a database query.
+     * Specify the joins for a `SELECT` statement in a database query.
      *
      * @param array $value The joins to be performed in the query.
      * Please refer to {@see join()} on how to specify this parameter.
@@ -526,7 +526,7 @@ interface QueryPartsInterface
     public function setJoin(array $value): static;
 
     /**
-     * Specify the unions for a SELECT statement in a database query.
+     * Specify the unions for a `SELECT` statement in a database query.
      *
      * @param array $value The unions to be performed in the query.
      * Please refer to {@see union()} on how to specify this parameter.
@@ -534,15 +534,15 @@ interface QueryPartsInterface
     public function setUnion(array $value): static;
 
     /**
-     * Appends an SQL statement using UNION operator.
+     * Appends an SQL statement using `UNION` operator.
      *
-     * @param QueryInterface|string $sql $sql The SQL statement to be appended using UNION.
-     * @param bool $all `true` if using UNION ALL and `false` if using UNION.
+     * @param QueryInterface|string $sql $sql The SQL statement to be appended using `UNION`.
+     * @param bool $all `true` if using `UNION ALL` and `false` if using `UNION`.
      */
     public function union(QueryInterface|string $sql, bool $all = false): static;
 
     /**
-     * Sets the WHERE part of the query.
+     * Sets the `WHERE` part of the query.
      *
      * The `$condition` specified as an array can be in one of the following two formats:
      *
@@ -625,11 +625,11 @@ interface QueryPartsInterface
      * - Additionally, you can specify arbitrary operators as follows: A condition of `['>=', 'id', 10]` will result
      *   in the following SQL expression: `id >= 10`.
      *
-     * **Note that this method will override any existing WHERE condition. You might want to use {@see andWhere()}
+     * **Note that this method will override any existing `WHERE` condition. You might want to use {@see andWhere()}
      * or {@see orWhere()} instead.**
      *
-     * @param array|ExpressionInterface|string|null $condition The conditions that should be put in the WHERE part.
-     * @param array $params The parameters (name => value) to be bound to the query.
+     * @param array|ExpressionInterface|string|null $condition The conditions to put in the `WHERE` part.
+     * @param array $params The parameters (name => value) to bind to the query.
      *
      * @see andWhere()
      * @see orWhere()
@@ -637,18 +637,18 @@ interface QueryPartsInterface
     public function where(array|string|ExpressionInterface|null $condition, array $params = []): static;
 
     /**
-     * Prepends an SQL statement using WITH syntax.
+     * Prepends an SQL statement using `WITH` syntax.
      *
-     * @param QueryInterface|string $query The SQL statement to be appended using UNION.
-     * @param string $alias The query alias in WITH construction.
-     * @param bool $recursive Its `true` if using WITH RECURSIVE and `false` if using WITH.
+     * @param QueryInterface|string $query The SQL statement to append using `UNION`.
+     * @param string $alias The query alias in `WITH` construction.
+     * @param bool $recursive Its `true` if using `WITH RECURSIVE` and `false` if using `WITH`.
      */
     public function withQuery(QueryInterface|string $query, string $alias, bool $recursive = false): static;
 
     /**
-     * Specifies the with query clause for the query.
+     * Specifies the `WITH` query clause for the query.
      *
-     * @param array $withQueries The with queries to be appended to the query.
+     * @param array $withQueries The `WITH` queries to append to the query.
      */
     public function withQueries(array $withQueries): static;
 }

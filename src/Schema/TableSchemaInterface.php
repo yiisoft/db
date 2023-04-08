@@ -116,7 +116,7 @@ interface TableSchemaInterface
     /**
      * Set primary keys of this table.
      *
-     * @param string $value The primary key column names.
+     * @param string $value The primary key column name.
      */
     public function primaryKey(string $value): void;
 
