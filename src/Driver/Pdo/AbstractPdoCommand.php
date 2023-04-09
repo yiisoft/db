@@ -228,7 +228,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     protected function queryInternal(int $queryMode): mixed
     {
         $rawSql = $this->getRawSql();
-        $logCategory = static::class . '::' . $this->getQueryMode($queryMode);
+        $logCategory = self::class . '::' . $this->getQueryMode($queryMode);
 
         $this->logQuery($rawSql, $logCategory);
 

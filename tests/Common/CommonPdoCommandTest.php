@@ -251,22 +251,22 @@ abstract class CommonPdoCommandTest extends TestCase
 
         $this->assertSame($sql, $command->getSql());
 
-        $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'queryOne')]));
+        $command->setLogger($this->createQueryLogger($sql, ['Yiisoft\Db\Driver\Pdo\AbstractPdoCommand::queryOne']));
         $command->queryOne();
 
-        $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'queryAll')]));
+        $command->setLogger($this->createQueryLogger($sql, ['Yiisoft\Db\Driver\Pdo\AbstractPdoCommand::queryAll']));
         $command->queryAll();
 
-        $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'queryColumn')]));
+        $command->setLogger($this->createQueryLogger($sql, ['Yiisoft\Db\Driver\Pdo\AbstractPdoCommand::queryColumn']));
         $command->queryColumn();
 
-        $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'queryScalar')]));
+        $command->setLogger($this->createQueryLogger($sql, ['Yiisoft\Db\Driver\Pdo\AbstractPdoCommand::queryScalar']));
         $command->queryScalar();
 
-        $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'query')]));
+        $command->setLogger($this->createQueryLogger($sql, ['Yiisoft\Db\Driver\Pdo\AbstractPdoCommand::query']));
         $command->query();
 
-        $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'execute')]));
+        $command->setLogger($this->createQueryLogger($sql, ['Yiisoft\Db\Driver\Pdo\AbstractPdoCommand::execute']));
         $command->execute();
 
         $db->close();
