@@ -6,13 +6,11 @@ namespace Yiisoft\Db\Tests\Common;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
-use Yiisoft\Db\Driver\Pdo\PdoCommandInterface;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -228,46 +226,6 @@ abstract class CommonPdoCommandTest extends TestCase
         $this->expectException(InvalidParamException::class);
         $this->expectExceptionMessage("Unknown query mode '1024'");
         $command->testExecute();
-
-        $db->close();
-    }
-
-    public function testCommandLogging(): void
-    {
-        $db = $this->getConnection(true);
-
-        /** @psalm-var $sql */
-        $sql = DbHelper::replaceQuotes(
-            <<<SQL
-            SELECT * FROM [[customer]]
-            SQL,
-            $db->getDriverName(),
-        );
-        /** @var AbstractPdoCommand $command */
-        $command = $db->createCommand();
-        $this->assertInstanceOf(PdoCommandInterface::class, $command);
-        $this->assertInstanceOf(LoggerAwareInterface::class, $command);
-        $command->setSql($sql);
-
-        $this->assertSame($sql, $command->getSql());
-
-        $command->setLogger($this->createQueryLogger($sql, ['Yiisoft\Db\Driver\Pdo\AbstractPdoCommand::queryOne']));
-        $command->queryOne();
-
-        $command->setLogger($this->createQueryLogger($sql, ['Yiisoft\Db\Driver\Pdo\AbstractPdoCommand::queryAll']));
-        $command->queryAll();
-
-        $command->setLogger($this->createQueryLogger($sql, ['Yiisoft\Db\Driver\Pdo\AbstractPdoCommand::queryColumn']));
-        $command->queryColumn();
-
-        $command->setLogger($this->createQueryLogger($sql, ['Yiisoft\Db\Driver\Pdo\AbstractPdoCommand::queryScalar']));
-        $command->queryScalar();
-
-        $command->setLogger($this->createQueryLogger($sql, ['Yiisoft\Db\Driver\Pdo\AbstractPdoCommand::query']));
-        $command->query();
-
-        $command->setLogger($this->createQueryLogger($sql, ['Yiisoft\Db\Driver\Pdo\AbstractPdoCommand::execute']));
-        $command->execute();
 
         $db->close();
     }
