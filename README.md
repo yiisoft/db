@@ -10,6 +10,16 @@ such as [MariaDB], [MSSQL], [MySQL], [Oracle], [PostgreSQL], and [SQLite].
 
 Using the package, you can perform common database tasks such as creating, reading, updating, and deleting
 records in a database table, as well as executing raw SQL queries.
+
+```php
+$rows = (new Query($db))  
+    ->select(['id', 'email'])  
+    ->from('{{%user}}')  
+    ->where(['last_name' => 'Smith'])  
+    ->limit(10)  
+    ->all();
+```
+
 The package is designed to be flexible
 and can be extended to support extra database types or to customize the way it interacts with databases.
 
