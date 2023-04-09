@@ -520,18 +520,23 @@ interface QueryPartsInterface
     /**
      * Specify the joins for a `SELECT` statement in a database query.
      *
-     * @param array $value The joins to be performed in the query.
-     * Please refer to {@see join()} on how to specify this parameter.
+     * @param array $value The joins to perform in the query. The format is the following:
+     *
+     * ```
+     * [
+     *     ['INNER JOIN', 'table1', 'table1.id = table2.id'],
+     *     ['LEFT JOIN', 'table3', 'table1.id = table3.id'],
+     * ]
+     * ```
      */
-    public function setJoin(array $value): static;
+    public function setJoins(array $value): static;
 
     /**
-     * Specify the unions for a `SELECT` statement in a database query.
+     * Specify queries for a `SELECT` statement that are combined with `UNION`s.
      *
-     * @param array $value The unions to be performed in the query.
-     * Please refer to {@see union()} on how to specify this parameter.
+     * @param array $value The queries to union such as `['SELECT * FROM table1', 'SELECT * FROM table2']`.
      */
-    public function setUnion(array $value): static;
+    public function setUnions(array $value): static;
 
     /**
      * Appends an SQL statement using `UNION` operator.

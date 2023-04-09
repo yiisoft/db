@@ -402,7 +402,7 @@ class Query implements QueryInterface
         return $this->indexBy;
     }
 
-    public function getJoin(): array
+    public function getJoins(): array
     {
         return $this->join;
     }
@@ -442,7 +442,7 @@ class Query implements QueryInterface
         return $this->db->getQuoter()->cleanUpTableNames($this->from);
     }
 
-    public function getUnion(): array
+    public function getUnions(): array
     {
         return $this->union;
     }
@@ -624,13 +624,13 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function setJoin(array $value): static
+    public function setJoins(array $value): static
     {
         $this->join = $value;
         return $this;
     }
 
-    public function setUnion(array $value): static
+    public function setUnions(array $value): static
     {
         $this->union = $value;
         return $this;

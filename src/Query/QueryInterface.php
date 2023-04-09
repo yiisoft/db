@@ -168,8 +168,17 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     /**
      * @return array The "join" value.
+     *
+     * The format is:
+     *
+     * ```
+     * [
+     *     ['INNER JOIN', 'table1', 'table1.id = table2.id'],
+     *     ['LEFT JOIN', 'table3', 'table1.id = table3.id'],
+     * ]
+     * ```
      */
-    public function getJoin(): array;
+    public function getJoins(): array;
 
     /**
      * @return ExpressionInterface|int|null The "limit" value.
@@ -213,9 +222,15 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function getTablesUsedInFrom(): array;
 
     /**
-     * @return array The "union" value.
+     * @return array The "union" values.
+     *
+     * The format is:
+     *
+     * ```php
+     * ['SELECT * FROM table1', 'SELECT * FROM table2']
+     * ```
      */
-    public function getUnion(): array;
+    public function getUnions(): array;
 
     /**
      * @return array|ExpressionInterface|string|null The "where" value.
