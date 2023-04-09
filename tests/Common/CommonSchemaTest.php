@@ -576,7 +576,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
-        $schema->schemaCacheEnable(true);
+        $schema->enableCache(true);
         $noCacheTable = $schema->getTableSchema('type', true);
         $schema->refreshTableSchema('type');
         $refreshedTable = $schema->getTableSchema('type');
@@ -595,7 +595,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
-        $schema->schemaCacheEnable(true);
+        $schema->enableCache(true);
         $noCacheTable = $schema->getTableSchema('type', true);
         $cachedTable = $schema->getTableSchema('type');
 
@@ -621,7 +621,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
-        $schema->schemaCacheEnable(true);
+        $schema->enableCache(true);
 
         if ($schema->getTableSchema('{{test_schema_cache}}') !== null) {
             $command->dropTable('{{test_schema_cache}}')->execute();
@@ -664,7 +664,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
-        $schema->schemaCacheEnable(true);
+        $schema->enableCache(true);
         $db->setTablePrefix($tablePrefix);
         $noCacheTable = $schema->getTableSchema($tableName, true);
 
