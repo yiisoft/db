@@ -62,17 +62,17 @@ composer require yiisoft/db-sqlite
 
 ## Configure schema cache
 
-First, you need to [configure database schema cache](schema-cache.md).
+First, you need to [configure database schema cache](schema/cache.md).
 
 ## Create connection
 
 You can create a database connection instance using a [DI container](https://github.com/yiisoft/di) or without it.
 
-- [MSSQL Server](/docs/en/connection/mssql.md)
-- [MySQL/MariaDB Server](/docs/en/connection/mysql.md)
-- [Oracle Server](/docs/en/connection/oracle.md)
-- [PostgreSQL Server](/docs/en/connection/pgsql.md)
-- [SQLite Server](/docs/en/connection/sqlite.md)
+- [MSSQL Server](connection/mssql.md)
+- [MySQL/MariaDB Server](connection/mysql.md)
+- [Oracle Server](connection/oracle.md)
+- [PostgreSQL Server](connection/pgsql.md)
+- [SQLite Server](connection/sqlite.md)
 
 > Info: When you create a DB connection instance, the actual connection to the database isn't established until
 > you execute the first SQL or call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.
@@ -81,16 +81,16 @@ You can create a database connection instance using a [DI container](https://git
 
 Logger and profiler are optional. You can use them if you need to log and profile your queries.
 
-- [Logger](/docs/en/connection/logger.md)
-- [Profiler](/docs/en/connection/profiler.md)
+- [Logger](connection/logger.md)
+- [Profiler](connection/profiler.md)
 
 ## Execute SQL queries
 
 Once you have a database connection instance, you can execute an SQL query by taking the following steps:
 
-1. [Create a command and fetch data](/docs/en/queries/create-command-fetch-data.md)
-2. [Bind parameters](/docs/en/queries/bind-parameters.md)
-3. [Execute a command](/docs/en/queries/execute-command.md)
+1. [Create a command and fetch data](queries/create-command-fetch-data.md)
+2. [Bind parameters](queries/bind-parameters.md)
+3. [Execute a command](queries/execute-command.md)
 
 ## Quote table and column names
 
@@ -131,15 +131,16 @@ Yii DB provides a `Command` class that represents an **SQL** statement to be exe
 You can use it to execute **SQL** statements that don't return any result set, such as `INSERT`, `UPDATE`, `DELETE`,
 `CREATE TABLE`, `DROP TABLE`, `CREATE INDEX`, `DROP INDEX`, etc.
 
-- [DDL commands](/docs/en/command/ddl.md)
-- [DML commands](/docs/en/command/dml.md)
+- [DDL commands](command/ddl.md)
+- [DML commands](command/dml.md)
 
 ## Schema
 
-Yii DB provides a `Schema` class that represents the metadata of a database, such as table names, column names, etc.
+Yii DB provides a way to inspect the metadata of a database, such as table names, column names, etc. You can do it
+via schema:
 
-- [Table schema](/docs/en/schema/table-schema.md)
-
+- [Reading database schema](schema/usage.md)
+- [Configuring schema cache](schema/cache.md)
 
 ## Extensions
 
