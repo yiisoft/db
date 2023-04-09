@@ -670,13 +670,13 @@ abstract class AbstractQueryTest extends TestCase
         $query = new Query($db);
         $query->setJoins(
             [
-                ['INNER JOIN', 'table1', 'table1.id = table2.id']
+                ['INNER JOIN', 'table1', 'table1.id = table2.id'],
             ]
         );
 
         $this->assertSame(
             [
-                ['INNER JOIN', 'table1', 'table1.id = table2.id']
+                ['INNER JOIN', 'table1', 'table1.id = table2.id'],
             ],
             $query->getJoins()
         );
