@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Cache;
 
 use PHPUnit\Framework\TestCase;
+use Psr\SimpleCache\CacheInterface;
+use RuntimeException;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Exception\PsrInvalidArgumentException;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -73,6 +75,19 @@ final class SchemaCacheTest extends TestCase
         $schemaCache->setExclude(['table1', 'table2']);
 
         $this->assertSame(['table1', 'table2'], Assert::getInaccessibleProperty($schemaCache, 'exclude'));
+    }
+
+    public function testWithFailSetCache(): void
+    {
+        $cacheMock = $this->createMock(CacheInterface::class);
+        $cacheMock->expects(self::once())
+            ->method('set')
+            ->willReturn(false);
+
+        $schemaCache = new SchemaCache($cacheMock);
+
+        $this->expectException(RuntimeException::class);
+        $schemaCache->set('key', 'test');
     }
 
     public function testInvalidCacheKey(): void
