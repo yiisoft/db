@@ -227,13 +227,13 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 $db->createCommand()->addForeignKey(
-    table: '{{%customer}}',
-    name: 'fk-customer-profile_id',
-    columns: 'profile_id',
-    refTable: '{{%profile}}',
-    refColumns: 'id',
-    delete: 'CASCADE',
-    update: 'CASCADE',
+    '{{%customer}}',
+    'fk-customer-profile_id',
+    'profile_id',
+    '{{%profile}}',
+    'id',
+    'CASCADE',
+    'CASCADE'
 )->execute();
 ```
 
@@ -315,6 +315,11 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'UNIQUE')->execute();
 ```
 
+> Info: Unique indexes are indexes that help maintain data integrity by ensuring that no rows of data in a table have identical
+> key values.
+> When you create a unique index for an existing table with data, values in the columns or expressions that comprise the
+> index key are checked for uniqueness.
+
 ### Add clustered index
 
 In MSSQL, you can create a clustered index by specifying the `CLUSTERED` option in the `$indexType` parameter:
@@ -330,6 +335,10 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'CLUSTERED')->execute();
 ```
 
+> Info: A clustered index is an index which defines the physical order in which table records are stored in a database.
+> Since there can be only one way in which records are physically stored in a database table, there can be only one
+> clustered index per table. By default a clustered index is created on a primary key column.
+
 ### Add non-clustered index
 
 In MSSQL, you can create a non-clustered index by specifying the `NONCLUSTERED` option in the `$indexType` parameter:
@@ -344,6 +353,13 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 /** @var ConnectionInterface $db */
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'NONCLUSTERED')->execute();
 ```
+
+> Info: A non-clustered index is also used to speed up search operations. Unlike a clustered index, a non-clustered index doesn’t
+> physically define the order in which records are inserted into a table. In fact, a non-clustered index is stored in a 
+> separate location from the data table.
+> 
+> A non-clustered index is like a book index, which is located separately from the main contents of the book. Since non-clustered
+> indexes are located in a separate location, there can be multiple non-clustered indexes per table.
 
 ### Add fulltext index
 
@@ -361,6 +377,11 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'name', 'FULLTEXT')->execute();
 ```
 
+> Info: Full-text indexes are created on text-based columns (`CHAR`, `VARCHAR`, or `TEXT` columns) to speed up queries and DML operations
+> on data contained within those columns. 
+> 
+> A full-text index is defined as part of a `CREATE TABLE` statement or added to an existing table using `ALTER TABLE` or `CREATE INDEX`.
+
 ### Add bitmap index
 
 In `Oracle`, you can create a bitmap index by specifying the `BITMAP` option in the `$indexType` parameter:
@@ -376,6 +397,11 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'BITMAP')->execute();
 ```
+
+> Info: A bitmap index is a special kind of database index which uses bitmaps or bit array. In a bitmap index, Oracle stores a
+> bitmap for each index key.
+> 
+> Each index key stores pointers to multiple rows. For example, if you create a bitmap index on the gender column of the members table.
 
 ## Constraints
 
