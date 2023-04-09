@@ -354,8 +354,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @throws NotSupportedException
      *
-     * @return array The metadata for all tables in the database. Each array element is an instance of
-     * {@see TableSchemaInterface} or its child class.
+     * @return TableSchemaInterface[] The metadata for all tables in the database.
      */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array;
 
