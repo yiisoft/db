@@ -62,8 +62,8 @@ final class SchemaCache
      * Retrieve value from cache.
      *
      * @param mixed $key The key identifying the value to cache.
-     * @return mixed Cache value.
      * @throws InvalidArgumentException
+     * @return mixed Cache value.
      */
     public function get(mixed $key): mixed
     {

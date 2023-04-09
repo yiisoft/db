@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Cache;
 
 use PHPUnit\Framework\TestCase;
-use Psr\SimpleCache\CacheInterface;
-use RuntimeException;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Exception\PsrInvalidArgumentException;
 use Yiisoft\Db\Tests\Support\Assert;
