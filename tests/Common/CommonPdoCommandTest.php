@@ -269,21 +269,10 @@ abstract class CommonPdoCommandTest extends TestCase
         $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'execute')]));
         $command->execute();
 
-        if ($db->getDriverName() === 'pgsql') {
-            $sql = DbHelper::replaceQuotes(
-                <<<SQL
-            INSERT INTO [[customer]] ([[name]], [[email]]) VALUES ('test', 'email@email') RETURNING [[id]]
-            SQL,
-                $db->getDriverName(),
-            );
-            $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'insertWithReturningPks')]));
-            $command->insertWithReturningPks('{{%customer}}', ['name' => 'test', 'email' => 'email@email']);
-        }
-
         $db->close();
     }
 
-    private function createQueryLogger(string $sql, array $params = []): LoggerInterface
+    protected function createQueryLogger(string $sql, array $params = []): LoggerInterface
     {
         $logger = $this->createMock(LoggerInterface::class);
         $logger
