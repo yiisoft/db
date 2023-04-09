@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Profiler;
 
-interface ProfilerAwareInterface {
+interface ProfilerAwareInterface
+{
     /**
      * Sets the profiler instance.
      *

@@ -30,10 +30,10 @@ use Yiisoft\Db\Query\Data\DataReader;
  *
  * It also provides methods for binding parameter values and retrieving query results.
  */
-abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandInterface, ProfilerAwareInterface, LoggerAwareInterface
+abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandInterface, LoggerAwareInterface, ProfilerAwareInterface
 {
-    use ProfilerAwareTrait;
     use LoggerAwareTrait;
+    use ProfilerAwareTrait;
 
     /**
      * @var PDOStatement|null Represents a prepared statement and, after the statement is executed, an associated

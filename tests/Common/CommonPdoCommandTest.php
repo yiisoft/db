@@ -232,7 +232,8 @@ abstract class CommonPdoCommandTest extends TestCase
         $db->close();
     }
 
-    public function testCommandLogging(): void {
+    public function testCommandLogging(): void
+    {
         $db = $this->getConnection(true);
 
         /** @psalm-var $sql */

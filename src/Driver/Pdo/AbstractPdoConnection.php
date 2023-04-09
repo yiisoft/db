@@ -35,10 +35,10 @@ use function is_string;
  *
  * It implements the ConnectionInterface, which defines the interface for interacting with a database connection.
  */
-abstract class AbstractPdoConnection extends AbstractConnection implements PdoConnectionInterface, ProfilerAwareInterface, LoggerAwareInterface
+abstract class AbstractPdoConnection extends AbstractConnection implements PdoConnectionInterface, LoggerAwareInterface, ProfilerAwareInterface
 {
-    use ProfilerAwareTrait;
     use LoggerAwareTrait;
+    use ProfilerAwareTrait;
 
     protected PDO|null $pdo = null;
     protected string $serverVersion = '';
