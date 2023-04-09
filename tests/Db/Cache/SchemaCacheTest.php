@@ -26,11 +26,11 @@ final class SchemaCacheTest extends TestCase
 
         $schemaCache->set('key', 'value', 'tag');
 
-        $this->assertSame('value', $schemaCache->getOrSet('key'));
+        $this->assertSame('value', $schemaCache->get('key'));
 
         $schemaCache->invalidate('tag');
 
-        $this->assertNull($schemaCache->getOrSet('key'));
+        $this->assertNull($schemaCache->get('key'));
     }
 
     public function testInvalidateWithEmptyTag(): void
@@ -39,11 +39,11 @@ final class SchemaCacheTest extends TestCase
 
         $schemaCache->set('key', 'value');
 
-        $this->assertSame('value', $schemaCache->getOrSet('key'));
+        $this->assertSame('value', $schemaCache->get('key'));
 
         $schemaCache->invalidate('');
 
-        $this->assertNotNull($schemaCache->getOrSet('key'));
+        $this->assertNotNull($schemaCache->get('key'));
     }
 
     public function testSetDuration(): void
@@ -75,22 +75,6 @@ final class SchemaCacheTest extends TestCase
         $schemaCache->setExclude(['table1', 'table2']);
 
         $this->assertSame(['table1', 'table2'], Assert::getInaccessibleProperty($schemaCache, 'exclude'));
-    }
-
-    public function testWithFailSetCache(): void
-    {
-        $cacheMock = $this->createMock(CacheInterface::class);
-        $cacheMock->expects(self::once())
-            ->method('has')
-            ->willReturn(false);
-        $cacheMock->expects(self::once())
-            ->method('set')
-            ->willReturn(false);
-
-        $schemaCache = new SchemaCache($cacheMock);
-
-        $this->expectException(RuntimeException::class);
-        $schemaCache->getOrSet('key');
     }
 
     public function testInvalidCacheKey(): void
