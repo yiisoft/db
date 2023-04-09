@@ -443,7 +443,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 SQL,
                 $db->getDriverName(),
             ),
-            $qb->buildJoin($query->getJoin(), $params),
+            $qb->buildJoin($query->getJoins(), $params),
         );
     }
 
@@ -647,7 +647,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 SQL,
                 $db->getDriverName(),
             ),
-            $qb->buildUnion($query->getUnion(), $params),
+            $qb->buildUnion($query->getUnions(), $params),
         );
     }
 
