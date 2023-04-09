@@ -369,7 +369,7 @@ final class SchemaTest extends AbstractSchemaTest
             ->will(
                 $this->onConsecutiveCalls($this->createTableSchemaStub(), $this->createTableSchemaStub())
             );
-        $schemaMock->schemaCacheEnable(true);
+        $schemaMock->enableCache(true);
         $noCacheTable = $schemaMock->getTableSchema('T_constraints_1', true);
         $schemaMock->refreshTableSchema('T_constraints_1');
         $refreshedTable = $schemaMock->getTableSchema('T_constraints_1');
@@ -391,7 +391,7 @@ final class SchemaTest extends AbstractSchemaTest
             ->will(
                 $this->onConsecutiveCalls($this->createTableSchemaStub(), $this->createTableSchemaStub())
             );
-        $schemaMock->schemaCacheEnable(false);
+        $schemaMock->enableCache(false);
         $noCacheTable = $schemaMock->getTableSchema('T_constraints_1', true);
         $schemaMock->refreshTableSchema('T_constraints_1');
         $refreshedTable = $schemaMock->getTableSchema('T_constraints_1');
