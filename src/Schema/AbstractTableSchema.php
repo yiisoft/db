@@ -20,7 +20,7 @@ abstract class AbstractTableSchema implements TableSchemaInterface
     private string|null $sequenceName = null;
     /** @psalm-var string[] */
     private array $primaryKey = [];
-    /** @psalm-var ColumnSchemaInterface[] */
+    /** @psalm-var array<string, ColumnSchemaInterface> */
     private array $columns = [];
     /** @psalm-var array<array-key, array> */
     protected array $foreignKeys = [];
