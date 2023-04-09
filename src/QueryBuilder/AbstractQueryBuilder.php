@@ -363,9 +363,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->renameTable($oldName, $newName);
     }
 
-    public function resetSequence(string $tableName, int|string|null $value = null): string
+    public function resetSequence(string $table, int|string|null $value = null): string
     {
-        return $this->dmlBuilder->resetSequence($tableName, $value);
+        return $this->dmlBuilder->resetSequence($table, $value);
     }
 
     public function selectExists(string $rawSql): string

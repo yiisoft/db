@@ -126,7 +126,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
     }
 
-    public function resetSequence(string $tableName, int|string|null $value = null): string
+    public function resetSequence(string $table, int|string|null $value = null): string
     {
         throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
     }

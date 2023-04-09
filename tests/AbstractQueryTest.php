@@ -432,13 +432,13 @@ abstract class AbstractQueryTest extends TestCase
         $query = new Query($db);
         $query->join('INNER JOIN', 'profile', 'user.id = profile.user_id');
 
-        $this->assertSame([['INNER JOIN', 'profile', 'user.id = profile.user_id']], $query->getJoin());
+        $this->assertSame([['INNER JOIN', 'profile', 'user.id = profile.user_id']], $query->getJoins());
 
         $query->join('LEFT JOIN', 'order', 'user.id = order.user_id');
 
         $this->assertSame(
             [['INNER JOIN', 'profile', 'user.id = profile.user_id'], ['LEFT JOIN', 'order', 'user.id = order.user_id']],
-            $query->getJoin()
+            $query->getJoins()
         );
     }
 
@@ -524,7 +524,7 @@ abstract class AbstractQueryTest extends TestCase
         $query = new Query($db);
         $query->rightJoin('profile', 'user.id = profile.user_id');
 
-        $this->assertSame([['RIGHT JOIN', 'profile', 'user.id = profile.user_id']], $query->getJoin());
+        $this->assertSame([['RIGHT JOIN', 'profile', 'user.id = profile.user_id']], $query->getJoins());
     }
 
     public function testSelect(): void
@@ -668,9 +668,18 @@ abstract class AbstractQueryTest extends TestCase
         $db = $this->getConnection();
 
         $query = new Query($db);
-        $query->setJoin(['INNER JOIN', 'table1', 'table1.id = table2.id']);
+        $query->setJoins(
+            [
+                ['INNER JOIN', 'table1', 'table1.id = table2.id'],
+            ]
+        );
 
-        $this->assertSame(['INNER JOIN', 'table1', 'table1.id = table2.id'], $query->getJoin());
+        $this->assertSame(
+            [
+                ['INNER JOIN', 'table1', 'table1.id = table2.id'],
+            ],
+            $query->getJoins()
+        );
     }
 
     public function testSetUnion(): void
@@ -678,9 +687,9 @@ abstract class AbstractQueryTest extends TestCase
         $db = $this->getConnection();
 
         $query = new Query($db);
-        $query->setUnion(['SELECT * FROM table1', 'SELECT * FROM table2']);
+        $query->setUnions(['SELECT * FROM table1', 'SELECT * FROM table2']);
 
-        $this->assertSame(['SELECT * FROM table1', 'SELECT * FROM table2'], $query->getUnion());
+        $this->assertSame(['SELECT * FROM table1', 'SELECT * FROM table2'], $query->getUnions());
     }
 
     public function testShouldEmulateExecution(): void

@@ -387,7 +387,7 @@ abstract class AbstractSchema implements SchemaInterface
         }
     }
 
-    public function schemaCacheEnable(bool $value): void
+    public function enableCache(bool $value): void
     {
         $this->schemaCache->setEnable($value);
     }
@@ -629,7 +629,7 @@ abstract class AbstractSchema implements SchemaInterface
             return;
         }
 
-        $metadata = $this->schemaCache->getOrSet($this->getCacheKey($rawName), null, $this->getCacheTag());
+        $metadata = $this->schemaCache->get($this->getCacheKey($rawName));
 
         if (
             !is_array($metadata) ||

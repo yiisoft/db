@@ -31,7 +31,8 @@ composer.phar
 
 # phpunit itself is not needed
 phpunit.phar
-phpunit.result.cache
+.phpunit.result.cache
+tests/Support/runtime/
 
 # local phpunit config
 /phpunit.xml
