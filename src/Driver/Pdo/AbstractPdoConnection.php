@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Driver\Pdo;
 
 use PDO;
 use PDOException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\AbstractConnection;
@@ -13,10 +15,13 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Profiler\Context\ConnectionContext;
+use Yiisoft\Db\Profiler\ProfilerAwareInterface;
+use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
+use Yiisoft\Db\Transaction\TransactionInterface;
 use function array_keys;
 use function is_string;
 
@@ -30,8 +35,11 @@ use function is_string;
  *
  * It implements the ConnectionInterface, which defines the interface for interacting with a database connection.
  */
-abstract class AbstractPdoConnection extends AbstractConnection implements PdoConnectionInterface
+abstract class AbstractPdoConnection extends AbstractConnection implements PdoConnectionInterface, ProfilerAwareInterface, LoggerAwareInterface
 {
+    use ProfilerAwareTrait;
+    use LoggerAwareTrait;
+
     protected PDO|null $pdo = null;
     protected string $serverVersion = '';
     protected bool|null $emulatePrepare = null;
@@ -66,6 +74,16 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         );
 
         return array_keys($fields);
+    }
+
+    public function beginTransaction(string $isolationLevel = null): TransactionInterface
+    {
+        $transaction = parent::beginTransaction($isolationLevel);
+        if ($this->logger !== null && $transaction instanceof LoggerAwareInterface) {
+            $transaction->setLogger($this->logger);
+        }
+
+        return $transaction;
     }
 
     public function open(): void
@@ -192,5 +210,23 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         }
 
         $this->pdo = $this->driver->createConnection();
+    }
+
+    /*
+     * Exceptions thrown from rollback will be caught and just logged with {@see logger->log()}.
+     */
+    protected function rollbackTransactionOnLevel(TransactionInterface $transaction, int $level): void
+    {
+        if ($transaction->isActive() && $transaction->getLevel() === $level) {
+            /**
+             * @link https://github.com/yiisoft/yii2/pull/13347
+             */
+            try {
+                $transaction->rollBack();
+            } catch (Exception $e) {
+                $this->logger?->log(LogLevel::ERROR, (string) $e, [__METHOD__]);
+                /** hide this exception to be able to continue throwing original exception outside */
+            }
+        }
     }
 }

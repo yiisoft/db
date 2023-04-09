@@ -6,9 +6,13 @@ namespace Yiisoft\Db\Tests\Common;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
+use Yiisoft\Db\Driver\Pdo\PdoCommandInterface;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -226,5 +230,69 @@ abstract class CommonPdoCommandTest extends TestCase
         $command->testExecute();
 
         $db->close();
+    }
+
+    public function testCommandLogging(): void {
+        $db = $this->getConnection(true);
+
+        /** @psalm-var $sql */
+        $sql = DbHelper::replaceQuotes(
+            <<<SQL
+            SELECT * FROM [[customer]]
+            SQL,
+            $db->getDriverName(),
+        );
+        /** @var AbstractPdoCommand $command */
+        $command = $db->createCommand();
+        $this->assertInstanceOf(PdoCommandInterface::class, $command);
+        $this->assertInstanceOf(LoggerAwareInterface::class, $command);
+        $command->setSql($sql);
+
+        $this->assertSame($sql, $command->getSql());
+
+        $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'queryOne')]));
+        $command->queryOne();
+
+        $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'queryAll')]));
+        $command->queryAll();
+
+        $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'queryColumn')]));
+        $command->queryColumn();
+
+        $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'queryScalar')]));
+        $command->queryScalar();
+
+        $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'query')]));
+        $command->query();
+
+        $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'execute')]));
+        $command->execute();
+
+        if ($db->getDriverName() === 'pgsql') {
+            $sql = DbHelper::replaceQuotes(
+                <<<SQL
+            INSERT INTO [[customer]] ([[name]], [[email]]) VALUES ('test', 'email@email') RETURNING [[id]]
+            SQL,
+                $db->getDriverName(),
+            );
+            $command->setLogger($this->createQueryLogger($sql, [sprintf('Yiisoft\Db\%s\Command::%s', ucfirst($db->getDriverName()), 'insertWithReturningPks')]));
+            $command->insertWithReturningPks('{{%customer}}', ['name' => 'test', 'email' => 'email@email']);
+        }
+
+        $db->close();
+    }
+
+    private function createQueryLogger(string $sql, array $params = []): LoggerInterface
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger
+            ->expects($this->once())
+            ->method('log')
+            ->with(
+                LogLevel::INFO,
+                $sql,
+                $params
+            );
+        return $logger;
     }
 }

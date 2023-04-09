@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Profiler;
 /**
  * Interface-decorator to work with `yiisoft\profiler` or another profiler.
  *
- * @see \Yiisoft\Db\Connection\ConnectionInterface::setProfiler()
+ * @see \Yiisoft\Db\Profiler\ProfilerAwareInterface::setProfiler()
  */
 interface ProfilerInterface
 {

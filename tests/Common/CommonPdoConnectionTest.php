@@ -7,8 +7,8 @@ namespace Yiisoft\Db\Tests\Common;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Db\Connection\AbstractConnection;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoConnection;
+use Yiisoft\Db\Driver\Pdo\AbstractPdoTransaction;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -295,7 +295,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
 
     public function testTransactionRollbackTransactionOnLevel(): void
     {
-        $transactionMock = $this->createMock(TransactionInterface::class);
+        $transactionMock = $this->createMock(AbstractPdoTransaction::class);
         $transactionMock->expects(self::once())
             ->method('isActive')
             ->willReturn(true);
@@ -307,7 +307,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
             ->willThrowException(new Exception('rollbackTransactionOnLevel'))
         ;
 
-        $db = $this->getMockBuilder(AbstractConnection::class)->onlyMethods([
+        $db = $this->getMockBuilder(AbstractPdoConnection::class)->onlyMethods([
             'createTransaction',
             'createCommand',
             'close',
@@ -320,7 +320,9 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
             'isActive',
             'open',
             'quoteValue',
-        ])->getMock();
+        ])
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
         $db->expects(self::once())
             ->method('createTransaction')
             ->willReturn($transactionMock);

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Transaction;
 
-use Psr\Log\LoggerAwareInterface;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -21,7 +20,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
  * The class defines several methods for working with transactions, such as {@see begin()}, {@see commit()}, and
  * {@see rollBack()}.
  */
-interface TransactionInterface extends LoggerAwareInterface
+interface TransactionInterface
 {
     /**
      * A constant representing the transaction isolation level `READ UNCOMMITTED`.

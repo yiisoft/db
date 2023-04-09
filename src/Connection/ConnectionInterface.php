@@ -203,13 +203,6 @@ interface ConnectionInterface
     public function setEnableSavepoint(bool $value): void;
 
     /**
-     * Sets the profiler instance.
-     *
-     * @param ProfilerInterface|null $profiler The profiler instance.
-     */
-    public function setProfiler(ProfilerInterface|null $profiler): void;
-
-    /**
      * The common prefix or suffix for table names.
      * If a table name is `{{%TableName}}`, then the percentage
      * character `%` will be replaced with this property value.
