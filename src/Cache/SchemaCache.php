@@ -87,6 +87,7 @@ final class SchemaCache
 
         if ($this->psrCache->set($stringKey, $value, $this->duration)) {
             $this->addToTag($stringKey, $tag);
+            return;
         }
 
         throw new RuntimeException('Cache value not set.');
