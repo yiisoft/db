@@ -29,7 +29,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
     /**
-     * Adds more parameters to biun to the query.
+     * Adds more parameters to bind to the query.
      *
      * @param array $params The list of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.

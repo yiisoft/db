@@ -138,8 +138,8 @@ interface CommandInterface
     /**
      * Creates an SQL command for changing the definition of a column.
      *
-     * @param string $table The table whose column is to be changed.
-     * @param string $column The name of the column to be changed.
+     * @param string $table The table whose column is to change.
+     * @param string $column The name of the column to change.
      * @param string $type The column type. {@see QueryBuilder::getColumnType()} will be called to convert the give
      * column type to the physical one. For example, `string` will be converted as `varchar(255)`, and `string not null`
      * becomes `varchar(255) not null`.
@@ -165,15 +165,15 @@ interface CommandInterface
      * )->execute();
      * ```
      *
-     * The method will escape the column names, and quote the values to be inserted.
+     * The method will escape the column names, and quote the values to insert.
      *
      * Note that the values in each row must match the corresponding column names.
      *
      * Also note that the created command isn't executed until {@see execute()} is called.
      *
-     * @param string $table The table that new rows will be inserted into.
+     * @param string $table The name of the table to insert new rows into.
      * @param array $columns The column names.
-     * @param iterable $rows The rows to be batched inserted into the table.
+     * @param iterable $rows The rows to be batch inserted into the table.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -189,7 +189,7 @@ interface CommandInterface
      * a parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
      * @param mixed $value The PHP variable to bind to the SQL statement parameter (passed by reference).
-     * @param int|null $dataType The SQL data type of the parameter. If null, the type is determined by the PHP type of
+     * @param int|null $dataType The SQL data type of the parameter. If `null`, the type is determined by the PHP type of
      * the value.
      * @param int|null $length The length of the data type.
      * @param mixed|null $driverOptions The driver-specific options.
@@ -212,7 +212,7 @@ interface CommandInterface
      * @param string $table The name of the table to add unique constraint to.
      * @param string $name The name of the unique constraint.
      * @param array|string $columns The name of the column to add unique constraint to. If there are
-     * many columns, separate them with commas.
+     * many columns, use an array or separate them with commas.
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
@@ -237,7 +237,7 @@ interface CommandInterface
      *
      * Note that the SQL data type of each value is determined by its PHP type.
      *
-     * @param array|ParamInterface[] $values The values to be bound. This must be given in terms of an associative
+     * @param array|ParamInterface[] $values The values to bind. This must be given in terms of an associative
      * array with array keys being the parameter names, and an array values the corresponding parameter values,
      * for example, `[':name' => 'John', ':age' => 25]`.
      * By default, the {@see PDO} type of each value is determined by its PHP type. You may explicitly specify the
@@ -302,7 +302,7 @@ interface CommandInterface
      * For example, it will convert `string` to `varchar(255)`, and `string not null` to
      * `varchar(255) not null`.
      *
-     * If you specify a column with definition only ('PRIMARY KEY (name, type)'), it will be directly inserted
+     * If you specify a column with definition only (`PRIMARY KEY (name, type)`), it will be directly inserted
      * into the generated SQL.
      *
      * @param string $table The name of the table to create.

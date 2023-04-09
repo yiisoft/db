@@ -103,9 +103,9 @@ abstract class AbstractTableSchema implements TableSchemaInterface
         $this->primaryKey[] = $value;
     }
 
-    public function columns(string $index, ColumnSchemaInterface $value): void
+    public function column(string $name, ColumnSchemaInterface $value): void
     {
-        $this->columns[$index] = $value;
+        $this->columns[$name] = $value;
     }
 
     public function getCatalogName(): string|null
@@ -153,7 +153,7 @@ abstract class AbstractTableSchema implements TableSchemaInterface
         $this->foreignKeys[$id] = $to;
     }
 
-    public function compositeFK(int $id, string $from, string $to): void
+    public function compositeForeignKey(int $id, string $from, string $to): void
     {
         throw new NotSupportedException(static::class . ' does not support composite FK.');
     }

@@ -8,12 +8,12 @@ use PDO;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Yiisoft\Db\Driver\PDO\PDODriverInterface;
+use Yiisoft\Db\Driver\Pdo\PdoDriverInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
-abstract class AbstractConnectionPDOTest extends TestCase
+abstract class AbstractPdoConnectionTest extends TestCase
 {
     use TestTrait;
 
@@ -32,7 +32,7 @@ abstract class AbstractConnectionPDOTest extends TestCase
     {
         $driver = $this->getConnection()->getDriver();
 
-        $this->assertInstanceOf(PDODriverInterface::class, $driver);
+        $this->assertInstanceOf(PdoDriverInterface::class, $driver);
     }
 
     public function testGetServerVersion(): void

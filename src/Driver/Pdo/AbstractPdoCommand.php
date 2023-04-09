@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Driver\PDO;
+namespace Yiisoft\Db\Driver\Pdo;
 
 use PDO;
 use PDOException;
@@ -24,7 +24,7 @@ use Yiisoft\Db\Query\Data\DataReader;
  *
  * It also provides methods for binding parameter values and retrieving query results.
  */
-abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOInterface
+abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandInterface
 {
     /**
      * @var PDOStatement|null Represents a prepared statement and, after the statement is executed, an associated
@@ -34,7 +34,7 @@ abstract class AbstractCommandPDO extends AbstractCommand implements CommandPDOI
      */
     protected PDOStatement|null $pdoStatement = null;
 
-    public function __construct(protected ConnectionPDOInterface $db)
+    public function __construct(protected PdoConnectionInterface $db)
     {
     }
 

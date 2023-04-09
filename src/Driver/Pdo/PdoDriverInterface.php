@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Driver\PDO;
+namespace Yiisoft\Db\Driver\Pdo;
 
 use PDO;
 use Yiisoft\Db\Driver\DriverInterface;
@@ -12,7 +12,7 @@ use Yiisoft\Db\Driver\DriverInterface;
  *
  * @link https://www.php.net/manual/en/book.pdo.php
  */
-interface PDODriverInterface extends DriverInterface
+interface PdoDriverInterface extends DriverInterface
 {
     /**
      * Set {@see PDO} attributes (name => value) to set when calling {@see open()} to establish a DB

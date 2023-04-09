@@ -8,16 +8,16 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Connection\AbstractConnection;
-use Yiisoft\Db\Driver\PDO\AbstractConnectionPDO;
+use Yiisoft\Db\Driver\Pdo\AbstractPdoConnection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\ProfilerInterface;
-use Yiisoft\Db\Tests\AbstractConnectionPDOTest;
+use Yiisoft\Db\Tests\AbstractPdoConnectionTest;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
-abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
+abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
 {
     /**
      * @throws Exception
@@ -226,7 +226,7 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
             ->method('log')
             ->with(
                 LogLevel::INFO,
-                'Transaction not committed: nested transaction not supported Yiisoft\Db\Driver\PDO\AbstractTransactionPDO::commit'
+                'Transaction not committed: nested transaction not supported Yiisoft\Db\Driver\Pdo\AbstractPdoTransaction::commit'
             );
 
         $db->beginTransaction();
@@ -264,7 +264,7 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
             ->method('log')
             ->with(
                 LogLevel::INFO,
-                'Transaction not rolled back: nested transaction not supported Yiisoft\Db\Driver\PDO\AbstractTransactionPDO::rollBack'
+                'Transaction not rolled back: nested transaction not supported Yiisoft\Db\Driver\Pdo\AbstractPdoTransaction::rollBack'
             );
 
         $db->beginTransaction();
@@ -340,7 +340,7 @@ abstract class CommonConnectionPDOTest extends AbstractConnectionPDOTest
 
     public function testGetActivePdo(): void
     {
-        $db = $this->getMockBuilder(AbstractConnectionPDO::class)->onlyMethods([
+        $db = $this->getMockBuilder(AbstractPdoConnection::class)->onlyMethods([
             'createCommand',
             'createTransaction',
             'getPdo',

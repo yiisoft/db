@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Driver\PDO;
+namespace Yiisoft\Db\Driver\Pdo;
 
 use PDOStatement;
 use Yiisoft\Db\Command\CommandInterface;
@@ -12,7 +12,7 @@ use Yiisoft\Db\Command\CommandInterface;
  *
  * @see CommandInterface
  */
-interface CommandPDOInterface extends CommandInterface
+interface PdoCommandInterface extends CommandInterface
 {
     /**
      * @return PDOStatement|null The PDO statement.

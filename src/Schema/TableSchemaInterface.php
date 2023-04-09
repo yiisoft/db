@@ -66,10 +66,10 @@ interface TableSchemaInterface
     public function getPrimaryKey(): array;
 
     /**
-     * @return array The column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object,
-     * indexed by column names.
+     * @return array The column metadata of this table. Array of {@see ColumnSchemaInterface} objects indexed by column
+     * names.
      *
-     * @psalm-return ColumnSchemaInterface[]
+     * @psalm-return array<string, ColumnSchemaInterface>
      */
     public function getColumns(): array;
 
@@ -116,17 +116,16 @@ interface TableSchemaInterface
     /**
      * Set primary keys of this table.
      *
-     * @param string $value The primary key column names.
+     * @param string $value The primary key column name.
      */
     public function primaryKey(string $value): void;
 
     /**
-     * Set one column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object, indexed by
-     * column names.
+     * Set one column metadata of this table.
      *
-     * @param string $index The column name.
+     * @param string $name The column name.
      */
-    public function columns(string $index, ColumnSchemaInterface $value): void;
+    public function column(string $name, ColumnSchemaInterface $value): void;
 
     /**
      * @return string|null The name of the catalog (database) that this table belongs to. Defaults to null, meaning no
@@ -212,5 +211,5 @@ interface TableSchemaInterface
      *
      * @throws NotSupportedException
      */
-    public function compositeFK(int $id, string $from, string $to): void;
+    public function compositeForeignKey(int $id, string $from, string $to): void;
 }

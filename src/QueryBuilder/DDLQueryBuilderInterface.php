@@ -248,13 +248,10 @@ interface DDLQueryBuilderInterface
      * @param QueryInterface|string $subQuery The select statement which defines the view.
      * This can be either a string or a {@see Query} object.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException If this isn't supported by the underlying DBMS.
-     *
+     * @throws Exception
      * @return string The `CREATE VIEW` SQL statement.
-     *
      * Note: The method will quote the `viewName` parameter before using it in the generated SQL.
      */
     public function createView(string $viewName, QueryInterface|string $subQuery): string;
@@ -274,8 +271,8 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for dropping a DB column.
      *
-     * @param string $table The table whose column is to dropp.
-     * @param string $column The name of the column to dropp.
+     * @param string $table The table whose column is to drop.
+     * @param string $column The name of the column to drop.
      *
      * @return string The SQL statement for dropping a DB column.
      *
