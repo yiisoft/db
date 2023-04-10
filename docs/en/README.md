@@ -91,6 +91,7 @@ Once you have a database connection instance, you can execute an SQL query by ta
 1. [Create a command and fetch data](queries/create-command-fetch-data.md)
 2. [Bind parameters](queries/bind-parameters.md)
 3. [Execute a command](queries/execute-command.md)
+4. [Execute many commands in a transaction](queries/transactions.md)
 
 ## Quote table and column names
 
