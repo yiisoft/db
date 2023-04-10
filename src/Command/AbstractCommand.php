@@ -101,7 +101,6 @@ abstract class AbstractCommand implements CommandInterface
     protected const QUERY_MODE_CURSOR = 16;
     /**
      * Command in this query mode returns the first column in the first row of the query result
-     * The value
      *
      * @see queryScalar()
      */
@@ -456,6 +455,7 @@ abstract class AbstractCommand implements CommandInterface
 
     public function queryScalar(): bool|string|null|int|float
     {
+        /** @psalm-var mixed $result */
         $result = $this->queryInternal(self::QUERY_MODE_SCALAR);
 
         if (is_resource($result) && get_resource_type($result) === 'stream') {
