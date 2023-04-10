@@ -23,12 +23,12 @@ try {
 
     $insertTagCommand = $db
         ->createCommand("INSERT INTO {{%tags}} ([[id]], [[name]]) VALUES (:id, :name)")
-        ->bindParam(':id', $id = 0)
-        ->bindParam(':name', $name = '');
+        ->bindParam(':id', $id, PDO::PARAM_INT)
+        ->bindParam(':name', $name, PDO::PARAM_STR);
         
     $insertPostTagCommand = $db
         ->createCommand("INSERT INTO {{%post_tag}} ([[tag_id]], [[post_id]]) VALUES (:tag_id, :post_id)")
-        ->bindParam(':tag_id', $id)
+        ->bindParam(':tag_id', $id, PDO::PARAM_INT)
         ->bindValue(':post_id', 1);
         
     $tags = [
@@ -69,12 +69,12 @@ $db->transaction(function (ConnectionInterface $db) {
 
     $insertTagCommand = $db
         ->createCommand("INSERT INTO {{%tags}} ([[id]], [[name]]) VALUES (:id, :name)")
-        ->bindParam(':id', $id = 0)
-        ->bindParam(':name', $name = '');
+        ->bindParam(':id', $id, PDO::PARAM_INT)
+        ->bindParam(':name', $name, PDO::PARAM_STR);
         
     $insertPostTagCommand = $db
         ->createCommand("INSERT INTO {{%post_tag}} ([[tag_id]], [[post_id]]) VALUES (:tag_id, :post_id)")
-        ->bindParam(':tag_id', $id)
+        ->bindParam(':tag_id', $id, PDO::PARAM_INT)
         ->bindValue(':post_id', 1);
         
     $tags = [
