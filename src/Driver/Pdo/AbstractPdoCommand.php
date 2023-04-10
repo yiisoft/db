@@ -199,9 +199,12 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
             return $this->pdoStatement?->rowCount() ?? 0;
         }
 
-        if ($this->is($queryMode, self::QUERY_MODE_ROW) || $this->is($queryMode, self::QUERY_MODE_SCALAR)) {
+        if ($this->is($queryMode, self::QUERY_MODE_ROW)) {
             /** @psalm-var array|false $result */
             $result = $this->pdoStatement?->fetch(PDO::FETCH_ASSOC);
+        } elseif ($this->is($queryMode, self::QUERY_MODE_SCALAR)) {
+            /** @psalm-var mixed $result */
+            $result = $this->pdoStatement?->fetchColumn();
         } elseif ($this->is($queryMode, self::QUERY_MODE_COLUMN)) {
             /** @psalm-var mixed $result */
             $result = $this->pdoStatement?->fetchAll(PDO::FETCH_COLUMN);

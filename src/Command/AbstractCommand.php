@@ -456,15 +456,7 @@ abstract class AbstractCommand implements CommandInterface
 
     public function queryScalar(): bool|string|null|int|float
     {
-        /** @psalm-var array|false $firstRow */
-        $firstRow = $this->queryInternal(self::QUERY_MODE_SCALAR);
-
-        if (!$firstRow) {
-            return false;
-        }
-
-        /** @psalm-var mixed $result */
-        $result = current($firstRow);
+        $result = $this->queryInternal(self::QUERY_MODE_SCALAR);
 
         if (is_resource($result) && get_resource_type($result) === 'stream') {
             return stream_get_contents($result);
