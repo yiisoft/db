@@ -77,6 +77,8 @@ interface ConstraintSchemaInterface
      *
      * @return array The primary keys for all tables in the database. Each array element is an instance of
      * {@see Constraint} or its child class.
+     *
+     * @psalm-return list<Constraint>
      */
     public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array;
 
