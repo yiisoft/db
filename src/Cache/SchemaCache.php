@@ -148,7 +148,7 @@ final class SchemaCache
      * @see setDuration()
      * @see setExclude()
      */
-    public function setEnable(bool $value): void
+    public function setEnabled(bool $value): void
     {
         $this->enabled = $value;
     }
@@ -159,7 +159,7 @@ final class SchemaCache
      *
      * @param DateInterval|int|null $value The number of seconds that table metadata can remain valid in cache.
      *
-     * @see setEnable()
+     * @see setEnabled()
      */
     public function setDuration(int|null|DateInterval $value): void
     {
@@ -173,7 +173,7 @@ final class SchemaCache
      *
      * @param array $value The table names.
      *
-     * @see setEnable()
+     * @see setEnabled()
      */
     public function setExclude(array $value): void
     {

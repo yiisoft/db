@@ -358,7 +358,7 @@ abstract class AbstractSchema implements SchemaInterface
 
     public function enableCache(bool $value): void
     {
-        $this->schemaCache->setEnable($value);
+        $this->schemaCache->setEnabled($value);
     }
 
     /**
