@@ -59,11 +59,11 @@ final class SchemaCacheTest extends TestCase
     {
         $schemaCache = new SchemaCache(DbHelper::getPsrCache());
 
-        $schemaCache->setEnable(false);
+        $schemaCache->setEnabled(false);
 
         $this->assertFalse($schemaCache->isEnabled());
 
-        $schemaCache->setEnable(true);
+        $schemaCache->setEnabled(true);
 
         $this->assertTrue($schemaCache->isEnabled());
     }

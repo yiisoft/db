@@ -352,9 +352,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
-     * @throws NotSupportedException
+     * @return array The metadata for all tables in the database.
      *
-     * @return TableSchemaInterface[] The metadata for all tables in the database.
+     * @psalm-return list<TableSchemaInterface>
      */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array;
 
