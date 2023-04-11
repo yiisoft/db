@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Tests\Common;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
@@ -226,5 +228,19 @@ abstract class CommonPdoCommandTest extends TestCase
         $command->testExecute();
 
         $db->close();
+    }
+
+    protected function createQueryLogger(string $sql, array $params = []): LoggerInterface
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger
+            ->expects($this->once())
+            ->method('log')
+            ->with(
+                LogLevel::INFO,
+                $sql,
+                $params
+            );
+        return $logger;
     }
 }

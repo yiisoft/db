@@ -5,18 +5,13 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Command;
 
 use Closure;
-use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Profiler\Context\CommandContext;
-use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
-use function current;
 use function explode;
 use function get_resource_type;
 use function is_array;
@@ -72,9 +67,6 @@ use function strncmp;
  */
 abstract class AbstractCommand implements CommandInterface
 {
-    use LoggerAwareTrait;
-    use ProfilerAwareTrait;
-
     /**
      * Command in this query mode returns count of affected rows.
      *
@@ -106,6 +98,12 @@ abstract class AbstractCommand implements CommandInterface
      * @see query()
      */
     protected const QUERY_MODE_CURSOR = 16;
+    /**
+     * Command in this query mode returns the first column in the first row of the query result
+     *
+     * @see queryScalar()
+     */
+    protected const QUERY_MODE_SCALAR = 32;
 
     /**
      * @var string|null Transaction isolation level.
@@ -456,15 +454,8 @@ abstract class AbstractCommand implements CommandInterface
 
     public function queryScalar(): bool|string|null|int|float
     {
-        /** @psalm-var array|false $firstRow */
-        $firstRow = $this->queryInternal(self::QUERY_MODE_ROW);
-
-        if (!$firstRow) {
-            return false;
-        }
-
         /** @psalm-var mixed $result */
-        $result = current($firstRow);
+        $result = $this->queryInternal(self::QUERY_MODE_SCALAR);
 
         if (is_resource($result) && get_resource_type($result) === 'stream') {
             return stream_get_contents($result);
@@ -577,14 +568,6 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Logs the current database query if query logging is on and returns the profiling token if profiling is on.
-     */
-    protected function logQuery(string $rawSql, string $category): void
-    {
-        $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
-    }
-
-    /**
      * The method is called after the query is executed.
      *
      * @param int $queryMode Query mode, `QUERY_MODE_*`.
@@ -594,31 +577,16 @@ abstract class AbstractCommand implements CommandInterface
      */
     protected function queryInternal(int $queryMode): mixed
     {
-        $rawSql = $this->getRawSql();
         $isReadMode = $this->isReadMode($queryMode);
-
-        $logCategory = self::class . '::' . ($isReadMode ? 'query' : 'execute');
-        $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
-
-        $this->logQuery($rawSql, $logCategory);
         $this->prepare($isReadMode);
 
-        try {
-            $this->profiler?->begin($rawSql, $queryContext);
+        $this->internalExecute($this->getRawSql());
 
-            $this->internalExecute($rawSql);
+        /** @psalm-var mixed $result */
+        $result = $this->internalGetQueryResult($queryMode);
 
-            /** @psalm-var mixed $result */
-            $result = $this->internalGetQueryResult($queryMode);
-
-            $this->profiler?->end($rawSql, $queryContext);
-
-            if (!$isReadMode) {
-                $this->refreshTableSchema();
-            }
-        } catch (Exception $e) {
-            $this->profiler?->end($rawSql, $queryContext->setException($e));
-            throw $e;
+        if (!$isReadMode) {
+            $this->refreshTableSchema();
         }
 
         return $result;

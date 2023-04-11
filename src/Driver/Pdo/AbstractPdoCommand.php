@@ -7,12 +7,18 @@ namespace Yiisoft\Db\Driver\Pdo;
 use PDO;
 use PDOException;
 use PDOStatement;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Command\AbstractCommand;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidParamException;
+use Yiisoft\Db\Profiler\Context\CommandContext;
+use Yiisoft\Db\Profiler\ProfilerAwareInterface;
+use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\Query\Data\DataReader;
 
 /**
@@ -24,8 +30,11 @@ use Yiisoft\Db\Query\Data\DataReader;
  *
  * It also provides methods for binding parameter values and retrieving query results.
  */
-abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandInterface
+abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandInterface, LoggerAwareInterface, ProfilerAwareInterface
 {
+    use LoggerAwareTrait;
+    use ProfilerAwareTrait;
+
     /**
      * @var PDOStatement|null Represents a prepared statement and, after the statement is executed, an associated
      * result set.
@@ -152,6 +161,19 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         }
     }
 
+    protected function getQueryMode(int $queryMode): string
+    {
+        return match ($queryMode) {
+            self::QUERY_MODE_EXECUTE => 'execute',
+            self::QUERY_MODE_ROW => 'queryOne',
+            self::QUERY_MODE_ALL => 'queryAll',
+            self::QUERY_MODE_COLUMN => 'queryColumn',
+            self::QUERY_MODE_CURSOR => 'query',
+            self::QUERY_MODE_SCALAR => 'queryScalar',
+            self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE => 'insertWithReturningPks'
+        };
+    }
+
     /**
      * Executes a prepared statement.
      *
@@ -180,6 +202,9 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         if ($this->is($queryMode, self::QUERY_MODE_ROW)) {
             /** @psalm-var array|false $result */
             $result = $this->pdoStatement?->fetch(PDO::FETCH_ASSOC);
+        } elseif ($this->is($queryMode, self::QUERY_MODE_SCALAR)) {
+            /** @psalm-var mixed $result */
+            $result = $this->pdoStatement?->fetchColumn();
         } elseif ($this->is($queryMode, self::QUERY_MODE_COLUMN)) {
             /** @psalm-var mixed $result */
             $result = $this->pdoStatement?->fetchAll(PDO::FETCH_COLUMN);
@@ -191,6 +216,36 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         }
 
         $this->pdoStatement?->closeCursor();
+
+        return $result;
+    }
+
+    /**
+     * Logs the current database query if query logging is on and returns the profiling token if profiling is on.
+     */
+    protected function logQuery(string $rawSql, string $category): void
+    {
+        $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
+    }
+
+    protected function queryInternal(int $queryMode): mixed
+    {
+        $rawSql = $this->getRawSql();
+        $logCategory = self::class . '::' . $this->getQueryMode($queryMode);
+
+        $this->logQuery($rawSql, $logCategory);
+
+        $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
+
+        $this->profiler?->begin($rawSql, $queryContext);
+        try {
+            /** @psalm-var mixed $result */
+            $result = parent::queryInternal($queryMode);
+        } catch (Throwable $e) {
+            $this->profiler?->end($rawSql, $queryContext->setException($e));
+            throw $e;
+        }
+        $this->profiler?->end($rawSql, $queryContext);
 
         return $result;
     }

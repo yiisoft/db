@@ -13,7 +13,6 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -692,13 +691,6 @@ interface CommandInterface
      * List all database names in the current connection.
      */
     public function showDatabases(): array;
-
-    /**
-     * Sets the profiler instance.
-     *
-     * @param ProfilerInterface|null $profiler The profiler instance.
-     */
-    public function setProfiler(ProfilerInterface|null $profiler): void;
 
     /**
      * Specifies the SQL statement to execute.

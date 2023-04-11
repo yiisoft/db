@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Driver\Pdo;
 
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
@@ -34,7 +35,7 @@ use Yiisoft\Db\Transaction\TransactionInterface;
  * }
  * ```
  */
-abstract class AbstractPdoTransaction implements TransactionInterface
+abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
