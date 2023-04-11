@@ -7,6 +7,7 @@ You can use the DML to perform the following operations:
 - [Batch insert](#batch-insert)
 - [Delete rows](#delete-rows)
 - [Reset sequence](#reset-sequence)
+- [Insert](#insert)
 - [Update](#update)
 - [Upsert](#upsert)
 
