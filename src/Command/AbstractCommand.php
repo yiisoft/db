@@ -12,7 +12,6 @@ use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
-use function current;
 use function explode;
 use function get_resource_type;
 use function is_array;
