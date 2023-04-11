@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Command\DataType;
 
 /** @var ConnectionInterface $db */
 
@@ -23,12 +24,12 @@ try {
 
     $insertTagCommand = $db
         ->createCommand("INSERT INTO {{%tags}} ([[id]], [[name]]) VALUES (:id, :name)")
-        ->bindParam(':id', $id, PDO::PARAM_INT)
-        ->bindParam(':name', $name, PDO::PARAM_STR);
+        ->bindParam(':id', $id, DataType::INTEGER)
+        ->bindParam(':name', $name, DataType::STRING);
         
     $insertPostTagCommand = $db
         ->createCommand("INSERT INTO {{%post_tag}} ([[tag_id]], [[post_id]]) VALUES (:tag_id, :post_id)")
-        ->bindParam(':tag_id', $id, PDO::PARAM_INT)
+        ->bindParam(':tag_id', $id, DataType::INTEGER)
         ->bindValue(':post_id', 1);
         
     $tags = [
@@ -69,12 +70,12 @@ $db->transaction(function (ConnectionInterface $db) {
 
     $insertTagCommand = $db
         ->createCommand("INSERT INTO {{%tags}} ([[id]], [[name]]) VALUES (:id, :name)")
-        ->bindParam(':id', $id, PDO::PARAM_INT)
-        ->bindParam(':name', $name, PDO::PARAM_STR);
+        ->bindParam(':id', $id, DataType::INTEGER)
+        ->bindParam(':name', $name, DataType::STRING);
         
     $insertPostTagCommand = $db
         ->createCommand("INSERT INTO {{%post_tag}} ([[tag_id]], [[post_id]]) VALUES (:tag_id, :post_id)")
-        ->bindParam(':tag_id', $id, PDO::PARAM_INT)
+        ->bindParam(':tag_id', $id, DataType::INTEGER)
         ->bindValue(':post_id', 1);
         
     $tags = [

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
-use PDO;
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -45,18 +45,18 @@ abstract class AbstractSchemaTest extends TestCase
         $this->assertNull($schema->getDefaultSchema());
     }
 
-    public function testGetPDOType(): void
+    public function testGetDataType(): void
     {
         $values = [
-            [null, PDO::PARAM_NULL],
-            ['', PDO::PARAM_STR],
-            ['hello', PDO::PARAM_STR],
-            [0, PDO::PARAM_INT],
-            [1, PDO::PARAM_INT],
-            [1337, PDO::PARAM_INT],
-            [true, PDO::PARAM_BOOL],
-            [false, PDO::PARAM_BOOL],
-            [$fp = fopen(__FILE__, 'rb'), PDO::PARAM_LOB],
+            [null, DataType::NULL],
+            ['', DataType::STRING],
+            ['hello', DataType::STRING],
+            [0, DataType::INTEGER],
+            [1, DataType::INTEGER],
+            [1337, DataType::INTEGER],
+            [true, DataType::BOOLEAN],
+            [false, DataType::BOOLEAN],
+            [$fp = fopen(__FILE__, 'rb'), DataType::LOB],
         ];
 
         $db = $this->getConnection();
@@ -66,7 +66,7 @@ abstract class AbstractSchemaTest extends TestCase
         foreach ($values as $value) {
             $this->assertSame(
                 $value[1],
-                $schema->getPdoType($value[0]),
+                $schema->getDataType($value[0]),
                 'type for value ' . print_r($value[0], true) . ' does not match.',
             );
         }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use PDO;
+use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbStringHelper;
@@ -275,7 +275,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
             is_array($value)
             && count($value) === 2
             && isset($value[1])
-            && in_array($value[1], $this->getPdoParamTypes(), true)
+            && in_array($value[1], $this->getDataTypes(), true)
         ) {
             return new Param((string) $value[0], $value[1]);
         }
@@ -314,17 +314,17 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     }
 
     /**
-     * @return int[] Array of numbers that represent possible PDO parameter types.
+     * @return int[] Array of numbers that represent possible parameter types.
      */
-    private function getPdoParamTypes(): array
+    private function getDataTypes(): array
     {
         return [
-            PDO::PARAM_BOOL,
-            PDO::PARAM_INT,
-            PDO::PARAM_STR,
-            PDO::PARAM_LOB,
-            PDO::PARAM_NULL,
-            PDO::PARAM_STMT,
+            DataType::BOOLEAN,
+            DataType::INTEGER,
+            DataType::STRING,
+            DataType::LOB,
+            DataType::NULL,
+            DataType::STMT,
         ];
     }
 }

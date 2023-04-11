@@ -99,8 +99,6 @@ interface ConnectionInterface
      * @throws InvalidCallException
      *
      * @return string The row ID of the last row inserted, or the last value retrieved from the sequence object.
-     *
-     * @link https://php.net/manual/en/pdo.lastinsertid.php'>https://php.net/manual/en/pdo.lastinsertid.php
      */
     public function getLastInsertID(string $sequenceName = null): string;
 

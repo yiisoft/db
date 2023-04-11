@@ -6,8 +6,7 @@ It's designed to be flexible and extensible,
 so that it can be used with different databases and different database schemas.
 Its database agnostic nature makes it easy to switch from one database to another.
 
-Built on top of [PDO](https://www.php.net/manual/en/book.pdo.php), Yii DB provides an object-oriented API for accessing
-relational databases.
+Yii DB provides an object-oriented API for accessing relational databases.
 It's the foundation for other more advanced database access methods, including [Query Builder](query-builder.md).
 
 When using Yii DB, you mainly need to deal with plain SQLs and PHP arrays.

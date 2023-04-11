@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Command;
 
 use Closure;
 use JsonException;
-use PDOException;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -188,14 +187,12 @@ interface CommandInterface
      * a parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
      * @param mixed $value The PHP variable to bind to the SQL statement parameter (passed by reference).
-     * @param int|null $dataType The SQL data type of the parameter. If `null`, the type is determined by the PHP type of
-     * the value.
+     * @param int|null $dataType The {@see DataType SQL data type} of the parameter. If `null`, the type is determined
+     * by the PHP type of the value.
      * @param int|null $length The length of the data type.
      * @param mixed|null $driverOptions The driver-specific options.
      *
      * @throws Exception
-     *
-     * @link https://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
     public function bindParam(
         int|string $name,
@@ -224,8 +221,8 @@ interface CommandInterface
      * parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
      * @param mixed $value The value to bind to the parameter.
-     * @param int|null $dataType The SQL data type of the parameter. If null, the type is determined by the PHP type of
-     * the value.
+     * @param int|null $dataType The {@see DataType SQL data type} of the parameter. If null, the type is determined
+     * by the PHP type of the value.
      */
     public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
 
@@ -239,9 +236,9 @@ interface CommandInterface
      * @param array|ParamInterface[] $values The values to bind. This must be given in terms of an associative
      * array with array keys being the parameter names, and an array values the corresponding parameter values,
      * for example, `[':name' => 'John', ':age' => 25]`.
-     * By default, the {@see PDO} type of each value is determined by its PHP type. You may explicitly specify the
-     * {@see PDO} type by using a {@see Param} class: `new Param(value, type)`, for example,
-     * `[':name' => 'John', ':profile' => new Param($profile, PDO::PARAM_LOB)]`.
+     * By default, the SQL data type of each value is determined by its PHP type.
+     * You may explicitly specify the {@see DataType SQL data type} type by using a {@see Param} class:
+     * `new Param(value, type)`, for example, `[':name' => 'John', ':profile' => new Param($profile, DataType::LOB)]`.
      */
     public function bindValues(array $values): static;
 
@@ -579,7 +576,6 @@ interface CommandInterface
      *
      * @throws Exception If there is any DB error.
      * @throws InvalidConfigException
-     * @throws PDOException
      */
     public function prepare(bool $forRead = null): void;
 
