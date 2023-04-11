@@ -36,7 +36,7 @@ return [
     CacheInterface::class => [
         'class' => FileCache::class,
         '__construct()' => [
-            'path' => __DIR__ . '/../../runtime/cache',
+            'cachePath' => __DIR__ . '/../../runtime/cache',
         ],
     ],
 ];
