@@ -1,8 +1,19 @@
 # Select
 
 The `Yiisoft\Db\Query\Query::select()` method specifies the `SELECT` fragment of a SQL statement.
+
+First of all, calling this method is optional, and it can be skipped completely resulting in selecting of all columns.
+
+```php
+$query->from('{{%user}}');
+
+// equal to:
+
+$query->select('*')->from('{{%user}}');
+```
+
 You can specify columns to select either as an array or as a string.
-The column names selected will be automatically quoted during the generation of the SQL statement.
+The selected column names will be automatically quoted during the generation of the SQL statement.
 
 ```php
 $query->select(['id', 'email']);
