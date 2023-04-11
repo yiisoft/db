@@ -241,7 +241,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         try {
             /** @psalm-var mixed $result */
             $result = parent::queryInternal($queryMode);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->profiler?->end($rawSql, $queryContext->setException($e));
             throw $e;
         }

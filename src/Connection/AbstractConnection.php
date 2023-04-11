@@ -113,7 +113,7 @@ abstract class AbstractConnection implements ConnectionInterface
              */
             try {
                 $transaction->rollBack();
-            } catch (Exception) {
+            } catch (Throwable) {
                 /** hide this exception to be able to continue throwing original exception outside */
             }
         }

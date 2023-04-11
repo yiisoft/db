@@ -581,17 +581,13 @@ abstract class AbstractCommand implements CommandInterface
         $isReadMode = $this->isReadMode($queryMode);
         $this->prepare($isReadMode);
 
-        try {
-            $this->internalExecute($this->getRawSql());
+        $this->internalExecute($this->getRawSql());
 
-            /** @psalm-var mixed $result */
-            $result = $this->internalGetQueryResult($queryMode);
+        /** @psalm-var mixed $result */
+        $result = $this->internalGetQueryResult($queryMode);
 
-            if (!$isReadMode) {
-                $this->refreshTableSchema();
-            }
-        } catch (Exception $e) {
-            throw $e;
+        if (!$isReadMode) {
+            $this->refreshTableSchema();
         }
 
         return $result;

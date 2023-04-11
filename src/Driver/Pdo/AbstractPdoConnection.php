@@ -9,6 +9,7 @@ use PDOException;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
+use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\AbstractConnection;
 use Yiisoft\Db\Exception\Exception;
@@ -223,7 +224,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
              */
             try {
                 $transaction->rollBack();
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $this->logger?->log(LogLevel::ERROR, (string) $e, [__METHOD__]);
                 /** hide this exception to be able to continue throwing original exception outside */
             }
