@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
-use PDO;
+use Yiisoft\Db\Command\DataType;
 
 class CommandPDOProvider
 {
@@ -15,7 +15,7 @@ class CommandPDOProvider
                 'id',
                 ':id',
                 1,
-                PDO::PARAM_STR,
+                DataType::STRING,
                 null,
                 null,
                 [

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema;
 
-use PDO;
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
@@ -244,9 +244,9 @@ final class ColumnSchemaTest extends TestCase
 
         $column->phpType(SchemaInterface::PHP_TYPE_STRING);
 
-        $this->assertInstanceOf(ParamInterface::class, $column->phpTypecast(['test', PDO::PARAM_STR]));
-        $this->assertSame('test', $column->phpTypecast(['test', PDO::PARAM_STR])->getValue());
-        $this->assertSame(PDO::PARAM_STR, $column->phpTypecast(['test', PDO::PARAM_STR])->getType());
+        $this->assertInstanceOf(ParamInterface::class, $column->phpTypecast(['test', DataType::STRING]));
+        $this->assertSame('test', $column->phpTypecast(['test', DataType::STRING])->getValue());
+        $this->assertSame(DataType::STRING, $column->phpTypecast(['test', DataType::STRING])->getType());
     }
 
     public function testPhpTypecastWithStringResourceValue(): void

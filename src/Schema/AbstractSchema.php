@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use PDO;
 use Psr\SimpleCache\InvalidArgumentException;
 use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
+use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -131,21 +131,21 @@ abstract class AbstractSchema implements SchemaInterface
         return $this->defaultSchema;
     }
 
-    public function getPdoType(mixed $data): int
+    public function getDataType(mixed $data): int
     {
         /** @psalm-var array<string, int> $typeMap */
         $typeMap = [
-            // php type => PDO type
-            SchemaInterface::PHP_TYPE_BOOLEAN => PDO::PARAM_BOOL,
-            SchemaInterface::PHP_TYPE_INTEGER => PDO::PARAM_INT,
-            SchemaInterface::PHP_TYPE_STRING => PDO::PARAM_STR,
-            SchemaInterface::PHP_TYPE_RESOURCE => PDO::PARAM_LOB,
-            SchemaInterface::PHP_TYPE_NULL => PDO::PARAM_NULL,
+            // php type => SQL data type
+            SchemaInterface::PHP_TYPE_BOOLEAN => DataType::BOOLEAN,
+            SchemaInterface::PHP_TYPE_INTEGER => DataType::INTEGER,
+            SchemaInterface::PHP_TYPE_STRING => DataType::STRING,
+            SchemaInterface::PHP_TYPE_RESOURCE => DataType::LOB,
+            SchemaInterface::PHP_TYPE_NULL => DataType::NULL,
         ];
 
         $type = gettype($data);
 
-        return $typeMap[$type] ?? PDO::PARAM_STR;
+        return $typeMap[$type] ?? DataType::STRING;
     }
 
     public function getRawTableName(string $name): string

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Throwable;
+use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -262,15 +263,15 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function getDefaultSchema(): string|null;
 
     /**
-     * Determines the PDO type for the given PHP data value.
+     * Determines the SQL data type for the given PHP data value.
      *
-     * @param mixed $data The data to find PDO type for.
+     * @param mixed $data The data to find a type for.
      *
-     * @return int The PDO type.
+     * @return int The type.
      *
-     * @link https://www.php.net/manual/en/pdo.constants.php
+     * @see DataType
      */
-    public function getPdoType(mixed $data): int;
+    public function getDataType(mixed $data): int;
 
     /**
      * Returns the actual name of a given table name.
