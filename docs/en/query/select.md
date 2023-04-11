@@ -2,7 +2,7 @@
 
 The `Yiisoft\Db\Query\Query::select()` method specifies the `SELECT` fragment of a SQL statement.
 
-By default, all columns will be selected, so the call of `select()` method can be skipped completely:
+First of all, calling this method is optional, and it can be skipped completely resulting in selecting of all columns.
 
 ```php
 $query->from('{{%user}}');
