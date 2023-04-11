@@ -138,6 +138,8 @@ interface ColumnSchemaInterface
      * @return string|null The database type of the column.
      * Null means the column has no type in the database.
      *
+     * Note that the type includes size, e.g. `varchar(128)`. The size can be obtained separately via {@see getSize()}.
+     *
      * @see dbType()
      */
     public function getDbType(): string|null;
