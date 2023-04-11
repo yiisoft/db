@@ -63,6 +63,21 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->resetSequence('{{%customer}}', 1)->execute();
 ```
 
+## Insert
+
+To insert a row to a table, you can use the `Yiisoft\Db\Command\CommandInterface::insert()` method:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+$db->createCommand()->insert('{{%customer}}', ['name' => 'John', 'age' => 18])->execute();
+```
+
 ## Update
 
 To update rows in a table, you can use the `Yiisoft\Db\Command\CommandInterface::update()` method:
