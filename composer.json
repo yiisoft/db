@@ -1,7 +1,7 @@
 {
     "name": "yiisoft/db",
     "type": "library",
-    "description": "Yii DataBase Library",
+    "description": "Yii Database",
     "keywords": [
         "yii",
         "sql",
