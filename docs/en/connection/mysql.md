@@ -84,7 +84,7 @@ $dsn = (new Dsn('mysql', '127.0.0.1', 'yiitest', '3306', ['charset' => 'utf8mb4'
 $arrayCache = new ArrayCache();
 
 // Schema cache.
-$schemaCache = new SchemaCache($cache);
+$schemaCache = new SchemaCache($arrayCache);
 
 // PDO driver.
 $pdoDriver = new Driver($dsn, 'user', 'password'); 
