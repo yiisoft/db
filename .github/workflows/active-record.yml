@@ -106,7 +106,7 @@ jobs:
         uses: yiisoft/actions/db/environment-linux@master
 
       - name: Install db-mssql.
-        uses: yiisoft/actions/db/subpackage-install@master
+        uses: yiisoft/actions/db/subpackage-install@test-actions
         with:
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
@@ -115,7 +115,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install db-mysql.
-        uses: yiisoft/actions/db/subpackage-install@master
+        uses: yiisoft/actions/db/subpackage-install@test-actions
         with:
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
@@ -124,7 +124,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install db-pgsql.
-        uses: yiisoft/actions/db/subpackage-install@master
+        uses: yiisoft/actions/db/subpackage-install@test-actions
         with:
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
@@ -133,7 +133,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install db-oracle.
-        uses: yiisoft/actions/db/subpackage-install@master
+        uses: yiisoft/actions/db/subpackage-install@test-actions
         with:
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
@@ -142,7 +142,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Install db-sqlite.
-        uses: yiisoft/actions/db/subpackage-install@master
+        uses: yiisoft/actions/db/subpackage-install@test-actions
         with:
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
@@ -154,7 +154,7 @@ jobs:
         run: composer require yiisoft/cache
 
       - name: Install active-record.
-        uses: yiisoft/actions/db/subpackage-install@master
+        uses: yiisoft/actions/db/subpackage-install@test-actions
         with:
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
           COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
