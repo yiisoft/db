@@ -178,7 +178,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 $result = $db->createCommand('SELECT * FROM {{%customer}}')->query();
 
-foreach ($command as $row) {
+foreach ($result as $row) {
     // do something with $row
 }
 ```
