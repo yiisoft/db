@@ -105,6 +105,13 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $this->buildHaving($query->getHaving(), $params),
         ];
         $sql = implode($this->separator, array_filter($clauses));
+
+        $union = $this->buildUnion($query->getUnions(), $params);
+
+        if ($union !== '') {
+            $sql = "($sql)$this->separator$union";
+        }
+
         $sql = $this->buildOrderByAndLimit($sql, $query->getOrderBy(), $query->getLimit(), $query->getOffset());
 
         if (!empty($query->getOrderBy())) {
@@ -123,12 +130,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                     $this->buildExpression($expression, $params);
                 }
             }
-        }
-
-        $union = $this->buildUnion($query->getUnions(), $params);
-
-        if ($union !== '') {
-            $sql = "($sql)$this->separator$union";
         }
 
         $with = $this->buildWithQueries($query->getWithQueries(), $params);
