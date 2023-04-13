@@ -45,7 +45,7 @@ try {
 } catch (Exception $e) {
     $transaction->rollBack();
     // to get a slightest info about the Exception
-    var_dump($e->errorInfo[2]);
+    var_dump($e->getMessage());
 }
 ```
 
