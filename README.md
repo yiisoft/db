@@ -46,6 +46,11 @@ similar to the way you would use ORM (Object-Relational Mapping) frameworks like
 
 [Check the documentation](/docs/en/README.md) to learn about usage.
 
+## Support
+
+If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/db/68) is a good place for that.
+You may also check out other [Yii Community Resources](https://www.yiiframework.com/community).
+
 ## Testing
 
 [Check the testing instructions](/docs/en/testing.md) to learn about testing.
