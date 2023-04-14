@@ -27,7 +27,7 @@ jobs:
 
     env:
       CURRENT_PACKAGE: db-oracle
-      COMPOSER_ROOT_VERSION: dev-master
+      COMPOSER_ROOT_VERSION: 1.0.0
       EXTENSIONS: pdo, pdo_oci
 
     runs-on: ${{ matrix.os }}
