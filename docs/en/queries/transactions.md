@@ -38,12 +38,14 @@ try {
         [3, 'db'],
     ];
         
-    foreach ($tags as [$id, $name] => $tag) {
+    foreach ($tags as list($id, $name)) {
         $insertTagCommand->execute();
         $insertPostTagCommand->execute();
     }    
-} catch () {
+} catch (Exception $e) {
     $transaction->rollBack();
+    // to get a slightest info about the Exception
+    var_dump($e->getMessage());
 }
 ```
 
@@ -84,7 +86,7 @@ $db->transaction(function (ConnectionInterface $db) {
         [3, 'db'],
     ];
         
-    foreach ($tags as [$id, $name] => $tag) {
+    foreach ($tags as list($id, $name)) {
         $insertTagCommand->execute();
         $insertPostTagCommand->execute();
     }
