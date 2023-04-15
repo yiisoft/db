@@ -46,7 +46,7 @@ The `SchemaCache` requires `CacheInterface` and DI container will automatically 
 
 ## Manual cache configuration
 
-Before you continue any further, make sure you install yii cache package via composer, using `composer require yiisoft/cache`.
+Make sure you have [yiisoft/cache](https://github.com/yiisoft/cache) installed via Composer using `composer require yiisoft/cache`.
 
 This configuration is suitable if you want to use a different cache driver for caching schema.
 
