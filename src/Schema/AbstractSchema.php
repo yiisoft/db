@@ -10,6 +10,7 @@ use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 use function array_change_key_case;
@@ -261,9 +262,7 @@ abstract class AbstractSchema implements SchemaInterface
      */
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
-        /** @psalm-var mixed $tableIndexes */
-        $tableIndexes = $this->getTableMetadata($name, SchemaInterface::INDEXES, $refresh);
-        return is_array($tableIndexes) ? $tableIndexes : [];
+        return $this->getTableMetadata($name, SchemaInterface::INDEXES, $refresh);
     }
 
     /**
@@ -476,14 +475,21 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * Returns the metadata of the given type for the given table.
      *
+     * @template T of string
+     *
      * @param string $name The table name. The table name may contain a schema name if any.
      * Don't quote the table name.
-     * @param string $type The metadata type.
+     * @param T $type The metadata type.
      * @param bool $refresh whether to reload the table metadata even if it's found in the cache.
      *
-     * @throws InvalidArgumentException
-     *
      * @return mixed The metadata of the given type for the given table.
+     * @psalm-return (
+     *     T is SchemaInterface::INDEXES
+     *     ? IndexConstraint[]
+     *     : mixed
+     * )
+     *
+     * @throws InvalidArgumentException
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false): mixed
     {
