@@ -482,14 +482,13 @@ abstract class AbstractSchema implements SchemaInterface
      * @param T $type The metadata type.
      * @param bool $refresh whether to reload the table metadata even if it's found in the cache.
      *
+     * @throws InvalidArgumentException
      * @return mixed The metadata of the given type for the given table.
      * @psalm-return (
      *     T is SchemaInterface::INDEXES
      *     ? IndexConstraint[]
      *     : mixed
      * )
-     *
-     * @throws InvalidArgumentException
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false): mixed
     {
