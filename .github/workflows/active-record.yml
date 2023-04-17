@@ -157,7 +157,7 @@ jobs:
         uses: yiisoft/actions/db/subpackage-install@master
         with:
           BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          COMPOSER_ROOT_VERSION: dev-master
+          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
           CURRENT_PACKAGE: active-record
           FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
