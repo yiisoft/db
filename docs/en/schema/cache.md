@@ -16,6 +16,9 @@ You can configure [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Ca
 - Use [DI container](https://github.com/yiisoft/di) autowiring.
 - Configure it manually.
 
+Examples below use [yiisoft/cache](https://github.com/yiisoft/cache), make sure you have installed it via Composer
+using `composer require yiisoft/cache`.
+
 ## Autowired PSR-16 cache
 
 This configuration is suitable if you want to use the same cache driver for the whole application.
@@ -45,8 +48,6 @@ return [
 The `SchemaCache` requires `CacheInterface` and DI container will automatically resolve it.
 
 ## Manual cache configuration
-
-Make sure you have [yiisoft/cache](https://github.com/yiisoft/cache) installed via Composer using `composer require yiisoft/cache`.
 
 This configuration is suitable if you want to use a different cache driver for caching schema.
 
