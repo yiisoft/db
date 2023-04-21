@@ -6,14 +6,12 @@ namespace Yiisoft\Db\Command;
 
 use Closure;
 use JsonException;
-use PDOException;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -98,9 +96,9 @@ interface CommandInterface
      * @param string $name The name of the foreign key constraint.
      * @param array|string $columns The name of the column to add foreign key constraint to. If there are
      * many columns, separate them with commas.
-     * @param string $refTable The name of the table that the foreign key references to.
-     * @param array|string $refColumns The name of the column that the foreign key references to. If there are many
-     * columns, separate them with commas.
+     * @param string $referenceTable The name of the table that the foreign key references to.
+     * @param array|string $referenceColumns The name of the column that the foreign key references to. If there are
+     * many columns, separate them with commas.
      * @param string|null $delete The `ON DELETE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
      * `SET DEFAULT`, `SET NULL`.
      * @param string|null $update The `ON UPDATE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
@@ -109,14 +107,15 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * Note: The method will quote the `name`, `table`, `refTable` parameters before using them in the generated SQL.
+     * Note: The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated
+     * SQL.
      */
     public function addForeignKey(
         string $table,
         string $name,
         array|string $columns,
-        string $refTable,
-        array|string $refColumns,
+        string $referenceTable,
+        array|string $referenceColumns,
         string $delete = null,
         string $update = null
     ): static;
@@ -137,8 +136,8 @@ interface CommandInterface
     /**
      * Creates an SQL command for changing the definition of a column.
      *
-     * @param string $table The table whose column is to be changed.
-     * @param string $column The name of the column to be changed.
+     * @param string $table The table whose column is to change.
+     * @param string $column The name of the column to change.
      * @param string $type The column type. {@see QueryBuilder::getColumnType()} will be called to convert the give
      * column type to the physical one. For example, `string` will be converted as `varchar(255)`, and `string not null`
      * becomes `varchar(255) not null`.
@@ -164,15 +163,15 @@ interface CommandInterface
      * )->execute();
      * ```
      *
-     * The method will escape the column names, and quote the values to be inserted.
+     * The method will escape the column names, and quote the values to insert.
      *
      * Note that the values in each row must match the corresponding column names.
      *
      * Also note that the created command isn't executed until {@see execute()} is called.
      *
-     * @param string $table The table that new rows will be inserted into.
+     * @param string $table The name of the table to insert new rows into.
      * @param array $columns The column names.
-     * @param iterable $rows The rows to be batched inserted into the table.
+     * @param iterable $rows The rows to be batch inserted into the table.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -188,14 +187,12 @@ interface CommandInterface
      * a parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
      * @param mixed $value The PHP variable to bind to the SQL statement parameter (passed by reference).
-     * @param int|null $dataType The SQL data type of the parameter. If null, the type is determined by the PHP type of
-     * the value.
+     * @param int|null $dataType The {@see DataType SQL data type} of the parameter. If `null`, the type is determined
+     * by the PHP type of the value.
      * @param int|null $length The length of the data type.
      * @param mixed|null $driverOptions The driver-specific options.
      *
      * @throws Exception
-     *
-     * @link https://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
     public function bindParam(
         int|string $name,
@@ -211,7 +208,7 @@ interface CommandInterface
      * @param string $table The name of the table to add unique constraint to.
      * @param string $name The name of the unique constraint.
      * @param array|string $columns The name of the column to add unique constraint to. If there are
-     * many columns, separate them with commas.
+     * many columns, use an array or separate them with commas.
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
@@ -224,8 +221,8 @@ interface CommandInterface
      * parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
      * @param mixed $value The value to bind to the parameter.
-     * @param int|null $dataType The SQL data type of the parameter. If null, the type is determined by the PHP type of
-     * the value.
+     * @param int|null $dataType The {@see DataType SQL data type} of the parameter. If null, the type is determined
+     * by the PHP type of the value.
      */
     public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
 
@@ -236,12 +233,12 @@ interface CommandInterface
      *
      * Note that the SQL data type of each value is determined by its PHP type.
      *
-     * @param array|ParamInterface[] $values The values to be bound. This must be given in terms of an associative
+     * @param array|ParamInterface[] $values The values to bind. This must be given in terms of an associative
      * array with array keys being the parameter names, and an array values the corresponding parameter values,
      * for example, `[':name' => 'John', ':age' => 25]`.
-     * By default, the {@see PDO} type of each value is determined by its PHP type. You may explicitly specify the
-     * {@see PDO} type by using a {@see Param} class: `new Param(value, type)`, for example,
-     * `[':name' => 'John', ':profile' => new Param($profile, PDO::PARAM_LOB)]`.
+     * By default, the SQL data type of each value is determined by its PHP type.
+     * You may explicitly specify the {@see DataType SQL data type} type by using a {@see Param} class:
+     * `new Param(value, type)`, for example, `[':name' => 'John', ':profile' => new Param($profile, DataType::LOB)]`.
      */
     public function bindValues(array $values): static;
 
@@ -301,7 +298,7 @@ interface CommandInterface
      * For example, it will convert `string` to `varchar(255)`, and `string not null` to
      * `varchar(255) not null`.
      *
-     * If you specify a column with definition only ('PRIMARY KEY (name, type)'), it will be directly inserted
+     * If you specify a column with definition only (`PRIMARY KEY (name, type)`), it will be directly inserted
      * into the generated SQL.
      *
      * @param string $table The name of the table to create.
@@ -579,7 +576,6 @@ interface CommandInterface
      *
      * @throws Exception If there is any DB error.
      * @throws InvalidConfigException
-     * @throws PDOException
      */
     public function prepare(bool $forRead = null): void;
 
@@ -691,13 +687,6 @@ interface CommandInterface
      * List all database names in the current connection.
      */
     public function showDatabases(): array;
-
-    /**
-     * Sets the profiler instance.
-     *
-     * @param ProfilerInterface|null $profiler The profiler instance.
-     */
-    public function setProfiler(ProfilerInterface|null $profiler): void;
 
     /**
      * Specifies the SQL statement to execute.

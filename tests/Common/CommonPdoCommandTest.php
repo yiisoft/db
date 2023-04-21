@@ -6,15 +6,17 @@ namespace Yiisoft\Db\Tests\Common;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
-use Yiisoft\Db\Driver\PDO\AbstractCommandPDO;
+use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
-abstract class CommonCommandPDOTest extends TestCase
+abstract class CommonPdoCommandTest extends TestCase
 {
     use TestTrait;
 
@@ -201,7 +203,7 @@ abstract class CommonCommandPDOTest extends TestCase
     {
         $db = $this->getConnection(true);
 
-        $command = new class ($db) extends AbstractCommandPDO {
+        $command = new class ($db) extends AbstractPdoCommand {
             public function testExecute(): void
             {
                 $this->internalGetQueryResult(1024);
@@ -226,5 +228,19 @@ abstract class CommonCommandPDOTest extends TestCase
         $command->testExecute();
 
         $db->close();
+    }
+
+    protected function createQueryLogger(string $sql, array $params = []): LoggerInterface
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger
+            ->expects($this->once())
+            ->method('log')
+            ->with(
+                LogLevel::INFO,
+                $sql,
+                $params
+            );
+        return $logger;
     }
 }

@@ -59,50 +59,38 @@ final class SchemaCache
     }
 
     /**
-     * The method combines retrieving and setting the value identified by the `$key`.
-     *
-     * It will save the result of `$callable` execution if there is no cache available for the `$key`.
+     * Retrieve value from cache.
      *
      * @param mixed $key The key identifying the value to cache.
-     * @param mixed $value The value to cache.
-     * @param string|null $cacheTag Tag name to tag cache with.
-     *
-     * @throws InvalidArgumentException Thrown if the `$key` or `$ttl` isn't a legal value.
-     * @throws RuntimeException If cache value isn't set.
-     *
-     * @return mixed Result of `$callable` execution.
+     * @throws InvalidArgumentException
+     * @return mixed Cache value.
      */
-    public function getOrSet(mixed $key, mixed $value = null, string $cacheTag = null): mixed
+    public function get(mixed $key): mixed
     {
         $stringKey = $this->normalize($key);
-
-        if ($this->psrCache->has($stringKey)) {
-            return $this->psrCache->get($stringKey);
-        }
-
-        $result = $this->psrCache->set($stringKey, $value, $this->duration);
-
-        if ($result) {
-            $this->addToTag($stringKey, $cacheTag);
-            return $value;
-        }
-
-        throw new RuntimeException('Cache value not set.');
+        return $this->psrCache->get($stringKey);
     }
 
     /**
-     * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.
+     * Persists data in the cache, uniquely referenced by a key with an optional tag.
      *
      * @param mixed $key The key of the item to store.
      * @param mixed $value The value of the item to store.
+     * @param string|null $tag Cache tag.
      *
      * @throws InvalidArgumentException If the $key string isn't a legal value.
      * @throws RuntimeException If cache value isn't set.
      */
-    public function set(mixed $key, mixed $value, string $cacheTag = null): void
+    public function set(mixed $key, mixed $value, string $tag = null): void
     {
-        $this->remove($key);
-        $this->getOrSet($key, $value, $cacheTag);
+        $stringKey = $this->normalize($key);
+
+        if ($this->psrCache->set($stringKey, $value, $this->duration)) {
+            $this->addToTag($stringKey, $tag);
+            return;
+        }
+
+        throw new RuntimeException('Cache value not set.');
     }
 
     /**
@@ -160,7 +148,7 @@ final class SchemaCache
      * @see setDuration()
      * @see setExclude()
      */
-    public function setEnable(bool $value): void
+    public function setEnabled(bool $value): void
     {
         $this->enabled = $value;
     }
@@ -171,7 +159,7 @@ final class SchemaCache
      *
      * @param DateInterval|int|null $value The number of seconds that table metadata can remain valid in cache.
      *
-     * @see setEnable()
+     * @see setEnabled()
      */
     public function setDuration(int|null|DateInterval $value): void
     {
@@ -185,7 +173,7 @@ final class SchemaCache
      *
      * @param array $value The table names.
      *
-     * @see setEnable()
+     * @see setEnabled()
      */
     public function setExclude(array $value): void
     {

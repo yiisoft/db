@@ -66,10 +66,10 @@ interface TableSchemaInterface
     public function getPrimaryKey(): array;
 
     /**
-     * @return array The column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object,
-     * indexed by column names.
+     * @return ColumnSchemaInterface[] The column metadata of this table.
+     * Array of {@see ColumnSchemaInterface} objects indexed by column names.
      *
-     * @psalm-return ColumnSchemaInterface[]
+     * @psalm-return array<string, ColumnSchemaInterface>
      */
     public function getColumns(): array;
 
@@ -116,17 +116,16 @@ interface TableSchemaInterface
     /**
      * Set primary keys of this table.
      *
-     * @param string $value The primary key column names.
+     * @param string $value The primary key column name.
      */
     public function primaryKey(string $value): void;
 
     /**
-     * Set one column metadata of this table. Each array element is a {@see ColumnSchemaInterface} object, indexed by
-     * column names.
+     * Set one column metadata of this table.
      *
-     * @param string $index The column name.
+     * @param string $name The column name.
      */
-    public function columns(string $index, ColumnSchemaInterface $value): void;
+    public function column(string $name, ColumnSchemaInterface $value): void;
 
     /**
      * @return string|null The name of the catalog (database) that this table belongs to. Defaults to null, meaning no
@@ -161,15 +160,15 @@ interface TableSchemaInterface
     public function serverName(string|null $value): void;
 
     /**
-     * @return string|null The sql for create current table or null if a query not found/exists. Now supported only in
+     * @return string|null The SQL for create current table or `null` if a query not found/exists. Now supported only in
      * MySQL and Oracle DBMS.
      */
     public function getCreateSql(): string|null;
 
     /**
-     * Set sql for create current table or null if a query not found/exists. Now supported only in MySQL and Oracle DBMS.
+     * Set SQL for create current table or null if a query not found/exists. Now supported only in MySQL and Oracle DBMS.
      *
-     * @param string $sql The sql for create current table or null if a query not found/exists.
+     * @param string $sql The SQL for create current table or `null` if a query not found/exists.
      */
     public function createSql(string $sql): void;
 
@@ -212,5 +211,5 @@ interface TableSchemaInterface
      *
      * @throws NotSupportedException
      */
-    public function compositeFK(int $id, string $from, string $to): void;
+    public function compositeForeignKey(int $id, string $from, string $to): void;
 }

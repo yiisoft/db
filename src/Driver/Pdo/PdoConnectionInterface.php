@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Driver\PDO;
+namespace Yiisoft\Db\Driver\Pdo;
 
 use PDO;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -13,7 +13,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  * This interface defines a set of methods to implement in a class that allows to connect to a database
  * with {@see PDO} (PHP Data Objects).
  */
-interface ConnectionPDOInterface extends ConnectionInterface
+interface PdoConnectionInterface extends ConnectionInterface
 {
     /**
      * Returns the PDO instance for the current connection.
@@ -44,9 +44,9 @@ interface ConnectionPDOInterface extends ConnectionInterface
     /**
      * Returns current DB driver.
      *
-     * @return PDODriverInterface The driver used to create current connection.
+     * @return PdoDriverInterface The driver used to create current connection.
      */
-    public function getDriver(): PDODriverInterface;
+    public function getDriver(): PdoDriverInterface;
 
     /**
      * Whether to emulate prepared statements on PHP side.

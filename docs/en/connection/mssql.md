@@ -10,17 +10,17 @@ declare(strict_types=1);
 
 use Psr\Log\LoggerInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Mssql\ConnectionPDO;
-use Yiisoft\Db\Mssql\PDODriver;
+use Yiisoft\Db\Mssql\Connection;
+use Yiisoft\Db\Mssql\Driver;
 use Yiisoft\Profiler\ProfilerInterface;
 
 /** @var array $params */
 
 return [
     ConnectionInterface::class => [
-        'class' => ConnectionPDO::class,
+        'class' => Connection::class,
         '__construct()' => [
-            'driver' => new PDODriver(
+            'driver' => new Driver(
                 $params['yiisoft/db-mssql']['dsn'],
                 $params['yiisoft/db-mssql']['username'],
                 $params['yiisoft/db-mssql']['password'],
@@ -58,9 +58,9 @@ declare(strict_types=1);
 
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Mssql\ConnectionPDO;
+use Yiisoft\Db\Mssql\Connection;
+use Yiisoft\Db\Mssql\Driver;
 use Yiisoft\Db\Mssql\Dsn;
-use Yiisoft\Db\Mssql\PDODriver;
 
 // Dsn.
 $dsn = (new Dsn('sqlsrv', 'localhost', 'yiitest'))->asString();
@@ -68,12 +68,12 @@ $dsn = (new Dsn('sqlsrv', 'localhost', 'yiitest'))->asString();
 // PSR-16 cache implementation.
 $arrayCache = new ArrayCache();
 
-// Cache PSR-6 implementation.
+// Schema cache.
 $schemaCache = new SchemaCache($cache);
 
 // PDO driver.
-$pdoDriver = new PDODriver($dsn, 'user', 'password'); 
+$pdoDriver = new Driver($dsn, 'user', 'password'); 
 
 // Connection.
-$db = new ConnectionPDO($pdoDriver, $schemaCache);
+$db = new Connection($pdoDriver, $schemaCache);
 ```

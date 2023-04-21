@@ -193,7 +193,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function andFilterCompare(string $name, string|null $value, string $defaultOperator = '='): static
+    public function andFilterCompare(string $column, string|null $value, string $defaultOperator = '='): static
     {
         $operator = $defaultOperator;
 
@@ -202,7 +202,7 @@ class Query implements QueryInterface
             $value = substr((string) $value, strlen($operator));
         }
 
-        return $this->andFilterWhere([$operator, $name, $value]);
+        return $this->andFilterWhere([$operator, $column, $value]);
     }
 
     public function andWhere($condition, array $params = []): static
@@ -229,11 +229,11 @@ class Query implements QueryInterface
         return DbArrayHelper::populate($this->createCommand()->queryAll(), $this->indexBy);
     }
 
-    public function average(string $q): int|float|null|string
+    public function average(string $sql): int|float|null|string
     {
         return match ($this->emulateExecution) {
             true => null,
-            false => is_numeric($avg = $this->queryScalar("AVG($q)")) ? $avg : null,
+            false => is_numeric($avg = $this->queryScalar("AVG($sql)")) ? $avg : null,
         };
     }
 
@@ -291,11 +291,11 @@ class Query implements QueryInterface
         return $results;
     }
 
-    public function count(string $q = '*'): int|string
+    public function count(string $sql = '*'): int|string
     {
         return match ($this->emulateExecution) {
             true => 0,
-            false => is_numeric($count = $this->queryScalar("COUNT($q)")) ? (int) $count : 0,
+            false => is_numeric($count = $this->queryScalar("COUNT($sql)")) ? (int) $count : 0,
         };
     }
 
@@ -402,7 +402,7 @@ class Query implements QueryInterface
         return $this->indexBy;
     }
 
-    public function getJoin(): array
+    public function getJoins(): array
     {
         return $this->join;
     }
@@ -442,7 +442,7 @@ class Query implements QueryInterface
         return $this->db->getQuoter()->cleanUpTableNames($this->from);
     }
 
-    public function getUnion(): array
+    public function getUnions(): array
     {
         return $this->union;
     }
@@ -506,15 +506,15 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function max(string $q): int|float|null|string
+    public function max(string $sql): int|float|null|string
     {
-        $max = $this->queryScalar("MAX($q)");
+        $max = $this->queryScalar("MAX($sql)");
         return is_numeric($max) ? $max : null;
     }
 
-    public function min(string $q): int|float|null|string
+    public function min(string $sql): int|float|null|string
     {
-        $min = $this->queryScalar("MIN($q)");
+        $min = $this->queryScalar("MIN($sql)");
         return is_numeric($min) ? $min : null;
     }
 
@@ -624,13 +624,13 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function setJoin(array $value): static
+    public function setJoins(array $value): static
     {
         $this->join = $value;
         return $this;
     }
 
-    public function setUnion(array $value): static
+    public function setUnions(array $value): static
     {
         $this->union = $value;
         return $this;
@@ -641,11 +641,11 @@ class Query implements QueryInterface
         return $this->emulateExecution;
     }
 
-    public function sum(string $q): int|float|null|string
+    public function sum(string $sql): int|float|null|string
     {
         return match ($this->emulateExecution) {
             true => null,
-            false => is_numeric($sum = $this->queryScalar("SUM($q)")) ? $sum : null,
+            false => is_numeric($sum = $this->queryScalar("SUM($sql)")) ? $sum : null,
         };
     }
 

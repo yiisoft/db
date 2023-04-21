@@ -82,12 +82,11 @@ The relevant part of SQL is:
 WHERE `id` IN (SELECT `id` FROM `user`)
 ```
 
-Using the hash format, [Yii DB](https://github.com/yiisoft/db) internally applies parameter binding for values,
-so in contrast to the string format, here you don't have to add parameters manually.
+Using the hash format, Yii DB internally applies parameter binding for values, so in contrast to the string format,
+here you don't have to add parameters manually.
 
-However, note that [Yii DB](https://github.com/yiisoft/db) never escapes column names, so if you pass a variable
-obtained from the user side as a column name without any more checks, the application will become vulnerable
-to SQL injection attacks.
+However, note that Yii DB never escapes column names, so if you pass a variable obtained from the user side as a column
+name without any more checks, the application will become vulnerable to SQL injection attacks.
 
 To keep the application secure, either don't use variables as column names or filter variables with whitelist.
 
@@ -112,65 +111,124 @@ Operator format allows you to specify arbitrary conditions in a programmatic way
 Where the operands can each be specified in string format, hash format or operator format recursively,
 while the operator can be one of the following:
 
-- `and`: The operands should be concatenated together using `AND`.
-  For example, `['and', 'id=1', 'id=2']` will generate `id=1 AND id=2`.
-  If an operand is an array, it will be converted into a string using the rules described here.
-  For example, `['and', 'type=1', ['or', 'id=1', 'id=2']]` will generate `type=1 AND (id=1 OR id=2)`.
-  The method won't do any quoting or escaping.
-- `or`: Similar to the `and` operator except that the operands are concatenated using `OR`.
-- `not`: Requires only 1 operand, which will be wrapped in `NOT()`.
-  For example, `['not', 'id=1']` will generate `NOT (id=1)`.
-  Operand may also be an array to describe many expressions.
-  For example `['not', ['status' => 'draft', 'name' => 'example']]` will generate
-  `NOT ((status='draft') AND (name='example'))`.
-- `between`: Operand 1 should be the column name, and operand 2 and 3 should be the starting and ending values of
-  the range that the column is in.
-  For example, `['between', 'id', 1,10]` will generate `id BETWEEN 1 AND 10`.
-  In case you need to build a condition where value is between two columns `(like 11 BETWEEN min_id AND max_id)`,
-  you should use `Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition`.
-- `not between`: Similar to `between` except the `BETWEEN` is replaced with `NOT BETWEEN` in the generated condition.
-- `in`: Operand 1 should be a column or DB expression.
-  Operand 2 can be either an array or a `Yiisoft\Db\Query\Query`. 
-  It will generate an `IN` condition.
-  If Operand 2 is an array, it will represent the range of the values that the column or DB expression should be;
-  If Operand 2 is a `Yiisoft\Db\Query\Query` object,
-  a subquery will be generated and used as the range of the column or DB expression.
-  For example, `['in', 'id', [1, 2, 3]]` will generate id `IN (1, 2, 3)`.
-  The method will quote the column name and escape values in the range.
-  The in operator also supports composite columns.
-  In this case, operand 1 should be an array of the columns,
-  while operand 2 should be an array of arrays or a `Yiisoft\Db\Query\Query` object representing the range of the columns.
-  For example, `['in', ['id', 'name'], [['id' => 1, 'name' => 'oy']]]` will generate `(id, name) IN ((1, 'oy'))`.
-- `not in`: Similar to the in operator except that `IN` is replaced with `NOT IN` in the generated condition.
-- `like`: Operand 1 should be a column or DB expression, and operand 2 be a string or an array representing the values
-  that the column or DB expression should be like.
-  For example, `['like', 'name', 'tester']` will generate `name LIKE '%tester%'`.
-  When the value range is given as an array, many `LIKE` predicates will be generated and concatenated using `AND`.
-  For example, `['like', 'name', ['test', 'sample']]` will generate `name LIKE '%test%' AND name LIKE '%sample%'`.
-  You may also give an optional third operand to specify how to escape special characters in the values.
-  The operand should be an array of mappings from the special characters to their escaped counterparts.
-  If this operand isn't provided, a default escape mapping will be used.
-  You may use false or an empty array to indicate the values are already escaped and no escape should be applied.
-  Note that when using an escape mapping (or the third operand isn't provided),
-  the values will be automatically inside within a pair of percentage characters.
+### and
+
+The operands should be concatenated together using `and`.
+
+For example, `['and', 'id=1', 'id=2']` will generate `id=1 AND id=2`.
+
+If an operand is an array, it will be converted into a string using the rules described here.
+
+For example, `['and', 'type=1', ['or', 'id=1', 'id=2']]` will generate `type=1 AND (id=1 OR id=2)`.
+
+> Note: The method won't do any quoting or escaping.
+
+### or
+
+Similar to the `and` operator except that the operands are concatenated using `or`.
+
+### not
+
+Requires only 1 operand, which will be wrapped in `NOT()`.
+
+For example, `['not', 'id=1']` will generate `NOT (id=1)`.
+
+Operand may also be an array to describe many expressions.
+
+For example `['not', ['status' => 'draft', 'name' => 'example']]` will generate `NOT ((status='draft') AND (name='example'))`.
+
+### between
+
+Operand 1 should be the column name, and operand 2 and 3 should be the starting and ending values of the range that the column is in.
+
+For example, `['between', 'id', 1,10]` will generate `id BETWEEN 1 AND 10`.
+
+In case you need to build a condition where value is between two columns `(like 11 BETWEEN min_id AND max_id)`,
+
+you should use `Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition`.
+
+### not between
+
+Similar to `between` except the `BETWEEN` is replaced with `NOT BETWEEN` in the generated condition.
+
+### in	
+
+Operand 1 should be a column or DB expression.
+Operand 2 can be either an array or a `Yiisoft\Db\Query\Query`. 
+
+It will generate an `IN` condition.
+If Operand 2 is an array, it will represent the range of the values that the column or DB expression should be;
+If Operand 2 is a `Yiisoft\Db\Query\Query` object, a subquery will be generated and used as the range of the column or DB expression.
+
+For example, `['in', 'id', [1, 2, 3]]` will generate id `IN (1, 2, 3)`.
+
+The method will quote the column name and escape values in the range.
+The in operator also supports composite columns.
+
+In this case, operand 1 should be an array of the columns,
+while operand 2 should be an array of arrays or a `Yiisoft\Db\Query\Query` object representing the range of the columns.
+
+For example, `['in', ['id', 'name'], [['id' => 1, 'name' => 'oy']]]` will generate `(id, name) IN ((1, 'oy'))`.
+
+### not in
+
+Similar to the in operator except that `IN` is replaced with `NOT IN` in the generated condition.
+
+### like
+
+Operand 1 should be a column or DB expression, and operand 2 be a string or an array representing the values
+that the column or DB expression should be like.
+
+For example, `['like', 'name', 'tester']` will generate `name LIKE '%tester%'`.
+
+When the value range is given as an array, many `LIKE` predicates will be generated and concatenated using `AND`.
+
+For example, `['like', 'name', ['test', 'sample']]` will generate `name LIKE '%test%' AND name LIKE '%sample%'`.
+
+You may also give an optional third operand to specify how to escape special characters in the values.
+The operand should be an array of mappings from the special characters to their escaped counterparts.
+
+If this operand isn't provided, a default escape mapping will be used.
+
+You may use false or an empty array to indicate the values are already escaped and no escape should be applied.
+
+> Note: That when using an escape mapping (or the third operand isn't provided), 
+> the values will be automatically inside within a pair of percentage characters.
 
 > Note: When using PostgreSQL, you may also use `ilike` instead of `like` for case-insensitive matching.
 
-- `or like`: Similar to the `like` operator except that `OR` is used to concatenate the `LIKE` predicates when second
-  operand is an array.
-- `not like`: Similar to the `like` operator except that `LIKE` is replaced with `NOT LIKE` in the generated condition.
-- `or not like`: Similar to the `not like` operator except that `OR` is used to concatenate the `NOT LIKE` predicates.
-- `exists`: Requires one operand which must be an instance of `Yiisoft\Db\Query\Query` representing the sub-query.
-  It will build an `EXISTS` (sub-query) expression.
-- `not exists`: Similar to the `exists` operator and builds a `NOT EXISTS` (sub-query) expression.
-- `>`, `<=`, or any other valid DB operator that takes two operands: The first operand must be a `column name` while
-  the second operand a `value`. For example, `['>', 'age', 10]` will generate `age > 10`.
+### or like
 
-Using the operator format, [Yii DB](https://github.com/yiisoft/db) internally uses parameter binding for values,
-so in contrast to the string format, here you don't have to add parameters manually.
+Similar to the `like` operator except that `OR` is used to concatenate the `LIKE` predicates when second
+operand is an array.
 
-However, note that [Yii DB](https://github.com/yiisoft/db) never escapes column names, so if you pass a variable as
-a column name, the application will likely become vulnerable to SQL injection attack.
+### not like
+
+Similar to the `like` operator except that `LIKE` is replaced with `NOT LIKE` in the generated condition.
+
+### or not like
+
+Similar to the `not like` operator except that `OR` is used to concatenate the `NOT LIKE` predicates.
+
+### exists
+
+Requires one operand which must be an instance of `Yiisoft\Db\Query\Query` representing the sub-query.
+It will build an `EXISTS` (sub-query) expression.
+
+## not exists
+
+Similar to the `exists` operator and builds a `NOT EXISTS` (sub-query) expression.
+
+### comparison
+
+`>`, `<=`, or any other valid DB operator that takes two operands: The first operand must be a `column name` while
+the second operand a `value`. For example, `['>', 'age', 10]` will generate `age > 10`.
+
+Using the operator format, Yii DB internally uses parameter binding for values, so in contrast to the string format,
+here you don't have to add parameters manually.
+
+However, note that Yii DB never escapes column names, so if you pass a variable as a column name, the application will
+likely become vulnerable to SQL injection attack.
 
 To keep application secure, either don't use variables as column names or filter variables against allow-list.
 In case you need to get a column name from user.
@@ -273,7 +331,7 @@ is that the former will ignore empty values provided in the condition in hash fo
 So, if `$email` is empty while `$username` isn't,
 the above code will result in the SQL condition `WHERE username=:username`.
 
-> **Note:** A value is considered empty if it's either `null`, an empty array, an empty string or a string containing 
+> Note: A value is considered empty if it's either `null`, an empty array, an empty string or a string containing 
 > whitespaces only.
 
 Like with `Yiisoft\Db\Query\Query::andWhere()` and `Yiisoft\Db\Query\Query::orWhere()`,

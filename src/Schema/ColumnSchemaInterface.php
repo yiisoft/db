@@ -32,7 +32,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *    'id' => $this->primaryKey()->autoIncrement(true),
+     *     'id' => $this->primaryKey()->autoIncrement(true),
      * ];
      * ```
      */
@@ -45,7 +45,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *    'description' => $this->text()->comment('Description of the product'),
+     *     'description' => $this->text()->comment('Description of the product'),
      * ];
      * ```
      */
@@ -58,7 +58,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *   'description' => $this->text()->computed(true),
+     *     'description' => $this->text()->computed(true),
      * ];
      * ```
      */
@@ -73,7 +73,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *    'description' => $this->text()->dbType('text'),
+     *     'description' => $this->text()->dbType('text'),
      * ];
      * ```
      */
@@ -96,7 +96,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *   'description' => $this->text()->defaultValue('Description of the product'),
+     *     'description' => $this->text()->defaultValue('Description of the product'),
      * ];
      * ```
      */
@@ -107,7 +107,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *  'status' => $this->string(16)->enumValues(['active', 'inactive']),
+     *     'status' => $this->string(16)->enumValues(['active', 'inactive']),
      * ];
      * ```
      */
@@ -121,7 +121,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *  'description' => $this->text()->extra('ON UPDATE CURRENT_TIMESTAMP'),
+     *     'description' => $this->text()->extra('ON UPDATE CURRENT_TIMESTAMP'),
      * ];
      * ```
      */
@@ -137,6 +137,9 @@ interface ColumnSchemaInterface
     /**
      * @return string|null The database type of the column.
      * Null means the column has no type in the database.
+     *
+     * Note that the type includes size for columns supporting it, e.g. `varchar(128)`. The size can be obtained
+     * separately via {@see getSize()}.
      *
      * @see dbType()
      */
@@ -252,7 +255,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *    'description' => $this->text()->phpType('string'),
+     *     'description' => $this->text()->phpType('string'),
      * ];
      * ```
      */
@@ -271,7 +274,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *    'price' => $this->decimal(10, 2)->precision(10),
+     *     'price' => $this->decimal(10, 2)->precision(10),
      * ];
      */
     public function precision(int|null $value): void;
@@ -281,7 +284,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *   'id' => $this->primaryKey(true),
+     *     'id' => $this->primaryKey(true),
      * ];
      * ```
      */
@@ -293,7 +296,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *   'price' => $this->decimal(10, 2)->scale(2),
+     *     'price' => $this->decimal(10, 2)->scale(2),
      * ];
      * ```
      */
@@ -306,7 +309,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *  'name' => $this->string()->size(255),
+     *     'name' => $this->string()->size(255),
      * ];
      * ```
      */
@@ -317,7 +320,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *  'description' => $this->text()->type('text'),
+     *     'description' => $this->text()->type('text'),
      * ];
      */
     public function type(string $value): void;
@@ -328,7 +331,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *   'age' => $this->integer()->unsigned(),
+     *     'age' => $this->integer()->unsigned(),
      * ];
      * ```
      */

@@ -121,9 +121,9 @@ abstract class AbstractColumn implements ColumnInterface
         return $this;
     }
 
-    public function check(string|null $check): static
+    public function check(string|null $sql): static
     {
-        $this->check = $check;
+        $this->check = $sql;
         return $this;
     }
 
@@ -160,9 +160,9 @@ abstract class AbstractColumn implements ColumnInterface
         return $this;
     }
 
-    public function defaultExpression(string $default): static
+    public function defaultExpression(string $sql): static
     {
-        $this->default = new Expression($default);
+        $this->default = new Expression($sql);
         return $this;
     }
 

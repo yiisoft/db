@@ -7,6 +7,7 @@ You can use the DML to perform the following operations:
 - [Batch insert](#batch-insert)
 - [Delete rows](#delete-rows)
 - [Reset sequence](#reset-sequence)
+- [Insert](#insert)
 - [Update](#update)
 - [Upsert](#upsert)
 
@@ -61,6 +62,21 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
 $db->createCommand()->resetSequence('{{%customer}}', 1)->execute();
+```
+
+## Insert
+
+To insert a row to a table, you can use the `Yiisoft\Db\Command\CommandInterface::insert()` method:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+$db->createCommand()->insert('{{%customer}}', ['name' => 'John', 'age' => 18])->execute();
 ```
 
 ## Update

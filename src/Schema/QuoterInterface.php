@@ -112,7 +112,7 @@ interface QuoterInterface
      *
      * If the table name has a schema prefix, then it will also quote the prefix.
      *
-     * If the table name is already quoted or has '(' or '{{', then this method will do nothing.
+     * If the table name is already quoted or has `(` or `{{`, then this method will do nothing.
      *
      * @param string $name The table name to quote.
      *

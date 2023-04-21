@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Throwable;
+use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -24,11 +25,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const SCHEMA = 'schema';
     /**
-     * The metadata type for retrieving the primary keys constraint.
+     * The metadata type for retrieving the primary key constraint.
      */
     public const PRIMARY_KEY = 'primaryKey';
     /**
-     * The metadata type for retrieving the indexes constraint.
+     * The metadata type for retrieving the index constraints.
      */
     public const INDEXES = 'indexes';
     /**
@@ -36,7 +37,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const CHECKS = 'checks';
     /**
-     * The metadata type for retrieving the foreign keys constraint.
+     * The metadata type for retrieving the foreign key constraints.
      */
     public const FOREIGN_KEYS = 'foreignKeys';
     /**
@@ -44,7 +45,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const DEFAULT_VALUES = 'defaultValues';
     /**
-     * The metadata type for retrieving the unique constraint.
+     * The metadata type for retrieving the unique constraints.
      */
     public const UNIQUES = 'uniques';
     /**
@@ -52,77 +53,77 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const DEFAULTS = 'defaults';
     /**
-     * Define the type of the index as `UNIQUE`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `UNIQUE`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`, `MariaDB`, `MSSQL`, `Oracle`, `PostgreSQL`, `SQLite`.
      */
     public const INDEX_UNIQUE = 'UNIQUE';
     /**
-     * Define the type of the index as `BTREE`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `BTREE`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`, `PostgreSQL`.
      */
     public const INDEX_BTREE = 'BTREE';
     /**
-     * Define the type of the index as `HASH`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `HASH`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`, `PostgreSQL`.
      */
     public const INDEX_HASH = 'HASH';
     /**
-     * Define the type of the index as `FULLTEXT`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `FULLTEXT`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`.
      */
     public const INDEX_FULLTEXT = 'FULLTEXT';
     /**
-     * Define the type of the index as `SPATIAL`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `SPATIAL`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`.
      */
     public const INDEX_SPATIAL = 'SPATIAL';
     /**
-     * Define the type of the index as `GIST`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `GIST`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `PostgreSQL`.
      */
     public const INDEX_GIST = 'GIST';
     /**
-     * Define the type of the index as `GIN`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `GIN`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `PostgreSQL`.
      */
     public const INDEX_GIN = 'GIN';
     /**
-     * Define the type of the index as `BRIN`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `BRIN`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `PostgreSQL`.
      */
     public const INDEX_BRIN = 'BRIN';
     /**
-     * Define the type of the index as `CLUSTERED`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `CLUSTERED`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MSSQL`.
      */
     public const INDEX_CLUSTERED = 'CLUSTERED';
     /**
-     * Define the type of the index as `NONCLUSTERED`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `NONCLUSTERED`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MSSQL`.
      */
     public const INDEX_NONCLUSTERED = 'NONCLUSTERED';
     /**
-     * Define the type of the index as `BITMAP`, it is used in {@see DDLQueryBuilderInterface::createIndex()}.
+     * Define the type of the index as `BITMAP`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `Oracle`.
      */
     public const INDEX_BITMAP = 'BITMAP';
     /**
-     * Define the abstract column type as primary key.
+     * Define the abstract column type as a primary key.
      */
     public const TYPE_PK = 'pk';
     /**
-     * Define the abstract column type as `unsigned` primary key.
+     * Define the abstract column type as an `unsigned` primary key.
      */
     public const TYPE_UPK = 'upk';
     /**
@@ -134,11 +135,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const TYPE_UBIGPK = 'ubigpk';
     /**
-     * Define the abstract column type as `uuid` primary key.
+     * Define the abstract column type as an `uuid` primary key.
      */
     public const TYPE_UUID_PK = 'uuid_pk';
     /**
-     * Define the abstract column type as `uuid` primary key with sequence.
+     * Define the abstract column type as an`uuid` primary key with a sequence.
      */
     public const TYPE_UUID_PK_SEQ = 'uuid_pk_seq';
     /**
@@ -262,15 +263,15 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function getDefaultSchema(): string|null;
 
     /**
-     * Determines the PDO type for the given PHP data value.
+     * Determines the SQL data type for the given PHP data value.
      *
-     * @param mixed $data The data to find PDO type for.
+     * @param mixed $data The data to find a type for.
      *
-     * @return int The PDO type.
+     * @return int The type.
      *
-     * @link https://www.php.net/manual/en/pdo.constants.php
+     * @see DataType
      */
-    public function getPdoType(mixed $data): int;
+    public function getDataType(mixed $data): int;
 
     /**
      * Returns the actual name of a given table name.
@@ -352,10 +353,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
-     * @throws NotSupportedException
+     * @return array The metadata for all tables in the database.
      *
-     * @return array The metadata for all tables in the database. Each array element is an instance of
-     * {@see TableSchemaInterface} or its child class.
+     * @psalm-return list<TableSchemaInterface>
      */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array;
 
@@ -387,11 +387,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function refreshTableSchema(string $name): void;
 
     /**
-     * Enable and disable the schema cache.
+     * Enable or disable the schema cache.
      *
      * @param bool $value Whether to enable or disable the schema cache.
      */
-    public function schemaCacheEnable(bool $value): void;
+    public function enableCache(bool $value): void;
 
     /**
      * Returns all view names in the database.

@@ -6,11 +6,7 @@ namespace Yiisoft\Db\Connection;
 
 use Closure;
 use Exception;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -23,14 +19,10 @@ use Yiisoft\Db\Transaction\TransactionInterface;
  * It provides methods for interacting with the database, such as executing SQL queries and performing data
  * manipulation.
  */
-abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInterface
+abstract class AbstractConnection implements ConnectionInterface
 {
-    use LoggerAwareTrait;
-    use ProfilerAwareTrait;
-
     protected TransactionInterface|null $transaction = null;
     private bool $enableSavepoint = true;
-    private int $serverRetryInterval = 600;
     private string $tablePrefix = '';
 
     public function beginTransaction(string $isolationLevel = null): TransactionInterface
@@ -40,10 +32,6 @@ abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInt
 
         if ($this->transaction === null) {
             $this->transaction = $this->createTransaction();
-        }
-
-        if ($this->logger !== null) {
-            $this->transaction->setLogger($this->logger);
         }
 
         $this->transaction->begin($isolationLevel);
@@ -112,14 +100,12 @@ abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInt
      *
      * Sometimes, rollback can fail, so this method is fail-safe.
      *
-     * Exceptions thrown from rollback will be caught and just logged with {@see logger->log()}.
-     *
      * @param TransactionInterface $transaction TransactionInterface object given from {@see beginTransaction()}.
      * @param int $level TransactionInterface level just after {@see beginTransaction()} call.
      *
      * @throws Throwable If transaction wasn't rolled back.
      */
-    private function rollbackTransactionOnLevel(TransactionInterface $transaction, int $level): void
+    protected function rollbackTransactionOnLevel(TransactionInterface $transaction, int $level): void
     {
         if ($transaction->isActive() && $transaction->getLevel() === $level) {
             /**
@@ -127,8 +113,7 @@ abstract class AbstractConnection implements ConnectionInterface, LoggerAwareInt
              */
             try {
                 $transaction->rollBack();
-            } catch (Exception $e) {
-                $this->logger?->log(LogLevel::ERROR, (string) $e, [__METHOD__]);
+            } catch (Throwable) {
                 /** hide this exception to be able to continue throwing original exception outside */
             }
         }

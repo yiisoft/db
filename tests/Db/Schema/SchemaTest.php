@@ -369,7 +369,7 @@ final class SchemaTest extends AbstractSchemaTest
             ->will(
                 $this->onConsecutiveCalls($this->createTableSchemaStub(), $this->createTableSchemaStub())
             );
-        $schemaMock->schemaCacheEnable(true);
+        $schemaMock->enableCache(true);
         $noCacheTable = $schemaMock->getTableSchema('T_constraints_1', true);
         $schemaMock->refreshTableSchema('T_constraints_1');
         $refreshedTable = $schemaMock->getTableSchema('T_constraints_1');
@@ -391,7 +391,7 @@ final class SchemaTest extends AbstractSchemaTest
             ->will(
                 $this->onConsecutiveCalls($this->createTableSchemaStub(), $this->createTableSchemaStub())
             );
-        $schemaMock->schemaCacheEnable(false);
+        $schemaMock->enableCache(false);
         $noCacheTable = $schemaMock->getTableSchema('T_constraints_1', true);
         $schemaMock->refreshTableSchema('T_constraints_1');
         $refreshedTable = $schemaMock->getTableSchema('T_constraints_1');
@@ -470,11 +470,11 @@ final class SchemaTest extends AbstractSchemaTest
 
         // defined table T_constraints_1
         $tableSchema = new TableSchema();
-        $tableSchema->columns('C_id', $columnCid);
-        $tableSchema->columns('C_not_null', $columnCNotNull);
-        $tableSchema->columns('C_check', $columnCCheck);
-        $tableSchema->columns('C_default', $columnCDefault);
-        $tableSchema->columns('C_unique', $columnCUnique);
+        $tableSchema->column('C_id', $columnCid);
+        $tableSchema->column('C_not_null', $columnCNotNull);
+        $tableSchema->column('C_check', $columnCCheck);
+        $tableSchema->column('C_default', $columnCDefault);
+        $tableSchema->column('C_unique', $columnCUnique);
         $tableSchema->fullName('T_constraints_1');
         $tableSchema->name('T_constraints_1');
         $tableSchema->primaryKey('C_id');

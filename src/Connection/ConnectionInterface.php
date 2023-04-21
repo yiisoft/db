@@ -11,7 +11,6 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -100,8 +99,6 @@ interface ConnectionInterface
      * @throws InvalidCallException
      *
      * @return string The row ID of the last row inserted, or the last value retrieved from the sequence object.
-     *
-     * @link https://php.net/manual/en/pdo.lastinsertid.php'>https://php.net/manual/en/pdo.lastinsertid.php
      */
     public function getLastInsertID(string $sequenceName = null): string;
 
@@ -179,7 +176,7 @@ interface ConnectionInterface
      * It does nothing if a DB connection is active.
      *
      * @throws Exception If connection fails.
-     * @throws InvalidConfigException If connection can not be established because of incomplete configuration.
+     * @throws InvalidConfigException If a connection can't be established because of incomplete configuration.
      */
     public function open(): void;
 
@@ -201,13 +198,6 @@ interface ConnectionInterface
      * @param bool $value Whether to enable savepoint.
      */
     public function setEnableSavepoint(bool $value): void;
-
-    /**
-     * Sets the profiler instance.
-     *
-     * @param ProfilerInterface|null $profiler The profiler instance.
-     */
-    public function setProfiler(ProfilerInterface|null $profiler): void;
 
     /**
      * The common prefix or suffix for table names.

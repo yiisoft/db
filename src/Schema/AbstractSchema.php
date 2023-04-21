@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use PDO;
 use Psr\SimpleCache\InvalidArgumentException;
 use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
+use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -131,21 +131,21 @@ abstract class AbstractSchema implements SchemaInterface
         return $this->defaultSchema;
     }
 
-    public function getPdoType(mixed $data): int
+    public function getDataType(mixed $data): int
     {
         /** @psalm-var array<string, int> $typeMap */
         $typeMap = [
-            // php type => PDO type
-            SchemaInterface::PHP_TYPE_BOOLEAN => PDO::PARAM_BOOL,
-            SchemaInterface::PHP_TYPE_INTEGER => PDO::PARAM_INT,
-            SchemaInterface::PHP_TYPE_STRING => PDO::PARAM_STR,
-            SchemaInterface::PHP_TYPE_RESOURCE => PDO::PARAM_LOB,
-            SchemaInterface::PHP_TYPE_NULL => PDO::PARAM_NULL,
+            // php type => SQL data type
+            SchemaInterface::PHP_TYPE_BOOLEAN => DataType::BOOLEAN,
+            SchemaInterface::PHP_TYPE_INTEGER => DataType::INTEGER,
+            SchemaInterface::PHP_TYPE_STRING => DataType::STRING,
+            SchemaInterface::PHP_TYPE_RESOURCE => DataType::LOB,
+            SchemaInterface::PHP_TYPE_NULL => DataType::NULL,
         ];
 
         $type = gettype($data);
 
-        return $typeMap[$type] ?? PDO::PARAM_STR;
+        return $typeMap[$type] ?? DataType::STRING;
     }
 
     public function getRawTableName(string $name): string
@@ -162,8 +162,6 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * @throws InvalidArgumentException
      * @throws NotSupportedException
-     *
-     * @return array The metadata for check constraints.
      */
     public function getSchemaChecks(string $schema = '', bool $refresh = false): array
     {
@@ -173,8 +171,6 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * @throws InvalidArgumentException
      * @throws NotSupportedException
-     *
-     * @return array The metadata for default values constraints.
      */
     public function getSchemaDefaultValues(string $schema = '', bool $refresh = false): array
     {
@@ -184,8 +180,6 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * @throws InvalidArgumentException
      * @throws NotSupportedException
-     *
-     * @return array The metadata for foreign keys constraints.
      */
     public function getSchemaForeignKeys(string $schema = '', bool $refresh = false): array
     {
@@ -195,8 +189,6 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * @throws InvalidArgumentException
      * @throws NotSupportedException
-     *
-     * @return array The metadata for indexes constraints.
      */
     public function getSchemaIndexes(string $schema = '', bool $refresh = false): array
     {
@@ -205,8 +197,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws NotSupportedException If this method isn't supported by the underlying DBMS.
-     *
-     * @return array The schema names in the database, except system schemas.
      */
     public function getSchemaNames(bool $refresh = false): array
     {
@@ -220,19 +210,16 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * @throws InvalidArgumentException
      * @throws NotSupportedException
-     *
-     * @return array The metadata for primary keys constraints.
      */
     public function getSchemaPrimaryKeys(string $schema = '', bool $refresh = false): array
     {
+        /** @psalm-var list<Constraint> */
         return $this->getSchemaMetadata($schema, SchemaInterface::PRIMARY_KEY, $refresh);
     }
 
     /**
-     * @throws InvalidArgumentException
      * @throws NotSupportedException
-     *
-     * @return array The metadata for unique constraints.
+     * @throws InvalidArgumentException
      */
     public function getSchemaUniques(string $schema = '', bool $refresh = false): array
     {
@@ -241,8 +228,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     *
-     * @return array The metadata for table checks constraints.
      */
     public function getTableChecks(string $name, bool $refresh = false): array
     {
@@ -253,8 +238,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     *
-     * @return array The metadata for table default values constraints.
      */
     public function getTableDefaultValues(string $name, bool $refresh = false): array
     {
@@ -265,8 +248,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     *
-     * @return array The metadata for table foreign keys constraints.
      */
     public function getTableForeignKeys(string $name, bool $refresh = false): array
     {
@@ -277,8 +258,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     *
-     * @return array The metadata for table indexes constraints.
      */
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
@@ -289,8 +268,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws NotSupportedException If this method isn't supported by the underlying DBMS.
-     *
-     * @return array The table names in the database.
      */
     public function getTableNames(string $schema = '', bool $refresh = false): array
     {
@@ -303,8 +280,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     *
-     * @return Constraint|null The metadata for table primary key constraint.
      */
     public function getTablePrimaryKey(string $name, bool $refresh = false): Constraint|null
     {
@@ -315,8 +290,6 @@ abstract class AbstractSchema implements SchemaInterface
 
     /**
      * @throws InvalidArgumentException
-     *
-     * @return TableSchemaInterface|null The table schema information. Null if the named table doesn't exist.
      */
     public function getTableSchema(string $name, bool $refresh = false): TableSchemaInterface|null
     {
@@ -328,15 +301,11 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * @throws NotSupportedException
      * @throws InvalidArgumentException
-     *
-     * @return array The list of table schemas in the database.
      */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array
     {
-        /** @psalm-var mixed $tableSchemas */
-        $tableSchemas = $this->getSchemaMetadata($schema, SchemaInterface::SCHEMA, $refresh);
-
-        return is_array($tableSchemas) ? $tableSchemas : [];
+        /** @psalm-var list<TableSchemaInterface> */
+        return $this->getSchemaMetadata($schema, SchemaInterface::SCHEMA, $refresh);
     }
 
     /**
@@ -387,9 +356,9 @@ abstract class AbstractSchema implements SchemaInterface
         }
     }
 
-    public function schemaCacheEnable(bool $value): void
+    public function enableCache(bool $value): void
     {
-        $this->schemaCache->setEnable($value);
+        $this->schemaCache->setEnabled($value);
     }
 
     /**
@@ -478,6 +447,8 @@ abstract class AbstractSchema implements SchemaInterface
      * @throws NotSupportedException
      *
      * @return array The metadata of the given type for all tables in the given schema.
+     *
+     * @psalm-return list<Constraint|TableSchemaInterface|array>
      */
     protected function getSchemaMetadata(string $schema, string $type, bool $refresh): array
     {
@@ -629,7 +600,7 @@ abstract class AbstractSchema implements SchemaInterface
             return;
         }
 
-        $metadata = $this->schemaCache->getOrSet($this->getCacheKey($rawName), null, $this->getCacheTag());
+        $metadata = $this->schemaCache->get($this->getCacheKey($rawName));
 
         if (
             !is_array($metadata) ||
