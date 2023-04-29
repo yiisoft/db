@@ -28,12 +28,38 @@ final class DatabaseCollector implements SummaryCollectorInterface
     private const QUERY_STATUS_ERROR = 'error';
     private const QUERY_STATUS_SUCCESS = 'success';
 
+    /**
+     * @psalm-var array<string, array{
+     *     rowNumber: int,
+     *     transactionId: int,
+     *     sql: string,
+     *     rawSql: string,
+     *     params: array,
+     *     line: string,
+     *     status: string,
+     *     actions: array<string, mixed>
+     *     }>
+     */
     private array $queries = [];
+    /**
+     * @psalm-var array<int, array{
+     *     id: int,
+     *     position: int,
+     *     status: string,
+     *     line: string,
+     *     level: string|null,
+     *     actions: array<string, mixed>,
+     *     exception: Throwable|null,
+     *     }>
+     */
     private array $transactions = [];
 
     private int $position = 0;
     private int $currentTransactionId = 0;
 
+    /**
+     * @psalm-suppress InvalidPropertyAssignmentValue
+     */
     public function collectQueryStart(
         string $id,
         string $sql,
@@ -56,6 +82,9 @@ final class DatabaseCollector implements SummaryCollectorInterface
         ];
     }
 
+    /**
+     * @psalm-suppress InvalidPropertyAssignmentValue
+     */
     public function collectQueryEnd(
         string $id,
         int $rowsNumber,
@@ -68,6 +97,9 @@ final class DatabaseCollector implements SummaryCollectorInterface
         ];
     }
 
+    /**
+     * @psalm-suppress InvalidPropertyAssignmentValue
+     */
     public function collectQueryError(
         string $id,
         Throwable $exception,
@@ -80,6 +112,9 @@ final class DatabaseCollector implements SummaryCollectorInterface
         ];
     }
 
+    /**
+     * @psalm-suppress InvalidPropertyAssignmentValue
+     */
     public function collectTransactionStart(
         ?string $isolationLevel,
         string $line,
@@ -98,9 +133,12 @@ final class DatabaseCollector implements SummaryCollectorInterface
         ];
     }
 
+    /**
+     * @psalm-suppress InvalidPropertyAssignmentValue
+     */
     public function collectTransactionRollback(
         string $line,
-    ) {
+    ): void {
         $this->transactions[$this->currentTransactionId]['status'] = self::TRANSACTION_STATUS_ROLLBACK;
         $this->transactions[$this->currentTransactionId]['actions'] = [
             'action' => self::ACTION_TRANSACTION_ROLLBACK,
@@ -110,9 +148,12 @@ final class DatabaseCollector implements SummaryCollectorInterface
         ++$this->currentTransactionId;
     }
 
+    /**
+     * @psalm-suppress InvalidPropertyAssignmentValue
+     */
     public function collectTransactionCommit(
         string $line,
-    ) {
+    ): void {
         $this->transactions[$this->currentTransactionId]['status'] = self::TRANSACTION_STATUS_COMMIT;
         $this->transactions[$this->currentTransactionId]['actions'] = [
             'action' => self::ACTION_TRANSACTION_COMMIT,
@@ -124,11 +165,12 @@ final class DatabaseCollector implements SummaryCollectorInterface
 
     public function getCollected(): array
     {
-        usort($this->queries, fn (array $a, array $b) => $a['position'] <=> $b['position']);
+        $queries = array_values($this->queries);
+        usort($queries, fn (array $a, array $b) => $a['position'] <=> $b['position']);
 
         return [
-            'queries' => array_values($this->queries),
-            'transactions' => array_values($this->transactions),
+            'queries' => $this->queries,
+            'transactions' => $this->transactions,
         ];
     }
 
@@ -158,5 +200,8 @@ final class DatabaseCollector implements SummaryCollectorInterface
     private function reset(): void
     {
         $this->queries = [];
+        $this->transactions = [];
+        $this->position = 0;
+        $this->currentTransactionId = 0;
     }
 }

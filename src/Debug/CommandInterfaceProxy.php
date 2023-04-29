@@ -7,10 +7,8 @@ namespace Yiisoft\Db\Debug;
 use Closure;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 final class CommandInterfaceProxy implements CommandInterface
 {
@@ -20,63 +18,96 @@ final class CommandInterfaceProxy implements CommandInterface
     ) {
     }
 
-    public function addCheck(string $name, string $table, string $expression): static
+    /**
+     * @psalm-suppress  MixedArgument
+     */
+    public function addCheck(string $table, string $name, string $expression): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function addColumn(string $table, string $column, string $type): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function addCommentOnColumn(string $table, string $column, string $comment): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function addCommentOnTable(string $table, string $comment): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function addDefaultValue(string $name, string $table, string $column, mixed $value): static
+    /**
+     * @psalm-suppress  MixedArgument
+     */
+    public function addDefaultValue(string $table, string $name, string $column, mixed $value): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function addForeignKey(
-        string $name,
         string $table,
+        string $name,
         array|string $columns,
-        string $refTable,
-        array|string $refColumns,
+        string $referenceTable,
+        array|string $referenceColumns,
         string $delete = null,
         string $update = null
     ): static {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function addPrimaryKey(string $name, string $table, array|string $columns): static
+    /**
+     * @psalm-suppress  MixedArgument
+     */
+    public function addPrimaryKey(string $table, string $name, array|string $columns): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function addUnique(string $name, string $table, array|string $columns): static
+    /**
+     * @psalm-suppress  MixedArgument
+     */
+    public function addUnique(string $table, string $name, array|string $columns): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function alterColumn(string $table, string $column, string $type): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function batchInsert(string $table, array $columns, iterable $rows): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function bindParam(
         int|string $name,
         mixed &$value,
@@ -87,11 +118,17 @@ final class CommandInterfaceProxy implements CommandInterface
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function bindValue(int|string $name, mixed $value, int $dataType = null): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function bindValues(array $values): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
@@ -102,14 +139,20 @@ final class CommandInterfaceProxy implements CommandInterface
         $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function checkIntegrity(string $schema, string $table, bool $check = true): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function createIndex(
-        string $name,
         string $table,
+        string $name,
         array|string $columns,
         string $indexType = null,
         string $indexMethod = null
@@ -117,76 +160,121 @@ final class CommandInterfaceProxy implements CommandInterface
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function createTable(string $table, array $columns, string $options = null): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function createView(string $viewName, QueryInterface|string $subQuery): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function delete(string $table, array|string $condition = '', array $params = []): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function dropCheck(string $name, string $table): static
+    /**
+     * @psalm-suppress  MixedArgument
+     */
+    public function dropCheck(string $table, string $name): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function dropColumn(string $table, string $column): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function dropCommentFromColumn(string $table, string $column): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function dropCommentFromTable(string $table): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function dropDefaultValue(string $name, string $table): static
+    /**
+     * @psalm-suppress  MixedArgument
+     */
+    public function dropDefaultValue(string $table, string $name): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function dropForeignKey(string $name, string $table): static
+    /**
+     * @psalm-suppress  MixedArgument
+     */
+    public function dropForeignKey(string $table, string $name): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function dropIndex(string $name, string $table): static
+    /**
+     * @psalm-suppress  MixedArgument
+     */
+    public function dropIndex(string $table, string $name): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function dropPrimaryKey(string $name, string $table): static
+    /**
+     * @psalm-suppress  MixedArgument
+     */
+    public function dropPrimaryKey(string $table, string $name): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function dropTable(string $table): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function dropUnique(string $name, string $table): static
+    /**
+     * @psalm-suppress  MixedArgument
+     */
+    public function dropUnique(string $table, string $name): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function dropView(string $viewName): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress PossiblyUndefinedArrayOffset
+     */
     public function execute(): int
     {
         [$callStack] = debug_backtrace();
@@ -218,11 +306,17 @@ final class CommandInterfaceProxy implements CommandInterface
         return $this->decorated->getSql();
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function insert(string $table, QueryInterface|array $columns): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress MixedInferredReturnType, MixedReturnStatement
+     */
     public function insertWithReturningPks(string $table, array $columns): bool|array
     {
         return $this->decorated->{__FUNCTION__}(...func_get_args());
@@ -233,6 +327,9 @@ final class CommandInterfaceProxy implements CommandInterface
         $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
+    /**
+     * @psalm-suppress PossiblyUndefinedArrayOffset
+     */
     public function query(): DataReaderInterface
     {
         [$callStack] = debug_backtrace();
@@ -250,6 +347,9 @@ final class CommandInterfaceProxy implements CommandInterface
         return $result;
     }
 
+    /**
+     * @psalm-suppress PossiblyUndefinedArrayOffset
+     */
     public function queryAll(): array
     {
         [$callStack] = debug_backtrace();
@@ -266,11 +366,9 @@ final class CommandInterfaceProxy implements CommandInterface
         return $result;
     }
 
-    public function queryBuilder(): QueryBuilderInterface
-    {
-        return $this->decorated->{__FUNCTION__}(...func_get_args());
-    }
-
+    /**
+     * @psalm-suppress PossiblyUndefinedArrayOffset
+     */
     public function queryColumn(): array
     {
         [$callStack] = debug_backtrace();
@@ -287,6 +385,9 @@ final class CommandInterfaceProxy implements CommandInterface
         return $result;
     }
 
+    /**
+     * @psalm-suppress PossiblyUndefinedArrayOffset
+     */
     public function queryOne(): array|null
     {
         [$callStack] = debug_backtrace();
@@ -303,6 +404,9 @@ final class CommandInterfaceProxy implements CommandInterface
         return $result;
     }
 
+    /**
+     * @psalm-suppress PossiblyUndefinedArrayOffset
+     */
     public function queryScalar(): bool|string|null|int|float
     {
         [$callStack] = debug_backtrace();
@@ -319,51 +423,73 @@ final class CommandInterfaceProxy implements CommandInterface
         return $result;
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function renameColumn(string $table, string $oldName, string $newName): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function renameTable(string $table, string $newName): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function resetSequence(string $table, int|string $value = null): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function setProfiler(?ProfilerInterface $profiler): void
-    {
-        $this->decorated->{__FUNCTION__}(...func_get_args());
-    }
-
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function setRawSql(string $sql): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function setRetryHandler(?Closure $handler): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function setSql(string $sql): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function truncateTable(string $table): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function update(string $table, array $columns, array|string $condition = '', array $params = []): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
+    /**
+     * @psalm-suppress  MixedArgument
+     */
     public function upsert(
         string $table,
         QueryInterface|array $insertColumns,
@@ -392,5 +518,10 @@ final class CommandInterfaceProxy implements CommandInterface
     private function collectQueryEnd(string $id, int $rowsNumber): void
     {
         $this->collector->collectQueryEnd($id, $rowsNumber);
+    }
+
+    public function showDatabases(): array
+    {
+        return $this->decorated->showDatabases();
     }
 }

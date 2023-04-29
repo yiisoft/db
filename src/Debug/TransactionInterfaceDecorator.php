@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Debug;
 
-use Psr\Log\LoggerInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 final class TransactionInterfaceDecorator implements TransactionInterface
@@ -15,11 +14,9 @@ final class TransactionInterfaceDecorator implements TransactionInterface
     ) {
     }
 
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->decorated->{__FUNCTION__}(...func_get_args());
-    }
-
+    /**
+     * @psalm-suppress PossiblyUndefinedArrayOffset
+     */
     public function begin(string $isolationLevel = null): void
     {
         [$callStack] = debug_backtrace();
@@ -29,6 +26,9 @@ final class TransactionInterfaceDecorator implements TransactionInterface
         $this->decorated->begin($isolationLevel);
     }
 
+    /**
+     * @psalm-suppress PossiblyUndefinedArrayOffset
+     */
     public function commit(): void
     {
         [$callStack] = debug_backtrace();
@@ -48,6 +48,9 @@ final class TransactionInterfaceDecorator implements TransactionInterface
         return $this->decorated->isActive();
     }
 
+    /**
+     * @psalm-suppress PossiblyUndefinedArrayOffset
+     */
     public function rollBack(): void
     {
         [$callStack] = debug_backtrace();

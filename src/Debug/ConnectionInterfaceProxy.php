@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Debug;
 use Closure;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -24,6 +23,9 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
     ) {
     }
 
+    /**
+     * @psalm-suppress PossiblyUndefinedArrayOffset
+     */
     public function beginTransaction(string $isolationLevel = null): TransactionInterface
     {
         [$callStack] = debug_backtrace();
@@ -58,16 +60,6 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
     public function close(): void
     {
         $this->connection->close();
-    }
-
-    public function getCacheKey(): array
-    {
-        return $this->connection->getCacheKey();
-    }
-
-    public function getName(): string
-    {
-        return $this->connection->getName();
     }
 
     public function getLastInsertID(string $sequenceName = null): string
@@ -147,17 +139,21 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
         $this->connection->setTablePrefix($value);
     }
 
+    /**
+     * @psalm-param Closure(self): mixed $closure
+     * @psalm-suppress PossiblyUndefinedArrayOffset
+     */
     public function transaction(Closure $closure, string $isolationLevel = null): mixed
     {
         [$callStack] = debug_backtrace();
 
         $this->collector->collectTransactionStart($isolationLevel, $callStack['file'] . ':' . $callStack['line']);
 
-        return $this->connection->transaction(fn () => $closure($this), $isolationLevel);
+        return $this->connection->transaction(fn (): mixed => $closure($this), $isolationLevel);
     }
 
-    public function setProfiler(?ProfilerInterface $profiler): void
+    public function getDriverName(): string
     {
-        $this->connection->setProfiler($profiler);
+        return $this->connection->getDriverName();
     }
 }

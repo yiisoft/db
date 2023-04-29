@@ -212,7 +212,7 @@ interface ConnectionInterface
     /**
      * Executes callback provided in a transaction.
      *
-     * @param Closure $closure A valid PHP callback that performs the job. Accepts connection instance as parameter.
+     * @psalm-param Closure(ConnectionInterface): mixed $closure A valid PHP callback that performs the job. Accepts connection instance as parameter.
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      * {@see TransactionInterface::begin()} for details.
      *
