@@ -105,7 +105,6 @@ final class ColumnSchemaTest extends TestCase
      */
     public function testDbTypecastIssue718(): void
     {
-        $this->markTestSkipped('');
         $column = new ColumnSchema('new');
 
         $param = ['test', DataType::STRING];
