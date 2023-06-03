@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests\Db\Schema;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
@@ -97,6 +98,23 @@ final class ColumnSchemaTest extends TestCase
         $column = new ColumnSchema('new');
 
         $this->assertNull($column->dbTypecast(''));
+    }
+
+    /*
+     * @link https://github.com/yiisoft/db/issues/718
+     */
+    public function testDbTypecastIssue718(): void
+    {
+        $this->markTestSkipped('');
+        $column = new ColumnSchema('new');
+
+        $param = ['test', DataType::STRING];
+        $result = $column->dbTypecast($param);
+        $this->assertEquals(new Param('test', DataType::STRING), $result);
+
+        $param = ['key' => 0, 1 => DataType::STRING];
+        $result = $column->dbTypecast($param);
+        $this->assertEquals($param, $result);
     }
 
     public function testDefaultValue(): void
