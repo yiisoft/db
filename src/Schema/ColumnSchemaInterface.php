@@ -87,7 +87,7 @@ interface ColumnSchemaInterface
      *
      * If the value is `null` or an {@see Expression}, there will be no conversion.
      * In exceptional case (with direct use) you can use array containing the value as the first element and the PDO type as the second
-     * element
+     * element.
      */
     public function dbTypecast(mixed $value): mixed;
 
