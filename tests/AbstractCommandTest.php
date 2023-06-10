@@ -221,7 +221,7 @@ abstract class AbstractCommandTest extends TestCase
      */
     public function testProfiler(string $sql = null): void
     {
-        $sql = $sql ??  'SELECT 123';
+        $sql ??= 'SELECT 123';
 
         $db = $this->getConnection();
         $db->open();
@@ -248,7 +248,7 @@ abstract class AbstractCommandTest extends TestCase
      */
     public function testProfilerData(string $sql = null): void
     {
-        $sql = $sql ?? 'SELECT 123';
+        $sql ??= 'SELECT 123';
 
         $db = $this->getConnection();
         $db->open();
