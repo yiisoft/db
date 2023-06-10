@@ -203,7 +203,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
 
     public function phpTypecast(mixed $value): mixed
     {
-        return $this->typecast($value);
+        return $this->typecast($value, false);
     }
 
     public function precision(int|null $value): void
@@ -245,7 +245,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
      *
      * @return mixed The converted value.
      */
-    protected function typecast(mixed $value): mixed
+    protected function typecast(mixed $value, bool $dbCast = true): mixed
     {
         if (
             $value === ''
@@ -272,7 +272,8 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         }
 
         if (
-            is_array($value)
+            $dbCast
+            && is_array($value)
             && count($value) === 2
             && isset($value[0], $value[1])
             && in_array($value[1], $this->getDataTypes(), true)

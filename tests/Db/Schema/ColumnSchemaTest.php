@@ -103,7 +103,7 @@ final class ColumnSchemaTest extends TestCase
     /*
      * @link https://github.com/yiisoft/db/issues/718
      */
-    public function testDbTypecastIssue718(): void
+    public function testTypecastIssue718(): void
     {
         $column = new ColumnSchema('new');
 
@@ -113,6 +113,14 @@ final class ColumnSchemaTest extends TestCase
 
         $param = ['key' => 0, 1 => DataType::STRING];
         $result = $column->dbTypecast($param);
+        $this->assertEquals($param, $result);
+
+        $param = [1, 2];
+        $result = $column->dbTypecast($param);
+        $this->assertEquals(new Param(1, 2), $result);
+
+        $param = [1, 2];
+        $result = $column->phpTypecast($param);
         $this->assertEquals($param, $result);
     }
 
@@ -257,6 +265,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testPhpTypecastWithStringParamValue(): void
     {
+        $this->markTestSkipped('Incorrect behaviour. https://github.com/yiisoft/db/issues/718');
         $column = new ColumnSchema('new');
 
         $column->phpType(SchemaInterface::PHP_TYPE_STRING);
