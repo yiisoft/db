@@ -19,11 +19,11 @@ on:
       - 'infection.json.dist'
       - 'psalm.xml'
 
-name: db-mysql
+name: db-mariadb
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-mysql-${{ matrix.mysql }}
+    name: PHP ${{ matrix.php }}-mariadb-${{ matrix.mariadb }}
 
     env:
       COMPOSER_ROOT_VERSION: 1.0.0
@@ -42,20 +42,25 @@ jobs:
           - 8.1
           - 8.2
 
-        mysql:
-          - mysql:5.7
-          - mysql:latest
+        maridb:
+          - mariadb:10.4
+          - mariadb:10.5
+          - mariadb:10.6
+          - mariadb:10.7
+          - mariadb:10.8
+          - mariadb:10.9
+          - mariadb:latest
 
     services:
-      mysql:
-        image: ${{ matrix.mysql }}
+      mariadb:
+        image: ${{ matrix.mariadb }}
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
-          MYSQL_PASSWORD: ''
-          MYSQL_DATABASE: yiitest
+          MARIADB_ALLOW_EMPTY_PASSWORD: true
+          MARIADB_PASSWORD: ''
+          MARIADB_DATABASE: yiitest
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd="mariadb-admin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout.
