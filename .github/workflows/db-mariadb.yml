@@ -55,8 +55,8 @@ jobs:
       mysql:
         image: ${{ matrix.mariadb }}
         env:
-          MARIADB_ALLOW_EMPTY_PASSWORD: true
-          MARIADB_PASSWORD: ''
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: true
+          MARIADB_ROOT_PASSWORD: ''
           MARIADB_DATABASE: yiitest
         ports:
           - 3306:3306
