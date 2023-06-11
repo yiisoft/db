@@ -242,6 +242,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
      * If the value is null or an {@see Expression}, it won't be converted.
      *
      * @param mixed $value The value to be converted.
+     * @param bool $dbCast Flag for detect direction of type casting (read or write to db)
      *
      * @return mixed The converted value.
      */
