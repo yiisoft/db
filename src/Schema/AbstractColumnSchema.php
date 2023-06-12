@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbStringHelper;
 
