@@ -238,17 +238,6 @@ final class ColumnSchemaTest extends TestCase
         $this->assertNull($column->phpTypecast(null));
     }
 
-    public function testPhpTypecastWithStringParamValue(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
-
-        $this->assertInstanceOf(ParamInterface::class, $column->phpTypecast(['test', DataType::STRING]));
-        $this->assertSame('test', $column->phpTypecast(['test', DataType::STRING])->getValue());
-        $this->assertSame(DataType::STRING, $column->phpTypecast(['test', DataType::STRING])->getType());
-    }
-
     public function testPhpTypecastWithStringResourceValue(): void
     {
         $column = new ColumnSchema('new');

@@ -271,15 +271,6 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
             return $value;
         }
 
-        if (
-            is_array($value)
-            && count($value) === 2
-            && isset($value[1])
-            && in_array($value[1], $this->getDataTypes(), true)
-        ) {
-            return new Param((string) $value[0], $value[1]);
-        }
-
         switch ($this->phpType) {
             case SchemaInterface::PHP_TYPE_RESOURCE:
             case SchemaInterface::PHP_TYPE_STRING:
