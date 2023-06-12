@@ -300,19 +300,4 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
 
         return $value;
     }
-
-    /**
-     * @return int[] Array of numbers that represent possible parameter types.
-     */
-    private function getDataTypes(): array
-    {
-        return [
-            DataType::BOOLEAN,
-            DataType::INTEGER,
-            DataType::STRING,
-            DataType::LOB,
-            DataType::NULL,
-            DataType::STMT,
-        ];
-    }
 }
