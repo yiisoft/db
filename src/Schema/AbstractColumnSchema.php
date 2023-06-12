@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Command\DataType;
-use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbStringHelper;
 
-use function count;
 use function gettype;
 use function in_array;
-use function is_array;
 use function is_bool;
 use function is_float;
 use function is_resource;
