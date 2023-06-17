@@ -33,6 +33,7 @@ use function json_encode;
 use function ksort;
 use function mb_chr;
 use function sort;
+use function str_replace;
 use function strtolower;
 
 abstract class CommonSchemaTest extends AbstractSchemaTest
@@ -1155,7 +1156,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     {
         $db = $this->getConnection();
 
-        if ($db->getDriverName() === 'sqlite' || $db->getDriverName() === 'oci' || $db->getDriverName() === 'sqlsrv') {
+        if ($db->getDriverName() === 'oci' || $db->getDriverName() === 'sqlite' || $db->getDriverName() === 'sqlsrv') {
             $this->markTestSkipped('Test is not supported by sqlite, oci and sqlsrv drivers.');
         }
 
@@ -1163,16 +1164,12 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $db->createCommand()->dropTable('{{%table}}')->execute();
         }
 
-        $db->createCommand()->createTable('{{%table}}', ['array' => 'json'])->execute(); // or array type instead of json ('integer []')
+        $db->createCommand()->createTable('{{%table}}', ['array' => 'json'])->execute();
         $db->createCommand()->insert('{{%table}}', ['array' => [1, 2]])->execute();
 
-        $result = $db->createCommand('SELECT * FROM {{%table}}')->queryScalar();
-        $expected = match ($db->getDriverName()) {
-            'pgsql' => '[1, 2]',
-            default => '[1,2]',
-        };
+        $result = str_replace(' ', '', $db->createCommand('SELECT * FROM {{%table}}')->queryScalar());
 
-        $this->assertSame($expected, $result);
+        $this->assertSame('[1,2]', trim($result));
     }
 
     protected function createTableForIndexAndConstraintTests(
