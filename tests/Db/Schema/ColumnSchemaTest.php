@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Schema;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
 
@@ -142,6 +143,19 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('', $column->getExtra());
     }
 
+
+    /**
+     * @link https://github.com/yiisoft/db/issues/718
+     */
+    public function testTypecastIssue718(): void
+    {
+        $column = new ColumnSchema('new');
+
+        $param = [1, 2];
+        $result = $column->dbTypecast($param);
+        $this->assertSame([1, 2], $result);
+    }
+
     public function testName(): void
     {
         $column = new ColumnSchema('test');
@@ -244,6 +258,7 @@ final class ColumnSchemaTest extends TestCase
 
         $this->assertIsResource($column->phpTypecast(fopen('php://memory', 'rb')));
     }
+
 
     public function testPrecision(): void
     {

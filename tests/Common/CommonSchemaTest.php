@@ -1148,6 +1148,33 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
+    /**
+     * @link https://github.com/yiisoft/db/issues/718
+     */
+    public function testIssue718(): void
+    {
+        $db = $this->getConnection();
+
+        if ($db->getDriverName() === 'sqlite' || $db->getDriverName() === 'oci' || $db->getDriverName() === 'sqlsrv') {
+            $this->markTestSkipped('Test is not supported by sqlite, oci and sqlsrv drivers.');
+        }
+
+        if ($db->getTableSchema('{{%table}}', true) !== null) {
+            $db->createCommand()->dropTable('{{%table}}')->execute();
+        }
+
+        $db->createCommand()->createTable('{{%table}}', ['array' => 'json'])->execute(); // or array type instead of json ('integer []')
+        $db->createCommand()->insert('{{%table}}', ['array' => [1, 2]])->execute();
+
+        $result = $db->createCommand('SELECT * FROM {{%table}}')->queryScalar();
+        $expected = match ($db->getDriverName()) {
+            'pgsql' => '[1, 2]',
+            default => '[1,2]',
+        };
+
+        $this->assertSame($expected, $result);
+    }
+
     protected function createTableForIndexAndConstraintTests(
         ConnectionInterface $db,
         string $tableName,
