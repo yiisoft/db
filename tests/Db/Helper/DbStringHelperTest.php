@@ -14,7 +14,7 @@ final class DbStringHelperTest extends TestCase
 {
     public function testBaseName(): void
     {
-        $this->assertSame('TestCase', DbStringHelper::baseName('PHPUnit\Framework\TestCase'));
+        $this->assertSame('TestCase', DbStringHelper::baseName(TestCase::class));
         $this->assertSame('TestCase', DbStringHelper::baseName('TestCase'));
     }
 
