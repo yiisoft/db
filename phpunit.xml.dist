@@ -1,76 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" colors="true" bootstrap="vendor/autoload.php" executionOrder="default" failOnRisky="true" failOnWarning="true" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd">
-  <coverage>
-    <include>
-      <directory>./src</directory>
-    </include>
-    <exclude>
-      <directory>./src/TestSupport</directory>
-      <directory>./tests</directory>
-      <directory>./vendor</directory>
-      <file>./src/Command/CommandInterface.php</file>
-      <file>./src/Command/ParamInterface.php</file>
-      <file>./src/Connection/ConnectionInterface.php</file>
-      <file>./src/Connection/ConnectionPoolInterface.php</file>
-      <file>./src/Constraint/ConstraintSchemaInterface.php</file>
-      <file>./src/Driver/DriverInterface.php</file>
-      <file>./src/Driver/PDO/CommandPDOInterface.php</file>
-      <file>./src/Driver/PDO/ConnectionPDOInterface.php</file>
-      <file>./src/Driver/PDO/ConnectionPDOPoolInterface.php</file>
-      <file>./src/Driver/PDO/PDODriverInterface.php</file>
-      <file>./src/Expression/ExpressionBuilderInterface.php</file>
-      <file>./src/Expression/ExpressionInterface.php</file>
-      <file>./src/Profiler/ProfilerInterface.php</file>
-      <file>./src/Query/BatchQueryResultInterface.php</file>
-      <file>./src/Query/Data/DataReaderInterface.php</file>
-      <file>./src/Query/QueryFunctionsInterface.php</file>
-      <file>./src/Query/QueryInterface.php</file>
-      <file>./src/Query/QueryPartsInterface.php</file>
-      <file>./src/QueryBuilder/Condition/Interface/BetweenColumnsConditionInterface.php</file>
-      <file>./src/QueryBuilder/Condition/Interface/BetweenConditionInterface.php</file>
-      <file>./src/QueryBuilder/Condition/Interface/ConditionInterface.php</file>
-      <file>./src/QueryBuilder/Condition/Interface/ConjunctionConditionInterface.php</file>
-      <file>./src/QueryBuilder/Condition/Interface/ExistConditionInterface.php</file>
-      <file>./src/QueryBuilder/Condition/Interface/HashConditionInterface.php</file>
-      <file>./src/QueryBuilder/Condition/Interface/InConditionInterface.php</file>
-      <file>./src/QueryBuilder/Condition/Interface/LikeConditionInterface.php</file>
-      <file>./src/QueryBuilder/Condition/Interface/NotConditionInterface.php</file>
-      <file>./src/QueryBuilder/Condition/Interface/SimpleConditionInterface.php</file>
-      <file>./src/QueryBuilder/DDLQueryBuilderInterface.php</file>
-      <file>./src/QueryBuilder/DMLQueryBuilderInterface.php</file>
-      <file>./src/QueryBuilder/DQLQueryBuilderInterface.php</file>
-      <file>./src/QueryBuilder/QueryBuilderInterface.php</file>
-      <file>./src/Schema/ColumnSchemaInterface.php</file>
-      <file>./src/Schema/QuoterInterface.php</file>
-      <file>./src/Schema/SchemaInterface.php</file>
-      <file>./src/Schema/TableSchemaInterface.php</file>
-      <file>./src/Transaction/TransactionInterface.php</file>
-    </exclude>
-  </coverage>
-  <php>
-    <ini name="error_reporting" value="-1"/>
-  </php>
-  <testsuites>
-    <testsuite name="Db">
-      <directory>./tests/Db</directory>
-    </testsuite>
-    <testsuite name="ActiveRecord">
-      <directory>./vendor/yiisoft/active-record/tests/Driver</directory>
-    </testsuite>
-    <testsuite name="Mssql">
-      <directory>./vendor/yiisoft/db-mssql/tests</directory>
-    </testsuite>
-    <testsuite name="Mysql">
-      <directory>./vendor/yiisoft/db-mysql/tests</directory>
-    </testsuite>
-    <testsuite name="Oracle">
-      <directory>./vendor/yiisoft/db-oracle/tests</directory>
-    </testsuite>
-    <testsuite name="Pgsql">
-      <directory>./vendor/yiisoft/db-pgsql/tests</directory>
-    </testsuite>
-    <testsuite name="Sqlite">
-      <directory>./vendor/yiisoft/db-sqlite/tests</directory>
-    </testsuite>
-  </testsuites>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    backupGlobals="false"
+    colors="true"
+    bootstrap="vendor/autoload.php"
+    executionOrder="default"
+    failOnRisky="true"
+    failOnWarning="true"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.2/phpunit.xsd"
+>
+    <source>
+        <include>
+            <directory>./src</directory>
+        </include>
+        <exclude>
+            <directory>./src/TestSupport</directory>
+            <directory>./tests</directory>
+            <directory>./vendor</directory>
+            <file>./src/Command/CommandInterface.php</file>
+            <file>./src/Command/ParamInterface.php</file>
+            <file>./src/Connection/ConnectionInterface.php</file>
+            <file>./src/Connection/ConnectionPoolInterface.php</file>
+            <file>./src/Constraint/ConstraintSchemaInterface.php</file>
+            <file>./src/Driver/DriverInterface.php</file>
+            <file>./src/Driver/PDO/CommandPDOInterface.php</file>
+            <file>./src/Driver/PDO/ConnectionPDOInterface.php</file>
+            <file>./src/Driver/PDO/ConnectionPDOPoolInterface.php</file>
+            <file>./src/Driver/PDO/PDODriverInterface.php</file>
+            <file>./src/Expression/ExpressionBuilderInterface.php</file>
+            <file>./src/Expression/ExpressionInterface.php</file>
+            <file>./src/Profiler/ProfilerInterface.php</file>
+            <file>./src/Query/BatchQueryResultInterface.php</file>
+            <file>./src/Query/Data/DataReaderInterface.php</file>
+            <file>./src/Query/QueryFunctionsInterface.php</file>
+            <file>./src/Query/QueryInterface.php</file>
+            <file>./src/Query/QueryPartsInterface.php</file>
+            <file>./src/QueryBuilder/Condition/Interface/BetweenColumnsConditionInterface.php</file>
+            <file>./src/QueryBuilder/Condition/Interface/BetweenConditionInterface.php</file>
+            <file>./src/QueryBuilder/Condition/Interface/ConditionInterface.php</file>
+            <file>./src/QueryBuilder/Condition/Interface/ConjunctionConditionInterface.php</file>
+            <file>./src/QueryBuilder/Condition/Interface/ExistConditionInterface.php</file>
+            <file>./src/QueryBuilder/Condition/Interface/HashConditionInterface.php</file>
+            <file>./src/QueryBuilder/Condition/Interface/InConditionInterface.php</file>
+            <file>./src/QueryBuilder/Condition/Interface/LikeConditionInterface.php</file>
+            <file>./src/QueryBuilder/Condition/Interface/NotConditionInterface.php</file>
+            <file>./src/QueryBuilder/Condition/Interface/SimpleConditionInterface.php</file>
+            <file>./src/QueryBuilder/DDLQueryBuilderInterface.php</file>
+            <file>./src/QueryBuilder/DMLQueryBuilderInterface.php</file>
+            <file>./src/QueryBuilder/DQLQueryBuilderInterface.php</file>
+            <file>./src/QueryBuilder/QueryBuilderInterface.php</file>
+            <file>./src/Schema/ColumnSchemaInterface.php</file>
+            <file>./src/Schema/QuoterInterface.php</file>
+            <file>./src/Schema/SchemaInterface.php</file>
+            <file>./src/Schema/TableSchemaInterface.php</file>
+            <file>./src/Transaction/TransactionInterface.php</file>
+        </exclude>
+    </source>
+    <php>
+        <ini name="error_reporting" value="-1"/>
+    </php>
+    <testsuites>
+        <testsuite name="Db">
+            <directory>./tests/Db</directory>
+        </testsuite>
+        <testsuite name="ActiveRecord">
+            <directory>./vendor/yiisoft/active-record/tests/Driver</directory>
+        </testsuite>
+        <testsuite name="Mssql">
+            <directory>./vendor/yiisoft/db-mssql/tests</directory>
+        </testsuite>
+        <testsuite name="Mysql">
+            <directory>./vendor/yiisoft/db-mysql/tests</directory>
+        </testsuite>
+        <testsuite name="Oracle">
+            <directory>./vendor/yiisoft/db-oracle/tests</directory>
+        </testsuite>
+        <testsuite name="Pgsql">
+            <directory>./vendor/yiisoft/db-pgsql/tests</directory>
+        </testsuite>
+        <testsuite name="Sqlite">
+            <directory>./vendor/yiisoft/db-sqlite/tests</directory>
+        </testsuite>
+    </testsuites>
 </phpunit>
