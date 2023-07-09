@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Schema;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Command\DataType;
-use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
 
@@ -144,6 +142,18 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('', $column->getExtra());
     }
 
+    /**
+     * @link https://github.com/yiisoft/db/issues/718
+     */
+    public function testTypecastIssue718(): void
+    {
+        $column = new ColumnSchema('new');
+
+        $param = [1, 2];
+        $result = $column->dbTypecast($param);
+        $this->assertSame([1, 2], $result);
+    }
+
     public function testName(): void
     {
         $column = new ColumnSchema('test');
@@ -236,17 +246,6 @@ final class ColumnSchemaTest extends TestCase
         $column->phpType(SchemaInterface::PHP_TYPE_STRING);
 
         $this->assertNull($column->phpTypecast(null));
-    }
-
-    public function testPhpTypecastWithStringParamValue(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
-
-        $this->assertInstanceOf(ParamInterface::class, $column->phpTypecast(['test', DataType::STRING]));
-        $this->assertSame('test', $column->phpTypecast(['test', DataType::STRING])->getValue());
-        $this->assertSame(DataType::STRING, $column->phpTypecast(['test', DataType::STRING])->getType());
     }
 
     public function testPhpTypecastWithStringResourceValue(): void

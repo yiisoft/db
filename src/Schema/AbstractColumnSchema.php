@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Command\DataType;
-use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbStringHelper;
 
-use function count;
 use function gettype;
 use function in_array;
-use function is_array;
 use function is_bool;
 use function is_float;
 use function is_resource;
@@ -45,11 +41,6 @@ use function is_resource;
  */
 abstract class AbstractColumnSchema implements ColumnSchemaInterface
 {
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-    }
-
     private bool $allowNull = false;
     private bool $autoIncrement = false;
     private string|null $comment = null;
@@ -59,13 +50,16 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     private array|null $enumValues = null;
     private string|null $extra = null;
     private bool $isPrimaryKey = false;
-    private string $name;
     private string|null $phpType = null;
     private int|null $precision = null;
     private int|null $scale = null;
     private int|null $size = null;
     private string $type = '';
     private bool $unsigned = false;
+
+    public function __construct(private string $name)
+    {
+    }
 
     public function allowNull(bool $value): void
     {
@@ -271,15 +265,6 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
             return $value;
         }
 
-        if (
-            is_array($value)
-            && count($value) === 2
-            && isset($value[1])
-            && in_array($value[1], $this->getDataTypes(), true)
-        ) {
-            return new Param((string) $value[0], $value[1]);
-        }
-
         switch ($this->phpType) {
             case SchemaInterface::PHP_TYPE_RESOURCE:
             case SchemaInterface::PHP_TYPE_STRING:
@@ -311,20 +296,5 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         }
 
         return $value;
-    }
-
-    /**
-     * @return int[] Array of numbers that represent possible parameter types.
-     */
-    private function getDataTypes(): array
-    {
-        return [
-            DataType::BOOLEAN,
-            DataType::INTEGER,
-            DataType::STRING,
-            DataType::LOB,
-            DataType::NULL,
-            DataType::STMT,
-        ];
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Connection;
 
 use Closure;
-use Exception;
 use Throwable;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\BatchQueryResultInterface;

@@ -33,6 +33,7 @@ use function json_encode;
 use function ksort;
 use function mb_chr;
 use function sort;
+use function str_replace;
 use function strtolower;
 
 abstract class CommonSchemaTest extends AbstractSchemaTest
@@ -1146,6 +1147,29 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->dropTableForIndexAndConstraintTests($db, $tableName);
 
         $db->close();
+    }
+
+    /**
+     * @link https://github.com/yiisoft/db/issues/718
+     */
+    public function testIssue718(): void
+    {
+        $db = $this->getConnection();
+
+        if ($db->getDriverName() === 'oci' || $db->getDriverName() === 'sqlite' || $db->getDriverName() === 'sqlsrv') {
+            $this->markTestSkipped('Test is not supported by sqlite, oci and sqlsrv drivers.');
+        }
+
+        if ($db->getTableSchema('{{%table}}', true) !== null) {
+            $db->createCommand()->dropTable('{{%table}}')->execute();
+        }
+
+        $db->createCommand()->createTable('{{%table}}', ['array' => 'json'])->execute();
+        $db->createCommand()->insert('{{%table}}', ['array' => [1, 2]])->execute();
+
+        $result = str_replace(' ', '', $db->createCommand('SELECT * FROM {{%table}}')->queryScalar());
+
+        $this->assertSame('[1,2]', trim($result));
     }
 
     protected function createTableForIndexAndConstraintTests(
