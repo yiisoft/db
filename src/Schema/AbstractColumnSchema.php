@@ -251,9 +251,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
             ], true)
         ) {
             return null;
-        }
-
-        if ($value instanceof ExpressionInterface) {
+        } elseif ($value instanceof ExpressionInterface) {
             return $value;
         }
 
