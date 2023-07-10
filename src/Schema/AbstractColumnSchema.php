@@ -241,39 +241,40 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
      */
     protected function typecast(mixed $value): mixed
     {
-        return match (true) {
-            $value === null,
-            $value === '' && !in_array($this->type, [
+        if (
+            $value === null
+            || $value === '' && !in_array($this->type, [
                 SchemaInterface::TYPE_TEXT,
                 SchemaInterface::TYPE_STRING,
                 SchemaInterface::TYPE_BINARY,
                 SchemaInterface::TYPE_CHAR,
             ], true)
-                => null,
-            $value instanceof ExpressionInterface,
-            gettype($value) === $this->phpType
-                => $value,
-            default
-            => match ($this->phpType) {
-                SchemaInterface::PHP_TYPE_RESOURCE,
-                SchemaInterface::PHP_TYPE_STRING
-                    => match (true) {
-                        is_resource($value) => $value,
-                        /** ensure type cast always has . as decimal separator in all locales */
-                        is_float($value) => DbStringHelper::normalizeFloat($value),
-                        is_bool($value) => $value ? '1' : '0',
-                        default => (string) $value,
-                    },
-                SchemaInterface::PHP_TYPE_INTEGER
-                    => (int) $value,
-                /** Treating a 0-bit value as false too (@link https://github.com/yiisoft/yii2/issues/9006) */
-                SchemaInterface::PHP_TYPE_BOOLEAN
-                    => $value && $value !== "\0",
-                SchemaInterface::PHP_TYPE_DOUBLE
-                    => (float) $value,
-                default
-                => $value,
-            }
+        ) {
+            return null;
+        }
+
+        if (
+            $value instanceof ExpressionInterface
+            || gettype($value) === $this->phpType
+        ) {
+            return $value;
+        }
+
+        return match ($this->phpType) {
+            SchemaInterface::PHP_TYPE_RESOURCE,
+            SchemaInterface::PHP_TYPE_STRING
+                => match (true) {
+                    is_resource($value) => $value,
+                    /** ensure type cast always has . as decimal separator in all locales */
+                    is_float($value) => DbStringHelper::normalizeFloat($value),
+                    is_bool($value) => $value ? '1' : '0',
+                    default => (string) $value,
+                },
+            SchemaInterface::PHP_TYPE_INTEGER => (int) $value,
+            /** Treating a 0-bit value as false too (@link https://github.com/yiisoft/yii2/issues/9006) */
+            SchemaInterface::PHP_TYPE_BOOLEAN => $value && $value !== "\0",
+            SchemaInterface::PHP_TYPE_DOUBLE => (float) $value,
+            default => $value,
         };
     }
 }
