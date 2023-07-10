@@ -253,14 +253,12 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
             return null;
         }
 
-        if (
-            $value instanceof ExpressionInterface
-            || gettype($value) === $this->phpType
-        ) {
+        if ($value instanceof ExpressionInterface) {
             return $value;
         }
 
         return match ($this->phpType) {
+            gettype($value) => $value,
             SchemaInterface::PHP_TYPE_RESOURCE,
             SchemaInterface::PHP_TYPE_STRING
                 => match (true) {
