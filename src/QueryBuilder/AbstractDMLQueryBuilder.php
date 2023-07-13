@@ -137,6 +137,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         /** @psalm-var string[] $lines */
         [$lines, $params] = $this->prepareUpdateSets($table, $columns, $params);
         $sql = 'UPDATE ' . $this->quoter->quoteTableName($table) . ' SET ' . implode(', ', $lines);
+        $condition = $this->quoteCondition($condition);
         /** @psalm-var array $params */
         $where = $this->queryBuilder->buildWhere($condition, $params);
 
@@ -493,7 +494,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
         foreach ($values as $key => $value) {
             if (is_string($key)) {
-                $quoted[$this->quoter->quoteColumnName($key)] = $this->quoter->quoteValue($value);
+                $quoted[$this->quoter->quoteColumnName($key)] = $value;
             }
         }
 
