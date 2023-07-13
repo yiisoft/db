@@ -492,8 +492,13 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
         $quoted = [];
 
+        /**
+         * @psalm-var array-key $key
+         * @psalm-var mixed $value
+         */
         foreach ($values as $key => $value) {
             if (is_string($key)) {
+                /** @psalm-var mixed */
                 $quoted[$this->quoter->quoteColumnName($key)] = $value;
             }
         }
