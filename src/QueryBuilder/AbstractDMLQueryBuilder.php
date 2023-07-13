@@ -101,6 +101,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     public function delete(string $table, array|string $condition, array &$params): string
     {
         $sql = 'DELETE FROM ' . $this->quoter->quoteTableName($table);
+        $condition = $this->quoteCondition($condition);
         $where = $this->queryBuilder->buildWhere($condition, $params);
 
         return $where === '' ? $sql : $sql . ' ' . $where;
@@ -480,5 +481,20 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         }
 
         return $normalizedNames;
+    }
+
+    private function quoteCondition(array $values): array
+    {
+        if (is_array($values)) {
+            $quoted = [];
+
+            foreach ($values as $key => $value) {
+                $quoted[$this->quoter->quoteColumnName($key)] = $this->quoter->quoteValue($value);
+            }
+
+            $values = $quoted;
+        }
+
+        return $values;
     }
 }
