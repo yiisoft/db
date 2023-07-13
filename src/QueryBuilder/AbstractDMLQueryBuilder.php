@@ -492,7 +492,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $quoted = [];
 
         foreach ($values as $key => $value) {
-            $quoted[$this->quoter->quoteColumnName($key)] = $this->quoter->quoteValue($value);
+            if (is_string($key)) {
+                $quoted[$this->quoter->quoteColumnName($key)] = $this->quoter->quoteValue($value);
+            }
         }
 
         return $quoted !== [] ? $quoted : $values;
