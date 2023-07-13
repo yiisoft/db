@@ -483,18 +483,18 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         return $normalizedNames;
     }
 
-    private function quoteCondition(array $values): array
+    private function quoteCondition(array|string $values): array|string
     {
-        if (is_array($values)) {
-            $quoted = [];
-
-            foreach ($values as $key => $value) {
-                $quoted[$this->quoter->quoteColumnName($key)] = $this->quoter->quoteValue($value);
-            }
-
-            $values = $quoted;
+        if (is_string($values)) {
+            return $values;
         }
 
-        return $values;
+        $quoted = [];
+
+        foreach ($values as $key => $value) {
+            $quoted[$this->quoter->quoteColumnName($key)] = $this->quoter->quoteValue($value);
+        }
+
+        return $quoted !== [] ? $quoted : $values;
     }
 }
