@@ -1,6 +1,6 @@
 # Yii Database Change Log
 
-## 1.0.1 under development
+## 1.1.0 July 24, 2023
 
 - Chg #722: Remove legacy array syntax for typecast. Use `Param` instead (@terabytesoftw)
 - Chg #724: Typecast refactoring (@Tigrov)
