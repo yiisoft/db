@@ -402,36 +402,24 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function getColumnPhpType(ColumnSchemaInterface $column): string
     {
-        /** @psalm-var string[] $typeMap */
-        $typeMap = [
+        return match ($column->getType()) {
             // abstract type => php type
             SchemaInterface::TYPE_TINYINT => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_SMALLINT => SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_INTEGER => SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_BIGINT => SchemaInterface::PHP_TYPE_INTEGER,
+            SchemaInterface::TYPE_INTEGER => PHP_INT_SIZE === 4 && $column->isUnsigned()
+                ? SchemaInterface::PHP_TYPE_STRING
+                : SchemaInterface::PHP_TYPE_INTEGER,
+            SchemaInterface::TYPE_BIGINT => PHP_INT_SIZE === 8 && !$column->isUnsigned()
+                ? SchemaInterface::PHP_TYPE_INTEGER
+                : SchemaInterface::PHP_TYPE_STRING,
             SchemaInterface::TYPE_BOOLEAN => SchemaInterface::PHP_TYPE_BOOLEAN,
             SchemaInterface::TYPE_DECIMAL => SchemaInterface::PHP_TYPE_DOUBLE,
             SchemaInterface::TYPE_FLOAT => SchemaInterface::PHP_TYPE_DOUBLE,
             SchemaInterface::TYPE_DOUBLE => SchemaInterface::PHP_TYPE_DOUBLE,
             SchemaInterface::TYPE_BINARY => SchemaInterface::PHP_TYPE_RESOURCE,
             SchemaInterface::TYPE_JSON => SchemaInterface::PHP_TYPE_ARRAY,
-        ];
-
-        if (isset($typeMap[$column->getType()])) {
-            if ($column->getType() === SchemaInterface::TYPE_BIGINT) {
-                return PHP_INT_SIZE === 8 && !$column->isUnsigned()
-                    ? SchemaInterface::PHP_TYPE_INTEGER : SchemaInterface::PHP_TYPE_STRING;
-            }
-
-            if ($column->getType() === SchemaInterface::TYPE_INTEGER) {
-                return PHP_INT_SIZE === 4 && $column->isUnsigned()
-                    ? SchemaInterface::PHP_TYPE_STRING : SchemaInterface::PHP_TYPE_INTEGER;
-            }
-
-            return $typeMap[$column->getType()];
-        }
-
-        return SchemaInterface::PHP_TYPE_STRING;
+            default => SchemaInterface::PHP_TYPE_STRING,
+        };
     }
 
     /**
