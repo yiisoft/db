@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Exception\NotSupportedException;
+
 /**
  * This interface defines the methods to build database expressions, such as conditions for a SELECT statement or values
  * to insert into a table.
@@ -18,4 +23,19 @@ namespace Yiisoft\Db\Expression;
  */
 interface ExpressionBuilderInterface
 {
+    /**
+     * Method builds the raw SQL from the $expression that will not be additionally escaped or quoted.
+     *
+     * @param ExpressionInterface $expression The expression to be built.
+     * @param array $params the binding Parameters.
+     *
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     *
+     * @return string The raw SQL that will not be additionally escaped or quoted.
+     */
+    public function build(ExpressionInterface $expression, array &$params = []): string;
 }
