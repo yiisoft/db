@@ -29,7 +29,6 @@ interface ExpressionBuilderInterface
      * @param ExpressionInterface $expression The expression to be built.
      * @param array $params the binding Parameters.
      *
-     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
