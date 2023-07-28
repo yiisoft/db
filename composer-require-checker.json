@@ -1,0 +1,6 @@
+{
+    "symbol-whitelist" : [
+        "Yiisoft\\Yii\\Debug\\Collector\\CollectorTrait",
+        "Yiisoft\\Yii\\Debug\\Collector\\SummaryCollectorInterface"
+    ]
+}

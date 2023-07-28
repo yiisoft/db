@@ -34,14 +34,15 @@
         "rector/rector": "^0.17",
         "roave/infection-static-analysis-plugin": "^1.16",
         "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.30|^5.6",
-        "yiisoft/aliases": "^1.1|^2.0",
+        "vimeo/psalm": "^4.30|^5.12.0",
+        "yiisoft/aliases": "^3.0",
         "yiisoft/cache-file": "^2.0",
         "yiisoft/di": "^1.0",
         "yiisoft/event-dispatcher": "^1.0",
         "yiisoft/json": "^1.0",
         "yiisoft/log": "^2.0",
-        "yiisoft/var-dumper": "^1.5"
+        "yiisoft/var-dumper": "^1.5",
+        "yiisoft/yii-debug": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -59,11 +60,20 @@
             "Yiisoft\\Db\\Sqlite\\Tests\\": "vendor/yiisoft/db-sqlite/tests"
         }
     },
+    "extra": {
+        "config-plugin-options": {
+            "source-directory": "config"
+        },
+        "config-plugin": {
+            "params": "params.php"
+        }
+    },
     "config": {
         "sort-packages": true,
         "allow-plugins": {
             "infection/extension-installer": true,
-            "composer/package-versions-deprecated": true
+            "composer/package-versions-deprecated": true,
+            "yiisoft/config": false
         }
     },
     "scripts": {
