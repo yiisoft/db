@@ -19,7 +19,7 @@ Yii DB supports the following databases out of the box:
 - [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) of versions **2017, 2019, 2022**.
 - [MySQL](https://www.mysql.com/) of versions **5.7 - 8.0**.
 - [MariaDB](https://mariadb.org/) of versions **10.4 - 10.9**.
-- [Oracle](https://www.oracle.com/database/) of versions **18c - 21c**.
+- [Oracle](https://www.oracle.com/database/) of versions **12c - 21c**.
 - [PostgreSQL](https://www.postgresql.org/) of versions **9.6 - 15**. 
 - [SQLite](https://www.sqlite.org/index.html) of version **3.3 and above**.
 

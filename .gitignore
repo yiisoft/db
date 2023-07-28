@@ -31,11 +31,11 @@ composer.phar
 
 # phpunit itself is not needed
 phpunit.phar
-.phpunit.result.cache
-tests/Support/runtime/
 
-# local phpunit config
+# local phpunit config and cache
 /phpunit.xml
+/.phpunit.result.cache
+/tests/Support/runtime/
 
 # NPM packages
 /node_modules

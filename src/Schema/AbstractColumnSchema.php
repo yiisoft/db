@@ -242,59 +242,37 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     protected function typecast(mixed $value): mixed
     {
         if (
-            $value === ''
-            && !in_array(
-                $this->type,
-                [
-                    SchemaInterface::TYPE_TEXT,
-                    SchemaInterface::TYPE_STRING,
-                    SchemaInterface::TYPE_BINARY,
-                    SchemaInterface::TYPE_CHAR,
-                ],
-                true
-            )
+            $value === null
+            || $value === '' && !in_array($this->type, [
+                SchemaInterface::TYPE_TEXT,
+                SchemaInterface::TYPE_STRING,
+                SchemaInterface::TYPE_BINARY,
+                SchemaInterface::TYPE_CHAR,
+            ], true)
         ) {
             return null;
         }
 
-        if (
-            $value === null
-            || $value instanceof ExpressionInterface
-            || gettype($value) === $this->phpType
-        ) {
+        if ($value instanceof ExpressionInterface) {
             return $value;
         }
 
-        switch ($this->phpType) {
-            case SchemaInterface::PHP_TYPE_RESOURCE:
-            case SchemaInterface::PHP_TYPE_STRING:
-                if (is_resource($value)) {
-                    return $value;
-                }
-
-                if (is_float($value)) {
+        return match ($this->phpType) {
+            gettype($value) => $value,
+            SchemaInterface::PHP_TYPE_RESOURCE,
+            SchemaInterface::PHP_TYPE_STRING
+                => match (true) {
+                    is_resource($value) => $value,
                     /** ensure type cast always has . as decimal separator in all locales */
-                    return DbStringHelper::normalizeFloat($value);
-                }
-
-                if (is_bool($value)) {
-                    return $value ? '1' : '0';
-                }
-
-                return (string) $value;
-            case SchemaInterface::PHP_TYPE_INTEGER:
-                return (int) $value;
-            case SchemaInterface::PHP_TYPE_BOOLEAN:
-                /**
-                 * Treating a 0-bit value as false too.
-                 *
-                 * @link https://github.com/yiisoft/yii2/issues/9006
-                 */
-                return (bool) $value && $value !== "\0";
-            case SchemaInterface::PHP_TYPE_DOUBLE:
-                return (float) $value;
-        }
-
-        return $value;
+                    is_float($value) => DbStringHelper::normalizeFloat($value),
+                    is_bool($value) => $value ? '1' : '0',
+                    default => (string) $value,
+                },
+            SchemaInterface::PHP_TYPE_INTEGER => (int) $value,
+            /** Treating a 0-bit value as false too (@link https://github.com/yiisoft/yii2/issues/9006) */
+            SchemaInterface::PHP_TYPE_BOOLEAN => $value && $value !== "\0",
+            SchemaInterface::PHP_TYPE_DOUBLE => (float) $value,
+            default => $value,
+        };
     }
 }
