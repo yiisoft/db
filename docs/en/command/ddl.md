@@ -58,7 +58,7 @@ CREATE TABLE `customer` (
 
 ### Drop a table
 
-To drop a table with schema declaration and and all its data, you can use the 
+To drop a table with schema declaration and all its data, you can use the 
 `Yiisoft\Db\Command\CommandInterface::dropTable()` method:
 
 ```php

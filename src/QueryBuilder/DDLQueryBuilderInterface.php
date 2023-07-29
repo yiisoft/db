@@ -281,23 +281,23 @@ interface DDLQueryBuilderInterface
     public function dropColumn(string $table, string $column): string;
 
     /**
-     * Builds an SQL command for adding comment to column.
+     * Builds an SQL command for dropping comment to column.
      *
      * @param string $table The table whose column is to comment.
      * @param string $column The name of the column to comment.
      *
-     * @return string The SQL statement for adding comment on column.
+     * @return string The SQL statement for dropping comment on column.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
     public function dropCommentFromColumn(string $table, string $column): string;
 
     /**
-     * Builds an SQL command for adding comment to the table.
+     * Builds an SQL command for dropping comment to the table.
      *
      * @param string $table The table whose column is to comment.
      *
-     * @return string The SQL statement for adding comment on column.
+     * @return string The SQL statement for dropping comment on column.
      *
      * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
