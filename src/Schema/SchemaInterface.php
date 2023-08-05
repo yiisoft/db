@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
+use DateTimeInterface;
 use Throwable;
 use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
@@ -247,6 +248,10 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * Define the php type as `array` for cast to php value.
      */
     public const PHP_TYPE_ARRAY = 'array';
+    /**
+     * Define the php type as `DateTimeInterface` for cast to php value.
+     */
+    public const PHP_TYPE_DATE_TIME = DateTimeInterface::class;
     /**
      * Define the php type as `null` for cast to php value.
      */

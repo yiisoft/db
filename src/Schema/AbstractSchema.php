@@ -418,6 +418,11 @@ abstract class AbstractSchema implements SchemaInterface
             SchemaInterface::TYPE_DOUBLE => SchemaInterface::PHP_TYPE_DOUBLE,
             SchemaInterface::TYPE_BINARY => SchemaInterface::PHP_TYPE_RESOURCE,
             SchemaInterface::TYPE_JSON => SchemaInterface::PHP_TYPE_ARRAY,
+            SchemaInterface::TYPE_DATETIME => SchemaInterface::PHP_TYPE_DATE_TIME,
+            SchemaInterface::TYPE_TIMESTAMP => SchemaInterface::PHP_TYPE_DATE_TIME,
+            SchemaInterface::TYPE_DATE => SchemaInterface::PHP_TYPE_DATE_TIME,
+            SchemaInterface::TYPE_TIME => SchemaInterface::PHP_TYPE_DATE_TIME,
+
             default => SchemaInterface::PHP_TYPE_STRING,
         };
     }
@@ -647,5 +652,31 @@ abstract class AbstractSchema implements SchemaInterface
         }
 
         return (array) $this->viewNames[$schema];
+    }
+
+    protected function getDateTimeFormat(ColumnSchemaInterface $column): string|null
+    {
+        return match ($column->getType()) {
+            self::TYPE_TIMESTAMP,
+            self::TYPE_DATETIME => 'Y-m-d H:i:s'
+                . $this->getMillisecondsFormat($column)
+                . ($column->hasTimezone() ? 'P' : ''),
+            self::TYPE_DATE => 'Y-m-d',
+            self::TYPE_TIME => 'H:i:s'
+                . $this->getMillisecondsFormat($column)
+                . ($column->hasTimezone() ? 'P' : ''),
+            default => null,
+        };
+    }
+
+    protected function getMillisecondsFormat(ColumnSchemaInterface $column): string
+    {
+        $precision = $column->getPrecision();
+
+        return match (true) {
+            $precision > 3 => '.u',
+            $precision > 0 => '.v',
+            default => '',
+        };
     }
 }
