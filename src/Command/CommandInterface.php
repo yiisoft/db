@@ -139,7 +139,7 @@ interface CommandInterface
      *
      * @param string $table The table whose column is to change.
      * @param string $column The name of the column to change.
-     * @param string|ColumnInterface $type The column type. {@see QueryBuilder::getColumnType()} will be called to
+     * @param ColumnInterface|string $type The column type. {@see QueryBuilder::getColumnType()} will be called to
      * convert the give column type to the physical one. For example, `string` will be converted as `varchar(255)`, and
      * `string not null` becomes `varchar(255) not null`.
      *
