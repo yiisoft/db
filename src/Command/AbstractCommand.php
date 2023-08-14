@@ -11,6 +11,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 
 use function explode;
 use function get_resource_type;
@@ -188,7 +189,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function alterColumn(string $table, string $column, string $type): static
+    public function alterColumn(string $table, string $column, string|ColumnInterface $type): static
     {
         $sql = $this->getQueryBuilder()->alterColumn($table, $column, $type);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
