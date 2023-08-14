@@ -189,7 +189,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function alterColumn(string $table, string $column, string|ColumnInterface $type): static
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): static
     {
         $sql = $this->getQueryBuilder()->alterColumn($table, $column, $type);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);

@@ -145,7 +145,7 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function alterColumn(string $table, string $column, string|ColumnInterface $type): static;
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): static;
 
     /**
      * Creates a batch INSERT command.
