@@ -434,6 +434,16 @@ final class SchemaTest extends AbstractSchemaTest
         $this->assertSame($checkConstraint, $schema->getTableChecks('T_constraints_1'));
     }
 
+    public function testDefaultSchema(): void
+    {
+        $db = $this->getConnection();
+
+        $schema = $db->getSchema();
+        $schema->defaultSchema('yii');
+
+        $this->assertSame('yii', $schema->getDefaultSchema());
+    }
+
     private function createTableSchemaStub(): TableSchemaInterface
     {
         // defined column C_id

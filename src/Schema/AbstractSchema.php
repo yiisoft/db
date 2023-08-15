@@ -126,6 +126,11 @@ abstract class AbstractSchema implements SchemaInterface
      */
     abstract protected function loadTableSchema(string $name): TableSchemaInterface|null;
 
+    public function defaultSchema(string $defaultSchema): void
+    {
+        $this->defaultSchema = $defaultSchema;
+    }
+
     public function getDefaultSchema(): string|null
     {
         return $this->defaultSchema;

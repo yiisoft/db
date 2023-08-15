@@ -404,4 +404,11 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @return array All view names in the database.
      */
     public function getViewNames(string $schema = '', bool $refresh = false): array;
+
+    /**
+     * Set the default schema of the database.
+     *
+     * @param string $defaultSchema The default schema name.
+     */
+    public function defaultSchema(string $defaultSchema): void;
 }
