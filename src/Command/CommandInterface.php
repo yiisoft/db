@@ -14,6 +14,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 
 /**
  * This interface represents a database command, such as a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement.
@@ -138,13 +139,13 @@ interface CommandInterface
      *
      * @param string $table The table whose column is to change.
      * @param string $column The name of the column to change.
-     * @param string $type The column type. {@see QueryBuilder::getColumnType()} will be called to convert the give
-     * column type to the physical one. For example, `string` will be converted as `varchar(255)`, and `string not null`
-     * becomes `varchar(255) not null`.
+     * @param ColumnInterface|string $type The column type. {@see QueryBuilder::getColumnType()} will be called to
+     * convert the give column type to the physical one. For example, `string` will be converted as `varchar(255)`, and
+     * `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function alterColumn(string $table, string $column, string $type): static;
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): static;
 
     /**
      * Creates a batch INSERT command.

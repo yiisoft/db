@@ -9,6 +9,7 @@ use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 
 final class CommandInterfaceProxy implements CommandInterface
 {
@@ -92,7 +93,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress  MixedArgument
      */
-    public function alterColumn(string $table, string $column, string $type): static
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }

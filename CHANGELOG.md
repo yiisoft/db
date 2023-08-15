@@ -2,6 +2,7 @@
 
 ## 1.1.1 under development
 
+- Bug #741: Fix `alterColumn()` method to accept `ColumnInterface::class` in argument `$type` (@terabytesoftw)
 - New #617: Add debug collector for `yiisoft/yii-debug` (@xepozz)
 - Enh #617, #733: Add specific psalm annotation of `$closure` parameter in `ConnectionInterface::transaction()` 
   method (@xepozz, @vjik)
