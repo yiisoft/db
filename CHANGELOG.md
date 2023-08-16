@@ -1,5 +1,9 @@
 # Yii Database Change Log
 
+## 1.1.2 under development
+
+- no changes in this release.
+
 ## 1.1.1 August 16, 2023
 
 - New #617: Add debug collector for `yiisoft/yii-debug` (@xepozz)
