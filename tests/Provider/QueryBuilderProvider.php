@@ -213,6 +213,18 @@ class QueryBuilderProvider
                 ),
                 [':qp0' => null],
             ],
+            'different tables in columns' => [
+                '{{%type}}',
+                ['{{%type}}.[[bool_col]]', '{{%another_table}}.[[bool_col2]]'],
+                [[true, false]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO {{%type}} ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
+                    SQL,
+                    static::$driverName,
+                ),
+                [':qp0' => null, ':qp1' => null],
+            ],
             'empty-sql' => [
                 '{{%type}}',
                 [],
