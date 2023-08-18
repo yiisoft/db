@@ -33,7 +33,7 @@ interface DMLQueryBuilderInterface
      * ```
      *
      * @param string $table The table to insert new rows into.
-     * @param string[] $columns The column names.
+     * @param string[] $columns The column names of the table.
      * @param Generator|iterable $rows The rows to batch-insert into the table.
      * @param array $params The binding parameters. This parameter exists.
      *
@@ -149,7 +149,7 @@ interface DMLQueryBuilderInterface
      * ```
      *
      * @param string $table The table to update.
-     * @param array $columns The column data (name => value) to update.
+     * @param array $columns The column data (name => value) to update the table.
      * @param array|string $condition The condition to put in the `WHERE` part. Please refer to
      * {@see Query::where()} On how to specify condition.
      * @param array $params The binding parameters that will be modified by this method so that they can be bound to
