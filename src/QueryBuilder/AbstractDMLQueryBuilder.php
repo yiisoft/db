@@ -58,9 +58,10 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $columns = $this->getNormalizeColumnNames($columns);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
-        /** @psalm-var array<array-key, array<array-key, string>> $rows */
+        /** @psalm-var array[] $rows */
         foreach ($rows as $row) {
             $placeholders = [];
+            /** @psalm-var mixed $value */
             foreach ($row as $i => $value) {
                 if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
                     /** @psalm-var mixed $value */
