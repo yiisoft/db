@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
-use Generator;
 use JsonException;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
@@ -335,9 +334,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $constraints[] = $primaryKey;
         }
 
-        // TODO remove getTableIndexes(), getTableUniques() should be enough
         /** @psalm-var IndexConstraint[] $tableIndexes */
-/*
         $tableIndexes = $this->schema->getTableIndexes($name);
 
         foreach ($tableIndexes as $constraint) {
@@ -345,7 +342,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 $constraints[] = $constraint;
             }
         }
-*/
+
         $constraints = array_merge($constraints, $this->schema->getTableUniques($name));
 
         /**
