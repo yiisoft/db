@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Constraint;
 
+use Stringable;
+
 /**
  * Represents a constraint in a database.
  *
@@ -16,7 +18,7 @@ namespace Yiisoft\Db\Constraint;
 class Constraint
 {
     private string|array|null $columnNames = null;
-    private string|null|object $name = null;
+    private Stringable|string|null $name = null;
 
     /**
      * @return array|string|null The list of column names the constraint belongs to.
@@ -27,9 +29,9 @@ class Constraint
     }
 
     /**
-     * @return object|string|null The constraint name.
+     * @return \Stringable|string|null The constraint name.
      */
-    public function getName(): object|string|null
+    public function getName(): Stringable|string|null
     {
         return $this->name;
     }
@@ -48,9 +50,9 @@ class Constraint
     /**
      * Set the constraint name.
      *
-     * @param object|string|null $value The constraint name.
+     * @param \Stringable|string|null $value The constraint name.
      */
-    public function name(object|string|null $value): static
+    public function name(Stringable|string|null $value): static
     {
         $this->name = $value;
         return $this;
