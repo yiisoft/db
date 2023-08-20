@@ -40,8 +40,14 @@ final class ConstraintTest extends TestCase
 
         $this->assertSame('name', $constraint->getName());
 
-        $constraint->name(new stdClass());
+        $stringable = new class {
+            public function __toString(): string
+            {
+                return 'name';
+            }
+        };
+        $constraint->name($stringable);
 
-        $this->assertInstanceOf(stdClass::class, $constraint->getName());
+        $this->assertInstanceOf(\Stringable::class, $constraint->getName());
     }
 }
