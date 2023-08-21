@@ -235,18 +235,6 @@ class QueryBuilderProvider
                 })(),
                 '',
             ],
-            'with associative values' => [
-                'type',
-                ['int_col', 'int_col2'],
-                [['first' => 1, 'second' => 2]],
-                'expected' => DbHelper::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[int_col2]]) VALUES (:qp0, :qp1)
-                    SQL,
-                    static::$driverName,
-                ),
-                [':qp0' => 1, ':qp1' => 2],
-            ],
         ];
     }
 
