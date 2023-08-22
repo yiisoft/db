@@ -209,6 +209,8 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         string $expectedSQL,
         array $expectedParams
     ): void {
+        self::markTestSkipped('AbstractDMLQueryBuilder::insertWithReturningPks() was removed');
+
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
@@ -226,6 +228,8 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
      */
     public function testResetSequence(): void
     {
+        self::markTestSkipped('AbstractDMLQueryBuilder::resetSequence() was removed');
+
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
@@ -274,6 +278,8 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         string|array $expectedSQL,
         array $expectedParams
     ): void {
+        self::markTestSkipped('AbstractDMLQueryBuilder::upsert() was removed');
+
         $db = $this->getConnection();
 
         $actualParams = [];
@@ -294,6 +300,8 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array|QueryInterface $insertColumns,
         array|bool $updateColumns
     ): void {
+        self::markTestSkipped('AbstractDMLQueryBuilder::upsert() was removed');
+
         $db = $this->getConnection();
 
         $this->expectException(NotSupportedException::class);
