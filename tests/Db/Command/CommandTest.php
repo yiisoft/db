@@ -645,8 +645,6 @@ final class CommandTest extends AbstractCommandTest
 
     public function testResetSequence(): void
     {
-        self::markTestSkipped('AbstractDMLQueryBuilder::resetSequence() was removed');
-
         $db = $this->getConnection();
 
         $this->expectException(NotSupportedException::class);
@@ -702,8 +700,6 @@ final class CommandTest extends AbstractCommandTest
 
     public function testUpsert(): void
     {
-        self::markTestSkipped('AbstractDMLQueryBuilder::upsert() was removed');
-
         $db = $this->getConnection();
 
         $command = $db->createCommand();

@@ -1918,8 +1918,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         if ($db->getDriverName() === 'db') {
-            self::markTestSkipped('AbstractDMLQueryBuilder::resetSequence() was removed');
-
             $this->expectException(NotSupportedException::class);
             $this->expectExceptionMessage(
                 'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.'
@@ -1944,8 +1942,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         if ($db->getDriverName() === 'db') {
-            self::markTestSkipped('AbstractDMLQueryBuilder::resetSequence() was removed');
-
             $this->expectException(NotSupportedException::class);
             $this->expectExceptionMessage(
                 'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::resetSequence() is not supported by this DBMS.'
