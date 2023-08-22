@@ -109,16 +109,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : ' ' . $values);
     }
 
-    public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string
-    {
-        throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
-    }
-
-    public function resetSequence(string $table, int|string|null $value = null): string
-    {
-        throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
-    }
-
     public function update(string $table, array $columns, array|string $condition, array &$params = []): string
     {
         [$lines, $params] = $this->prepareUpdateSets($table, $columns, $params);
@@ -127,15 +117,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $where = $this->queryBuilder->buildWhere($condition, $params);
 
         return $where === '' ? $sql : $sql . ' ' . $where;
-    }
-
-    public function upsert(
-        string $table,
-        QueryInterface|array $insertColumns,
-        bool|array $updateColumns,
-        array &$params
-    ): string {
-        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     /**
