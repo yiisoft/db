@@ -2,7 +2,7 @@
 
 ## 1.1.2 under development
 
-- no changes in this release.
+- Bug #746: Refactor `DMLQueryBuilder` and fix: unique indexes in `upsert()`, column names with table name and brackets, `batchInsert()` with associative arrays, enhanced documentation of `batchInsert()` and `update()` (@Tigrov)
 
 ## 1.1.1 August 16, 2023
 
