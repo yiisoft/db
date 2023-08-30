@@ -51,7 +51,7 @@ For [PostgreSQL](https://github.com/yiisoft/db-pgsql):
 composer require yiisoft/db-pgsql
 ```
 
-For [SQLite](https://github.com/yiisoft/db-pgsql):
+For [SQLite](https://github.com/yiisoft/db-sqlite):
 
 ```bash
 composer require yiisoft/db-sqlite
