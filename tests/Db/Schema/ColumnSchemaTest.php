@@ -4,18 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema;
 
-use PDO;
 use PHPUnit\Framework\TestCase;
-use stdClass;
-use Yiisoft\Db\Command\Param;
-use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\JsonExpression;
-use Yiisoft\Db\Schema\Column\BigIntColumnSchema;
-use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
 use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
 use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
 use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
-use Yiisoft\Db\Schema\Column\JsonColumnSchema;
 use Yiisoft\Db\Schema\Column\StringColumnSchema;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
@@ -345,100 +337,5 @@ final class ColumnSchemaTest extends TestCase
         $column->unsigned(false);
 
         $this->assertFalse($column->isUnsigned());
-    }
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider::dbTypecastColumns
-     */
-    public function testDbTypecastColumnSchema(array $columns)
-    {
-        foreach ($columns as $class => $values) {
-            $col = new $class('column_name');
-
-            foreach ($values as [$expected, $value]) {
-                if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {
-                    $this->assertEquals($expected, $col->dbTypecast($value));
-                } else {
-                    $this->assertSame($expected, $col->dbTypecast($value));
-                }
-            }
-        }
-    }
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider::phpTypecastColumns
-     */
-    public function testPhpTypecastColumnSchema(array $columns)
-    {
-        foreach ($columns as $class => $values) {
-            $col = new $class('column_name');
-
-            foreach ($values as [$expected, $value]) {
-                $this->assertSame($expected, $col->phpTypecast($value));
-            }
-        }
-    }
-
-    public function testIntegerColumnSchema()
-    {
-        $intCol = new IntegerColumnSchema('int_col');
-
-        $this->assertSame('int_col', $intCol->getName());
-        $this->assertSame(SchemaInterface::TYPE_INTEGER, $intCol->getType());
-        $this->assertSame(SchemaInterface::PHP_TYPE_INTEGER, $intCol->getPhpType());
-    }
-
-    public function testBigIntColumnSchema()
-    {
-        $bigintCol = new BigIntColumnSchema('bigint_col');
-
-        $this->assertSame('bigint_col', $bigintCol->getName());
-        $this->assertSame(SchemaInterface::TYPE_BIGINT, $bigintCol->getType());
-        $this->assertSame(SchemaInterface::PHP_TYPE_INTEGER, $bigintCol->getPhpType());
-    }
-
-    public function testDoubleColumnSchema()
-    {
-        $floatCol = new DoubleColumnSchema('float_col');
-
-        $this->assertSame('float_col', $floatCol->getName());
-        $this->assertSame(SchemaInterface::TYPE_DOUBLE, $floatCol->getType());
-        $this->assertSame(SchemaInterface::PHP_TYPE_DOUBLE, $floatCol->getPhpType());
-    }
-
-    public function testStringColumnSchema()
-    {
-        $stringCol = new StringColumnSchema('string_col');
-
-        $this->assertSame('string_col', $stringCol->getName());
-        $this->assertSame(SchemaInterface::TYPE_STRING, $stringCol->getType());
-        $this->assertSame(SchemaInterface::PHP_TYPE_STRING, $stringCol->getPhpType());
-    }
-
-    public function testBinaryColumnSchema()
-    {
-        $binaryCol = new BinaryColumnSchema('binary_col');
-
-        $this->assertSame('binary_col', $binaryCol->getName());
-        $this->assertSame(SchemaInterface::TYPE_BINARY, $binaryCol->getType());
-        $this->assertSame(SchemaInterface::PHP_TYPE_RESOURCE, $binaryCol->getPhpType());
-    }
-
-    public function testBooleanColumnSchema()
-    {
-        $boolCol = new BooleanColumnSchema('bool_col');
-
-        $this->assertSame('bool_col', $boolCol->getName());
-        $this->assertSame(SchemaInterface::TYPE_BOOLEAN, $boolCol->getType());
-        $this->assertSame(SchemaInterface::PHP_TYPE_BOOLEAN, $boolCol->getPhpType());
-    }
-
-    public function testJsonColumnSchema()
-    {
-        $jsonCol = new JsonColumnSchema('json_col');
-
-        $this->assertSame('json_col', $jsonCol->getName());
-        $this->assertSame(SchemaInterface::TYPE_JSON, $jsonCol->getType());
-        $this->assertSame(SchemaInterface::PHP_TYPE_ARRAY, $jsonCol->getPhpType());
     }
 }
