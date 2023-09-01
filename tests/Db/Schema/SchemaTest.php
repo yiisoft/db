@@ -11,6 +11,9 @@ use Yiisoft\Db\Constraint\DefaultValueConstraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
+use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
+use Yiisoft\Db\Schema\Column\StringColumnSchema;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -65,33 +68,21 @@ final class SchemaTest extends AbstractSchemaTest
 
         $schema = $db->getSchema();
 
-        $columnBigInt = new ColumnSchema('bigint');
-        $columnBigInt->type('bigint');
-
-        $columnBoolean = new ColumnSchema('boolean');
-        $columnBoolean->type('boolean');
-
-        $columnInteger = new ColumnSchema('integer');
-        $columnInteger->type('integer');
-
-        $columnString = new ColumnSchema('string');
-        $columnString->type('string');
-
         $this->assertSame(
             'integer',
-            Assert::invokeMethod($schema, 'getColumnPhpType', [$columnBigInt]),
+            Assert::invokeMethod($schema, 'getColumnPhpType', ['bigint']),
         );
         $this->assertSame(
             'boolean',
-            Assert::invokeMethod($schema, 'getColumnPhpType', [$columnBoolean]),
+            Assert::invokeMethod($schema, 'getColumnPhpType', ['boolean']),
         );
         $this->assertSame(
             'integer',
-            Assert::invokeMethod($schema, 'getColumnPhpType', [$columnInteger]),
+            Assert::invokeMethod($schema, 'getColumnPhpType', ['integer']),
         );
         $this->assertSame(
             'string',
-            Assert::invokeMethod($schema, 'getColumnPhpType', [$columnString]),
+            Assert::invokeMethod($schema, 'getColumnPhpType', ['string']),
         );
     }
 

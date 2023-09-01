@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Schema;
+namespace Yiisoft\Db\Schema\Column;
 
 /**
- * @deprecated Use Yiisoft\Db\Schema\Column\ColumnSchemaInterface instead
- *
  * This interface defines a set of methods that must be implemented by a class that represents the column schema of a
  * database table column.
  */

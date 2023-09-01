@@ -11,6 +11,14 @@ use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
+use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
+use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
+use Yiisoft\Db\Schema\Column\JsonColumnSchema;
+use Yiisoft\Db\Schema\Column\StringColumnSchema;
+use Yiisoft\Db\Schema\Column\BigIntColumnSchema;
 
 use function array_change_key_case;
 use function array_map;
@@ -394,24 +402,54 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * Extracts the PHP type from an abstract DB type.
+     * Creates a column schema for the database.
      *
-     * @param ColumnSchemaInterface $column The column schema information.
+     * This method may be overridden by child classes to create a DBMS-specific column schema.
+     *
+     * @param string $type The abstract data type.
+     * @param string $name The column name.
+     * @param array $info The column information.
+     * @psalm-param array{unsigned?: bool, dimension?: int} $info
+     * Parameter `dimension` is for PgSQL only
+     *
+     * @return ColumnSchemaInterface
+     */
+    protected function createColumnSchema(string $type, string $name, bool|int ...$info): ColumnSchemaInterface
+    {
+        $phpType = $this->getColumnPhpType($type);
+        $isUnsigned = !empty($info['unsigned']);
+
+        if (
+            $isUnsigned && PHP_INT_SIZE === 4 && $type === SchemaInterface::TYPE_INTEGER
+            || ($isUnsigned || PHP_INT_SIZE !== 8) && $type === SchemaInterface::TYPE_BIGINT
+        ) {
+            $column = new BigIntColumnSchema($name);
+        } else {
+            $column = $this->createPhpTypeColumnSchema($phpType, $name);
+        }
+
+        $column->type($type);
+        $column->phpType($phpType);
+        $column->unsigned($isUnsigned);
+
+        return $column;
+    }
+
+    /**
+     * Get the PHP type from an abstract database type.
+     *
+     * @param string $type The abstract database type.
      *
      * @return string The PHP type name.
      */
-    protected function getColumnPhpType(ColumnSchemaInterface $column): string
+    protected function getColumnPhpType(string $type): string
     {
-        return match ($column->getType()) {
+        return match ($type) {
             // abstract type => php type
             SchemaInterface::TYPE_TINYINT => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_SMALLINT => SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_INTEGER => PHP_INT_SIZE === 4 && $column->isUnsigned()
-                ? SchemaInterface::PHP_TYPE_STRING
-                : SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_BIGINT => PHP_INT_SIZE === 8 && !$column->isUnsigned()
-                ? SchemaInterface::PHP_TYPE_INTEGER
-                : SchemaInterface::PHP_TYPE_STRING,
+            SchemaInterface::TYPE_INTEGER => SchemaInterface::PHP_TYPE_INTEGER,
+            SchemaInterface::TYPE_BIGINT => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_BOOLEAN => SchemaInterface::PHP_TYPE_BOOLEAN,
             SchemaInterface::TYPE_DECIMAL => SchemaInterface::PHP_TYPE_DOUBLE,
             SchemaInterface::TYPE_FLOAT => SchemaInterface::PHP_TYPE_DOUBLE,
@@ -419,6 +457,18 @@ abstract class AbstractSchema implements SchemaInterface
             SchemaInterface::TYPE_BINARY => SchemaInterface::PHP_TYPE_RESOURCE,
             SchemaInterface::TYPE_JSON => SchemaInterface::PHP_TYPE_ARRAY,
             default => SchemaInterface::PHP_TYPE_STRING,
+        };
+    }
+
+    protected function createPhpTypeColumnSchema(string $phpType, string $name): ColumnSchemaInterface
+    {
+        return match ($phpType) {
+            SchemaInterface::PHP_TYPE_INTEGER => new IntegerColumnSchema($name),
+            SchemaInterface::PHP_TYPE_DOUBLE => new DoubleColumnSchema($name),
+            SchemaInterface::PHP_TYPE_BOOLEAN => new BooleanColumnSchema($name),
+            SchemaInterface::PHP_TYPE_RESOURCE => new BinaryColumnSchema($name),
+            SchemaInterface::PHP_TYPE_ARRAY => new JsonColumnSchema($name),
+            default => new StringColumnSchema($name),
         };
     }
 
