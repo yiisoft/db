@@ -76,8 +76,10 @@ final class DatabaseCollector implements SummaryCollectorInterface
             'line' => $line,
             'status' => self::QUERY_STATUS_INITIALIZED,
             'actions' => [
-                'action' => self::ACTION_QUERY_START,
-                'time' => microtime(true),
+                [
+                    'action' => self::ACTION_QUERY_START,
+                    'time' => microtime(true),
+                ],
             ],
         ];
     }
@@ -127,8 +129,10 @@ final class DatabaseCollector implements SummaryCollectorInterface
             'line' => $line,
             'level' => $isolationLevel,
             'actions' => [
-                'action' => self::ACTION_TRANSACTION_START,
-                'time' => microtime(true),
+                [
+                    'action' => self::ACTION_TRANSACTION_START,
+                    'time' => microtime(true),
+                ],
             ],
         ];
     }
@@ -140,7 +144,7 @@ final class DatabaseCollector implements SummaryCollectorInterface
         string $line,
     ): void {
         $this->transactions[$this->currentTransactionId]['status'] = self::TRANSACTION_STATUS_ROLLBACK;
-        $this->transactions[$this->currentTransactionId]['actions'] = [
+        $this->transactions[$this->currentTransactionId]['actions'][] = [
             'action' => self::ACTION_TRANSACTION_ROLLBACK,
             'line' => $line,
             'time' => microtime(true),
@@ -155,7 +159,7 @@ final class DatabaseCollector implements SummaryCollectorInterface
         string $line,
     ): void {
         $this->transactions[$this->currentTransactionId]['status'] = self::TRANSACTION_STATUS_COMMIT;
-        $this->transactions[$this->currentTransactionId]['actions'] = [
+        $this->transactions[$this->currentTransactionId]['actions'][] = [
             'action' => self::ACTION_TRANSACTION_COMMIT,
             'line' => $line,
             'time' => microtime(true),
