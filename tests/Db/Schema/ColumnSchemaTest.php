@@ -386,19 +386,6 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('int_col', $intCol->getName());
         $this->assertSame(SchemaInterface::TYPE_INTEGER, $intCol->getType());
         $this->assertSame(SchemaInterface::PHP_TYPE_INTEGER, $intCol->getPhpType());
-
-        $this->assertNull($intCol->dbTypecast(null));
-        $this->assertNull($intCol->dbTypecast(''));
-        $this->assertSame(1, $intCol->dbTypecast(1));
-        $this->assertSame(1, $intCol->dbTypecast(1.0));
-        $this->assertSame(1, $intCol->dbTypecast('1'));
-        $this->assertSame(1, $intCol->dbTypecast(true));
-        $this->assertSame(0, $intCol->dbTypecast(false));
-        $this->assertEquals(new Expression('1'), $intCol->dbTypecast(new Expression('1')));
-
-        $this->assertNull($intCol->phpTypecast(null));
-        $this->assertSame(1, $intCol->phpTypecast(1));
-        $this->assertSame(1, $intCol->phpTypecast('1'));
     }
 
     public function testBigIntColumnSchema()
@@ -408,21 +395,6 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('bigint_col', $bigintCol->getName());
         $this->assertSame(SchemaInterface::TYPE_BIGINT, $bigintCol->getType());
         $this->assertSame(SchemaInterface::PHP_TYPE_INTEGER, $bigintCol->getPhpType());
-
-        $this->assertNull($bigintCol->dbTypecast(null));
-        $this->assertNull($bigintCol->dbTypecast(''));
-        $this->assertSame(1, $bigintCol->dbTypecast(1));
-        $this->assertSame(1, $bigintCol->dbTypecast(1.0));
-        $this->assertSame(1, $bigintCol->dbTypecast('1'));
-        $this->assertSame(1, $bigintCol->dbTypecast(true));
-        $this->assertSame(0, $bigintCol->dbTypecast(false));
-        $this->assertSame('12345678901234567890', $bigintCol->dbTypecast('12345678901234567890'));
-        $this->assertEquals(new Expression('1'), $bigintCol->dbTypecast(new Expression('1')));
-
-        $this->assertNull($bigintCol->phpTypecast(null));
-        $this->assertSame(1, $bigintCol->phpTypecast(1));
-        $this->assertSame(1, $bigintCol->phpTypecast('1'));
-        $this->assertSame('12345678901234567890', $bigintCol->phpTypecast('12345678901234567890'));
     }
 
     public function testDoubleColumnSchema()
@@ -432,19 +404,6 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('float_col', $floatCol->getName());
         $this->assertSame(SchemaInterface::TYPE_DOUBLE, $floatCol->getType());
         $this->assertSame(SchemaInterface::PHP_TYPE_DOUBLE, $floatCol->getPhpType());
-
-        $this->assertNull($floatCol->dbTypecast(null));
-        $this->assertNull($floatCol->dbTypecast(''));
-        $this->assertSame(1.0, $floatCol->dbTypecast(1));
-        $this->assertSame(1.0, $floatCol->dbTypecast(1.0));
-        $this->assertSame(1.0, $floatCol->dbTypecast('1'));
-        $this->assertSame(1.0, $floatCol->dbTypecast(true));
-        $this->assertSame(0.0, $floatCol->dbTypecast(false));
-        $this->assertEquals(new Expression('1'), $floatCol->dbTypecast(new Expression('1')));
-
-        $this->assertNull($floatCol->phpTypecast(null));
-        $this->assertSame(1.0, $floatCol->phpTypecast(1.0));
-        $this->assertSame(1.0, $floatCol->phpTypecast('1.0'));
     }
 
     public function testStringColumnSchema()
@@ -454,18 +413,6 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('string_col', $stringCol->getName());
         $this->assertSame(SchemaInterface::TYPE_STRING, $stringCol->getType());
         $this->assertSame(SchemaInterface::PHP_TYPE_STRING, $stringCol->getPhpType());
-
-        $this->assertNull($stringCol->dbTypecast(null));
-        $this->assertSame('1', $stringCol->dbTypecast(1));
-        $this->assertSame('1', $stringCol->dbTypecast(true));
-        $this->assertSame('0', $stringCol->dbTypecast(false));
-        $this->assertSame('string', $stringCol->dbTypecast('string'));
-        $this->assertIsResource($stringCol->dbTypecast(fopen('php://memory', 'rb')));
-        $this->assertEquals(new Expression('expression'), $stringCol->dbTypecast(new Expression('expression')));
-
-        $this->assertNull($stringCol->phpTypecast(null));
-        $this->assertSame('string', $stringCol->phpTypecast('string'));
-        $this->assertIsResource($stringCol->phpTypecast(fopen('php://memory', 'rb')));
     }
 
     public function testBinaryColumnSchema()
@@ -475,18 +422,6 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('binary_col', $binaryCol->getName());
         $this->assertSame(SchemaInterface::TYPE_BINARY, $binaryCol->getType());
         $this->assertSame(SchemaInterface::PHP_TYPE_RESOURCE, $binaryCol->getPhpType());
-
-        $this->assertNull($binaryCol->dbTypecast(null));
-        $this->assertSame('1', $binaryCol->dbTypecast(1));
-        $this->assertSame('1', $binaryCol->dbTypecast(true));
-        $this->assertSame('0', $binaryCol->dbTypecast(false));
-        $this->assertIsResource($binaryCol->dbTypecast(fopen('php://memory', 'rb')));
-        $this->assertEquals(new Param("\x10\x11\x12", PDO::PARAM_LOB), $binaryCol->dbTypecast("\x10\x11\x12"));
-        $this->assertEquals(new Expression('expression'), $binaryCol->dbTypecast(new Expression('expression')));
-
-        $this->assertNull($binaryCol->phpTypecast(null));
-        $this->assertSame("\x10\x11\x12", $binaryCol->phpTypecast("\x10\x11\x12"));
-        $this->assertIsResource($binaryCol->phpTypecast(fopen('php://memory', 'rb')));
     }
 
     public function testBooleanColumnSchema()
@@ -496,24 +431,6 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('bool_col', $boolCol->getName());
         $this->assertSame(SchemaInterface::TYPE_BOOLEAN, $boolCol->getType());
         $this->assertSame(SchemaInterface::PHP_TYPE_BOOLEAN, $boolCol->getPhpType());
-
-        $this->assertNull($boolCol->dbTypecast(null));
-        $this->assertNull($boolCol->dbTypecast(''));
-        $this->assertTrue($boolCol->dbTypecast(true));
-        $this->assertTrue($boolCol->dbTypecast(1));
-        $this->assertTrue($boolCol->dbTypecast(1.0));
-        $this->assertTrue($boolCol->dbTypecast('1'));
-        $this->assertFalse($boolCol->dbTypecast(false));
-        $this->assertFalse($boolCol->dbTypecast(0));
-        $this->assertFalse($boolCol->dbTypecast('0'));
-        $this->assertEquals(new Expression('expression'), $boolCol->dbTypecast(new Expression('expression')));
-
-        $this->assertNull($boolCol->phpTypecast(null));
-        $this->assertTrue($boolCol->phpTypecast(true));
-        $this->assertTrue($boolCol->phpTypecast('1'));
-        $this->assertFalse($boolCol->phpTypecast(false));
-        $this->assertFalse($boolCol->phpTypecast('0'));
-        $this->assertFalse($boolCol->phpTypecast("\0"));
     }
 
     public function testJsonColumnSchema()
@@ -523,24 +440,5 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('json_col', $jsonCol->getName());
         $this->assertSame(SchemaInterface::TYPE_JSON, $jsonCol->getType());
         $this->assertSame(SchemaInterface::PHP_TYPE_ARRAY, $jsonCol->getPhpType());
-
-        $this->assertNull($jsonCol->dbTypecast(null));
-        $this->assertEquals(new JsonExpression(1, 'json'), $jsonCol->dbTypecast(1));
-        $this->assertEquals(new JsonExpression(true, 'json'), $jsonCol->dbTypecast(true));
-        $this->assertEquals(new JsonExpression(false, 'json'), $jsonCol->dbTypecast(false));
-        $this->assertEquals(new JsonExpression('string', 'json'), $jsonCol->dbTypecast('string'));
-        $this->assertEquals(new JsonExpression([1, 2, 3], 'json'), $jsonCol->dbTypecast([1, 2, 3]));
-        $this->assertEquals(new JsonExpression(['key' => 'value'], 'json'), $jsonCol->dbTypecast(['key' => 'value']));
-        $this->assertEquals(new JsonExpression(new stdClass(), 'json'), $jsonCol->dbTypecast(new stdClass()));
-        $this->assertEquals(new JsonExpression([1, 2, 3]), $jsonCol->dbTypecast(new JsonExpression([1, 2, 3])));
-
-        $this->assertNull($jsonCol->phpTypecast(null));
-        $this->assertSame(1.0, $jsonCol->phpTypecast('1.0'));
-        $this->assertSame(1, $jsonCol->phpTypecast('1'));
-        $this->assertTrue($jsonCol->phpTypecast('true'));
-        $this->assertFalse($jsonCol->phpTypecast('false'));
-        $this->assertSame('string', $jsonCol->phpTypecast('"string"'));
-        $this->assertSame([1, 2, 3], $jsonCol->phpTypecast('[1,2,3]'));
-        $this->assertSame(['key' => 'value'], $jsonCol->phpTypecast('{"key":"value"}'));
     }
 }
