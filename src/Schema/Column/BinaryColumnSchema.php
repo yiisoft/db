@@ -14,7 +14,7 @@ use function is_float;
 use function is_resource;
 use function is_string;
 
-final class BinaryColumnSchema extends AbstractColumnSchema
+class BinaryColumnSchema extends AbstractColumnSchema
 {
     public function __construct(string $name)
     {

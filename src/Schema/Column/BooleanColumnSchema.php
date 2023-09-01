@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Schema\Column;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
-final class BooleanColumnSchema extends AbstractColumnSchema
+class BooleanColumnSchema extends AbstractColumnSchema
 {
     public function __construct(string $name)
     {

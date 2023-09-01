@@ -12,7 +12,7 @@ use function is_float;
 use function is_resource;
 use function is_string;
 
-final class StringColumnSchema extends AbstractColumnSchema
+class StringColumnSchema extends AbstractColumnSchema
 {
     public function __construct(string $name)
     {

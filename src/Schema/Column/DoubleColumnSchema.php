@@ -9,7 +9,7 @@ use Yiisoft\Db\Schema\SchemaInterface;
 
 use function is_float;
 
-final class DoubleColumnSchema extends AbstractColumnSchema
+class DoubleColumnSchema extends AbstractColumnSchema
 {
     public function __construct(string $name)
     {

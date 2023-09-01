@@ -11,7 +11,7 @@ use Yiisoft\Db\Schema\SchemaInterface;
 use function is_string;
 use function json_decode;
 
-final class JsonColumnSchema extends AbstractColumnSchema
+class JsonColumnSchema extends AbstractColumnSchema
 {
     public function __construct(string $name)
     {

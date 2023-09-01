@@ -9,7 +9,7 @@ use Yiisoft\Db\Schema\SchemaInterface;
 
 use function is_int;
 
-final class IntegerColumnSchema extends AbstractColumnSchema
+class IntegerColumnSchema extends AbstractColumnSchema
 {
     public function __construct(string $name)
     {

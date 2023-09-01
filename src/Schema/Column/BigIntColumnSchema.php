@@ -9,7 +9,7 @@ use Yiisoft\Db\Schema\SchemaInterface;
 
 use function is_int;
 
-final class BigIntColumnSchema extends AbstractColumnSchema
+class BigIntColumnSchema extends AbstractColumnSchema
 {
     public function __construct(string $name)
     {
