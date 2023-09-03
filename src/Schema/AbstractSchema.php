@@ -408,13 +408,12 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $type The abstract data type.
      * @param string $name The column name.
-     * @param array $info The column information.
-     * @psalm-param array{unsigned?: bool, dimension?: int} $info
-     * Parameter `dimension` is for PgSQL only
+     * @param mixed ...$info The column information.
+     * @psalm-param array{unsigned?: bool} $info The set of parameters may be different for a specific DBMS.
      *
      * @return ColumnSchemaInterface
      */
-    protected function createColumnSchema(string $type, string $name, bool|int ...$info): ColumnSchemaInterface
+    protected function createColumnSchema(string $type, string $name, mixed ...$info): ColumnSchemaInterface
     {
         $phpType = $this->getColumnPhpType($type);
         $isUnsigned = !empty($info['unsigned']);
