@@ -3,6 +3,8 @@
 ## 1.1.2 under development
 
 - Bug #751: Fix collected debug actions (@xepozz)
+- Enh #752: Implement `ColumnSchemaInterface` classes according to the data type of database table columns 
+  for type casting performance (@Tigrov)
 
 ## 1.1.1 August 16, 2023
 
