@@ -198,13 +198,13 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      */
     protected function prepareInsertValues(string $table, array|QueryInterface $columns, array $params = []): array
     {
+        if (empty($columns)) {
+            return [[], [], 'DEFAULT VALUES', []];
+        }
+
         if ($columns instanceof QueryInterface) {
             [$names, $values, $params] = $this->prepareInsertSelectSubQuery($columns, $params);
             return [$names, [], $values, $params];
-        }
-
-        if (empty($columns)) {
-            return [[], [], 'DEFAULT VALUES', []];
         }
 
         $names = [];
