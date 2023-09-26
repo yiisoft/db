@@ -3,6 +3,10 @@
 ## 1.1.2 under development
 
 - Bug #751: Fix collected debug actions (@xepozz)
+- Enh #756: Refactor `Quoter` (@Tigrov) 
+- Bug #756: Fix `quoteSql()` for SQL containing table with prefix (@Tigrov)
+- Bug #756: Fix `getTableNameParts()` for cases when different quotes for tables and columns (@Tigrov)
+- Bug #756: Fix `quoteTableName()` for sub-query with alias (@Tigrov)
 
 ## 1.1.1 August 16, 2023
 
