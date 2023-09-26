@@ -3,7 +3,7 @@
 ## 1.1.2 under development
 
 - Bug #751: Fix collected debug actions (@xepozz)
-- Chg #755: Deprecate `compositeForeignKey()` (@Tigrov) 
+- Chg #755: Deprecate `TableSchemaInterface::compositeForeignKey()` (@Tigrov) 
 - Enh #756: Refactor `Quoter` (@Tigrov) 
 - Bug #756: Fix `Quoter::quoteSql()` for SQL containing table with prefix (@Tigrov)
 - Bug #756: Fix `Quoter::getTableNameParts()` for cases when different quotes for tables and columns (@Tigrov)
