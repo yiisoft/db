@@ -3,6 +3,7 @@
 ## 1.1.2 under development
 
 - Bug #751: Fix collected debug actions (@xepozz)
+- Chg #755: Deprecate `compositeForeignKey()` (@Tigrov) 
 
 ## 1.1.1 August 16, 2023
 
