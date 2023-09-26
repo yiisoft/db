@@ -105,7 +105,7 @@ final class QuoterTest extends AbstractQuoterTest
 
     public function testQuoteTableNameWithQueryAlias()
     {
-        $quoter = new Quoter('`', '`', 'prefix_');
+        $quoter = new Quoter('`', '`');
         $name = '(SELECT * FROM table) alias';
 
         $this->assertSame($name, $quoter->quoteTableName($name));
