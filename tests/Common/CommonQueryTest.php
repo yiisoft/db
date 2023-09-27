@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\AbstractQueryTest;
 
@@ -31,6 +32,17 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->column();
 
         $this->assertEquals([2 => '1', 4 => '2', 6 => '3'], $result);
+
+        $db->close();
+    }
+
+    public function testSelectWithoutFrom()
+    {
+        $db = $this->getConnection();
+
+        $query = (new Query($db))->select(new Expression('1'));
+
+        $this->assertEquals(1, $query->scalar());
 
         $db->close();
     }
