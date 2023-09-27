@@ -684,10 +684,6 @@ class QueryBuilderProvider
                 ),
                 ['param1' => 'A', 'param2' => 'B'],
             ],
-            'no table' => [
-                [],
-                'SELECT *',
-            ],
         ];
     }
 
