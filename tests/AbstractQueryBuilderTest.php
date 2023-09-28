@@ -668,7 +668,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                WITH cte AS (SELECT * FROM [[admin_profile]])
+                WITH [[cte]] AS (SELECT * FROM [[admin_profile]])
                 SQL,
                 $db->getDriverName(),
             ),
@@ -1131,7 +1131,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                WITH a1 AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1), a2 AS ((SELECT [[id]] FROM [[t2]] INNER JOIN [[a1]] ON t2.id = a1.id WHERE expr = 2) UNION ( SELECT [[id]] FROM [[t3]] WHERE expr = 3 )) SELECT * FROM [[a2]]
+                WITH [[a1]] AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1), [[a2]] AS ((SELECT [[id]] FROM [[t2]] INNER JOIN [[a1]] ON t2.id = a1.id WHERE expr = 2) UNION ( SELECT [[id]] FROM [[t3]] WHERE expr = 3 )) SELECT * FROM [[a2]]
                 SQL,
                 $db->getDriverName(),
             ),
@@ -1157,16 +1157,44 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $qb->build($query);
 
-        $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                WITH RECURSIVE a1 AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1) SELECT * FROM [[a1]]
-                SQL,
-                $db->getDriverName(),
-            ),
-            $sql,
+        $expected = DbHelper::replaceQuotes(
+            <<<SQL
+            WITH RECURSIVE [[a1]] AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1) SELECT * FROM [[a1]]
+            SQL,
+            $db->getDriverName(),
         );
+
+        if (in_array($db->getDriverName(), ['oci', 'sqlsrv'], true)) {
+            $expected = str_replace('WITH RECURSIVE ', 'WITH ', $expected);
+        }
+
+        $this->assertSame($expected, $sql);
         $this->assertSame([], $params);
+    }
+
+    public function testBuildWithQueryRecursiveWithColumns()
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+        $withQuery = (new Query($db))->select(['id', 'name'])->from('user')->where(['status' => 1]);
+        $query = (new Query($db))->withQuery($withQuery, 'u(id, name)', true)->from('account');
+
+        [$sql, $params] = $qb->build($query);
+
+        $expected = DbHelper::replaceQuotes(
+            <<<SQL
+            WITH RECURSIVE [[u]]([[id]], [[name]]) AS (SELECT [[id]], [[name]] FROM [[user]] WHERE [[status]]=:qp0) SELECT * FROM [[account]]
+            SQL,
+            $db->getDriverName(),
+        );
+
+        if (in_array($db->getDriverName(), ['oci', 'sqlsrv'], true)) {
+            $expected = str_replace('WITH RECURSIVE ', 'WITH ', $expected);
+        }
+
+        $this->assertSame($expected, $sql);
+        $this->assertSame([':qp0' => 1], $params);
     }
 
     /**

@@ -421,7 +421,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                 [$with['query'], $params] = $this->build($with['query'], $params);
             }
 
-            $result[] = $with['alias'] . ' AS (' . $with['query'] . ')';
+            $quotedAlias = $this->quoteCteAlias($with['alias']);
+
+            $result[] = $quotedAlias . ' AS (' . $with['query'] . ')';
         }
 
         return 'WITH ' . ($recursive ? 'RECURSIVE ' : '') . implode(', ', $result);
@@ -609,5 +611,36 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         }
 
         return $tables;
+    }
+
+    /**
+     * Quotes an alias of Common Table Expressions (CTE)
+     *
+     * @param string $name The alias name with or without column names to quote.
+     *
+     * @return string The quoted alias.
+     */
+    private function quoteCteAlias(string $name): string
+    {
+        if (!str_contains($name, '(')) {
+            return $this->quoter->quoteTableName($name);
+        }
+
+        if (!str_ends_with($name, ')')) {
+            return $name;
+        }
+
+        /** @psalm-suppress PossiblyUndefinedArrayOffset */
+        [$name, $columnNames] = explode('(', substr($name, 0, -1), 2);
+
+        $quotedName = $this->quoter->quoteTableName(trim($name));
+        $columnNames = explode(',', $columnNames);
+        $quotedColumnNames = [];
+
+        foreach ($columnNames as $columnName) {
+            $quotedColumnNames[] = $this->quoter->quoteColumnName(trim($columnName));
+        }
+
+        return $quotedName . '(' . implode(', ', $quotedColumnNames) . ')';
     }
 }
