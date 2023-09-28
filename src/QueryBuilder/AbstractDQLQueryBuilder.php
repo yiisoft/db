@@ -411,7 +411,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         $recursive = false;
         $result = [];
 
-        /** @psalm-var array<array-key, array{query:string|Query, alias:string, recursive:bool}> $withs */
+        /** @psalm-var array{query:string|Query, alias:ExpressionInterface|string, recursive:bool}[] $withs */
         foreach ($withs as $with) {
             if ($with['recursive']) {
                 $recursive = true;
