@@ -1231,4 +1231,40 @@ class QueryBuilderProvider
             ],
         ];
     }
+
+    public static function cteAliases(): array
+    {
+        return [
+            'simple' => [
+                'a',
+                <<<SQL
+                WITH [[a]] AS (SELECT * FROM [[t]]) SELECT * FROM [[t]]
+                SQL,
+            ],
+            'with one column' => [
+                'a(b)',
+                <<<SQL
+                WITH [[a]]([[b]]) AS (SELECT * FROM [[t]]) SELECT * FROM [[t]]
+                SQL,
+            ],
+            'with columns' => [
+                'a(b,c,d)',
+                <<<SQL
+                WITH [[a]]([[b]], [[c]], [[d]]) AS (SELECT * FROM [[t]]) SELECT * FROM [[t]]
+                SQL,
+            ],
+            'with extra space' => [
+                'a(b,c,d) ',
+                <<<SQL
+                WITH a(b,c,d)  AS (SELECT * FROM [[t]]) SELECT * FROM [[t]]
+                SQL,
+            ],
+            'expression' => [
+                new Expression('a(b,c,d)'),
+                <<<SQL
+                WITH a(b,c,d) AS (SELECT * FROM [[t]]) SELECT * FROM [[t]]
+                SQL,
+            ],
+        ];
+    }
 }

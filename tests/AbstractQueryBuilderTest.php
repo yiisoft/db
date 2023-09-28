@@ -1172,29 +1172,21 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([], $params);
     }
 
-    public function testBuildWithQueryRecursiveWithColumns()
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::cteAliases */
+    public function testBuildWithQueryAlias($alias, $expected)
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
-        $withQuery = (new Query($db))->select(['id', 'name'])->from('user')->where(['status' => 1]);
-        $query = (new Query($db))->withQuery($withQuery, 'u(id, name)', true)->from('account');
+
+        $withQuery = (new Query($db))->from('t');
+        $query = (new Query($db))->withQuery($withQuery, $alias)->from('t');
 
         [$sql, $params] = $qb->build($query);
 
-        $expected = DbHelper::replaceQuotes(
-            <<<SQL
-            WITH RECURSIVE [[u]]([[id]], [[name]]) AS (SELECT [[id]], [[name]] FROM [[user]] WHERE [[status]]=:qp0) SELECT * FROM [[account]]
-            SQL,
-            $db->getDriverName(),
-        );
-
-        if (in_array($db->getDriverName(), ['oci', 'sqlsrv'], true)) {
-            $expected = str_replace('WITH RECURSIVE ', 'WITH ', $expected);
-        }
+        $expected = DbHelper::replaceQuotes($expected, $db->getDriverName());
 
         $this->assertSame($expected, $sql);
-        $this->assertSame([':qp0' => 1], $params);
+        $this->assertSame([], $params);
     }
 
     /**

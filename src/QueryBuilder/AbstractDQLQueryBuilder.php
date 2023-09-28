@@ -616,12 +616,16 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     /**
      * Quotes an alias of Common Table Expressions (CTE)
      *
-     * @param string $name The alias name with or without column names to quote.
+     * @param ExpressionInterface|string $name The alias name with or without column names to quote.
      *
      * @return string The quoted alias.
      */
-    private function quoteCteAlias(string $name): string
+    private function quoteCteAlias(ExpressionInterface|string $name): string
     {
+        if ($name instanceof ExpressionInterface) {
+            return $this->buildExpression($name);
+        }
+
         if (!str_contains($name, '(')) {
             return $this->quoter->quoteTableName($name);
         }
@@ -631,16 +635,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         }
 
         /** @psalm-suppress PossiblyUndefinedArrayOffset */
-        [$name, $columnNames] = explode('(', substr($name, 0, -1), 2);
+        [$name, $columns] = explode('(', substr($name, 0, -1), 2);
+        $name = trim($name);
 
-        $quotedName = $this->quoter->quoteTableName(trim($name));
-        $columnNames = explode(',', $columnNames);
-        $quotedColumnNames = [];
-
-        foreach ($columnNames as $columnName) {
-            $quotedColumnNames[] = $this->quoter->quoteColumnName(trim($columnName));
-        }
-
-        return $quotedName . '(' . implode(', ', $quotedColumnNames) . ')';
+        return $this->quoter->quoteTableName($name) . '(' . $this->buildColumns($columns) . ')';
     }
 }
