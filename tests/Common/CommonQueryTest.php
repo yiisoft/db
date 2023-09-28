@@ -38,7 +38,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
 
     public function testWithQuery()
     {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $with = (new Query($db))
             ->distinct()
@@ -50,6 +50,8 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->from('statuses');
 
         $this->assertEquals(2, $query->count());
+
+        $db->close();
     }
 
     public function testWithQueryRecursive()
@@ -76,5 +78,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
             ->sum($quotedName);
 
         $this->assertEquals(55, $sum);
+
+        $db->close();
     }
 }
