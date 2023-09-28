@@ -1183,9 +1183,14 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $qb->build($query);
 
-        $expected = DbHelper::replaceQuotes($expected, $db->getDriverName());
+        $expectedSql = DbHelper::replaceQuotes(
+            <<<SQL
+            WITH $expected AS (SELECT * FROM [[t]]) SELECT * FROM [[t]]
+            SQL,
+            $db->getDriverName(),
+        );
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame($expectedSql, $sql);
         $this->assertSame([], $params);
     }
 
