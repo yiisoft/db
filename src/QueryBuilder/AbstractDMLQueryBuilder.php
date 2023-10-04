@@ -84,9 +84,10 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             return '';
         }
 
-        foreach ($columns as $i => $name) {
-            $columns[$i] = $this->quoter->quoteColumnName($name);
-        }
+        $columns = array_map(
+            [$this->quoter, 'quoteColumnName'],
+            $columns,
+        );
 
         return 'INSERT INTO ' . $this->quoter->quoteTableName($table)
             . ' (' . implode(', ', $columns) . ') VALUES ' . implode(', ', $values);
@@ -298,9 +299,10 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             /** @psalm-var array<string, mixed> $insertColumns */
             $insertNames = $this->getNormalizeColumnNames(array_keys($insertColumns));
 
-            foreach ($insertNames as $i => $name) {
-                $insertNames[$i] = $this->quoter->quoteColumnName($name);
-            }
+            $insertNames = array_map(
+                [$this->quoter, 'quoteColumnName'],
+                $insertNames,
+            );
         }
 
         /** @psalm-var string[] $uniqueNames */
@@ -374,13 +376,13 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             array_filter(
                 $constraints,
                 static function (Constraint $constraint) use ($quoter, $columns, &$columnNames): bool {
-                    /** @psalm-var string[] $getColumnNames */
-                    $getColumnNames = (array) $constraint->getColumnNames();
-                    $constraintColumnNames = [];
+                    /** @psalm-var string[] $constraintColumnNames */
+                    $constraintColumnNames = (array) $constraint->getColumnNames();
 
-                    foreach ($getColumnNames as $columnName) {
-                        $constraintColumnNames[] = $quoter->quoteColumnName($columnName);
-                    }
+                    $constraintColumnNames = array_map(
+                        [$quoter, 'quoteColumnName'],
+                        $constraintColumnNames,
+                    );
 
                     $result = empty(array_diff($constraintColumnNames, $columns));
 
@@ -406,9 +408,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      */
     protected function normalizeColumnNames(array $columns): array
     {
-        /** @var string[] $columnList */
-        $columnList = array_keys($columns);
-        $normalizedNames = $this->getNormalizeColumnNames($columnList);
+        /** @var string[] $columnNames */
+        $columnNames = array_keys($columns);
+        $normalizedNames = $this->getNormalizeColumnNames($columnNames);
 
         return array_combine($normalizedNames, $columns);
     }
