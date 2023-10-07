@@ -8,9 +8,13 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 use function addcslashes;
+use function array_slice;
+use function count;
 use function explode;
 use function implode;
 use function is_string;
+use function preg_match;
+use function preg_replace;
 use function preg_replace_callback;
 use function str_contains;
 use function str_replace;
@@ -44,7 +48,7 @@ class Quoter implements QuoterInterface
     {
         $cleanedUpTableNames = [];
         $pattern = <<<PATTERN
-        ~^\s*((?:['"`\[]|{{).*?(?:['"`\]]|}})|\(.*?\)|.*?)(?:(?:\s+(?:as\s+)?)((?:['"`\[]|{{).*?(?:['"`\]]|}})|.*?))?\s*$~iux
+        ~^\s*((?:['"`\[]|{{).*?(?:['"`\]]|}})|\(.*?\)|.*?)(?:\s+(?:as\s+)?((?:['"`\[]|{{).*?(?:['"`\]]|}})|.*?))?\s*$~iux
         PATTERN;
 
         /** @psalm-var array<array-key, ExpressionInterface|string> $tableNames */
@@ -104,7 +108,7 @@ class Quoter implements QuoterInterface
             $name = $parts[count($parts) - 1];
         }
 
-        return preg_replace('|^\[\[([_\w\-. ]+)\]\]$|', '\1', $name);
+        return preg_replace('|^\[\[([\w\-. ]+)]]$|', '\1', $name);
     }
 
     public function quoteColumnName(string $name): string
@@ -135,8 +139,9 @@ class Quoter implements QuoterInterface
             [$startingCharacter, $endingCharacter] = $this->columnQuoteCharacter;
         }
 
-        return $name === '*' || str_contains($name, $startingCharacter) ? $name : $startingCharacter . $name
-            . $endingCharacter;
+        return $name === '*' || str_starts_with($name, $startingCharacter)
+            ? $name
+            : $startingCharacter . $name . $endingCharacter;
     }
 
     public function quoteSimpleTableName(string $name): string
@@ -147,13 +152,15 @@ class Quoter implements QuoterInterface
             [$startingCharacter, $endingCharacter] = $this->tableQuoteCharacter;
         }
 
-        return str_contains($name, $startingCharacter) ? $name : $startingCharacter . $name . $endingCharacter;
+        return str_starts_with($name, $startingCharacter)
+            ? $name
+            : $startingCharacter . $name . $endingCharacter;
     }
 
     public function quoteSql(string $sql): string
     {
         return preg_replace_callback(
-            '/({{(%?[\w\-. ]+%?)}}|\\[\\[([\w\-. ]+)]])/',
+            '/({{(%?[\w\-. ]+)%?}}|\\[\\[([\w\-. ]+)]])/',
             function ($matches) {
                 if (isset($matches[3])) {
                     return $this->quoteColumnName($matches[3]);
@@ -167,7 +174,7 @@ class Quoter implements QuoterInterface
 
     public function quoteTableName(string $name): string
     {
-        if (str_starts_with($name, '(') && str_ends_with($name, ')')) {
+        if (str_starts_with($name, '(')) {
             return $name;
         }
 
@@ -194,7 +201,7 @@ class Quoter implements QuoterInterface
             return $value;
         }
 
-        return '\'' . str_replace('\'', '\'\'', addcslashes($value, "\000\032")) . '\'';
+        return "'" . str_replace("'", "''", addcslashes($value, "\000\032")) . "'";
     }
 
     public function unquoteSimpleColumnName(string $name): string
@@ -205,7 +212,9 @@ class Quoter implements QuoterInterface
             $startingCharacter = $this->columnQuoteCharacter[0];
         }
 
-        return !str_contains($name, $startingCharacter) ? $name : substr($name, 1, -1);
+        return !str_starts_with($name, $startingCharacter)
+            ? $name
+            : substr($name, 1, -1);
     }
 
     public function unquoteSimpleTableName(string $name): string
@@ -216,7 +225,9 @@ class Quoter implements QuoterInterface
             $startingCharacter = $this->tableQuoteCharacter[0];
         }
 
-        return !str_contains($name, $startingCharacter) ? $name : substr($name, 1, -1);
+        return !str_starts_with($name, $startingCharacter)
+            ? $name
+            : substr($name, 1, -1);
     }
 
     /**
@@ -229,7 +240,7 @@ class Quoter implements QuoterInterface
         $lastKey = count($parts) - 1;
 
         foreach ($parts as $k => &$part) {
-            $part = ($withColumn || $lastKey === $k) ?
+            $part = ($withColumn && $lastKey === $k) ?
                 $this->unquoteSimpleColumnName($part) :
                 $this->unquoteSimpleTableName($part);
         }

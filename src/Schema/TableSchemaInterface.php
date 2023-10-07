@@ -211,6 +211,8 @@ interface TableSchemaInterface
      * @param string $to The column name in foreign table.
      *
      * @throws NotSupportedException
+     *
+     * @deprecated will be removed in version 2.0.0
      */
     public function compositeForeignKey(int $id, string $from, string $to): void;
 }
