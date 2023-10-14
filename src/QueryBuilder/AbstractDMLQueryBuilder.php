@@ -18,17 +18,22 @@ use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_combine;
 use function array_diff;
+use function array_fill_keys;
 use function array_filter;
+use function array_key_first;
 use function array_keys;
 use function array_map;
 use function array_merge;
+use function array_slice;
 use function array_unique;
 use function array_values;
 use function implode;
 use function in_array;
+use function is_array;
 use function is_string;
 use function json_encode;
 use function preg_match;
+use function reset;
 use function sort;
 
 /**
@@ -58,25 +63,58 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $columns = $this->getNormalizeColumnNames($columns);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
+        if ($columns === []) {
+            $columnNames = [];
+            if (is_array($rows)) {
+                /** @psalm-var iterable $row */
+                $row = reset($rows);
+
+                if (is_array($row)) {
+                    if (is_string(array_key_first($row))) {
+                        $columnNames = array_keys($row);
+                    } else {
+                        $columnNames = array_slice(array_keys($columnSchemas), 0, count($row));
+                    }
+
+                    $columns = array_combine($columnNames, $columnNames);
+                }
+            }
+        } else {
+            $columnNames = array_values($columns);
+        }
+
+        $columnKeys = array_fill_keys($columnNames, false);
+
         /** @psalm-var array[] $rows */
         foreach ($rows as $row) {
             $i = 0;
-            $placeholders = [];
-            /** @psalm-var mixed $value */
-            foreach ($row as $value) {
-                if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
+            $placeholders = $columnKeys;
+            /**
+             * @psalm-var string|int $key
+             * @psalm-var mixed $value
+             */
+            foreach ($row as $key => $value) {
+                /** @psalm-var string|int $columnName */
+                $columnName = $columns[$key] ?? (
+                    isset($columnKeys[$key])
+                        ? $key
+                        : $columnNames[$i] ?? $i
+                );
+
+                if (isset($columnSchemas[$columnName])) {
                     /** @psalm-var mixed $value */
-                    $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
+                    $value = $columnSchemas[$columnName]->dbTypecast($value);
                 }
 
                 if ($value instanceof ExpressionInterface) {
-                    $placeholders[] = $this->queryBuilder->buildExpression($value, $params);
+                    $placeholders[$columnName] = $this->queryBuilder->buildExpression($value, $params);
                 } else {
-                    $placeholders[] = $this->queryBuilder->bindParam($value, $params);
+                    $placeholders[$columnName] = $this->queryBuilder->bindParam($value, $params);
                 }
 
                 ++$i;
             }
+
             $values[] = '(' . implode(', ', $placeholders) . ')';
         }
 
@@ -84,13 +122,13 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             return '';
         }
 
-        $columns = array_map(
+        $columnNames = array_map(
             [$this->quoter, 'quoteColumnName'],
-            $columns,
+            $columnNames,
         );
 
         return 'INSERT INTO ' . $this->quoter->quoteTableName($table)
-            . ' (' . implode(', ', $columns) . ') VALUES ' . implode(', ', $values);
+            . ' (' . implode(', ', $columnNames) . ') VALUES ' . implode(', ', $values);
     }
 
     public function delete(string $table, array|string $condition, array &$params): string
@@ -424,13 +462,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      */
     protected function getNormalizeColumnNames(array $columns): array
     {
-        $normalizedNames = [];
-
-        foreach ($columns as $name) {
-            $normalizedName = $this->quoter->ensureColumnName($name);
-            $normalizedNames[] = $this->quoter->unquoteSimpleColumnName($normalizedName);
+        foreach ($columns as &$name) {
+            $name = $this->quoter->ensureColumnName($name);
+            $name = $this->quoter->unquoteSimpleColumnName($name);
         }
 
-        return $normalizedNames;
+        return $columns;
     }
 }
