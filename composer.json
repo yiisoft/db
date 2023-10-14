@@ -36,7 +36,7 @@
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^4.30|^5.12",
         "yiisoft/aliases": "^3.0",
-        "yiisoft/cache-file": "^2.0",
+        "yiisoft/cache-file": "^3.1",
         "yiisoft/di": "^1.0",
         "yiisoft/event-dispatcher": "^1.0",
         "yiisoft/json": "^1.0",
