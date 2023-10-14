@@ -8,6 +8,7 @@
 - Bug #756: Fix `Quoter::quoteSql()` for SQL containing table with prefix (@Tigrov)
 - Bug #756: Fix `Quoter::getTableNameParts()` for cases when different quotes for tables and columns (@Tigrov)
 - Bug #756: Fix `Quoter::quoteTableName()` for sub-query with alias (@Tigrov)
+- Bug #761: Quote aliases of CTE in `WITH` queries (@Tigrov)
 - Chg #765: Deprecate `SchemaInterface::TYPE_JSONB` (@Tigrov)
 
 ## 1.1.1 August 16, 2023
