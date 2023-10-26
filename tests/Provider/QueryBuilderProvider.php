@@ -12,6 +12,7 @@ use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
@@ -1240,6 +1241,14 @@ class QueryBuilderProvider
             'with columns' => ['a(b,c,d)', '[[a]]([[b]], [[c]], [[d]])'],
             'with extra space' => ['a(b,c,d) ', 'a(b,c,d) '],
             'expression' => [new Expression('a(b,c,d)'), 'a(b,c,d)'],
+        ];
+    }
+
+    public static function columnTypes(): array
+    {
+        return [
+            [SchemaInterface::TYPE_STRING],
+            [new Column('string(100)')],
         ];
     }
 }

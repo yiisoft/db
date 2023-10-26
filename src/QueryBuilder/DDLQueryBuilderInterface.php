@@ -36,7 +36,7 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table to add the new column will to.
      * @param string $column The name of the new column.
-     * @param string $type The column type.
+     * @param ColumnInterface|string $type The column type.
      * {@see getColumnType()} Method will be invoked to convert an abstract column type (if any) into the physical one.
      * Anything that isn't recognized as an abstract type will be kept in the generated SQL.
      * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become
@@ -46,7 +46,7 @@ interface DDLQueryBuilderInterface
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function addColumn(string $table, string $column, string $type): string;
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): string;
 
     /**
      * Builds an SQL command for adding comment to column.
@@ -233,6 +233,7 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The name of the table to create.
      * @param array $columns The columns (name => definition) in the new table.
+     * The definition can be `string` or {@see ColumnInterface} instance.
      * @param string|null $options More SQL fragments to append to the generated SQL.
      *
      * @return string The SQL statement for creating a new DB table.

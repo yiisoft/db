@@ -22,6 +22,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -53,18 +54,19 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    public function testAddColumn(): void
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::columnTypes */
+    public function testAddColumn(ColumnInterface|string $type): void
     {
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->addColumn('table', 'column', SchemaInterface::TYPE_STRING);
+        $sql = $qb->addColumn('table', 'column', $type);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
-                SQL . ' ' . $qb->getColumnType(SchemaInterface::TYPE_STRING),
+                SQL . ' ' . $qb->getColumnType($type),
                 $db->getDriverName(),
             ),
             $sql,
@@ -185,18 +187,19 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($expected, $sql);
     }
 
-    public function testAlterColumn(): void
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::columnTypes */
+    public function testAlterColumn(ColumnInterface|string $type): void
     {
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->alterColumn('customer', 'email', SchemaInterface::TYPE_STRING);
+        $sql = $qb->alterColumn('customer', 'email', $type);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[customer]] CHANGE [[email]] [[email]]
-                SQL . ' ' . $qb->getColumnType(SchemaInterface::TYPE_STRING),
+                SQL . ' ' . $qb->getColumnType($type),
                 $db->getDriverName(),
             ),
             $sql,

@@ -39,13 +39,13 @@ interface CommandInterface
      *
      * @param string $table The name of the table to add new column to.
      * @param string $column The name of the new column.
-     * @param string $type The column type. {@see QueryBuilder::getColumnType()} will be called to convert the given
-     * column type to the database one.
+     * @param ColumnInterface|string $type The column type. {@see QueryBuilder::getColumnType()} will be called
+     * to convert the given column type to the database one.
      * For example, `string` will be converted to `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function addColumn(string $table, string $column, string $type): static;
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): static;
 
     /**
      * Builds an SQL command for adding a comment to a column.
@@ -304,6 +304,7 @@ interface CommandInterface
      *
      * @param string $table The name of the table to create.
      * @param array $columns The columns (name => definition) in the new table.
+     * The definition can be `string` or {@see ColumnInterface} instance.
      * @param string|null $options More SQL fragments to append to the generated SQL.
      *
      * @throws Exception
