@@ -177,6 +177,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
                     . ' '
                     . $this->queryBuilder->getColumnType($type);
             } else {
+                /** @psalm-var string $type */
                 $cols[] = "\t" . $type;
             }
         }
