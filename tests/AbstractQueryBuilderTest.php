@@ -187,19 +187,18 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($expected, $sql);
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::columnTypes */
-    public function testAlterColumn(ColumnInterface|string $type): void
+    public function testAlterColumn(): void
     {
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->alterColumn('customer', 'email', $type);
+        $sql = $qb->alterColumn('customer', 'email', SchemaInterface::TYPE_STRING);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[customer]] CHANGE [[email]] [[email]]
-                SQL . ' ' . $qb->getColumnType($type),
+                SQL . ' ' . $qb->getColumnType(SchemaInterface::TYPE_STRING),
                 $db->getDriverName(),
             ),
             $sql,

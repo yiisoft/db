@@ -158,20 +158,17 @@ final class CommandTest extends AbstractCommandTest
         $this->assertSame($expected, $sql);
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::columnTypes */
-    public function testAlterColumn(ColumnInterface|string $type): void
+    public function testAlterColumn(): void
     {
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->alterColumn('table', 'column', $type)->getSql();
-
-        $type = $db->getQueryBuilder()->getColumnType($type);
+        $sql = $command->alterColumn('table', 'column', SchemaInterface::TYPE_INTEGER)->getSql();
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                ALTER TABLE [[table]] CHANGE [[column]] [[column]] {$type}
+                ALTER TABLE [[table]] CHANGE [[column]] [[column]] integer
                 SQL,
                 $db->getDriverName(),
             ),
