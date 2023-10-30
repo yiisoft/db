@@ -58,14 +58,12 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $columns = $this->getNormalizeColumnNames($columns);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
-        /** @psalm-var array[] $rows */
         foreach ($rows as $row) {
             $i = 0;
             $placeholders = [];
-            /** @psalm-var mixed $value */
+
             foreach ($row as $value) {
                 if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
-                    /** @psalm-var mixed $value */
                     $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
                 }
 
@@ -213,15 +211,10 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $columns = $this->normalizeColumnNames($columns);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
-        /**
-         * @psalm-var mixed $value
-         * @psalm-var array<string, mixed> $columns
-         */
         foreach ($columns as $name => $value) {
             $names[] = $this->quoter->quoteColumnName($name);
 
             if (isset($columnSchemas[$name])) {
-                /** @var mixed $value */
                 $value = $columnSchemas[$name]->dbTypecast($value);
             }
 
@@ -251,13 +244,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $columns = $this->normalizeColumnNames($columns);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
-        /**
-         * @psalm-var array<string, mixed> $columns
-         * @psalm-var mixed $value
-         */
         foreach ($columns as $name => $value) {
             if (isset($columnSchemas[$name])) {
-                /** @psalm-var mixed $value */
                 $value = $columnSchemas[$name]->dbTypecast($value);
             }
 
@@ -282,6 +270,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @throws JsonException
      * @throws NotSupportedException
      *
+     * @psalm-param array<string, mixed>|QueryInterface $insertColumns
      * @psalm-param Constraint[] $constraints
      *
      * @return array Array of unique, insert and update quoted column names.
@@ -296,7 +285,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         if ($insertColumns instanceof QueryInterface) {
             [$insertNames] = $this->prepareInsertSelectSubQuery($insertColumns);
         } else {
-            /** @psalm-var array<string, mixed> $insertColumns */
             $insertNames = $this->getNormalizeColumnNames(array_keys($insertColumns));
 
             $insertNames = array_map(
@@ -305,7 +293,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             );
         }
 
-        /** @psalm-var string[] $uniqueNames */
         $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
 
         if ($updateColumns === true) {
@@ -328,7 +315,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @throws JsonException
      *
-     * @return array The quoted column names.
+     * @return string[] The quoted column names.
      *
      * @psalm-param Constraint[] $constraints
     */
@@ -405,6 +392,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @param array $columns The column data (name => value).
      *
      * @return array The normalized column names (name => value).
+     *
+     * @psalm-return array<string, mixed>
      */
     protected function normalizeColumnNames(array $columns): array
     {

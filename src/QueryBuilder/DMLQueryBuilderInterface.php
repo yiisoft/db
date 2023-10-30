@@ -43,6 +43,7 @@ interface DMLQueryBuilderInterface
      * @return string The batch INSERT SQL statement.
      *
      * @psalm-param string[] $columns
+     * @psalm-param iterable<array-key, array<array-key, mixed>> $rows
      *
      * Note:
      * - That the values in each row must match the corresponding column names.
