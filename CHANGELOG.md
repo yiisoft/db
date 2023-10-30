@@ -2,11 +2,11 @@
 
 ## 1.1.2 under development
 
-- Enh #746: Refactor `DMLQueryBuilder` (@Tigrov)
-- Bug #746: Fix `DMLQueryBuilder::upsert()` when unique index is not at the first position of inserted values (@Tigrov)
-- Bug #746: Typecast values in `DMLQueryBuilder::batchInsert()` if column names with table name and brackets (@Tigrov)
-- Bug #746: Typecast values in `DMLQueryBuilder::batchInsert()` if values with string keys, issue #61 (point 2) (@Tigrov)
-- Enh #746: Enhanced documentation of `batchInsert()` and `update()` methods (@Tigrov)
+- Enh #746: Refactor `AbstractDMLQueryBuilder` (@Tigrov)
+- Bug #746: Fix `AbstractDMLQueryBuilder::upsert()` when unique index is not at the first position of inserted values (@Tigrov)
+- Bug #746: Typecast values in `AbstractDMLQueryBuilder::batchInsert()` if column names with table name and brackets (@Tigrov)
+- Bug #746, #61: Typecast values in `AbstractDMLQueryBuilder::batchInsert()` if values with string keys (@Tigrov)
+- Enh #746: Enhanced documentation of `batchInsert()` and `update()` methods of `DDLQueryBuilderInterface` interface (@Tigrov)
 - Bug #751: Fix collected debug actions (@xepozz)
 - Chg #755: Deprecate `TableSchemaInterface::compositeForeignKey()` (@Tigrov) 
 - Enh #756: Refactor `Quoter` (@Tigrov) 
