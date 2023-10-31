@@ -194,6 +194,8 @@ interface DMLQueryBuilderInterface
      * @throws JsonException
      * @throws NotSupportedException If this isn't supported by the underlying DBMS.
      *
+     * @psalm-param array<string, mixed>|QueryInterface $insertColumns
+     *
      * Note: The method will escape the table and column names.
      */
     public function upsert(
