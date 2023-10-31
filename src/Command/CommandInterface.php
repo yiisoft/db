@@ -822,6 +822,8 @@ interface CommandInterface
      * @throws JsonException
      * @throws NotSupportedException
      *
+     * @psalm-param array<string, mixed>|QueryInterface $insertColumns
+     *
      * Note: The method will quote the `table` and `insertColumns`, `updateColumns` parameters before using it in the
      * generated SQL.
      */
