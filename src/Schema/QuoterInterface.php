@@ -30,7 +30,7 @@ interface QuoterInterface
      * Splits full table name into parts.
      *
      * @param string $name The full name of the table.
-     * @param bool $withColumn For cases when full name has as last prat name of column.
+     * @param bool $withColumn Deprecated. Will be removed in version 2.0.0.
      *
      * @return string[] The table name parts.
      */
