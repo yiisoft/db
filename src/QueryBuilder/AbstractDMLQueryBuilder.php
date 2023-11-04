@@ -21,21 +21,16 @@ use function array_combine;
 use function array_diff;
 use function array_fill_keys;
 use function array_filter;
-use function array_key_first;
 use function array_keys;
 use function array_map;
 use function array_merge;
-use function array_slice;
 use function array_unique;
 use function array_values;
-use function count;
 use function implode;
 use function in_array;
-use function is_array;
 use function is_string;
 use function json_encode;
 use function preg_match;
-use function reset;
 use function sort;
 
 /**
@@ -63,32 +58,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
         $values = [];
         $columns = $this->getNormalizeColumnNames('', $columns);
-        $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
-        $values = [];
-        $columns = $this->getNormalizeColumnNames($columns);
-        $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
-
-        if ($columns === []) {
-            $columnNames = [];
-            if (is_array($rows)) {
-                /** @psalm-var iterable $row */
-                $row = reset($rows);
-
-                if (is_array($row)) {
-                    if (is_string(array_key_first($row))) {
-                        $columnNames = array_keys($row);
-                    } else {
-                        $columnNames = array_slice(array_keys($columnSchemas), 0, count($row));
-                    }
-
-                    $columns = array_combine($columnNames, $columnNames);
-                }
-            }
-        } else {
-            $columnNames = array_values($columns);
-        }
-
+        $columnNames = array_values($columns);
         $columnKeys = array_fill_keys($columnNames, false);
+        $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
         foreach ($rows as $row) {
             $i = 0;
@@ -99,11 +71,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
              */
             foreach ($row as $key => $value) {
                 /** @psalm-var string|int $columnName */
-                $columnName = $columns[$key] ?? (
-                    isset($columnKeys[$key])
-                        ? $key
-                        : $columnNames[$i] ?? $i
-                );
+                $columnName = $columns[$key] ?? (isset($columnKeys[$key]) ? $key : $columnNames[$i] ?? $i);
 
                 if (isset($columnSchemas[$columnName])) {
                     /** @psalm-var mixed $value */

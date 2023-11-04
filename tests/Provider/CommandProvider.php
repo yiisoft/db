@@ -424,22 +424,6 @@ class CommandProvider
                     ':qp3' => 2.0,
                 ],
             ],
-            'with empty columns' => [
-                'customer',
-                [],
-                'values' => [['10.0', 'info@gmail.com']],
-                'expected' => DbHelper::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[customer]] (`id`, `email`) VALUES (:qp0, :qp1)
-                    SQL,
-                    static::$driverName,
-                ),
-                'expectedParams' => [
-                    ':qp0' => 10,
-                    ':qp1' => 'info@gmail.com',
-                ],
-                4,
-            ],
         ];
     }
 
