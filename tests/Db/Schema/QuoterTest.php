@@ -87,4 +87,27 @@ final class QuoterTest extends AbstractQuoterTest
             ['tableAlias' => 123],
         );
     }
+
+    public function testGetTableNamePartsWithDifferentQuotes(): void
+    {
+        $quoter = new Quoter('`', '"');
+
+        $this->assertSame(['schema', 'table'], $quoter->getTableNameParts('"schema"."table"'));
+    }
+
+    public function testQuoteSqlWithTablePrefix(): void
+    {
+        $quoter = new Quoter('`', '`', 'prefix_');
+        $sql = 'SELECT * FROM {{%table%}}';
+
+        $this->assertSame('SELECT * FROM `prefix_table`', $quoter->quoteSql($sql));
+    }
+
+    public function testQuoteTableNameWithQueryAlias()
+    {
+        $quoter = new Quoter('`', '`');
+        $name = '(SELECT * FROM table) alias';
+
+        $this->assertSame($name, $quoter->quoteTableName($name));
+    }
 }
