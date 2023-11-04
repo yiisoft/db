@@ -67,11 +67,10 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $placeholders = $columnKeys;
 
             foreach ($row as $key => $value) {
-                /** @psalm-var string|int $columnName */
+                /** @psalm-suppress MixedArrayTypeCoercion */
                 $columnName = $columns[$key] ?? (isset($columnKeys[$key]) ? $key : $columnNames[$i] ?? $i);
-
+                /** @psalm-suppress MixedArrayTypeCoercion */
                 if (isset($columnSchemas[$columnName])) {
-                    /** @psalm-var mixed $value */
                     $value = $columnSchemas[$columnName]->dbTypecast($value);
                 }
 
