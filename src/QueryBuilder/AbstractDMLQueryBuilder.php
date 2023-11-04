@@ -65,10 +65,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         foreach ($rows as $row) {
             $i = 0;
             $placeholders = $columnKeys;
-            /**
-             * @psalm-var string|int $key
-             * @psalm-var mixed $value
-             */
+
             foreach ($row as $key => $value) {
                 /** @psalm-var string|int $columnName */
                 $columnName = $columns[$key] ?? (isset($columnKeys[$key]) ? $key : $columnNames[$i] ?? $i);

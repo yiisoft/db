@@ -2,7 +2,6 @@
 
 ## 1.1.2 under development
 
-- Bug #746: Refactor `DMLQueryBuilder` and fix: unique indexes in `upsert()`, column names with table name and brackets, `batchInsert()` with associative arrays, enhanced documentation of `batchInsert()` and `update()` (@Tigrov)
 - Enh #746: Refactor `AbstractDMLQueryBuilder` (@Tigrov)
 - Bug #746: Fix `AbstractDMLQueryBuilder::upsert()` when unique index is not at the first position of inserted values (@Tigrov)
 - Bug #746: Typecast values in `AbstractDMLQueryBuilder::batchInsert()` if column names with table name and brackets (@Tigrov)
