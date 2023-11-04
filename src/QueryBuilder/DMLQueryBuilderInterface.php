@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
-use Generator;
 use JsonException;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -34,7 +33,7 @@ interface DMLQueryBuilderInterface
      *
      * @param string $table The table to insert new rows into.
      * @param string[] $columns The column names of the table.
-     * @param Generator|iterable $rows The rows to batch-insert into the table.
+     * @param iterable $rows The rows to batch-insert into the table.
      * @param array $params The binding parameters. This parameter exists.
      *
      * @throws Exception
@@ -43,12 +42,13 @@ interface DMLQueryBuilderInterface
      * @return string The batch INSERT SQL statement.
      *
      * @psalm-param string[] $columns
+     * @psalm-param iterable<array-key, array<array-key, mixed>> $rows
      *
      * Note:
      * - That the values in each row must match the corresponding column names.
      * - The method will escape the column names, and quote the values to insert.
      */
-    public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string;
+    public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string;
 
     /**
      * Creates a `DELETE` SQL statement.
@@ -193,6 +193,8 @@ interface DMLQueryBuilderInterface
      * @throws InvalidConfigException
      * @throws JsonException
      * @throws NotSupportedException If this isn't supported by the underlying DBMS.
+     *
+     * @psalm-param array<string, mixed>|QueryInterface $insertColumns
      *
      * Note: The method will escape the table and column names.
      */
