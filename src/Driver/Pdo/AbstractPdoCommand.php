@@ -14,12 +14,14 @@ use Throwable;
 use Yiisoft\Db\Command\AbstractCommand;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
+use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\Query\Data\DataReader;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
  * Represents a database command that can be executed using a PDO (PHP Data Object) database connection.
@@ -161,6 +163,11 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         }
     }
 
+    protected function getQueryBuilder(): QueryBuilderInterface
+    {
+        return $this->db->getQueryBuilder();
+    }
+
     protected function getQueryMode(int $queryMode): string
     {
         return match ($queryMode) {
@@ -184,7 +191,35 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      * @throws Exception
      * @throws Throwable
      */
-    abstract protected function internalExecute(string|null $rawSql): void;
+    protected function internalExecute(string|null $rawSql): void
+    {
+        $attempt = 0;
+
+        while (true) {
+            try {
+                if (
+                    ++$attempt === 1
+                    && $this->isolationLevel !== null
+                    && $this->db->getTransaction() === null
+                ) {
+                    $this->db->transaction(
+                        fn () => $this->internalExecute($rawSql),
+                        $this->isolationLevel
+                    );
+                } else {
+                    $this->pdoStatement?->execute();
+                }
+                break;
+            } catch (PDOException $e) {
+                $rawSql = $rawSql ?: $this->getRawSql();
+                $e = (new ConvertException($e, $rawSql))->run();
+
+                if ($this->retryHandler === null || !($this->retryHandler)($e, $attempt)) {
+                    throw $e;
+                }
+            }
+        }
+    }
 
     /**
      * @throws InvalidParamException
