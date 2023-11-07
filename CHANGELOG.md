@@ -15,6 +15,7 @@
 - Bug #756: Fix `Quoter::quoteTableName()` for sub-query with alias (@Tigrov)
 - Bug #761: Quote aliases of CTE in `WITH` queries (@Tigrov)
 - Chg #765: Deprecate `SchemaInterface::TYPE_JSONB` (@Tigrov)
+- Enh #770: Move methods from concrete `Command` class to `AbstractPdoCommand` class (@Tigrov)
 
 ## 1.1.1 August 16, 2023
 
