@@ -302,16 +302,10 @@ class CommandProvider
                     ':qp3' => true,
                 ],
             ],
-            'wrongBehavior' => [
+            'table name with column name with brackets' => [
                 '{{%type}}',
                 ['{{%type}}.[[int_col]]', '[[float_col]]', 'char_col', 'bool_col'],
                 'values' => [['0', '0.0', 'Kyiv {{city}}, Ukraine', false]],
-                /**
-                 * Test covers potentially wrong behavior and marks it as expected!.
-                 *
-                 * In case table name or table column is passed with curly or square bracelets, QueryBuilder can not
-                 * determine the table schema and typecast values properly.
-                 */
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
@@ -319,8 +313,8 @@ class CommandProvider
                     static::$driverName,
                 ),
                 'expectedParams' => [
-                    ':qp0' => '0',
-                    ':qp1' => '0.0',
+                    ':qp0' => 0,
+                    ':qp1' => 0.0,
                     ':qp2' => 'Kyiv {{city}}, Ukraine',
                     ':qp3' => false,
                 ],
@@ -344,6 +338,23 @@ class CommandProvider
                     ':qp1' => 1.0,
                     ':qp2' => 'test',
                     ':qp3' => false,
+                ],
+            ],
+            'with associative values' => [
+                'type',
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
+                'values' => [['int' => '1.0', 'float' => '2', 'char' => 10, 'bool' => 1]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 2.0,
+                    ':qp2' => '10',
+                    ':qp3' => true,
                 ],
             ],
         ];

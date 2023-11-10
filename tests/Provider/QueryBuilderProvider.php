@@ -214,6 +214,18 @@ class QueryBuilderProvider
                 ),
                 [':qp0' => null],
             ],
+            'column table names are not checked' => [
+                '{{%type}}',
+                ['{{%type}}.[[bool_col]]', '{{%another_table}}.[[bool_col2]]'],
+                [[true, false]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO {{%type}} ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
+                    SQL,
+                    static::$driverName,
+                ),
+                [':qp0' => null, ':qp1' => null],
+            ],
             'empty-sql' => [
                 '{{%type}}',
                 [],
@@ -1107,6 +1119,13 @@ class QueryBuilderProvider
                 true,
                 '',
                 [':qp0' => 'test@example.com', ':qp1' => 'bar {{city}}', ':qp2' => 1, ':qp3' => null],
+            ],
+            'regular values with unique at not the first position' => [
+                'T_upsert',
+                ['address' => 'bar {{city}}', 'email' => 'test@example.com', 'status' => 1, 'profile_id' => null],
+                true,
+                '',
+                [':qp0' => 'bar {{city}}', ':qp1' => 'test@example.com', ':qp2' => 1, ':qp3' => null],
             ],
             'regular values with update part' => [
                 'T_upsert',

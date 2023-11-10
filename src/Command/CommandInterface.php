@@ -177,6 +177,8 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
+     * @psalm-param iterable<array-key, array<array-key, mixed>> $rows
+     *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
     public function batchInsert(string $table, array $columns, iterable $rows): static;
@@ -820,6 +822,8 @@ interface CommandInterface
      * @throws InvalidConfigException
      * @throws JsonException
      * @throws NotSupportedException
+     *
+     * @psalm-param array<string, mixed>|QueryInterface $insertColumns
      *
      * Note: The method will quote the `table` and `insertColumns`, `updateColumns` parameters before using it in the
      * generated SQL.
