@@ -2,20 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Schema;
-
-use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Helper\DbStringHelper;
-
-use function gettype;
-use function in_array;
-use function is_bool;
-use function is_float;
-use function is_resource;
+namespace Yiisoft\Db\Schema\Column;
 
 /**
- * @deprecated Use Yiisoft\Db\Schema\Column\AbstractColumnSchema instead
- *
  * Represents the metadata of a column in a database table.
  *
  * It provides information about the column's name, type, size, precision, and other details.
@@ -40,8 +29,6 @@ use function is_resource;
  * $column->autoIncrement(true);
  * $column->primaryKey(true);
  * ``
- *
- * @psalm-suppress DeprecatedInterface
  */
 abstract class AbstractColumnSchema implements ColumnSchemaInterface
 {
@@ -92,11 +79,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
 
     public function dbTypecast(mixed $value): mixed
     {
-        /**
-         * The default implementation does the same as casting for PHP, but it should be possible to override this with
-         * annotation of an explicit PDO type.
-         */
-        return $this->typecast($value);
+        return $value;
     }
 
     public function defaultValue(mixed $value): void
@@ -201,7 +184,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
 
     public function phpTypecast(mixed $value): mixed
     {
-        return $this->typecast($value);
+        return $value;
     }
 
     public function precision(int|null $value): void
@@ -232,51 +215,5 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     public function unsigned(bool $value): void
     {
         $this->unsigned = $value;
-    }
-
-    /**
-     * Converts the input value according to {@see phpType} after retrieval from the database.
-     *
-     * If the value is null or an {@see Expression}, it won't be converted.
-     *
-     * @param mixed $value The value to be converted.
-     *
-     * @return mixed The converted value.
-     */
-    protected function typecast(mixed $value): mixed
-    {
-        if (
-            $value === null
-            || $value === '' && !in_array($this->type, [
-                SchemaInterface::TYPE_TEXT,
-                SchemaInterface::TYPE_STRING,
-                SchemaInterface::TYPE_BINARY,
-                SchemaInterface::TYPE_CHAR,
-            ], true)
-        ) {
-            return null;
-        }
-
-        if ($value instanceof ExpressionInterface) {
-            return $value;
-        }
-
-        return match ($this->phpType) {
-            gettype($value) => $value,
-            SchemaInterface::PHP_TYPE_RESOURCE,
-            SchemaInterface::PHP_TYPE_STRING
-                => match (true) {
-                    is_resource($value) => $value,
-                    /** ensure type cast always has . as decimal separator in all locales */
-                    is_float($value) => DbStringHelper::normalizeFloat($value),
-                    is_bool($value) => $value ? '1' : '0',
-                    default => (string) $value,
-                },
-            SchemaInterface::PHP_TYPE_INTEGER => (int) $value,
-            /** Treating a 0-bit value as false too (@link https://github.com/yiisoft/yii2/issues/9006) */
-            SchemaInterface::PHP_TYPE_BOOLEAN => $value && $value !== "\0",
-            SchemaInterface::PHP_TYPE_DOUBLE => (float) $value,
-            default => $value,
-        };
     }
 }

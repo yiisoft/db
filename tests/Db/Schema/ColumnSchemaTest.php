@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Schema;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
+use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
+use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
+use Yiisoft\Db\Schema\Column\StringColumnSchema;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
 
@@ -94,7 +98,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema('new');
 
-        $this->assertNull($column->dbTypecast(''));
+        $this->assertSame('', $column->dbTypecast(''));
     }
 
     public function testDefaultValue(): void
@@ -178,81 +182,69 @@ final class ColumnSchemaTest extends TestCase
 
     public function testPhpTypecast(): void
     {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
+        $column = new StringColumnSchema('new');
 
         $this->assertSame('test', $column->phpTypecast('test'));
     }
 
     public function testPhpTypecastWithBoolean(): void
     {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_BOOLEAN);
+        $column = new BooleanColumnSchema('new');
 
         $this->assertTrue($column->phpTypecast(1));
     }
 
     public function testPhpTypecastWithDouble(): void
     {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_DOUBLE);
+        $column = new DoubleColumnSchema('new');
 
         $this->assertSame(1.2, $column->phpTypecast('1.2'));
     }
 
     public function testPhpTypecastWithInteger(): void
     {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_INTEGER);
+        $column = new IntegerColumnSchema('new');
 
         $this->assertSame(1, $column->phpTypecast('1'));
     }
 
     public function testPhpTypecastWithStringBooleanValue(): void
     {
-        $column = new ColumnSchema('new');
+        self::markTestSkipped('Wrong test: database does not return bool value for string type');
 
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
+        $column = new StringColumnSchema('new');
 
         $this->assertSame('1', $column->phpTypecast(true));
     }
 
     public function testPhpTypecastWithStringFloatValue(): void
     {
-        $column = new ColumnSchema('new');
+        self::markTestSkipped('Wrong test: database does not return double value for string type');
 
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
+        $column = new StringColumnSchema('new');
 
         $this->assertSame('1.1', $column->phpTypecast(1.1));
     }
 
     public function testPhpTypecastWithStringIntegerValue(): void
     {
-        $column = new ColumnSchema('new');
+        self::markTestSkipped('Wrong test: database does not return int value for string type');
 
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
+        $column = new StringColumnSchema('new');
 
         $this->assertSame('1', $column->phpTypecast(1));
     }
 
     public function testPhpTypecastWithStringNullValue(): void
     {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
+        $column = new StringColumnSchema('new');
 
         $this->assertNull($column->phpTypecast(null));
     }
 
     public function testPhpTypecastWithStringResourceValue(): void
     {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
+        $column = new StringColumnSchema('new');
 
         $this->assertIsResource($column->phpTypecast(fopen('php://memory', 'rb')));
     }

@@ -8,6 +8,8 @@
 - Bug #746, #61: Typecast values in `AbstractDMLQueryBuilder::batchInsert()` if values with string keys (@Tigrov)
 - Enh #746: Enhanced documentation of `batchInsert()` and `update()` methods of `DMLQueryBuilderInterface` interface (@Tigrov)
 - Bug #751: Fix collected debug actions (@xepozz)
+- Enh #752: Implement `ColumnSchemaInterface` classes according to the data type of database table columns 
+  for type casting performance (@Tigrov)
 - Chg #755: Deprecate `TableSchemaInterface::compositeForeignKey()` (@Tigrov) 
 - Enh #756: Refactor `Quoter` (@Tigrov) 
 - Bug #756: Fix `Quoter::quoteSql()` for SQL containing table with prefix (@Tigrov)

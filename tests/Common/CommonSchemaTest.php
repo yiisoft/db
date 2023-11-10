@@ -898,6 +898,14 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 );
             }
 
+            if (isset($expected['unsigned'])) {
+                $this->assertSame(
+                    $expected['unsigned'],
+                    $column->isUnsigned(),
+                    "unsigned of column $name does not match"
+                );
+            }
+
             /* Pgsql only */
             if (isset($expected['dimension'])) {
                 /** @psalm-suppress UndefinedMethod */
