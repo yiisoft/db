@@ -16,6 +16,7 @@
 - Bug #761: Quote aliases of CTE in `WITH` queries (@Tigrov)
 - Chg #765: Deprecate `SchemaInterface::TYPE_JSONB` (@Tigrov)
 - Enh #770: Move methods from concrete `Command` class to `AbstractPdoCommand` class (@Tigrov)
+- Bug #769, #61: Fix `AbstractDMLQueryBuilder::batchInsert()` for values as associative arrays (@Tigrov)
 
 ## 1.1.1 August 16, 2023
 
