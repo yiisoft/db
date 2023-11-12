@@ -1,5 +1,9 @@
 # Yii Database Change Log
 
+## 1.2.1 under development
+
+- no changes in this release.
+
 ## 1.2.0 November 12, 2023
 
 - Chg #755: Deprecate `TableSchemaInterface::compositeForeignKey()` (@Tigrov)
