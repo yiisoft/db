@@ -339,7 +339,7 @@ class CommandProvider
                     ':qp3' => false,
                 ],
             ],
-            'with associative values' => [
+            'with associative values with different keys' => [
                 'type',
                 ['int_col', 'float_col', 'char_col', 'bool_col'],
                 'values' => [['int' => '1.0', 'float' => '2', 'char' => 10, 'bool' => 1]],
@@ -354,6 +354,74 @@ class CommandProvider
                     ':qp1' => 2.0,
                     ':qp2' => '10',
                     ':qp3' => true,
+                ],
+            ],
+            'with associative values with different keys and columns with keys' => [
+                'type',
+                ['a' => 'int_col', 'b' => 'float_col', 'c' => 'char_col', 'd' => 'bool_col'],
+                'values' => [['int' => '1.0', 'float' => '2', 'char' => 10, 'bool' => 1]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 2.0,
+                    ':qp2' => '10',
+                    ':qp3' => true,
+                ],
+            ],
+            'with associative values with keys of column names' => [
+                'type',
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
+                'values' => [['bool_col' => 1, 'char_col' => 10, 'int_col' => '1.0', 'float_col' => '2']],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp2, :qp3, :qp1, :qp0)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => true,
+                    ':qp1' => '10',
+                    ':qp2' => 1,
+                    ':qp3' => 2.0,
+                ],
+            ],
+            'with associative values with keys of column keys' => [
+                'type',
+                ['int' => 'int_col', 'float' => 'float_col', 'char' => 'char_col', 'bool' => 'bool_col'],
+                'values' => [['bool' => 1, 'char' => 10, 'int' => '1.0', 'float' => '2']],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp2, :qp3, :qp1, :qp0)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => true,
+                    ':qp1' => '10',
+                    ':qp2' => 1,
+                    ':qp3' => 2.0,
+                ],
+            ],
+            'with shuffled indexes of values' => [
+                'type',
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
+                'values' => [[3 => 1, 2 => 10, 0 => '1.0', 1 => '2']],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp2, :qp3, :qp1, :qp0)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => true,
+                    ':qp1' => '10',
+                    ':qp2' => 1,
+                    ':qp3' => 2.0,
                 ],
             ],
         ];
