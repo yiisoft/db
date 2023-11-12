@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
-use Generator;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -109,7 +108,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
 
-    public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
+    public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
     {
         return $this->dmlBuilder->batchInsert($table, $columns, $rows, $params);
     }
