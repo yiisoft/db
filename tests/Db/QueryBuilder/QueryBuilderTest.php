@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 
+use Generator;
 use JsonException;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -47,7 +48,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert
      */
-    public function testBatchInsert(string $table, array $columns, iterable $rows, string $expected): void
+    public function testBatchInsert(string $table, array $columns, iterable|Generator $rows, string $expected): void
     {
         $db = $this->getConnection();
 

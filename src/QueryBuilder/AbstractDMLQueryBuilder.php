@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Generator;
 use JsonException;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
@@ -49,7 +50,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     ) {
     }
 
-    public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
+    public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string
     {
         if (empty($rows)) {
             return '';

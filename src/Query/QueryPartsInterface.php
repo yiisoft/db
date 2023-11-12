@@ -645,11 +645,10 @@ interface QueryPartsInterface
      * Prepends an SQL statement using `WITH` syntax.
      *
      * @param QueryInterface|string $query The SQL statement to append using `UNION`.
-     * @param ExpressionInterface|string $alias The query alias in `WITH` construction.
-     * To specify the alias in plain SQL, you may pass an instance of {@see ExpressionInterface}.
+     * @param string $alias The query alias in `WITH` construction.
      * @param bool $recursive Its `true` if using `WITH RECURSIVE` and `false` if using `WITH`.
      */
-    public function withQuery(QueryInterface|string $query, ExpressionInterface|string $alias, bool $recursive = false): static;
+    public function withQuery(QueryInterface|string $query, string $alias, bool $recursive = false): static;
 
     /**
      * Specifies the `WITH` query clause for the query.

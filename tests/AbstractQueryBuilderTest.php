@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Closure;
+use Generator;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -210,7 +211,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
      *
      * @psalm-param array<array-key, string> $columns
      */
-    public function testBatchInsert(string $table, array $columns, iterable $rows, string $expected): void
+    public function testBatchInsert(string $table, array $columns, iterable|Generator $rows, string $expected): void
     {
         $db = $this->getConnection();
 
