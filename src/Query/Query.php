@@ -295,7 +295,11 @@ class Query implements QueryInterface
     {
         /** @var int|string|null $count */
         $count = $this->queryScalar("COUNT($sql)");
-        /** @var int|string */
+
+        if ($count === null) {
+            return 0;
+        }
+
         return $count <= PHP_INT_MAX ? (int) $count : $count;
     }
 
