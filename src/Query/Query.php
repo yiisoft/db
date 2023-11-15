@@ -293,10 +293,10 @@ class Query implements QueryInterface
 
     public function count(string $sql = '*'): int|string
     {
-        return match ($this->emulateExecution) {
-            true => 0,
-            false => is_numeric($count = $this->queryScalar("COUNT($sql)")) ? (int) $count : 0,
-        };
+        /** @var int|string|null $count */
+        $count = $this->queryScalar("COUNT($sql)");
+        /** @var int|string */
+        return $count <= PHP_INT_MAX ? (int) $count : $count;
     }
 
     public function createCommand(): CommandInterface
