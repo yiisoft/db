@@ -787,4 +787,18 @@ abstract class AbstractQueryTest extends TestCase
         $query->select($columns);
         $this->assertEquals($expected, $query->getSelect());
     }
+
+    public function testCountGreaterThanPhpIntMax(): void
+    {
+        $query = $this->getMockBuilder(Query::class)
+            ->setConstructorArgs([$this->getConnection()])
+            ->onlyMethods(['queryScalar'])
+            ->getMock();
+
+        $query->expects($this->once())
+            ->method('queryScalar')
+            ->willReturn('12345678901234567890');
+
+        $this->assertSame('12345678901234567890', $query->count());
+    }
 }
