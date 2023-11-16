@@ -2,7 +2,7 @@
 
 ## 1.2.1 under development
 
-- no changes in this release.
+- Bug #777: Fix `Query::count()` (@Tigrov)
 
 ## 1.2.0 November 12, 2023
 
