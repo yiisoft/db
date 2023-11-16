@@ -2,7 +2,8 @@
 
 ## 1.2.1 under development
 
-- no changes in this release.
+- Bug #777: Fix `Query::count()` when it returns an incorrect value if the result is greater
+  than `PHP_INT_MAX` (@Tigrov)
 
 ## 1.2.0 November 12, 2023
 
