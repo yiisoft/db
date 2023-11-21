@@ -7,6 +7,7 @@
 - Enh #779: Specify result type of `QueryInterface::all()`, `CommandInterface::queryAll()` and
   `DbArrayHelper::populate()` methods to `array[]` (@vjik)
 - Enh #779: Specify populate closure type in `BatchQueryResultInterface` (@vjik)
+- Enh #778: Deprecate unnecessary argument `$rawSql` of `AbstractCommand::internalExecute()` (@Tigrov)
 
 ## 1.2.0 November 12, 2023
 

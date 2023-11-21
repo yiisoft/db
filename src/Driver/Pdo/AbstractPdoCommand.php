@@ -186,7 +186,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      *
      * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
      *
-     * @param string|null $rawSql The rawSql if it has been created.
+     * @param string|null $rawSql Deprecated. Use `null` value. Will be removed in version 2.0.0.
      *
      * @throws Exception
      * @throws Throwable

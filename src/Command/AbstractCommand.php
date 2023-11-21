@@ -548,7 +548,7 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * Executes a prepared statement.
      *
-     * @param string|null $rawSql The rawSql if it has been created.
+     * @param string|null $rawSql Deprecated. Use `null` value. Will be removed in version 2.0.0.
      *
      * @throws Exception
      * @throws Throwable
@@ -581,7 +581,7 @@ abstract class AbstractCommand implements CommandInterface
         $isReadMode = $this->isReadMode($queryMode);
         $this->prepare($isReadMode);
 
-        $this->internalExecute($this->getRawSql());
+        $this->internalExecute(null);
 
         /** @psalm-var mixed $result */
         $result = $this->internalGetQueryResult($queryMode);
