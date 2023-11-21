@@ -2,8 +2,8 @@
 
 ## 1.2.1 under development
 
-- Bug #777: Fix `Query::count()` when it returns an incorrect value if the result is greater
-  than `PHP_INT_MAX` (@Tigrov)
+- Bug #777: Fix `Query::count()` when it returns an incorrect value if the result is greater than `PHP_INT_MAX` (@Tigrov)
+- Enh #778: Deprecate unnecessary argument `$rawSql` of `AbstractCommand::internalExecute()` (@Tigrov)
 
 ## 1.2.0 November 12, 2023
 
