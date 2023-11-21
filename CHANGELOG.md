@@ -4,6 +4,9 @@
 
 - Bug #777: Fix `Query::count()` when it returns an incorrect value if the result is greater
   than `PHP_INT_MAX` (@Tigrov)
+- Enh #779: Specify result type of `QueryInterface::all()`, `CommandInterface::queryAll()` and
+  `DbArrayHelper::populate()` methods to `array[]` (@vjik)
+- Enh #779: Specify populate closure type in `BatchQueryResultInterface` (@vjik)
 
 ## 1.2.0 November 12, 2023
 
