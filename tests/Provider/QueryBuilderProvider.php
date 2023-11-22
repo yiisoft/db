@@ -1259,7 +1259,6 @@ class QueryBuilderProvider
             'with one column' => ['a(b)', '[[a]]([[b]])'],
             'with columns' => ['a(b,c,d)', '[[a]]([[b]], [[c]], [[d]])'],
             'with extra space' => ['a(b,c,d) ', 'a(b,c,d) '],
-            'expression' => [new Expression('a(b,c,d)'), 'a(b,c,d)'],
         ];
     }
 

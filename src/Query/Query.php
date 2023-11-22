@@ -293,10 +293,14 @@ class Query implements QueryInterface
 
     public function count(string $sql = '*'): int|string
     {
-        return match ($this->emulateExecution) {
-            true => 0,
-            false => is_numeric($count = $this->queryScalar("COUNT($sql)")) ? (int) $count : 0,
-        };
+        /** @var int|string|null $count */
+        $count = $this->queryScalar("COUNT($sql)");
+
+        if ($count === null) {
+            return 0;
+        }
+
+        return $count <= PHP_INT_MAX ? (int) $count : $count;
     }
 
     public function createCommand(): CommandInterface
@@ -662,7 +666,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function withQuery(QueryInterface|string $query, ExpressionInterface|string $alias, bool $recursive = false): static
+    public function withQuery(QueryInterface|string $query, string $alias, bool $recursive = false): static
     {
         $this->withQueries[] = ['query' => $query, 'alias' => $alias, 'recursive' => $recursive];
         return $this;

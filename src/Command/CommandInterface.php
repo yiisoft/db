@@ -601,7 +601,7 @@ interface CommandInterface
      * @throws Exception
      * @throws Throwable If execution failed.
      *
-     * @return array All rows of the query result. Each array element is an array representing a row of data.
+     * @return array[] All rows of the query result. Each array element is an array representing a row of data.
      * Empty array if the query results in nothing.
      */
     public function queryAll(): array;
