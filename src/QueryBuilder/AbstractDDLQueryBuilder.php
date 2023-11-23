@@ -169,7 +169,6 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     {
         $cols = [];
 
-        /** @psalm-var array<string, ColumnInterface>|string[] $columns */
         foreach ($columns as $name => $type) {
             if (is_string($name)) {
                 $cols[] = "\t"

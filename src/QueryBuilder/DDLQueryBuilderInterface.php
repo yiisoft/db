@@ -239,6 +239,8 @@ interface DDLQueryBuilderInterface
      * @return string The SQL statement for creating a new DB table.
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
+     *
+     * @psalm-param array<string, ColumnInterface>|string[] $columns
      */
     public function createTable(string $table, array $columns, string $options = null): string;
 
