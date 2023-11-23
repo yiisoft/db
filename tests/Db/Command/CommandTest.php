@@ -48,12 +48,12 @@ final class CommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $sql = $command->addColumn('table', 'column', $type)->getSql();
 
-        $type = $db->getQueryBuilder()->getColumnType($type);
+        $columnType = $db->getQueryBuilder()->getColumnType($type);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                ALTER TABLE [[table]] ADD [[column]] {$type}
+                ALTER TABLE [[table]] ADD [[column]] {$columnType}
                 SQL,
                 $db->getDriverName(),
             ),
