@@ -10,6 +10,7 @@ use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 use function array_change_key_case;
@@ -95,7 +96,7 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $tableName The table name.
      *
-     * @return array The indexes for the given table.
+     * @return IndexConstraint[] The indexes for the given table.
      */
     abstract protected function loadTableIndexes(string $tableName): array;
 
@@ -261,7 +262,7 @@ abstract class AbstractSchema implements SchemaInterface
      */
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
-        /** @psalm-var mixed $tableIndexes */
+        /** @var IndexConstraint[]|null $tableIndexes */
         $tableIndexes = $this->getTableMetadata($name, SchemaInterface::INDEXES, $refresh);
         return is_array($tableIndexes) ? $tableIndexes : [];
     }
