@@ -257,6 +257,8 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
 
     /**
      * Logs the current database query if query logging is on and returns the profiling token if profiling is on.
+     *
+     * @deprecated Use {@see logger} instead. Will be removed in version 2.0.0.
      */
     protected function logQuery(string $rawSql, string $category): void
     {
@@ -267,7 +269,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     {
         $logCategory = self::class . '::' . $this->getQueryMode($queryMode);
 
-        $this->logger?->log(LogLevel::INFO, $rawSql = $this->getRawSql(), [$logCategory]);
+        $this->logger?->info($rawSql = $this->getRawSql(), [$logCategory]);
 
         $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
 
