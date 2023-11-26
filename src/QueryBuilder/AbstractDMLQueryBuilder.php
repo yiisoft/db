@@ -6,7 +6,6 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use JsonException;
 use Yiisoft\Db\Constraint\Constraint;
-use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -335,7 +334,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $constraints[] = $primaryKey;
         }
 
-        /** @psalm-var IndexConstraint[] $tableIndexes */
         $tableIndexes = $this->schema->getTableIndexes($name);
 
         foreach ($tableIndexes as $constraint) {

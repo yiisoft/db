@@ -10,6 +10,9 @@
 - Enh #778: Deprecate unnecessary argument `$rawSql` of `AbstractCommand::internalExecute()` (@Tigrov)
 - Enh #785: Refactor `AbstractCommand::getRawSql()` (@Tigrov)
 - Bug #785: Fix bug of `AbstractCommand::getRawSql()` when a param value is `Stringable` object (@Tigrov)
+- Enh #786: Refactor `AbstractSchema::getDataType()` (@Tigrov)
+- Enh #784: Specify result type of `ConstraintSchemaInterface::getTableIndexes()` method to `IndexConstraint[]` (@vjik)
+- Enh #784: Remove unused code in `AbstractSchema::getTableIndexes()` (@vjik)
 
 ## 1.2.0 November 12, 2023
 
