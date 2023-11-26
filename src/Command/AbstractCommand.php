@@ -108,12 +108,12 @@ abstract class AbstractCommand implements CommandInterface
      * @var string|null Transaction isolation level.
      */
     protected string|null $isolationLevel = null;
+
     /**
-     * @var array Parameters to use.
-     *
-     * @psalm-var ParamInterface[]
+     * @var ParamInterface[] Parameters to use.
      */
     protected array $params = [];
+
     /**
      * @var string|null Name of the table to refresh schema for. Null means not to refresh the schema.
      */
