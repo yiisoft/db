@@ -21,6 +21,7 @@ use function is_resource;
 use function is_scalar;
 use function is_string;
 use function preg_replace_callback;
+use function str_starts_with;
 use function stream_get_contents;
 
 /**
@@ -349,14 +350,13 @@ abstract class AbstractCommand implements CommandInterface
 
             $value = $param->getValue();
 
-            if ($value instanceof Expression) {
-                $params[$name] = (string)$value;
-                continue;
-            }
-
             $params[$name] = match ($param->getType()) {
                 DataType::INTEGER => (string)$value,
-                DataType::STRING, DataType::LOB => is_resource($value) ? $name : $quoter->quoteValue((string)$value),
+                DataType::STRING, DataType::LOB => match (true) {
+                    $value instanceof Expression => (string)$value,
+                    is_resource($value) => $name,
+                    default => $quoter->quoteValue((string)$value),
+                },
                 DataType::BOOLEAN => $value ? 'TRUE' : 'FALSE',
                 DataType::NULL => 'NULL',
                 default => $name,
