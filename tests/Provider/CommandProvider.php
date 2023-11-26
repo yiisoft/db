@@ -640,12 +640,12 @@ class CommandProvider
             ],
             [
                 <<<SQL
-                SELECT * FROM [[customer]] WHERE [[id]] = :id
+                SELECT * FROM [[customer]] WHERE [[name]] = :name
                 SQL,
-                ['id' => new Stringable('alfa')],
+                ['name' => new Stringable('Alfa')],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[id]] = 'alfa'
+                    SELECT * FROM [[customer]] WHERE [[id]] = 'Alfa'
                     SQL,
                     static::$driverName,
                 ),
