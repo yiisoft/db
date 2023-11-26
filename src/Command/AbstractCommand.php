@@ -342,7 +342,6 @@ abstract class AbstractCommand implements CommandInterface
         $params = [];
         $quoter = $this->getQueryBuilder()->quoter();
 
-        /** @psalm-var ParamInterface $param */
         foreach ($this->params as $name => $param) {
             if (is_string($name) && !str_starts_with($name, ':')) {
                 $name = ':' . $name;
