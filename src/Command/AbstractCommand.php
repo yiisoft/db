@@ -16,15 +16,12 @@ use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use function explode;
 use function get_resource_type;
 use function is_array;
-use function is_bool;
 use function is_int;
-use function is_object;
 use function is_resource;
 use function is_scalar;
 use function is_string;
 use function preg_replace_callback;
 use function stream_get_contents;
-use function strncmp;
 
 /**
  * Represents an SQL statement to execute in a database.
