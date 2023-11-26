@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Tests\Common;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
