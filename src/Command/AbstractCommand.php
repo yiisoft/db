@@ -343,44 +343,44 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         $params = [];
+        $quoter = $this->getQueryBuilder()->quoter();
 
-        /** @psalm-var mixed $value */
-        foreach ($this->params as $name => $value) {
-            if (is_string($name) && strncmp(':', $name, 1)) {
+        /** @psalm-var ParamInterface $param */
+        foreach ($this->params as $name => $param) {
+            if (is_string($name) && !str_starts_with($name, ':')) {
                 $name = ':' . $name;
             }
 
-            if ($value instanceof ParamInterface) {
-                /** @psalm-var mixed $value */
-                $value = $value->getValue();
+            $value = $param->getValue();
+
+            if ($value instanceof Expression) {
+                $params[$name] = (string)$value;
+                continue;
             }
 
-            if (is_string($value)) {
-                /** @psalm-var mixed */
-                $params[$name] = $this->getQueryBuilder()->quoter()->quoteValue($value);
-            } elseif (is_bool($value)) {
-                /** @psalm-var string */
-                $params[$name] = $value ? 'TRUE' : 'FALSE';
-            } elseif ($value === null) {
-                $params[$name] = 'NULL';
-            } elseif ((!is_object($value) && !is_resource($value)) || $value instanceof Expression) {
-                /** @psalm-var mixed */
-                $params[$name] = $value;
-            }
+            $params[$name] = match ($param->getType()) {
+                DataType::INTEGER => (string)$value,
+                DataType::STRING, DataType::LOB => is_resource($value) ? $name : $quoter->quoteValue((string)$value),
+                DataType::BOOLEAN => $value ? 'TRUE' : 'FALSE',
+                DataType::NULL => 'NULL',
+                default => $name,
+            };
         }
 
+        /** @psalm-var string[] $params */
         if (!isset($params[0])) {
-            return preg_replace_callback('#(:\w+)#', static function (array $matches) use ($params): string {
-                $m = $matches[1];
-                return (string)($params[$m] ?? $m);
-            }, $this->sql);
+            return preg_replace_callback(
+                '#(:\w+)#',
+                static fn (array $matches): string => $params[$matches[1]] ?? $matches[1],
+                $this->sql
+            );
         }
 
         // Support unnamed placeholders should be dropped
         $sql = '';
 
         foreach (explode('?', $this->sql) as $i => $part) {
-            $sql .= $part . (string)($params[$i] ?? '');
+            $sql .= $part . ($params[$i] ?? '');
         }
 
         return $sql;
