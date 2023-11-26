@@ -8,6 +8,8 @@
   `DbArrayHelper::populate()` methods to `array[]` (@vjik)
 - Enh #779: Specify populate closure type in `BatchQueryResultInterface` (@vjik)
 - Enh #778: Deprecate unnecessary argument `$rawSql` of `AbstractCommand::internalExecute()` (@Tigrov)
+- Enh #785: Refactor `AbstractCommand::getRawSql()` (@Tigrov)
+- Bug #785: Fix bug of `AbstractCommand::getRawSql()` when a param value is `Stringable` object (@Tigrov)
 
 ## 1.2.0 November 12, 2023
 
