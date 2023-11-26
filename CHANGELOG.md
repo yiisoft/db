@@ -8,6 +8,7 @@
   `DbArrayHelper::populate()` methods to `array[]` (@vjik)
 - Enh #779: Specify populate closure type in `BatchQueryResultInterface` (@vjik)
 - Enh #778: Deprecate unnecessary argument `$rawSql` of `AbstractCommand::internalExecute()` (@Tigrov)
+- Enh #786: Refactor `AbstractSchema::getDataType()` (@Tigrov)
 - Enh #784: Specify result type of `ConstraintSchemaInterface::getTableIndexes()` method to `IndexConstraint[]` (@vjik)
 - Enh #784: Remove unused code in `AbstractSchema::getTableIndexes()` (@vjik)
 

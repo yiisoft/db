@@ -134,19 +134,14 @@ abstract class AbstractSchema implements SchemaInterface
 
     public function getDataType(mixed $data): int
     {
-        /** @psalm-var array<string, int> $typeMap */
-        $typeMap = [
+        return match (gettype($data)) {
             // php type => SQL data type
             SchemaInterface::PHP_TYPE_BOOLEAN => DataType::BOOLEAN,
             SchemaInterface::PHP_TYPE_INTEGER => DataType::INTEGER,
-            SchemaInterface::PHP_TYPE_STRING => DataType::STRING,
             SchemaInterface::PHP_TYPE_RESOURCE => DataType::LOB,
             SchemaInterface::PHP_TYPE_NULL => DataType::NULL,
-        ];
-
-        $type = gettype($data);
-
-        return $typeMap[$type] ?? DataType::STRING;
+            default => DataType::STRING,
+        };
     }
 
     public function getRawTableName(string $name): string
