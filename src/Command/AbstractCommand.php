@@ -363,7 +363,7 @@ abstract class AbstractCommand implements CommandInterface
             };
         }
 
-        /** @psalm-var string[] $params */
+        /** @var string[] $params */
         if (!isset($params[0])) {
             return preg_replace_callback(
                 '#(:\w+)#',
