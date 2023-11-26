@@ -235,9 +235,8 @@ abstract class CommonPdoCommandTest extends TestCase
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
-            ->method('log')
+            ->method('info')
             ->with(
-                LogLevel::INFO,
                 $sql,
                 $params
             );
