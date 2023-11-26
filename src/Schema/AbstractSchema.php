@@ -262,9 +262,8 @@ abstract class AbstractSchema implements SchemaInterface
      */
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
-        /** @var IndexConstraint[]|null $tableIndexes */
-        $tableIndexes = $this->getTableMetadata($name, SchemaInterface::INDEXES, $refresh);
-        return is_array($tableIndexes) ? $tableIndexes : [];
+        /** @var IndexConstraint[] */
+        return $this->getTableMetadata($name, SchemaInterface::INDEXES, $refresh);
     }
 
     /**
