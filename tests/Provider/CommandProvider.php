@@ -645,7 +645,7 @@ class CommandProvider
                 ['name' => new Stringable('Alfa')],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[id]] = 'Alfa'
+                    SELECT * FROM [[customer]] WHERE [[name]] = 'Alfa'
                     SQL,
                     static::$driverName,
                 ),
