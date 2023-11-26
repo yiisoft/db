@@ -9,6 +9,7 @@
 - Enh #779: Specify populate closure type in `BatchQueryResultInterface` (@vjik)
 - Enh #778: Deprecate unnecessary argument `$rawSql` of `AbstractCommand::internalExecute()` (@Tigrov)
 - Enh #781: Skip calling `CommandInterface::getRawSql()` if no `logger` or `profiler` is set (@Tigrov)
+- Enh #781: Deprecate `AbstractCommand::logQuery()` method (@Tigrov)
 
 ## 1.2.0 November 12, 2023
 
