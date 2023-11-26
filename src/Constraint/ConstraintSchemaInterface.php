@@ -131,7 +131,7 @@ interface ConstraintSchemaInterface
      * @param string $name Table name. The table name may contain a schema name if any. Don't quote the table name.
      * @param bool $refresh Whether to reload the information, even if it's found in the cache.
      *
-     * @return array The information metadata for the indexes of the named table.
+     * @return IndexConstraint[] The information metadata for the indexes of the named table.
      */
     public function getTableIndexes(string $name, bool $refresh = false): array;
 
