@@ -16,15 +16,13 @@ use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use function explode;
 use function get_resource_type;
 use function is_array;
-use function is_bool;
 use function is_int;
-use function is_object;
 use function is_resource;
 use function is_scalar;
 use function is_string;
 use function preg_replace_callback;
+use function str_starts_with;
 use function stream_get_contents;
-use function strncmp;
 
 /**
  * Represents an SQL statement to execute in a database.
@@ -110,12 +108,12 @@ abstract class AbstractCommand implements CommandInterface
      * @var string|null Transaction isolation level.
      */
     protected string|null $isolationLevel = null;
+
     /**
-     * @var array Parameters to use.
-     *
-     * @psalm-var ParamInterface[]
+     * @var ParamInterface[] Parameters to use.
      */
     protected array $params = [];
+
     /**
      * @var string|null Name of the table to refresh schema for. Null means not to refresh the schema.
      */
@@ -343,44 +341,42 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         $params = [];
+        $quoter = $this->getQueryBuilder()->quoter();
 
-        /** @psalm-var mixed $value */
-        foreach ($this->params as $name => $value) {
-            if (is_string($name) && strncmp(':', $name, 1)) {
+        foreach ($this->params as $name => $param) {
+            if (is_string($name) && !str_starts_with($name, ':')) {
                 $name = ':' . $name;
             }
 
-            if ($value instanceof ParamInterface) {
-                /** @psalm-var mixed $value */
-                $value = $value->getValue();
-            }
+            $value = $param->getValue();
 
-            if (is_string($value)) {
-                /** @psalm-var mixed */
-                $params[$name] = $this->getQueryBuilder()->quoter()->quoteValue($value);
-            } elseif (is_bool($value)) {
-                /** @psalm-var string */
-                $params[$name] = $value ? 'TRUE' : 'FALSE';
-            } elseif ($value === null) {
-                $params[$name] = 'NULL';
-            } elseif ((!is_object($value) && !is_resource($value)) || $value instanceof Expression) {
-                /** @psalm-var mixed */
-                $params[$name] = $value;
-            }
+            $params[$name] = match ($param->getType()) {
+                DataType::INTEGER => (string)$value,
+                DataType::STRING, DataType::LOB => match (true) {
+                    $value instanceof Expression => (string)$value,
+                    is_resource($value) => $name,
+                    default => $quoter->quoteValue((string)$value),
+                },
+                DataType::BOOLEAN => $value ? 'TRUE' : 'FALSE',
+                DataType::NULL => 'NULL',
+                default => $name,
+            };
         }
 
+        /** @var string[] $params */
         if (!isset($params[0])) {
-            return preg_replace_callback('#(:\w+)#', static function (array $matches) use ($params): string {
-                $m = $matches[1];
-                return (string)($params[$m] ?? $m);
-            }, $this->sql);
+            return preg_replace_callback(
+                '#(:\w+)#',
+                static fn (array $matches): string => $params[$matches[1]] ?? $matches[1],
+                $this->sql
+            );
         }
 
         // Support unnamed placeholders should be dropped
         $sql = '';
 
         foreach (explode('?', $this->sql) as $i => $part) {
-            $sql .= $part . (string)($params[$i] ?? '');
+            $sql .= $part . ($params[$i] ?? '');
         }
 
         return $sql;
