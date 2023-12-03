@@ -39,7 +39,7 @@ use Yiisoft\Db\Pgsql\Dsn;
 
 return [
     'yiisoft/db-pgsql' => [
-        'dsn' => (new Dsn('pgsql', '127.0.0.1', 'yiitest', '5432'))->asString();,
+        'dsn' => (new Dsn('pgsql', '127.0.0.1', 'yiitest', '5432'))->asString(),
         'username' => 'user',
         'password' => 'password',
     ],
