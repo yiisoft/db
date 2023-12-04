@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -546,6 +548,18 @@ class CommandProvider
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
                 ['id' => 1],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[id]] = 1
+                    SQL,
+                    static::$driverName,
+                ),
+            ],
+            [
+                <<<SQL
+                SELECT * FROM [[customer]] WHERE [[id]] = :id
+                SQL,
+                ['id' => new Param('1 OR 1=1', DataType::INTEGER)],
                 DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1

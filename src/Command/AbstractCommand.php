@@ -351,7 +351,7 @@ abstract class AbstractCommand implements CommandInterface
             $value = $param->getValue();
 
             $params[$name] = match ($param->getType()) {
-                DataType::INTEGER => (string)$value,
+                DataType::INTEGER => (string)(int)$value,
                 DataType::STRING, DataType::LOB => match (true) {
                     $value instanceof Expression => (string)$value,
                     is_resource($value) => $name,
