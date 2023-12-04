@@ -14,6 +14,7 @@
 - Enh #786: Refactor `AbstractSchema::getDataType()` (@Tigrov)
 - Enh #784: Specify result type of `ConstraintSchemaInterface::getTableIndexes()` method to `IndexConstraint[]` (@vjik)
 - Enh #784: Remove unused code in `AbstractSchema::getTableIndexes()` (@vjik)
+- Bug #788: Fix casting integer to string in `AbstractCommand::getRawSql()` (@Tigrov)
 
 ## 1.2.0 November 12, 2023
 
