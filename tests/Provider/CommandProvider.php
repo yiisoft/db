@@ -557,6 +557,18 @@ class CommandProvider
                 <<<SQL
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
+                ['id' => new Param('1 OR 1=1', DataType::INTEGER)],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[id]] = 1
+                    SQL,
+                    static::$driverName,
+                ),
+            ],
+            [
+                <<<SQL
+                SELECT * FROM [[customer]] WHERE [[id]] = :id
+                SQL,
                 ['id' => null],
                 DbHelper::replaceQuotes(
                     <<<SQL
