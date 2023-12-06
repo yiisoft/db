@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder;
 
 use JsonException;
+use Traversable;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -20,16 +21,24 @@ use function array_combine;
 use function array_diff;
 use function array_fill_keys;
 use function array_filter;
+use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_merge;
+use function array_slice;
 use function array_unique;
 use function array_values;
+use function count;
+use function get_object_vars;
 use function implode;
 use function in_array;
+use function is_array;
+use function is_object;
 use function is_string;
+use function iterator_to_array;
 use function json_encode;
 use function preg_match;
+use function reset;
 use function sort;
 
 /**
@@ -55,11 +64,33 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             return '';
         }
 
+        $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
+        $columns = $this->extractColumnNames($columns, $columnSchemas, $rows);
+        $values = $this->prepareBatchInsertValues($columns, $columnSchemas, $rows, $params);
+
+        if (empty($values)) {
+            return '';
+        }
+
+        $query = 'INSERT INTO ' . $this->quoter->quoteTableName($table);
+
+        if (count($columns) > 0) {
+            $quotedColumnNames = array_map(
+                [$this->quoter, 'quoteColumnName'],
+                $columns,
+            );
+
+            $query .= ' (' . implode(', ', $quotedColumnNames) . ')';
+        }
+
+        return $query . ' VALUES ' . implode(', ', $values);
+    }
+
+    protected function prepareBatchInsertValues(array $columns, array $columnSchemas, iterable $rows, array &$params): array
+    {
         $values = [];
-        $columns = $this->getNormalizeColumnNames('', $columns);
         $columnNames = array_values($columns);
         $columnKeys = array_fill_keys($columnNames, false);
-        $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
         foreach ($rows as $row) {
             $i = 0;
@@ -85,17 +116,32 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $values[] = '(' . implode(', ', $placeholders) . ')';
         }
 
-        if (empty($values)) {
-            return '';
+        return $values;
+    }
+
+    protected function extractColumnNames(array $columns, array $columnSchemas, iterable $rows): array
+    {
+        $columns = $this->getNormalizeColumnNames('', $columns);
+
+        if ($columns !== [] || !is_array($rows)) {
+            return $columns;
         }
 
-        $columnNames = array_map(
-            [$this->quoter, 'quoteColumnName'],
-            $columnNames,
-        );
+        $row = reset($rows);
+        $row = match (true) {
+            is_array($row) => $row,
+            $row instanceof Traversable => iterator_to_array($row),
+            is_object($row) => get_object_vars($row),
+            default => [],
+        };
 
-        return 'INSERT INTO ' . $this->quoter->quoteTableName($table)
-            . ' (' . implode(', ', $columnNames) . ') VALUES ' . implode(', ', $values);
+        if (!array_key_exists(0, $row)) {
+            $columnNames = array_keys($row);
+        } else {
+            $columnNames = array_slice(array_keys($columnSchemas), 0, count($row));
+        }
+
+        return array_combine($columnNames, $columnNames);
     }
 
     public function delete(string $table, array|string $condition, array &$params): string
