@@ -145,7 +145,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => 'test@example.com', ':qp1' => 'silverfire', ':qp2' => 'Kyiv {{city}}, Ukraine'],
+                'expectedParams' => [':qp0' => 'test@example.com', ':qp1' => 'silverfire', ':qp2' => 'Kyiv {{city}}, Ukraine'],
             ],
             'escape-danger-chars' => [
                 'customer',
@@ -157,7 +157,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => "SQL-danger chars are escaped: '); --"],
+                'expectedParams' => [':qp0' => "SQL-danger chars are escaped: '); --"],
             ],
             'customer2' => [
                 'customer',
@@ -175,7 +175,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => 'no columns passed'],
+                'expectedParams' => [':qp0' => 'no columns passed'],
             ],
             'bool-false, bool2-null' => [
                 'type',
@@ -187,7 +187,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => 0, ':qp1' => null],
+                'expectedParams' => [':qp0' => false, ':qp1' => null],
             ],
             'wrong' => [
                 '{{%type}}',
@@ -199,7 +199,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => null, ':qp1' => null],
+                'expectedParams' => [':qp0' => null, ':qp1' => null],
             ],
             'bool-false, time-now()' => [
                 '{{%type}}',
@@ -211,7 +211,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => null],
+                'expectedParams' => [':qp0' => false],
             ],
             'column table names are not checked' => [
                 '{{%type}}',
@@ -223,7 +223,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => null, ':qp1' => null],
+                'expectedParams' => [':qp0' => true, ':qp1' => false],
             ],
             'empty-sql' => [
                 '{{%type}}',
