@@ -210,14 +210,21 @@ abstract class AbstractQueryBuilderTest extends TestCase
      *
      * @psalm-param array<array-key, string> $columns
      */
-    public function testBatchInsert(string $table, array $columns, iterable $rows, string $expected): void
-    {
+    public function testBatchInsert(
+        string $table,
+        array $columns,
+        iterable $rows,
+        string $expected,
+        array $expectedParams = [],
+    ): void {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
-        $sql = $qb->batchInsert($table, $columns, $rows);
+
+        $params = [];
+        $sql = $qb->batchInsert($table, $columns, $rows, $params);
 
         $this->assertSame($expected, $sql);
+        $this->assertSame($expectedParams, $params);
     }
 
     /**
