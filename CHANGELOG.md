@@ -15,7 +15,7 @@
 - Enh #784: Specify result type of `ConstraintSchemaInterface::getTableIndexes()` method to `IndexConstraint[]` (@vjik)
 - Enh #784: Remove unused code in `AbstractSchema::getTableIndexes()` (@vjik)
 - Bug #788: Fix casting integer to string in `AbstractCommand::getRawSql()` (@Tigrov)
-- Enh #789: Remove unnecessary type casting to `(array)` (@Tigrov)
+- Enh #789: Remove unnecessary type casting to array in `AbstractDMLQueryBuilder::getTableUniqueColumnNames()` (@Tigrov)
 
 ## 1.2.0 November 12, 2023
 
