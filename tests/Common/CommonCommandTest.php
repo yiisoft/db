@@ -2022,7 +2022,12 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $pkValues = $db->createCommand()->insertWithReturningPks('null_values', []);
 
-        $this->assertSame(['id' => 1], $pkValues);
+        $expected = match ($db->getDriverName()) {
+            'pgsql' => ['id' => 1],
+            default => ['id' => '1'],
+        };
+
+        $this->assertSame($expected, $pkValues);
 
         $db->createCommand()->dropTable('null_values')->execute();
     }
