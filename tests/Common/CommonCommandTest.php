@@ -2015,4 +2015,15 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertSame($decimalValue, $phpTypecastValue);
     }
+
+    public function testInsertWithReturningPksEmptyValues()
+    {
+        $db = $this->getConnection(true);
+
+        $pkValues = $db->createCommand()->insertWithReturningPks('null_values', []);
+
+        $this->assertSame(['id' => 1], $pkValues);
+
+        $db->createCommand()->dropTable('null_values')->execute();
+    }
 }
