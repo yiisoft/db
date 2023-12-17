@@ -2029,4 +2029,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertSame($expected, $pkValues);
     }
+
+    public function testInsertWithReturningPksEmptyValuesAndNoPk()
+    {
+        $db = $this->getConnection(true);
+
+        $pkValues = $db->createCommand()->insertWithReturningPks('negative_default_values', []);
+
+        $this->assertSame([], $pkValues);
+    }
 }
