@@ -2028,7 +2028,5 @@ abstract class CommonCommandTest extends AbstractCommandTest
         };
 
         $this->assertSame($expected, $pkValues);
-
-        $db->createCommand()->dropTable('null_values')->execute();
     }
 }
