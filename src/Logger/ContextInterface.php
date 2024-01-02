@@ -14,5 +14,6 @@ interface ContextInterface
     public function getMethodName(): string;
 
     public function getException(): Throwable|null;
+
     public function setException(Throwable $e): static;
 }

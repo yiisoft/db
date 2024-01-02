@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yiisoft\Db\Logger;
 
 use Psr\Log\LoggerInterface as PsrLoggerInterface;

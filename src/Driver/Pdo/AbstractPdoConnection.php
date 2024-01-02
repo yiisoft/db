@@ -120,9 +120,9 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
     {
         if ($this->pdo !== null) {
             $this->logger?->log(
-                DbLoggerEvent::CONNECTION_BEGIN,
+                DbLoggerEvent::CONNECTION_END,
                 new LoggerContext(__METHOD__, $this->getDriver()->getDsn()),
-                );
+            );
 
             $this->pdo = null;
             $this->transaction = null;

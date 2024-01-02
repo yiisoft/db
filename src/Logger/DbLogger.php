@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Logger;
 use Psr\Log\LoggerInterface as PsrLoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Logger\Context\ConnectionContext;
 use Yiisoft\Db\Logger\Context\QueryContext;
 use Yiisoft\Db\Logger\Context\TransactionContext;

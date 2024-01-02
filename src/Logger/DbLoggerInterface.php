@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Logger;
 
-interface DbLoggerInterface {
+interface DbLoggerInterface
+{
 
     /**
      * @param string $logEvent
