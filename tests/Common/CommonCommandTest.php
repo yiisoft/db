@@ -2015,4 +2015,27 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertSame($decimalValue, $phpTypecastValue);
     }
+
+    public function testInsertWithReturningPksEmptyValues()
+    {
+        $db = $this->getConnection(true);
+
+        $pkValues = $db->createCommand()->insertWithReturningPks('null_values', []);
+
+        $expected = match ($db->getDriverName()) {
+            'pgsql' => ['id' => 1],
+            default => ['id' => '1'],
+        };
+
+        $this->assertSame($expected, $pkValues);
+    }
+
+    public function testInsertWithReturningPksEmptyValuesAndNoPk()
+    {
+        $db = $this->getConnection(true);
+
+        $pkValues = $db->createCommand()->insertWithReturningPks('negative_default_values', []);
+
+        $this->assertSame([], $pkValues);
+    }
 }

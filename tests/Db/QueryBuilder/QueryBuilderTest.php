@@ -47,15 +47,22 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert
      */
-    public function testBatchInsert(string $table, array $columns, iterable $rows, string $expected): void
-    {
+    public function testBatchInsert(
+        string $table,
+        array $columns,
+        iterable $rows,
+        string $expected,
+        array $expectedParams = [],
+    ): void {
         $db = $this->getConnection();
 
         $schemaMock = $this->createMock(Schema::class);
         $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
+        $params = [];
 
         try {
-            $this->assertSame($expected, $qb->batchInsert($table, $columns, $rows));
+            $this->assertSame($expected, $qb->batchInsert($table, $columns, $rows, $params));
+            $this->assertSame($expectedParams, $params);
         } catch (InvalidArgumentException|Exception) {
         }
     }
