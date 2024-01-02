@@ -12,6 +12,8 @@ use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Exception\InvalidParamException;
+use Yiisoft\Db\Logger\DbLogger;
+use Yiisoft\Db\Logger\DbLoggerInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -230,7 +232,7 @@ abstract class CommonPdoCommandTest extends TestCase
         $db->close();
     }
 
-    protected function createQueryLogger(string $sql, array $params = []): LoggerInterface
+    protected function createQueryLogger(string $sql, array $params = []): DbLoggerInterface
     {
         $logger = $this->createMock(LoggerInterface::class);
         $logger
@@ -241,6 +243,6 @@ abstract class CommonPdoCommandTest extends TestCase
                 $sql,
                 $params
             );
-        return $logger;
+        return new DbLogger($logger);
     }
 }
