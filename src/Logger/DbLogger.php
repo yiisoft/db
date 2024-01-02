@@ -13,7 +13,6 @@ use Yiisoft\Db\Logger\Context\TransactionContext;
 
 class DbLogger implements DbLoggerInterface
 {
-
     private const DEFAULT_LOG_LEVEL = LogLevel::DEBUG;
 
     private static array $LOG_LEVELS = [

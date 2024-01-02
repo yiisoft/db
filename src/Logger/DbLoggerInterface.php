@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Logger;
 
 interface DbLoggerInterface
 {
-
     /**
      * @param string $logEvent
      * @param ContextInterface $context
