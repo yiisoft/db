@@ -7,9 +7,6 @@ namespace Yiisoft\Db\Driver\Pdo;
 use PDO;
 use PDOException;
 use PDOStatement;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Command\AbstractCommand;
 use Yiisoft\Db\Command\Param;
@@ -17,6 +14,10 @@ use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidParamException;
+use Yiisoft\Db\Logger\Context\QueryContext;
+use Yiisoft\Db\Logger\DbLoggerAwareInterface;
+use Yiisoft\Db\Logger\DbLoggerAwareTrait;
+use Yiisoft\Db\Logger\DbLoggerEvent;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
@@ -32,9 +33,9 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  *
  * It also provides methods for binding parameter values and retrieving query results.
  */
-abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandInterface, LoggerAwareInterface, ProfilerAwareInterface
+abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandInterface, DbLoggerAwareInterface, ProfilerAwareInterface
 {
-    use LoggerAwareTrait;
+    use DbLoggerAwareTrait;
     use ProfilerAwareTrait;
 
     /**
@@ -255,21 +256,13 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         return $result;
     }
 
-    /**
-     * Logs the current database query if query logging is on and returns the profiling token if profiling is on.
-     */
-    protected function logQuery(string $rawSql, string $category): void
-    {
-        $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
-    }
-
     protected function queryInternal(int $queryMode): mixed
     {
         $logCategory = self::class . '::' . $this->getQueryMode($queryMode);
 
         if ($this->logger !== null) {
             $rawSql = $this->getRawSql();
-            $this->logQuery($rawSql, $logCategory);
+            $this->logger->log(DbLoggerEvent::QUERY, new QueryContext(__METHOD__, $rawSql, $logCategory));
         }
 
         $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());

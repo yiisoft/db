@@ -6,16 +6,18 @@ namespace Yiisoft\Db\Driver\Pdo;
 
 use PDO;
 use PDOException;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\AbstractConnection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Profiler\Context\ConnectionContext;
+use Yiisoft\Db\Logger\Context\ConnectionContext as LoggerContext;
+use Yiisoft\Db\Logger\Context\TransactionContext as LoggerTransactionContext;
+use Yiisoft\Db\Logger\DbLoggerAwareInterface;
+use Yiisoft\Db\Logger\DbLoggerAwareTrait;
+use Yiisoft\Db\Logger\DbLoggerEvent;
+use Yiisoft\Db\Profiler\Context\ConnectionContext as ProfilerContext;
 use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -36,9 +38,9 @@ use function is_string;
  *
  * It implements the ConnectionInterface, which defines the interface for interacting with a database connection.
  */
-abstract class AbstractPdoConnection extends AbstractConnection implements PdoConnectionInterface, LoggerAwareInterface, ProfilerAwareInterface
+abstract class AbstractPdoConnection extends AbstractConnection implements PdoConnectionInterface, DbLoggerAwareInterface, ProfilerAwareInterface
 {
-    use LoggerAwareTrait;
+    use DbLoggerAwareTrait;
     use ProfilerAwareTrait;
 
     protected PDO|null $pdo = null;
@@ -80,7 +82,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
     public function beginTransaction(string $isolationLevel = null): TransactionInterface
     {
         $transaction = parent::beginTransaction($isolationLevel);
-        if ($this->logger !== null && $transaction instanceof LoggerAwareInterface) {
+        if ($this->logger !== null && $transaction instanceof DbLoggerAwareInterface) {
             $transaction->setLogger($this->logger);
         }
 
@@ -98,16 +100,17 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         }
 
         $token = 'Opening DB connection: ' . $this->driver->getDsn();
-        $connectionContext = new ConnectionContext(__METHOD__);
+        $profilerContext = new ProfilerContext(__METHOD__);
+        $loggerContext = new LoggerContext(__METHOD__, $this->getDriver()->getDsn());
 
         try {
-            $this->logger?->log(LogLevel::INFO, $token);
-            $this->profiler?->begin($token, $connectionContext);
+            $this->logger?->log(DbLoggerEvent::CONNECTION_BEGIN, $loggerContext);
+            $this->profiler?->begin($token, $profilerContext);
             $this->initConnection();
-            $this->profiler?->end($token, $connectionContext);
+            $this->profiler?->end($token, $profilerContext);
         } catch (PDOException $e) {
-            $this->profiler?->end($token, $connectionContext->setException($e));
-            $this->logger?->log(LogLevel::ERROR, $token);
+            $this->profiler?->end($token, $profilerContext->setException($e));
+            $this->logger?->log(DbLoggerEvent::CONNECTION_ERROR, $loggerContext->setException($e));
 
             throw new Exception($e->getMessage(), (array) $e->errorInfo, $e);
         }
@@ -117,9 +120,9 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
     {
         if ($this->pdo !== null) {
             $this->logger?->log(
-                LogLevel::DEBUG,
-                'Closing DB connection: ' . $this->driver->getDsn() . ' ' . __METHOD__,
-            );
+                DbLoggerEvent::CONNECTION_BEGIN,
+                new LoggerContext(__METHOD__, $this->getDriver()->getDsn()),
+                );
 
             $this->pdo = null;
             $this->transaction = null;
@@ -225,7 +228,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
             try {
                 $transaction->rollBack();
             } catch (Throwable $e) {
-                $this->logger?->log(LogLevel::ERROR, (string) $e, [__METHOD__]);
+                $this->logger?->log(DbLoggerEvent::TRANSACTION_ROLLBACK_ON_LEVEL, (new LoggerTransactionContext(__METHOD__, $level))->setException($e));
                 /** hide this exception to be able to continue throwing original exception outside */
             }
         }

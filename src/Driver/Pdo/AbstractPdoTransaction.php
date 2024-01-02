@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Driver\Pdo;
 
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Logger\Context\TransactionContext;
+use Yiisoft\Db\Logger\DbLoggerAwareInterface;
+use Yiisoft\Db\Logger\DbLoggerAwareTrait;
+use Yiisoft\Db\Logger\DbLoggerEvent;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 /**
@@ -35,9 +36,9 @@ use Yiisoft\Db\Transaction\TransactionInterface;
  * }
  * ```
  */
-abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwareInterface
+abstract class AbstractPdoTransaction implements TransactionInterface, DbLoggerAwareInterface
 {
-    use LoggerAwareTrait;
+    use DbLoggerAwareTrait;
 
     /**
      * @var int The nesting level of the transaction.
@@ -52,16 +53,13 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
     {
         $this->db->open();
 
+        $loggerContext = new TransactionContext(__METHOD__, $this->level, $isolationLevel);
         if ($this->level === 0) {
             if ($isolationLevel !== null) {
                 $this->setTransactionIsolationLevel($isolationLevel);
             }
 
-            $this->logger?->log(
-                LogLevel::DEBUG,
-                'Begin transaction' . ($isolationLevel ? ' with isolation level ' . $isolationLevel : '')
-                . ' ' . __METHOD__
-            );
+            $this->logger?->log(DbLoggerEvent::TRANSACTION_BEGIN_TRANS, $loggerContext);
 
             $this->db->getPDO()?->beginTransaction();
             $this->level = 1;
@@ -70,14 +68,11 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
         }
 
         if ($this->db->isSavepointEnabled()) {
-            $this->logger?->log(LogLevel::DEBUG, 'Set savepoint ' . $this->level . ' ' . __METHOD__);
+            $this->logger?->log(DbLoggerEvent::TRANSACTION_BEGIN_SAVEPOINT, $loggerContext);
 
             $this->createSavepoint('LEVEL' . $this->level);
         } else {
-            $this->logger?->log(
-                LogLevel::DEBUG,
-                'Transaction not started: nested transaction not supported ' . __METHOD__
-            );
+            $this->logger?->log(DbLoggerEvent::TRANSACTION_BEGIN_NESTED_ERROR, $loggerContext);
 
             throw new NotSupportedException('Transaction not started: nested transaction not supported.');
         }
@@ -93,21 +88,19 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
 
         $this->level--;
 
+        $loggerContext = new TransactionContext(__METHOD__, $this->level);
         if ($this->level === 0) {
-            $this->logger?->log(LogLevel::DEBUG, 'Commit transaction ' . __METHOD__);
+            $this->logger?->log(DbLoggerEvent::TRANSACTION_COMMIT, $loggerContext);
             $this->db->getPDO()?->commit();
 
             return;
         }
 
         if ($this->db->isSavepointEnabled()) {
-            $this->logger?->log(LogLevel::DEBUG, 'Release savepoint ' . $this->level . ' ' . __METHOD__);
+            $this->logger?->log(DbLoggerEvent::TRANSACTION_RELEASE_SAVEPOINT, $loggerContext);
             $this->releaseSavepoint('LEVEL' . $this->level);
         } else {
-            $this->logger?->log(
-                LogLevel::INFO,
-                'Transaction not committed: nested transaction not supported ' . __METHOD__
-            );
+            $this->logger?->log(DbLoggerEvent::TRANSACTION_COMMIT_NESTED_ERROR, $loggerContext);
         }
     }
 
@@ -134,21 +127,19 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
 
         $this->level--;
 
+        $loggerContext = new TransactionContext(__METHOD__, $this->level);
         if ($this->level === 0) {
-            $this->logger?->log(LogLevel::INFO, 'Roll back transaction ' . __METHOD__);
+            $this->logger?->log(DbLoggerEvent::TRANSACTION_ROLLBACK, $loggerContext);
             $this->db->getPDO()?->rollBack();
 
             return;
         }
 
         if ($this->db->isSavepointEnabled()) {
-            $this->logger?->log(LogLevel::DEBUG, 'Roll back to savepoint ' . $this->level . ' ' . __METHOD__);
+            $this->logger?->log(DbLoggerEvent::TRANSACTION_ROLLBACK_SAVEPOINT, $loggerContext);
             $this->rollBackSavepoint('LEVEL' . $this->level);
         } else {
-            $this->logger?->log(
-                LogLevel::INFO,
-                'Transaction not rolled back: nested transaction not supported ' . __METHOD__
-            );
+            $this->logger?->log(DbLoggerEvent::TRANSACTION_ROLLBACK_NESTED_ERROR, $loggerContext);
         }
     }
 
@@ -158,10 +149,7 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
             throw new Exception('Failed to set isolation level: transaction was inactive.');
         }
 
-        $this->logger?->log(
-            LogLevel::DEBUG,
-            'Setting transaction isolation level to ' . $this->level . ' ' . __METHOD__
-        );
+        $this->logger?->log(DbLoggerEvent::TRANSACTION_SET_ISOLATION_LEVEL, new TransactionContext(__METHOD__, $this->level, $level));
         $this->setTransactionIsolationLevel($level);
     }
 

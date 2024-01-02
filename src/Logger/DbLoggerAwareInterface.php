@@ -1,0 +1,20 @@
+<?php
+
+namespace Yiisoft\Db\Logger;
+
+use Psr\Log\LoggerInterface as PsrLoggerInterface;
+
+/**
+ * Describes a logger-aware instance.
+ */
+interface DbLoggerAwareInterface
+{
+    /**
+     * Sets a logger instance on the object.
+     *
+     * @param DbLoggerInterface|PsrLoggerInterface $logger
+     *
+     * @return void
+     */
+    public function setLogger(DbLoggerInterface|PsrLoggerInterface $logger): void;
+}
