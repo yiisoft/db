@@ -255,21 +255,13 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         return $result;
     }
 
-    /**
-     * Logs the current database query if query logging is on and returns the profiling token if profiling is on.
-     */
-    protected function logQuery(string $rawSql, string $category): void
-    {
-        $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
-    }
-
     protected function queryInternal(int $queryMode): mixed
     {
         $logCategory = self::class . '::' . $this->getQueryMode($queryMode);
+        $rawSql = $this->getRawSql();
 
         if ($this->logger !== null) {
-            $rawSql = $this->getRawSql();
-            $this->logQuery($rawSql, $logCategory);
+            $this->logger?->log(LogLevel::INFO, $rawSql, [$logCategory, LogTypes::KEY => LogTypes::TYPE_QUERY]);
         }
 
         $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
@@ -279,7 +271,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
          * @psalm-suppress RedundantConditionGivenDocblockType
          * @psalm-suppress DocblockTypeContradiction
          */
-        $this->profiler?->begin($rawSql ??= $this->getRawSql(), $queryContext);
+        $this->profiler?->begin($rawSql, $queryContext);
         try {
             /** @psalm-var mixed $result */
             $result = parent::queryInternal($queryMode);
