@@ -217,7 +217,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         string $expected,
         array $expectedParams = [],
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
         $qb = $db->getQueryBuilder();
 
         $params = [];

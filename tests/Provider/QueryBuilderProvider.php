@@ -171,11 +171,11 @@ class QueryBuilderProvider
                 [['no columns passed']],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
-                    INSERT INTO [[customer]] () VALUES (:qp0)
+                    INSERT INTO [[customer]] ([[id]]) VALUES (:qp0)
                     SQL,
                     static::$driverName,
                 ),
-                'expectedParams' => [':qp0' => 'no columns passed'],
+                'expectedParams' => [':qp0' => 0],
             ],
             'bool-false, bool2-null' => [
                 'type',
@@ -234,6 +234,23 @@ class QueryBuilderProvider
                     }
                 })(),
                 '',
+            ],
+            'empty columns and non-exists table' => [
+                'non_exists_table',
+                [],
+                'values' => [['1.0', '2', 10, 1]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[non_exists_table]] VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => '1.0',
+                    ':qp1' => '2',
+                    ':qp2' => 10,
+                    ':qp3' => 1,
+                ],
             ],
         ];
     }
