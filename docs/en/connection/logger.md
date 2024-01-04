@@ -64,7 +64,8 @@ For other DBMS refer to ["Create connecton"](/docs/en/README.md#create-connectio
 
 ## Advanced usage of Logger
 
-If you needed re-define logger messages or increase(decrease) level of log:
+If you need to redefine logger messages or increase/decrease logging level:
+
 1. Create custom logger class
 2. Use context for detect type of message in method "log"
 
