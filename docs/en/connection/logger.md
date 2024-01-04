@@ -66,8 +66,8 @@ For other DBMS refer to ["Create connecton"](/docs/en/README.md#create-connectio
 
 If you need to redefine logger messages or increase/decrease logging level:
 
-1. Create custom logger class
-2. Use context for detect type of message in method "log"
+1. Create a custom logger class
+2. Use the context to detect type of the message in the "log" method
 
 ```php
 <?php
