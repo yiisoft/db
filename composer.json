@@ -42,7 +42,7 @@
         "yiisoft/json": "^1.0",
         "yiisoft/log": "^2.0",
         "yiisoft/var-dumper": "^1.5",
-        "yiisoft/yii-debug": "dev-master|dev-master#d5232f6fd5ec20381a6e874efdaf5e277339cf4e"
+        "yiisoft/yii-debug": "dev-master|dev-php80"
     },
     "autoload": {
         "psr-4": {
