@@ -64,7 +64,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             return '';
         }
 
-        $columns = $this->extractColumnNames($table, $rows, $columns);
+        $columns = $this->extractColumnNames($rows, $columns);
         $values = $this->prepareBatchInsertValues($table, $rows, $columns, $params);
 
         if (empty($values)) {
@@ -182,7 +182,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @return string[] The column names.
      */
-    protected function extractColumnNames(string $table, iterable $rows, array $columns): array
+    protected function extractColumnNames(iterable $rows, array $columns): array
     {
         $columns = $this->getNormalizeColumnNames('', $columns);
 
@@ -198,14 +198,13 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             default => [],
         };
 
-        if (!array_key_exists(0, $row)) {
-            $columnNames = array_keys($row);
-        } else {
-            $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
-            $columnNames = array_slice(array_keys($columnSchemas), 0, count($row));
+        if (array_key_exists(0, $row)) {
+            return [];
         }
 
         /** @var string[] $columnNames */
+        $columnNames = array_keys($row);
+
         return array_combine($columnNames, $columnNames);
     }
 

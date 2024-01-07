@@ -479,23 +479,6 @@ class CommandProvider
                     ':qp3' => true,
                 ],
             ],
-            'empty columns and indexed values' => [
-                'type',
-                [],
-                'values' => [['1.0', '2', 10, 1]],
-                'expected' => DbHelper::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
-                    SQL,
-                    static::$driverName,
-                ),
-                'expectedParams' => [
-                    ':qp0' => 1,
-                    ':qp1' => 2.0,
-                    ':qp2' => '10',
-                    ':qp3' => true,
-                ],
-            ],
         ];
     }
 

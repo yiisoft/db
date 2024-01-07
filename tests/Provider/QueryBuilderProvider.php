@@ -171,11 +171,11 @@ class QueryBuilderProvider
                 [['no columns passed']],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
-                    INSERT INTO [[customer]] ([[id]]) VALUES (:qp0)
+                    INSERT INTO [[customer]] VALUES (:qp0)
                     SQL,
                     static::$driverName,
                 ),
-                'expectedParams' => [':qp0' => 0],
+                'expectedParams' => [':qp0' => 'no columns passed'],
             ],
             'bool-false, bool2-null' => [
                 'type',

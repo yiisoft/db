@@ -45,7 +45,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Db\QueryBuilderProvider::batchInsert
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert
      */
     public function testBatchInsert(
         string $table,
