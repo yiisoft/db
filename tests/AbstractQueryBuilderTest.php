@@ -246,10 +246,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $db->getQueryBuilder()->build($query);
 
-        $replacedQuotes = DbHelper::replaceQuotes((string) $expected, $db->getDriverName());
-
-        $this->assertIsString($replacedQuotes);
-        $this->assertEquals('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $replacedQuotes), $sql);
+        $this->assertEquals(
+            'SELECT *'
+            . ($db->getDriverName() === 'oci' ? ' FROM DUAL' : '')
+            . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
+            $sql
+        );
         $this->assertEquals($expectedParams, $params);
     }
 
@@ -349,9 +351,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            'SELECT *' . (
-                empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())
-            ),
+            'SELECT *'
+            . ($db->getDriverName() === 'oci' ? ' FROM DUAL' : '')
+            . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
             $sql,
         );
         $this->assertSame($expectedParams, $params);
@@ -472,10 +474,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $db->getQueryBuilder()->build($query);
 
-        $replacedQuotes = DbHelper::replaceQuotes($expected, $db->getDriverName());
-
-        $this->assertIsString($replacedQuotes);
-        $this->assertSame('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $replacedQuotes), $sql);
+        $this->assertSame(
+            'SELECT *'
+            . ($db->getDriverName() === 'oci' ? ' FROM DUAL' : '')
+            . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
+            $sql
+        );
         $this->assertSame($expectedParams, $params);
     }
 
@@ -1306,12 +1310,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $qb->build($query);
 
-        $this->assertSame(
-            <<<SQL
-            SELECT DISTINCT *
-            SQL,
-            $sql,
-        );
+        $expected = 'SELECT DISTINCT *';
+
+        if ($this->getDriverName() === 'oci') {
+            $expected .= ' FROM DUAL';
+        }
+
+        $this->assertSame($expected, $sql);
         $this->assertSame([], $params);
     }
 
@@ -1558,16 +1563,16 @@ abstract class AbstractQueryBuilderTest extends TestCase
     public function testCreateView(): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
 
+        $expected = 'CREATE VIEW [[animal_view]] AS SELECT [[1]]';
+
+        if ($this->getDriverName() === 'oci') {
+            $expected .= ' FROM DUAL';
+        }
+
         $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                CREATE VIEW [[animal_view]] AS SELECT [[1]]
-                SQL,
-                $db->getDriverName(),
-            ),
+            DbHelper::replaceQuotes($expected, $db->getDriverName()),
             $qb->createView('animal_view', (new query($db))->select('1')),
         );
     }
