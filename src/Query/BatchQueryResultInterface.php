@@ -35,6 +35,8 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  * ```
  *
  * @extends Iterator<int|string, mixed>
+ *
+ * @psalm-type PopulateClosure=Closure(array[],Closure|string|null): mixed
  */
 interface BatchQueryResultInterface extends Iterator
 {
@@ -106,5 +108,8 @@ interface BatchQueryResultInterface extends Iterator
      */
     public function batchSize(int $value): self;
 
+    /**
+     * @psalm-param PopulateClosure|null $populateMethod
+     */
     public function setPopulatedMethod(Closure|null $populateMethod = null): self;
 }

@@ -36,6 +36,52 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $db->close();
     }
 
+    public function testWithQuery()
+    {
+        $db = $this->getConnection(true);
+
+        $with = (new Query($db))
+            ->distinct()
+            ->select(['status'])
+            ->from('customer');
+
+        $query = (new Query($db))
+            ->withQuery($with, 'statuses')
+            ->from('statuses');
+
+        $this->assertEquals(2, $query->count());
+
+        $db->close();
+    }
+
+    public function testWithQueryRecursive()
+    {
+        $db = $this->getConnection();
+        $quoter = $db->getQuoter();
+        $isOracle = $db->getDriverName() === 'oci';
+
+        /** Sum 1 to 10 equals 55 */
+        $quotedName = $quoter->quoteColumnName('n');
+        $union = (new Query($db))
+            ->select(new Expression($quotedName . ' + 1'))
+            ->from('t')
+            ->where(['<', 'n', 10]);
+
+        $with = (new Query($db))
+            ->select(new Expression('1'))
+            ->from($isOracle ? new Expression('DUAL') : [])
+            ->union($union, true);
+
+        $sum = (new Query($db))
+            ->withQuery($with, 't(n)', true)
+            ->from('t')
+            ->sum($quotedName);
+
+        $this->assertEquals(55, $sum);
+
+        $db->close();
+    }
+
     public function testSelectWithoutFrom()
     {
         $db = $this->getConnection();

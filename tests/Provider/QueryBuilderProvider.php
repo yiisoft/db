@@ -145,7 +145,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => 'test@example.com', ':qp1' => 'silverfire', ':qp2' => 'Kyiv {{city}}, Ukraine'],
+                'expectedParams' => [':qp0' => 'test@example.com', ':qp1' => 'silverfire', ':qp2' => 'Kyiv {{city}}, Ukraine'],
             ],
             'escape-danger-chars' => [
                 'customer',
@@ -157,7 +157,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => "SQL-danger chars are escaped: '); --"],
+                'expectedParams' => [':qp0' => "SQL-danger chars are escaped: '); --"],
             ],
             'customer2' => [
                 'customer',
@@ -171,11 +171,11 @@ class QueryBuilderProvider
                 [['no columns passed']],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
-                    INSERT INTO [[customer]] () VALUES (:qp0)
+                    INSERT INTO [[customer]] VALUES (:qp0)
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => 'no columns passed'],
+                'expectedParams' => [':qp0' => 'no columns passed'],
             ],
             'bool-false, bool2-null' => [
                 'type',
@@ -187,7 +187,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => 0, ':qp1' => null],
+                'expectedParams' => [':qp0' => false, ':qp1' => null],
             ],
             'wrong' => [
                 '{{%type}}',
@@ -199,7 +199,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => null, ':qp1' => null],
+                'expectedParams' => [':qp0' => null, ':qp1' => null],
             ],
             'bool-false, time-now()' => [
                 '{{%type}}',
@@ -211,7 +211,19 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                [':qp0' => null],
+                'expectedParams' => [':qp0' => false],
+            ],
+            'column table names are not checked' => [
+                '{{%type}}',
+                ['{{%type}}.[[bool_col]]', '{{%another_table}}.[[bool_col2]]'],
+                [[true, false]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO {{%type}} ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [':qp0' => true, ':qp1' => false],
             ],
             'empty-sql' => [
                 '{{%type}}',
@@ -222,6 +234,23 @@ class QueryBuilderProvider
                     }
                 })(),
                 '',
+            ],
+            'empty columns and non-exists table' => [
+                'non_exists_table',
+                [],
+                'values' => [['1.0', '2', 10, 1]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[non_exists_table]] VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => '1.0',
+                    ':qp1' => '2',
+                    ':qp2' => 10,
+                    ':qp3' => 1,
+                ],
             ],
         ];
     }
@@ -1107,6 +1136,13 @@ class QueryBuilderProvider
                 '',
                 [':qp0' => 'test@example.com', ':qp1' => 'bar {{city}}', ':qp2' => 1, ':qp3' => null],
             ],
+            'regular values with unique at not the first position' => [
+                'T_upsert',
+                ['address' => 'bar {{city}}', 'email' => 'test@example.com', 'status' => 1, 'profile_id' => null],
+                true,
+                '',
+                [':qp0' => 'bar {{city}}', ':qp1' => 'test@example.com', ':qp2' => 1, ':qp3' => null],
+            ],
             'regular values with update part' => [
                 'T_upsert',
                 ['email' => 'test@example.com', 'address' => 'bar {{city}}', 'status' => 1, 'profile_id' => null],
@@ -1229,6 +1265,16 @@ class QueryBuilderProvider
                 '',
                 [':qp0' => 'test'],
             ],
+        ];
+    }
+
+    public static function cteAliases(): array
+    {
+        return [
+            'simple' => ['a', '[[a]]'],
+            'with one column' => ['a(b)', '[[a]]([[b]])'],
+            'with columns' => ['a(b,c,d)', '[[a]]([[b]], [[c]], [[d]])'],
+            'with extra space' => ['a(b,c,d) ', 'a(b,c,d) '],
         ];
     }
 }

@@ -10,6 +10,7 @@ use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 use function array_change_key_case;
@@ -95,7 +96,7 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $tableName The table name.
      *
-     * @return array The indexes for the given table.
+     * @return IndexConstraint[] The indexes for the given table.
      */
     abstract protected function loadTableIndexes(string $tableName): array;
 
@@ -133,19 +134,14 @@ abstract class AbstractSchema implements SchemaInterface
 
     public function getDataType(mixed $data): int
     {
-        /** @psalm-var array<string, int> $typeMap */
-        $typeMap = [
+        return match (gettype($data)) {
             // php type => SQL data type
             SchemaInterface::PHP_TYPE_BOOLEAN => DataType::BOOLEAN,
             SchemaInterface::PHP_TYPE_INTEGER => DataType::INTEGER,
-            SchemaInterface::PHP_TYPE_STRING => DataType::STRING,
             SchemaInterface::PHP_TYPE_RESOURCE => DataType::LOB,
             SchemaInterface::PHP_TYPE_NULL => DataType::NULL,
-        ];
-
-        $type = gettype($data);
-
-        return $typeMap[$type] ?? DataType::STRING;
+            default => DataType::STRING,
+        };
     }
 
     public function getRawTableName(string $name): string
@@ -261,9 +257,8 @@ abstract class AbstractSchema implements SchemaInterface
      */
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
-        /** @psalm-var mixed $tableIndexes */
-        $tableIndexes = $this->getTableMetadata($name, SchemaInterface::INDEXES, $refresh);
-        return is_array($tableIndexes) ? $tableIndexes : [];
+        /** @var IndexConstraint[] */
+        return $this->getTableMetadata($name, SchemaInterface::INDEXES, $refresh);
     }
 
     /**
