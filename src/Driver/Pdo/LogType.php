@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Driver\Pdo;
 
-class LogTypes
+final class LogType
 {
     public const KEY = 'log-type';
 

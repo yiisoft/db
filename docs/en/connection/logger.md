@@ -74,13 +74,13 @@ If you need to redefine logger messages or increase/decrease logging level:
 
 declare(strict_types=1);
 
-use Yiisoft\Db\Driver\Pdo\LogTypes;
+use Yiisoft\Db\Driver\Pdo\LogType;
 
 class MyLogger extends ParentLoggerClass implements LoggerInterface
 {
     public function log($level, string|\Stringable $message, array $context = []): void
     {
-        if ($context[LogTypes::KEY] === LogTypes::TYPE_QUERY) {
+        if ($context[LogType::KEY] === LogType::TYPE_QUERY) {
             ... your logic here
         }    
     }
