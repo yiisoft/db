@@ -61,7 +61,7 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
                 LogLevel::DEBUG,
                 'Begin transaction' . ($isolationLevel ? ' with isolation level ' . $isolationLevel : '')
                 . ' ' . __METHOD__,
-                [LogType::KEY => LogType::TYPE_TRANSACTION]
+                ['type' => LogType::TRANSACTION]
             );
 
             $this->db->getPDO()?->beginTransaction();
@@ -74,7 +74,7 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
             $this->logger?->log(
                 LogLevel::DEBUG,
                 'Set savepoint ' . $this->level . ' ' . __METHOD__,
-                [LogType::KEY => LogType::TYPE_TRANSACTION]
+                ['type' => LogType::TRANSACTION]
             );
 
             $this->createSavepoint('LEVEL' . $this->level);
@@ -82,7 +82,7 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
             $this->logger?->log(
                 LogLevel::DEBUG,
                 'Transaction not started: nested transaction not supported ' . __METHOD__,
-                [LogType::KEY => LogType::TYPE_TRANSACTION]
+                ['type' => LogType::TRANSACTION]
             );
 
             throw new NotSupportedException('Transaction not started: nested transaction not supported.');
@@ -103,7 +103,7 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
             $this->logger?->log(
                 LogLevel::DEBUG,
                 'Commit transaction ' . __METHOD__,
-                [LogType::KEY => LogType::TYPE_TRANSACTION]
+                ['type' => LogType::TRANSACTION]
             );
             $this->db->getPDO()?->commit();
 
@@ -114,14 +114,14 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
             $this->logger?->log(
                 LogLevel::DEBUG,
                 'Release savepoint ' . $this->level . ' ' . __METHOD__,
-                [LogType::KEY => LogType::TYPE_TRANSACTION]
+                ['type' => LogType::TRANSACTION]
             );
             $this->releaseSavepoint('LEVEL' . $this->level);
         } else {
             $this->logger?->log(
                 LogLevel::INFO,
                 'Transaction not committed: nested transaction not supported ' . __METHOD__,
-                [LogType::KEY => LogType::TYPE_TRANSACTION]
+                ['type' => LogType::TRANSACTION]
             );
         }
     }
@@ -153,7 +153,7 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
             $this->logger?->log(
                 LogLevel::INFO,
                 'Roll back transaction ' . __METHOD__,
-                [LogType::KEY => LogType::TYPE_TRANSACTION]
+                ['type' => LogType::TRANSACTION]
             );
             $this->db->getPDO()?->rollBack();
 
@@ -164,14 +164,14 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
             $this->logger?->log(
                 LogLevel::DEBUG,
                 'Roll back to savepoint ' . $this->level . ' ' . __METHOD__,
-                [LogType::KEY => LogType::TYPE_TRANSACTION]
+                ['type' => LogType::TRANSACTION]
             );
             $this->rollBackSavepoint('LEVEL' . $this->level);
         } else {
             $this->logger?->log(
                 LogLevel::INFO,
                 'Transaction not rolled back: nested transaction not supported ' . __METHOD__,
-                [LogType::KEY => LogType::TYPE_TRANSACTION]
+                ['type' => LogType::TRANSACTION]
             );
         }
     }
@@ -185,7 +185,7 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
         $this->logger?->log(
             LogLevel::DEBUG,
             'Setting transaction isolation level to ' . $this->level . ' ' . __METHOD__,
-            [LogType::KEY => LogType::TYPE_TRANSACTION]
+            ['type' => LogType::TRANSACTION]
         );
         $this->setTransactionIsolationLevel($level);
     }

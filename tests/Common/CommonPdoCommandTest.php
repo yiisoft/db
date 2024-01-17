@@ -239,7 +239,7 @@ abstract class CommonPdoCommandTest extends TestCase
             ->with(
                 LogLevel::INFO,
                 $sql,
-                $params + ['log-type' => 'query']
+                $params + ['type' => 'query']
             );
         return $logger;
     }

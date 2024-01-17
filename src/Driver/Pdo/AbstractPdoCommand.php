@@ -259,7 +259,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     {
         $logCategory = self::class . '::' . $this->getQueryMode($queryMode);
 
-        $this->logger?->log(LogLevel::INFO, $rawSql = $this->getRawSql(), [$logCategory, LogType::KEY => LogType::TYPE_QUERY]);
+        $this->logger?->log(LogLevel::INFO, $rawSql = $this->getRawSql(), [$logCategory, 'type' => LogType::QUERY]);
 
         $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
 

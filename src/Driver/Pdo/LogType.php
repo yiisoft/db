@@ -6,9 +6,7 @@ namespace Yiisoft\Db\Driver\Pdo;
 
 final class LogType
 {
-    public const KEY = 'log-type';
-
-    public const TYPE_CONNECTION = 'connection';
-    public const TYPE_QUERY = 'query';
-    public const TYPE_TRANSACTION = 'transaction';
+    public const CONNECTION = 'connection';
+    public const QUERY = 'query';
+    public const TRANSACTION = 'transaction';
 }

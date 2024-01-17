@@ -80,7 +80,7 @@ class MyLogger extends ParentLoggerClass implements LoggerInterface
 {
     public function log($level, string|\Stringable $message, array $context = []): void
     {
-        if ($context[LogType::KEY] === LogType::TYPE_QUERY) {
+        if ($context['type'] === LogType::QUERY) {
             ... your logic here
         }    
     }
