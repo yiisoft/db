@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Closure;
-use Generator;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -211,14 +210,21 @@ abstract class AbstractQueryBuilderTest extends TestCase
      *
      * @psalm-param array<array-key, string> $columns
      */
-    public function testBatchInsert(string $table, array $columns, iterable|Generator $rows, string $expected): void
-    {
-        $db = $this->getConnection();
-
+    public function testBatchInsert(
+        string $table,
+        array $columns,
+        iterable $rows,
+        string $expected,
+        array $expectedParams = [],
+    ): void {
+        $db = $this->getConnection(true);
         $qb = $db->getQueryBuilder();
-        $sql = $qb->batchInsert($table, $columns, $rows);
+
+        $params = [];
+        $sql = $qb->batchInsert($table, $columns, $rows, $params);
 
         $this->assertSame($expected, $sql);
+        $this->assertSame($expectedParams, $params);
     }
 
     /**
@@ -240,10 +246,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $db->getQueryBuilder()->build($query);
 
-        $replacedQuotes = DbHelper::replaceQuotes((string) $expected, $db->getDriverName());
-
-        $this->assertIsString($replacedQuotes);
-        $this->assertEquals('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $replacedQuotes), $sql);
+        $this->assertEquals(
+            'SELECT *'
+            . ($db->getDriverName() === 'oci' ? ' FROM DUAL' : '')
+            . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
+            $sql
+        );
         $this->assertEquals($expectedParams, $params);
     }
 
@@ -343,9 +351,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
         [$sql, $params] = $qb->build($query);
 
         $this->assertSame(
-            'SELECT *' . (
-                empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())
-            ),
+            'SELECT *'
+            . ($db->getDriverName() === 'oci' ? ' FROM DUAL' : '')
+            . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
             $sql,
         );
         $this->assertSame($expectedParams, $params);
@@ -466,10 +474,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $db->getQueryBuilder()->build($query);
 
-        $replacedQuotes = DbHelper::replaceQuotes($expected, $db->getDriverName());
-
-        $this->assertIsString($replacedQuotes);
-        $this->assertSame('SELECT *' . (empty($expected) ? '' : ' WHERE ' . $replacedQuotes), $sql);
+        $this->assertSame(
+            'SELECT *'
+            . ($db->getDriverName() === 'oci' ? ' FROM DUAL' : '')
+            . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
+            $sql
+        );
         $this->assertSame($expectedParams, $params);
     }
 
@@ -668,7 +678,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                WITH cte AS (SELECT * FROM [[admin_profile]])
+                WITH [[cte]] AS (SELECT * FROM [[admin_profile]])
                 SQL,
                 $db->getDriverName(),
             ),
@@ -1131,7 +1141,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                WITH a1 AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1), a2 AS ((SELECT [[id]] FROM [[t2]] INNER JOIN [[a1]] ON t2.id = a1.id WHERE expr = 2) UNION ( SELECT [[id]] FROM [[t3]] WHERE expr = 3 )) SELECT * FROM [[a2]]
+                WITH [[a1]] AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1), [[a2]] AS ((SELECT [[id]] FROM [[t2]] INNER JOIN [[a1]] ON t2.id = a1.id WHERE expr = 2) UNION ( SELECT [[id]] FROM [[t3]] WHERE expr = 3 )) SELECT * FROM [[a2]]
                 SQL,
                 $db->getDriverName(),
             ),
@@ -1157,15 +1167,40 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $qb->build($query);
 
-        $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                WITH RECURSIVE a1 AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1) SELECT * FROM [[a1]]
-                SQL,
-                $db->getDriverName(),
-            ),
-            $sql,
+        $expected = DbHelper::replaceQuotes(
+            <<<SQL
+            WITH RECURSIVE [[a1]] AS (SELECT [[id]] FROM [[t1]] WHERE expr = 1) SELECT * FROM [[a1]]
+            SQL,
+            $db->getDriverName(),
         );
+
+        if (in_array($db->getDriverName(), ['oci', 'sqlsrv'], true)) {
+            $expected = str_replace('WITH RECURSIVE ', 'WITH ', $expected);
+        }
+
+        $this->assertSame($expected, $sql);
+        $this->assertSame([], $params);
+    }
+
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::cteAliases */
+    public function testBuildWithQueryAlias($alias, $expected)
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $withQuery = (new Query($db))->from('t');
+        $query = (new Query($db))->withQuery($withQuery, $alias)->from('t');
+
+        [$sql, $params] = $qb->build($query);
+
+        $expectedSql = DbHelper::replaceQuotes(
+            <<<SQL
+            WITH $expected AS (SELECT * FROM [[t]]) SELECT * FROM [[t]]
+            SQL,
+            $db->getDriverName(),
+        );
+
+        $this->assertSame($expectedSql, $sql);
         $this->assertSame([], $params);
     }
 
@@ -1275,12 +1310,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         [$sql, $params] = $qb->build($query);
 
-        $this->assertSame(
-            <<<SQL
-            SELECT DISTINCT *
-            SQL,
-            $sql,
-        );
+        $expected = 'SELECT DISTINCT *';
+
+        if ($this->getDriverName() === 'oci') {
+            $expected .= ' FROM DUAL';
+        }
+
+        $this->assertSame($expected, $sql);
         $this->assertSame([], $params);
     }
 
@@ -1527,16 +1563,16 @@ abstract class AbstractQueryBuilderTest extends TestCase
     public function testCreateView(): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
 
+        $expected = 'CREATE VIEW [[animal_view]] AS SELECT [[1]]';
+
+        if ($this->getDriverName() === 'oci') {
+            $expected .= ' FROM DUAL';
+        }
+
         $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                CREATE VIEW [[animal_view]] AS SELECT [[1]]
-                SQL,
-                $db->getDriverName(),
-            ),
+            DbHelper::replaceQuotes($expected, $db->getDriverName()),
             $qb->createView('animal_view', (new query($db))->select('1')),
         );
     }

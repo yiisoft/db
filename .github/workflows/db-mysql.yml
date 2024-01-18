@@ -26,7 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-mysql-${{ matrix.mysql }}
 
     env:
-      COMPOSER_ROOT_VERSION: 1.0.0
+      COMPOSER_ROOT_VERSION: 1.2.0
       CURRENT_PACKAGE: db-mysql
       EXTENSIONS: pdo, pdo_mysql
 

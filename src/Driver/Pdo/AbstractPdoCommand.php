@@ -14,12 +14,14 @@ use Throwable;
 use Yiisoft\Db\Command\AbstractCommand;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
+use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\Query\Data\DataReader;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
  * Represents a database command that can be executed using a PDO (PHP Data Object) database connection.
@@ -161,6 +163,11 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         }
     }
 
+    protected function getQueryBuilder(): QueryBuilderInterface
+    {
+        return $this->db->getQueryBuilder();
+    }
+
     protected function getQueryMode(int $queryMode): string
     {
         return match ($queryMode) {
@@ -179,12 +186,40 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      *
      * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
      *
-     * @param string|null $rawSql The rawSql if it has been created.
+     * @param string|null $rawSql Deprecated. Use `null` value. Will be removed in version 2.0.0.
      *
      * @throws Exception
      * @throws Throwable
      */
-    abstract protected function internalExecute(string|null $rawSql): void;
+    protected function internalExecute(string|null $rawSql): void
+    {
+        $attempt = 0;
+
+        while (true) {
+            try {
+                if (
+                    ++$attempt === 1
+                    && $this->isolationLevel !== null
+                    && $this->db->getTransaction() === null
+                ) {
+                    $this->db->transaction(
+                        fn () => $this->internalExecute($rawSql),
+                        $this->isolationLevel
+                    );
+                } else {
+                    $this->pdoStatement?->execute();
+                }
+                break;
+            } catch (PDOException $e) {
+                $rawSql = $rawSql ?: $this->getRawSql();
+                $e = (new ConvertException($e, $rawSql))->run();
+
+                if ($this->retryHandler === null || !($this->retryHandler)($e, $attempt)) {
+                    throw $e;
+                }
+            }
+        }
+    }
 
     /**
      * @throws InvalidParamException
@@ -230,14 +265,21 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
 
     protected function queryInternal(int $queryMode): mixed
     {
-        $rawSql = $this->getRawSql();
         $logCategory = self::class . '::' . $this->getQueryMode($queryMode);
 
-        $this->logQuery($rawSql, $logCategory);
+        if ($this->logger !== null) {
+            $rawSql = $this->getRawSql();
+            $this->logQuery($rawSql, $logCategory);
+        }
 
         $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
 
-        $this->profiler?->begin($rawSql, $queryContext);
+        /**
+         * @psalm-var string $rawSql
+         * @psalm-suppress RedundantConditionGivenDocblockType
+         * @psalm-suppress DocblockTypeContradiction
+         */
+        $this->profiler?->begin($rawSql ??= $this->getRawSql(), $queryContext);
         try {
             /** @psalm-var mixed $result */
             $result = parent::queryInternal($queryMode);
