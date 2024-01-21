@@ -260,7 +260,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      */
     protected function logQuery(string $rawSql, string $category): void
     {
-        $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
+        $this->logger?->log(LogLevel::INFO, $rawSql, [$category, 'type' => LogType::QUERY]);
     }
 
     protected function queryInternal(int $queryMode): mixed

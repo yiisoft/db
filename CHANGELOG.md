@@ -17,6 +17,7 @@
 - Bug #788: Fix casting integer to string in `AbstractCommand::getRawSql()` (@Tigrov)
 - Enh #789: Remove unnecessary type casting to array in `AbstractDMLQueryBuilder::getTableUniqueColumnNames()` (@Tigrov)
 - Enh #795: Allow to use `DMLQueryBuilderInterface::batchInsert()` method with empty columns (@Tigrov)
+- Enh #794: Add message type to log context (@darkdef)
 
 ## 1.2.0 November 12, 2023
 
