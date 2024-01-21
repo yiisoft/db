@@ -442,6 +442,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
                     $result = empty(array_diff($constraintColumnNames, $columns));
 
+                    /** @psalm-var array $columnNames */
                     if ($result) {
                         $columnNames = array_merge($columnNames, $constraintColumnNames);
                     }
