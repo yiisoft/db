@@ -405,4 +405,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     ): string {
         return $this->dmlBuilder->upsert($table, $insertColumns, $updateColumns, $params);
     }
+
+    public function refreshMaterializedView(string $viewName, bool $concurrently = false, ?bool $withData = null): string
+    {
+        return $this->ddlBuilder->refreshMaterializedView($viewName, $concurrently, $withData);
+    }
 }

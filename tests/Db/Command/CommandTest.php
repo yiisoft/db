@@ -727,4 +727,48 @@ final class CommandTest extends AbstractCommandTest
         );
         parent::testProfilerData();
     }
+
+    public static function refreshMaterializedViewDataProvider(): array
+    {
+        return [
+            [
+                'default_mt',
+                null,
+                null,
+            ],
+            [
+                'concurrently_mt',
+                true,
+                null,
+            ],
+            [
+                'concurrently_with_data_mt',
+                true,
+                true,
+            ],
+            [
+                'concurrently_without_data_mt',
+                true,
+                false,
+            ],
+        ];
+    }
+
+
+    /**
+     * @dataProvider refreshMaterializedViewDataProvider
+     * @param string $viewName
+     * @param bool|null $concurrently
+     * @param bool|null $withData
+     * @return void
+     * @throws \Yiisoft\Db\Exception\Exception
+     * @throws \Yiisoft\Db\Exception\InvalidConfigException
+     */
+    public function testRefreshMaterializedView(string $viewName, ?bool $concurrently, ?bool $withData): void
+    {
+        $db = $this->getConnection();
+        $this->expectException(NotSupportedException::class);
+
+        $db->createCommand()->refreshMaterializedView($viewName, $concurrently, $withData);
+    }
 }
