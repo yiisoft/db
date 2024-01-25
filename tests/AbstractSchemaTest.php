@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Helper\DbStringHelper;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -76,14 +77,10 @@ abstract class AbstractSchemaTest extends TestCase
 
     public function testIsReadQuery(): void
     {
-        $db = $this->getConnection();
-
-        $schema = $db->getSchema();
-
-        $this->assertTrue($schema->isReadQuery('SELECT * FROM tbl'));
-        $this->assertTrue($schema->isReadQuery('SELECT * FROM tbl WHERE id=1'));
-        $this->assertTrue($schema->isReadQuery('SELECT * FROM tbl WHERE id=1 LIMIT 1'));
-        $this->assertTrue($schema->isReadQuery('SELECT * FROM tbl WHERE id=1 LIMIT 1 OFFSET 1'));
+        $this->assertTrue(DbStringHelper::isReadQuery('SELECT * FROM tbl'));
+        $this->assertTrue(DbStringHelper::isReadQuery('SELECT * FROM tbl WHERE id=1'));
+        $this->assertTrue(DbStringHelper::isReadQuery('SELECT * FROM tbl WHERE id=1 LIMIT 1'));
+        $this->assertTrue(DbStringHelper::isReadQuery('SELECT * FROM tbl WHERE id=1 LIMIT 1 OFFSET 1'));
     }
 
     public function testRefresh(): void

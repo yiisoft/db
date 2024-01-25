@@ -83,6 +83,17 @@ class Quoter implements QuoterInterface
         return $cleanedUpTableNames;
     }
 
+    public function getRawTableName(string $name): string
+    {
+        if (str_contains($name, '{{')) {
+            $name = preg_replace('/{{(.*?)}}/', '\1', $name);
+
+            return str_replace('%', $this->tablePrefix, $name);
+        }
+
+        return $name;
+    }
+
     public function getTableNameParts(string $name, bool $withColumn = false): array
     {
         $parts = array_slice(explode('.', $name), -2, 2);

@@ -27,6 +27,18 @@ interface QuoterInterface
     public function cleanUpTableNames(array $tableNames): array;
 
     /**
+     * Returns the actual name of a given table name.
+     *
+     * This method will strip off curly brackets from the given table name and replace the percentage character '%' with
+     * {@see ConnectionInterface::tablePrefix}.
+     *
+     * @param string $name The table name to convert.
+     *
+     * @return string The real name of the given table name.
+     */
+    public function getRawTableName(string $name): string;
+
+    /**
      * Splits full table name into parts.
      *
      * @param string $name The full name of the table.

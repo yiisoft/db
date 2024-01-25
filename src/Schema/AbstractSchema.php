@@ -532,6 +532,9 @@ abstract class AbstractSchema implements SchemaInterface
      * @param bool $multiple Whether many rows or a single row passed.
      *
      * @return array The normalized row or rows.
+     *
+     * @deprecated Use `array_change_key_case($row)` or `array_map('array_change_key_case', $row)`.
+     * Will be removed in version 2.0.0.
      */
     protected function normalizeRowKeyCase(array $row, bool $multiple): array
     {
