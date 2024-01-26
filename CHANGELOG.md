@@ -18,6 +18,9 @@
 - Enh #789: Remove unnecessary type casting to array in `AbstractDMLQueryBuilder::getTableUniqueColumnNames()` (@Tigrov)
 - Enh #795: Allow to use `DMLQueryBuilderInterface::batchInsert()` method with empty columns (@Tigrov)
 - Enh #794: Add message type to log context (@darkdef)
+- Enh #801: Deprecate `AbstractSchema::normalizeRowKeyCase()` method (@Tigrov)
+- Enh #801: Deprecate `SchemaInterface::getRawTableName()` and add `QuoterInterface::getRawTableName()` method (@Tigrov)
+- Enh #801: Deprecate `SchemaInterface::isReadQuery()` and add `DbStringHelper::isReadQuery()` method (@Tigrov)
 
 ## 1.2.0 November 12, 2023
 
