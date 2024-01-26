@@ -215,6 +215,11 @@ class Quoter implements QuoterInterface
         return "'" . str_replace("'", "''", addcslashes($value, "\000\032")) . "'";
     }
 
+    public function setTablePrefix(string $value): void
+    {
+        $this->tablePrefix = $value;
+    }
+
     public function unquoteSimpleColumnName(string $name): string
     {
         if (is_string($this->columnQuoteCharacter)) {

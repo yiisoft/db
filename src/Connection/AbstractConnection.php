@@ -9,6 +9,7 @@ use Throwable;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
@@ -21,6 +22,7 @@ use Yiisoft\Db\Transaction\TransactionInterface;
 abstract class AbstractConnection implements ConnectionInterface
 {
     protected TransactionInterface|null $transaction = null;
+    protected QuoterInterface|null $quoter = null;
     private bool $enableSavepoint = true;
     private string $tablePrefix = '';
 
@@ -71,6 +73,7 @@ abstract class AbstractConnection implements ConnectionInterface
     public function setTablePrefix(string $value): void
     {
         $this->tablePrefix = $value;
+        $this->quoter?->setTablePrefix($value);
     }
 
     public function transaction(Closure $closure, string $isolationLevel = null): mixed
