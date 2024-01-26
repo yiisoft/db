@@ -144,6 +144,7 @@ abstract class AbstractSchema implements SchemaInterface
         };
     }
 
+    /** @deprecated Use {@see QuoterInterface::getRawTableName()}. Will be removed in version 2.0.0. */
     public function getRawTableName(string $name): string
     {
         if (str_contains($name, '{{')) {
@@ -315,6 +316,7 @@ abstract class AbstractSchema implements SchemaInterface
         return is_array($tableUniques) ? $tableUniques : [];
     }
 
+    /** @deprecated Use {@see DbStringHelper::isReadQuery()}. Will be removed in version 2.0.0. */
     public function isReadQuery(string $sql): bool
     {
         $pattern = '/^\s*(SELECT|SHOW|DESCRIBE)\b/i';
@@ -340,7 +342,7 @@ abstract class AbstractSchema implements SchemaInterface
      */
     public function refreshTableSchema(string $name): void
     {
-        $rawName = $this->getRawTableName($name);
+        $rawName = $this->db->getQuoter()->getRawTableName($name);
 
         unset($this->tableMetadata[$rawName]);
 
@@ -470,7 +472,7 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false): mixed
     {
-        $rawName = $this->getRawTableName($name);
+        $rawName = $this->db->getQuoter()->getRawTableName($name);
 
         if (!isset($this->tableMetadata[$rawName])) {
             $this->loadTableMetadataFromCache($rawName);
@@ -571,7 +573,7 @@ abstract class AbstractSchema implements SchemaInterface
     protected function setTableMetadata(string $name, string $type, mixed $data): void
     {
         /** @psalm-suppress MixedArrayAssignment  */
-        $this->tableMetadata[$this->getRawTableName($name)][$type] = $data;
+        $this->tableMetadata[$this->db->getQuoter()->getRawTableName($name)][$type] = $data;
     }
 
     /**

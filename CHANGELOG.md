@@ -21,6 +21,7 @@
 - Enh #801: Deprecate `AbstractSchema::normalizeRowKeyCase()` method (@Tigrov)
 - Enh #801: Deprecate `SchemaInterface::getRawTableName()` and add `QuoterInterface::getRawTableName()` method (@Tigrov)
 - Enh #801: Deprecate `SchemaInterface::isReadQuery()` and add `DbStringHelper::isReadQuery()` method (@Tigrov)
+- Enh #801: Remove unnecessary symbol `\\` from `rtrim()` function inside `DbStringHelper::baseName()` method (@Tigrov)
 
 ## 1.2.0 November 12, 2023
 
