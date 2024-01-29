@@ -14,14 +14,13 @@ use function is_float;
 use function is_resource;
 use function is_string;
 
-class BinaryColumnSchema extends AbstractColumnSchema
+class BinaryColumn extends Column
 {
-    public function __construct(string $name)
-    {
-        parent::__construct($name);
-
-        $this->type(SchemaInterface::TYPE_BINARY);
-        $this->phpType(SchemaInterface::PHP_TYPE_RESOURCE);
+    public function __construct(
+        string|null $type = SchemaInterface::TYPE_BINARY,
+        string|null $phpType = SchemaInterface::PHP_TYPE_RESOURCE,
+    ) {
+        parent::__construct($type, $phpType);
     }
 
     public function dbTypecast(mixed $value): mixed

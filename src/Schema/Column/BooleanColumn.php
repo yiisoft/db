@@ -7,14 +7,13 @@ namespace Yiisoft\Db\Schema\Column;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
-class BooleanColumnSchema extends AbstractColumnSchema
+class BooleanColumn extends Column
 {
-    public function __construct(string $name)
-    {
-        parent::__construct($name);
-
-        $this->type(SchemaInterface::TYPE_BOOLEAN);
-        $this->phpType(SchemaInterface::PHP_TYPE_BOOLEAN);
+    public function __construct(
+        string|null $type = SchemaInterface::TYPE_BOOLEAN,
+        string|null $phpType = SchemaInterface::PHP_TYPE_BOOLEAN,
+    ) {
+        parent::__construct($type, $phpType);
     }
 
     public function dbTypecast(mixed $value): bool|ExpressionInterface|null

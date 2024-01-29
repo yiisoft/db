@@ -12,17 +12,16 @@ use function is_float;
 use function is_resource;
 use function is_string;
 
-class StringColumnSchema extends AbstractColumnSchema
+class StringColumn extends Column
 {
-    public function __construct(string $name)
-    {
-        parent::__construct($name);
-
-        $this->type(SchemaInterface::TYPE_STRING);
-        $this->phpType(SchemaInterface::PHP_TYPE_STRING);
+    public function __construct(
+        string|null $type = SchemaInterface::TYPE_STRING,
+        string|null $phpType = SchemaInterface::PHP_TYPE_STRING,
+    ) {
+        parent::__construct($type, $phpType);
     }
 
-    public function dbTypecast(mixed $value): mixed
+    public function dbTypecast(mixed $value): string|ExpressionInterface|null
     {
         return match (true) {
             is_string($value), $value === null, is_resource($value), $value instanceof ExpressionInterface => $value,

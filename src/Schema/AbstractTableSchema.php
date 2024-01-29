@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function array_keys;
 
@@ -14,22 +14,43 @@ use function array_keys;
  */
 abstract class AbstractTableSchema implements TableSchemaInterface
 {
-    private string|null $schemaName = null;
+    private string $schemaName = '';
     private string $name = '';
-    private string|null $fullName = null;
     private string|null $comment = null;
     private string|null $sequenceName = null;
     /** @psalm-var string[] */
     private array $primaryKey = [];
-    /** @psalm-var array<string, ColumnSchemaInterface> */
-    private array $columns = [];
     /** @psalm-var array<array-key, array> */
     protected array $foreignKeys = [];
     protected string|null $createSql = null;
     private string|null $catalogName = null;
     private string|null $serverName = null;
 
-    public function getColumn(string $name): ColumnSchemaInterface|null
+    /**
+     * @param ColumnInterface[] $columns
+     *
+     * @psalm-param array<string, ColumnInterface> $columns
+     */
+    public function __construct(
+        private string $fullName = '',
+        private array $columns = [],
+    ) {
+        $values = explode('.', $this->fullName, 2);
+
+        if (count($values) === 2) {
+            [$this->schemaName, $this->name] = $values;
+        } else {
+            $this->name = $this->fullName;
+        }
+
+        foreach ($columns as $columnName => $column) {
+            if ($column->isPrimaryKey()) {
+                $this->primaryKey[] = $columnName;
+            }
+        }
+    }
+
+    public function getColumn(string $name): ColumnInterface|null
     {
         return $this->columns[$name] ?? null;
     }
@@ -104,7 +125,7 @@ abstract class AbstractTableSchema implements TableSchemaInterface
         $this->primaryKey[] = $value;
     }
 
-    public function column(string $name, ColumnSchemaInterface $value): void
+    public function column(string $name, ColumnInterface $value): void
     {
         $this->columns[$name] = $value;
     }

@@ -9,13 +9,13 @@ use stdClass;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
-use Yiisoft\Db\Schema\Column\BigIntColumnSchema;
-use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
-use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
-use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
-use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
-use Yiisoft\Db\Schema\Column\JsonColumnSchema;
-use Yiisoft\Db\Schema\Column\StringColumnSchema;
+use Yiisoft\Db\Schema\Column\BigIntColumn;
+use Yiisoft\Db\Schema\Column\BinaryColumn;
+use Yiisoft\Db\Schema\Column\BooleanColumn;
+use Yiisoft\Db\Schema\Column\DoubleColumn;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
+use Yiisoft\Db\Schema\Column\JsonColumn;
+use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 use function fopen;
@@ -26,13 +26,13 @@ class ColumnSchemaProvider
     {
         return [
             // [class, type, phpType]
-            'integer' => [IntegerColumnSchema::class, SchemaInterface::TYPE_INTEGER, SchemaInterface::PHP_TYPE_INTEGER],
-            'bigint' => [BigIntColumnSchema::class, SchemaInterface::TYPE_BIGINT, SchemaInterface::PHP_TYPE_INTEGER],
-            'double' => [DoubleColumnSchema::class, SchemaInterface::TYPE_DOUBLE, SchemaInterface::PHP_TYPE_DOUBLE],
-            'string' => [StringColumnSchema::class, SchemaInterface::TYPE_STRING, SchemaInterface::PHP_TYPE_STRING],
-            'binary' => [BinaryColumnSchema::class, SchemaInterface::TYPE_BINARY, SchemaInterface::PHP_TYPE_RESOURCE],
-            'boolean' => [BooleanColumnSchema::class, SchemaInterface::TYPE_BOOLEAN, SchemaInterface::PHP_TYPE_BOOLEAN],
-            'json' => [JsonColumnSchema::class, SchemaInterface::TYPE_JSON, SchemaInterface::PHP_TYPE_ARRAY],
+            'integer' => [IntegerColumn::class, SchemaInterface::TYPE_INTEGER, SchemaInterface::PHP_TYPE_INTEGER],
+            'bigint' => [BigIntColumn::class, SchemaInterface::TYPE_BIGINT, SchemaInterface::PHP_TYPE_INTEGER],
+            'double' => [DoubleColumn::class, SchemaInterface::TYPE_DOUBLE, SchemaInterface::PHP_TYPE_DOUBLE],
+            'string' => [StringColumn::class, SchemaInterface::TYPE_STRING, SchemaInterface::PHP_TYPE_STRING],
+            'binary' => [BinaryColumn::class, SchemaInterface::TYPE_BINARY, SchemaInterface::PHP_TYPE_RESOURCE],
+            'boolean' => [BooleanColumn::class, SchemaInterface::TYPE_BOOLEAN, SchemaInterface::PHP_TYPE_BOOLEAN],
+            'json' => [JsonColumn::class, SchemaInterface::TYPE_JSON, SchemaInterface::PHP_TYPE_ARRAY],
         ];
     }
 
@@ -40,7 +40,7 @@ class ColumnSchemaProvider
     {
         return [
             'integer' => [
-                IntegerColumnSchema::class,
+                IntegerColumn::class,
                 [
                     // [expected, typecast value]
                     [null, null],
@@ -54,7 +54,7 @@ class ColumnSchemaProvider
                 ],
             ],
             'bigint' => [
-                BigIntColumnSchema::class,
+                BigIntColumn::class,
                 [
                     [null, null],
                     [null, ''],
@@ -68,7 +68,7 @@ class ColumnSchemaProvider
                 ],
             ],
             'double' => [
-                DoubleColumnSchema::class,
+                DoubleColumn::class,
                 [
                     [null, null],
                     [null, ''],
@@ -81,7 +81,7 @@ class ColumnSchemaProvider
                 ],
             ],
             'string' => [
-                StringColumnSchema::class,
+                StringColumn::class,
                 [
                     [null, null],
                     ['', ''],
@@ -94,9 +94,10 @@ class ColumnSchemaProvider
                 ],
             ],
             'binary' => [
-                BinaryColumnSchema::class,
+                BinaryColumn::class,
                 [
                     [null, null],
+                    ['', ''],
                     ['1', 1],
                     ['1', true],
                     ['0', false],
@@ -106,7 +107,7 @@ class ColumnSchemaProvider
                 ],
             ],
             'boolean' => [
-                BooleanColumnSchema::class,
+                BooleanColumn::class,
                 [
                     [null, null],
                     [null, ''],
@@ -118,11 +119,12 @@ class ColumnSchemaProvider
                     [false, 0],
                     [false, 0.0],
                     [false, '0'],
+                    [false, "\0"],
                     [$expression = new Expression('expression'), $expression],
                 ],
             ],
             'json' => [
-                JsonColumnSchema::class,
+                JsonColumn::class,
                 [
                     [null, null],
                     [new JsonExpression('', 'json'), ''],
@@ -143,7 +145,7 @@ class ColumnSchemaProvider
     {
         return [
             'integer' => [
-                IntegerColumnSchema::class,
+                IntegerColumn::class,
                 [
                     // [expected, typecast value]
                     [null, null],
@@ -152,7 +154,7 @@ class ColumnSchemaProvider
                 ],
             ],
             'bigint' => [
-                BigIntColumnSchema::class,
+                BigIntColumn::class,
                 [
                     [null, null],
                     [1, 1],
@@ -161,7 +163,7 @@ class ColumnSchemaProvider
                 ],
             ],
             'double' => [
-                DoubleColumnSchema::class,
+                DoubleColumn::class,
                 [
                     [null, null],
                     [1.0, 1.0],
@@ -169,7 +171,7 @@ class ColumnSchemaProvider
                 ],
             ],
             'string' => [
-                StringColumnSchema::class,
+                StringColumn::class,
                 [
                     [null, null],
                     ['', ''],
@@ -178,7 +180,7 @@ class ColumnSchemaProvider
                 ],
             ],
             'binary' => [
-                BinaryColumnSchema::class,
+                BinaryColumn::class,
                 [
                     [null, null],
                     ['', ''],
@@ -187,7 +189,7 @@ class ColumnSchemaProvider
                 ],
             ],
             'boolean' => [
-                BooleanColumnSchema::class,
+                BooleanColumn::class,
                 [
                     [null, null],
                     [true, true],
@@ -198,7 +200,7 @@ class ColumnSchemaProvider
                 ],
             ],
             'json' => [
-                JsonColumnSchema::class,
+                JsonColumn::class,
                 [
                     [null, null],
                     ['', '""'],

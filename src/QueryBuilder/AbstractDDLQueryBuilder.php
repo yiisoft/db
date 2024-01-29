@@ -6,7 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -39,14 +39,14 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' CHECK (' . $this->quoter->quoteSql($expression) . ')';
     }
 
-    public function addColumn(string $table, string $column, string $type): string
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
             . ' ADD '
             . $this->quoter->quoteColumnName($column)
             . ' '
-            . $this->queryBuilder->getColumnType($type);
+            . $this->queryBuilder->buildColumnDefinition($type);
     }
 
     public function addCommentOnColumn(string $table, string $column, string $comment): string
@@ -144,7 +144,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . $this->quoter->quoteColumnName($column)
             . ' '
             . $this->quoter->quoteColumnName($column) . ' '
-            . $this->queryBuilder->getColumnType($type);
+            . $this->queryBuilder->buildColumnDefinition($type);
     }
 
     public function checkIntegrity(string $schema = '', string $table = '', bool $check = true): string
@@ -170,14 +170,14 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         $cols = [];
 
         /** @psalm-var string[] $columns */
-        foreach ($columns as $name => $type) {
+        foreach ($columns as $name => $column) {
             if (is_string($name)) {
                 $cols[] = "\t"
                     . $this->quoter->quoteColumnName($name)
                     . ' '
-                    . $this->queryBuilder->getColumnType($type);
+                    . $this->queryBuilder->buildColumnDefinition($column);
             } else {
-                $cols[] = "\t" . $type;
+                $cols[] = "\t" . $column;
             }
         }
 

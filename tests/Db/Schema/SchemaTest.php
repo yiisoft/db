@@ -11,11 +11,12 @@ use Yiisoft\Db\Constraint\DefaultValueConstraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
+use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\Stub\TableSchema;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -424,49 +425,15 @@ final class SchemaTest extends AbstractSchemaTest
 
     private function createTableSchemaStub(): TableSchemaInterface
     {
-        // defined column C_id
-        $columnCid = new ColumnSchema('C_id');
-        $columnCid->autoIncrement(true);
-        $columnCid->dbType('int');
-        $columnCid->primaryKey(true);
-        $columnCid->phpType('integer');
-        $columnCid->type('integer');
-
-        // defined column C_not_null
-        $columnCNotNull = new ColumnSchema('C_not_null');
-        $columnCNotNull->dbType('int');
-        $columnCNotNull->phpType('int');
-        $columnCNotNull->type('int');
-
-        // defined column C_check
-        $columnCCheck = new ColumnSchema('C_check');
-        $columnCCheck->dbType('varchar(255)');
-        $columnCCheck->phpType('string');
-        $columnCCheck->type('string');
-
-        // defined column C_default
-        $columnCDefault = new ColumnSchema('C_default');
-        $columnCDefault->dbType('int');
-        $columnCDefault->phpType('integer');
-        $columnCDefault->type('integer');
-
-        // defined column C_unique
-        $columnCUnique = new ColumnSchema('C_unique');
-        $columnCUnique->dbType('int');
-        $columnCUnique->phpType('integer');
-        $columnCUnique->type('integer');
-
         // defined table T_constraints_1
-        $tableSchema = new TableSchema();
-        $tableSchema->column('C_id', $columnCid);
-        $tableSchema->column('C_not_null', $columnCNotNull);
-        $tableSchema->column('C_check', $columnCCheck);
-        $tableSchema->column('C_default', $columnCDefault);
-        $tableSchema->column('C_unique', $columnCUnique);
-        $tableSchema->fullName('T_constraints_1');
-        $tableSchema->name('T_constraints_1');
+        $tableSchema = new TableSchema('dbo.T_constraints_1', [
+            'C_id' => ColumnBuilder::pk(),
+            'C_not_null' => ColumnBuilder::integer(),
+            'C_check' => ColumnBuilder::string(),
+            'C_default' => ColumnBuilder::integer(),
+            'C_unique' => ColumnBuilder::integer(),
+        ]);
         $tableSchema->primaryKey('C_id');
-        $tableSchema->schemaName('dbo');
 
         return $tableSchema;
     }

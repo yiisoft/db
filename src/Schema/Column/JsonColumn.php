@@ -11,18 +11,18 @@ use Yiisoft\Db\Schema\SchemaInterface;
 use function is_string;
 use function json_decode;
 
-class JsonColumnSchema extends AbstractColumnSchema
+class JsonColumn extends Column
 {
-    public function __construct(string $name)
-    {
-        parent::__construct($name);
+    public function __construct(
+        string|null $type = SchemaInterface::TYPE_JSON,
+        string|null $phpType = SchemaInterface::PHP_TYPE_ARRAY,
+    ) {
+        parent::__construct($type, $phpType);
 
         $this->dbType('json');
-        $this->type(SchemaInterface::TYPE_JSON);
-        $this->phpType(SchemaInterface::PHP_TYPE_ARRAY);
     }
 
-    public function dbTypecast(mixed $value): mixed
+    public function dbTypecast(mixed $value): ExpressionInterface|null
     {
         if ($value === null || $value instanceof ExpressionInterface) {
             return $value;
