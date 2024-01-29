@@ -442,7 +442,7 @@ abstract class AbstractCommand implements CommandInterface
         return is_array($results) ? $results : [];
     }
 
-    public function queryOne(): array|null
+    public function queryOne(): array|object|null
     {
         /** @psalm-var mixed $results */
         $results = $this->queryInternal(self::QUERY_MODE_ROW);

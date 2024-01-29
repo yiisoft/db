@@ -45,7 +45,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array[] The query results. If the query results in nothing, it returns an empty array.
+     * @return array The query results. If the query results in nothing, it returns an empty array.
+     * @psalm-return array[]|object[]
      */
     public function all(): array;
 

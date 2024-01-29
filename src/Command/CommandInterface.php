@@ -626,10 +626,10 @@ interface CommandInterface
      * @throws Exception
      * @throws Throwable If execution failed.
      *
-     * @return array|null The first row (in terms of an array) of the query result. Null if the query
+     * @return array|object|null The first row (in terms of an array) of the query result. Null if the query
      * results in nothing.
      */
-    public function queryOne(): array|null;
+    public function queryOne(): array|object|null;
 
     /**
      * Execute the SQL statement and returns the value of the first column in the first row of data.
