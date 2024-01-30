@@ -200,7 +200,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
 
     public function setTablePrefix(string $value): void
     {
-        $this->tablePrefix = $value;
+        parent::setTablePrefix($value);
         $this->quoter?->setTablePrefix($value);
     }
 
