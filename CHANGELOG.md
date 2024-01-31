@@ -18,6 +18,7 @@
 - Enh #789: Remove unnecessary type casting to array in `AbstractDMLQueryBuilder::getTableUniqueColumnNames()` (@Tigrov)
 - Enh #795: Allow to use `DMLQueryBuilderInterface::batchInsert()` method with empty columns (@Tigrov)
 - Enh #794: Add message type to log context (@darkdef)
+- Enh #802: Resolve psalm issues (@Tigrov)
 
 ## 1.2.0 November 12, 2023
 
