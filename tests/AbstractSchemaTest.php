@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\DataType;
-use Yiisoft\Db\Helper\DbStringHelper;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
