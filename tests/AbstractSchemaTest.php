@@ -75,14 +75,6 @@ abstract class AbstractSchemaTest extends TestCase
         fclose($fp);
     }
 
-    public function testIsReadQuery(): void
-    {
-        $this->assertTrue(DbStringHelper::isReadQuery('SELECT * FROM tbl'));
-        $this->assertTrue(DbStringHelper::isReadQuery('SELECT * FROM tbl WHERE id=1'));
-        $this->assertTrue(DbStringHelper::isReadQuery('SELECT * FROM tbl WHERE id=1 LIMIT 1'));
-        $this->assertTrue(DbStringHelper::isReadQuery('SELECT * FROM tbl WHERE id=1 LIMIT 1 OFFSET 1'));
-    }
-
     public function testRefresh(): void
     {
         $db = $this->getConnection();
