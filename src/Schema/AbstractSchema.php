@@ -144,7 +144,7 @@ abstract class AbstractSchema implements SchemaInterface
         };
     }
 
-    /** @deprecated Use {@see QuoterInterface::getRawTableName()}. Will be removed in version 2.0.0. */
+    /** @deprecated Use {@see Quoter::getRawTableName()}. Will be removed in version 2.0.0. */
     public function getRawTableName(string $name): string
     {
         if (str_contains($name, '{{')) {

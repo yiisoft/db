@@ -285,7 +285,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @return string The real name of the given table name.
      *
-     * @deprecated Use {@see QuoterInterface::getRawTableName()}. Will be removed in version 2.0.0.
+     * @deprecated Use {@see Quoter::getRawTableName()}. Will be removed in version 2.0.0.
      */
     public function getRawTableName(string $name): string;
 

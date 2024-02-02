@@ -83,6 +83,16 @@ class Quoter implements QuoterInterface
         return $cleanedUpTableNames;
     }
 
+    /**
+     * Returns the actual name of a given table name.
+     *
+     * This method will strip off curly brackets from the given table name and replace the percentage character '%' with
+     * {@see ConnectionInterface::tablePrefix}.
+     *
+     * @param string $name The table name to convert.
+     *
+     * @return string The real name of the given table name.
+     */
     public function getRawTableName(string $name): string
     {
         if (str_contains($name, '{{')) {
