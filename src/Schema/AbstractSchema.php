@@ -342,7 +342,8 @@ abstract class AbstractSchema implements SchemaInterface
      */
     public function refreshTableSchema(string $name): void
     {
-        $rawName = $this->db->getQuoter()->getRawTableName($name);
+        /** @psalm-suppress DeprecatedMethod */
+        $rawName = $this->getRawTableName($name);
 
         unset($this->tableMetadata[$rawName]);
 
@@ -472,7 +473,8 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false): mixed
     {
-        $rawName = $this->db->getQuoter()->getRawTableName($name);
+        /** @psalm-suppress DeprecatedMethod */
+        $rawName = $this->getRawTableName($name);
 
         if (!isset($this->tableMetadata[$rawName])) {
             $this->loadTableMetadataFromCache($rawName);
@@ -572,8 +574,11 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function setTableMetadata(string $name, string $type, mixed $data): void
     {
-        /** @psalm-suppress MixedArrayAssignment  */
-        $this->tableMetadata[$this->db->getQuoter()->getRawTableName($name)][$type] = $data;
+        /**
+         * @psalm-suppress MixedArrayAssignment
+         * @psalm-suppress DeprecatedMethod
+         */
+        $this->tableMetadata[$this->getRawTableName($name)][$type] = $data;
     }
 
     /**
