@@ -253,6 +253,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         string $table,
         array $columns,
         array|string $condition,
+        array $params,
         string $expectedSQL,
         array $expectedParams
     ): void {
@@ -260,10 +261,12 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $schemaMock = $this->createMock(Schema::class);
         $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
-        $actualParams = [];
 
-        $this->assertSame($expectedSQL, $qb->update($table, $columns, $condition, $actualParams));
-        $this->assertSame($expectedParams, $actualParams);
+        $sql = $qb->update($table, $columns, $condition, $params);
+        $sql = $qb->quoter()->quoteSql($sql);
+
+        $this->assertSame($expectedSQL, $sql);
+        $this->assertSame($expectedParams, $params);
     }
 
     /**

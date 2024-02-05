@@ -2194,16 +2194,18 @@ abstract class AbstractQueryBuilderTest extends TestCase
         string $table,
         array $columns,
         array|string $condition,
-        string $expectedSQL,
+        array $params,
+        string $expectedSql,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
-        $actualParams = [];
 
-        $this->assertSame($expectedSQL, $qb->update($table, $columns, $condition, $actualParams));
-        $this->assertSame($expectedParams, $actualParams);
+        $sql = $qb->update($table, $columns, $condition, $params);
+        $sql = $qb->quoter()->quoteSql($sql);
+
+        $this->assertSame($expectedSql, $sql);
+        $this->assertSame($expectedParams, $params);
     }
 
     /**

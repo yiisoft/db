@@ -129,7 +129,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $phName;
     }
 
-    public function build(QueryInterface $query, array &$params = []): array
+    public function build(QueryInterface $query, array $params = []): array
     {
         return $this->dqlBuilder->build($query, $params);
     }

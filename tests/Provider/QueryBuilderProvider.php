@@ -1116,6 +1116,7 @@ class QueryBuilderProvider
                 'customer',
                 ['status' => 1, 'updated_at' => new Expression('now()')],
                 ['id' => 100],
+                [],
                 DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[customer]] SET [[status]]=:qp0, [[updated_at]]=now() WHERE [[id]]=:qp1
@@ -1123,6 +1124,22 @@ class QueryBuilderProvider
                     static::$driverName,
                 ),
                 [':qp0' => 1, ':qp1' => 100],
+            ],
+            [
+                '{{table}}',
+                ['name' => new Expression(
+                    '[[name]] || :name',
+                    ['name' => new Expression('LOWER(:val)', ['val' => 'FOO'])]
+                )],
+                '[[name]] != :name',
+                ['name' => new Expression('LOWER(:val)', ['val' => 'BAR'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=[[name]] || LOWER(:val) WHERE [[name]] != LOWER(:val_0)
+                    SQL,
+                    static::$driverName,
+                ),
+                ['val' => 'BAR', 'val_0' => 'FOO'],
             ],
         ];
     }

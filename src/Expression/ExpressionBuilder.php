@@ -6,10 +6,10 @@ namespace Yiisoft\Db\Expression;
 
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
+use function array_intersect_key;
 use function array_merge;
 use function preg_quote;
 use function preg_replace;
-use function preg_replace_callback;
 use function str_starts_with;
 
 /**
@@ -54,19 +54,12 @@ class ExpressionBuilder implements ExpressionBuilderInterface
                 continue;
             }
 
-            $sql = preg_replace_callback(
-                $this->getPattern($name),
-                function () use ($value, &$params): string {
-                    return $this->queryBuilder->buildExpression($value, $params);
-                },
-                $sql,
-                1,
-                $count,
-            );
+            $pattern = $this->getPattern($name);
+            $expression = $this->queryBuilder->buildExpression($value, $params);
 
-            if ($count > 0) {
-                unset($replaceableParams[$name]);
-            }
+            $sql = preg_replace($pattern, $expression, $sql, 1);
+
+            unset($replaceableParams[$name]);
         }
 
         return $sql;
@@ -74,18 +67,19 @@ class ExpressionBuilder implements ExpressionBuilderInterface
 
     private function appendParams(string $sql, array $appendableParams, array &$params): string
     {
+        $nonUniqueParams = array_intersect_key($appendableParams, $params);
+        $params += $appendableParams;
+
         /** @var string $name */
-        foreach ($appendableParams as $name => $value) {
-            if (isset($params[$name])) {
-                $pattern = $this->getPattern($name);
-                $name = $this->getUniqueName($name, $params + $appendableParams);
+        foreach ($nonUniqueParams as $name => $value) {
+            $pattern = $this->getPattern($name);
+            $uniqueName = $this->getUniqueName($name, $params);
 
-                $placeholder = !str_starts_with($name, ':') ? ":$name" : $name;
+            $placeholder = !str_starts_with($uniqueName, ':') ? ":$uniqueName" : $uniqueName;
 
-                $sql = preg_replace($pattern, $placeholder, $sql, 1);
-            }
+            $sql = preg_replace($pattern, $placeholder, $sql, 1);
 
-            $params[$name] = $value;
+            $params[$uniqueName] = $value;
         }
 
         return $sql;

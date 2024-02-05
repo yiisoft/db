@@ -92,7 +92,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         $this->conditionClasses = $this->defaultConditionClasses();
     }
 
-    public function build(QueryInterface $query, array &$params = []): array
+    public function build(QueryInterface $query, array $params = []): array
     {
         $query = $query->prepare($this->queryBuilder);
         $params = empty($params) ? $query->getParams() : array_merge($params, $query->getParams());
