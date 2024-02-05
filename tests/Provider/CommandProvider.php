@@ -774,10 +774,10 @@ class CommandProvider
                 '{{table}}',
                 ['name' => new Expression(
                     '[[name]] || :name',
-                    ['name' => new Expression('LOWER(:val)', ['val' => 'FOO'])]
+                    ['name' => new Expression('LOWER(:val)', ['val' => 'A'])]
                 )],
                 '[[name]] != :name',
-                ['name' => new Expression('LOWER(:val)', ['val' => 'BAR'])],
+                ['name' => new Expression('LOWER(:val)', ['val' => 'B'])],
                 DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[table]] SET [[name]]=[[name]] || LOWER(:val) WHERE [[name]] != LOWER(:val_0)
@@ -785,8 +785,8 @@ class CommandProvider
                     static::$driverName,
                 ),
                 [
-                    'val' => 'BAR',
-                    'val_0' => 'FOO',
+                    'val' => 'A',
+                    'val_0' => 'B',
                 ],
             ],
         ];

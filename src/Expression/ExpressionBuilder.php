@@ -41,10 +41,40 @@ class ExpressionBuilder implements ExpressionBuilderInterface
             return $sql;
         }
 
-        $sql = $this->replaceParamExpressions($sql, $expressionParams, $params);
+        $nonUniqueParams = array_intersect_key($expressionParams, $params);
+        $params += $expressionParams;
 
-        return $this->appendParams($sql, $expressionParams, $params);
+        /** @var string $name */
+        foreach ($nonUniqueParams as $name => $value) {
+            $pattern = $this->getPattern($name);
+            $uniqueName = $this->getUniqueName($name, $params);
+
+            $replacement = !str_starts_with($uniqueName, ':') ? ":$uniqueName" : $uniqueName;
+
+            $sql = preg_replace($pattern, $replacement, $sql, 1);
+
+            $params[$uniqueName] = $value;
+            $expressionParams[$uniqueName] = $value;
+            unset($expressionParams[$name]);
+        }
+
+        /** @var string $name */
+        foreach ($expressionParams as $name => $value) {
+            if (!$value instanceof ExpressionInterface) {
+                continue;
+            }
+
+            $pattern = $this->getPattern($name);
+            $replacement = $this->queryBuilder->buildExpression($value, $params);
+
+            $sql = preg_replace($pattern, $replacement, $sql, 1);
+
+            unset($params[$name]);
+        }
+
+        return $sql;
     }
+
 
     private function replaceParamExpressions(string $sql, array &$replaceableParams, array &$params): string
     {
