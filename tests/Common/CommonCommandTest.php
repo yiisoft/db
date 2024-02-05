@@ -1888,7 +1888,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         array $columns,
         array|string $conditions,
         array $params,
-        string $expected
+        string $expected,
+        array $expectedParams = [],
     ): void {
         $db = $this->getConnection();
 
@@ -1896,6 +1897,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $sql = $command->update($table, $columns, $conditions, $params)->getSql();
 
         $this->assertSame($expected, $sql);
+        $this->assertSame($expectedParams, $command->getParams());
 
         $db->close();
     }

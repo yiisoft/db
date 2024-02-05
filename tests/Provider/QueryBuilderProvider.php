@@ -266,6 +266,7 @@ class QueryBuilderProvider
 
             /* not */
             [['not', ''], '', []],
+            [['not', '0'], 'NOT (0)', []],
             [['not', 'name'], 'NOT (name)', []],
             [[
                 'not',

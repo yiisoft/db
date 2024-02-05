@@ -733,6 +733,9 @@ class CommandProvider
                     SQL,
                     static::$driverName,
                 ),
+                [
+                    ':qp0' => '{{test}}'
+                ],
             ],
             [
                 '{{table}}',
@@ -745,42 +748,10 @@ class CommandProvider
                     SQL,
                     static::$driverName,
                 ),
-            ],
-            [
-                '{{table}}',
-                ['name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'integer'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
-            ],
-            [
-                '{{table}}',
-                ['name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'string'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
-            ],
-            [
-                '{{table}}',
-                ['name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'boolean'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
+                [
+                    ':qp0' => '{{test}}',
+                    ':qp1' => 1,
+                ],
             ],
             [
                 '{{table}}',
@@ -793,18 +764,30 @@ class CommandProvider
                     SQL,
                     static::$driverName,
                 ),
+                [
+                    'id' => 'boolean',
+                    ':qp1' => '{{test}}',
+                    ':qp2' => 1,
+                ],
             ],
             [
                 '{{table}}',
-                ['name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'float'],
+                ['name' => new Expression(
+                    '[[name]] || :name',
+                    ['name' => new Expression('LOWER(:val)', ['val' => 'FOO'])]
+                )],
+                '[[name]] != :name',
+                ['name' => new Expression('LOWER(:val)', ['val' => 'BAR'])],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
+                    UPDATE [[table]] SET [[name]]=[[name]] || LOWER(:val) WHERE [[name]] != LOWER(:val_0)
                     SQL,
                     static::$driverName,
                 ),
+                [
+                    'val' => 'BAR',
+                    'val_0' => 'FOO',
+                ],
             ],
         ];
     }

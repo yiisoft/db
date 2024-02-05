@@ -39,7 +39,7 @@ interface DQLQueryBuilderInterface
      *
      * @psalm-return array{0: string, 1: array}
      */
-    public function build(QueryInterface $query, array $params = []): array;
+    public function build(QueryInterface $query, array &$params = []): array;
 
     /**
      * Processes columns and quotes them if necessary.

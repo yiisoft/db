@@ -2274,7 +2274,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     {
         $db = $this->getConnection();
 
-        $params = [':id' => 1, ':pv2' => new Expression('(select type from {{%animal}}) where id=1')];
+        $params = [':id' => 1, ':pv2' => 'test'];
         $expression = new Expression('id = :id AND type = :pv2', $params);
 
         $query = new Query($db);
@@ -2289,7 +2289,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals([':id', ':pv2', ':pv2_0',], array_keys($command->getParams()));
         $this->assertEquals(
             DbHelper::replaceQuotes(
-                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = (select type from {{%animal}}) where id=1) AND ([[type]]=\'test1\')',
+                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]]=\'test1\')',
                 $db->getDriverName()
             ),
             $command->getRawSql()
