@@ -41,6 +41,13 @@ class ExpressionBuilder implements ExpressionBuilderInterface
             return $sql;
         }
 
+        $sql = $this->appendParams($sql, $expressionParams, $params);
+
+        return $this->replaceParamExpressions($sql, $expressionParams, $params);
+    }
+
+    private function appendParams(string $sql, array &$expressionParams, array &$params): string
+    {
         $nonUniqueParams = array_intersect_key($expressionParams, $params);
         $params += $expressionParams;
 
@@ -58,6 +65,11 @@ class ExpressionBuilder implements ExpressionBuilderInterface
             unset($expressionParams[$name]);
         }
 
+        return $sql;
+    }
+
+    private function replaceParamExpressions(string $sql, array $expressionParams, array &$params): string
+    {
         /** @var string $name */
         foreach ($expressionParams as $name => $value) {
             if (!$value instanceof ExpressionInterface) {
@@ -70,46 +82,6 @@ class ExpressionBuilder implements ExpressionBuilderInterface
             $sql = preg_replace($pattern, $replacement, $sql, 1);
 
             unset($params[$name]);
-        }
-
-        return $sql;
-    }
-
-
-    private function replaceParamExpressions(string $sql, array &$replaceableParams, array &$params): string
-    {
-        /** @var string $name */
-        foreach ($replaceableParams as $name => $value) {
-            if (!$value instanceof ExpressionInterface) {
-                continue;
-            }
-
-            $pattern = $this->getPattern($name);
-            $expression = $this->queryBuilder->buildExpression($value, $params);
-
-            $sql = preg_replace($pattern, $expression, $sql, 1);
-
-            unset($replaceableParams[$name]);
-        }
-
-        return $sql;
-    }
-
-    private function appendParams(string $sql, array $appendableParams, array &$params): string
-    {
-        $nonUniqueParams = array_intersect_key($appendableParams, $params);
-        $params += $appendableParams;
-
-        /** @var string $name */
-        foreach ($nonUniqueParams as $name => $value) {
-            $pattern = $this->getPattern($name);
-            $uniqueName = $this->getUniqueName($name, $params);
-
-            $placeholder = !str_starts_with($uniqueName, ':') ? ":$uniqueName" : $uniqueName;
-
-            $sql = preg_replace($pattern, $placeholder, $sql, 1);
-
-            $params[$uniqueName] = $value;
         }
 
         return $sql;

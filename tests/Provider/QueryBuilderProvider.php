@@ -1132,14 +1132,14 @@ class QueryBuilderProvider
                     ['name' => new Expression('LOWER(:val)', ['val' => 'A'])]
                 )],
                 '[[name]] != :name',
-                ['name' => new Expression('LOWER(:val)', ['val' => 'B'])],
+                ['name' => new Expression('UPPER(:val)', ['val' => 'B'])],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    UPDATE [[table]] SET [[name]]=[[name]] || LOWER(:val) WHERE [[name]] != LOWER(:val_0)
+                    UPDATE [[table]] SET [[name]]=[[name]] || LOWER(:val) WHERE [[name]] != UPPER(:val_0)
                     SQL,
                     static::$driverName,
                 ),
-                ['val' => 'B', 'val_0' => 'A'],
+                ['val' => 'A', 'val_0' => 'B'],
             ],
             [
                 '{{table}}',
@@ -1153,21 +1153,21 @@ class QueryBuilderProvider
                 '[[name]] != :val || :val_0',
                 [
                     'val_0' => 'F',
-                    'val' => new Expression('LOWER(:val || :val_0)', ['val' => 'D', 'val_0' => 'E']),
+                    'val' => new Expression('UPPER(:val || :val_0)', ['val' => 'D', 'val_0' => 'E']),
                 ],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    UPDATE `table` SET `name`=LOWER(:val_2 || :val_0_1) || :val_0_0 WHERE `name` != LOWER(:val_1 || :val_0_2) || :val_0
+                    UPDATE [[table]] SET [[name]]=LOWER(:val_2 || :val_0_1) || :val_0_0 WHERE [[name]] != UPPER(:val_1 || :val_0_2) || :val_0
                     SQL,
                     static::$driverName,
                 ),
                 [
-                    'val_0' => 'F',
-                    'val_0_0' => 'C',
                     'val_2' => 'A',
                     'val_0_1' => 'B',
+                    'val_0_0' => 'C',
                     'val_1' => 'D',
                     'val_0_2' => 'E',
+                    'val_0' => 'F',
                 ],
             ],
         ];
