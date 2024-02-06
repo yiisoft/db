@@ -254,7 +254,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array $columns,
         array|string $condition,
         array $params,
-        string $expectedSQL,
+        string $expectedSql,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
@@ -265,8 +265,8 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $sql = $qb->update($table, $columns, $condition, $params);
         $sql = $qb->quoter()->quoteSql($sql);
 
-        $this->assertSame($expectedSQL, $sql);
-        $this->assertSame($expectedParams, $params);
+        $this->assertSame($expectedSql, $sql);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**

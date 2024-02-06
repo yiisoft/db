@@ -2205,7 +2205,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->quoter()->quoteSql($sql);
 
         $this->assertSame($expectedSql, $sql);
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**

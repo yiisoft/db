@@ -723,71 +723,47 @@ class CommandProvider
     {
         return [
             [
-                '{{table}}',
+                '{{customer}}',
                 ['name' => '{{test}}'],
                 [],
                 [],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp0
-                    SQL,
-                    static::$driverName,
-                ),
-                [
-                    ':qp0' => '{{test}}'
-                ],
+                ['name' => '{{test}}'],
+                3,
             ],
             [
-                '{{table}}',
+                '{{customer}}',
                 ['name' => '{{test}}'],
                 ['id' => 1],
                 [],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]]=:qp1
-                    SQL,
-                    static::$driverName,
-                ),
-                [
-                    ':qp0' => '{{test}}',
-                    ':qp1' => 1,
-                ],
+                ['name' => '{{test}}'],
+                1,
             ],
             [
-                '{{table}}',
-                ['{{table}}.name' => '{{test}}'],
+                '{{customer}}',
+                ['{{customer}}.name' => '{{test}}'],
                 ['id' => 1],
-                ['id' => 'boolean'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
-                [
-                    'id' => 'boolean',
-                    ':qp1' => '{{test}}',
-                    ':qp2' => 1,
-                ],
+                [],
+                ['name' => '{{test}}'],
+                1,
             ],
             [
-                '{{table}}',
-                ['name' => new Expression(
-                    '[[name]] || :name',
-                    ['name' => new Expression('LOWER(:val)', ['val' => 'A'])]
+                'customer',
+                ['status' => new Expression('1 + 2')],
+                ['id' => 2],
+                [],
+                ['status' => 3],
+                1,
+            ],
+            [
+                '{{customer}}',
+                ['status' => new Expression(
+                    '1 + :val',
+                    ['val' => new Expression('2 + :val', ['val' => 3])]
                 )],
-                '[[name]] != :name',
-                ['name' => new Expression('LOWER(:val)', ['val' => 'B'])],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=[[name]] || LOWER(:val) WHERE [[name]] != LOWER(:val_0)
-                    SQL,
-                    static::$driverName,
-                ),
-                [
-                    'val' => 'A',
-                    'val_0' => 'B',
-                ],
+                '[[name]] != :val',
+                ['val' => new Expression('LOWER(:val)', ['val' => 'USER1'])],
+                ['name' => 'user2', 'status' => 6],
+                2,
             ],
         ];
     }

@@ -1113,6 +1113,54 @@ class QueryBuilderProvider
     {
         return [
             [
+                '{{table}}',
+                ['name' => '{{test}}'],
+                [],
+                [],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp0
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':qp0' => '{{test}}'
+                ],
+            ],
+            [
+                '{{table}}',
+                ['name' => '{{test}}'],
+                ['id' => 1],
+                [],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]]=:qp1
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':qp0' => '{{test}}',
+                    ':qp1' => 1,
+                ],
+            ],
+            [
+                '{{table}}',
+                ['{{table}}.name' => '{{test}}'],
+                ['id' => 1],
+                ['id' => 'boolean'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    'id' => 'boolean',
+                    ':qp1' => '{{test}}',
+                    ':qp2' => 1,
+                ],
+            ],
+            [
                 'customer',
                 ['status' => 1, 'updated_at' => new Expression('now()')],
                 ['id' => 100],
