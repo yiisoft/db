@@ -1124,7 +1124,7 @@ class QueryBuilderProvider
                     static::$driverName,
                 ),
                 [
-                    ':qp0' => '{{test}}'
+                    ':qp0' => '{{test}}',
                 ],
             ],
             [
