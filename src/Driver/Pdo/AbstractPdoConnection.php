@@ -19,6 +19,7 @@ use Yiisoft\Db\Profiler\Context\ConnectionContext;
 use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
@@ -46,10 +47,12 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
     protected bool|null $emulatePrepare = null;
     protected QueryBuilderInterface|null $queryBuilder = null;
     protected QuoterInterface|null $quoter = null;
-    protected SchemaInterface|null $schema = null;
 
-    public function __construct(protected PdoDriverInterface $driver, protected SchemaCache $schemaCache)
-    {
+    public function __construct(
+        protected PdoDriverInterface $driver,
+        protected SchemaCache $schemaCache,
+        protected ColumnFactoryInterface|null $columnFactory = null,
+    ) {
     }
 
     /**

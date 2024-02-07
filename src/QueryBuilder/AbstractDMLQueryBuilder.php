@@ -13,7 +13,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -331,6 +331,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         return [$sets, $params];
     }
 
+        return [$uniqueNames, $insertNames, null];
+    }
+
     /**
      * Prepare column names and constraints for "upsert" operation.
      *
@@ -460,7 +463,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @deprecated will be removed in version 2.0.0
      */
-    protected function getTypecastValue(mixed $value, ColumnSchemaInterface $columnSchema = null): mixed
+    protected function getTypecastValue(mixed $value, ColumnInterface $columnSchema = null): mixed
     {
         if ($columnSchema) {
             return $columnSchema->dbTypecast($value);

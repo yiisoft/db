@@ -11,6 +11,8 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 
 /**
  * Represents the schema for a database table.
@@ -120,26 +122,38 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const INDEX_BITMAP = 'BITMAP';
     /**
      * Define the abstract column type as a primary key.
+     *
+     * @deprecated Use {@see ColumnBuilder::pk()}. Will be removed in version 3.0.0.
      */
     public const TYPE_PK = 'pk';
     /**
      * Define the abstract column type as an `unsigned` primary key.
+     *
+     * @deprecated Use {@see ColumnBuilder::upk()}. Will be removed in version 3.0.0.
      */
     public const TYPE_UPK = 'upk';
     /**
      * Define the abstract column type as big primary key.
+     *
+     * @deprecated Use {@see ColumnBuilder::bigpk()}. Will be removed in version 3.0.0.
      */
     public const TYPE_BIGPK = 'bigpk';
     /**
      * Define the abstract column type as `unsigned` big primary key.
+     *
+     * @deprecated Use {@see ColumnBuilder::ubigpk()}. Will be removed in version 3.0.0.
      */
     public const TYPE_UBIGPK = 'ubigpk';
     /**
      * Define the abstract column type as an `uuid` primary key.
+     *
+     * @deprecated Use {@see ColumnBuilder::uuidpk()}. Will be removed in version 3.0.0.
      */
     public const TYPE_UUID_PK = 'uuid_pk';
     /**
      * Define the abstract column type as an`uuid` primary key with a sequence.
+     *
+     * @deprecated Use {@see ColumnBuilder::uuidpk(true)}. Will be removed in version 3.0.0.
      */
     public const TYPE_UUID_PK_SEQ = 'uuid_pk_seq';
     /**
@@ -158,6 +172,18 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * Define the abstract column type as `text`.
      */
     public const TYPE_TEXT = 'text';
+    /**
+     * Define the abstract column type as `binary`.
+     */
+    public const TYPE_BINARY = 'binary';
+    /**
+     * Define the abstract column type as `boolean`.
+     */
+    public const TYPE_BOOLEAN = 'boolean';
+    /**
+     * Define the abstract column type as `bit`.
+     */
+    public const TYPE_BIT = 'bit';
     /**
      * Define the abstract column type as `tinyint`.
      */
@@ -187,6 +213,10 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const TYPE_DECIMAL = 'decimal';
     /**
+     * Define the abstract column type as `money`.
+     */
+    public const TYPE_MONEY = 'money';
+    /**
      * Define the abstract column type as `datetime`.
      */
     public const TYPE_DATETIME = 'datetime';
@@ -203,27 +233,17 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const TYPE_DATE = 'date';
     /**
-     * Define the abstract column type as `binary`.
-     */
-    public const TYPE_BINARY = 'binary';
-    /**
-     * Define the abstract column type as `boolean`.
-     */
-    public const TYPE_BOOLEAN = 'boolean';
-    /**
-     * Define the abstract column type as `money`.
-     */
-    public const TYPE_MONEY = 'money';
-    /**
      * Define the abstract column type as `json`.
      */
     public const TYPE_JSON = 'json';
     /**
-     * Define the abstract column type as `jsonb`.
-     *
-     * @deprecated will be removed in version 2.0.0. Use `SchemaInterface::TYPE_JSON` instead.
+     * Define the abstract column type as `array`.
      */
-    public const TYPE_JSONB = 'jsonb';
+    public const TYPE_ARRAY = 'array';
+    /**
+     * Define the abstract column type as `composite`.
+     */
+    public const TYPE_COMPOSITE = 'composite';
 
     /**
      * Define the php type as `integer` for cast to php value.
@@ -256,8 +276,12 @@ interface SchemaInterface extends ConstraintSchemaInterface
 
     /**
      * @psalm-param string[]|int[]|int|string|null $length
+     *
+     * @deprecated Use {@see getColumnFactory()} or {@see ColumnBuilder}. Will be removed in version 3.0.0.
      */
     public function createColumn(string $type, array|int|string $length = null): ColumnInterface;
+
+    public function getColumnFactory(): ColumnFactoryInterface;
 
     /**
      * @return string|null The default schema name.

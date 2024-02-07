@@ -13,6 +13,9 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Column\ColumnFactory;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use function array_change_key_case;
 use function array_map;
 use function gettype;
@@ -46,8 +49,11 @@ abstract class AbstractSchema implements SchemaInterface
     private array $tableNames = [];
     private array $tableMetadata = [];
 
-    public function __construct(protected ConnectionInterface $db, private SchemaCache $schemaCache)
-    {
+    public function __construct(
+        protected ConnectionInterface $db,
+        private SchemaCache $schemaCache,
+        private ColumnFactoryInterface|null $columnFactory = null,
+    ) {
     }
 
     /**
@@ -126,6 +132,11 @@ abstract class AbstractSchema implements SchemaInterface
      * @return TableSchemaInterface|null DBMS-dependent table metadata, `null` if the table doesn't exist.
      */
     abstract protected function loadTableSchema(string $name): TableSchemaInterface|null;
+
+    public function getColumnFactory(): ColumnFactoryInterface
+    {
+        return $this->columnFactory ??= new ColumnFactory();
+    }
 
     public function getDefaultSchema(): string|null
     {
@@ -386,35 +397,6 @@ abstract class AbstractSchema implements SchemaInterface
     protected function findTableNames(string $schema): array
     {
         throw new NotSupportedException(static::class . ' does not support fetching all table names.');
-    }
-
-    /**
-     * Extracts the PHP type from an abstract DB type.
-     *
-     * @param ColumnSchemaInterface $column The column schema information.
-     *
-     * @return string The PHP type name.
-     */
-    protected function getColumnPhpType(ColumnSchemaInterface $column): string
-    {
-        return match ($column->getType()) {
-            // abstract type => php type
-            SchemaInterface::TYPE_TINYINT => SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_SMALLINT => SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_INTEGER => PHP_INT_SIZE === 4 && $column->isUnsigned()
-                ? SchemaInterface::PHP_TYPE_STRING
-                : SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_BIGINT => PHP_INT_SIZE === 8 && !$column->isUnsigned()
-                ? SchemaInterface::PHP_TYPE_INTEGER
-                : SchemaInterface::PHP_TYPE_STRING,
-            SchemaInterface::TYPE_BOOLEAN => SchemaInterface::PHP_TYPE_BOOLEAN,
-            SchemaInterface::TYPE_DECIMAL => SchemaInterface::PHP_TYPE_DOUBLE,
-            SchemaInterface::TYPE_FLOAT => SchemaInterface::PHP_TYPE_DOUBLE,
-            SchemaInterface::TYPE_DOUBLE => SchemaInterface::PHP_TYPE_DOUBLE,
-            SchemaInterface::TYPE_BINARY => SchemaInterface::PHP_TYPE_RESOURCE,
-            SchemaInterface::TYPE_JSON => SchemaInterface::PHP_TYPE_ARRAY,
-            default => SchemaInterface::PHP_TYPE_STRING,
-        };
     }
 
     /**

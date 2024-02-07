@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Schema;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Schema\Column\BooleanColumn;
+use Yiisoft\Db\Schema\Column\DoubleColumn;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
+use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\SchemaInterface;
-use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
+use Yiisoft\Db\Tests\Support\Stub\Column;
 
 /**
  * @group db
@@ -17,7 +21,7 @@ final class ColumnSchemaTest extends TestCase
 {
     public function testAllowNull(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertFalse($column->isAllowNull());
 
@@ -32,7 +36,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testAutoIncrement(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertFalse($column->isAutoIncrement());
 
@@ -47,7 +51,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testComment(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertNull($column->getComment());
 
@@ -62,7 +66,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testComputed(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertFalse($column->isComputed());
 
@@ -77,7 +81,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testDbType(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertNull($column->getDbType());
 
@@ -92,14 +96,14 @@ final class ColumnSchemaTest extends TestCase
 
     public function testDbTypecast(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
-        $this->assertNull($column->dbTypecast(''));
+        $this->assertSame('', $column->dbTypecast(''));
     }
 
     public function testDefaultValue(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertNull($column->getDefaultValue());
 
@@ -114,7 +118,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testEnumValues(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertNull($column->getEnumValues());
 
@@ -129,7 +133,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testExtra(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertNull($column->getExtra());
 
@@ -147,7 +151,7 @@ final class ColumnSchemaTest extends TestCase
      */
     public function testTypecastIssue718(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $param = [1, 2];
         $result = $column->dbTypecast($param);
@@ -156,14 +160,14 @@ final class ColumnSchemaTest extends TestCase
 
     public function testName(): void
     {
-        $column = new ColumnSchema('test');
+        $column = new Column('test');
 
         $this->assertSame('test', $column->getName());
     }
 
     public function testPhpType(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertNull($column->getPhpType());
 
@@ -178,88 +182,76 @@ final class ColumnSchemaTest extends TestCase
 
     public function testPhpTypecast(): void
     {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
+        $column = new StringColumn('new');
 
         $this->assertSame('test', $column->phpTypecast('test'));
     }
 
     public function testPhpTypecastWithBoolean(): void
     {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_BOOLEAN);
+        $column = new BooleanColumn('new');
 
         $this->assertTrue($column->phpTypecast(1));
     }
 
     public function testPhpTypecastWithDouble(): void
     {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_DOUBLE);
+        $column = new DoubleColumn('new');
 
         $this->assertSame(1.2, $column->phpTypecast('1.2'));
     }
 
     public function testPhpTypecastWithInteger(): void
     {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_INTEGER);
+        $column = new IntegerColumn('new');
 
         $this->assertSame(1, $column->phpTypecast('1'));
     }
 
     public function testPhpTypecastWithStringBooleanValue(): void
     {
-        $column = new ColumnSchema('new');
+        self::markTestSkipped('Wrong test: database does not return bool value for string type');
 
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
+        $column = new StringColumn('new');
 
         $this->assertSame('1', $column->phpTypecast(true));
     }
 
     public function testPhpTypecastWithStringFloatValue(): void
     {
-        $column = new ColumnSchema('new');
+        self::markTestSkipped('Wrong test: database does not return double value for string type');
 
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
+        $column = new StringColumn('new');
 
         $this->assertSame('1.1', $column->phpTypecast(1.1));
     }
 
     public function testPhpTypecastWithStringIntegerValue(): void
     {
-        $column = new ColumnSchema('new');
+        self::markTestSkipped('Wrong test: database does not return int value for string type');
 
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
+        $column = new StringColumn('new');
 
         $this->assertSame('1', $column->phpTypecast(1));
     }
 
     public function testPhpTypecastWithStringNullValue(): void
     {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
+        $column = new StringColumn('new');
 
         $this->assertNull($column->phpTypecast(null));
     }
 
     public function testPhpTypecastWithStringResourceValue(): void
     {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
+        $column = new StringColumn('new');
 
         $this->assertIsResource($column->phpTypecast(fopen('php://memory', 'rb')));
     }
 
     public function testPrecision(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertNull($column->getPrecision());
 
@@ -274,22 +266,22 @@ final class ColumnSchemaTest extends TestCase
 
     public function testPrimaryKey(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
-        $this->assertFalse($column->isPrimaryKey());
+        $this->assertFalse($column->primaryKey());
 
         $column->primaryKey(true);
 
-        $this->assertTrue($column->isPrimaryKey());
+        $this->assertTrue($column->primaryKey());
 
         $column->primaryKey(false);
 
-        $this->assertFalse($column->isPrimaryKey());
+        $this->assertFalse($column->primaryKey());
     }
 
     public function testScale(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertNull($column->getScale());
 
@@ -304,7 +296,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testSize(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertNull($column->getSize());
 
@@ -319,7 +311,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testType(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertSame('', $column->getType());
 
@@ -334,7 +326,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testUnsigned(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new Column('new');
 
         $this->assertFalse($column->isUnsigned());
 

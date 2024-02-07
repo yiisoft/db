@@ -2,13 +2,34 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Schema;
+namespace Yiisoft\Db\Schema\Column;
+
+use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
  * This interface defines a set of methods that must be implemented by a class that represents the column schema of a
  * database table column.
+ *
+ * @psalm-type ColumnInfo = array{
+ *     allow_null?: bool|string|null,
+ *     auto_increment?: bool|string,
+ *     comment?: string|null,
+ *     computed?: bool|string,
+ *     db_type?: string|null,
+ *     default_value?: mixed,
+ *     default_value_raw?: string|null,
+ *     extra?: string|null,
+ *     primary_key?: bool|string,
+ *     php_type?: string|null,
+ *     scale?: int|string|null,
+ *     size?: int|string|null,
+ *     type?: string|null,
+ *     unsigned?: bool|string,
+ *     values?: string[]|null,
+ * }
  */
-interface ColumnSchemaInterface
+interface ColumnInterface
 {
     /**
      * Whether to allow `null` values.
@@ -17,11 +38,11 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'description' => $this->text()->allowNull(true),
+     *     'description' => $this->text()->allowNull(false),
      * ];
      * ```
      */
-    public function allowNull(bool $value): void;
+    public function allowNull(bool|null $value = true): static;
 
     /**
      * The database assigns auto incremented column a unique value automatically whenever you insert a new row into
@@ -32,11 +53,13 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'id' => $this->primaryKey()->autoIncrement(true),
+     *     'id' => $this->primaryKey()->autoIncrement(),
      * ];
      * ```
      */
-    public function autoIncrement(bool $value): void;
+    public function autoIncrement(bool $value = true): static;
+
+    public function check(string|ExpressionInterface|null $value = null): static;
 
     /**
      * The comment for a column in a database table.
@@ -49,7 +72,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function comment(string|null $value): void;
+    public function comment(string|null $value = null): static;
 
     /**
      * A computed column is a virtual column that computes its values from an expression.
@@ -62,7 +85,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function computed(bool $value): void;
+    public function computed(bool $value = true): static;
 
     /**
      * The database data-type of column.
@@ -77,7 +100,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function dbType(string|null $value): void;
+    public function dbType(string|null $value = null): static;
 
     /**
      * Convert a value from its PHP representation to a database-specific representation.
@@ -100,18 +123,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function defaultValue(mixed $value): void;
-
-    /**
-     * The list of possible values for the `ENUM` column.
-     *
-     * ```php
-     * $columns = [
-     *     'status' => $this->string(16)->enumValues(['active', 'inactive']),
-     * ];
-     * ```
-     */
-    public function enumValues(array|null $value): void;
+    public function defaultValue(mixed $value = null): static;
 
     /**
      * Extra SQL to append to the generated SQL for a column.
@@ -125,7 +137,9 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function extra(string|null $value): void;
+    public function extra(string|null $value = null): static;
+
+    public function getCheck(): string|ExpressionInterface|null;
 
     /**
      * @return string|null The comment of the column.
@@ -138,7 +152,7 @@ interface ColumnSchemaInterface
      * @return string|null The database type of the column.
      * Null means the column has no type in the database.
      *
-     * Note that the type includes size for columns supporting it, e.g. `varchar(128)`. The size can be obtained
+     * Note that the type is not including size for columns supporting it, e.g. `varchar(128)`. The size can be obtained
      * separately via {@see getSize()}.
      *
      * @see dbType()
@@ -153,13 +167,6 @@ interface ColumnSchemaInterface
     public function getDefaultValue(): mixed;
 
     /**
-     * @return array|null The enum values of the column.
-     *
-     * @see enumValues()
-     */
-    public function getEnumValues(): array|null;
-
-    /**
      * @return string|null The extra SQL for the column.
      *
      * @see extra()
@@ -167,16 +174,11 @@ interface ColumnSchemaInterface
     public function getExtra(): string|null;
 
     /**
-     * @return string The name of the column.
-     */
-    public function getName(): string;
-
-    /**
-     * @return int|null The precision of the column.
+     * @return string|null The database type of the column including size, precision and scale.
      *
-     * @see precision()
+     * @see getDbType(), getSize(), getScale() for more details.
      */
-    public function getPrecision(): int|null;
+    public function getFullDbType(): string|null;
 
     /**
      * @return string|null The PHP type of the column.
@@ -184,6 +186,8 @@ interface ColumnSchemaInterface
      * @see phpType()
      */
     public function getPhpType(): string|null;
+
+    public function getReference(): ForeignKeyConstraint|null;
 
     /**
      * @return int|null The scale of the column.
@@ -207,11 +211,18 @@ interface ColumnSchemaInterface
     public function getType(): string;
 
     /**
+     * @return array|null The `ENUM`, `SET` or other values of the column.
+     *
+     * @see values()
+     */
+    public function getValues(): array|null;
+
+    /**
      * Whether this column is nullable.
      *
      * @see allowNull()
      */
-    public function isAllowNull(): bool;
+    public function isAllowNull(): bool|null;
 
     /**
      * Whether this column is auto incremental.
@@ -236,13 +247,29 @@ interface ColumnSchemaInterface
      */
     public function isPrimaryKey(): bool;
 
+    public function isUnique(): bool;
+
     /**
-     * Whether this column is unsigned. This is only meaningful when {@see type} is `smallint`, `integer`
+     * Whether this column is unsigned. This is only meaningful when {@see type} is `tinyint`, `smallint`, `integer`
      * or `bigint`.
      *
      * @see unsigned()
      */
     public function isUnsigned(): bool;
+
+    /**
+     * @psalm-param ColumnInfo $info
+     */
+    public function load(array $info): static;
+
+    /**
+     * Converts column's default value according to {@see ColumnSchema::phpType} after retrieval from the database.
+     *
+     * @param string|null $value The default value retrieved from the database.
+     *
+     * @return mixed The normalized default value.
+     */
+    public function normalizeDefaultValue(string|null $value): mixed;
 
     /**
      * The PHP data type for representing the data stored in the column.
@@ -259,7 +286,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function phpType(string|null $value): void;
+    public function phpType(string|null $value = null): static;
 
     /**
      * Converts the input value according to {@see phpType} after retrieval from the database.
@@ -267,17 +294,6 @@ interface ColumnSchemaInterface
      * If the value is `null` or an {@see Expression}, there is no conversion.
      */
     public function phpTypecast(mixed $value): mixed;
-
-    /**
-     * The precision is the total number of digits that represent the value.
-     * This is only meaningful when {@see type} is `decimal`.
-     *
-     * ```php
-     * $columns = [
-     *     'price' => $this->decimal(10, 2)->precision(10),
-     * ];
-     */
-    public function precision(int|null $value): void;
 
     /**
      * The primary key is a column or set of columns that uniquely identifies each row in a table.
@@ -288,7 +304,9 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function primaryKey(bool $value): void;
+    public function primaryKey(bool $value = true): static;
+
+    public function reference(ForeignKeyConstraint|null $value = null): static;
 
     /**
      * The scale is the number of digits to the right of the decimal point and is only meaningful when {@see type} is
@@ -300,12 +318,12 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function scale(int|null $value): void;
+    public function scale(int|null $value = null): static;
 
     /**
      * The size refers to the number of characters or digits allowed in a column of a database table. The size is
-     * typically used for character or numeric data types, such as `VARCHAR` or `INT`, to specify the maximum length or
-     * precision of the data in the column.
+     * typically used for character or numeric data types, such as `VARCHAR`, `INT` or DECIMAL, to specify the maximum
+     * length or precision of the data in the column.
      *
      * ```php
      * $columns = [
@@ -313,7 +331,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function size(int|null $value): void;
+    public function size(int|null $value = null): static;
 
     /**
      * The database type of the column.
@@ -323,7 +341,9 @@ interface ColumnSchemaInterface
      *     'description' => $this->text()->type('text'),
      * ];
      */
-    public function type(string $value): void;
+    public function type(string|null $value = null): static;
+
+    public function unique(bool $value = true): static;
 
     /**
      * Whether the column type is an unsigned integer.
@@ -335,5 +355,16 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function unsigned(bool $value): void;
+    public function unsigned(bool $value = true): static;
+
+    /**
+     * The list of possible values for the `ENUM`, `SET` or other column.
+     *
+     * ```php
+     * $columns = [
+     *     'status' => $this->string(16)->values(['active', 'inactive']),
+     * ];
+     * ```
+     */
+    public function values(array $value = []): static;
 }
