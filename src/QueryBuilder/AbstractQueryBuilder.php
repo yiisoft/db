@@ -13,8 +13,6 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 use function count;
-use function preg_match;
-use function preg_replace;
 
 /**
  * Builds a SELECT SQL statement based on the specification given as a {@see QueryInterface} object.

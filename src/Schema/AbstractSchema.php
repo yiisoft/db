@@ -13,9 +13,9 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 
-use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
+
 use function array_change_key_case;
 use function array_map;
 use function gettype;
