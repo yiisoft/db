@@ -1175,9 +1175,9 @@ class QueryBuilderProvider
             ],
             'Expressions without params' => [
                 '{{product}}',
-                ['name' => new Expression("UPPER([[name]])")],
+                ['name' => new Expression('UPPER([[name]])')],
                 '[[name]] = :name',
-                ['name' => new Expression("LOWER([[name]])")],
+                ['name' => new Expression('LOWER([[name]])')],
                 DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER([[name]])
@@ -1201,9 +1201,9 @@ class QueryBuilderProvider
             ],
             'Expression without params and with params' => [
                 '{{product}}',
-                ['name' => new Expression("UPPER([[name]])")],
+                ['name' => new Expression('UPPER([[name]])')],
                 '[[name]] = :name',
-                ['name' => new Expression("LOWER(:val)", [':val' => 'Apple'])],
+                ['name' => new Expression('LOWER(:val)', [':val' => 'Apple'])],
                 DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER(:val)
