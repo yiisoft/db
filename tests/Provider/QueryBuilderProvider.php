@@ -1173,21 +1173,94 @@ class QueryBuilderProvider
                 ),
                 [':qp0' => 1, ':qp1' => 100],
             ],
-            [
-                '{{table}}',
-                ['name' => new Expression(
-                    '[[name]] || :name',
-                    ['name' => new Expression('LOWER(:val)', ['val' => 'A'])]
-                )],
-                '[[name]] != :name',
-                ['name' => new Expression('UPPER(:val)', ['val' => 'B'])],
+            'Expressions without params' => [
+                '{{product}}',
+                ['name' => new Expression("UPPER([[name]])")],
+                '[[name]] = :name',
+                ['name' => new Expression("LOWER([[name]])")],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    UPDATE [[table]] SET [[name]]=[[name]] || LOWER(:val) WHERE [[name]] != UPPER(:val_0)
+                    UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER([[name]])
                     SQL,
                     static::$driverName,
                 ),
-                ['val' => 'A', 'val_0' => 'B'],
+                [],
+            ],
+            'Expression with params and without params' => [
+                '{{product}}',
+                ['price' => new Expression('[[price]] + :val', [':val' => 1])],
+                '[[start_at]] < :date',
+                ['date' => new Expression('NOW()')],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[price]]=[[price]] + :val WHERE [[start_at]] < NOW()
+                    SQL,
+                    static::$driverName,
+                ),
+                [':val' => 1],
+            ],
+            'Expression without params and with params' => [
+                '{{product}}',
+                ['name' => new Expression("UPPER([[name]])")],
+                '[[name]] = :name',
+                ['name' => new Expression("LOWER(:val)", [':val' => 'Apple'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER(:val)
+                    SQL,
+                    static::$driverName,
+                ),
+                [':val' => 'Apple'],
+            ],
+            'Expressions with the same params' => [
+                '{{product}}',
+                ['name' => new Expression('LOWER(:val)', ['val' => 'Apple'])],
+                '[[name]] != :name',
+                ['name' => new Expression('UPPER(:val)', ['val' => 'Banana'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val_0)
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    'val' => 'Apple',
+                    'val_0' => 'Banana',
+                ],
+            ],
+            'Expressions with the same and different params' => [
+                '{{product}}',
+                ['price' => new Expression('[[price]] * :val + :val1', ['val' => 1.2, 'val1' => 2])],
+                '[[name]] IN :values',
+                ['values' => new Expression('(:val, :val2)', ['val' => 'Banana', 'val2' => 'Cherry'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[price]]=[[price]] * :val + :val1 WHERE [[name]] IN (:val_0, :val2)
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    'val' => 1.2,
+                    'val1' => 2,
+                    'val_0' => 'Banana',
+                    'val2' => 'Cherry',
+                ],
+            ],
+            'Expressions with the different params' => [
+                '{{product}}',
+                ['name' => new Expression('LOWER(:val)', ['val' => 'Apple'])],
+                '[[name]] != :name',
+                ['name' => new Expression('UPPER(:val1)', ['val1' => 'Banana'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val1)
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    'val' => 'Apple',
+                    'val1' => 'Banana',
+                ],
             ],
             [
                 '{{table}}',
