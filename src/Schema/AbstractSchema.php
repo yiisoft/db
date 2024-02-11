@@ -144,6 +144,7 @@ abstract class AbstractSchema implements SchemaInterface
         };
     }
 
+    /** @deprecated Use {@see Quoter::getRawTableName()}. Will be removed in version 2.0.0. */
     public function getRawTableName(string $name): string
     {
         if (str_contains($name, '{{')) {
@@ -315,6 +316,7 @@ abstract class AbstractSchema implements SchemaInterface
         return is_array($tableUniques) ? $tableUniques : [];
     }
 
+    /** @deprecated Use {@see DbStringHelper::isReadQuery()}. Will be removed in version 2.0.0. */
     public function isReadQuery(string $sql): bool
     {
         $pattern = '/^\s*(SELECT|SHOW|DESCRIBE)\b/i';
@@ -340,6 +342,7 @@ abstract class AbstractSchema implements SchemaInterface
      */
     public function refreshTableSchema(string $name): void
     {
+        /** @psalm-suppress DeprecatedMethod */
         $rawName = $this->getRawTableName($name);
 
         unset($this->tableMetadata[$rawName]);
@@ -470,6 +473,7 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false): mixed
     {
+        /** @psalm-suppress DeprecatedMethod */
         $rawName = $this->getRawTableName($name);
 
         if (!isset($this->tableMetadata[$rawName])) {
@@ -532,6 +536,9 @@ abstract class AbstractSchema implements SchemaInterface
      * @param bool $multiple Whether many rows or a single row passed.
      *
      * @return array The normalized row or rows.
+     *
+     * @deprecated Use `array_change_key_case($row)` or `array_map('array_change_key_case', $row)`.
+     * Will be removed in version 2.0.0.
      */
     protected function normalizeRowKeyCase(array $row, bool $multiple): array
     {
@@ -567,7 +574,10 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function setTableMetadata(string $name, string $type, mixed $data): void
     {
-        /** @psalm-suppress MixedArrayAssignment  */
+        /**
+         * @psalm-suppress MixedArrayAssignment
+         * @psalm-suppress DeprecatedMethod
+         */
         $this->tableMetadata[$this->getRawTableName($name)][$type] = $data;
     }
 
