@@ -77,6 +77,7 @@ class ExpressionBuilder implements ExpressionBuilderInterface
             }
 
             $pattern = $this->getPattern($name);
+            /** @psalm-suppress PossiblyNullReference */
             $replacement = $this->queryBuilder->buildExpression($value, $params);
 
             $sql = preg_replace($pattern, $replacement, $sql, 1);
