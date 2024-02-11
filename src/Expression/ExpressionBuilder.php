@@ -23,7 +23,7 @@ use function str_starts_with;
  */
 class ExpressionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(private QueryBuilderInterface|null $queryBuilder = null)
     {
     }
 
@@ -36,7 +36,7 @@ class ExpressionBuilder implements ExpressionBuilderInterface
             return $sql;
         }
 
-        if (isset($params[0]) || isset($expressionParams[0])) {
+        if ($this->queryBuilder === null || isset($params[0]) || isset($expressionParams[0])) {
             $params = array_merge($params, $expressionParams);
             return $sql;
         }
