@@ -25,6 +25,8 @@ use Yiisoft\Db\Transaction\TransactionInterface;
  *
  * It allows you to access and manipulate databases in a database-agnostic way, so you can write code that works with
  * different database systems without having to worry about the specific details of each one.
+ *
+ * @psalm-type ParamsType = array<string,mixed>|list<mixed>
  */
 interface ConnectionInterface
 {
@@ -64,6 +66,8 @@ interface ConnectionInterface
      * @throws InvalidConfigException
      *
      * @return CommandInterface The database command instance.
+     *
+     * @psalm-param ParamsType $params
      */
     public function createCommand(string $sql = null, array $params = []): CommandInterface;
 
