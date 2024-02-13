@@ -1291,6 +1291,20 @@ class QueryBuilderProvider
                     'val_0' => 'F',
                 ],
             ],
+            'Expressions with indexed params' => [
+                '{{product}}',
+                ['name' => new Expression('LOWER(?)', ['Apple'])],
+                '[[name]] != ?',
+                ['Banana'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[name]]=LOWER(?) WHERE [[name]] != ?
+                    SQL,
+                    static::$driverName,
+                ),
+                // Wrong order of params
+                ['Banana', 'Apple'],
+            ],
         ];
     }
 
