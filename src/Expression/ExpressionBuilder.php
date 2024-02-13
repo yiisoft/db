@@ -10,7 +10,6 @@ use function array_intersect_key;
 use function array_merge;
 use function preg_quote;
 use function preg_replace;
-use function str_starts_with;
 
 /**
  * It's used to build expressions for use in database queries.
@@ -36,7 +35,7 @@ class ExpressionBuilder implements ExpressionBuilderInterface
             return $sql;
         }
 
-        if ($this->queryBuilder === null || isset($params[0]) || isset($expressionParams[0])) {
+        if ($this->queryBuilder === null || isset($expressionParams[0])) {
             $params = array_merge($params, $expressionParams);
             return $sql;
         }
@@ -51,47 +50,57 @@ class ExpressionBuilder implements ExpressionBuilderInterface
         $nonUniqueParams = array_intersect_key($expressionParams, $params);
         $params += $expressionParams;
 
+        if (empty($nonUniqueParams)) {
+            return $sql;
+        }
+
+        $patterns = [];
+        $replacements = [];
+
         /** @var string $name */
         foreach ($nonUniqueParams as $name => $value) {
-            $pattern = $this->getPattern($name);
+            $patterns[] = $this->getPattern($name);
             $uniqueName = $this->getUniqueName($name, $params);
 
-            $replacement = !str_starts_with($uniqueName, ':') ? ":$uniqueName" : $uniqueName;
-
-            $sql = preg_replace($pattern, $replacement, $sql, 1);
+            $replacements[] = $uniqueName[0] !== ':' ? ":$uniqueName" : $uniqueName;
 
             $params[$uniqueName] = $value;
             $expressionParams[$uniqueName] = $value;
             unset($expressionParams[$name]);
         }
 
-        return $sql;
+        return preg_replace($patterns, $replacements, $sql, 1);
     }
 
     private function replaceParamExpressions(string $sql, array $expressionParams, array &$params): string
     {
+        $patterns = [];
+        $replacements = [];
+
         /** @var string $name */
         foreach ($expressionParams as $name => $value) {
             if (!$value instanceof ExpressionInterface) {
                 continue;
             }
 
-            $pattern = $this->getPattern($name);
+            $patterns[] = $this->getPattern($name);
             /** @psalm-suppress PossiblyNullReference */
-            $replacement = $this->queryBuilder->buildExpression($value, $params);
-
-            $sql = preg_replace($pattern, $replacement, $sql, 1);
+            $replacements[] = $this->queryBuilder->buildExpression($value, $params);
 
             unset($params[$name]);
         }
 
-        return $sql;
+        if (empty($patterns)) {
+            return $sql;
+        }
+
+        return preg_replace($patterns, $replacements, $sql, 1);
     }
 
     /** @psalm-return non-empty-string */
     private function getPattern(string $name): string
     {
-        if (!str_starts_with($name, ':')) {
+        if ($name[0] !== ':') {
             $name = ":$name";
         }
 
