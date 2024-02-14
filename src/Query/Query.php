@@ -300,6 +300,7 @@ class Query implements QueryInterface
             return 0;
         }
 
+        /** @psalm-var non-negative-int|string */
         return $count <= PHP_INT_MAX ? (int) $count : $count;
     }
 
