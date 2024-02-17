@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Iterator;
+use IteratorAggregate;
 use JsonException;
 use Traversable;
 use Yiisoft\Db\Constraint\Constraint;
@@ -19,7 +21,6 @@ use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_combine;
 use function array_diff;
-use function array_fill_keys;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -142,7 +143,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $values = [];
         /** @var string[] $columnNames */
         $columnNames = array_values($columns);
-        $columnKeys = array_fill_keys($columnNames, false);
+        $columnKeys = array_combine($columnNames, $columnNames);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
         foreach ($rows as $row) {
@@ -151,7 +152,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
             /** @var int|string $key */
             foreach ($row as $key => $value) {
-                $columnName = $columns[$key] ?? (isset($columnKeys[$key]) ? $key : $columnNames[$i] ?? $i);
+                $columnName = $columns[$key] ?? $columnKeys[$key] ?? $columnNames[$i] ?? $i;
 
                 if (isset($columnSchemas[$columnName])) {
                     $value = $columnSchemas[$columnName]->dbTypecast($value);
@@ -175,7 +176,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Extract column names from columns and rows.
      *
-     * @param string $table The column schemas.
      * @param iterable $rows The rows to be batch inserted into the table.
      * @param string[] $columns The column names.
      *
@@ -185,11 +185,21 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     {
         $columns = $this->getNormalizeColumnNames('', $columns);
 
-        if ($columns !== [] || !is_array($rows)) {
+        if (!empty($columns)) {
             return $columns;
         }
 
-        $row = reset($rows);
+        while ($rows instanceof IteratorAggregate && !$rows instanceof Iterator) {
+            $rows = $rows->getIterator();
+        }
+
+        if ($rows instanceof Iterator) {
+            $row = $rows->current();
+        } else {
+            /** @var array[] $rows */
+            $row = reset($rows);
+        }
+
         $row = match (true) {
             is_array($row) => $row,
             $row instanceof Traversable => iterator_to_array($row),
