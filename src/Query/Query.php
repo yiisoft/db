@@ -131,10 +131,6 @@ class Query implements QueryInterface
         if (empty($this->params)) {
             $this->params = $params;
         } else {
-            /**
-             * @psalm-var array $params
-             * @psalm-var mixed $value
-             */
             foreach ($params as $name => $value) {
                 if (is_int($name)) {
                     $this->params[] = $value;
