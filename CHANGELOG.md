@@ -1,5 +1,9 @@
 # Yii Database Change Log
 
+## 1.3.1 under development
+
+- no changes in this release.
+
 ## 1.3.0 March 21, 2024
 
 - Enh #778: Deprecate unnecessary argument `$rawSql` of `AbstractCommand::internalExecute()` (@Tigrov)
