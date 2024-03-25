@@ -65,6 +65,13 @@ interface ColumnSchemaInterface
     public function computed(bool $value): void;
 
     /**
+     * The datetime format to convert value from `DateTimeInterface` to a database representation.
+     *
+     * It defines from table schema.
+     */
+    public function dateTimeFormat(string|null $value): void;
+
+    /**
      * The database data-type of column.
      *
      * The data type can be one of the built-in data types supported by the database server (such as `INTEGER`, `VARCHAR`,
@@ -133,6 +140,13 @@ interface ColumnSchemaInterface
      * @see comment()
      */
     public function getComment(): string|null;
+
+    /**
+     * @return string|null The datetime format.
+     *
+     * @see dateTimeFormat()
+     */
+    public function getDateTimeFormat(): string|null;
 
     /**
      * @return string|null The database type of the column.
@@ -205,6 +219,11 @@ interface ColumnSchemaInterface
      * @see type()
      */
     public function getType(): string;
+
+    /**
+     * @return bool True if the datetime type has a timezone, false otherwise.
+     */
+    public function hasTimezone(): bool;
 
     /**
      * Whether this column is nullable.

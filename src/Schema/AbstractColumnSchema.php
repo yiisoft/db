@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+use DateTimeZone;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbStringHelper;
 
@@ -45,6 +49,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     private bool $autoIncrement = false;
     private string|null $comment = null;
     private bool $computed = false;
+    private string|null $dateTimeFormat = null;
     private string|null $dbType = null;
     private mixed $defaultValue = null;
     private array|null $enumValues = null;
@@ -81,6 +86,11 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         $this->computed = $value;
     }
 
+    public function dateTimeFormat(string|null $value): void
+    {
+        $this->dateTimeFormat = $value;
+    }
+
     public function dbType(string|null $value): void
     {
         $this->dbType = $value;
@@ -92,6 +102,41 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
          * The default implementation does the same as casting for PHP, but it should be possible to override this with
          * annotation of an explicit PDO type.
          */
+
+        if ($this->dateTimeFormat !== null) {
+            if (empty($value) || $value instanceof Expression) {
+                return $value;
+            }
+
+            if (!$this->hasTimezone() && $this->type !== SchemaInterface::TYPE_DATE) {
+                // if data type does not have timezone DB stores datetime without timezone
+                // convert datetime to UTC to avoid timezone issues
+                if (!$value instanceof DateTimeImmutable) {
+                    // make a copy of $value if change timezone
+                    if ($value instanceof DateTimeInterface) {
+                        $value = DateTimeImmutable::createFromInterface($value);
+                    } elseif (is_string($value)) {
+                        $value = date_create_immutable($value) ?: $value;
+                    }
+                }
+
+                if ($value instanceof DateTimeImmutable) { // DateTimeInterface does not have the method setTimezone()
+                    $value = $value->setTimezone(new DateTimeZone('UTC'));
+                    // Known possible issues:
+                    // MySQL converts `TIMESTAMP` values from the current time zone to UTC for storage, and back from UTC to the current time zone when retrieve data.
+                    // Oracle `TIMESTAMP WITH LOCAL TIME ZONE` data stored in the database is normalized to the database time zone. And returns it in the users' local session time zone.
+                    // Both of them do not store time zone offset and require to convert DateTime to local DB timezone instead of UTC before insert.
+                    // To solve the issue it requires to set local DB timezone to UTC if the types are in use
+                }
+            }
+
+            if ($value instanceof DateTimeInterface) {
+                return $value->format($this->dateTimeFormat);
+            }
+
+            return (string) $value;
+        }
+
         return $this->typecast($value);
     }
 
@@ -113,6 +158,11 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     public function getComment(): string|null
     {
         return $this->comment;
+    }
+
+    public function getDateTimeFormat(): string|null
+    {
+        return $this->dateTimeFormat;
     }
 
     public function getDbType(): string|null
@@ -165,6 +215,11 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->type;
     }
 
+    public function hasTimezone(): bool
+    {
+        return false;
+    }
+
     public function isAllowNull(): bool
     {
         return $this->allowNull;
@@ -195,8 +250,23 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         $this->phpType = $value;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function phpTypecast(mixed $value): mixed
     {
+        if (is_string($value) && $this->dateTimeFormat !== null) {
+            if (!$this->hasTimezone()) {
+                // if data type does not have timezone datetime was converted to UTC before insert
+                $datetime = new DateTimeImmutable($value, new DateTimeZone('UTC'));
+
+                // convert datetime to PHP timezone
+                return $datetime->setTimezone(new DateTimeZone(date_default_timezone_get()));
+            }
+
+            return new DateTimeImmutable($value);
+        }
+
         return $this->typecast($value);
     }
 
