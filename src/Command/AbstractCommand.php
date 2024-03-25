@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Command;
 use Closure;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -21,6 +22,7 @@ use function is_resource;
 use function is_scalar;
 use function is_string;
 use function preg_replace_callback;
+use function sprintf;
 use function str_starts_with;
 use function stream_get_contents;
 
@@ -524,6 +526,13 @@ abstract class AbstractCommand implements CommandInterface
     ): static {
         $sql = $this->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
         return $this->setSql($sql)->bindValues($params);
+    }
+
+    public function refreshMaterializedView(string $viewName, ?bool $concurrently = null, ?bool $withData = null): bool
+    {
+        $sql = $this->getQueryBuilder()->refreshMaterializedView($viewName, $concurrently ?? false, $withData);
+
+        throw new NotSupportedException(sprintf('"%s" command not supported', $sql));
     }
 
     /**
