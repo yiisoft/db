@@ -9,7 +9,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * Defines methods for building SQL statements for DDL (data definition language).
@@ -46,7 +46,7 @@ interface DDLQueryBuilderInterface
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function addColumn(string $table, string $column, string $type): string;
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): string;
 
     /**
      * Builds an SQL command for adding comment to column.
