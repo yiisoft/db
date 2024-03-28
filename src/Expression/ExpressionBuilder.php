@@ -62,7 +62,7 @@ class ExpressionBuilder implements ExpressionBuilderInterface
             $patterns[] = $this->getPattern($name);
             $uniqueName = $this->getUniqueName($name, $params);
 
-            $replacements[] = $uniqueName[0] !== ':' ? ":$uniqueName" : $uniqueName;
+            $replacements[] = '$1' . ($uniqueName[0] !== ':' ? ":$uniqueName" : $uniqueName);
 
             $params[$uniqueName] = $value;
             $expressionParams[$uniqueName] = $value;
@@ -104,7 +104,9 @@ class ExpressionBuilder implements ExpressionBuilderInterface
             $name = ":$name";
         }
 
-        return '/' . preg_quote($name, '/') . '\b/';
+        $skipQuotedStrings = '((?:([\'"`])(?:.*?(?:\\\\)*(?:\\\2)?)*\2.*?)*)';
+
+        return '/' . $skipQuotedStrings . preg_quote($name, '/') . '\b/';
     }
 
     private function getUniqueName(string $name, array $params): string

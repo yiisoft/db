@@ -1262,7 +1262,7 @@ class QueryBuilderProvider
                     'val1' => 'Banana',
                 ],
             ],
-            [
+            'Expressions with nested Expressions' => [
                 '{{table}}',
                 ['name' => new Expression(
                     ':val || :val_0',
@@ -1304,6 +1304,22 @@ class QueryBuilderProvider
                 ),
                 // Wrong order of params
                 ['Banana', 'Apple'],
+            ],
+            'Expressions with a string value containing a placeholder name' => [
+                '{{product}}',
+                ['price' => 10],
+                ':val',
+                [':val' => new Expression("label=':val\\\'a\\\'' label1=':val\\\'a\\\'' AND name=:val", [':val' => 'Apple'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[price]]=:qp1 WHERE label=':val\'a\'' AND name=:val_0
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':qp1' => 10,
+                    ':val_0' => 'Apple',
+                ],
             ],
         ];
     }
