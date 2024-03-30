@@ -1228,6 +1228,22 @@ class QueryBuilderProvider
                     'val_0' => 'Banana',
                 ],
             ],
+            'Expressions with the same params starting with and without colon' => [
+                '{{product}}',
+                ['name' => new Expression('LOWER(:val)', [':val' => 'Apple'])],
+                '[[name]] != :name',
+                ['name' => new Expression('UPPER(:val)', ['val' => 'Banana'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val_0)
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':val' => 'Apple',
+                    'val_0' => 'Banana',
+                ],
+            ],
             'Expressions with the same and different params' => [
                 '{{product}}',
                 ['price' => new Expression('[[price]] * :val + :val1', ['val' => 1.2, 'val1' => 2])],
@@ -1309,10 +1325,10 @@ class QueryBuilderProvider
                 '{{product}}',
                 ['price' => 10],
                 ':val',
-                [':val' => new Expression("label=':val\\\'a\\\'' label1=':val\\\'a\\\'' AND name=:val", [':val' => 'Apple'])],
+                [':val' => new Expression("label=':val' AND name=:val", [':val' => 'Apple'])],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    UPDATE [[product]] SET [[price]]=:qp1 WHERE label=':val\'a\'' AND name=:val_0
+                    UPDATE [[product]] SET [[price]]=:qp1 WHERE label=':val' AND name=:val_0
                     SQL,
                     static::$driverName,
                 ),
