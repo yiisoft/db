@@ -176,6 +176,7 @@ class ExpressionBuilder implements ExpressionBuilderInterface
 
         while (null !== $parsedPlaceholder = $parser->getNextPlaceholder($position)) {
             if ($parsedPlaceholder === $placeholder) {
+                /** @var int $position */
                 return substr_replace($sql, $replacement, $position, strlen($placeholder));
             }
         }
