@@ -88,7 +88,6 @@ class ExpressionBuilder implements ExpressionBuilderInterface
 
         /** @var non-empty-string $name */
         foreach ($nonUniqueParams as $name => $value) {
-
             $paramName = $name[0] === ':' ? substr($name, 1) : $name;
             $uniqueName = $this->getUniqueName($paramName, $params);
 

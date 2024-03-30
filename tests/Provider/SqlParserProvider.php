@@ -15,7 +15,7 @@ class SqlParserProvider
                 null,
             ],
             [
-                "SELECT * FROM {{customer}} WHERE name = ::name",
+                'SELECT * FROM {{customer}} WHERE name = ::name',
                 null,
                 null,
             ],
