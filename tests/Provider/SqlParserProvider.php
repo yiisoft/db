@@ -74,6 +74,25 @@ class SqlParserProvider
                 ':age',
                 52,
             ],
+            [
+                <<<SQL
+                SELECT * FROM {{customer}} -- :comment
+                WHERE name = :name
+                SQL,
+                ':name',
+                52,
+            ],
+            [
+                <<<SQL
+                SELECT * FROM {{customer}}
+                /*
+                * :comment
+                */
+                WHERE name = :name
+                SQL,
+                ':name',
+                57,
+            ],
         ];
     }
 

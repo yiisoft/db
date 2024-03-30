@@ -1337,6 +1337,22 @@ class QueryBuilderProvider
                     ':val_0' => 'Apple',
                 ],
             ],
+            'Expressions without placeholders in SQL statement' => [
+                '{{product}}',
+                ['price' => 10],
+                ':val',
+                [':val' => new Expression("label=':val'", [':val' => 'Apple'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[price]]=:qp1 WHERE label=':val'
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':qp1' => 10,
+                    ':val_0' => 'Apple',
+                ],
+            ],
         ];
     }
 

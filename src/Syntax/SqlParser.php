@@ -119,7 +119,7 @@ class SqlParser
     {
         do {
             $this->skipToAfterChar($endChar);
-        } while ($this->sql[$this->position] === $endChar && ++$this->position);
+        } while (($this->sql[$this->position] ?? null) === $endChar && ++$this->position);
     }
 
     /**
