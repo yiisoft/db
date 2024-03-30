@@ -77,7 +77,7 @@ class SqlParserProvider
             [
                 <<<SQL
                 SELECT * FROM {{customer}} -- :comment
-                WHERE name = :name
+                WHERE 2-1 AND name = :name
                 SQL,
                 ':name',
                 52,
@@ -88,7 +88,7 @@ class SqlParserProvider
                 /*
                 * :comment
                 */
-                WHERE name = :name
+                WHERE 2/1 AND name = :name
                 SQL,
                 ':name',
                 57,
