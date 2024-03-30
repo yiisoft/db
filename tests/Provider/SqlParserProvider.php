@@ -80,7 +80,7 @@ class SqlParserProvider
                 WHERE 2-1 AND name = :name
                 SQL,
                 ':name',
-                52,
+                60,
             ],
             [
                 <<<SQL
@@ -91,7 +91,7 @@ class SqlParserProvider
                 WHERE 2/1 AND name = :name
                 SQL,
                 ':name',
-                57,
+                65,
             ],
         ];
     }
