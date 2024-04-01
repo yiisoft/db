@@ -9,6 +9,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Syntax\SqlParser;
 
 use function array_merge;
+use function count;
 use function strlen;
 use function substr;
 use function substr_replace;
@@ -54,23 +55,30 @@ class ExpressionBuilder implements ExpressionBuilderInterface
             return $sql;
         }
 
-        $sql = $this->appendParams($sql, $expressionParams, $params);
+        $nonUniqueReplacements = $this->appendParams($expressionParams, $params);
+        $expressionReplacements = $this->buildParamExpressions($expressionParams, $params);
 
-        return $this->replaceParamExpressions($sql, $expressionParams, $params);
+        $replacements = $this->mergeReplacements($nonUniqueReplacements, $expressionReplacements);
+
+        if (empty($replacements)) {
+            return $sql;
+        }
+
+        return $this->replacePlaceholders($sql, $replacements);
     }
 
     /**
      * Appends parameters to the list of query parameters replacing non-unique parameters with unique ones.
      *
-     * @param string $sql SQL statement of the expression.
      * @param array $expressionParams Parameters to be appended.
      * @param array $params Parameters to be bound to the query.
      *
+     * @psalm-param ParamsType $expressionParams
      * @psalm-param ParamsType $params
      *
-     * @return string SQL statement with unique parameters.
+     * @return string[] Replacements for non-unique parameters.
      */
-    private function appendParams(string $sql, array &$expressionParams, array &$params): string
+    private function appendParams(array &$expressionParams, array &$params): array
     {
         $nonUniqueParams = [];
 
@@ -86,12 +94,14 @@ class ExpressionBuilder implements ExpressionBuilderInterface
             $nonUniqueParams[$name] = $value;
         }
 
+        $replacements = [];
+
         /** @var non-empty-string $name */
         foreach ($nonUniqueParams as $name => $value) {
             $paramName = $name[0] === ':' ? substr($name, 1) : $name;
             $uniqueName = $this->getUniqueName($paramName, $params);
 
-            $sql = $this->replacePlaceholder($sql, ":$paramName", ":$uniqueName");
+            $replacements[":$paramName"] = ":$uniqueName";
 
             if ($name[0] === ':') {
                 $uniqueName = ":$uniqueName";
@@ -102,23 +112,24 @@ class ExpressionBuilder implements ExpressionBuilderInterface
             unset($expressionParams[$name]);
         }
 
-        return $sql;
+        return $replacements;
     }
 
     /**
-     * Replaces parameters with expression values in SQL statement.
+     * Build expression values of parameters.
      *
-     * @param string $sql SQL statement where parameters should be replaced.
-     * @param array $expressionParams Parameters to be replaced.
+     * @param array $expressionParams Parameters from the expression.
      * @param array $params Parameters to be bound to the query.
      *
      * @psalm-param ParamsType $expressionParams
      * @psalm-param ParamsType $params
      *
-     * @return string SQL statement with replaced parameters.
+     * @return string[] Replacements for parameters.
      */
-    private function replaceParamExpressions(string $sql, array $expressionParams, array &$params): string
+    private function buildParamExpressions(array $expressionParams, array &$params): array
     {
+        $replacements = [];
+
         /** @var non-empty-string $name */
         foreach ($expressionParams as $name => $value) {
             if (!$value instanceof ExpressionInterface) {
@@ -127,15 +138,42 @@ class ExpressionBuilder implements ExpressionBuilderInterface
 
             $placeholder = $name[0] !== ':' ? ":$name" : $name;
             /** @psalm-suppress PossiblyNullReference */
-            $replacement = $this->queryBuilder->buildExpression($value, $params);
-
-            $sql = $this->replacePlaceholder($sql, $placeholder, $replacement);
+            $replacements[$placeholder] = $this->queryBuilder->buildExpression($value, $params);
 
             /** @psalm-var ParamsType $params */
             unset($params[$name]);
         }
 
-        return $sql;
+        return $replacements;
+    }
+
+    /**
+     * Merges replacements for non-unique parameters with replacements for expression parameters.
+     *
+     * @param string[] $replacements Replacements for non-unique parameters.
+     * @param string[] $expressionReplacements Replacements for expression parameters.
+     *
+     * @return string[] Merged replacements.
+     */
+    private function mergeReplacements(array $replacements, array $expressionReplacements): array
+    {
+        if (empty($replacements)) {
+            return $expressionReplacements;
+        }
+
+        if (empty($expressionReplacements)) {
+            return $replacements;
+        }
+
+        /** @var non-empty-string $value */
+        foreach ($replacements as $name => $value) {
+            if (isset($expressionReplacements[$value])) {
+                $replacements[$name] = $expressionReplacements[$value];
+                unset($expressionReplacements[$value]);
+            }
+        }
+
+        return $replacements + $expressionReplacements;
     }
 
     /**
@@ -162,22 +200,29 @@ class ExpressionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Replaces the placeholder with the replacement in SQL statement.
+     * Replaces placeholders with replacements in SQL statement.
      *
      * @param string $sql SQL statement where the placeholder should be replaced.
-     * @param string $placeholder Placeholder to be replaced.
-     * @param string $replacement Replacement for the placeholder.
+     * @param string[] $replacements Replacements for placeholders.
      *
-     * @return string SQL with the replaced placeholder.
+     * @return string SQL statement with the replaced placeholders.
      */
-    private function replacePlaceholder(string $sql, string $placeholder, string $replacement): string
+    private function replacePlaceholders(string $sql, array $replacements): string
     {
         $parser = $this->createSqlParser($sql);
+        $offset = 0;
 
-        while (null !== $parsedPlaceholder = $parser->getNextPlaceholder($position)) {
-            if ($parsedPlaceholder === $placeholder) {
+        while (null !== $placeholder = $parser->getNextPlaceholder($position)) {
+            if (isset($replacements[$placeholder])) {
                 /** @var int $position */
-                return substr_replace($sql, $replacement, $position, strlen($placeholder));
+                $sql = substr_replace($sql, $replacements[$placeholder], $position + $offset, strlen($placeholder));
+
+                if (count($replacements) === 1) {
+                    break;
+                }
+
+                $offset += strlen($replacements[$placeholder]) - strlen($placeholder);
+                unset($replacements[$placeholder]);
             }
         }
 
