@@ -12,7 +12,7 @@ use function substr;
  *
  * This class provides methods to parse SQL statements and extract placeholders from them.
  */
-class SqlParser
+abstract class AbstractSqlParser
 {
     /**
      * @var int Length of SQL statement.
@@ -39,37 +39,7 @@ class SqlParser
      *
      * @return string|null The next placeholder or null if it is not found.
      */
-    public function getNextPlaceholder(int|null &$position = null): string|null
-    {
-        $result = null;
-        $length = $this->length - 1;
-
-        while ($this->position < $length) {
-            $pos = $this->position++;
-
-            match ($this->sql[$pos]) {
-                ':' => ($word = $this->parseWord()) === ''
-                    ? $this->skipChars(':')
-                    : $result = ':' . $word,
-                '"', "'" => $this->skipQuotedWithoutEscape($this->sql[$pos]),
-                '-' => $this->sql[$this->position] === '-'
-                    ? ++$this->position && $this->skipToAfterChar("\n")
-                    : null,
-                '/' => $this->sql[$this->position] === '*'
-                    ? ++$this->position && $this->skipToAfterString('*/')
-                    : null,
-                default => null,
-            };
-
-            if ($result !== null) {
-                $position = $pos;
-
-                return $result;
-            }
-        }
-
-        return null;
-    }
+    abstract public function getNextPlaceholder(int|null &$position = null): string|null;
 
     /**
      * Parses and returns word symbols. Equals to `\w+` in regular expressions.

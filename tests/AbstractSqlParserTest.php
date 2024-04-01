@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Syntax\SqlParser;
+use Yiisoft\Db\Syntax\AbstractSqlParser;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class AbstractSqlParserTest extends TestCase
 {
     use TestTrait;
 
-    protected function createSqlParser(string $sql): SqlParser
-    {
-        return new SqlParser($sql);
-    }
+    abstract protected function createSqlParser(string $sql): AbstractSqlParser;
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\SqlParserProvider::getNextPlaceholder */
     public function testGetNextPlaceholder(string $sql, string|null $expectedPlaceholder, int|null $expectedPosition): void
@@ -29,7 +26,7 @@ abstract class AbstractSqlParserTest extends TestCase
     /** @dataProvider \Yiisoft\Db\Tests\Provider\SqlParserProvider::getAllPlaceholders */
     public function testGetAllPlaceholders(string $sql, array $expectedPlaceholders, array $expectedPositions): void
     {
-        $parser = new SqlParser($sql);
+        $parser = $this->createSqlParser($sql);
 
         $placeholders = [];
         $positions = [];

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Syntax\SqlParser;
+use Yiisoft\Db\Syntax\AbstractSqlParser;
 
 use function array_merge;
 use function count;
@@ -25,7 +26,7 @@ use function substr_replace;
  *
  * @psalm-import-type ParamsType from ConnectionInterface
  */
-class ExpressionBuilder implements ExpressionBuilderInterface
+abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private QueryBuilderInterface|null $queryBuilder = null)
     {
@@ -132,7 +133,7 @@ class ExpressionBuilder implements ExpressionBuilderInterface
 
         /** @var non-empty-string $name */
         foreach ($expressionParams as $name => $value) {
-            if (!$value instanceof ExpressionInterface) {
+            if (!$value instanceof ExpressionInterface || $value instanceof Param) {
                 continue;
             }
 
@@ -230,14 +231,11 @@ class ExpressionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Creates an instance of {@see SqlParser} for the given SQL statement.
+     * Creates an instance of {@see AbstractSqlParser} for the given SQL statement.
      *
      * @param string $sql SQL statement to be parsed.
      *
-     * @return SqlParser SQL parser instance.
+     * @return AbstractSqlParser SQL parser instance.
      */
-    protected function createSqlParser(string $sql): SqlParser
-    {
-        return new SqlParser($sql);
-    }
+    abstract protected function createSqlParser(string $sql): AbstractSqlParser;
 }

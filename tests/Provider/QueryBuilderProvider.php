@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
@@ -1284,12 +1286,12 @@ class QueryBuilderProvider
                     ':val || :val_0',
                     [
                         'val' => new Expression('LOWER(:val || :val_0)', ['val' => 'A', 'val_0' => 'B']),
-                        'val_0' => 'C',
+                        'val_0' => new Param('C', DataType::STRING),
                     ],
                 )],
                 '[[name]] != :val || :val_0',
                 [
-                    'val_0' => 'F',
+                    'val_0' => new Param('F', DataType::STRING),
                     'val' => new Expression('UPPER(:val || :val_0)', ['val' => 'D', 'val_0' => 'E']),
                 ],
                 DbHelper::replaceQuotes(
@@ -1301,10 +1303,10 @@ class QueryBuilderProvider
                 [
                     'val_2' => 'A',
                     'val_0_1' => 'B',
-                    'val_0_0' => 'C',
+                    'val_0_0' => new Param('C', DataType::STRING),
                     'val_1' => 'D',
                     'val_0_2' => 'E',
-                    'val_0' => 'F',
+                    'val_0' => new Param('F', DataType::STRING),
                 ],
             ],
             'Expressions with indexed params' => [

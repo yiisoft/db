@@ -11,7 +11,6 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\ExpressionBuilder;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
@@ -503,7 +502,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return [
             Query::class => QueryExpressionBuilder::class,
             Param::class => ParamBuilder::class,
-            Expression::class => ExpressionBuilder::class,
             Condition\AbstractConjunctionCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
             Condition\NotCondition::class => Condition\Builder\NotConditionBuilder::class,
             Condition\AndCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
