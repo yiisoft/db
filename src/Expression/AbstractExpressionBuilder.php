@@ -28,21 +28,23 @@ use function substr_replace;
  */
 abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface|null $queryBuilder = null)
+    public function __construct(private QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * Builds SQL statement from the given expression.
+     * Builds an SQL expression from the given expression object.
      *
-     * @param Expression $expression The expression to be built.
+     * This method is called by the query builder to build SQL expressions from {@see ExpressionInterface} objects.
+     *
+     * @param Expression $expression The expression to build.
      * @param array $params The parameters to be bound to the query.
      *
      * @psalm-param ParamsType $params
      *
-     * @return string SQL statement.
+     * @return string SQL expression.
      */
-    public function build(Expression $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $sql = $expression->__toString();
         $expressionParams = $expression->getParams();
@@ -51,7 +53,7 @@ abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
             return $sql;
         }
 
-        if ($this->queryBuilder === null || isset($expressionParams[0])) {
+        if (isset($expressionParams[0])) {
             $params = array_merge($params, $expressionParams);
             return $sql;
         }
@@ -138,7 +140,6 @@ abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
             }
 
             $placeholder = $name[0] !== ':' ? ":$name" : $name;
-            /** @psalm-suppress PossiblyNullReference */
             $replacements[$placeholder] = $this->queryBuilder->buildExpression($value, $params);
 
             /** @psalm-var ParamsType $params */
@@ -201,12 +202,12 @@ abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Replaces placeholders with replacements in SQL statement.
+     * Replaces placeholders with replacements in a SQL expression.
      *
-     * @param string $sql SQL statement where the placeholder should be replaced.
+     * @param string $sql SQL expression where the placeholder should be replaced.
      * @param string[] $replacements Replacements for placeholders.
      *
-     * @return string SQL statement with the replaced placeholders.
+     * @return string SQL expression with replaced placeholders.
      */
     private function replacePlaceholders(string $sql, array $replacements): string
     {
@@ -231,9 +232,9 @@ abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Creates an instance of {@see AbstractSqlParser} for the given SQL statement.
+     * Creates an instance of {@see AbstractSqlParser} for the given SQL expression.
      *
-     * @param string $sql SQL statement to be parsed.
+     * @param string $sql SQL expression to be parsed.
      *
      * @return AbstractSqlParser SQL parser instance.
      */
