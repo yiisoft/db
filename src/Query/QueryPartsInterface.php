@@ -64,11 +64,13 @@ interface QueryPartsInterface
      * $query->addSelect(["*", "CONCAT(first_name, ' ', last_name) AS full_name"])->one();
      * ```
      *
-     * @param array|ExpressionInterface|string $columns The columns to add to the select.
+     * @param array|bool|float|int|string|ExpressionInterface $columns The columns to add to the select.
      *
-     * {@see select()} for more details about the format of this parameter.
+     * @see select() for more details about the format of this parameter.
+     *
+     * @since 2.0.0 `$columns` can be a scalar value or an array of scalar values.
      */
-    public function addSelect(array|string|ExpressionInterface $columns): static;
+    public function addSelect(array|bool|float|int|string|ExpressionInterface $columns): static;
 
     /**
      * Adds a filtering condition for a specific column and allow the user to choose a filter operator.
@@ -514,7 +516,7 @@ interface QueryPartsInterface
     /**
      * Sets the `SELECT` part of the query.
      *
-     * @param array|ExpressionInterface|string $columns The columns to be selected.
+     * @param array|bool|float|int|string|ExpressionInterface $columns The columns to be selected.
      * Columns can be specified in either a string (for example `id, name`) or an array (such as `['id', 'name']`).
      * Columns can be prefixed with table names (such as `user.id`) and/or contain column aliases
      * (for example `user.id AS user_id`).
@@ -527,8 +529,11 @@ interface QueryPartsInterface
      * doesn't need alias, don't use a string key).
      * @param string|null $option More option that should be appended to the 'SELECT' keyword. For example, in MySQL,
      * the option 'SQL_CALC_FOUND_ROWS' can be used.
+     *
+     * @since 2.0.0 `$columns` can be a scalar value or an array of scalar values.
+     * For example, `$query->select(1)` will be converted to `SELECT 1`.
      */
-    public function select(array|string|ExpressionInterface $columns, string $option = null): static;
+    public function select(array|bool|float|int|string|ExpressionInterface $columns, string $option = null): static;
 
     /**
      * It allows you to specify more options for the `SELECT` clause of an SQL statement.

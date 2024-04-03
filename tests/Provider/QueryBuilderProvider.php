@@ -1108,6 +1108,21 @@ class QueryBuilderProvider
         ];
     }
 
+    public static function selectScalar(): array
+    {
+        return [
+            [1, 'SELECT 1'],
+            [true, 'SELECT TRUE'],
+            [false, 'SELECT FALSE'],
+            [12.34, 'SELECT 12.34'],
+            [[1, true, 12.34], 'SELECT 1, TRUE, 12.34'],
+            [
+                ['a' => 1, 'b' => true, 12.34],
+                DbHelper::replaceQuotes('SELECT 1 AS [[a]], TRUE AS [[b]], 12.34', static::$driverName)
+            ],
+        ];
+    }
+
     public static function update(): array
     {
         return [
