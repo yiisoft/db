@@ -264,16 +264,16 @@ class Query implements QueryInterface
                 }
             }
 
-            if (($dotPos = strpos($this->indexBy, '.')) === false) {
-                $column = $this->indexBy;
-            } else {
-                $column = substr($this->indexBy, $dotPos + 1);
-            }
-
             $rows = $this->createCommand()->queryAll();
 
             if (empty($rows)) {
                 return [];
+            }
+
+            if (($dotPos = strpos($this->indexBy, '.')) === false) {
+                $column = $this->indexBy;
+            } else {
+                $column = substr($this->indexBy, $dotPos + 1);
             }
 
             return array_column($rows, key($rows[0]), $column);
