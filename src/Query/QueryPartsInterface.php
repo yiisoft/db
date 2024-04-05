@@ -321,6 +321,8 @@ interface QueryPartsInterface
      *     // return the index value corresponding to $row
      * }
      * ```
+     *
+     * @psalm-param Closure(array):array-key|string|null $column
      */
     public function indexBy(string|Closure|null $column): static;
 

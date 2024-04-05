@@ -82,6 +82,7 @@ class Query implements QueryInterface
     protected array $params = [];
     protected array $union = [];
     protected array $withQueries = [];
+    /** @psalm-var Closure(array):array-key|string|null $indexBy */
     protected Closure|string|null $indexBy = null;
     protected ExpressionInterface|int|null $limit = null;
     protected ExpressionInterface|int|null $offset = null;
@@ -284,7 +285,6 @@ class Query implements QueryInterface
             return [];
         }
 
-        /** @psalm-suppress MixedArgumentTypeCoercion */
         return array_combine(array_map($this->indexBy, $rows), array_column($rows, key($rows[0])));
     }
 
