@@ -31,7 +31,6 @@ use function is_string;
 use function key;
 use function preg_match;
 use function preg_split;
-use function reset;
 use function str_contains;
 use function strcasecmp;
 use function strlen;
