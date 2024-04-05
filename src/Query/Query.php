@@ -16,7 +16,10 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
+use function array_column;
+use function array_combine;
 use function array_key_exists;
+use function array_map;
 use function array_merge;
 use function array_shift;
 use function array_unshift;
@@ -252,39 +255,38 @@ class Query implements QueryInterface
             return $this->createCommand()->queryColumn();
         }
 
-        if (is_string($this->indexBy) && count($this->select) === 1) {
-            if (!str_contains($this->indexBy, '.') && count($tables = $this->getTablesUsedInFrom()) > 0) {
-                $this->select[] = key($tables) . '.' . $this->indexBy;
-            } else {
-                $this->select[] = $this->indexBy;
-            }
-        }
-
-        $rows = $this->createCommand()->queryAll();
-        $results = [];
-        $column = null;
-
         if (is_string($this->indexBy)) {
+            if (count($this->select) === 1) {
+                if (!str_contains($this->indexBy, '.') && count($tables = $this->getTablesUsedInFrom()) > 0) {
+                    $this->select[] = key($tables) . '.' . $this->indexBy;
+                } else {
+                    $this->select[] = $this->indexBy;
+                }
+            }
+
             if (($dotPos = strpos($this->indexBy, '.')) === false) {
                 $column = $this->indexBy;
             } else {
                 $column = substr($this->indexBy, $dotPos + 1);
             }
-        }
 
-        /** @psalm-var array<array-key, array<string, string>> $rows */
-        foreach ($rows as $row) {
-            $value = reset($row);
+            $rows = $this->createCommand()->queryAll();
 
-            if ($this->indexBy instanceof Closure) {
-                /** @psalm-suppress MixedArrayOffset */
-                $results[($this->indexBy)($row)] = $value;
-            } else {
-                $results[$row[$column] ?? $row[$this->indexBy]] = $value;
+            if (empty($rows)) {
+                return [];
             }
+
+            return array_column($rows, key($rows[0]), $column);
         }
 
-        return $results;
+        $rows = $this->createCommand()->queryAll();
+
+        if (empty($rows)) {
+            return [];
+        }
+
+        /** @psalm-suppress MixedArgumentTypeCoercion */
+        return array_combine(array_map($this->indexBy, $rows), array_column($rows, key($rows[0])));
     }
 
     public function count(string $sql = '*'): int|string
