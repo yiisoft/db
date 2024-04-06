@@ -2,7 +2,7 @@
 
 ## 1.3.1 under development
 
-- no changes in this release.
+- Enh #815: Refactor `Query::column()` method (@Tigrov) 
 
 ## 1.3.0 March 21, 2024
 
