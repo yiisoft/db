@@ -78,6 +78,22 @@ class QuoterProvider
     /**
      * @return string[][]
      */
+    public static function rawTableNames(): array
+    {
+        return [
+            ['table', 'table'],
+            ['"table"', '"table"'],
+            ['public.table', 'public.table'],
+            ['{{table}}', 'table'],
+            ['{{public}}.{{table}}', 'public.table'],
+            ['{{%table}}', 'yii_table', 'yii_'],
+            ['{{public}}.{{%table}}', 'public.yii_table', 'yii_'],
+        ];
+    }
+
+    /**
+     * @return string[][]
+     */
     public static function tableNameParts(): array
     {
         return [

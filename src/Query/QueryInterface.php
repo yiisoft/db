@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Query;
 use Closure;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -25,6 +26,8 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * Allows pagination via {@see limit()} and {@see offset()}.
  *
  * Sorting is supported via {@see orderBy()} and items can be limited to match some conditions using {@see where()}.
+ *
+ * @psalm-import-type ParamsType from ConnectionInterface
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
@@ -33,6 +36,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @param array $params The list of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
+     *
+     * @psalm-param ParamsType $params
      *
      * @see params()
      */
@@ -260,6 +265,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @param array $params List of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
+     *
+     * @psalm-param ParamsType $params
      *
      * @see addParams()
      */
