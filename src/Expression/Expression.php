@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Expression;
 
 use Stringable;
+use Yiisoft\Db\Connection\ConnectionInterface;
 
 /**
  * Represents a DB expression that doesn't need escaping or quoting.
@@ -22,9 +23,14 @@ use Stringable;
  *
  * Expression objects are mainly created for passing raw SQL expressions to methods of
  * {@see \Yiisoft\Db\Query\QueryInterface} and related classes.
+ *
+ * @psalm-import-type ParamsType from ConnectionInterface
  */
 class Expression implements ExpressionInterface, Stringable
 {
+    /**
+     * @psalm-param ParamsType $params
+     */
     public function __construct(private string $expression, private array $params = [])
     {
     }
@@ -40,6 +46,8 @@ class Expression implements ExpressionInterface, Stringable
     /**
      * @return array List of parameters to bind to this expression. The keys are placeholders appearing in
      * {@see expression} and the values are the corresponding parameter values.
+     *
+     * @psalm-return ParamsType
      */
     public function getParams(): array
     {

@@ -201,12 +201,12 @@ final class SchemaCache
         if (is_string($key) || is_int($key)) {
             $key = (string)$key;
             $length = mb_strlen($key, '8bit');
-            return (strpbrk($key, '{}()/\@:') || $length < 1 || $length > 64) ? md5($key) : $key;
+            return (strpbrk($key, '{}()/\@:') !== false || $length < 1 || $length > 64) ? md5($key) : $key;
         }
 
         $key = json_encode($key);
 
-        if (!$key) {
+        if ($key === false) {
             throw new PsrInvalidArgumentException('Invalid key. ' . json_last_error_msg());
         }
 

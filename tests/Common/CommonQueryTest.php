@@ -81,4 +81,15 @@ abstract class CommonQueryTest extends AbstractQueryTest
 
         $db->close();
     }
+
+    public function testSelectWithoutFrom()
+    {
+        $db = $this->getConnection();
+
+        $query = (new Query($db))->select(new Expression('1'));
+
+        $this->assertEquals(1, $query->scalar());
+
+        $db->close();
+    }
 }

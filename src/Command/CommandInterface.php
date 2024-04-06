@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Command;
 use Closure;
 use JsonException;
 use Throwable;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -19,7 +20,9 @@ use Yiisoft\Db\Schema\Builder\ColumnInterface;
 /**
  * This interface represents a database command, such as a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement.
  *
- * A command instance is usually created by calling {@see \Yiisoft\Db\Connection\ConnectionInterface::createCommand()}.
+ * A command instance is usually created by calling {@see ConnectionInterface::createCommand}.
+ *
+ * @psalm-import-type ParamsType from ConnectionInterface
  */
 interface CommandInterface
 {
@@ -360,6 +363,8 @@ interface CommandInterface
      *
      * @throws Exception
      * @throws InvalidArgumentException
+     *
+     * @psalm-param ParamsType $params
      *
      * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
@@ -785,6 +790,8 @@ interface CommandInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
+     * @psalm-param ParamsType $params
+     *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
     public function update(string $table, array $columns, array|string $condition = '', array $params = []): static;
@@ -826,6 +833,7 @@ interface CommandInterface
      * @throws NotSupportedException
      *
      * @psalm-param array<string, mixed>|QueryInterface $insertColumns
+     * @psalm-param ParamsType $params
      *
      * Note: The method will quote the `table` and `insertColumns`, `updateColumns` parameters before using it in the
      * generated SQL.

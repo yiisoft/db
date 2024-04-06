@@ -10,6 +10,7 @@ use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 
 use function array_change_key_case;
@@ -95,7 +96,7 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $tableName The table name.
      *
-     * @return array The indexes for the given table.
+     * @return IndexConstraint[] The indexes for the given table.
      */
     abstract protected function loadTableIndexes(string $tableName): array;
 
@@ -133,21 +134,17 @@ abstract class AbstractSchema implements SchemaInterface
 
     public function getDataType(mixed $data): int
     {
-        /** @psalm-var array<string, int> $typeMap */
-        $typeMap = [
+        return match (gettype($data)) {
             // php type => SQL data type
             SchemaInterface::PHP_TYPE_BOOLEAN => DataType::BOOLEAN,
             SchemaInterface::PHP_TYPE_INTEGER => DataType::INTEGER,
-            SchemaInterface::PHP_TYPE_STRING => DataType::STRING,
             SchemaInterface::PHP_TYPE_RESOURCE => DataType::LOB,
             SchemaInterface::PHP_TYPE_NULL => DataType::NULL,
-        ];
-
-        $type = gettype($data);
-
-        return $typeMap[$type] ?? DataType::STRING;
+            default => DataType::STRING,
+        };
     }
 
+    /** @deprecated Use {@see Quoter::getRawTableName()}. Will be removed in version 2.0.0. */
     public function getRawTableName(string $name): string
     {
         if (str_contains($name, '{{')) {
@@ -261,9 +258,8 @@ abstract class AbstractSchema implements SchemaInterface
      */
     public function getTableIndexes(string $name, bool $refresh = false): array
     {
-        /** @psalm-var mixed $tableIndexes */
-        $tableIndexes = $this->getTableMetadata($name, SchemaInterface::INDEXES, $refresh);
-        return is_array($tableIndexes) ? $tableIndexes : [];
+        /** @var IndexConstraint[] */
+        return $this->getTableMetadata($name, SchemaInterface::INDEXES, $refresh);
     }
 
     /**
@@ -320,6 +316,7 @@ abstract class AbstractSchema implements SchemaInterface
         return is_array($tableUniques) ? $tableUniques : [];
     }
 
+    /** @deprecated Use {@see DbStringHelper::isReadQuery()}. Will be removed in version 2.0.0. */
     public function isReadQuery(string $sql): bool
     {
         $pattern = '/^\s*(SELECT|SHOW|DESCRIBE)\b/i';
@@ -345,6 +342,7 @@ abstract class AbstractSchema implements SchemaInterface
      */
     public function refreshTableSchema(string $name): void
     {
+        /** @psalm-suppress DeprecatedMethod */
         $rawName = $this->getRawTableName($name);
 
         unset($this->tableMetadata[$rawName]);
@@ -475,6 +473,7 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false): mixed
     {
+        /** @psalm-suppress DeprecatedMethod */
         $rawName = $this->getRawTableName($name);
 
         if (!isset($this->tableMetadata[$rawName])) {
@@ -537,6 +536,9 @@ abstract class AbstractSchema implements SchemaInterface
      * @param bool $multiple Whether many rows or a single row passed.
      *
      * @return array The normalized row or rows.
+     *
+     * @deprecated Use `array_change_key_case($row)` or `array_map('array_change_key_case', $row)`.
+     * Will be removed in version 2.0.0.
      */
     protected function normalizeRowKeyCase(array $row, bool $multiple): array
     {
@@ -572,7 +574,10 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function setTableMetadata(string $name, string $type, mixed $data): void
     {
-        /** @psalm-suppress MixedArrayAssignment  */
+        /**
+         * @psalm-suppress MixedArrayAssignment
+         * @psalm-suppress DeprecatedMethod
+         */
         $this->tableMetadata[$this->getRawTableName($name)][$type] = $data;
     }
 

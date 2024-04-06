@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -19,6 +20,8 @@ use Yiisoft\Db\Schema\QuoterInterface;
  * A query builder should also support creating SQL statements for DBMS-specific features such as creating indexes,
  * adding foreign keys, etc. through the methods defined in {@see DDLQueryBuilderInterface}, {@see DMLQueryBuilderInterface}
  * and {@see DQLQueryBuilderInterface}.
+ *
+ * @psalm-import-type ParamsType from ConnectionInterface
  */
 interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilderInterface, DQLQueryBuilderInterface
 {
@@ -28,6 +31,8 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * @param array $params Passed by reference.
      *
      * @return string The placeholder name in $params array.
+     *
+     * @psalm-param ParamsType $params
      */
     public function bindParam(mixed $value, array &$params = []): string;
 

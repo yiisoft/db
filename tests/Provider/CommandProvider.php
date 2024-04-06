@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use ArrayIterator;
+use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -425,6 +429,57 @@ class CommandProvider
                     ':qp3' => 2.0,
                 ],
             ],
+            'empty columns and associative values' => [
+                'type',
+                [],
+                'values' => [['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 2.0,
+                    ':qp2' => '10',
+                    ':qp3' => true,
+                ],
+            ],
+            'empty columns and objects' => [
+                'type',
+                [],
+                'values' => [(object)['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 2.0,
+                    ':qp2' => '10',
+                    ':qp3' => true,
+                ],
+            ],
+            'empty columns and Traversable' => [
+                'type',
+                [],
+                'values' => [new ArrayIterator(['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1])],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 2.0,
+                    ':qp2' => '10',
+                    ':qp3' => true,
+                ],
+            ],
         ];
     }
 
@@ -557,6 +612,18 @@ class CommandProvider
                 <<<SQL
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
+                ['id' => new Param('1 OR 1=1', DataType::INTEGER)],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[id]] = 1
+                    SQL,
+                    static::$driverName,
+                ),
+            ],
+            [
+                <<<SQL
+                SELECT * FROM [[customer]] WHERE [[id]] = :id
+                SQL,
                 ['id' => null],
                 DbHelper::replaceQuotes(
                     <<<SQL
@@ -634,6 +701,18 @@ class CommandProvider
                 DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[id]] = 1 OR [[id]] = 2
+                    SQL,
+                    static::$driverName,
+                ),
+            ],
+            [
+                <<<SQL
+                SELECT * FROM [[customer]] WHERE [[name]] = :name
+                SQL,
+                ['name' => new Stringable('Alfa')],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[name]] = 'Alfa'
                     SQL,
                     static::$driverName,
                 ),
