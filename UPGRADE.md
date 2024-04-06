@@ -11,7 +11,7 @@ All the "Yes, it is" cool stuff, and Yii soul is still in place.
 Changes summary:
 
 ## 1.x to 2.0
-* `$columns` property of `Query::select()` and `Query::addSelect()` methods can also accept scalar values of `bool`, 
+* `$columns` parameter of `Query::select()` and `Query::addSelect()` methods can also accept scalar values of `bool`, 
   `float` or `int` types or array of scalar values. For example, `$query->select(1)` or `$query->select([1, true])`.
 
 ## Yii2 to 1.0
