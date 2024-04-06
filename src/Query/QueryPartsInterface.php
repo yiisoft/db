@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
@@ -13,6 +14,8 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * query, such as the {@see addGroupBy()}, {@see addSelect()}, {@see addOrderBy()}, {@see andFilterCompare()}, etc.
  *
  * {@see Query} uses these methods to build and manipulate SQL statements.
+ *
+ * @psalm-import-type ParamsType from ConnectionInterface
  */
 interface QueryPartsInterface
 {
@@ -126,6 +129,8 @@ interface QueryPartsInterface
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
+     * @psalm-param ParamsType $params
+     *
      * @see having()
      * @see orHaving()
      */
@@ -159,6 +164,8 @@ interface QueryPartsInterface
      * @param array|ExpressionInterface|string $condition The new `WHERE` condition.
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
+     *
+     * @psalm-param ParamsType $params
      *
      * @see where()
      * @see orWhere()
@@ -293,6 +300,8 @@ interface QueryPartsInterface
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
      *
+     * @psalm-param ParamsType $params
+     *
      * @see andHaving()
      * @see orHaving()
      */
@@ -329,6 +338,8 @@ interface QueryPartsInterface
      * @param array|string $on The join condition that should appear in the ON part. Please refer to {@see join()} on
      * how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
      */
     public function innerJoin(array|string $table, array|string $on = '', array $params = []): static;
 
@@ -357,6 +368,8 @@ interface QueryPartsInterface
      * 'post.author_id = user.id'
      * ```
      * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
      */
     public function join(string $type, array|string $table, array|string $on = '', array $params = []): static;
 
@@ -374,6 +387,8 @@ interface QueryPartsInterface
      * @param array|string $on The join condition that should appear in the ON part. Please refer to {@see join()} on
      * how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
      */
     public function leftJoin(array|string $table, array|string $on = '', array $params = []): static;
 
@@ -454,6 +469,8 @@ interface QueryPartsInterface
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
      *
+     * @psalm-param ParamsType $params
+     *
      * @see having()
      * @see andHaving()
      */
@@ -467,6 +484,8 @@ interface QueryPartsInterface
      * @param array|ExpressionInterface|string $condition The new `WHERE` condition.
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
      *
      * @see where()
      * @see andWhere()
@@ -487,6 +506,8 @@ interface QueryPartsInterface
      * @param array|string $on The join condition that should appear in the ON part.
      * Please refer to {@see join()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
+     *
+     * @psalm-param ParamsType $params
      */
     public function rightJoin(array|string $table, array|string $on = '', array $params = []): static;
 
@@ -635,6 +656,8 @@ interface QueryPartsInterface
      *
      * @param array|ExpressionInterface|string|null $condition The conditions to put in the `WHERE` part.
      * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
      *
      * @see andWhere()
      * @see orWhere()

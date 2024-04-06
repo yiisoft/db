@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -17,6 +18,8 @@ use Yiisoft\Db\Query\QueryInterface;
  * Defines methods for building SQL statements for DQL (data query language).
  *
  * @link https://en.wikipedia.org/wiki/Data_query_language
+ *
+ * @psalm-import-type ParamsType from ConnectionInterface
  */
 interface DQLQueryBuilderInterface
 {
@@ -37,6 +40,7 @@ interface DQLQueryBuilderInterface
      * @return array The generated SQL statement (the first array element) and the corresponding parameters to bind
      * to the SQL statement (the second array element). The parameters returned include those provided in `$params`.
      *
+     * @psalm-param ParamsType $params
      * @psalm-return array{0: string, 1: array}
      */
     public function build(QueryInterface $query, array $params = []): array;
@@ -64,6 +68,8 @@ interface DQLQueryBuilderInterface
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
+     *
+     * @psalm-param ParamsType $params
      */
     public function buildCondition(array|string|ExpressionInterface|null $condition, array &$params = []): string;
 
@@ -82,6 +88,8 @@ interface DQLQueryBuilderInterface
      *
      * @return string The SQL statement that won't be neither quoted nor encoded before passing to DBMS.
      *
+     * @psalm-param ParamsType $params
+     *
      * @see ExpressionInterface
      * @see ExpressionBuilderInterface
      * @see AbstractDQLQueryBuilder::expressionBuilders
@@ -97,6 +105,8 @@ interface DQLQueryBuilderInterface
      * @throws NotSupportedException
      *
      * @return string The `FROM` clause built from {@see \Yiisoft\Db\Query\Query::from()}.
+     *
+     * @psalm-param ParamsType $params
      */
     public function buildFrom(array|null $tables, array &$params): string;
 
@@ -110,6 +120,8 @@ interface DQLQueryBuilderInterface
      * @throws InvalidArgumentException
      *
      * @return string The `GROUP BY` clause
+     *
+     * @psalm-param ParamsType $params
      */
     public function buildGroupBy(array $columns, array &$params = []): string;
 
@@ -123,6 +135,8 @@ interface DQLQueryBuilderInterface
      * @throws NotSupportedException
      *
      * @return string The `HAVING` clause built from {@see \Yiisoft\Db\Query\Query::having()}.
+     *
+     * @psalm-param ParamsType $params
      */
     public function buildHaving(array|ExpressionInterface|string|null $condition, array &$params = []): string;
 
@@ -133,6 +147,8 @@ interface DQLQueryBuilderInterface
      * @throws Exception If the `$joins` parameter isn't in proper format.
      *
      * @return string The `JOIN` clause built from {@see \Yiisoft\Db\Query\Query::join()}.
+     *
+     * @psalm-param ParamsType $params
      */
     public function buildJoin(array $joins, array &$params): string;
 
@@ -161,6 +177,8 @@ interface DQLQueryBuilderInterface
      * @throws InvalidArgumentException
      *
      * @return string The `ORDER BY` clause built from {@see \Yiisoft\Db\Query\Query::orderBy()}.
+     *
+     * @psalm-param ParamsType $params
      */
     public function buildOrderBy(array $columns, array &$params = []): string;
 
@@ -180,6 +198,8 @@ interface DQLQueryBuilderInterface
      * @throws InvalidArgumentException
      *
      * @return string The SQL completed with `ORDER BY/LIMIT/OFFSET` (if any).
+     *
+     * @psalm-param ParamsType $params
      */
     public function buildOrderByAndLimit(
         string $sql,
@@ -203,6 +223,8 @@ interface DQLQueryBuilderInterface
      * @throws NotSupportedException
      *
      * @return string The `SELECT` clause built from {@see \Yiisoft\Db\Query\Query::select()}.
+     *
+     * @psalm-param ParamsType $params
      */
     public function buildSelect(
         array $columns,
@@ -221,6 +243,8 @@ interface DQLQueryBuilderInterface
      * @throws NotSupportedException
      *
      * @return string The `UNION` clause built from {@see \Yiisoft\Db\Query\Query::union()}.
+     *
+     * @psalm-param ParamsType $params
      */
     public function buildUnion(array $unions, array &$params): string;
 
@@ -235,6 +259,8 @@ interface DQLQueryBuilderInterface
      * @throws NotSupportedException
      *
      * @return string The `WHERE` clause built from {@see \Yiisoft\Db\Query\Query::where()}.
+     *
+     * @psalm-param ParamsType $params
      */
     public function buildWhere(
         array|string|ConditionInterface|ExpressionInterface|null $condition,
@@ -251,6 +277,8 @@ interface DQLQueryBuilderInterface
      * @throws NotSupportedException
      *
      * @return string The `WITH` clause built from {@see \Yiisoft\Db\Query\Query::with}.
+     *
+     * @psalm-param ParamsType $params
      */
     public function buildWithQueries(array $withs, array &$params): string;
 
