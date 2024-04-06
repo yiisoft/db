@@ -681,7 +681,6 @@ class Query implements QueryInterface
      *
      * Restores the value of select to make this query reusable.
      *
-     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
