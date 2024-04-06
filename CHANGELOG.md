@@ -2,7 +2,7 @@
 
 ## 2.0.0 under development
 
-- Enh #766: Allow `ColumnInterface` as column type (@Tigrov)
+- Enh #766: Allow `ColumnInterface` as column type. (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
