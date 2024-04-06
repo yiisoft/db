@@ -10,5 +10,10 @@ All the "Yes, it is" cool stuff, and Yii soul is still in place.
 
 Changes summary:
 
+## 1.x to 2.0
+* `Expression::$params` can contain non-unique placeholder names, they will be replaced with unique names.
+* `Expression::$params` can contain `Expression` instances, they will be built when building a query using `QueryBuilder`.
+
+## Yii2 to 1.0
 * `Yiisoft\Db\Connection::$charset` has been removed. All supported PDO classes allow you to specify the connection
   charset in the DSN.
