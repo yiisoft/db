@@ -2,7 +2,7 @@
 
 ## 2.0.0 under development
 
-- Enh #806: Allows non-unique param names inside `Expression::$params`, they will be replaced with unique names (@Tigrov)
+- Enh #806: Non-unique placeholder names inside `Expression::$params` will be replaced with unique names (@Tigrov)
 - Enh #806: Build `Expression` instances inside `Expression::$params` when build a query using `QueryBuilder` (@Tigrov)
 
 ## 1.3.0 March 21, 2024
