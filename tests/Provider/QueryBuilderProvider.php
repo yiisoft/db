@@ -1118,7 +1118,7 @@ class QueryBuilderProvider
             [[1, true, 12.34], 'SELECT 1, TRUE, 12.34'],
             [
                 ['a' => 1, 'b' => true, 12.34],
-                DbHelper::replaceQuotes('SELECT 1 AS [[a]], TRUE AS [[b]], 12.34', static::$driverName)
+                DbHelper::replaceQuotes('SELECT 1 AS [[a]], TRUE AS [[b]], 12.34', static::$driverName),
             ],
         ];
     }
