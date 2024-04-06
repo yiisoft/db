@@ -1,8 +1,8 @@
 # Yii Database Change Log
 
-## 1.3.1 under development
+## 2.0.0 under development
 
-- no changes in this release.
+- Enh #816: Allow scalar values for `$columns` argument of `Query::select()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
