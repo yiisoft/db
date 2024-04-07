@@ -348,7 +348,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             return $select . ' *';
         }
 
-        /** @psalm-var array<array-key, ExpressionInterface|bool|float|int|string> $columns */
         foreach ($columns as $i => $column) {
             if ($column instanceof ExpressionInterface) {
                 if (is_int($i)) {

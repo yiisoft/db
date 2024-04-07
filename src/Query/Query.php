@@ -67,9 +67,12 @@ use function trim;
  * ```
  *
  * Query internally uses the {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} class to generate the SQL statement.
+ *
+ * @psalm-import-type SelectValue from QueryPartsInterface
  */
 class Query implements QueryInterface
 {
+    /** @psalm-var SelectValue $select */
     protected array $select = [];
     protected string|null $selectOption = null;
     protected bool|null $distinct = null;
@@ -855,6 +858,9 @@ class Query implements QueryInterface
 
     /**
      * Normalizes the `SELECT` columns passed to {@see select()} or {@see addSelect()}.
+     *
+     * @psalm-param SelectValue|scalar|ExpressionInterface $columns
+     * @psalm-return SelectValue
      */
     private function normalizeSelect(array|bool|float|int|string|ExpressionInterface $columns): array
     {
@@ -866,7 +872,6 @@ class Query implements QueryInterface
 
         $select = [];
 
-        /** @psalm-var array<array-key, bool|float|int|string|ExpressionInterface> $columns */
         foreach ($columns as $columnAlias => $columnDefinition) {
             if (is_string($columnAlias)) {
                 // Already in the normalized format, good for them.
