@@ -65,7 +65,7 @@ interface QueryPartsInterface
      * $query->addSelect(["*", "CONCAT(first_name, ' ', last_name) AS full_name"])->one();
      * ```
      *
-     * @param array|bool|ExpressionInterface|float|int|string $columns The columns to add to the select.
+     * @param array|ExpressionInterface|scalar $columns The columns to add to the select.
      *
      * @see select() for more details about the format of this parameter.
      *
@@ -519,7 +519,7 @@ interface QueryPartsInterface
     /**
      * Sets the `SELECT` part of the query.
      *
-     * @param array|bool|ExpressionInterface|float|int|string $columns The columns to be selected.
+     * @param array|ExpressionInterface|scalar $columns The columns to be selected.
      * Columns can be specified in either a string (for example `id, name`) or an array (such as `['id', 'name']`).
      * Columns can be prefixed with table names (such as `user.id`) and/or contain column aliases
      * (for example `user.id AS user_id`).
