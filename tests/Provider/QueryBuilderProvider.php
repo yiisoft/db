@@ -1113,7 +1113,7 @@ class QueryBuilderProvider
     {
         return [
             [1, 'SELECT 1'],
-            ['custom_string', 'SELECT "custom_string"'],
+            ['custom_string', DbHelper::replaceQuotes('SELECT [[custom_string]]', static::$driverName)],
             [true, 'SELECT TRUE'],
             [false, 'SELECT FALSE'],
             [12.34, 'SELECT 12.34'],
