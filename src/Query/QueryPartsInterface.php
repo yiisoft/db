@@ -15,6 +15,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  *
  * {@see Query} uses these methods to build and manipulate SQL statements.
  *
+ * @psalm-type SelectValue = array<array-key, ExpressionInterface|scalar>
  * @psalm-import-type ParamsType from ConnectionInterface
  */
 interface QueryPartsInterface
@@ -69,6 +70,8 @@ interface QueryPartsInterface
      * @see select() for more details about the format of this parameter.
      *
      * @since 2.0.0 `$columns` can be a scalar value or an array of scalar values.
+     *
+     * @psalm-param SelectValue|scalar|ExpressionInterface $columns
      */
     public function addSelect(array|bool|float|int|string|ExpressionInterface $columns): static;
 
@@ -532,6 +535,8 @@ interface QueryPartsInterface
      *
      * @since 2.0.0 `$columns` can be a scalar value or an array of scalar values.
      * For example, `$query->select(1)` will be converted to `SELECT 1`.
+     *
+     * @psalm-param SelectValue|scalar|ExpressionInterface $columns
      */
     public function select(array|bool|float|int|string|ExpressionInterface $columns, string $option = null): static;
 

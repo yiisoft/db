@@ -15,6 +15,7 @@ use Yiisoft\Db\Expression\ExpressionBuilder;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbStringHelper;
+use Yiisoft\Db\Query\QueryPartsInterface;
 use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
@@ -43,6 +44,8 @@ use function trim;
  * It's used to query data from a database.
  *
  * @link https://en.wikipedia.org/wiki/Data_query_language
+ *
+ * @psalm-import-type SelectValue from QueryPartsInterface
  */
 abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 {
@@ -332,6 +335,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return $sql;
     }
 
+    /**
+     * @psalm-param SelectValue $columns
+     */
     public function buildSelect(
         array $columns,
         array &$params,
@@ -348,7 +354,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             return $select . ' *';
         }
 
-        /** @psalm-var array<array-key, ExpressionInterface|bool|float|int|string> $columns */
         foreach ($columns as $i => $column) {
             if ($column instanceof ExpressionInterface) {
                 if (is_int($i)) {
