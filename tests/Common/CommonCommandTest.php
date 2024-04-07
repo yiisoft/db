@@ -24,6 +24,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function call_user_func_array;
@@ -544,16 +545,23 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable(
             '{{testCreateTable}}',
-            ['[[id]]' => SchemaInterface::TYPE_PK, '[[bar]]' => SchemaInterface::TYPE_INTEGER],
+            [
+                '[[id]]' => SchemaInterface::TYPE_PK,
+                '[[bar]]' => SchemaInterface::TYPE_INTEGER,
+                '[[name]]' => (new Column('string(100)'))->notNull(),
+            ],
         )->execute();
-        $command->insert('{{testCreateTable}}', ['[[bar]]' => 1])->execute();
+        $command->insert('{{testCreateTable}}', ['[[bar]]' => 1, '[[name]]' => 'Lilo'])->execute();
         $records = $command->setSql(
             <<<SQL
-            SELECT [[id]], [[bar]] FROM [[testCreateTable]];
+            SELECT [[id]], [[bar]], [[name]] FROM [[testCreateTable]];
             SQL
         )->queryAll();
 
-        $this->assertEquals([['id' => 1, 'bar' => 1]], $records);
+        $nameCol = $schema->getTableSchema('{{testCreateTable}}', true)->getColumn('name');
+
+        $this->assertFalse($nameCol->isAllowNull());
+        $this->assertEquals([['id' => 1, 'bar' => 1, 'name' => 'Lilo']], $records);
 
         $db->close();
     }

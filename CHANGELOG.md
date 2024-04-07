@@ -3,6 +3,7 @@
 ## 2.0.0 under development
 
 - Enh #816: Allow scalar values for `$columns` parameter of `Query::select()` and `Query::addSelect()` methods (@Tigrov)
+- Enh #766: Allow `ColumnInterface` as column type. (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
