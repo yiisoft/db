@@ -67,6 +67,14 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             return '';
         }
 
+        while ($rows instanceof IteratorAggregate) {
+            $rows = $rows->getIterator();
+        }
+
+        if ($rows instanceof Iterator && !$rows->valid()) {
+            return '';
+        }
+
         $columns = $this->extractColumnNames($rows, $columns);
         $values = $this->prepareBatchInsertValues($table, $rows, $columns, $params);
 
@@ -149,11 +157,12 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         /** @var string[] $columnNames */
         $columnNames = array_values($columns);
         $columnKeys = array_combine($columnNames, $columnNames);
+        $columnNulls = array_fill_keys($columnNames, 'NULL');
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
         foreach ($rows as $row) {
             $i = 0;
-            $placeholders = $columnKeys;
+            $placeholders = $columnNulls;
 
             /** @var int|string $key */
             foreach ($row as $key => $value) {
@@ -181,12 +190,12 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Extract column names from columns and rows.
      *
-     * @param iterable $rows The rows to be batch inserted into the table.
+     * @param array[]|Iterator $rows The rows to be batch inserted into the table.
      * @param string[] $columns The column names.
      *
      * @return string[] The column names.
      */
-    protected function extractColumnNames(iterable $rows, array $columns): array
+    protected function extractColumnNames(array|Iterator $rows, array $columns): array
     {
         $columns = $this->getNormalizeColumnNames('', $columns);
 
@@ -194,14 +203,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             return $columns;
         }
 
-        while ($rows instanceof IteratorAggregate && !$rows instanceof Iterator) {
-            $rows = $rows->getIterator();
-        }
-
         if ($rows instanceof Iterator) {
             $row = $rows->current();
         } else {
-            /** @var array[] $rows */
             $row = reset($rows);
         }
 
