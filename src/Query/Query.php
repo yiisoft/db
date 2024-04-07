@@ -72,9 +72,7 @@ use function trim;
  */
 class Query implements QueryInterface
 {
-    /**
-     * @psalm-var SelectValue $select
-     */
+    /** @psalm-var SelectValue $select */
     protected array $select = [];
     protected string|null $selectOption = null;
     protected bool|null $distinct = null;
@@ -184,9 +182,6 @@ class Query implements QueryInterface
         return $this;
     }
 
-    /**
-     * @psalm-param SelectValue|scalar|ExpressionInterface $columns
-     */
     public function addSelect(array|bool|float|int|string|ExpressionInterface $columns): static
     {
         if ($this->select === []) {
