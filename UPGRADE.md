@@ -5,6 +5,8 @@ there is version B between A and C, you need to following the instructions for b
 
 ## Upgrade from 1.x to 2.x
 
+### `ColumnInterface` as column type
+
 Add `ColumnInterface` support and change type of parameter `$type` from `string` to `ColumnInterface|string` 
 in `addColumn()` method of your classes that implement the following interfaces:
 
@@ -17,5 +19,8 @@ in `addColumn()` method of your classes that implement the following interfaces:
 - `Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder`;
 - `Yiisoft\Db\QueryBuilder\AbstractQueryBuilder`.
 
-`$columns` parameter of `Query::select()` and `Query::addSelect()` methods can also accept scalar values of `bool`, 
-`float` or `int` types or array with scalar values. For example, `$query->select(1)` will be converted to `SELECT 1`.
+### Scalar values for columns in `Query`
+
+Change `$columns` parameter type from `array|string|ExpressionInterface` to `array|bool|float|int|string|ExpressionInterface` in methods `select()` and `addSelect()` of your classes that implement `Yiisoft\Db\Query\QueryPartsInterface`.
+
+Add support any scalar values for `$columns` parameter of these methods in your classes that implement `Yiisoft\Db\Query\QueryPartsInterface` or inherit `Yiisoft\Db\Query\Query`.
