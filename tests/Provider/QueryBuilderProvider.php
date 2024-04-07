@@ -1113,6 +1113,7 @@ class QueryBuilderProvider
     {
         return [
             [1, 'SELECT 1'],
+            ['custom_string', 'SELECT "custom_string"'],
             [true, 'SELECT TRUE'],
             [false, 'SELECT FALSE'],
             [12.34, 'SELECT 12.34'],
