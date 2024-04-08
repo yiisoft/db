@@ -369,17 +369,16 @@ abstract class AbstractCommand implements CommandInterface
         return $this->sql;
     }
 
-    public function insert(string $table, QueryInterface|array $columns): static
+    public function insert(string $table, array|QueryInterface $columns): static
     {
         $params = [];
         $sql = $this->getQueryBuilder()->insert($table, $columns, $params);
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function insertWithReturningPks(string $table, array $columns): array|false
+    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false
     {
         $params = [];
-
         $sql = $this->getQueryBuilder()->insertWithReturningPks($table, $columns, $params);
 
         $this->setSql($sql)->bindValues($params);
@@ -500,12 +499,28 @@ abstract class AbstractCommand implements CommandInterface
 
     public function upsert(
         string $table,
-        QueryInterface|array $insertColumns,
-        bool|array $updateColumns = true,
-        array $params = []
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
     ): static {
+        $params = [];
         $sql = $this->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
         return $this->setSql($sql)->bindValues($params);
+    }
+
+    public function upsertWithReturningPks(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+    ): array|false {
+        $params = [];
+        $sql = $this->getQueryBuilder()->upsertWithReturningPks($table, $insertColumns, $updateColumns, $params);
+
+        $this->setSql($sql)->bindValues($params);
+
+        /** @psalm-var array|bool $result */
+        $result = $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
+
+        return is_array($result) ? $result : false;
     }
 
     public function withDbTypecasting(bool $dbTypecasting = true): static

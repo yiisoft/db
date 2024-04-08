@@ -235,35 +235,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidCallException
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
-    public function testGetPrimaryKey(): void
-    {
-        $db = $this->getConnection(true);
-
-        $command = $db->createCommand();
-
-        $insertResult = $command->insertWithReturningPks('animal', ['type' => 'cat']);
-        $selectResult = $command->setSql(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                SELECT [[id]] FROM [[animal]] WHERE [[type]] = 'cat'
-                SQL,
-                $db->getDriverName(),
-            )
-        )->queryOne();
-
-        $this->assertIsArray($insertResult);
-        $this->assertIsArray($selectResult);
-        $this->assertEquals($selectResult['id'], $insertResult['id']);
-
-        $db->close();
-    }
-
     public function testGetSchemaChecks(): void
     {
         $db = $this->getConnection();

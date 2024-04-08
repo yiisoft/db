@@ -109,7 +109,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         return $where === '' ? $sql : $sql . ' ' . $where;
     }
 
-    public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
+    public function insert(string $table, array|QueryInterface $columns, array &$params = []): string
     {
         [$names, $placeholders, $values, $params] = $this->prepareInsertValues($table, $columns, $params);
 
@@ -118,11 +118,13 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : ' ' . $values);
     }
 
-    public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string
+    /** @throws NotSupportedException */
+    public function insertWithReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string
     {
         throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
     }
 
+    /** @throws NotSupportedException */
     public function resetSequence(string $table, int|string|null $value = null): string
     {
         throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
@@ -138,13 +140,24 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         return $where === '' ? $sql : $sql . ' ' . $where;
     }
 
+    /** @throws NotSupportedException */
     public function upsert(
         string $table,
-        QueryInterface|array $insertColumns,
-        bool|array $updateColumns,
-        array &$params
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+        array &$params = [],
     ): string {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
+    }
+
+    /** @throws NotSupportedException */
+    public function upsertWithReturningPks(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+        array &$params = [],
+    ): string {
+        throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
     }
 
     public function withTypecasting(bool $typecasting = true): static
@@ -418,8 +431,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      */
     protected function prepareUpsertColumns(
         string $table,
-        QueryInterface|array $insertColumns,
-        QueryInterface|bool|array $updateColumns,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns,
         array &$constraints = []
     ): array {
         if ($insertColumns instanceof QueryInterface) {
