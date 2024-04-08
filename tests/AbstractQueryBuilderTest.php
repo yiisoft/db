@@ -2092,7 +2092,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::selectScalar */
-    public function testSelectScalar(array|bool|float|int $columns, string $expected): void
+    public function testSelectScalar(array|bool|float|int|string $columns, string $expected): void
     {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
