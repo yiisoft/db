@@ -139,7 +139,7 @@ abstract class AbstractConnectionTest extends TestCase
         $this->assertSame('pre_', $db->getTablePrefix());
     }
 
-    public function testSerialized()
+    public function testSerialized(): void
     {
         $connection = $this->getConnection();
         $connection->open();
