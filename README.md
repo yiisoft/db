@@ -42,9 +42,9 @@ similar to the way you would use ORM (Object-Relational Mapping) frameworks like
 [![static analysis](https://github.com/yiisoft/db/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db/actions/workflows/static.yml)
 [![type-coverage](https://shepherd.dev/github/yiisoft/db/coverage.svg)](https://shepherd.dev/github/yiisoft/db)
 
-## Usage 
+## Usage
 
-[Check the documentation](/docs/en/README.md) to learn about usage.
+[Check the documentation](/docs/guide/en/README.md) to learn about usage.
 
 ## Support
 
@@ -53,7 +53,7 @@ You may also check out other [Yii Community Resources](https://www.yiiframework.
 
 ## Testing
 
-[Check the testing instructions](/docs/en/testing.md) to learn about testing.
+[Check the testing instructions](/docs/guide/en/testing.md) to learn about testing.
 
 ## Support the project
 

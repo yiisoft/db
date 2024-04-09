@@ -65,10 +65,10 @@ abstract class AbstractCommandTest extends TestCase
         $sql = <<<SQL
         SELECT * FROM customer WHERE name=:name
         SQL;
-        $command = $db->createCommand($sql, [':name' => 'John']);
+        $command = $db->createCommand($sql, [':name' => 'John Doe']);
 
         $this->assertSame($sql, $command->getSql());
-        $this->assertSame([':name' => 'John'], $command->getParams());
+        $this->assertSame([':name' => 'John Doe'], $command->getParams());
     }
 
     /**
@@ -229,12 +229,10 @@ abstract class AbstractCommandTest extends TestCase
         $profiler = $this->createMock(ProfilerInterface::class);
         $profiler->expects(self::once())
             ->method('begin')
-            ->with($sql)
-        ;
+            ->with($sql);
         $profiler->expects(self::once())
             ->method('end')
-            ->with($sql)
-        ;
+            ->with($sql);
         $db->setProfiler($profiler);
 
         $db->createCommand($sql)->execute();
@@ -253,7 +251,8 @@ abstract class AbstractCommandTest extends TestCase
         $db = $this->getConnection();
         $db->open();
 
-        $profiler = new class ($this, $sql) implements ProfilerInterface {
+        $profiler = new class($this, $sql) implements ProfilerInterface
+        {
             public function __construct(private TestCase $test, private string $sql)
             {
             }
