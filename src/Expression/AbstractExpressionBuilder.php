@@ -18,7 +18,7 @@ use function substr_replace;
 /**
  * It's used to build expressions for use in database queries.
  *
- * It provides a methods {@see build()} for creating various types of expressions, such as conditions, joins, and
+ * It provides a {@see build()} method for creating various types of expressions, such as conditions, joins, and
  * ordering clauses.
  *
  * These expressions can be used with the query builder to build complex and customizable database queries
