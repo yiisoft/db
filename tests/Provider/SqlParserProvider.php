@@ -93,6 +93,11 @@ class SqlParserProvider
                 ':name',
                 65,
             ],
+            [
+                "SELECT * FROM {{customer}} WHERE \"Ģ:name\" = '😀 ȧ Привет 中文 :label' AND age = :age",
+                ':age',
+                92,
+            ],
         ];
     }
 
