@@ -21,5 +21,9 @@ in `addColumn()` method of your classes that implement the following interfaces:
 
 ### Build `Expression` instances inside `Expression::$params`
 
-- `Expression::$params` can contain non-unique placeholder names, they will be replaced with unique names.
-- `Expression::$params` can contain `Expression` instances, they will be built when building a query using `QueryBuilder`.
+`ExpressionBuilder` is replaced by an abstract class `AbstractExpressionBuilder` with an instance of the 
+`QueryBuilderInterface` parameter in the constructor. Each DBMS driver should implement its own expression builder.
+
+`Expression::$params` can contain:
+- non-unique placeholder names, they will be replaced with unique names.
+- `Expression` instances, they will be built when building a query using `QueryBuilder`.
