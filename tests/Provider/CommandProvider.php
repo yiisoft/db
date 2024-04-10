@@ -12,6 +12,7 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
+use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 class CommandProvider
@@ -919,6 +920,14 @@ class CommandProvider
                     'expected' => ['email' => 'user1@example.com', 'address' => 'address1', 'status' => 1],
                 ],
             ],
+        ];
+    }
+
+    public static function columnTypes(): array
+    {
+        return [
+            [SchemaInterface::TYPE_INTEGER],
+            [new Column('string(100)')],
         ];
     }
 }

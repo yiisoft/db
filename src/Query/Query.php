@@ -681,8 +681,6 @@ class Query implements QueryInterface
      *
      * Restores the value of select to make this query reusable.
      *
-     * @param ExpressionInterface|string $selectExpression
-     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
