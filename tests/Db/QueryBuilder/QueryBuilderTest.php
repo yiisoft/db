@@ -254,17 +254,20 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         string $table,
         array $columns,
         array|string $condition,
-        string $expectedSQL,
+        array $params,
+        string $expectedSql,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
 
         $schemaMock = $this->createMock(Schema::class);
         $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
-        $actualParams = [];
 
-        $this->assertSame($expectedSQL, $qb->update($table, $columns, $condition, $actualParams));
-        $this->assertSame($expectedParams, $actualParams);
+        $sql = $qb->update($table, $columns, $condition, $params);
+        $sql = $qb->quoter()->quoteSql($sql);
+
+        $this->assertSame($expectedSql, $sql);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**

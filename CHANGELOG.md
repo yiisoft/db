@@ -2,6 +2,8 @@
 
 ## 2.0.0 under development
 
+- Enh #806: Non-unique placeholder names inside `Expression::$params` will be replaced with unique names (@Tigrov)
+- Enh #806: Build `Expression` instances inside `Expression::$params` when build a query using `QueryBuilder` (@Tigrov)
 - Enh #766: Allow `ColumnInterface` as column type. (@Tigrov)
 
 ## 1.3.0 March 21, 2024
