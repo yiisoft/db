@@ -2091,6 +2091,24 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEmpty($params);
     }
 
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::selectScalar */
+    public function testSelectScalar(array|bool|float|int|string $columns, string $expected): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $query = (new Query($db))->select($columns);
+
+        [$sql, $params] = $qb->build($query);
+
+        if ($db->getDriverName() === 'oci') {
+            $expected .= ' FROM DUAL';
+        }
+
+        $this->assertSame($expected, $sql);
+        $this->assertEmpty($params);
+    }
+
     public function testSetConditionClasses(): void
     {
         $db = $this->getConnection();

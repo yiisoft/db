@@ -19,6 +19,14 @@ in `addColumn()` method of your classes that implement the following interfaces:
 - `Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder`;
 - `Yiisoft\Db\QueryBuilder\AbstractQueryBuilder`.
 
+### Scalar values for columns in `Query`
+
+Change `$columns` parameter type from `array|string|ExpressionInterface` to `array|bool|float|int|string|ExpressionInterface`
+in methods `select()` and `addSelect()` of your classes that implement `Yiisoft\Db\Query\QueryPartsInterface`.
+
+Add support any scalar values for `$columns` parameter of these methods in your classes that implement
+`Yiisoft\Db\Query\QueryPartsInterface` or inherit `Yiisoft\Db\Query\Query`.
+
 ### Build `Expression` instances inside `Expression::$params`
 
 `ExpressionBuilder` is replaced by an abstract class `AbstractExpressionBuilder` with an instance of the 
