@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
@@ -267,6 +269,7 @@ class QueryBuilderProvider
 
             /* not */
             [['not', ''], '', []],
+            [['not', '0'], 'NOT (0)', []],
             [['not', 'name'], 'NOT (name)', []],
             [[
                 'not',
@@ -1129,9 +1132,58 @@ class QueryBuilderProvider
     {
         return [
             [
+                '{{table}}',
+                ['name' => '{{test}}'],
+                [],
+                [],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp0
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':qp0' => '{{test}}',
+                ],
+            ],
+            [
+                '{{table}}',
+                ['name' => '{{test}}'],
+                ['id' => 1],
+                [],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]]=:qp1
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':qp0' => '{{test}}',
+                    ':qp1' => 1,
+                ],
+            ],
+            [
+                '{{table}}',
+                ['{{table}}.name' => '{{test}}'],
+                ['id' => 1],
+                ['id' => 'boolean'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    'id' => 'boolean',
+                    ':qp1' => '{{test}}',
+                    ':qp2' => 1,
+                ],
+            ],
+            [
                 'customer',
                 ['status' => 1, 'updated_at' => new Expression('now()')],
                 ['id' => 100],
+                [],
                 DbHelper::replaceQuotes(
                     <<<SQL
                     UPDATE [[customer]] SET [[status]]=:qp0, [[updated_at]]=now() WHERE [[id]]=:qp1
@@ -1139,6 +1191,186 @@ class QueryBuilderProvider
                     static::$driverName,
                 ),
                 [':qp0' => 1, ':qp1' => 100],
+            ],
+            'Expressions without params' => [
+                '{{product}}',
+                ['name' => new Expression('UPPER([[name]])')],
+                '[[name]] = :name',
+                ['name' => new Expression('LOWER([[name]])')],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER([[name]])
+                    SQL,
+                    static::$driverName,
+                ),
+                [],
+            ],
+            'Expression with params and without params' => [
+                '{{product}}',
+                ['price' => new Expression('[[price]] + :val', [':val' => 1])],
+                '[[start_at]] < :date',
+                ['date' => new Expression('NOW()')],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[price]]=[[price]] + :val WHERE [[start_at]] < NOW()
+                    SQL,
+                    static::$driverName,
+                ),
+                [':val' => 1],
+            ],
+            'Expression without params and with params' => [
+                '{{product}}',
+                ['name' => new Expression('UPPER([[name]])')],
+                '[[name]] = :name',
+                ['name' => new Expression('LOWER(:val)', [':val' => 'Apple'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[name]]=UPPER([[name]]) WHERE [[name]] = LOWER(:val)
+                    SQL,
+                    static::$driverName,
+                ),
+                [':val' => 'Apple'],
+            ],
+            'Expressions with the same params' => [
+                '{{product}}',
+                ['name' => new Expression('LOWER(:val)', ['val' => 'Apple'])],
+                '[[name]] != :name',
+                ['name' => new Expression('UPPER(:val)', ['val' => 'Banana'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val_0)
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    'val' => 'Apple',
+                    'val_0' => 'Banana',
+                ],
+            ],
+            'Expressions with the same params starting with and without colon' => [
+                '{{product}}',
+                ['name' => new Expression('LOWER(:val)', [':val' => 'Apple'])],
+                '[[name]] != :name',
+                ['name' => new Expression('UPPER(:val)', ['val' => 'Banana'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val_0)
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':val' => 'Apple',
+                    'val_0' => 'Banana',
+                ],
+            ],
+            'Expressions with the same and different params' => [
+                '{{product}}',
+                ['price' => new Expression('[[price]] * :val + :val1', ['val' => 1.2, 'val1' => 2])],
+                '[[name]] IN :values',
+                ['values' => new Expression('(:val, :val2)', ['val' => 'Banana', 'val2' => 'Cherry'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[price]]=[[price]] * :val + :val1 WHERE [[name]] IN (:val_0, :val2)
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    'val' => 1.2,
+                    'val1' => 2,
+                    'val_0' => 'Banana',
+                    'val2' => 'Cherry',
+                ],
+            ],
+            'Expressions with the different params' => [
+                '{{product}}',
+                ['name' => new Expression('LOWER(:val)', ['val' => 'Apple'])],
+                '[[name]] != :name',
+                ['name' => new Expression('UPPER(:val1)', ['val1' => 'Banana'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[name]]=LOWER(:val) WHERE [[name]] != UPPER(:val1)
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    'val' => 'Apple',
+                    'val1' => 'Banana',
+                ],
+            ],
+            'Expressions with nested Expressions' => [
+                '{{table}}',
+                ['name' => new Expression(
+                    ':val || :val_0',
+                    [
+                        'val' => new Expression('LOWER(:val || :val_0)', ['val' => 'A', 'val_0' => 'B']),
+                        'val_0' => new Param('C', DataType::STRING),
+                    ],
+                )],
+                '[[name]] != :val || :val_0',
+                [
+                    'val_0' => new Param('F', DataType::STRING),
+                    'val' => new Expression('UPPER(:val || :val_0)', ['val' => 'D', 'val_0' => 'E']),
+                ],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[table]] SET [[name]]=LOWER(:val_2 || :val_0_1) || :val_0_0 WHERE [[name]] != UPPER(:val_1 || :val_0_2) || :val_0
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    'val_2' => 'A',
+                    'val_0_1' => 'B',
+                    'val_0_0' => new Param('C', DataType::STRING),
+                    'val_1' => 'D',
+                    'val_0_2' => 'E',
+                    'val_0' => new Param('F', DataType::STRING),
+                ],
+            ],
+            'Expressions with indexed params' => [
+                '{{product}}',
+                ['name' => new Expression('LOWER(?)', ['Apple'])],
+                '[[name]] != ?',
+                ['Banana'],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[name]]=LOWER(?) WHERE [[name]] != ?
+                    SQL,
+                    static::$driverName,
+                ),
+                // Wrong order of params
+                ['Banana', 'Apple'],
+            ],
+            'Expressions with a string value containing a placeholder name' => [
+                '{{product}}',
+                ['price' => 10],
+                ':val',
+                [':val' => new Expression("label=':val' AND name=:val", [':val' => 'Apple'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[price]]=:qp1 WHERE label=':val' AND name=:val_0
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':qp1' => 10,
+                    ':val_0' => 'Apple',
+                ],
+            ],
+            'Expressions without placeholders in SQL statement' => [
+                '{{product}}',
+                ['price' => 10],
+                ':val',
+                [':val' => new Expression("label=':val'", [':val' => 'Apple'])],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    UPDATE [[product]] SET [[price]]=:qp1 WHERE label=':val'
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':qp1' => 10,
+                    ':val_0' => 'Apple',
+                ],
             ],
         ];
     }

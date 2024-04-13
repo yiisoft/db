@@ -11,7 +11,6 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\ExpressionBuilder;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbStringHelper;
@@ -107,25 +106,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $this->buildHaving($query->getHaving(), $params),
         ];
         $sql = implode($this->separator, array_filter($clauses));
-        $sql = $this->buildOrderByAndLimit($sql, $query->getOrderBy(), $query->getLimit(), $query->getOffset());
-
-        if (!empty($query->getOrderBy())) {
-            /** @psalm-var array<string, ExpressionInterface|string> */
-            foreach ($query->getOrderBy() as $expression) {
-                if ($expression instanceof ExpressionInterface) {
-                    $this->buildExpression($expression, $params);
-                }
-            }
-        }
-
-        if (!empty($query->getGroupBy())) {
-            /** @psalm-var array<string, ExpressionInterface|string> */
-            foreach ($query->getGroupBy() as $expression) {
-                if ($expression instanceof ExpressionInterface) {
-                    $this->buildExpression($expression, $params);
-                }
-            }
-        }
+        $sql = $this->buildOrderByAndLimit($sql, $query->getOrderBy(), $query->getLimit(), $query->getOffset(), $params);
 
         $union = $this->buildUnion($query->getUnions(), $params);
 
@@ -167,19 +148,22 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function buildCondition(array|string|ExpressionInterface|null $condition, array &$params = []): string
     {
-        if (is_array($condition)) {
-            if (empty($condition)) {
-                return '';
+        if (empty($condition)) {
+            if ($condition === '0') {
+                return '0';
             }
 
+            return '';
+        }
+
+        if (is_array($condition)) {
             $condition = $this->createConditionFromArray($condition);
+        } elseif (is_string($condition)) {
+            $condition = new Expression($condition, $params);
+            $params = [];
         }
 
-        if ($condition instanceof ExpressionInterface) {
-            return $this->buildExpression($condition, $params);
-        }
-
-        return $condition ?? '';
+        return $this->buildExpression($condition, $params);
     }
 
     public function buildExpression(ExpressionInterface $expression, array &$params = []): string
@@ -210,10 +194,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         /** @psalm-var array<string, ExpressionInterface|string> $columns */
         foreach ($columns as $i => $column) {
             if ($column instanceof ExpressionInterface) {
-                $columns[$i] = $this->buildExpression($column);
-                if ($column instanceof Expression || $column instanceof QueryInterface) {
-                    $params = array_merge($params, $column->getParams());
-                }
+                $columns[$i] = $this->buildExpression($column, $params);
             } elseif (!str_contains($column, '(')) {
                 $columns[$i] = $this->quoter->quoteColumnName($column);
             }
@@ -301,10 +282,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         /** @psalm-var array<string, ExpressionInterface|int|string> $columns */
         foreach ($columns as $name => $direction) {
             if ($direction instanceof ExpressionInterface) {
-                $orders[] = $this->buildExpression($direction);
-                if ($direction instanceof Expression || $direction instanceof QueryInterface) {
-                    $params = array_merge($params, $direction->getParams());
-                }
+                $orders[] = $this->buildExpression($direction, $params);
             } else {
                 $orders[] = $this->quoter->quoteColumnName($name) . ($direction === SORT_DESC ? ' DESC' : '');
             }
@@ -535,7 +513,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return [
             Query::class => QueryExpressionBuilder::class,
             Param::class => ParamBuilder::class,
-            Expression::class => ExpressionBuilder::class,
             Condition\AbstractConjunctionCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
             Condition\NotCondition::class => Condition\Builder\NotConditionBuilder::class,
             Condition\AndCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,

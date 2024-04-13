@@ -2214,16 +2214,18 @@ abstract class AbstractQueryBuilderTest extends TestCase
         string $table,
         array $columns,
         array|string $condition,
-        string $expectedSQL,
+        array $params,
+        string $expectedSql,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
-        $actualParams = [];
 
-        $this->assertSame($expectedSQL, $qb->update($table, $columns, $condition, $actualParams));
-        $this->assertSame($expectedParams, $actualParams);
+        $sql = $qb->update($table, $columns, $condition, $params);
+        $sql = $qb->quoter()->quoteSql($sql);
+
+        $this->assertSame($expectedSql, $sql);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**
@@ -2294,7 +2296,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     {
         $db = $this->getConnection();
 
-        $params = [':id' => 1, ':pv2' => new Expression('(select type from {{%animal}}) where id=1')];
+        $params = [':id' => 1, ':pv2' => 'test'];
         $expression = new Expression('id = :id AND type = :pv2', $params);
 
         $query = new Query($db);
@@ -2309,7 +2311,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals([':id', ':pv2', ':pv2_0',], array_keys($command->getParams()));
         $this->assertEquals(
             DbHelper::replaceQuotes(
-                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = (select type from {{%animal}}) where id=1) AND ([[type]]=\'test1\')',
+                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]]=\'test1\')',
                 $db->getDriverName()
             ),
             $command->getRawSql()
