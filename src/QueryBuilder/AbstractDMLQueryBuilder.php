@@ -142,6 +142,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @param Traversable $rows The rows to be batch inserted into the table.
      *
      * @return array|Iterator The prepared rows.
+     *
+     * @psalm-return Iterator|array<iterable<array-key, mixed>>
      */
     protected function prepareTraversable(Traversable $rows): Iterator|array
     {
@@ -153,6 +155,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             return [];
         }
 
+        /** @var Iterator $rows */
         return $rows;
     }
 
@@ -210,6 +213,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @param string[] $columns The column names.
      *
      * @return string[] The column names.
+     *
+     * @psalm-param Iterator|non-empty-array<iterable<array-key, mixed>> $rows
      */
     protected function extractColumnNames(array|Iterator $rows, array $columns): array
     {
