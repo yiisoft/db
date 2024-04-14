@@ -255,18 +255,6 @@ class QueryBuilderProvider
                     ':qp3' => 1,
                 ],
             ],
-            'skipped columns' => [
-                'customer',
-                ['email', 'name', 'address'],
-                'values' => [['email' => 'hello@localhost', 'address' => 'Earth, Solar System']],
-                'expected' => DbHelper::replaceQuotes(
-                    <<<SQL
-                    INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES (:qp0, NULL, :qp1)
-                    SQL,
-                    static::$driverName,
-                ),
-                'expectedParams' => [':qp0' => 'hello@localhost', ':qp1' => 'Earth, Solar System'],
-            ],
         ];
     }
 

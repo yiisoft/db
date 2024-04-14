@@ -22,6 +22,7 @@ use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_combine;
 use function array_diff;
+use function array_fill_keys;
 use function array_filter;
 use function array_key_exists;
 use function array_keys;
@@ -63,15 +64,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
     public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
     {
+        if (!is_array($rows)) {
+            $rows = $this->prepareTraversable($rows);
+        }
+
         if (empty($rows)) {
-            return '';
-        }
-
-        while ($rows instanceof IteratorAggregate) {
-            $rows = $rows->getIterator();
-        }
-
-        if ($rows instanceof Iterator && !$rows->valid()) {
             return '';
         }
 
@@ -140,6 +137,26 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
+     * Prepare traversable for batch insert.
+     *
+     * @param Traversable $rows The rows to be batch inserted into the table.
+     *
+     * @return Iterator|array The prepared rows.
+     */
+    protected function prepareTraversable(Traversable $rows): Iterator|array
+    {
+        while ($rows instanceof IteratorAggregate) {
+            $rows = $rows->getIterator();
+        }
+
+        if ($rows instanceof Iterator && !$rows->valid()) {
+            return [];
+        }
+
+        return $rows;
+    }
+
+    /**
      * Prepare values for batch insert.
      *
      * @param string $table The table name.
@@ -156,17 +173,16 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $values = [];
         /** @var string[] $columnNames */
         $columnNames = array_values($columns);
-        $columnKeys = array_combine($columnNames, $columnNames);
-        $columnNulls = array_fill_keys($columnNames, 'NULL');
+        $columnKeys = array_fill_keys($columnNames, false);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
         foreach ($rows as $row) {
             $i = 0;
-            $placeholders = $columnNulls;
+            $placeholders = $columnKeys;
 
             /** @var int|string $key */
             foreach ($row as $key => $value) {
-                $columnName = $columns[$key] ?? $columnKeys[$key] ?? $columnNames[$i] ?? $i;
+                $columnName = $columns[$key] ?? (isset($columnKeys[$key]) ? $key : $columnNames[$i] ?? $i);
 
                 if (isset($columnSchemas[$columnName])) {
                     $value = $columnSchemas[$columnName]->dbTypecast($value);
