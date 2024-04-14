@@ -485,7 +485,7 @@ class CommandProvider
             'empty columns and Traversable values' => [
                 'type',
                 [],
-                'values' => new class implements IteratorAggregate {
+                'values' => new class () implements IteratorAggregate {
                     public function getIterator(): Traversable
                     {
                         yield ['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1];

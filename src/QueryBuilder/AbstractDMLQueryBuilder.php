@@ -141,7 +141,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @param Traversable $rows The rows to be batch inserted into the table.
      *
-     * @return Iterator|array The prepared rows.
+     * @return array|Iterator The prepared rows.
      */
     protected function prepareTraversable(Traversable $rows): Iterator|array
     {
