@@ -75,10 +75,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $columns = $this->extractColumnNames($rows, $columns);
         $values = $this->prepareBatchInsertValues($table, $rows, $columns, $params);
 
-        if (empty($values)) {
-            return '';
-        }
-
         $query = 'INSERT INTO ' . $this->quoter->quoteTableName($table);
 
         if (count($columns) > 0) {
