@@ -147,11 +147,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $rows = $rows->getIterator();
         }
 
-        if ($rows instanceof Iterator && !$rows->valid()) {
+        /** @var Iterator $rows */
+        if (!$rows->valid()) {
             return [];
         }
 
-        /** @var Iterator $rows */
         return $rows;
     }
 
