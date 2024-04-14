@@ -661,6 +661,13 @@ abstract class AbstractQueryTest extends TestCase
             ['DISTINCT ON(tour_dates.date_from) tour_dates.date_from', 'tour_dates.id' => 'tour_dates.id'],
             $query->getSelect()
         );
+
+        $query = new Query($db);
+        $query->select(1);
+        $query->addSelect(true);
+        $query->addSelect(['float' => 12.34]);
+
+        $this->assertSame([1, true, 'float' => 12.34], $query->getSelect());
     }
 
     public function testSetJoin(): void
@@ -779,7 +786,7 @@ abstract class AbstractQueryTest extends TestCase
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryProvider::normalizeSelect
      */
-    public function testNormalizeSelect(array|string|Expression $columns, array|string $expected): void
+    public function testNormalizeSelect(array|bool|float|int|string|ExpressionInterface $columns, array|string $expected): void
     {
         $query = (new Query($this->getConnection()));
         $this->assertEquals([], $query->getSelect());

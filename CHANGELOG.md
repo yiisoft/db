@@ -1,8 +1,11 @@
 # Yii Database Change Log
 
-## 1.3.1 under development
+## 2.0.0 under development
 
-- no changes in this release.
+- Enh #816: Allow scalar values for `$columns` parameter of `Query::select()` and `Query::addSelect()` methods (@Tigrov)
+- Enh #806: Non-unique placeholder names inside `Expression::$params` will be replaced with unique names (@Tigrov)
+- Enh #806: Build `Expression` instances inside `Expression::$params` when build a query using `QueryBuilder` (@Tigrov)
+- Enh #766: Allow `ColumnInterface` as column type. (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
