@@ -29,31 +29,31 @@ To install Yii DB, you must select the driver you want to use and install it wit
 
 For [MSSQL](https://github.com/yiisoft/db-mssql):
 
-```bash
+```shell
 composer require yiisoft/db-mssql
 ```
 
 For [MySQL/MariaDB](https://github.com/yiisoft/db-mysql):
 
-```bash
+```shell
 composer require yiisoft/db-mysql
 ```
 
 For [Oracle](https://github.com/yiisoft/db-oracle):
 
-```bash
+```shell
 composer require yiisoft/db-oracle
 ```
 
 For [PostgreSQL](https://github.com/yiisoft/db-pgsql):
 
-```bash
+```shell
 composer require yiisoft/db-pgsql
 ```
 
 For [SQLite](https://github.com/yiisoft/db-sqlite):
 
-```bash
+```shell
 composer require yiisoft/db-sqlite
 ```
 
