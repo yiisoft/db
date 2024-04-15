@@ -24,6 +24,7 @@ use function array_merge;
 use function array_shift;
 use function array_unshift;
 use function count;
+use function gettype;
 use function is_array;
 use function is_int;
 use function is_numeric;
@@ -68,9 +69,12 @@ use function trim;
  * ```
  *
  * Query internally uses the {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} class to generate the SQL statement.
+ *
+ * @psalm-import-type SelectValue from QueryPartsInterface
  */
 class Query implements QueryInterface
 {
+    /** @psalm-var SelectValue $select */
     protected array $select = [];
     protected string|null $selectOption = null;
     protected bool|null $distinct = null;
@@ -181,7 +185,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function addSelect(array|string|ExpressionInterface $columns): static
+    public function addSelect(array|bool|float|int|string|ExpressionInterface $columns): static
     {
         if ($this->select === []) {
             return $this->select($columns);
@@ -613,7 +617,7 @@ class Query implements QueryInterface
         };
     }
 
-    public function select(array|string|ExpressionInterface $columns, string $option = null): static
+    public function select(array|bool|float|int|string|ExpressionInterface $columns, string $option = null): static
     {
         $this->select = $this->normalizeSelect($columns);
         $this->selectOption = $option;
@@ -855,18 +859,20 @@ class Query implements QueryInterface
 
     /**
      * Normalizes the `SELECT` columns passed to {@see select()} or {@see addSelect()}.
+     *
+     * @psalm-param SelectValue|scalar|ExpressionInterface $columns
+     * @psalm-return SelectValue
      */
-    private function normalizeSelect(array|ExpressionInterface|string $columns): array
+    private function normalizeSelect(array|bool|float|int|string|ExpressionInterface $columns): array
     {
-        if ($columns instanceof ExpressionInterface) {
-            $columns = [$columns];
-        } elseif (!is_array($columns)) {
-            $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
-        }
+        $columns = match (gettype($columns)) {
+            'array' => $columns,
+            'string' => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
+            default => [$columns],
+        };
 
         $select = [];
 
-        /** @psalm-var array<array-key, ExpressionInterface|string> $columns */
         foreach ($columns as $columnAlias => $columnDefinition) {
             if (is_string($columnAlias)) {
                 // Already in the normalized format, good for them.
@@ -891,8 +897,7 @@ class Query implements QueryInterface
                 }
             }
 
-            // Either a string calling a function, DB expression, or sub-query
-            /** @psalm-var string */
+            // Either a string calling a function, instance of ExpressionInterface or a scalar value.
             $select[] = $columnDefinition;
         }
 

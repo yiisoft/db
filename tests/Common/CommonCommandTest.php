@@ -1896,14 +1896,25 @@ abstract class CommonCommandTest extends AbstractCommandTest
         array $columns,
         array|string $conditions,
         array $params,
-        string $expected
+        array $expectedValues,
+        int $expectedCount,
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $sql = $command->update($table, $columns, $conditions, $params)->getSql();
+        $count = $command->update($table, $columns, $conditions, $params)->execute();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame($expectedCount, $count);
+
+        $values = (new Query($db))
+            ->from($table)
+            ->where($conditions, $params)
+            ->limit(1)
+            ->one();
+
+        foreach ($expectedValues as $name => $expectedValue) {
+            $this->assertEquals($expectedValue, $values[$name]);
+        }
 
         $db->close();
     }
