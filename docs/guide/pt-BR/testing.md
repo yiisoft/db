@@ -26,7 +26,7 @@ Para maior facilidade é recomendado utilizar containers Docker para cada SGBD, 
 
 Para executar os contêineres Docker você pode usar o seguinte comando:
 
-```shell
+```dockerfile
 docker compose up -d
 ```
 
