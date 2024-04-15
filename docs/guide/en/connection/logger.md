@@ -10,8 +10,6 @@ In the following example, you configure [Yii Logging Library](https://github.com
 Create a file `config/common/di/logger.php`:
 
 ```php
-declare(strict_types=1);
-
 use Psr\Log\LoggerInterface;
 use Yiisoft\Definitions\ReferencesArray;
 use Yiisoft\Log\Logger;
@@ -31,8 +29,6 @@ Depending on used DBMS, create a file with database connection configuration. Fo
 will be `config/common/di/db-pgsql.php`:
 
 ```php
-declare(strict_types=1);
-
 use Psr\Log\LoggerInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Pgsql\Connection;
@@ -66,8 +62,6 @@ If you need to redefine logger messages or increase/decrease logging level:
 2. Use the context to detect type of the message in the "log" method
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Driver\Pdo\LogType;
 
 class MyLogger extends ParentLoggerClass implements LoggerInterface

@@ -26,8 +26,6 @@ This configuration is suitable if you want to use the same cache driver for the 
 Create a file `config/common/di/cache.php` for cache:
 
 ```php
-declare(strict_types=1);
-
 use Psr\SimpleCache\CacheInterface;
 use Yiisoft\Cache\File\FileCache;
 
@@ -52,8 +50,6 @@ This configuration is suitable if you want to use a different cache driver for c
 Create a file `config/common/di/db-schema-cache.php` for cache:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Cache\File\FileCache;
 use Yiisoft\Db\Cache\SchemaCache;
 

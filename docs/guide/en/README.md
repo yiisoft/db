@@ -73,7 +73,7 @@ You can create a database connection instance using a [DI container](https://git
 - [PostgreSQL Server](connection/pgsql.md)
 - [SQLite Server](connection/sqlite.md)
 
-> Note: When you create a DB connection instance, the actual connection to the database isn't established until
+> Info: When you create a DB connection instance, the actual connection to the database isn't established until
 > you execute the first SQL or call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.
 
 ### Logger and profiler
@@ -108,8 +108,6 @@ Yii DB will automatically convert such constructs into the corresponding quoted 
 For example, the following code will generate an SQL statement that's valid for all supported databases:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */

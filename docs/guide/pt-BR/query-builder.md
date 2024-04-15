@@ -15,8 +15,6 @@ instrução SQL `SELECT`.
 O código a seguir mostra uma maneira típica de usar um construtor de consultas.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 

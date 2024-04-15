@@ -4,8 +4,6 @@ Para configurar o [Yii DB PostgreSQL](https://github.com/yiisoft/db-pgsql) com
 um [contêiner DI](https://github.com/yiisoft/di), você precisa criar o arquivo de configuração `config/common/di/db-pgsql.php`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Pgsql\Connection;
 use Yiisoft\Db\Pgsql\Driver;
@@ -29,8 +27,6 @@ return [
 Crie um arquivo `config/common/params.php` para parâmetros `common`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Pgsql\Dsn;
 
 return [
@@ -45,8 +41,6 @@ return [
 Para configurar sem um [contêiner DI](https://github.com/yiisoft/di), você precisa seguir estas etapas:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Pgsql\Connection;

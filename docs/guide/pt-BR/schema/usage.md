@@ -8,8 +8,6 @@ por meio de objetos de esquema.
 Para obter esquemas para todas as tabelas disponíveis, você pode usar o seguinte código:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -22,8 +20,6 @@ foreach ($schemas as $schema) {
 Se você deseja obter tabelas apenas de um determinado esquema de banco de dados:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /**
@@ -44,8 +40,6 @@ foreach ($schemas as $schema) {
 Para obter um esquema para uma determinada tabela, use o seguinte código:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -55,8 +49,6 @@ $tableSchema = $db->getTableSchema('customer');
 Se não existir nenhuma tabela, o método retornará `null`. Então, para verificar se a tabela existe você pode fazer:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -71,8 +63,6 @@ if ($db->getTableSchema('customer') === null) {
 Tendo um esquema de tabela, você pode obter várias informações sobre a tabela:
 
 ```php
-declare(strict_types=1);
-
 use \Yiisoft\Db\Schema\TableSchemaInterface;
 
 /** @var TableSchemaInterface $tableSchema */
@@ -90,8 +80,6 @@ Você pode recuperar os metadados da coluna para uma determinada tabela usando o
 da classe `TableSchema`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */

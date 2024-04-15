@@ -16,8 +16,6 @@ Você pode usar o DML para realizar as seguintes operações:
 Para inserir múltiplas linhas em uma tabela, você pode usar o método `Yiisoft\Db\Command\CommandInterface::batchInsert()`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -37,8 +35,6 @@ $db->createCommand()->batchInsert(
 Para excluir linhas de uma tabela, você pode usar o método `Yiisoft\Db\Command\CommandInterface::delete()`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -50,8 +46,6 @@ $db->createCommand()->delete('{{%customer}}', ['id' => 1])->execute();
 Para redefinir a sequência de uma tabela, você pode usar o método `Yiisoft\Db\Command\CommandInterface::resetSequence()`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -63,8 +57,6 @@ $db->createCommand()->resetSequence('{{%customer}}', 1)->execute();
 Para inserir uma linha em uma tabela, você pode usar o método `Yiisoft\Db\Command\CommandInterface::insert()`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -76,8 +68,6 @@ $db->createCommand()->insert('{{%customer}}', ['name' => 'John Doe', 'age' => 18
 Para atualizar linhas em uma tabela, você pode usar o método `Yiisoft\Db\Command\CommandInterface::update()`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -90,8 +80,6 @@ Para atualizar atomicamente linhas existentes e inserir linhas não existentes,
 você pode usar o método `Yiisoft\Db\Command\CommandInterface::upsert()`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
 

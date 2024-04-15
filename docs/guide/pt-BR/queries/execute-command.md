@@ -16,8 +16,6 @@ consultas não `SELECT` estão sendo executadas para ambos.
 Então, no código a seguir, a contagem de linhas afetadas será `1`, porque a linha foi encontrada e atualizada com sucesso:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -29,8 +27,6 @@ $rowCount = $command->execute(); // 1
 Esta consulta, entretanto, não afeta nenhuma linha, porque nenhuma linha foi encontrada pela condição fornecida na cláusula `WHERE`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -42,8 +38,6 @@ $rowCount = $command->execute(); // 0
 No caso de SQL inválido, a exceção correspondente será lançada.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */

@@ -64,8 +64,6 @@ Você também pode selecionar subconsultas. Você deve especificar cada subconsu
 Por exemplo, o código a seguir selecionará a contagem de usuários em cada postagem.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 

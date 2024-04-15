@@ -18,8 +18,6 @@ You can use `bindValue()` to bind a value to a parameter.
 For example, the following code binds the value `42` to the named placeholder `:id`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -49,8 +47,6 @@ The result is:
 For example, the following code binds the values `3` and `user3` to the named placeholders `:id` and `:name`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -82,8 +78,6 @@ For example, the following code binds the value `2` and `user2` to the named pla
 then it's changing the value:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */

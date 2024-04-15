@@ -3,8 +3,6 @@
 To create a command, you can use the `Yiisoft\Db\Connection\ConnectionInterface::createCommand()` method:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -32,8 +30,6 @@ It returns an empty array if the query results in nothing.
 For example, the following code fetches all rows from the `customer` table.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -80,8 +76,6 @@ It returns `null` if the query results in nothing.
 For example, the following code fetches the first row from the `customer` table.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -109,8 +103,6 @@ It returns an empty array if the query results in nothing.
 For example, the following code fetches the values of the first column from the `customer` table.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -136,8 +128,6 @@ It returns `false` if there is no value.
 For example, the following code fetches the value of the first column from the first row from the `customer` table.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -158,8 +148,6 @@ Returns a `Yiisoft\Db\DataReader\DataReaderInterface` object for traversing the 
 For example, the following code fetches all rows from the `customer` table.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */

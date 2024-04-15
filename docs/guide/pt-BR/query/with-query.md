@@ -7,8 +7,6 @@ Você pode usá-lo em vez da subconsulta para obter mais legibilidade e alguns r
 Por exemplo, esta consulta selecionará todas as permissões aninhadas de admin com seus filhos recursivamente.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 

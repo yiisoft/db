@@ -63,8 +63,6 @@ Como você pode ver, o construtor de consultas é inteligente o suficiente para 
 Você também pode usar subconsultas em formato hash como a seguir.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 
@@ -253,8 +251,6 @@ Internamente, os formatos descritos são convertidos implicitamente para o forma
 então é possível combinar formatos em uma única condição:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
 use Yiisoft\Db\Query\Query;

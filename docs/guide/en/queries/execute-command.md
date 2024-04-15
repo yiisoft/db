@@ -16,8 +16,6 @@ non-`SELECT` queries are being executed for both of them.
 Then, in the following code affected row count will be `1`, because the row has been found and successfully updated:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -29,8 +27,6 @@ $rowCount = $command->execute(); // 1
 This query however affects no rows, because no rows were found by the given condition in `WHERE` clause:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -42,8 +38,6 @@ $rowCount = $command->execute(); // 0
 In case of invalid SQL, the according exception will be thrown.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */

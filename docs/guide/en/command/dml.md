@@ -16,8 +16,6 @@ You can use the DML to perform the following operations:
 To insert multiple rows into a table, you can use the `Yiisoft\Db\Command\CommandInterface::batchInsert()` method:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -37,8 +35,6 @@ $db->createCommand()->batchInsert(
 To delete rows from a table, you can use the `Yiisoft\Db\Command\CommandInterface::delete()` method:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -50,8 +46,6 @@ $db->createCommand()->delete('{{%customer}}', ['id' => 1])->execute();
 To reset the sequence of a table, you can use the `Yiisoft\Db\Command\CommandInterface::resetSequence()` method:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -63,8 +57,6 @@ $db->createCommand()->resetSequence('{{%customer}}', 1)->execute();
 To insert a row to a table, you can use the `Yiisoft\Db\Command\CommandInterface::insert()` method:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -76,8 +68,6 @@ $db->createCommand()->insert('{{%customer}}', ['name' => 'John Doe', 'age' => 18
 To update rows in a table, you can use the `Yiisoft\Db\Command\CommandInterface::update()` method:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -90,8 +80,6 @@ To atomically update existing rows and insert non-existing ones,
 you can use the `Yiisoft\Db\Command\CommandInterface::upsert()` method:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\Expression;
 

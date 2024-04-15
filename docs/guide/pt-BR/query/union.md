@@ -5,8 +5,6 @@ O método `Yiisoft\Db\Query\Query::union()` especifica o fragmento `UNION` de um
 Por exemplo:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 

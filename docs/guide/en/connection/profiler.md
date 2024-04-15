@@ -12,8 +12,6 @@ The following describes how to configure it manually.
 Create a file `config/common/di/profiler.php`.
 
 ```php
-declare(strict_types=1);
-
 use Psr\Log\LoggerInterface;
 use Yiisoft\Definitions\Reference;
 use Yiisoft\Profiler\Profiler;
@@ -33,8 +31,6 @@ Depending on used DBMS, create a file with database connection configuration. Fo
 will be `config/common/di/db-pgsql.php`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Pgsql\Connection;
 use Yiisoft\Db\Pgsql\Driver;

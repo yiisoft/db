@@ -15,8 +15,6 @@ Using a query builder usually involves two steps:
 The following code shows a typical way of using a query builder.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 

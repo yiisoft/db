@@ -4,8 +4,6 @@ Para configurar [Yii DB MySQL/MariaDB](https://github.com/yiisoft/db-mysql) com
 um [contêiner DI](https://github.com/yiisoft/di), você precisa criar o arquivo de configuração `config/common/di/db-mysql.php`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Mysql\Connection;
 use Yiisoft\Db\Mysql\Driver;
@@ -29,8 +27,6 @@ return [
 Crie um arquivo `config/common/params.php` para parâmetros `common`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Mysql\Dsn;
 
 return [
@@ -45,8 +41,6 @@ return [
 Crie um arquivo `config/common/params.php` para parâmetros `common` com soquete unix DSN.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Mysql\DsnSocket;
 
 return [
@@ -61,8 +55,6 @@ return [
 Para configurar sem [contêiner DI](https://github.com/yiisoft/di), você precisa seguir estas etapas:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Mysql\Connection;

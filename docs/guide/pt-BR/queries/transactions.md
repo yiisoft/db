@@ -3,8 +3,6 @@
 Para que os dados sejam consistentes quando vários comandos estiverem envolvidos, você pode usar transações.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Command\DataType;
@@ -52,8 +50,6 @@ Dessa forma, você obtém todos os dados ou nenhum dado, para que seu banco de d
 Você também pode fazer isso sem `try ... catch`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 

@@ -7,8 +7,6 @@ You can use it instead of subquery for more readability and some unique features
 For example, this query will select all nested permissions of admin with their children recursively.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 

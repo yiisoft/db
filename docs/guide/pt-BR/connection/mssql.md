@@ -4,8 +4,6 @@ Para configurar [Yii DB MSSQL](https://github.com/yiisoft/db-mssql) com [contêi
 você precisa criar o arquivo de configuração `config/common/di/db-mssql.php`:
 
 ```php
-declare(strict_types=1);
-
 use Psr\Log\LoggerInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Mssql\Connection;
@@ -31,8 +29,6 @@ return [
 Crie um arquivo `config/common/params.php` para parâmetros `common`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Mssql\Dsn;
 
 return [
@@ -48,8 +44,6 @@ Para configurar a conexão sem [contêiner DI](https://github.com/yiisoft/di),
 você precisa seguir estas etapas:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Mssql\Connection;

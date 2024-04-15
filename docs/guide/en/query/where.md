@@ -63,8 +63,6 @@ As you can see, the query builder is intelligent enough to handle values that ar
 You can also use subqueries with hash format like the following.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 
@@ -253,8 +251,6 @@ Internally, the formats described are implicitly converted to object format befo
 so it's possible to combine formats in a single condition:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
 use Yiisoft\Db\Query\Query;

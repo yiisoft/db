@@ -3,8 +3,6 @@
 Para criar um comando, você pode usar o método `Yiisoft\Db\Connection\ConnectionInterface::createCommand()`:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -32,8 +30,6 @@ Ele retorna um array vazio se a consulta não retornar nada.
 Por exemplo, o código a seguir busca todas as linhas da tabela `customer`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -80,8 +76,6 @@ Ele retorna `null` se a consulta não retornar nada.
 Por exemplo, o código a seguir busca a primeira linha da tabela `customer`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -109,8 +103,6 @@ Ele retorna um array vazio se a consulta não retornar nada.
 Por exemplo, o código a seguir busca os valores da primeira coluna da tabela `customer`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -136,8 +128,6 @@ Ele retorna `false` se não houver valor.
 Por exemplo, o código a seguir busca o valor da primeira coluna da primeira linha da tabela `customer`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -158,8 +148,6 @@ Retorna um objeto `Yiisoft\Db\DataReader\DataReaderInterface` para percorrer as 
 Por exemplo, o código a seguir busca todas as linhas da tabela `customer`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */

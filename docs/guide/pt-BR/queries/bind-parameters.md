@@ -18,8 +18,6 @@ Você pode usar `bindValue()` para vincular um valor a um parâmetro.
 Por exemplo, o código a seguir vincula o valor `42` ao espaço reservado nomeado `:id`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -49,8 +47,6 @@ O resultado é:
 Por exemplo, o código a seguir vincula os valores `3` e `user3` aos espaços reservados nomeados `:id` e `:name`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -82,8 +78,6 @@ Por exemplo, o código a seguir vincula o valor `2` e `user2` aos espaços reser
 então altera o valor:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */

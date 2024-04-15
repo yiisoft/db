@@ -4,8 +4,6 @@ To configure [Yii DB Oracle](https://github.com/yiisoft/db-oracle) with [DI cont
 you need to create `config/common/di/db-oracle.php` configuration file.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Oracle\Connection;
 use Yiisoft\Db\Oracle\Driver;
@@ -29,8 +27,6 @@ return [
 Create a file `config/common/params.php` for `common` parameters.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Oracle\Dsn;
 
 return [
@@ -45,8 +41,6 @@ return [
 To configure without [DI container](https://github.com/yiisoft/di), you need to follow these steps:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Oracle\Connection;

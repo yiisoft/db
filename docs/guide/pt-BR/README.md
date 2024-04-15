@@ -73,7 +73,7 @@ Você pode criar uma instância de conexão de banco de dados usando um [contêi
 - [Servidor PostgreSQL](connection/pgsql.md)
 - [Servidor SQLite](connection/sqlite.md)
 
-> Nota: Quando você cria uma instância de conexão de banco de dados, a conexão real com o banco de dados não é estabelecida até
+> Info: Quando você cria uma instância de conexão de banco de dados, a conexão real com o banco de dados não é estabelecida até
 > você executar o primeiro SQL ou chamar o método `Yiisoft\Db\Connection\ConnectionInterface::open()` explicitamente.
 
 ### Logger e profiler (criador de perfil)
@@ -108,8 +108,6 @@ O Yii DB converterá automaticamente tais construções nas colunas ou nomes de 
 Por exemplo, o código a seguir gerará uma instrução SQL válida para todos os bancos de dados suportados:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */

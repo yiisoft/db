@@ -8,8 +8,6 @@ via schema objects.
 To get schemas for all tables available, you can use the following code:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -22,8 +20,6 @@ foreach ($schemas as $schema) {
 If you want to get tables from a certain database schema only:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /**
@@ -44,8 +40,6 @@ foreach ($schemas as $schema) {
 To obtain a schema for a certain table, use the following code:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -55,8 +49,6 @@ $tableSchema = $db->getTableSchema('customer');
 If no table exists, the method returns `null`. So, to check if table exists you can do:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
@@ -71,8 +63,6 @@ if ($db->getTableSchema('customer') === null) {
 Having a table schema, you can get various info about the table:
 
 ```php
-declare(strict_types=1);
-
 use \Yiisoft\Db\Schema\TableSchemaInterface;
 
 /** @var TableSchemaInterface $tableSchema */
@@ -90,8 +80,6 @@ You can retrieve the column metadata for a given table using either the `getColu
 of `TableSchema` class:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */

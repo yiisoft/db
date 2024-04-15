@@ -64,8 +64,6 @@ You may also select sub-queries. You should specify each sub-query in terms of a
 For example, the following code will select count of users in each post.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
 

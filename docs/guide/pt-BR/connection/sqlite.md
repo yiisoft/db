@@ -4,8 +4,6 @@ Para configurar o [Yii DB SQLite](https://github.com/yiisoft/db-sqlite) com
 um [contêiner DI](https://github.com/yiisoft/di), você precisa criar o arquivo de configuração `config/common/di/db-sqlite.php`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Sqlite\Connection;
 use Yiisoft\Db\Sqlite\Driver;
@@ -25,8 +23,6 @@ return [
 Crie um arquivo `config/common/params.php` para parâmetros `common`.
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Db\Sqlite\Dsn;
 
 return [
@@ -39,8 +35,6 @@ return [
 Para configurar sem [contêiner DI](https://github.com/yiisoft/di), você precisa seguir estas etapas:
 
 ```php
-declare(strict_types=1);
-
 use Yiisoft\Cache\ArrayCache;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Sqlite\Connection;
