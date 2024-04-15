@@ -24,6 +24,7 @@ use function array_merge;
 use function array_shift;
 use function array_unshift;
 use function count;
+use function current;
 use function gettype;
 use function is_array;
 use function is_int;
@@ -280,7 +281,7 @@ class Query implements QueryInterface
                 $column = substr($this->indexBy, $dotPos + 1);
             }
 
-            return array_column($rows, key($rows[0]), $column);
+            return array_column($rows, key(current($rows)), $column);
         }
 
         $rows = $this->createCommand()->queryAll();
@@ -289,7 +290,7 @@ class Query implements QueryInterface
             return [];
         }
 
-        return array_combine(array_map($this->indexBy, $rows), array_column($rows, key($rows[0])));
+        return array_combine(array_map($this->indexBy, $rows), array_column($rows, key(current($rows))));
     }
 
     public function count(string $sql = '*'): int|string
