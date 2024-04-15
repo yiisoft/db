@@ -73,6 +73,10 @@ class QueryProvider
                 ['email' => 'email', 'address' => 'address', 'status' => new Expression('1')],
             ],
             [new Expression('1 as Ab'), [new Expression('1 as Ab')]],
+            [1, [1]],
+            [true, [true]],
+            [12.34, [12.34]],
+            [['a' => 1, 'b' => true, 12.34], ['a' => 1, 'b' => true, 12.34]],
         ];
     }
 }

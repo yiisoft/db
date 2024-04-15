@@ -11,6 +11,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Query\QueryPartsInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -20,6 +21,7 @@ use Yiisoft\Db\Query\QueryInterface;
  * @link https://en.wikipedia.org/wiki/Data_query_language
  *
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type SelectValue from QueryPartsInterface
  */
 interface DQLQueryBuilderInterface
 {
@@ -224,6 +226,7 @@ interface DQLQueryBuilderInterface
      *
      * @return string The `SELECT` clause built from {@see \Yiisoft\Db\Query\Query::select()}.
      *
+     * @psalm-param SelectValue $columns
      * @psalm-param ParamsType $params
      */
     public function buildSelect(
