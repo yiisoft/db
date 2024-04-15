@@ -2,6 +2,7 @@
 
 ## 2.0.0 under development
 
+- Enh #815: Refactor `Query::column()` method (@Tigrov) 
 - Enh #816: Allow scalar values for `$columns` parameter of `Query::select()` and `Query::addSelect()` methods (@Tigrov)
 - Enh #806: Non-unique placeholder names inside `Expression::$params` will be replaced with unique names (@Tigrov)
 - Enh #806: Build `Expression` instances inside `Expression::$params` when build a query using `QueryBuilder` (@Tigrov)

@@ -169,6 +169,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     /**
      * @return Closure|string|null The "index by" value.
+     *
+     * @psalm-return Closure(array):array-key|string|null
      */
     public function getIndexBy(): Closure|string|null;
 

@@ -757,6 +757,22 @@ abstract class AbstractQueryTest extends TestCase
             2 => 'user2',
             3 => 'user3',
         ], $query->column());
+
+        $query = (new Query($db))
+            ->select('name')
+            ->from('customer')
+            ->indexBy('id')
+            ->where(['id' => null]);
+
+        $this->assertSame([], $query->column());
+
+        $query = (new Query($db))
+            ->select(['name', 'id'])
+            ->from('customer')
+            ->indexBy(fn (array $row) => $row['id'] * 2)
+            ->where(['id' => null]);
+
+        $this->assertSame([], $query->column());
     }
 
     /**
