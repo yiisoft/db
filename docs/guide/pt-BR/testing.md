@@ -62,7 +62,7 @@ Suítes disponíveis:
 
 - MSSQL
 - Mysql
-- Oráculo
+- Oracle
 - Pgsql
 - Sqlite
 
