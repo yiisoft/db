@@ -20,7 +20,6 @@ use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
-use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
@@ -227,7 +226,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     protected function internalGetQueryResult(int $queryMode): mixed
     {
         if ($queryMode === self::QUERY_MODE_CURSOR) {
-            return new DataReader($this);
+            return new PdoDataReader($this);
         }
 
         if ($queryMode === self::QUERY_MODE_EXECUTE) {

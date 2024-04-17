@@ -2,15 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Query\Data;
+namespace Yiisoft\Db\Driver\Pdo;
 
+use Closure;
 use Countable;
 use Iterator;
 use PDO;
 use PDOStatement;
-use Yiisoft\Db\Driver\Pdo\PdoCommandInterface;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidParamException;
+use Yiisoft\Db\Query\DataReaderInterface;
+use Yiisoft\Db\Query\QueryPartsInterface;
+use function is_string;
 
 /**
  * Provides an abstract way to read data from a database.
@@ -21,11 +24,15 @@ use Yiisoft\Db\Exception\InvalidParamException;
  * to execute a SELECT statement and read the results.
  *
  * The class provides methods for accessing the data returned by the query.
+ *
+ * @psalm-import-type IndexBy from QueryPartsInterface
  */
-final class DataReader implements DataReaderInterface
+final class PdoDataReader implements DataReaderInterface
 {
-    private int $index = -1;
-    private mixed $row;
+    /** @psalm-var IndexBy $indexBy */
+    private Closure|string|null $indexBy = null;
+    private int $index = 0;
+    private array|false $row;
     private PDOStatement $statement;
 
     /**
@@ -40,6 +47,13 @@ final class DataReader implements DataReaderInterface
         }
 
         $this->statement = $statement;
+        /** @var array|false */
+        $this->row = $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function __destruct()
+    {
+        $this->statement->closeCursor();
     }
 
     /**
@@ -64,30 +78,31 @@ final class DataReader implements DataReaderInterface
      */
     public function rewind(): void
     {
-        if ($this->index < 0) {
-            $this->row = $this->statement->fetch(PDO::FETCH_ASSOC);
-            $this->index = 0;
-        } else {
-            throw new InvalidCallException('DataReader cannot rewind. It is a forward-only reader.');
+        if ($this->index === 0) {
+            return;
         }
+
+        throw new InvalidCallException('DataReader cannot rewind. It is a forward-only reader.');
     }
 
-    /**
-     * Returns the index of the current row.
-     *
-     * This method is required by the interface {@see Iterator}.
-     */
-    public function key(): int
+    public function key(): int|string|null
     {
-        return $this->index;
+        if ($this->indexBy === null) {
+            return $this->index;
+        }
+
+        if ($this->row === false) {
+            return null;
+        }
+
+        if (is_string($this->indexBy)) {
+            return (string) $this->row[$this->indexBy];
+        }
+
+        return ($this->indexBy)($this->row);
     }
 
-    /**
-     * Returns the current row.
-     *
-     * This method is required by the interface {@see Iterator}.
-     */
-    public function current(): mixed
+    public function current(): array|false
     {
         return $this->row;
     }
@@ -99,6 +114,7 @@ final class DataReader implements DataReaderInterface
      */
     public function next(): void
     {
+        /** @var array|false */
         $this->row = $this->statement->fetch(PDO::FETCH_ASSOC);
         $this->index++;
     }
@@ -111,5 +127,11 @@ final class DataReader implements DataReaderInterface
     public function valid(): bool
     {
         return $this->row !== false;
+    }
+
+    public function indexBy(Closure|string|null $indexBy): static
+    {
+        $this->indexBy = $indexBy;
+        return $this;
     }
 }

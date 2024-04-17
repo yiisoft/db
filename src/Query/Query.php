@@ -15,7 +15,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-
 use function array_column;
 use function array_combine;
 use function array_key_exists;
@@ -72,6 +71,7 @@ use function trim;
  * Query internally uses the {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} class to generate the SQL statement.
  *
  * @psalm-import-type SelectValue from QueryPartsInterface
+ * @psalm-import-type IndexBy from QueryPartsInterface
  */
 class Query implements QueryInterface
 {
@@ -87,7 +87,7 @@ class Query implements QueryInterface
     protected array $params = [];
     protected array $union = [];
     protected array $withQueries = [];
-    /** @psalm-var Closure(array):array-key|string|null $indexBy */
+    /** @psalm-var IndexBy $indexBy */
     protected Closure|string|null $indexBy = null;
     protected ExpressionInterface|int|null $limit = null;
     protected ExpressionInterface|int|null $offset = null;
@@ -318,13 +318,9 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function each(int $batchSize = 100): BatchQueryResultInterface
+    public function each(): DataReaderInterface
     {
-        return $this->db
-            ->createBatchQueryResult($this, true)
-            ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::populate($rows, $indexBy))
-        ;
+        return $this->createCommand()->query()->indexBy($this->indexBy);
     }
 
     public function exists(): bool
