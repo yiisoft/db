@@ -42,18 +42,26 @@ similar to the way you would use ORM (Object-Relational Mapping) frameworks like
 [![static analysis](https://github.com/yiisoft/db/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db/actions/workflows/static.yml)
 [![type-coverage](https://shepherd.dev/github/yiisoft/db/coverage.svg)](https://shepherd.dev/github/yiisoft/db)
 
-## Usage
+## Requirements
 
-[Check the documentation](/docs/guide/en/README.md) to learn about usage.
+- PHP 8.0 or higher.
+
+## Documentation
+
+- [English](docs/guide/en/README.md)
+- [Portuguese - Brazil](docs/guide/pt-BR/README.md)
+
+Testing:
+
+- [English](docs/guide/en/testing.md)
+- [Portuguese - Brazil](docs/guide/pt-BR/testing.md)
+
+- More information can be found in the [Internals.](docs/internals.md)
 
 ## Support
 
-If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/db/68) is a good place for that.
+If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is a good place for that.
 You may also check out other [Yii Community Resources](https://www.yiiframework.com/community).
-
-## Testing
-
-[Check the testing instructions](/docs/guide/en/testing.md) to learn about testing.
 
 ## Support the project
 
@@ -69,7 +77,7 @@ You may also check out other [Yii Community Resources](https://www.yiiframework.
 
 ## License
 
-The Yii DataBase Library is free software. It's released under the terms of the BSD License.
+The Yii Access is free software. It is released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).
