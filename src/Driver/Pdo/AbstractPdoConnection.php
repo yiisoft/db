@@ -26,6 +26,7 @@ use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function array_keys;
 use function is_string;
+use function method_exists;
 
 /**
  * Represents a connection to a database using the PDO (PHP Data Objects) extension.
@@ -104,13 +105,13 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         $connectionContext = new ConnectionContext(__METHOD__);
 
         try {
-            $this->logger?->log(LogLevel::INFO, $token);
+            $this->logger?->log(LogLevel::INFO, $token, ['type' => LogType::CONNECTION]);
             $this->profiler?->begin($token, $connectionContext);
             $this->initConnection();
             $this->profiler?->end($token, $connectionContext);
         } catch (PDOException $e) {
             $this->profiler?->end($token, $connectionContext->setException($e));
-            $this->logger?->log(LogLevel::ERROR, $token);
+            $this->logger?->log(LogLevel::ERROR, $token, ['type' => LogType::CONNECTION]);
 
             throw new Exception($e->getMessage(), (array) $e->errorInfo, $e);
         }
@@ -122,6 +123,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
             $this->logger?->log(
                 LogLevel::DEBUG,
                 'Closing DB connection: ' . $this->driver->getDsn() . ' ' . __METHOD__,
+                ['type' => LogType::CONNECTION],
             );
 
             $this->pdo = null;
@@ -200,6 +202,14 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         $this->emulatePrepare = $value;
     }
 
+    public function setTablePrefix(string $value): void
+    {
+        parent::setTablePrefix($value);
+        if ($this->quoter !== null && method_exists($this->quoter, 'setTablePrefix')) {
+            $this->quoter->setTablePrefix($value);
+        }
+    }
+
     /**
      * Initializes the DB connection.
      *
@@ -228,7 +238,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
             try {
                 $transaction->rollBack();
             } catch (Throwable $e) {
-                $this->logger?->log(LogLevel::ERROR, (string) $e, [__METHOD__]);
+                $this->logger?->log(LogLevel::ERROR, (string) $e, [__METHOD__, 'type' => LogType::TRANSACTION]);
                 /** hide this exception to be able to continue throwing original exception outside */
             }
         }

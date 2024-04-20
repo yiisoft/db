@@ -159,7 +159,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         string $indexType = null,
         string $indexMethod = null
     ): string {
-        return 'CREATE ' . ($indexType ? ($indexType . ' ') : '') . 'INDEX '
+        return 'CREATE ' . (!empty($indexType) ? $indexType . ' ' : '') . 'INDEX '
             . $this->quoter->quoteTableName($name)
             . ' ON ' . $this->quoter->quoteTableName($table)
             . ' (' . $this->queryBuilder->buildColumns($columns) . ')';
@@ -169,15 +169,14 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     {
         $cols = [];
 
-        /** @psalm-var string[] $columns */
-        foreach ($columns as $name => $column) {
+        foreach ($columns as $name => $type) {
             if (is_string($name)) {
                 $cols[] = "\t"
                     . $this->quoter->quoteColumnName($name)
                     . ' '
-                    . $this->queryBuilder->buildColumnDefinition($column);
+                    . $this->queryBuilder->buildColumnDefinition($type);
             } else {
-                $cols[] = "\t" . $column;
+                $cols[] = "\t" . $type;
             }
         }
 

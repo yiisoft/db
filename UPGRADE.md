@@ -1,14 +1,37 @@
 # Upgrading Instructions for Yii Database
 
-This file contains the upgrade notes for the Yii Database.
-These notes highlight changes that could break your application when you upgrade it from one version to another.
-Even though we try to ensure backwards compatibility (BC) as much as possible, sometimes
-it isn't possible or very complicated to avoid it and still create a good solution to
-a problem. While upgrade to Yii 3.0 might require substantial changes to both your application and extensions,
-the changes are bearable and require "refactoring", not "rewrite".
-All the "Yes, it is" cool stuff, and Yii soul is still in place.
+The following upgrading instructions are cumulative. That is, if you want to upgrade from version A to version C and 
+there is version B between A and C, you need to following the instructions for both A and B.
 
-Changes summary:
+## Upgrade from 1.x to 2.x
 
-* `Yiisoft\Db\Connection::$charset` has been removed. All supported PDO classes allow you to specify the connection
-  charset in the DSN.
+### `ColumnInterface` as column type
+
+Add `ColumnInterface` support and change type of parameter `$type` from `string` to `ColumnInterface|string` 
+in `addColumn()` method of your classes that implement the following interfaces:
+
+- `Yiisoft\Db\Command\CommandInterface`;
+- `Yiisoft\Db\QueryBuilder\DDLQueryBuilderInterface`;
+
+… or inherit from the following classes:
+
+- `Yiisoft\Db\Command\AbstractCommand`;
+- `Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder`;
+- `Yiisoft\Db\QueryBuilder\AbstractQueryBuilder`.
+
+### Scalar values for columns in `Query`
+
+Change `$columns` parameter type from `array|string|ExpressionInterface` to `array|bool|float|int|string|ExpressionInterface`
+in methods `select()` and `addSelect()` of your classes that implement `Yiisoft\Db\Query\QueryPartsInterface`.
+
+Add support any scalar values for `$columns` parameter of these methods in your classes that implement
+`Yiisoft\Db\Query\QueryPartsInterface` or inherit `Yiisoft\Db\Query\Query`.
+
+### Build `Expression` instances inside `Expression::$params`
+
+`ExpressionBuilder` is replaced by an abstract class `AbstractExpressionBuilder` with an instance of the 
+`QueryBuilderInterface` parameter in the constructor. Each DBMS driver should implement its own expression builder.
+
+`Expression::$params` can contain:
+- non-unique placeholder names, they will be replaced with unique names.
+- `Expression` instances, they will be built when building a query using `QueryBuilder`.

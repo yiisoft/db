@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
@@ -13,6 +14,9 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * query, such as the {@see addGroupBy()}, {@see addSelect()}, {@see addOrderBy()}, {@see andFilterCompare()}, etc.
  *
  * {@see Query} uses these methods to build and manipulate SQL statements.
+ *
+ * @psalm-type SelectValue = array<array-key, ExpressionInterface|scalar>
+ * @psalm-import-type ParamsType from ConnectionInterface
  */
 interface QueryPartsInterface
 {
@@ -61,11 +65,15 @@ interface QueryPartsInterface
      * $query->addSelect(["*", "CONCAT(first_name, ' ', last_name) AS full_name"])->one();
      * ```
      *
-     * @param array|ExpressionInterface|string $columns The columns to add to the select.
+     * @param array|ExpressionInterface|scalar $columns The columns to add to the select.
      *
-     * {@see select()} for more details about the format of this parameter.
+     * @see select() for more details about the format of this parameter.
+     *
+     * @since 2.0.0 `$columns` can be a scalar value or an array of scalar values.
+     *
+     * @psalm-param SelectValue|scalar|ExpressionInterface $columns
      */
-    public function addSelect(array|string|ExpressionInterface $columns): static;
+    public function addSelect(array|bool|float|int|string|ExpressionInterface $columns): static;
 
     /**
      * Adds a filtering condition for a specific column and allow the user to choose a filter operator.
@@ -126,6 +134,8 @@ interface QueryPartsInterface
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
      *
+     * @psalm-param ParamsType $params
+     *
      * @see having()
      * @see orHaving()
      */
@@ -159,6 +169,8 @@ interface QueryPartsInterface
      * @param array|ExpressionInterface|string $condition The new `WHERE` condition.
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
+     *
+     * @psalm-param ParamsType $params
      *
      * @see where()
      * @see orWhere()
@@ -293,6 +305,8 @@ interface QueryPartsInterface
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
      *
+     * @psalm-param ParamsType $params
+     *
      * @see andHaving()
      * @see orHaving()
      */
@@ -312,6 +326,8 @@ interface QueryPartsInterface
      *     // return the index value corresponding to $row
      * }
      * ```
+     *
+     * @psalm-param Closure(array):array-key|string|null $column
      */
     public function indexBy(string|Closure|null $column): static;
 
@@ -329,6 +345,8 @@ interface QueryPartsInterface
      * @param array|string $on The join condition that should appear in the ON part. Please refer to {@see join()} on
      * how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
      */
     public function innerJoin(array|string $table, array|string $on = '', array $params = []): static;
 
@@ -357,6 +375,8 @@ interface QueryPartsInterface
      * 'post.author_id = user.id'
      * ```
      * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
      */
     public function join(string $type, array|string $table, array|string $on = '', array $params = []): static;
 
@@ -374,6 +394,8 @@ interface QueryPartsInterface
      * @param array|string $on The join condition that should appear in the ON part. Please refer to {@see join()} on
      * how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
      */
     public function leftJoin(array|string $table, array|string $on = '', array $params = []): static;
 
@@ -454,6 +476,8 @@ interface QueryPartsInterface
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
      *
+     * @psalm-param ParamsType $params
+     *
      * @see having()
      * @see andHaving()
      */
@@ -467,6 +491,8 @@ interface QueryPartsInterface
      * @param array|ExpressionInterface|string $condition The new `WHERE` condition.
      * Please refer to {@see where()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
      *
      * @see where()
      * @see andWhere()
@@ -487,13 +513,15 @@ interface QueryPartsInterface
      * @param array|string $on The join condition that should appear in the ON part.
      * Please refer to {@see join()} on how to specify this parameter.
      * @param array $params The parameters (name => value) to be bound to the query.
+     *
+     * @psalm-param ParamsType $params
      */
     public function rightJoin(array|string $table, array|string $on = '', array $params = []): static;
 
     /**
      * Sets the `SELECT` part of the query.
      *
-     * @param array|ExpressionInterface|string $columns The columns to be selected.
+     * @param array|ExpressionInterface|scalar $columns The columns to be selected.
      * Columns can be specified in either a string (for example `id, name`) or an array (such as `['id', 'name']`).
      * Columns can be prefixed with table names (such as `user.id`) and/or contain column aliases
      * (for example `user.id AS user_id`).
@@ -506,8 +534,13 @@ interface QueryPartsInterface
      * doesn't need alias, don't use a string key).
      * @param string|null $option More option that should be appended to the 'SELECT' keyword. For example, in MySQL,
      * the option 'SQL_CALC_FOUND_ROWS' can be used.
+     *
+     * @since 2.0.0 `$columns` can be a scalar value or an array of scalar values.
+     * For example, `$query->select(1)` will be converted to `SELECT 1`.
+     *
+     * @psalm-param SelectValue|scalar|ExpressionInterface $columns
      */
-    public function select(array|string|ExpressionInterface $columns, string $option = null): static;
+    public function select(array|bool|float|int|string|ExpressionInterface $columns, string $option = null): static;
 
     /**
      * It allows you to specify more options for the `SELECT` clause of an SQL statement.
@@ -635,6 +668,8 @@ interface QueryPartsInterface
      *
      * @param array|ExpressionInterface|string|null $condition The conditions to put in the `WHERE` part.
      * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
      *
      * @see andWhere()
      * @see orWhere()

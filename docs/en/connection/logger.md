@@ -61,3 +61,30 @@ return [
 ```
 
 For other DBMS refer to ["Create connecton"](/docs/en/README.md#create-connection) section.
+
+## Advanced usage of Logger
+
+If you need to redefine logger messages or increase/decrease logging level:
+
+1. Create a custom logger class
+2. Use the context to detect type of the message in the "log" method
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Yiisoft\Db\Driver\Pdo\LogType;
+
+class MyLogger extends ParentLoggerClass implements LoggerInterface
+{
+    public function log($level, string|\Stringable $message, array $context = []): void
+    {
+        if ($context['type'] === LogType::QUERY) {
+            ... your logic here
+        }    
+    }
+    
+    // implements other methods of LoggerInterface without changes
+}
+```

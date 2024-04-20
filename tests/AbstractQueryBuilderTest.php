@@ -21,6 +21,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -52,18 +53,19 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    public function testAddColumn(): void
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::columnTypes */
+    public function testAddColumn(ColumnInterface|string $type): void
     {
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->addColumn('table', 'column', SchemaInterface::TYPE_STRING);
+        $sql = $qb->addColumn('table', 'column', $type);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
-                SQL . ' ' . $qb->getColumnType(SchemaInterface::TYPE_STRING),
+                SQL . ' ' . $qb->getColumnType($type),
                 $db->getDriverName(),
             ),
             $sql,
@@ -2089,6 +2091,24 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEmpty($params);
     }
 
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::selectScalar */
+    public function testSelectScalar(array|bool|float|int|string $columns, string $expected): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $query = (new Query($db))->select($columns);
+
+        [$sql, $params] = $qb->build($query);
+
+        if ($db->getDriverName() === 'oci') {
+            $expected .= ' FROM DUAL';
+        }
+
+        $this->assertSame($expected, $sql);
+        $this->assertEmpty($params);
+    }
+
     public function testSetConditionClasses(): void
     {
         $db = $this->getConnection();
@@ -2194,16 +2214,18 @@ abstract class AbstractQueryBuilderTest extends TestCase
         string $table,
         array $columns,
         array|string $condition,
-        string $expectedSQL,
+        array $params,
+        string $expectedSql,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
-        $actualParams = [];
 
-        $this->assertSame($expectedSQL, $qb->update($table, $columns, $condition, $actualParams));
-        $this->assertSame($expectedParams, $actualParams);
+        $sql = $qb->update($table, $columns, $condition, $params);
+        $sql = $qb->quoter()->quoteSql($sql);
+
+        $this->assertSame($expectedSql, $sql);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**
@@ -2274,7 +2296,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     {
         $db = $this->getConnection();
 
-        $params = [':id' => 1, ':pv2' => new Expression('(select type from {{%animal}}) where id=1')];
+        $params = [':id' => 1, ':pv2' => 'test'];
         $expression = new Expression('id = :id AND type = :pv2', $params);
 
         $query = new Query($db);
@@ -2289,7 +2311,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals([':id', ':pv2', ':pv2_0',], array_keys($command->getParams()));
         $this->assertEquals(
             DbHelper::replaceQuotes(
-                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = (select type from {{%animal}}) where id=1) AND ([[type]]=\'test1\')',
+                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]]=\'test1\')',
                 $db->getDriverName()
             ),
             $command->getRawSql()

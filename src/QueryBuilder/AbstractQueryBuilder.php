@@ -54,7 +54,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addCheck($table, $name, $expression);
     }
 
-    public function addColumn(string $table, string $column, string $type): string
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return $this->ddlBuilder->addColumn($table, $column, $type);
     }

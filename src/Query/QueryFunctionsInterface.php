@@ -39,6 +39,8 @@ interface QueryFunctionsInterface
      * @return int|string Number of records. The result may be a string depending on the underlying database engine and
      * to support integer values higher than a 32bit PHP integer can handle.
      *
+     * @psalm-return non-negative-int|string
+     *
      * Note: Make sure you quote column names in the expression.
      */
     public function count(string $sql = '*'): int|string;

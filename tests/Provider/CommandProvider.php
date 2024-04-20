@@ -12,6 +12,7 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
+use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 class CommandProvider
@@ -723,88 +724,47 @@ class CommandProvider
     {
         return [
             [
-                '{{table}}',
+                '{{customer}}',
                 ['name' => '{{test}}'],
                 [],
                 [],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp0
-                    SQL,
-                    static::$driverName,
-                ),
+                ['name' => '{{test}}'],
+                3,
             ],
             [
-                '{{table}}',
+                '{{customer}}',
                 ['name' => '{{test}}'],
                 ['id' => 1],
                 [],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]]=:qp1
-                    SQL,
-                    static::$driverName,
-                ),
-            ],
-            [
-                '{{table}}',
                 ['name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'integer'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
+                1,
             ],
             [
-                '{{table}}',
+                '{{customer}}',
+                ['{{customer}}.name' => '{{test}}'],
+                ['id' => 1],
+                [],
                 ['name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'string'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
+                1,
             ],
             [
-                '{{table}}',
-                ['name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'boolean'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
+                'customer',
+                ['status' => new Expression('1 + 2')],
+                ['id' => 2],
+                [],
+                ['status' => 3],
+                1,
             ],
             [
-                '{{table}}',
-                ['{{table}}.name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'boolean'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
-            ],
-            [
-                '{{table}}',
-                ['name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'float'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
+                '{{customer}}',
+                ['status' => new Expression(
+                    '1 + :val',
+                    ['val' => new Expression('2 + :val', ['val' => 3])]
+                )],
+                '[[name]] != :val',
+                ['val' => new Expression('LOWER(:val)', ['val' => 'USER1'])],
+                ['name' => 'user2', 'status' => 6],
+                2,
             ],
         ];
     }
@@ -919,6 +879,14 @@ class CommandProvider
                     'expected' => ['email' => 'user1@example.com', 'address' => 'address1', 'status' => 1],
                 ],
             ],
+        ];
+    }
+
+    public static function columnTypes(): array
+    {
+        return [
+            [SchemaInterface::TYPE_INTEGER],
+            [new Column('string(100)')],
         ];
     }
 }

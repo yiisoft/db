@@ -211,7 +211,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
                 }
                 break;
             } catch (PDOException $e) {
-                $rawSql = $rawSql ?: $this->getRawSql();
+                $rawSql ??= $this->getRawSql();
                 $e = (new ConvertException($e, $rawSql))->run();
 
                 if ($this->retryHandler === null || !($this->retryHandler)($e, $attempt)) {
@@ -260,7 +260,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      */
     protected function logQuery(string $rawSql, string $category): void
     {
-        $this->logger?->log(LogLevel::INFO, $rawSql, [$category]);
+        $this->logger?->log(LogLevel::INFO, $rawSql, [$category, 'type' => LogType::QUERY]);
     }
 
     protected function queryInternal(int $queryMode): mixed
