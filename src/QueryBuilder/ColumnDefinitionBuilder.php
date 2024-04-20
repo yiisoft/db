@@ -8,7 +8,8 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbStringHelper;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
-use Yiisoft\Db\Schema\QuoterInterface;
+
+use function gettype;
 
 /**
  * Builds column definition from {@see ColumnInterface} object. Column definition is a string that represents
@@ -34,7 +35,6 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
 
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
-        protected QuoterInterface $quoter,
     ) {
     }
 
@@ -162,6 +162,7 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
             'float' => DbStringHelper::normalizeFloat((string) $value),
             'bool' => $value ? 'TRUE' : 'FALSE',
             default => $this->quoter->quoteValue((string) $value),
+            default => $this->queryBuilder->quoter()->quoteValue((string) $value),
         };
     }
 
@@ -230,10 +231,12 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
             return null;
         }
 
+        $quoter = $this->queryBuilder->quoter();
+
         if (null !== $schema = $reference->getForeignSchemaName()) {
-            $sql = $this->quoter->quoteTableName($schema) . '.' . $this->quoter->quoteTableName($table);
+            $sql = $quoter->quoteTableName($schema) . '.' . $quoter->quoteTableName($table);
         } else {
-            $sql = $this->quoter->quoteTableName($table);
+            $sql = $quoter->quoteTableName($table);
         }
 
         $columns = $reference->getForeignColumnNames();
