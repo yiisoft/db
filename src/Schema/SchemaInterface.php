@@ -275,12 +275,10 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const PHP_TYPE_NULL = 'NULL';
 
     /**
-     * @psalm-param string[]|int[]|int|string|null $length
+     * Returns the column schema factory for the database.
      *
-     * @deprecated Use {@see getColumnFactory()} or {@see ColumnBuilder}. Will be removed in version 3.0.0.
+     * @return ColumnFactoryInterface The column schema factory for the database.
      */
-    public function createColumn(string $type, array|int|string $length = null): ColumnInterface;
-
     public function getColumnFactory(): ColumnFactoryInterface;
 
     /**

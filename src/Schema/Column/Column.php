@@ -9,6 +9,8 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 use function array_key_exists;
+use function preg_match;
+use function str_replace;
 
 /**
  * Represents the metadata of a column in a database table.
@@ -72,6 +74,12 @@ abstract class Column implements ColumnInterface
         return $this;
     }
 
+    public function check(string|ExpressionInterface|null $value): static
+    {
+        $this->check = $value;
+        return $this;
+    }
+
     public function comment(string $value = null): static
     {
         $this->comment = $value;
@@ -105,6 +113,11 @@ abstract class Column implements ColumnInterface
     {
         $this->extra = $value;
         return $this;
+    }
+
+    public function getCheck(): string|ExpressionInterface|null
+    {
+        return $this->check;
     }
 
     public function getComment(): string|null
@@ -145,6 +158,11 @@ abstract class Column implements ColumnInterface
         return $this->phpType;
     }
 
+    public function getReference(): ForeignKeyConstraint|null
+    {
+        return $this->reference;
+    }
+
     public function getScale(): int|null
     {
         return $this->scale;
@@ -183,6 +201,11 @@ abstract class Column implements ColumnInterface
     public function isPrimaryKey(): bool
     {
         return $this->primaryKey;
+    }
+
+    public function isUnique(): bool
+    {
+        return $this->unique;
     }
 
     public function isUnsigned(): bool
@@ -249,6 +272,12 @@ abstract class Column implements ColumnInterface
         return $this;
     }
 
+    public function reference(?ForeignKeyConstraint $value): static
+    {
+        $this->reference = $value;
+        return $this;
+    }
+
     public function scale(int $value = null): static
     {
         $this->scale = $value;
@@ -264,6 +293,12 @@ abstract class Column implements ColumnInterface
     public function type(string $value = null): static
     {
         $this->type = $value;
+        return $this;
+    }
+
+    public function unique(bool $value = true): static
+    {
+        $this->unique = $value;
         return $this;
     }
 

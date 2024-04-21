@@ -59,7 +59,7 @@ interface ColumnInterface
      */
     public function autoIncrement(bool $value = true): static;
 
-    public function check(string|ExpressionInterface|null $value = null): static;
+    public function check(string|ExpressionInterface|null $value): static;
 
     /**
      * The comment for a column in a database table.
@@ -72,7 +72,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function comment(string|null $value = null): static;
+    public function comment(string|null $value): static;
 
     /**
      * A computed column is a virtual column that computes its values from an expression.
@@ -100,7 +100,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function dbType(string|null $value = null): static;
+    public function dbType(string|null $value): static;
 
     /**
      * Convert a value from its PHP representation to a database-specific representation.
@@ -123,7 +123,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function defaultValue(mixed $value = null): static;
+    public function defaultValue(mixed $value): static;
 
     /**
      * Extra SQL to append to the generated SQL for a column.
@@ -137,7 +137,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function extra(string|null $value = null): static;
+    public function extra(string|null $value): static;
 
     public function getCheck(): string|ExpressionInterface|null;
 
@@ -241,12 +241,17 @@ interface ColumnInterface
     public function isComputed(): bool;
 
     /**
-     * Whether this column is a primary key.
+     * Whether this column is a part of primary key.
      *
      * @see primaryKey()
      */
     public function isPrimaryKey(): bool;
 
+    /**
+     * Whether this column has a unique index.
+     *
+     * @see unique()
+     */
     public function isUnique(): bool;
 
     /**
@@ -258,6 +263,8 @@ interface ColumnInterface
     public function isUnsigned(): bool;
 
     /**
+     * Loads the column's schema information from an array.
+     *
      * @psalm-param ColumnInfo $info
      */
     public function load(array $info): static;
@@ -286,7 +293,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function phpType(string|null $value = null): static;
+    public function phpType(string|null $value): static;
 
     /**
      * Converts the input value according to {@see phpType} after retrieval from the database.
@@ -306,7 +313,20 @@ interface ColumnInterface
      */
     public function primaryKey(bool $value = true): static;
 
-    public function reference(ForeignKeyConstraint|null $value = null): static;
+    /**
+     * The reference to the foreign key constraint.
+     *
+     * ```php
+     * $reference = new ForeignKeyConstraint();
+     * $reference->foreignTableName('user');
+     * $reference->foreignColumnNames(['id']);
+     *
+     * $columns = [
+     *     'id' => $this->reference($reference),
+     * ];
+     * ```
+     */
+    public function reference(ForeignKeyConstraint|null $value): static;
 
     /**
      * The scale is the number of digits to the right of the decimal point and is only meaningful when {@see type} is
@@ -318,7 +338,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function scale(int|null $value = null): static;
+    public function scale(int|null $value): static;
 
     /**
      * The size refers to the number of characters or digits allowed in a column of a database table. The size is
@@ -331,7 +351,7 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function size(int|null $value = null): static;
+    public function size(int|null $value): static;
 
     /**
      * The database type of the column.
@@ -341,8 +361,11 @@ interface ColumnInterface
      *     'description' => $this->text()->type('text'),
      * ];
      */
-    public function type(string|null $value = null): static;
+    public function type(string|null $value): static;
 
+    /**
+     * Whether the column has a unique index.
+     */
     public function unique(bool $value = true): static;
 
     /**
