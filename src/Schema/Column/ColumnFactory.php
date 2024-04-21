@@ -159,7 +159,6 @@ class ColumnFactory implements ColumnFactoryInterface
         return match ($type) {
             // abstract type => php type
             SchemaInterface::TYPE_BOOLEAN => SchemaInterface::PHP_TYPE_BOOLEAN,
-            SchemaInterface::TYPE_BIT => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_TINYINT => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_SMALLINT => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_INTEGER => SchemaInterface::PHP_TYPE_INTEGER,
@@ -169,8 +168,6 @@ class ColumnFactory implements ColumnFactoryInterface
             SchemaInterface::TYPE_DOUBLE => SchemaInterface::PHP_TYPE_DOUBLE,
             SchemaInterface::TYPE_BINARY => SchemaInterface::PHP_TYPE_RESOURCE,
             SchemaInterface::TYPE_JSON => SchemaInterface::PHP_TYPE_ARRAY,
-            SchemaInterface::TYPE_ARRAY => SchemaInterface::PHP_TYPE_ARRAY,
-            SchemaInterface::TYPE_COMPOSITE => SchemaInterface::PHP_TYPE_ARRAY,
             default => SchemaInterface::PHP_TYPE_STRING,
         };
     }

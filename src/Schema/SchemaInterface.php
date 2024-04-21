@@ -181,10 +181,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const TYPE_BOOLEAN = 'boolean';
     /**
-     * Define the abstract column type as `bit`.
-     */
-    public const TYPE_BIT = 'bit';
-    /**
      * Define the abstract column type as `tinyint`.
      */
     public const TYPE_TINYINT = 'tinyint';
@@ -236,15 +232,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * Define the abstract column type as `json`.
      */
     public const TYPE_JSON = 'json';
-    /**
-     * Define the abstract column type as `array`.
-     */
-    public const TYPE_ARRAY = 'array';
-    /**
-     * Define the abstract column type as `composite`.
-     */
-    public const TYPE_COMPOSITE = 'composite';
-
     /**
      * Define the php type as `integer` for cast to php value.
      */

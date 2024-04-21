@@ -94,13 +94,6 @@ class ColumnBuilder implements ColumnBuilderInterface
             ->fromType(SchemaInterface::TYPE_BOOLEAN);
     }
 
-    public static function bit(int|null $size = 255): ColumnInterface
-    {
-        return static::columnFactory()
-            ->fromType(SchemaInterface::TYPE_BIT)
-            ->size($size);
-    }
-
     public static function tinyint(int|null $size = null): ColumnInterface
     {
         return static::columnFactory()

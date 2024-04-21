@@ -32,8 +32,6 @@ interface ColumnBuilderInterface
 
     public static function boolean(): ColumnInterface;
 
-    public static function bit(int|null $size = 255): ColumnInterface;
-
     public static function tinyint(int|null $size = null): ColumnInterface;
 
     public static function smallint(int|null $size = null): ColumnInterface;
