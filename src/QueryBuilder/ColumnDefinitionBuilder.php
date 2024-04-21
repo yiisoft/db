@@ -6,7 +6,6 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Helper\DbStringHelper;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function gettype;
@@ -157,11 +156,9 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
         }
 
         /** @var string */
-        return match (get_debug_type($value)) {
-            'int' => (string) $value,
-            'float' => DbStringHelper::normalizeFloat((string) $value),
-            'bool' => $value ? 'TRUE' : 'FALSE',
-            default => $this->quoter->quoteValue((string) $value),
+        return match (gettype($value)) {
+            'integer', 'double' => (string) $value,
+            'boolean' => $value ? 'TRUE' : 'FALSE',
             default => $this->queryBuilder->quoter()->quoteValue((string) $value),
         };
     }

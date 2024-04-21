@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
-use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
-
-use function is_int;
 
 class IntegerColumn extends Column
 {
@@ -21,9 +18,12 @@ class IntegerColumn extends Column
 
     public function dbTypecast(mixed $value): int|ExpressionInterface|null
     {
-        return match (true) {
-            is_int($value), $value === null, $value instanceof ExpressionInterface => $value,
-            $value === '' => null,
+        if ($value instanceof ExpressionInterface) {
+            return $value;
+        }
+
+        return match ($value) {
+            null, '' => null,
             default => (int) $value,
         };
     }

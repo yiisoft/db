@@ -18,10 +18,12 @@ class BooleanColumn extends Column
 
     public function dbTypecast(mixed $value): bool|ExpressionInterface|null
     {
-        /** Optimized for performance. Do not merge cases or change order. */
-        return match (true) {
-            $value, $value === false, $value === null, $value instanceof ExpressionInterface => $value,
-            $value === '' => null,
+        if ($value instanceof ExpressionInterface) {
+            return $value;
+        }
+
+        return match ($value) {
+            null, '' => null,
             default => (bool) $value,
         };
     }
