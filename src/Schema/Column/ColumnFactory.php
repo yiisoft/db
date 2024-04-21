@@ -25,35 +25,6 @@ use const PHP_INT_SIZE;
  */
 class ColumnFactory implements ColumnFactoryInterface
 {
-    private const BUILDERS = [
-        'pk', 'upk', 'bigpk', 'ubigpk', 'uuidpk', 'uuidpkseq',
-    ];
-
-    private const TYPES = [
-        SchemaInterface::TYPE_UUID,
-        SchemaInterface::TYPE_CHAR,
-        SchemaInterface::TYPE_STRING,
-        SchemaInterface::TYPE_TEXT,
-        SchemaInterface::TYPE_BINARY,
-        SchemaInterface::TYPE_BIT,
-        SchemaInterface::TYPE_BOOLEAN,
-        SchemaInterface::TYPE_TINYINT,
-        SchemaInterface::TYPE_SMALLINT,
-        SchemaInterface::TYPE_INTEGER,
-        SchemaInterface::TYPE_BIGINT,
-        SchemaInterface::TYPE_FLOAT,
-        SchemaInterface::TYPE_DOUBLE,
-        SchemaInterface::TYPE_DECIMAL,
-        SchemaInterface::TYPE_MONEY,
-        SchemaInterface::TYPE_DATETIME,
-        SchemaInterface::TYPE_TIMESTAMP,
-        SchemaInterface::TYPE_TIME,
-        SchemaInterface::TYPE_DATE,
-        SchemaInterface::TYPE_JSON,
-        SchemaInterface::TYPE_ARRAY,
-        SchemaInterface::TYPE_COMPOSITE,
-    ];
-
     public function __construct(
         private string $columnBuilderClass = ColumnBuilder::class,
         private array $fromDbType = [],
@@ -110,11 +81,11 @@ class ColumnFactory implements ColumnFactoryInterface
             }
         }
 
-        if (in_array($dbType, self::BUILDERS, true)) {
+        if ($this->isBuilder($dbType)) {
             return $this->columnBuilderClass::$dbType()->load($info);
         }
 
-        if (in_array($dbType, self::TYPES, true)) {
+        if ($this->isType($dbType)) {
             return $this->fromType($dbType, $info);
         }
 
@@ -169,7 +140,7 @@ class ColumnFactory implements ColumnFactoryInterface
      */
     protected function getType(string $dbType): string
     {
-        if (in_array($dbType, self::TYPES, true)) {
+        if ($this->isType($dbType)) {
             return $dbType;
         }
 
@@ -214,6 +185,45 @@ class ColumnFactory implements ColumnFactoryInterface
             SchemaInterface::PHP_TYPE_RESOURCE => SchemaInterface::TYPE_BINARY,
             SchemaInterface::PHP_TYPE_ARRAY => SchemaInterface::TYPE_JSON,
             default => SchemaInterface::TYPE_STRING,
+        };
+    }
+
+    protected function isBuilder(string $dbType): bool
+    {
+        return match ($dbType) {
+            'pk',
+            'upk',
+            'bigpk',
+            'ubigpk',
+            'uuidpk',
+            'uuidpkseq' => true,
+            default => false,
+        };
+    }
+
+    protected function isType(string $dbType): bool
+    {
+        return match ($dbType) {
+            SchemaInterface::TYPE_UUID,
+            SchemaInterface::TYPE_CHAR,
+            SchemaInterface::TYPE_STRING,
+            SchemaInterface::TYPE_TEXT,
+            SchemaInterface::TYPE_BINARY,
+            SchemaInterface::TYPE_BOOLEAN,
+            SchemaInterface::TYPE_TINYINT,
+            SchemaInterface::TYPE_SMALLINT,
+            SchemaInterface::TYPE_INTEGER,
+            SchemaInterface::TYPE_BIGINT,
+            SchemaInterface::TYPE_FLOAT,
+            SchemaInterface::TYPE_DOUBLE,
+            SchemaInterface::TYPE_DECIMAL,
+            SchemaInterface::TYPE_MONEY,
+            SchemaInterface::TYPE_DATETIME,
+            SchemaInterface::TYPE_TIMESTAMP,
+            SchemaInterface::TYPE_TIME,
+            SchemaInterface::TYPE_DATE,
+            SchemaInterface::TYPE_JSON => true,
+            default => false,
         };
     }
 }

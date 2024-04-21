@@ -322,7 +322,7 @@ interface ColumnInterface
      * $reference->foreignColumnNames(['id']);
      *
      * $columns = [
-     *     'id' => $this->reference($reference),
+     *     'user_id' => $this->reference($reference),
      * ];
      * ```
      */
@@ -334,7 +334,7 @@ interface ColumnInterface
      *
      * ```php
      * $columns = [
-     *     'price' => $this->decimal(10, 2)->scale(2),
+     *     'price' => $this->decimal(10, 2),
      * ];
      * ```
      */
