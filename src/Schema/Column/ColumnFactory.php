@@ -6,13 +6,12 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Schema\SchemaInterface;
 
-use function count;
 use function explode;
 use function in_array;
 use function preg_match;
 use function preg_match_all;
 use function str_contains;
-use function str_replace;
+use function str_ireplace;
 use function strlen;
 use function strtolower;
 use function substr;
@@ -56,6 +55,7 @@ class ColumnFactory implements ColumnFactoryInterface
     ];
 
     public function __construct(
+        private string $columnBuilderClass = ColumnBuilder::class,
         private array $fromDbType = [],
         private array $fromType = [],
     ) {
@@ -89,7 +89,7 @@ class ColumnFactory implements ColumnFactoryInterface
                 $values = explode(',', $matches[2]);
                 $info['size'] = (int) $values[0];
 
-                if (count($values) === 2) {
+                if (isset($values[1])) {
                     $info['scale'] = (int) $values[1];
                 }
             }
@@ -97,12 +97,12 @@ class ColumnFactory implements ColumnFactoryInterface
 
         $extra = substr($definition, strlen($matches[0]));
 
-        if (str_contains($extra, 'unsigned')) {
+        if (!empty($extra) && str_contains(strtolower($extra), 'unsigned')) {
             $info['unsigned'] = true;
-            $extra = trim(str_replace('unsigned', '', $extra));
+            $extra = trim(str_ireplace('unsigned', '', $extra));
         }
 
-        if ($extra !== '') {
+        if (!empty($extra)) {
             if (empty($info['extra'])) {
                 $info['extra'] = $extra;
             } else {
@@ -111,7 +111,7 @@ class ColumnFactory implements ColumnFactoryInterface
         }
 
         if (in_array($dbType, self::BUILDERS, true)) {
-            return $this->getBuilderClass()::$dbType()->load($info);
+            return $this->columnBuilderClass::$dbType()->load($info);
         }
 
         if (in_array($dbType, self::TYPES, true)) {
@@ -151,18 +151,13 @@ class ColumnFactory implements ColumnFactoryInterface
         $isUnsigned = !empty($info['unsigned']);
 
         if (
-            $isUnsigned && PHP_INT_SIZE === 4 && $type === SchemaInterface::TYPE_INTEGER
-            || ($isUnsigned || PHP_INT_SIZE !== 8) && $type === SchemaInterface::TYPE_BIGINT
+            PHP_INT_SIZE !== 8 && $isUnsigned && $type === SchemaInterface::TYPE_INTEGER
+            || (PHP_INT_SIZE !== 8 || $isUnsigned) && $type === SchemaInterface::TYPE_BIGINT
         ) {
             return (new BigIntColumn($type, $phpType))->load($info);
         }
 
         return $this->fromPhpType($phpType, $info);
-    }
-
-    public function getBuilderClass(): string
-    {
-        return ColumnBuilder::class;
     }
 
     /**
@@ -225,6 +220,7 @@ class ColumnFactory implements ColumnFactoryInterface
     protected function getDbType(string $type): string
     {
         return match ($type) {
+            SchemaInterface::TYPE_UUID => 'binary',
             SchemaInterface::TYPE_CHAR => 'char',
             SchemaInterface::TYPE_STRING => 'varchar',
             SchemaInterface::TYPE_TEXT => 'text',
@@ -235,15 +231,14 @@ class ColumnFactory implements ColumnFactoryInterface
             SchemaInterface::TYPE_FLOAT => 'float',
             SchemaInterface::TYPE_DOUBLE => 'double',
             SchemaInterface::TYPE_DECIMAL => 'decimal',
+            SchemaInterface::TYPE_MONEY => 'decimal',
             SchemaInterface::TYPE_DATETIME => 'datetime',
             SchemaInterface::TYPE_TIMESTAMP => 'timestamp',
             SchemaInterface::TYPE_TIME => 'time',
             SchemaInterface::TYPE_DATE => 'date',
             SchemaInterface::TYPE_BINARY => 'blob',
             SchemaInterface::TYPE_BOOLEAN => 'bit',
-            SchemaInterface::TYPE_MONEY => 'decimal',
             SchemaInterface::TYPE_JSON => 'jsonb',
-            SchemaInterface::TYPE_UUID => 'binary',
             default => 'varchar',
         };
     }
