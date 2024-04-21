@@ -8,6 +8,8 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
+use Yiisoft\Db\Schema\SchemaInterface;
+
 use function gettype;
 
 /**
@@ -62,6 +64,11 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
 
     protected function buildType(ColumnInterface $column): string
     {
+        if ($column->getDbType() === null) {
+            $column = clone $column;
+            $column->dbType($this->getDbType($column->getType()));
+        }
+
         return (string) $column->getFullDbType();
     }
 
@@ -251,5 +258,31 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
         }
 
         return $sql;
+    }
+
+    protected function getDbType(string $type): string
+    {
+        return match ($type) {
+            SchemaInterface::TYPE_UUID => 'binary',
+            SchemaInterface::TYPE_CHAR => 'char',
+            SchemaInterface::TYPE_STRING => 'varchar',
+            SchemaInterface::TYPE_TEXT => 'text',
+            SchemaInterface::TYPE_BINARY => 'blob',
+            SchemaInterface::TYPE_BOOLEAN => 'bit',
+            SchemaInterface::TYPE_TINYINT => 'tinyint',
+            SchemaInterface::TYPE_SMALLINT => 'smallint',
+            SchemaInterface::TYPE_INTEGER => 'integer',
+            SchemaInterface::TYPE_BIGINT => 'bigint',
+            SchemaInterface::TYPE_FLOAT => 'float',
+            SchemaInterface::TYPE_DOUBLE => 'double',
+            SchemaInterface::TYPE_DECIMAL => 'decimal',
+            SchemaInterface::TYPE_MONEY => 'decimal',
+            SchemaInterface::TYPE_DATETIME => 'datetime',
+            SchemaInterface::TYPE_TIMESTAMP => 'timestamp',
+            SchemaInterface::TYPE_TIME => 'time',
+            SchemaInterface::TYPE_DATE => 'date',
+            SchemaInterface::TYPE_JSON => 'jsonb',
+            default => 'varchar',
+        };
     }
 }

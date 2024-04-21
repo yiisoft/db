@@ -192,7 +192,7 @@ abstract class AbstractTableSchemaTest extends TestCase
     {
         $tableSchema = new TableSchema();
 
-        $this->assertNull($tableSchema->getSchemaName());
+        $this->assertSame('', $tableSchema->getSchemaName());
 
         $tableSchema->schemaName('test');
 

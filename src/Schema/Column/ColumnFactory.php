@@ -216,30 +216,4 @@ class ColumnFactory implements ColumnFactoryInterface
             default => SchemaInterface::TYPE_STRING,
         };
     }
-
-    protected function getDbType(string $type): string
-    {
-        return match ($type) {
-            SchemaInterface::TYPE_UUID => 'binary',
-            SchemaInterface::TYPE_CHAR => 'char',
-            SchemaInterface::TYPE_STRING => 'varchar',
-            SchemaInterface::TYPE_TEXT => 'text',
-            SchemaInterface::TYPE_TINYINT => 'tinyint',
-            SchemaInterface::TYPE_SMALLINT => 'smallint',
-            SchemaInterface::TYPE_INTEGER => 'integer',
-            SchemaInterface::TYPE_BIGINT => 'bigint',
-            SchemaInterface::TYPE_FLOAT => 'float',
-            SchemaInterface::TYPE_DOUBLE => 'double',
-            SchemaInterface::TYPE_DECIMAL => 'decimal',
-            SchemaInterface::TYPE_MONEY => 'decimal',
-            SchemaInterface::TYPE_DATETIME => 'datetime',
-            SchemaInterface::TYPE_TIMESTAMP => 'timestamp',
-            SchemaInterface::TYPE_TIME => 'time',
-            SchemaInterface::TYPE_DATE => 'date',
-            SchemaInterface::TYPE_BINARY => 'blob',
-            SchemaInterface::TYPE_BOOLEAN => 'bit',
-            SchemaInterface::TYPE_JSON => 'jsonb',
-            default => 'varchar',
-        };
-    }
 }

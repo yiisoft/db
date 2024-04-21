@@ -150,7 +150,11 @@ abstract class Column implements ColumnInterface
             return $this->dbType;
         }
 
-        return "$this->dbType($this->size)";
+        if ($this->scale === null) {
+            return "$this->dbType($this->size)";
+        }
+
+        return "$this->dbType($this->size,$this->scale)";
     }
 
     public function getPhpType(): string|null

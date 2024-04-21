@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests\Db\Command;
 
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -231,19 +232,20 @@ final class CommandTest extends AbstractCommandTest
         $command = $db->createCommand();
 
         $expected = <<<SQL
-        CREATE TABLE [test_table] (
-        \t[id] pk,
-        \t[name] string(255) NOT NULL,
-        \t[email] string(255) NOT NULL,
-        \t[address] string(255) NOT NULL,
-        \t[status] integer NOT NULL,
-        \t[profile_id] integer NOT NULL,
-        \t[created_at] timestamp NOT NULL,
-        \t[updated_at] timestamp NOT NULL
-        ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
-        SQL;
+            CREATE TABLE [test_table] (
+            \t[id] integer PRIMARY KEY,
+            \t[name] varchar(255) NOT NULL,
+            \t[email] varchar(255) NOT NULL,
+            \t[address] varchar(255) NOT NULL,
+            \t[status] integer NOT NULL,
+            \t[profile_id] integer NOT NULL,
+            \t[created_at] timestamp NOT NULL,
+            \t[updated_at] timestamp NOT NULL
+            ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
+            SQL;
+
         $columns = [
-            'id' => SchemaInterface::TYPE_PK,
+            'id' => ColumnBuilder::pk(),
             'name' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
             'email' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
             'address' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
