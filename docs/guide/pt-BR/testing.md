@@ -62,7 +62,7 @@ Suítes disponíveis:
 - Pgsql
 - Sqlite
 
-## Documentação
+## Documentation
 
 - [Internals](docs/internals.md)
 
