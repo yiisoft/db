@@ -169,15 +169,15 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     {
         $cols = [];
 
-        /** @psalm-var string[] $columns */
-        foreach ($columns as $name => $column) {
+        foreach ($columns as $name => $type) {
             if (is_string($name)) {
                 $cols[] = "\t"
                     . $this->quoter->quoteColumnName($name)
                     . ' '
-                    . $this->queryBuilder->buildColumnDefinition($column);
+                    . $this->queryBuilder->buildColumnDefinition($type);
             } else {
-                $cols[] = "\t" . $column;
+                /** @psalm-var string $type */
+                $cols[] = "\t" . $type;
             }
         }
 

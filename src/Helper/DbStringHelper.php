@@ -9,6 +9,7 @@ use function is_float;
 use function mb_strrpos;
 use function mb_strtolower;
 use function mb_substr;
+use function preg_match;
 use function preg_replace;
 use function rtrim;
 use function str_replace;
@@ -38,7 +39,7 @@ final class DbStringHelper
      */
     public static function baseName(string $path): string
     {
-        $path = rtrim(str_replace('\\', '/', $path), '/\\');
+        $path = rtrim(str_replace('\\', '/', $path), '/');
         $position = mb_strrpos($path, '/');
 
         if ($position !== false) {
@@ -46,6 +47,20 @@ final class DbStringHelper
         }
 
         return $path;
+    }
+
+    /**
+     * Returns a value indicating whether an SQL statement is for read purpose.
+     *
+     * @param string $sql The SQL statement.
+     *
+     * @return bool Whether an SQL statement is for read purpose.
+     */
+    public static function isReadQuery(string $sql): bool
+    {
+        $pattern = '/^\s*(SELECT|SHOW|DESCRIBE)\b/i';
+
+        return preg_match($pattern, $sql) === 1;
     }
 
     /**

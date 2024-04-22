@@ -30,7 +30,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress  MixedArgument
      */
-    public function addColumn(string $table, string $column, string $type): static
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }

@@ -25,6 +25,7 @@ use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function array_keys;
 use function is_string;
+use function method_exists;
 
 /**
  * Represents a connection to a database using the PDO (PHP Data Objects) extension.
@@ -198,6 +199,14 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
     public function setEmulatePrepare(bool $value): void
     {
         $this->emulatePrepare = $value;
+    }
+
+    public function setTablePrefix(string $value): void
+    {
+        parent::setTablePrefix($value);
+        if ($this->quoter !== null && method_exists($this->quoter, 'setTablePrefix')) {
+            $this->quoter->setTablePrefix($value);
+        }
     }
 
     /**
