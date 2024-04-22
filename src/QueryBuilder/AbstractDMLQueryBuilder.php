@@ -341,9 +341,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         return [$sets, $params];
     }
 
-        return [$uniqueNames, $insertNames, null];
-    }
-
     /**
      * Prepare column names and constraints for "upsert" operation.
      *
