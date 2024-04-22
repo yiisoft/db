@@ -389,5 +389,5 @@ interface ColumnInterface
      * ];
      * ```
      */
-    public function values(array $value = []): static;
+    public function values(array $value): static;
 }

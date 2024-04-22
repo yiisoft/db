@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Schema\Column;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 use function explode;
-use function in_array;
 use function preg_match;
 use function preg_match_all;
 use function str_contains;
@@ -25,6 +24,28 @@ use const PHP_INT_SIZE;
  */
 class ColumnFactory implements ColumnFactoryInterface
 {
+    private const TYPE_MAP = [
+        'uuid' => SchemaInterface::TYPE_UUID,
+        'char' => SchemaInterface::TYPE_CHAR,
+        'varchar' => SchemaInterface::TYPE_STRING,
+        'text' => SchemaInterface::TYPE_TEXT,
+        'binary' => SchemaInterface::TYPE_BINARY,
+        'boolean' => SchemaInterface::TYPE_BOOLEAN,
+        'tinyint' => SchemaInterface::TYPE_TINYINT,
+        'smallint' => SchemaInterface::TYPE_SMALLINT,
+        'integer' => SchemaInterface::TYPE_INTEGER,
+        'bigint' => SchemaInterface::TYPE_BIGINT,
+        'float' => SchemaInterface::TYPE_FLOAT,
+        'double' => SchemaInterface::TYPE_DOUBLE,
+        'decimal' => SchemaInterface::TYPE_DECIMAL,
+        'money' => SchemaInterface::TYPE_MONEY,
+        'datetime' => SchemaInterface::TYPE_DATETIME,
+        'timestamp' => SchemaInterface::TYPE_TIMESTAMP,
+        'time' => SchemaInterface::TYPE_TIME,
+        'date' => SchemaInterface::TYPE_DATE,
+        'json' => SchemaInterface::TYPE_JSON,
+    ];
+
     public function __construct(
         private string $columnBuilderClass = ColumnBuilder::class,
         private array $fromDbType = [],
@@ -35,7 +56,7 @@ class ColumnFactory implements ColumnFactoryInterface
     public function fromDbType(string $dbType, array $info = []): ColumnInterface
     {
         $info['db_type'] = $dbType;
-        $type = $info['type'] ?? $this->getType($dbType);
+        $type = $info['type'] ?? $this->getTypeFromDb($dbType);
 
         if (isset($this->fromDbType[$dbType])) {
             $phpType = $info['php_type'] ?? $this->getPhpType($type);
@@ -81,12 +102,12 @@ class ColumnFactory implements ColumnFactoryInterface
             }
         }
 
-        if ($this->isBuilder($dbType)) {
-            return $this->columnBuilderClass::$dbType()->load($info);
+        if ($this->isDbType($dbType)) {
+            return $this->fromDbType($dbType, $info);
         }
 
-        if ($this->isType($dbType)) {
-            return $this->fromType($dbType, $info);
+        if ($this->isBuilder($dbType)) {
+            return $this->columnBuilderClass::$dbType()->load($info);
         }
 
         return $this->fromDbType($dbType, $info);
@@ -132,22 +153,6 @@ class ColumnFactory implements ColumnFactoryInterface
     }
 
     /**
-     * Get the abstract database type from a database column type.
-     *
-     * @param string $dbType The database column type.
-     *
-     * @return string The abstract database type.
-     */
-    protected function getType(string $dbType): string
-    {
-        if ($this->isType($dbType)) {
-            return $dbType;
-        }
-
-        return SchemaInterface::TYPE_STRING;
-    }
-
-    /**
      * Get the PHP type from an abstract database type.
      *
      * @param string $type The abstract database type.
@@ -172,6 +177,18 @@ class ColumnFactory implements ColumnFactoryInterface
         };
     }
 
+    /**
+     * Get the abstract database type from a database column type.
+     *
+     * @param string $dbType The database column type.
+     *
+     * @return string The abstract database type.
+     */
+    protected function getTypeFromDb(string $dbType): string
+    {
+        return self::TYPE_MAP[$dbType] ?? SchemaInterface::TYPE_STRING;
+    }
+
     protected function getTypeFromPhp(string $phpType): string
     {
         return match ($phpType) {
@@ -194,8 +211,13 @@ class ColumnFactory implements ColumnFactoryInterface
             'ubigpk',
             'uuidpk',
             'uuidpkseq' => true,
-            default => false,
+            default => $this->isType($dbType),
         };
+    }
+
+    protected function isDbType(string $dbType): bool
+    {
+        return isset(self::TYPE_MAP[$dbType]);
     }
 
     protected function isType(string $dbType): bool

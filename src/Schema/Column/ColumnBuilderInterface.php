@@ -28,7 +28,7 @@ interface ColumnBuilderInterface
 
     public static function text(): ColumnInterface;
 
-    public static function binary(int|null $size = 255): ColumnInterface;
+    public static function binary(int|null $size = null): ColumnInterface;
 
     public static function boolean(): ColumnInterface;
 

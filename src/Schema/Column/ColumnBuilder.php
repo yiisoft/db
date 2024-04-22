@@ -11,40 +11,31 @@ class ColumnBuilder implements ColumnBuilderInterface
     // Primary key column builders
     public static function pk(bool $autoIncrement = true): ColumnInterface
     {
-        return static::columnFactory()
-            ->fromType(SchemaInterface::TYPE_INTEGER)
+        return static::integer()
             ->primaryKey()
             ->autoIncrement($autoIncrement);
     }
 
     public static function upk(bool $autoIncrement = true): ColumnInterface
     {
-        return static::columnFactory()
-            ->fromType(SchemaInterface::TYPE_INTEGER, ['unsigned' => true])
-            ->primaryKey()
-            ->autoIncrement($autoIncrement);
+        return static::pk()->unsigned();
     }
 
     public static function bigpk(bool $autoIncrement = true): ColumnInterface
     {
-        return static::columnFactory()
-            ->fromType(SchemaInterface::TYPE_BIGINT)
+        return static::bigint()
             ->primaryKey()
             ->autoIncrement($autoIncrement);
     }
 
     public static function ubigpk(bool $autoIncrement = true): ColumnInterface
     {
-        return static::columnFactory()
-            ->fromType(SchemaInterface::TYPE_BIGINT, ['unsigned' => true])
-            ->primaryKey()
-            ->autoIncrement($autoIncrement);
+        return static::bigpk()->unsigned();
     }
 
     public static function uuidpk(bool $autoIncrement = false): ColumnInterface
     {
-        return static::columnFactory()
-            ->fromType(SchemaInterface::TYPE_UUID)
+        return static::uuid()
             ->primaryKey()
             ->autoIncrement($autoIncrement);
     }
@@ -81,7 +72,7 @@ class ColumnBuilder implements ColumnBuilderInterface
             ->fromType(SchemaInterface::TYPE_TEXT);
     }
 
-    public static function binary(int|null $size = 255): ColumnInterface
+    public static function binary(int|null $size = null): ColumnInterface
     {
         return static::columnFactory()
             ->fromType(SchemaInterface::TYPE_BINARY)
@@ -138,7 +129,7 @@ class ColumnBuilder implements ColumnBuilderInterface
             ->scale($scale);
     }
 
-    public static function decimal(int|null $size = null, int|null $scale = null): ColumnInterface
+    public static function decimal(int|null $size = 10, int|null $scale = 0): ColumnInterface
     {
         return static::columnFactory()
             ->fromType(SchemaInterface::TYPE_DECIMAL)
@@ -146,7 +137,7 @@ class ColumnBuilder implements ColumnBuilderInterface
             ->scale($scale);
     }
 
-    public static function money(int|null $size = null, int|null $scale = null): ColumnInterface
+    public static function money(int|null $size = 19, int|null $scale = 4): ColumnInterface
     {
         return static::columnFactory()
             ->fromType(SchemaInterface::TYPE_MONEY)
@@ -154,21 +145,21 @@ class ColumnBuilder implements ColumnBuilderInterface
             ->scale($scale);
     }
 
-    public static function datetime(int|null $size = null): ColumnInterface
+    public static function datetime(int|null $size = 0): ColumnInterface
     {
         return static::columnFactory()
             ->fromType(SchemaInterface::TYPE_DATETIME)
             ->size($size);
     }
 
-    public static function timestamp(int|null $size = null): ColumnInterface
+    public static function timestamp(int|null $size = 0): ColumnInterface
     {
         return static::columnFactory()
             ->fromType(SchemaInterface::TYPE_TIMESTAMP)
             ->size($size);
     }
 
-    public static function time(int|null $size = null): ColumnInterface
+    public static function time(int|null $size = 0): ColumnInterface
     {
         return static::columnFactory()
             ->fromType(SchemaInterface::TYPE_TIME)

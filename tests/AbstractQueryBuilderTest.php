@@ -21,8 +21,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -66,7 +65,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             DbHelper::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
-                SQL . ' ' . $qb->getColumnType($type),
+                SQL . ' ' . $qb->buildColumnDefinition($type),
                 $db->getDriverName(),
             ),
             $sql,
@@ -1789,34 +1788,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    public function testGetColumnType(): void
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildColumnDefinition */
+    public function testBuildColumnDefinition($type, $expected): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
 
-        $this->assertSame('pk', $qb->buildColumnDefinition(ColumnBuilder::pk()));
-        $this->assertSame('upk', $qb->buildColumnDefinition(ColumnBuilder::upk()));
-        $this->assertSame('bigpk', $qb->buildColumnDefinition(ColumnBuilder::bigpk()));
-        $this->assertSame('ubigpk', $qb->buildColumnDefinition(ColumnBuilder::ubigpk()));
-        $this->assertSame('char', $qb->buildColumnDefinition(SchemaInterface::TYPE_CHAR));
-        $this->assertSame('string', $qb->buildColumnDefinition(SchemaInterface::TYPE_STRING));
-        $this->assertSame('text', $qb->buildColumnDefinition(SchemaInterface::TYPE_TEXT));
-        $this->assertSame('tinyint', $qb->buildColumnDefinition(SchemaInterface::TYPE_TINYINT));
-        $this->assertSame('smallint', $qb->buildColumnDefinition(SchemaInterface::TYPE_SMALLINT));
-        $this->assertSame('integer', $qb->buildColumnDefinition(SchemaInterface::TYPE_INTEGER));
-        $this->assertSame('bigint', $qb->buildColumnDefinition(SchemaInterface::TYPE_BIGINT));
-        $this->assertSame('float', $qb->buildColumnDefinition(SchemaInterface::TYPE_FLOAT));
-        $this->assertSame('double', $qb->buildColumnDefinition(SchemaInterface::TYPE_DOUBLE));
-        $this->assertSame('decimal', $qb->buildColumnDefinition(SchemaInterface::TYPE_DECIMAL));
-        $this->assertSame('datetime', $qb->buildColumnDefinition(SchemaInterface::TYPE_DATETIME));
-        $this->assertSame('timestamp', $qb->buildColumnDefinition(SchemaInterface::TYPE_TIMESTAMP));
-        $this->assertSame('time', $qb->buildColumnDefinition(SchemaInterface::TYPE_TIME));
-        $this->assertSame('date', $qb->buildColumnDefinition(SchemaInterface::TYPE_DATE));
-        $this->assertSame('binary', $qb->buildColumnDefinition(SchemaInterface::TYPE_BINARY));
-        $this->assertSame('boolean', $qb->buildColumnDefinition(SchemaInterface::TYPE_BOOLEAN));
-        $this->assertSame('money', $qb->buildColumnDefinition(SchemaInterface::TYPE_MONEY));
-        $this->assertSame('json', $qb->buildColumnDefinition(SchemaInterface::TYPE_JSON));
+        $this->assertSame($expected, $qb->buildColumnDefinition($type));
     }
 
     /**

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Command;
 
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -49,12 +49,12 @@ final class CommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $sql = $command->addColumn('table', 'column', $type)->getSql();
 
-        $columnType = $db->getQueryBuilder()->getColumnType($type);
+        $columnType = $db->getQueryBuilder()->buildColumnDefinition($type);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                ALTER TABLE [[table]] ADD [[column]] {$columnType}
+                ALTER TABLE [[table]] ADD [[column]] $columnType
                 SQL,
                 $db->getDriverName(),
             ),

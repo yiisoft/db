@@ -80,7 +80,7 @@ abstract class Column implements ColumnInterface
         return $this;
     }
 
-    public function comment(string $value = null): static
+    public function comment(string|null $value): static
     {
         $this->comment = $value;
         return $this;
@@ -92,7 +92,7 @@ abstract class Column implements ColumnInterface
         return $this;
     }
 
-    public function dbType(string $value = null): static
+    public function dbType(string|null $value): static
     {
         $this->dbType = $value;
         return $this;
@@ -103,13 +103,13 @@ abstract class Column implements ColumnInterface
         return $value;
     }
 
-    public function defaultValue(mixed $value = null): static
+    public function defaultValue(mixed $value): static
     {
         $this->defaultValue = $value;
         return $this;
     }
 
-    public function extra(string $value = null): static
+    public function extra(string|null $value): static
     {
         $this->extra = $value;
         return $this;
@@ -259,7 +259,7 @@ abstract class Column implements ColumnInterface
         return new Expression($value);
     }
 
-    public function phpType(string $value = null): static
+    public function phpType(string|null $value): static
     {
         $this->phpType = $value;
         return $this;
@@ -282,19 +282,19 @@ abstract class Column implements ColumnInterface
         return $this;
     }
 
-    public function scale(int $value = null): static
+    public function scale(int|null $value): static
     {
         $this->scale = $value;
         return $this;
     }
 
-    public function size(int $value = null): static
+    public function size(int|null $value): static
     {
         $this->size = $value;
         return $this;
     }
 
-    public function type(string $value = null): static
+    public function type(string|null $value): static
     {
         $this->type = $value;
         return $this;
@@ -312,7 +312,7 @@ abstract class Column implements ColumnInterface
         return $this;
     }
 
-    public function values(array $value = []): static
+    public function values(array $value): static
     {
         $this->values = $value;
         return $this;
