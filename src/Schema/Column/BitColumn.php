@@ -8,6 +8,9 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
+use function bindec;
+use function preg_match;
+
 class BitColumn extends Column
 {
     public function __construct(
@@ -19,9 +22,12 @@ class BitColumn extends Column
 
     public function dbTypecast(mixed $value): int|string|ExpressionInterface|null
     {
-        return match (true) {
-            is_int($value), $value === null, $value instanceof ExpressionInterface => $value,
-            $value === '' => null,
+        if ($value instanceof ExpressionInterface) {
+            return $value;
+        }
+
+        return match ($value) {
+            null, '' => null,
             default => (int) $value,
         };
     }

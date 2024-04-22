@@ -6,10 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\DataType;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function fclose;
@@ -19,22 +16,6 @@ use function print_r;
 abstract class AbstractSchemaTest extends TestCase
 {
     use TestTrait;
-
-    public function testCreateColumnSchemaBuilder(): void
-    {
-        $columnSchemaBuilder = $this->getConnection()->getSchema()->createColumn('string');
-
-        $this->assertInstanceOf(ColumnInterface::class, $columnSchemaBuilder);
-        $this->assertSame('string', $columnSchemaBuilder->getType());
-    }
-
-    public function testColumnSchemaDbTypecastWithEmptyCharType(): void
-    {
-        $columnSchema = new Column('new');
-        $columnSchema->type(SchemaInterface::TYPE_CHAR);
-
-        $this->assertSame('', $columnSchema->dbTypecast(''));
-    }
 
     public function testGetDefaultSchema(): void
     {

@@ -6,9 +6,10 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Helper\DbStringHelper;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
-use Yiisoft\Db\Schema\QuoterInterface;
+use Yiisoft\Db\Schema\SchemaInterface;
+
+use function gettype;
 
 /**
  * Builds column definition from {@see ColumnInterface} object. Column definition is a string that represents
@@ -21,6 +22,7 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
 {
     protected array $clauses = [
         'type',
+        'unsigned',
         'null',
         'primary_key',
         'auto_increment',
@@ -34,7 +36,6 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
 
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
-        protected QuoterInterface $quoter,
     ) {
     }
 
@@ -45,6 +46,7 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
         foreach ($this->clauses as $clause) {
             $result .= match ($clause) {
                 'type' => $this->buildType($column),
+                'unsigned' => $this->buildUnsigned($column),
                 'null' => $this->buildNull($column),
                 'primary_key' => $this->buildPrimaryKey($column),
                 'auto_increment' => $this->buildAutoIncrement($column),
@@ -63,6 +65,11 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
 
     protected function buildType(ColumnInterface $column): string
     {
+        if ($column->getDbType() === null) {
+            $column = clone $column;
+            $column->dbType($this->getDbType($column->getType()));
+        }
+
         return (string) $column->getFullDbType();
     }
 
@@ -157,11 +164,10 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
         }
 
         /** @var string */
-        return match (get_debug_type($value)) {
-            'int' => (string) $value,
-            'float' => DbStringHelper::normalizeFloat((string) $value),
-            'bool' => $value ? 'TRUE' : 'FALSE',
-            default => $this->quoter->quoteValue((string) $value),
+        return match (gettype($value)) {
+            'integer', 'double' => (string) $value,
+            'boolean' => $value ? 'TRUE' : 'FALSE',
+            default => $this->queryBuilder->quoter()->quoteValue((string) $value),
         };
     }
 
@@ -174,7 +180,7 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
     {
         $check = $column->getCheck();
 
-        return !empty($check) ? " CHECK($check)" : '';
+        return !empty($check) ? " CHECK ($check)" : '';
     }
 
     /**
@@ -184,7 +190,7 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
      */
     protected function buildUnsigned(ColumnInterface $column): string
     {
-        return '';
+        return $column->isUnsigned() ? ' UNSIGNED' : '';
     }
 
     /**
@@ -209,6 +215,9 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
         return '';
     }
 
+    /**
+     * Builds the references clause for the column.
+     */
     private function buildReferences(ColumnInterface $column): string
     {
         $reference = $this->buildReferenceDefinition($column);
@@ -220,6 +229,9 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
         return "REFERENCES $reference";
     }
 
+    /**
+     * Builds the reference definition for the column.
+     */
     protected function buildReferenceDefinition(ColumnInterface $column): string|null
     {
         /** @var ForeignKeyConstraint|null $reference */
@@ -230,10 +242,12 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
             return null;
         }
 
+        $quoter = $this->queryBuilder->quoter();
+
         if (null !== $schema = $reference->getForeignSchemaName()) {
-            $sql = $this->quoter->quoteTableName($schema) . '.' . $this->quoter->quoteTableName($table);
+            $sql = $quoter->quoteTableName($schema) . '.' . $quoter->quoteTableName($table);
         } else {
-            $sql = $this->quoter->quoteTableName($table);
+            $sql = $quoter->quoteTableName($table);
         }
 
         $columns = $reference->getForeignColumnNames();
@@ -251,5 +265,38 @@ class ColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
         }
 
         return $sql;
+    }
+
+    /**
+     * Get the database column type from an abstract database type.
+     *
+     * @param string $type The abstract database type.
+     *
+     * @return string The database column type.
+     */
+    protected function getDbType(string $type): string
+    {
+        return match ($type) {
+            SchemaInterface::TYPE_UUID => 'uuid',
+            SchemaInterface::TYPE_CHAR => 'char',
+            SchemaInterface::TYPE_STRING => 'varchar',
+            SchemaInterface::TYPE_TEXT => 'text',
+            SchemaInterface::TYPE_BINARY => 'binary',
+            SchemaInterface::TYPE_BOOLEAN => 'boolean',
+            SchemaInterface::TYPE_TINYINT => 'tinyint',
+            SchemaInterface::TYPE_SMALLINT => 'smallint',
+            SchemaInterface::TYPE_INTEGER => 'integer',
+            SchemaInterface::TYPE_BIGINT => 'bigint',
+            SchemaInterface::TYPE_FLOAT => 'float',
+            SchemaInterface::TYPE_DOUBLE => 'double',
+            SchemaInterface::TYPE_DECIMAL => 'decimal',
+            SchemaInterface::TYPE_MONEY => 'money',
+            SchemaInterface::TYPE_DATETIME => 'datetime',
+            SchemaInterface::TYPE_TIMESTAMP => 'timestamp',
+            SchemaInterface::TYPE_TIME => 'time',
+            SchemaInterface::TYPE_DATE => 'date',
+            SchemaInterface::TYPE_JSON => 'json',
+            default => 'varchar',
+        };
     }
 }

@@ -6,13 +6,11 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Schema\SchemaInterface;
 
-use function count;
 use function explode;
-use function in_array;
 use function preg_match;
 use function preg_match_all;
 use function str_contains;
-use function str_replace;
+use function str_ireplace;
 use function strlen;
 use function strtolower;
 use function substr;
@@ -26,36 +24,30 @@ use const PHP_INT_SIZE;
  */
 class ColumnFactory implements ColumnFactoryInterface
 {
-    private const BUILDERS = [
-        'pk', 'upk', 'bigpk', 'ubigpk', 'uuidpk', 'uuidpkseq',
-    ];
-
-    private const TYPES = [
-        SchemaInterface::TYPE_UUID,
-        SchemaInterface::TYPE_CHAR,
-        SchemaInterface::TYPE_STRING,
-        SchemaInterface::TYPE_TEXT,
-        SchemaInterface::TYPE_BINARY,
-        SchemaInterface::TYPE_BIT,
-        SchemaInterface::TYPE_BOOLEAN,
-        SchemaInterface::TYPE_TINYINT,
-        SchemaInterface::TYPE_SMALLINT,
-        SchemaInterface::TYPE_INTEGER,
-        SchemaInterface::TYPE_BIGINT,
-        SchemaInterface::TYPE_FLOAT,
-        SchemaInterface::TYPE_DOUBLE,
-        SchemaInterface::TYPE_DECIMAL,
-        SchemaInterface::TYPE_MONEY,
-        SchemaInterface::TYPE_DATETIME,
-        SchemaInterface::TYPE_TIMESTAMP,
-        SchemaInterface::TYPE_TIME,
-        SchemaInterface::TYPE_DATE,
-        SchemaInterface::TYPE_JSON,
-        SchemaInterface::TYPE_ARRAY,
-        SchemaInterface::TYPE_COMPOSITE,
+    private const TYPE_MAP = [
+        'uuid' => SchemaInterface::TYPE_UUID,
+        'char' => SchemaInterface::TYPE_CHAR,
+        'varchar' => SchemaInterface::TYPE_STRING,
+        'text' => SchemaInterface::TYPE_TEXT,
+        'binary' => SchemaInterface::TYPE_BINARY,
+        'boolean' => SchemaInterface::TYPE_BOOLEAN,
+        'tinyint' => SchemaInterface::TYPE_TINYINT,
+        'smallint' => SchemaInterface::TYPE_SMALLINT,
+        'integer' => SchemaInterface::TYPE_INTEGER,
+        'bigint' => SchemaInterface::TYPE_BIGINT,
+        'float' => SchemaInterface::TYPE_FLOAT,
+        'double' => SchemaInterface::TYPE_DOUBLE,
+        'decimal' => SchemaInterface::TYPE_DECIMAL,
+        'money' => SchemaInterface::TYPE_MONEY,
+        'datetime' => SchemaInterface::TYPE_DATETIME,
+        'timestamp' => SchemaInterface::TYPE_TIMESTAMP,
+        'time' => SchemaInterface::TYPE_TIME,
+        'date' => SchemaInterface::TYPE_DATE,
+        'json' => SchemaInterface::TYPE_JSON,
     ];
 
     public function __construct(
+        private string $columnBuilderClass = ColumnBuilder::class,
         private array $fromDbType = [],
         private array $fromType = [],
     ) {
@@ -64,7 +56,7 @@ class ColumnFactory implements ColumnFactoryInterface
     public function fromDbType(string $dbType, array $info = []): ColumnInterface
     {
         $info['db_type'] = $dbType;
-        $type = $info['type'] ?? $this->getType($dbType);
+        $type = $info['type'] ?? $this->getTypeFromDb($dbType);
 
         if (isset($this->fromDbType[$dbType])) {
             $phpType = $info['php_type'] ?? $this->getPhpType($type);
@@ -89,7 +81,7 @@ class ColumnFactory implements ColumnFactoryInterface
                 $values = explode(',', $matches[2]);
                 $info['size'] = (int) $values[0];
 
-                if (count($values) === 2) {
+                if (isset($values[1])) {
                     $info['scale'] = (int) $values[1];
                 }
             }
@@ -97,12 +89,12 @@ class ColumnFactory implements ColumnFactoryInterface
 
         $extra = substr($definition, strlen($matches[0]));
 
-        if (str_contains($extra, 'unsigned')) {
+        if (!empty($extra) && str_contains(strtolower($extra), 'unsigned')) {
             $info['unsigned'] = true;
-            $extra = trim(str_replace('unsigned', '', $extra));
+            $extra = trim(str_ireplace('unsigned', '', $extra));
         }
 
-        if ($extra !== '') {
+        if (!empty($extra)) {
             if (empty($info['extra'])) {
                 $info['extra'] = $extra;
             } else {
@@ -110,12 +102,12 @@ class ColumnFactory implements ColumnFactoryInterface
             }
         }
 
-        if (in_array($dbType, self::BUILDERS, true)) {
-            return $this->getBuilderClass()::$dbType()->load($info);
+        if ($this->isDbType($dbType)) {
+            return $this->fromDbType($dbType, $info);
         }
 
-        if (in_array($dbType, self::TYPES, true)) {
-            return $this->fromType($dbType, $info);
+        if ($this->isBuilder($dbType)) {
+            return $this->columnBuilderClass::$dbType()->load($info);
         }
 
         return $this->fromDbType($dbType, $info);
@@ -151,34 +143,13 @@ class ColumnFactory implements ColumnFactoryInterface
         $isUnsigned = !empty($info['unsigned']);
 
         if (
-            $isUnsigned && PHP_INT_SIZE === 4 && $type === SchemaInterface::TYPE_INTEGER
-            || ($isUnsigned || PHP_INT_SIZE !== 8) && $type === SchemaInterface::TYPE_BIGINT
+            PHP_INT_SIZE !== 8 && $isUnsigned && $type === SchemaInterface::TYPE_INTEGER
+            || (PHP_INT_SIZE !== 8 || $isUnsigned) && $type === SchemaInterface::TYPE_BIGINT
         ) {
             return (new BigIntColumn($type, $phpType))->load($info);
         }
 
         return $this->fromPhpType($phpType, $info);
-    }
-
-    public function getBuilderClass(): string
-    {
-        return ColumnBuilder::class;
-    }
-
-    /**
-     * Get the abstract database type from a database column type.
-     *
-     * @param string $dbType The database column type.
-     *
-     * @return string The abstract database type.
-     */
-    protected function getType(string $dbType): string
-    {
-        if (in_array($dbType, self::TYPES, true)) {
-            return $dbType;
-        }
-
-        return SchemaInterface::TYPE_STRING;
     }
 
     /**
@@ -193,7 +164,6 @@ class ColumnFactory implements ColumnFactoryInterface
         return match ($type) {
             // abstract type => php type
             SchemaInterface::TYPE_BOOLEAN => SchemaInterface::PHP_TYPE_BOOLEAN,
-            SchemaInterface::TYPE_BIT => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_TINYINT => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_SMALLINT => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_INTEGER => SchemaInterface::PHP_TYPE_INTEGER,
@@ -203,10 +173,20 @@ class ColumnFactory implements ColumnFactoryInterface
             SchemaInterface::TYPE_DOUBLE => SchemaInterface::PHP_TYPE_DOUBLE,
             SchemaInterface::TYPE_BINARY => SchemaInterface::PHP_TYPE_RESOURCE,
             SchemaInterface::TYPE_JSON => SchemaInterface::PHP_TYPE_ARRAY,
-            SchemaInterface::TYPE_ARRAY => SchemaInterface::PHP_TYPE_ARRAY,
-            SchemaInterface::TYPE_COMPOSITE => SchemaInterface::PHP_TYPE_ARRAY,
             default => SchemaInterface::PHP_TYPE_STRING,
         };
+    }
+
+    /**
+     * Get the abstract database type from a database column type.
+     *
+     * @param string $dbType The database column type.
+     *
+     * @return string The abstract database type.
+     */
+    protected function getTypeFromDb(string $dbType): string
+    {
+        return self::TYPE_MAP[$dbType] ?? SchemaInterface::TYPE_STRING;
     }
 
     protected function getTypeFromPhp(string $phpType): string
@@ -222,29 +202,47 @@ class ColumnFactory implements ColumnFactoryInterface
         };
     }
 
-    protected function getDbType(string $type): string
+    protected function isBuilder(string $dbType): bool
     {
-        return match ($type) {
-            SchemaInterface::TYPE_CHAR => 'char',
-            SchemaInterface::TYPE_STRING => 'varchar',
-            SchemaInterface::TYPE_TEXT => 'text',
-            SchemaInterface::TYPE_TINYINT => 'tinyint',
-            SchemaInterface::TYPE_SMALLINT => 'smallint',
-            SchemaInterface::TYPE_INTEGER => 'integer',
-            SchemaInterface::TYPE_BIGINT => 'bigint',
-            SchemaInterface::TYPE_FLOAT => 'float',
-            SchemaInterface::TYPE_DOUBLE => 'double',
-            SchemaInterface::TYPE_DECIMAL => 'decimal',
-            SchemaInterface::TYPE_DATETIME => 'datetime',
-            SchemaInterface::TYPE_TIMESTAMP => 'timestamp',
-            SchemaInterface::TYPE_TIME => 'time',
-            SchemaInterface::TYPE_DATE => 'date',
-            SchemaInterface::TYPE_BINARY => 'blob',
-            SchemaInterface::TYPE_BOOLEAN => 'bit',
-            SchemaInterface::TYPE_MONEY => 'decimal',
-            SchemaInterface::TYPE_JSON => 'jsonb',
-            SchemaInterface::TYPE_UUID => 'binary',
-            default => 'varchar',
+        return match ($dbType) {
+            'pk',
+            'upk',
+            'bigpk',
+            'ubigpk',
+            'uuidpk',
+            'uuidpkseq' => true,
+            default => $this->isType($dbType),
+        };
+    }
+
+    protected function isDbType(string $dbType): bool
+    {
+        return isset(self::TYPE_MAP[$dbType]);
+    }
+
+    protected function isType(string $dbType): bool
+    {
+        return match ($dbType) {
+            SchemaInterface::TYPE_UUID,
+            SchemaInterface::TYPE_CHAR,
+            SchemaInterface::TYPE_STRING,
+            SchemaInterface::TYPE_TEXT,
+            SchemaInterface::TYPE_BINARY,
+            SchemaInterface::TYPE_BOOLEAN,
+            SchemaInterface::TYPE_TINYINT,
+            SchemaInterface::TYPE_SMALLINT,
+            SchemaInterface::TYPE_INTEGER,
+            SchemaInterface::TYPE_BIGINT,
+            SchemaInterface::TYPE_FLOAT,
+            SchemaInterface::TYPE_DOUBLE,
+            SchemaInterface::TYPE_DECIMAL,
+            SchemaInterface::TYPE_MONEY,
+            SchemaInterface::TYPE_DATETIME,
+            SchemaInterface::TYPE_TIMESTAMP,
+            SchemaInterface::TYPE_TIME,
+            SchemaInterface::TYPE_DATE,
+            SchemaInterface::TYPE_JSON => true,
+            default => false,
         };
     }
 }

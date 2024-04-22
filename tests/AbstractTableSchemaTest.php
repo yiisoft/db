@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Tests\Support\Stub\Column;
+use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Tests\Support\Stub\TableSchema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -49,7 +49,7 @@ abstract class AbstractTableSchemaTest extends TestCase
     public function testGetColumn(): void
     {
         // Defined column schema.
-        $columnSchema = new Column('id');
+        $columnSchema = new StringColumn();
 
         // Create table schema.
         $tableSchema = new TableSchema();
@@ -64,7 +64,7 @@ abstract class AbstractTableSchemaTest extends TestCase
     public function testGetColumns(): void
     {
         // Defined column schema.
-        $columnSchema = new Column('id');
+        $columnSchema = new StringColumn();
 
         // Create table schema.
         $tableSchema = new TableSchema();
@@ -79,7 +79,7 @@ abstract class AbstractTableSchemaTest extends TestCase
     public function testGetColumnName(): void
     {
         // Defined column schema.
-        $columnSchema = new Column('id');
+        $columnSchema = new StringColumn();
 
         // Create table schema.
         $tableSchema = new TableSchema();
@@ -192,7 +192,7 @@ abstract class AbstractTableSchemaTest extends TestCase
     {
         $tableSchema = new TableSchema();
 
-        $this->assertNull($tableSchema->getSchemaName());
+        $this->assertSame('', $tableSchema->getSchemaName());
 
         $tableSchema->schemaName('test');
 

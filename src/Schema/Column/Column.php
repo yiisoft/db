@@ -9,6 +9,8 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 use function array_key_exists;
+use function preg_match;
+use function str_replace;
 
 /**
  * Represents the metadata of a column in a database table.
@@ -72,7 +74,13 @@ abstract class Column implements ColumnInterface
         return $this;
     }
 
-    public function comment(string $value = null): static
+    public function check(string|ExpressionInterface|null $value): static
+    {
+        $this->check = $value;
+        return $this;
+    }
+
+    public function comment(string|null $value): static
     {
         $this->comment = $value;
         return $this;
@@ -84,7 +92,7 @@ abstract class Column implements ColumnInterface
         return $this;
     }
 
-    public function dbType(string $value = null): static
+    public function dbType(string|null $value): static
     {
         $this->dbType = $value;
         return $this;
@@ -95,16 +103,21 @@ abstract class Column implements ColumnInterface
         return $value;
     }
 
-    public function defaultValue(mixed $value = null): static
+    public function defaultValue(mixed $value): static
     {
         $this->defaultValue = $value;
         return $this;
     }
 
-    public function extra(string $value = null): static
+    public function extra(string|null $value): static
     {
         $this->extra = $value;
         return $this;
+    }
+
+    public function getCheck(): string|ExpressionInterface|null
+    {
+        return $this->check;
     }
 
     public function getComment(): string|null
@@ -137,12 +150,21 @@ abstract class Column implements ColumnInterface
             return $this->dbType;
         }
 
-        return "$this->dbType($this->size)";
+        if ($this->scale === null) {
+            return "$this->dbType($this->size)";
+        }
+
+        return "$this->dbType($this->size,$this->scale)";
     }
 
     public function getPhpType(): string|null
     {
         return $this->phpType;
+    }
+
+    public function getReference(): ForeignKeyConstraint|null
+    {
+        return $this->reference;
     }
 
     public function getScale(): int|null
@@ -183,6 +205,11 @@ abstract class Column implements ColumnInterface
     public function isPrimaryKey(): bool
     {
         return $this->primaryKey;
+    }
+
+    public function isUnique(): bool
+    {
+        return $this->unique;
     }
 
     public function isUnsigned(): bool
@@ -232,7 +259,7 @@ abstract class Column implements ColumnInterface
         return new Expression($value);
     }
 
-    public function phpType(string $value = null): static
+    public function phpType(string|null $value): static
     {
         $this->phpType = $value;
         return $this;
@@ -249,21 +276,33 @@ abstract class Column implements ColumnInterface
         return $this;
     }
 
-    public function scale(int $value = null): static
+    public function reference(?ForeignKeyConstraint $value): static
+    {
+        $this->reference = $value;
+        return $this;
+    }
+
+    public function scale(int|null $value): static
     {
         $this->scale = $value;
         return $this;
     }
 
-    public function size(int $value = null): static
+    public function size(int|null $value): static
     {
         $this->size = $value;
         return $this;
     }
 
-    public function type(string $value = null): static
+    public function type(string|null $value): static
     {
         $this->type = $value;
+        return $this;
+    }
+
+    public function unique(bool $value = true): static
+    {
+        $this->unique = $value;
         return $this;
     }
 
@@ -273,7 +312,7 @@ abstract class Column implements ColumnInterface
         return $this;
     }
 
-    public function values(array $value = []): static
+    public function values(array $value): static
     {
         $this->values = $value;
         return $this;

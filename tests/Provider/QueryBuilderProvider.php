@@ -12,9 +12,9 @@ use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
@@ -1531,7 +1531,40 @@ class QueryBuilderProvider
     {
         return [
             [SchemaInterface::TYPE_STRING],
-            [new Column('string(100)')],
+            [ColumnBuilder::string(100)],
+        ];
+    }
+
+    public static function buildColumnDefinition(): array
+    {
+        return [
+            // Primary key columns
+            'pk' => [ColumnBuilder::pk(), 'integer PRIMARY KEY'],
+            'upk' => [ColumnBuilder::upk(), 'integer UNSIGNED PRIMARY KEY'],
+            'bigpk' => [ColumnBuilder::bigpk(), 'bigint PRIMARY KEY'],
+            'ubigpk' => [ColumnBuilder::ubigpk(), 'bigint UNSIGNED PRIMARY KEY'],
+            'uuidpk' => [ColumnBuilder::uuidpk(), 'uuid PRIMARY KEY'],
+            'uuidpkseq' => [ColumnBuilder::uuidpkseq(), 'uuid PRIMARY KEY'],
+            // Abstract types
+            SchemaInterface::TYPE_UUID => [SchemaInterface::TYPE_UUID, 'uuid'],
+            SchemaInterface::TYPE_CHAR => [SchemaInterface::TYPE_CHAR, 'char'],
+            SchemaInterface::TYPE_STRING => [SchemaInterface::TYPE_STRING, 'varchar(255)'],
+            SchemaInterface::TYPE_TEXT => [SchemaInterface::TYPE_TEXT, 'text'],
+            SchemaInterface::TYPE_BINARY => [SchemaInterface::TYPE_BINARY, 'binary'],
+            SchemaInterface::TYPE_BOOLEAN => [SchemaInterface::TYPE_BOOLEAN, 'boolean'],
+            SchemaInterface::TYPE_TINYINT => [SchemaInterface::TYPE_TINYINT, 'tinyint'],
+            SchemaInterface::TYPE_SMALLINT => [SchemaInterface::TYPE_SMALLINT, 'smallint'],
+            SchemaInterface::TYPE_INTEGER => [SchemaInterface::TYPE_INTEGER, 'integer'],
+            SchemaInterface::TYPE_BIGINT => [SchemaInterface::TYPE_BIGINT, 'bigint'],
+            SchemaInterface::TYPE_FLOAT => [SchemaInterface::TYPE_FLOAT, 'float'],
+            SchemaInterface::TYPE_DOUBLE => [SchemaInterface::TYPE_DOUBLE, 'double'],
+            SchemaInterface::TYPE_DECIMAL => [SchemaInterface::TYPE_DECIMAL, 'decimal'],
+            SchemaInterface::TYPE_MONEY => [SchemaInterface::TYPE_MONEY, 'money'],
+            SchemaInterface::TYPE_DATETIME => [SchemaInterface::TYPE_DATETIME, 'datetime'],
+            SchemaInterface::TYPE_TIMESTAMP => [SchemaInterface::TYPE_TIMESTAMP, 'timestamp'],
+            SchemaInterface::TYPE_TIME => [SchemaInterface::TYPE_TIME, 'time'],
+            SchemaInterface::TYPE_DATE => [SchemaInterface::TYPE_DATE, 'date'],
+            SchemaInterface::TYPE_JSON => [SchemaInterface::TYPE_JSON, 'json'],
         ];
     }
 }

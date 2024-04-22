@@ -51,11 +51,4 @@ interface ColumnFactoryInterface
      * @psalm-param ColumnInfo $info The set of parameters may be different for a specific DBMS.
      */
     public function fromType(string $type, array $info = []): ColumnInterface;
-
-    /**
-     * Get the column builder class name.
-     *
-     * @return string The column builder class name.
-     */
-    public function getBuilderClass(): string;
 }

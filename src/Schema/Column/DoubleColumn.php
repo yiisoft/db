@@ -7,8 +7,6 @@ namespace Yiisoft\Db\Schema\Column;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
-use function is_float;
-
 class DoubleColumn extends Column
 {
     public function __construct(
@@ -20,9 +18,12 @@ class DoubleColumn extends Column
 
     public function dbTypecast(mixed $value): float|ExpressionInterface|null
     {
-        return match (true) {
-            is_float($value), $value === null, $value instanceof ExpressionInterface => $value,
-            $value === '' => null,
+        if ($value instanceof ExpressionInterface) {
+            return $value;
+        }
+
+        return match ($value) {
+            null, '' => null,
             default => (float) $value,
         };
     }

@@ -10,7 +10,7 @@ use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 
@@ -181,10 +181,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const TYPE_BOOLEAN = 'boolean';
     /**
-     * Define the abstract column type as `bit`.
-     */
-    public const TYPE_BIT = 'bit';
-    /**
      * Define the abstract column type as `tinyint`.
      */
     public const TYPE_TINYINT = 'tinyint';
@@ -237,15 +233,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const TYPE_JSON = 'json';
     /**
-     * Define the abstract column type as `array`.
-     */
-    public const TYPE_ARRAY = 'array';
-    /**
-     * Define the abstract column type as `composite`.
-     */
-    public const TYPE_COMPOSITE = 'composite';
-
-    /**
      * Define the php type as `integer` for cast to php value.
      */
     public const PHP_TYPE_INTEGER = 'integer';
@@ -275,12 +262,10 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const PHP_TYPE_NULL = 'NULL';
 
     /**
-     * @psalm-param string[]|int[]|int|string|null $length
+     * Returns the column schema factory for the database.
      *
-     * @deprecated Use {@see getColumnFactory()} or {@see ColumnBuilder}. Will be removed in version 3.0.0.
+     * @return ColumnFactoryInterface The column schema factory for the database.
      */
-    public function createColumn(string $type, array|int|string $length = null): ColumnInterface;
-
     public function getColumnFactory(): ColumnFactoryInterface;
 
     /**

@@ -45,6 +45,12 @@
 - Bug #746: Typecast values in `AbstractDMLQueryBuilder::batchInsert()` if column names with table name and brackets (@Tigrov)
 - Bug #746, #61: Typecast values in `AbstractDMLQueryBuilder::batchInsert()` if values with string keys (@Tigrov)
 - Bug #751: Fix collected debug actions (@xepozz)
+- Enh #752: Implement `ColumnSchemaInterface` classes according to the data type of database table columns 
+  for type casting performance (@Tigrov)
+- Chg #755: Deprecate `TableSchemaInterface::compositeForeignKey()` (@Tigrov) 
+- Enh #756: Refactor `Quoter` (@Tigrov) 
+- Bug #756: Fix `Quoter::quoteSql()` for SQL containing table with prefix (@Tigrov)
+- Bug #756: Fix `Quoter::getTableNameParts()` for cases when different quotes for tables and columns (@Tigrov)
 - Bug #756: Fix `Quoter::quoteTableName()` for sub-query with alias (@Tigrov)
 - Bug #761: Quote aliases of CTE in `WITH` queries (@Tigrov)
 - Bug #769, #61: Fix `AbstractDMLQueryBuilder::batchInsert()` for values as associative arrays (@Tigrov)

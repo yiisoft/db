@@ -57,33 +57,6 @@ final class SchemaTest extends AbstractSchemaTest
     }
 
     /**
-     * @throws ReflectionException
-     */
-    public function testGetColumnPhpType(): void
-    {
-        $db = $this->getConnection();
-
-        $schema = $db->getSchema();
-
-        $this->assertSame(
-            'integer',
-            Assert::invokeMethod($schema, 'getColumnPhpType', ['bigint']),
-        );
-        $this->assertSame(
-            'boolean',
-            Assert::invokeMethod($schema, 'getColumnPhpType', ['boolean']),
-        );
-        $this->assertSame(
-            'integer',
-            Assert::invokeMethod($schema, 'getColumnPhpType', ['integer']),
-        );
-        $this->assertSame(
-            'string',
-            Assert::invokeMethod($schema, 'getColumnPhpType', ['string']),
-        );
-    }
-
-    /**
      * @throws NotSupportedException
      */
     public function testGetSchemaChecks(): void
