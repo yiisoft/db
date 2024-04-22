@@ -57,38 +57,38 @@ class ColumnDefinitionBuilderProvider
 
         return $result;
     }
-/*
-    public static function buildColumnDefinition(): array
-    {
-        return [
-            // Primary key columns
-            'pk' => [ColumnBuilder::pk(), 'integer PRIMARY KEY'],
-            'upk' => [ColumnBuilder::upk(), 'integer UNSIGNED PRIMARY KEY'],
-            'bigpk' => [ColumnBuilder::bigpk(), 'bigint PRIMARY KEY'],
-            'ubigpk' => [ColumnBuilder::ubigpk(), 'bigint UNSIGNED PRIMARY KEY'],
-            'uuidpk' => [ColumnBuilder::uuidpk(), 'uuid PRIMARY KEY'],
-            'uuidpkseq' => [ColumnBuilder::uuidpkseq(), 'uuid PRIMARY KEY'],
-            // Abstract types
-            SchemaInterface::TYPE_UUID => [SchemaInterface::TYPE_UUID, 'char(36)'],
-            SchemaInterface::TYPE_CHAR => [SchemaInterface::TYPE_CHAR, 'char(1)'],
-            SchemaInterface::TYPE_STRING => [SchemaInterface::TYPE_STRING, 'varchar(255)'],
-            SchemaInterface::TYPE_TEXT => [SchemaInterface::TYPE_TEXT, 'text'],
-            SchemaInterface::TYPE_BINARY => [SchemaInterface::TYPE_BINARY, 'binary(255)'],
-            SchemaInterface::TYPE_BOOLEAN => [SchemaInterface::TYPE_BOOLEAN, 'boolean'],
-            SchemaInterface::TYPE_TINYINT => [SchemaInterface::TYPE_TINYINT, 'tinyint'],
-            SchemaInterface::TYPE_SMALLINT => [SchemaInterface::TYPE_SMALLINT, 'smallint'],
-            SchemaInterface::TYPE_INTEGER => [SchemaInterface::TYPE_INTEGER, 'integer'],
-            SchemaInterface::TYPE_BIGINT => [SchemaInterface::TYPE_BIGINT, 'bigint'],
-            SchemaInterface::TYPE_FLOAT => [SchemaInterface::TYPE_FLOAT, 'float'],
-            SchemaInterface::TYPE_DOUBLE => [SchemaInterface::TYPE_DOUBLE, 'double'],
-            SchemaInterface::TYPE_DECIMAL => [SchemaInterface::TYPE_DECIMAL, 'decimal(10,0)'],
-            SchemaInterface::TYPE_MONEY => [SchemaInterface::TYPE_MONEY, 'money(19,4)'],
-            SchemaInterface::TYPE_DATETIME => [SchemaInterface::TYPE_DATETIME, 'datetime(0)'],
-            SchemaInterface::TYPE_TIMESTAMP => [SchemaInterface::TYPE_TIMESTAMP, 'timestamp(0)'],
-            SchemaInterface::TYPE_TIME => [SchemaInterface::TYPE_TIME, 'time(0)'],
-            SchemaInterface::TYPE_DATE => [SchemaInterface::TYPE_DATE, 'date'],
-            SchemaInterface::TYPE_JSON => [SchemaInterface::TYPE_JSON, 'json'],
-        ];
-    }
-*/
+    /*
+        public static function buildColumnDefinition(): array
+        {
+            return [
+                // Primary key columns
+                'pk' => [ColumnBuilder::pk(), 'integer PRIMARY KEY'],
+                'upk' => [ColumnBuilder::upk(), 'integer UNSIGNED PRIMARY KEY'],
+                'bigpk' => [ColumnBuilder::bigpk(), 'bigint PRIMARY KEY'],
+                'ubigpk' => [ColumnBuilder::ubigpk(), 'bigint UNSIGNED PRIMARY KEY'],
+                'uuidpk' => [ColumnBuilder::uuidpk(), 'uuid PRIMARY KEY'],
+                'uuidpkseq' => [ColumnBuilder::uuidpkseq(), 'uuid PRIMARY KEY'],
+                // Abstract types
+                SchemaInterface::TYPE_UUID => [SchemaInterface::TYPE_UUID, 'char(36)'],
+                SchemaInterface::TYPE_CHAR => [SchemaInterface::TYPE_CHAR, 'char(1)'],
+                SchemaInterface::TYPE_STRING => [SchemaInterface::TYPE_STRING, 'varchar(255)'],
+                SchemaInterface::TYPE_TEXT => [SchemaInterface::TYPE_TEXT, 'text'],
+                SchemaInterface::TYPE_BINARY => [SchemaInterface::TYPE_BINARY, 'binary(255)'],
+                SchemaInterface::TYPE_BOOLEAN => [SchemaInterface::TYPE_BOOLEAN, 'boolean'],
+                SchemaInterface::TYPE_TINYINT => [SchemaInterface::TYPE_TINYINT, 'tinyint'],
+                SchemaInterface::TYPE_SMALLINT => [SchemaInterface::TYPE_SMALLINT, 'smallint'],
+                SchemaInterface::TYPE_INTEGER => [SchemaInterface::TYPE_INTEGER, 'integer'],
+                SchemaInterface::TYPE_BIGINT => [SchemaInterface::TYPE_BIGINT, 'bigint'],
+                SchemaInterface::TYPE_FLOAT => [SchemaInterface::TYPE_FLOAT, 'float'],
+                SchemaInterface::TYPE_DOUBLE => [SchemaInterface::TYPE_DOUBLE, 'double'],
+                SchemaInterface::TYPE_DECIMAL => [SchemaInterface::TYPE_DECIMAL, 'decimal(10,0)'],
+                SchemaInterface::TYPE_MONEY => [SchemaInterface::TYPE_MONEY, 'money(19,4)'],
+                SchemaInterface::TYPE_DATETIME => [SchemaInterface::TYPE_DATETIME, 'datetime(0)'],
+                SchemaInterface::TYPE_TIMESTAMP => [SchemaInterface::TYPE_TIMESTAMP, 'timestamp(0)'],
+                SchemaInterface::TYPE_TIME => [SchemaInterface::TYPE_TIME, 'time(0)'],
+                SchemaInterface::TYPE_DATE => [SchemaInterface::TYPE_DATE, 'date'],
+                SchemaInterface::TYPE_JSON => [SchemaInterface::TYPE_JSON, 'json'],
+            ];
+        }
+    */
 }
