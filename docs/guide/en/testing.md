@@ -26,7 +26,7 @@ For greater ease it is recommended to use Docker containers for each DBMS, for t
 
 For running the Docker containers you can use the following command:
 
-```dockerfile
+```shell
 docker compose up -d
 ```
 
