@@ -271,9 +271,11 @@ class QueryBuilderProvider
             [['not', ''], '', []],
             [['not', '0'], 'NOT (0)', []],
             [['not', 'name'], 'NOT (name)', []],
-            [[
-                'not',
-                (new query(static::getDb()))->select('exists')->from('some_table'), ],
+            [
+                [
+                    'not',
+                    (new query(static::getDb()))->select('exists')->from('some_table'),
+                ],
                 'NOT ((SELECT [[exists]] FROM [[some_table]]))', [],
             ],
 
@@ -395,17 +397,18 @@ class QueryBuilderProvider
             [['in', 'id', [1]], '[[id]]=:qp0', [':qp0' => 1]],
             [['in', 'id', new TraversableObject([1])], '[[id]]=:qp0', [':qp0' => 1]],
             'composite in' => [
-                ['in', ['id', 'name'], [['id' => 1, 'name' => 'oy']]],
+                ['in', ['id', 'name'], [['id' => 1, 'name' => 'John Doe']]],
                 '([[id]], [[name]]) IN ((:qp0, :qp1))',
-                [':qp0' => 1, ':qp1' => 'oy'],
+                [':qp0' => 1, ':qp1' => 'John Doe'],
             ],
             'composite in with Expression' => [
-                ['in',
+                [
+                    'in',
                     [new Expression('id'), new Expression('name')],
-                    [['id' => 1, 'name' => 'oy']],
+                    [['id' => 1, 'name' => 'John Doe']],
                 ],
                 '(id, name) IN ((:qp0, :qp1))',
-                [':qp0' => 1, ':qp1' => 'oy'],
+                [':qp0' => 1, ':qp1' => 'John Doe'],
             ],
             'composite in (just one column)' => [
                 ['in', ['id'], [['id' => 1, 'name' => 'Name1'], ['id' => 2, 'name' => 'Name2']]],
@@ -456,10 +459,10 @@ class QueryBuilderProvider
                 [
                     'in',
                     new TraversableObject(['id', 'name']),
-                    new TraversableObject([['id' => 1, 'name' => 'oy'], ['id' => 2, 'name' => 'yo']]),
+                    new TraversableObject([['id' => 1, 'name' => 'John Doe'], ['id' => 2, 'name' => 'yo']]),
                 ],
                 '([[id]], [[name]]) IN ((:qp0, :qp1), (:qp2, :qp3))',
-                [':qp0' => 1, ':qp1' => 'oy', ':qp2' => 2, ':qp3' => 'yo'],
+                [':qp0' => 1, ':qp1' => 'John Doe', ':qp2' => 2, ':qp3' => 'yo'],
             ],
 
             /* in object conditions */
@@ -487,14 +490,14 @@ class QueryBuilderProvider
                 [':qp0' => 1],
             ],
             'inCondition-custom-4' => [
-                new InCondition(['id', 'name'], 'in', [['name' => 'oy']]),
+                new InCondition(['id', 'name'], 'in', [['name' => 'John Doe']]),
                 '([[id]], [[name]]) IN ((NULL, :qp0))',
-                [':qp0' => 'oy'],
+                [':qp0' => 'John Doe'],
             ],
             'inCondition-custom-5' => [
-                new InCondition(['id', 'name'], 'in', [['id' => 1, 'name' => 'oy']]),
+                new InCondition(['id', 'name'], 'in', [['id' => 1, 'name' => 'John Doe']]),
                 '([[id]], [[name]]) IN ((:qp0, :qp1))',
-                [':qp0' => 1, ':qp1' => 'oy'],
+                [':qp0' => 1, ':qp1' => 'John Doe'],
             ],
             'inCondition-custom-6' => [
                 new InCondition(
