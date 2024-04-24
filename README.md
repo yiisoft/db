@@ -77,7 +77,7 @@ You may also check out other [Yii Community Resources](https://www.yiiframework.
 
 ## License
 
-The Yii Access is free software. It is released under the terms of the BSD License.
+The Yii Database is free software. It is released under the terms of the BSD License.
 Please see [`LICENSE`](./LICENSE.md) for more information.
 
 Maintained by [Yii Software](https://www.yiiframework.com/).
