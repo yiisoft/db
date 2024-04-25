@@ -9,21 +9,20 @@ use Yiisoft\Db\Schema\SchemaInterface;
 
 class BooleanColumnSchema extends AbstractColumnSchema
 {
-    public function __construct(string $name)
-    {
-        parent::__construct($name);
-
-        $this->type(SchemaInterface::TYPE_BOOLEAN);
-        $this->phpType(SchemaInterface::PHP_TYPE_BOOLEAN);
+    public function __construct(
+        string $type = SchemaInterface::TYPE_BOOLEAN,
+        string|null $phpType = SchemaInterface::PHP_TYPE_BOOLEAN,
+    ) {
+        parent::__construct($type, $phpType);
     }
 
     public function dbTypecast(mixed $value): bool|ExpressionInterface|null
     {
-        /** Optimized for performance. Do not merge cases or change order. */
-        return match (true) {
-            $value, $value === false, $value === null, $value instanceof ExpressionInterface => $value,
-            $value === '' => null,
-            default => (bool) $value,
+        return match ($value) {
+            true => true,
+            false => false,
+            null, '' => null,
+            default => $value instanceof ExpressionInterface ? $value : (bool) $value,
         };
     }
 

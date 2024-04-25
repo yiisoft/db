@@ -9,34 +9,45 @@ use Yiisoft\Db\Schema\SchemaInterface;
 
 use function is_int;
 
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
+
 class BigIntColumnSchema extends AbstractColumnSchema
 {
-    public function __construct(string $name)
-    {
-        parent::__construct($name);
-
-        $this->type(SchemaInterface::TYPE_BIGINT);
-        $this->phpType(SchemaInterface::PHP_TYPE_INTEGER);
+    public function __construct(
+        string $type = SchemaInterface::TYPE_BIGINT,
+        string|null $phpType = SchemaInterface::PHP_TYPE_INTEGER,
+    ) {
+        parent::__construct($type, $phpType);
     }
 
     public function dbTypecast(mixed $value): int|string|ExpressionInterface|null
     {
-        return match (true) {
-            is_int($value), $value === null, $value instanceof ExpressionInterface => $value,
-            $value === '' => null,
-            $value === false => 0,
-            PHP_INT_MIN <= $value && $value <= PHP_INT_MAX => (int) $value,
-            default => (string) $value,
+        if (is_int($value)) {
+            return $value;
+        }
+
+        return match ($value) {
+            null, '' => null,
+            false => 0,
+            default => $value instanceof ExpressionInterface
+                ? $value
+                : (($val = (string) $value) <= PHP_INT_MAX && $val >= PHP_INT_MIN
+                    ? (int) $value
+                    : $val),
         };
     }
 
     public function phpTypecast(mixed $value): int|string|null
     {
-        /** @psalm-var int|string|null $value */
-        return match (true) {
-            $value === null => null,
-            PHP_INT_MIN <= $value && $value <= PHP_INT_MAX => (int) $value,
-            default => (string) $value,
-        };
+        if ($value === null) {
+            return null;
+        }
+
+        if ($value <= PHP_INT_MAX && $value >= PHP_INT_MIN) {
+            return (int) $value;
+        }
+
+        return (string) $value;
     }
 }

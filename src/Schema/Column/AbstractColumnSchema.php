@@ -41,15 +41,16 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     private array|null $enumValues = null;
     private string|null $extra = null;
     private bool $isPrimaryKey = false;
-    private string|null $phpType = null;
+    private string|null $name = null;
     private int|null $precision = null;
     private int|null $scale = null;
     private int|null $size = null;
-    private string $type = '';
     private bool $unsigned = false;
 
-    public function __construct(private string $name)
-    {
+    public function __construct(
+        private string $type,
+        private string|null $phpType = null,
+    ) {
     }
 
     public function allowNull(bool $value): void
@@ -122,7 +123,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->extra;
     }
 
-    public function getName(): string
+    public function getName(): string|null
     {
         return $this->name;
     }
@@ -175,6 +176,11 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     public function isUnsigned(): bool
     {
         return $this->unsigned;
+    }
+
+    public function name(string|null $name): void
+    {
+        $this->name = $name;
     }
 
     public function phpType(string|null $value): void

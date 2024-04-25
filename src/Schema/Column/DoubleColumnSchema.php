@@ -11,20 +11,22 @@ use function is_float;
 
 class DoubleColumnSchema extends AbstractColumnSchema
 {
-    public function __construct(string $name)
-    {
-        parent::__construct($name);
-
-        $this->type(SchemaInterface::TYPE_DOUBLE);
-        $this->phpType(SchemaInterface::PHP_TYPE_DOUBLE);
+    public function __construct(
+        string $type = SchemaInterface::TYPE_DOUBLE,
+        string|null $phpType = SchemaInterface::PHP_TYPE_DOUBLE,
+    ) {
+        parent::__construct($type, $phpType);
     }
 
     public function dbTypecast(mixed $value): float|ExpressionInterface|null
     {
-        return match (true) {
-            is_float($value), $value === null, $value instanceof ExpressionInterface => $value,
-            $value === '' => null,
-            default => (float) $value,
+        if (is_float($value)) {
+            return $value;
+        }
+
+        return match ($value) {
+            null, '' => null,
+            default => $value instanceof ExpressionInterface ? $value : (float) $value,
         };
     }
 

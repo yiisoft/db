@@ -167,9 +167,9 @@ interface ColumnSchemaInterface
     public function getExtra(): string|null;
 
     /**
-     * @return string The name of the column.
+     * @return string|null The name of the column.
      */
-    public function getName(): string;
+    public function getName(): string|null;
 
     /**
      * @return int|null The precision of the column.
@@ -243,6 +243,17 @@ interface ColumnSchemaInterface
      * @see unsigned()
      */
     public function isUnsigned(): bool;
+
+    /**
+     * Sets the name of the column.
+     *
+     * ```php
+     * $columns = [
+     *     'description' => $this->primaryKey()->name('id'),
+     * ];
+     * ```
+     */
+    public function name(string|null $name): void;
 
     /**
      * The PHP data type for representing the data stored in the column.

@@ -118,7 +118,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testEnumValues(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new StringColumnSchema();
 
         $this->assertNull($column->getEnumValues());
 
@@ -160,9 +160,17 @@ final class ColumnSchemaTest extends TestCase
 
     public function testName(): void
     {
-        $column = new ColumnSchema('test');
+        $column = new StringColumnSchema();
+
+        $this->assertNull($column->getName());
+
+        $column->name('test');
 
         $this->assertSame('test', $column->getName());
+
+        $column->name('');
+
+        $this->assertSame('', $column->getName());
     }
 
     public function testPhpType(): void
@@ -311,7 +319,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testType(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new StringColumnSchema('');
 
         $this->assertSame('', $column->getType());
 
