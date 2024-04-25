@@ -16,11 +16,16 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
+use function array_column;
+use function array_combine;
 use function array_key_exists;
+use function array_map;
 use function array_merge;
 use function array_shift;
 use function array_unshift;
 use function count;
+use function current;
+use function gettype;
 use function is_array;
 use function is_int;
 use function is_numeric;
@@ -28,7 +33,6 @@ use function is_string;
 use function key;
 use function preg_match;
 use function preg_split;
-use function reset;
 use function str_contains;
 use function strcasecmp;
 use function strlen;
@@ -66,9 +70,12 @@ use function trim;
  * ```
  *
  * Query internally uses the {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} class to generate the SQL statement.
+ *
+ * @psalm-import-type SelectValue from QueryPartsInterface
  */
 class Query implements QueryInterface
 {
+    /** @psalm-var SelectValue $select */
     protected array $select = [];
     protected string|null $selectOption = null;
     protected bool|null $distinct = null;
@@ -80,6 +87,7 @@ class Query implements QueryInterface
     protected array $params = [];
     protected array $union = [];
     protected array $withQueries = [];
+    /** @psalm-var Closure(array):array-key|string|null $indexBy */
     protected Closure|string|null $indexBy = null;
     protected ExpressionInterface|int|null $limit = null;
     protected ExpressionInterface|int|null $offset = null;
@@ -131,10 +139,6 @@ class Query implements QueryInterface
         if (empty($this->params)) {
             $this->params = $params;
         } else {
-            /**
-             * @psalm-var array $params
-             * @psalm-var mixed $value
-             */
             foreach ($params as $name => $value) {
                 if (is_int($name)) {
                     $this->params[] = $value;
@@ -182,7 +186,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function addSelect(array|string|ExpressionInterface $columns): static
+    public function addSelect(array|bool|float|int|string|ExpressionInterface $columns): static
     {
         if ($this->select === []) {
             return $this->select($columns);
@@ -256,47 +260,50 @@ class Query implements QueryInterface
             return $this->createCommand()->queryColumn();
         }
 
-        if (is_string($this->indexBy) && count($this->select) === 1) {
-            if (!str_contains($this->indexBy, '.') && count($tables = $this->getTablesUsedInFrom()) > 0) {
-                $this->select[] = key($tables) . '.' . $this->indexBy;
-            } else {
-                $this->select[] = $this->indexBy;
-            }
-        }
-
-        $rows = $this->createCommand()->queryAll();
-        $results = [];
-        $column = null;
-
         if (is_string($this->indexBy)) {
+            if (count($this->select) === 1) {
+                if (!str_contains($this->indexBy, '.') && count($tables = $this->getTablesUsedInFrom()) > 0) {
+                    $this->select[] = key($tables) . '.' . $this->indexBy;
+                } else {
+                    $this->select[] = $this->indexBy;
+                }
+            }
+
+            $rows = $this->createCommand()->queryAll();
+
+            if (empty($rows)) {
+                return [];
+            }
+
             if (($dotPos = strpos($this->indexBy, '.')) === false) {
                 $column = $this->indexBy;
             } else {
                 $column = substr($this->indexBy, $dotPos + 1);
             }
+
+            return array_column($rows, key(current($rows)), $column);
         }
 
-        /** @psalm-var array<array-key, array<string, string>> $rows */
-        foreach ($rows as $row) {
-            $value = reset($row);
+        $rows = $this->createCommand()->queryAll();
 
-            if ($this->indexBy instanceof Closure) {
-                /** @psalm-suppress MixedArrayOffset */
-                $results[($this->indexBy)($row)] = $value;
-            } else {
-                $results[$row[$column] ?? $row[$this->indexBy]] = $value;
-            }
+        if (empty($rows)) {
+            return [];
         }
 
-        return $results;
+        return array_combine(array_map($this->indexBy, $rows), array_column($rows, key(current($rows))));
     }
 
     public function count(string $sql = '*'): int|string
     {
-        return match ($this->emulateExecution) {
-            true => 0,
-            false => is_numeric($count = $this->queryScalar("COUNT($sql)")) ? (int) $count : 0,
-        };
+        /** @var int|string|null $count */
+        $count = $this->queryScalar("COUNT($sql)");
+
+        if ($count === null) {
+            return 0;
+        }
+
+        /** @psalm-var non-negative-int|string */
+        return $count <= PHP_INT_MAX ? (int) $count : $count;
     }
 
     public function createCommand(): CommandInterface
@@ -611,7 +618,7 @@ class Query implements QueryInterface
         };
     }
 
-    public function select(array|string|ExpressionInterface $columns, string $option = null): static
+    public function select(array|bool|float|int|string|ExpressionInterface $columns, string $option = null): static
     {
         $this->select = $this->normalizeSelect($columns);
         $this->selectOption = $option;
@@ -678,8 +685,6 @@ class Query implements QueryInterface
      * Queries a scalar value by setting {@see select()} first.
      *
      * Restores the value of select to make this query reusable.
-     *
-     * @param ExpressionInterface|string $selectExpression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -855,18 +860,20 @@ class Query implements QueryInterface
 
     /**
      * Normalizes the `SELECT` columns passed to {@see select()} or {@see addSelect()}.
+     *
+     * @psalm-param SelectValue|scalar|ExpressionInterface $columns
+     * @psalm-return SelectValue
      */
-    private function normalizeSelect(array|ExpressionInterface|string $columns): array
+    private function normalizeSelect(array|bool|float|int|string|ExpressionInterface $columns): array
     {
-        if ($columns instanceof ExpressionInterface) {
-            $columns = [$columns];
-        } elseif (!is_array($columns)) {
-            $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
-        }
+        $columns = match (gettype($columns)) {
+            'array' => $columns,
+            'string' => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
+            default => [$columns],
+        };
 
         $select = [];
 
-        /** @psalm-var array<array-key, ExpressionInterface|string> $columns */
         foreach ($columns as $columnAlias => $columnDefinition) {
             if (is_string($columnAlias)) {
                 // Already in the normalized format, good for them.
@@ -891,8 +898,7 @@ class Query implements QueryInterface
                 }
             }
 
-            // Either a string calling a function, DB expression, or sub-query
-            /** @psalm-var string */
+            // Either a string calling a function, instance of ExpressionInterface or a scalar value.
             $select[] = $columnDefinition;
         }
 

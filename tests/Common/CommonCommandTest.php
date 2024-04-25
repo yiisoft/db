@@ -24,6 +24,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function call_user_func_array;
@@ -544,16 +545,23 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable(
             '{{testCreateTable}}',
-            ['[[id]]' => SchemaInterface::TYPE_PK, '[[bar]]' => SchemaInterface::TYPE_INTEGER],
+            [
+                '[[id]]' => SchemaInterface::TYPE_PK,
+                '[[bar]]' => SchemaInterface::TYPE_INTEGER,
+                '[[name]]' => (new Column('string(100)'))->notNull(),
+            ],
         )->execute();
-        $command->insert('{{testCreateTable}}', ['[[bar]]' => 1])->execute();
+        $command->insert('{{testCreateTable}}', ['[[bar]]' => 1, '[[name]]' => 'Lilo'])->execute();
         $records = $command->setSql(
             <<<SQL
-            SELECT [[id]], [[bar]] FROM [[testCreateTable]];
+            SELECT [[id]], [[bar]], [[name]] FROM [[testCreateTable]];
             SQL
         )->queryAll();
 
-        $this->assertEquals([['id' => 1, 'bar' => 1]], $records);
+        $nameCol = $schema->getTableSchema('{{testCreateTable}}', true)->getColumn('name');
+
+        $this->assertFalse($nameCol->isAllowNull());
+        $this->assertEquals([['id' => 1, 'bar' => 1, 'name' => 'Lilo']], $records);
 
         $db->close();
     }
@@ -1888,14 +1896,25 @@ abstract class CommonCommandTest extends AbstractCommandTest
         array $columns,
         array|string $conditions,
         array $params,
-        string $expected
+        array $expectedValues,
+        int $expectedCount,
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $sql = $command->update($table, $columns, $conditions, $params)->getSql();
+        $count = $command->update($table, $columns, $conditions, $params)->execute();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame($expectedCount, $count);
+
+        $values = (new Query($db))
+            ->from($table)
+            ->where($conditions, $params)
+            ->limit(1)
+            ->one();
+
+        foreach ($expectedValues as $name => $expectedValue) {
+            $this->assertEquals($expectedValue, $values[$name]);
+        }
 
         $db->close();
     }
@@ -2014,5 +2033,28 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $phpTypecastValue = $columnSchema->phpTypecast($result['total']);
 
         $this->assertSame($decimalValue, $phpTypecastValue);
+    }
+
+    public function testInsertWithReturningPksEmptyValues()
+    {
+        $db = $this->getConnection(true);
+
+        $pkValues = $db->createCommand()->insertWithReturningPks('null_values', []);
+
+        $expected = match ($db->getDriverName()) {
+            'pgsql' => ['id' => 1],
+            default => ['id' => '1'],
+        };
+
+        $this->assertSame($expected, $pkValues);
+    }
+
+    public function testInsertWithReturningPksEmptyValuesAndNoPk()
+    {
+        $db = $this->getConnection(true);
+
+        $pkValues = $db->createCommand()->insertWithReturningPks('negative_default_values', []);
+
+        $this->assertSame([], $pkValues);
     }
 }

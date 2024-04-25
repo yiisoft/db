@@ -83,6 +83,27 @@ class Quoter implements QuoterInterface
         return $cleanedUpTableNames;
     }
 
+    /**
+     * Returns the actual name of a given table name.
+     *
+     * This method will strip off curly brackets from the given table name and replace the percentage character '%' with
+     * {@see ConnectionInterface::tablePrefix}.
+     *
+     * @param string $name The table name to convert.
+     *
+     * @return string The real name of the given table name.
+     */
+    public function getRawTableName(string $name): string
+    {
+        if (str_contains($name, '{{')) {
+            $name = preg_replace('/{{(.*?)}}/', '\1', $name);
+
+            return str_replace('%', $this->tablePrefix, $name);
+        }
+
+        return $name;
+    }
+
     public function getTableNameParts(string $name, bool $withColumn = false): array
     {
         $parts = array_slice(explode('.', $name), -2, 2);
@@ -202,6 +223,11 @@ class Quoter implements QuoterInterface
         }
 
         return "'" . str_replace("'", "''", addcslashes($value, "\000\032")) . "'";
+    }
+
+    public function setTablePrefix(string $value): void
+    {
+        $this->tablePrefix = $value;
     }
 
     public function unquoteSimpleColumnName(string $name): string

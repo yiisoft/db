@@ -220,6 +220,8 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const TYPE_JSON = 'json';
     /**
      * Define the abstract column type as `jsonb`.
+     *
+     * @deprecated will be removed in version 2.0.0. Use `SchemaInterface::TYPE_JSON` instead.
      */
     public const TYPE_JSONB = 'jsonb';
 
@@ -282,6 +284,8 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param string $name The table name to convert.
      *
      * @return string The real name of the given table name.
+     *
+     * @deprecated Use {@see Quoter::getRawTableName()}. Will be removed in version 2.0.0.
      */
     public function getRawTableName(string $name): string;
 
@@ -365,6 +369,8 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param string $sql The SQL statement.
      *
      * @return bool Whether an SQL statement is for read purpose.
+     *
+     * @deprecated Use {@see DbStringHelper::isReadQuery()}. Will be removed in version 2.0.0.
      */
     public function isReadQuery(string $sql): bool;
 

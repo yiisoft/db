@@ -32,6 +32,18 @@ abstract class AbstractQuoterTest extends TestCase
     }
 
     /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::rawTableNames
+     */
+    public function testGetRawTableName(string $tableName, string $expected, string $tablePrefix = ''): void
+    {
+        $db = $this->getConnection();
+
+        $db->setTablePrefix($tablePrefix);
+
+        $this->assertSame($expected, $db->getQuoter()->getRawTableName($tableName));
+    }
+
+    /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QuoterProvider::tableNameParts
      */
     public function testGetTableNameParts(string $tableName, string ...$expected): void

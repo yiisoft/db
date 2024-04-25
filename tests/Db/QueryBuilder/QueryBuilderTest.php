@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 
-use Generator;
 use JsonException;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -15,6 +14,7 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\Stub\QueryBuilder;
 use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -48,15 +48,22 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert
      */
-    public function testBatchInsert(string $table, array $columns, iterable|Generator $rows, string $expected): void
-    {
+    public function testBatchInsert(
+        string $table,
+        array $columns,
+        iterable $rows,
+        string $expected,
+        array $expectedParams = [],
+    ): void {
         $db = $this->getConnection();
 
         $schemaMock = $this->createMock(Schema::class);
         $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
+        $params = [];
 
         try {
-            $this->assertSame($expected, $qb->batchInsert($table, $columns, $rows));
+            $this->assertSame($expected, $qb->batchInsert($table, $columns, $rows, $params));
+            $this->assertSame($expectedParams, $params);
         } catch (InvalidArgumentException|Exception) {
         }
     }
@@ -116,7 +123,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 [
                     'id' => 'pk',
                     'name' => 'string(255) NOT NULL',
-                    'email' => 'string(255) NOT NULL',
+                    'email' => (new Column('string(255)'))->notNull(),
                     'status' => 'integer NOT NULL',
                     'created_at' => 'datetime NOT NULL',
                     'UNIQUE test_email_unique (email)',
@@ -247,17 +254,20 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         string $table,
         array $columns,
         array|string $condition,
-        string $expectedSQL,
+        array $params,
+        string $expectedSql,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
 
         $schemaMock = $this->createMock(Schema::class);
         $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
-        $actualParams = [];
 
-        $this->assertSame($expectedSQL, $qb->update($table, $columns, $condition, $actualParams));
-        $this->assertSame($expectedParams, $actualParams);
+        $sql = $qb->update($table, $columns, $condition, $params);
+        $sql = $qb->quoter()->quoteSql($sql);
+
+        $this->assertSame($expectedSql, $sql);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**

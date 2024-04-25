@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Query;
 use Closure;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -25,6 +26,9 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * Allows pagination via {@see limit()} and {@see offset()}.
  *
  * Sorting is supported via {@see orderBy()} and items can be limited to match some conditions using {@see where()}.
+ *
+ * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type SelectValue from QueryPartsInterface
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
@@ -33,6 +37,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @param array $params The list of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
+     *
+     * @psalm-param ParamsType $params
      *
      * @see params()
      */
@@ -45,7 +51,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array The query results. If the query results in nothing, it returns an empty array.
+     * @return array[] The query results. If the query results in nothing, it returns an empty array.
      */
     public function all(): array;
 
@@ -163,6 +169,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     /**
      * @return Closure|string|null The "index by" value.
+     *
+     * @psalm-return Closure(array):array-key|string|null
      */
     public function getIndexBy(): Closure|string|null;
 
@@ -202,6 +210,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     /**
      * @return array The "select" value.
+     * @psalm-return SelectValue
      */
     public function getSelect(): array;
 
@@ -259,6 +268,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      *
      * @param array $params List of query parameter values indexed by parameter placeholders.
      * For example, `[':name' => 'Dan', ':age' => 31]`.
+     *
+     * @psalm-param ParamsType $params
      *
      * @see addParams()
      */

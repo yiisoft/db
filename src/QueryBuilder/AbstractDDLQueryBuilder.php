@@ -39,7 +39,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' CHECK (' . $this->quoter->quoteSql($expression) . ')';
     }
 
-    public function addColumn(string $table, string $column, string $type): string
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
@@ -159,7 +159,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         string $indexType = null,
         string $indexMethod = null
     ): string {
-        return 'CREATE ' . ($indexType ? ($indexType . ' ') : '') . 'INDEX '
+        return 'CREATE ' . (!empty($indexType) ? $indexType . ' ' : '') . 'INDEX '
             . $this->quoter->quoteTableName($name)
             . ' ON ' . $this->quoter->quoteTableName($table)
             . ' (' . $this->queryBuilder->buildColumns($columns) . ')';
@@ -169,7 +169,6 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     {
         $cols = [];
 
-        /** @psalm-var string[] $columns */
         foreach ($columns as $name => $type) {
             if (is_string($name)) {
                 $cols[] = "\t"
@@ -177,6 +176,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
                     . ' '
                     . $this->queryBuilder->getColumnType($type);
             } else {
+                /** @psalm-var string $type */
                 $cols[] = "\t" . $type;
             }
         }

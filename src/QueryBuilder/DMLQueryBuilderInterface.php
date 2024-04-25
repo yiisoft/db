@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
-use Generator;
 use JsonException;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -16,6 +16,8 @@ use Yiisoft\Db\Query\QueryInterface;
  * Defines methods for building SQL statements for DML (data manipulation language).
  *
  * @link https://en.wikipedia.org/wiki/Data_manipulation_language
+ *
+ * @psalm-import-type ParamsType from ConnectionInterface
  */
 interface DMLQueryBuilderInterface
 {
@@ -33,8 +35,8 @@ interface DMLQueryBuilderInterface
      * ```
      *
      * @param string $table The table to insert new rows into.
-     * @param string[] $columns The column names.
-     * @param Generator|iterable $rows The rows to batch-insert into the table.
+     * @param string[] $columns The column names of the table.
+     * @param iterable $rows The rows to batch-insert into the table.
      * @param array $params The binding parameters. This parameter exists.
      *
      * @throws Exception
@@ -43,12 +45,14 @@ interface DMLQueryBuilderInterface
      * @return string The batch INSERT SQL statement.
      *
      * @psalm-param string[] $columns
+     * @psalm-param iterable<array-key, array<array-key, mixed>> $rows
+     * @psalm-param ParamsType $params
      *
      * Note:
      * - That the values in each row must match the corresponding column names.
      * - The method will escape the column names, and quote the values to insert.
      */
-    public function batchInsert(string $table, array $columns, iterable|Generator $rows, array &$params = []): string;
+    public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string;
 
     /**
      * Creates a `DELETE` SQL statement.
@@ -70,6 +74,8 @@ interface DMLQueryBuilderInterface
      * @throws NotSupportedException If this isn't supported by the underlying DBMS.
      *
      * @return string The `DELETE` SQL.
+     *
+     * @psalm-param ParamsType $params
      *
      * Note: The method will escape the table and column names.
      */
@@ -101,6 +107,8 @@ interface DMLQueryBuilderInterface
      *
      * @return string The INSERT SQL.
      *
+     * @psalm-param ParamsType $params
+     *
      * Note: The method will escape the table and column names.
      */
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string;
@@ -115,6 +123,8 @@ interface DMLQueryBuilderInterface
      *
      * @throws Exception
      * @throws NotSupportedException If this isn't supported by the underlying DBMS.
+     *
+     * @psalm-param ParamsType $params
      *
      * Note: The method will escape the table and column names.
      */
@@ -149,7 +159,7 @@ interface DMLQueryBuilderInterface
      * ```
      *
      * @param string $table The table to update.
-     * @param array $columns The column data (name => value) to update.
+     * @param array $columns The column data (name => value) to update the table.
      * @param array|string $condition The condition to put in the `WHERE` part. Please refer to
      * {@see Query::where()} On how to specify condition.
      * @param array $params The binding parameters that will be modified by this method so that they can be bound to
@@ -159,6 +169,8 @@ interface DMLQueryBuilderInterface
      * @throws InvalidArgumentException
      *
      * @return string The UPDATE SQL.
+     *
+     * @psalm-param ParamsType $params
      *
      * Note: The method will escape the table and column names.
      */
@@ -193,6 +205,9 @@ interface DMLQueryBuilderInterface
      * @throws InvalidConfigException
      * @throws JsonException
      * @throws NotSupportedException If this isn't supported by the underlying DBMS.
+     *
+     * @psalm-param array<string, mixed>|QueryInterface $insertColumns
+     * @psalm-param ParamsType $params
      *
      * Note: The method will escape the table and column names.
      */

@@ -26,7 +26,7 @@ jobs:
     name: PHP ${{ matrix.php }}-pgsql-${{ matrix.pgsql }}
 
     env:
-      COMPOSER_ROOT_VERSION: 1.0.0
+      COMPOSER_ROOT_VERSION: 1.2.0
       CURRENT_PACKAGE: db-pgsql
       EXTENSIONS: pdo, pdo_pgsql
 

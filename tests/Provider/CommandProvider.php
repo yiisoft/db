@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use ArrayIterator;
+use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stringable;
+use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 class CommandProvider
@@ -301,16 +306,10 @@ class CommandProvider
                     ':qp3' => true,
                 ],
             ],
-            'wrongBehavior' => [
+            'table name with column name with brackets' => [
                 '{{%type}}',
                 ['{{%type}}.[[int_col]]', '[[float_col]]', 'char_col', 'bool_col'],
                 'values' => [['0', '0.0', 'Kyiv {{city}}, Ukraine', false]],
-                /**
-                 * Test covers potentially wrong behavior and marks it as expected!.
-                 *
-                 * In case table name or table column is passed with curly or square bracelets, QueryBuilder can not
-                 * determine the table schema and typecast values properly.
-                 */
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
@@ -318,8 +317,8 @@ class CommandProvider
                     static::$driverName,
                 ),
                 'expectedParams' => [
-                    ':qp0' => '0',
-                    ':qp1' => '0.0',
+                    ':qp0' => 0,
+                    ':qp1' => 0.0,
                     ':qp2' => 'Kyiv {{city}}, Ukraine',
                     ':qp3' => false,
                 ],
@@ -343,6 +342,142 @@ class CommandProvider
                     ':qp1' => 1.0,
                     ':qp2' => 'test',
                     ':qp3' => false,
+                ],
+            ],
+            'with associative values with different keys' => [
+                'type',
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
+                'values' => [['int' => '1.0', 'float' => '2', 'char' => 10, 'bool' => 1]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 2.0,
+                    ':qp2' => '10',
+                    ':qp3' => true,
+                ],
+            ],
+            'with associative values with different keys and columns with keys' => [
+                'type',
+                ['a' => 'int_col', 'b' => 'float_col', 'c' => 'char_col', 'd' => 'bool_col'],
+                'values' => [['int' => '1.0', 'float' => '2', 'char' => 10, 'bool' => 1]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 2.0,
+                    ':qp2' => '10',
+                    ':qp3' => true,
+                ],
+            ],
+            'with associative values with keys of column names' => [
+                'type',
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
+                'values' => [['bool_col' => 1, 'char_col' => 10, 'int_col' => '1.0', 'float_col' => '2']],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp2, :qp3, :qp1, :qp0)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => true,
+                    ':qp1' => '10',
+                    ':qp2' => 1,
+                    ':qp3' => 2.0,
+                ],
+            ],
+            'with associative values with keys of column keys' => [
+                'type',
+                ['int' => 'int_col', 'float' => 'float_col', 'char' => 'char_col', 'bool' => 'bool_col'],
+                'values' => [['bool' => 1, 'char' => 10, 'int' => '1.0', 'float' => '2']],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp2, :qp3, :qp1, :qp0)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => true,
+                    ':qp1' => '10',
+                    ':qp2' => 1,
+                    ':qp3' => 2.0,
+                ],
+            ],
+            'with shuffled indexes of values' => [
+                'type',
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
+                'values' => [[3 => 1, 2 => 10, 0 => '1.0', 1 => '2']],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp2, :qp3, :qp1, :qp0)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => true,
+                    ':qp1' => '10',
+                    ':qp2' => 1,
+                    ':qp3' => 2.0,
+                ],
+            ],
+            'empty columns and associative values' => [
+                'type',
+                [],
+                'values' => [['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 2.0,
+                    ':qp2' => '10',
+                    ':qp3' => true,
+                ],
+            ],
+            'empty columns and objects' => [
+                'type',
+                [],
+                'values' => [(object)['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 2.0,
+                    ':qp2' => '10',
+                    ':qp3' => true,
+                ],
+            ],
+            'empty columns and Traversable' => [
+                'type',
+                [],
+                'values' => [new ArrayIterator(['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1])],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 2.0,
+                    ':qp2' => '10',
+                    ':qp3' => true,
                 ],
             ],
         ];
@@ -477,6 +612,18 @@ class CommandProvider
                 <<<SQL
                 SELECT * FROM [[customer]] WHERE [[id]] = :id
                 SQL,
+                ['id' => new Param('1 OR 1=1', DataType::INTEGER)],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[id]] = 1
+                    SQL,
+                    static::$driverName,
+                ),
+            ],
+            [
+                <<<SQL
+                SELECT * FROM [[customer]] WHERE [[id]] = :id
+                SQL,
                 ['id' => null],
                 DbHelper::replaceQuotes(
                     <<<SQL
@@ -558,6 +705,18 @@ class CommandProvider
                     static::$driverName,
                 ),
             ],
+            [
+                <<<SQL
+                SELECT * FROM [[customer]] WHERE [[name]] = :name
+                SQL,
+                ['name' => new Stringable('Alfa')],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[name]] = 'Alfa'
+                    SQL,
+                    static::$driverName,
+                ),
+            ],
         ];
     }
 
@@ -565,88 +724,47 @@ class CommandProvider
     {
         return [
             [
-                '{{table}}',
+                '{{customer}}',
                 ['name' => '{{test}}'],
                 [],
                 [],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp0
-                    SQL,
-                    static::$driverName,
-                ),
+                ['name' => '{{test}}'],
+                3,
             ],
             [
-                '{{table}}',
+                '{{customer}}',
                 ['name' => '{{test}}'],
                 ['id' => 1],
                 [],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp0 WHERE [[id]]=:qp1
-                    SQL,
-                    static::$driverName,
-                ),
-            ],
-            [
-                '{{table}}',
                 ['name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'integer'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
+                1,
             ],
             [
-                '{{table}}',
+                '{{customer}}',
+                ['{{customer}}.name' => '{{test}}'],
+                ['id' => 1],
+                [],
                 ['name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'string'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
+                1,
             ],
             [
-                '{{table}}',
-                ['name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'boolean'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
+                'customer',
+                ['status' => new Expression('1 + 2')],
+                ['id' => 2],
+                [],
+                ['status' => 3],
+                1,
             ],
             [
-                '{{table}}',
-                ['{{table}}.name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'boolean'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
-            ],
-            [
-                '{{table}}',
-                ['name' => '{{test}}'],
-                ['id' => 1],
-                ['id' => 'float'],
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    UPDATE [[table]] SET [[name]]=:qp1 WHERE [[id]]=:qp2
-                    SQL,
-                    static::$driverName,
-                ),
+                '{{customer}}',
+                ['status' => new Expression(
+                    '1 + :val',
+                    ['val' => new Expression('2 + :val', ['val' => 3])]
+                )],
+                '[[name]] != :val',
+                ['val' => new Expression('LOWER(:val)', ['val' => 'USER1'])],
+                ['name' => 'user2', 'status' => 6],
+                2,
             ],
         ];
     }
@@ -761,6 +879,14 @@ class CommandProvider
                     'expected' => ['email' => 'user1@example.com', 'address' => 'address1', 'status' => 1],
                 ],
             ],
+        ];
+    }
+
+    public static function columnTypes(): array
+    {
+        return [
+            [SchemaInterface::TYPE_INTEGER],
+            [new Column('string(100)')],
         ];
     }
 }

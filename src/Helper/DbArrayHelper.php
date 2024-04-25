@@ -333,9 +333,9 @@ final class DbArrayHelper
      * This method is internally used to convert the data fetched from a database into the format as required by this
      * query.
      *
-     * @param array $rows The raw query result from a database.
+     * @param array[] $rows The raw query result from a database.
      *
-     * @psalm-suppress MixedArrayOffset
+     * @return array[]
      */
     public static function populate(array $rows, Closure|string|null $indexBy = null): array
     {
@@ -345,7 +345,6 @@ final class DbArrayHelper
 
         $result = [];
 
-        /** @psalm-var array[][] $row */
         foreach ($rows as $row) {
             /** @psalm-suppress MixedArrayOffset */
             $result[self::getValueByPath($row, $indexBy)] = $row;
