@@ -352,6 +352,7 @@ abstract class AbstractCommand implements CommandInterface
 
             $value = $param->getValue();
 
+            /** @psalm-suppress ParadoxicalCondition */
             $params[$name] = match ($param->getType()) {
                 DataType::INTEGER => (string) (int) $value,
                 DataType::STRING, DataType::LOB => match (gettype($value)) {
