@@ -241,10 +241,10 @@ interface CommandInterface
      *
      * @param array|ParamInterface[] $values The values to bind. This must be given in terms of an associative
      * array with array keys being the parameter names, and an array values the corresponding parameter values,
-     * for example, `[':name' => 'John', ':age' => 25]`.
+     * for example, `[':name' => 'John Doe', ':age' => 25]`.
      * By default, the SQL data type of each value is determined by its PHP type.
      * You may explicitly specify the {@see DataType SQL data type} type by using a {@see Param} class:
-     * `new Param(value, type)`, for example, `[':name' => 'John', ':profile' => new Param($profile, DataType::LOB)]`.
+     * `new Param(value, type)`, for example, `[':name' => 'John Doe', ':profile' => new Param($profile, DataType::LOB)]`.
      */
     public function bindValues(array $values): static;
 
