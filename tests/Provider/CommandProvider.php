@@ -717,6 +717,18 @@ class CommandProvider
                     static::$driverName,
                 ),
             ],
+            [
+                <<<SQL
+                SELECT * FROM [[customer]] WHERE [[price]] = :price
+                SQL,
+                ['price' => 123.45],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[customer]] WHERE [[price]] = 123.45
+                    SQL,
+                    static::$driverName,
+                ),
+            ],
         ];
     }
 
