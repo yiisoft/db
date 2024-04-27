@@ -241,7 +241,7 @@ class QueryBuilderProvider
             'empty columns and non-exists table' => [
                 'non_exists_table',
                 [],
-                'values' => [['1.0', '2', 10, 1]],
+                [['1.0', '2', 10, 1]],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[non_exists_table]] VALUES (:qp0, :qp1, :qp2, :qp3)
