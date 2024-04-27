@@ -405,13 +405,12 @@ abstract class AbstractSchema implements SchemaInterface
      * This method may be overridden by child classes to create a DBMS-specific column schema.
      *
      * @param string $type The abstract data type.
-     * @param string $name The column name.
      * @param mixed ...$info The column information.
      * @psalm-param array{unsigned?: bool} $info The set of parameters may be different for a specific DBMS.
      *
      * @return ColumnSchemaInterface
      */
-    protected function createColumnSchema(string $type, string $name, mixed ...$info): ColumnSchemaInterface
+    protected function createColumnSchema(string $type, mixed ...$info): ColumnSchemaInterface
     {
         $phpType = $this->getColumnPhpType($type);
         $isUnsigned = !empty($info['unsigned']);
@@ -420,13 +419,11 @@ abstract class AbstractSchema implements SchemaInterface
             $isUnsigned && PHP_INT_SIZE === 4 && $type === SchemaInterface::TYPE_INTEGER
             || ($isUnsigned || PHP_INT_SIZE !== 8) && $type === SchemaInterface::TYPE_BIGINT
         ) {
-            $column = new BigIntColumnSchema($name);
+            $column = new BigIntColumnSchema($type, $phpType);
         } else {
-            $column = $this->createPhpTypeColumnSchema($phpType, $name);
+            $column = $this->createPhpTypeColumnSchema($phpType, $type);
         }
 
-        $column->type($type);
-        $column->phpType($phpType);
         $column->unsigned($isUnsigned);
 
         return $column;
@@ -457,15 +454,15 @@ abstract class AbstractSchema implements SchemaInterface
         };
     }
 
-    protected function createPhpTypeColumnSchema(string $phpType, string $name): ColumnSchemaInterface
+    protected function createPhpTypeColumnSchema(string $phpType, string $type): ColumnSchemaInterface
     {
         return match ($phpType) {
-            SchemaInterface::PHP_TYPE_INTEGER => new IntegerColumnSchema($name),
-            SchemaInterface::PHP_TYPE_DOUBLE => new DoubleColumnSchema($name),
-            SchemaInterface::PHP_TYPE_BOOLEAN => new BooleanColumnSchema($name),
-            SchemaInterface::PHP_TYPE_RESOURCE => new BinaryColumnSchema($name),
-            SchemaInterface::PHP_TYPE_ARRAY => new JsonColumnSchema($name),
-            default => new StringColumnSchema($name),
+            SchemaInterface::PHP_TYPE_INTEGER => new IntegerColumnSchema($type, $phpType),
+            SchemaInterface::PHP_TYPE_DOUBLE => new DoubleColumnSchema($type, $phpType),
+            SchemaInterface::PHP_TYPE_BOOLEAN => new BooleanColumnSchema($type, $phpType),
+            SchemaInterface::PHP_TYPE_RESOURCE => new BinaryColumnSchema($type, $phpType),
+            SchemaInterface::PHP_TYPE_ARRAY => new JsonColumnSchema($type, $phpType),
+            default => new StringColumnSchema($type, $phpType),
         };
     }
 

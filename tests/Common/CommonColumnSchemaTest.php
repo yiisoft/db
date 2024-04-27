@@ -13,9 +13,8 @@ abstract class CommonColumnSchemaTest extends TestCase
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider::predefinedTypes */
     public function testPredefinedType(string $className, string $type, string $phpType)
     {
-        $column = new $className('column_name');
+        $column = new $className();
 
-        $this->assertSame('column_name', $column->getName());
         $this->assertSame($type, $column->getType());
         $this->assertSame($phpType, $column->getPhpType());
     }
@@ -23,7 +22,7 @@ abstract class CommonColumnSchemaTest extends TestCase
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider::dbTypecastColumns */
     public function testDbTypecastColumns(string $className, array $values)
     {
-        $column = new $className('column_name');
+        $column = new $className();
 
         foreach ($values as [$expected, $value]) {
             if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {
