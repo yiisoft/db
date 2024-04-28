@@ -10,6 +10,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 
@@ -63,6 +64,8 @@ use function stream_get_contents;
  * ```
  *
  * To build `SELECT` SQL statements, please use {@see QueryInterface} and its implementations instead.
+ *
+ * @psalm-import-type BatchValues from DMLQueryBuilderInterface
  */
 abstract class AbstractCommand implements CommandInterface
 {
@@ -193,7 +196,19 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
+    /**
+     * @param string[] $columns
+     *
+     * @psalm-param BatchValues $rows
+     *
+     * @deprecated Use (@see insertBatch()) instead. It will be removed in version 3.0.0.
+     */
     public function batchInsert(string $table, array $columns, iterable $rows): static
+    {
+        return $this->insertBatch($table, $rows, $columns);
+    }
+
+    public function insertBatch(string $table, iterable $rows, array $columns = []): static
     {
         $table = $this->getQueryBuilder()->quoter()->quoteSql($table);
 
@@ -205,7 +220,7 @@ abstract class AbstractCommand implements CommandInterface
         unset($column);
 
         $params = [];
-        $sql = $this->getQueryBuilder()->batchInsert($table, $columns, $rows, $params);
+        $sql = $this->getQueryBuilder()->insertBatch($table, $rows, $columns, $params);
 
         $this->setRawSql($sql);
         $this->bindValues($params);

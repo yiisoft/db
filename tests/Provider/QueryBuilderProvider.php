@@ -140,8 +140,8 @@ class QueryBuilderProvider
         return [
             'simple' => [
                 'customer',
-                ['email', 'name', 'address'],
                 [['test@example.com', 'silverfire', 'Kyiv {{city}}, Ukraine']],
+                ['email', 'name', 'address'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES (:qp0, :qp1, :qp2)
@@ -152,8 +152,8 @@ class QueryBuilderProvider
             ],
             'escape-danger-chars' => [
                 'customer',
-                ['address'],
                 [["SQL-danger chars are escaped: '); --"]],
+                ['address'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] ([[address]]) VALUES (:qp0)
@@ -164,14 +164,14 @@ class QueryBuilderProvider
             ],
             'customer2' => [
                 'customer',
-                ['address'],
                 [],
+                ['address'],
                 '',
             ],
             'customer3' => [
                 'customer',
-                [],
                 [['no columns passed']],
+                [],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] VALUES (:qp0)
@@ -182,8 +182,8 @@ class QueryBuilderProvider
             ],
             'bool-false, bool2-null' => [
                 'type',
-                ['bool_col', 'bool_col2'],
                 [[false, null]],
+                ['bool_col', 'bool_col2'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
@@ -194,8 +194,8 @@ class QueryBuilderProvider
             ],
             'wrong' => [
                 '{{%type}}',
-                ['{{%type}}.[[float_col]]', '[[time]]'],
                 [[null, new Expression('now()')], [null, new Expression('now()')]],
+                ['{{%type}}.[[float_col]]', '[[time]]'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO {{%type}} ([[float_col]], [[time]]) VALUES (:qp0, now()), (:qp1, now())
@@ -206,8 +206,8 @@ class QueryBuilderProvider
             ],
             'bool-false, time-now()' => [
                 '{{%type}}',
-                ['{{%type}}.[[bool_col]]', '[[time]]'],
                 [[false, new Expression('now()')]],
+                ['{{%type}}.[[bool_col]]', '[[time]]'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO {{%type}} ([[bool_col]], [[time]]) VALUES (:qp0, now())
@@ -218,8 +218,8 @@ class QueryBuilderProvider
             ],
             'column table names are not checked' => [
                 '{{%type}}',
-                ['{{%type}}.[[bool_col]]', '{{%another_table}}.[[bool_col2]]'],
                 [[true, false]],
+                ['{{%type}}.[[bool_col]]', '{{%another_table}}.[[bool_col2]]'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO {{%type}} ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
@@ -230,18 +230,18 @@ class QueryBuilderProvider
             ],
             'empty-sql' => [
                 '{{%type}}',
-                [],
                 (static function () {
                     if (false) {
                         yield [];
                     }
                 })(),
+                [],
                 '',
             ],
             'empty columns and non-exists table' => [
                 'non_exists_table',
-                [],
                 [['1.0', '2', 10, 1]],
+                [],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[non_exists_table]] VALUES (:qp0, :qp1, :qp2, :qp3)

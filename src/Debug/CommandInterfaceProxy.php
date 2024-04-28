@@ -101,7 +101,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress  MixedArgument
      */
-    public function batchInsert(string $table, array $columns, iterable $rows): static
+    public function insertBatch(string $table, iterable $rows, array $columns = []): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
@@ -24,6 +25,9 @@ use function preg_replace;
  *
  * AbstractQueryBuilder is also used by {@see CommandInterface} to build SQL statements such as {@see insert()},
  * {@see update()}, {@see delete()} and {@see createTable()}.
+ *
+ * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type BatchValues from DMLQueryBuilderInterface
  */
 abstract class AbstractQueryBuilder implements QueryBuilderInterface
 {
@@ -108,9 +112,22 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
 
+    /**
+     * @param string[] $columns
+     *
+     * @psalm-param BatchValues $rows
+     * @psalm-param ParamsType $params
+     *
+     * @deprecated Use (@see insertBatch()) instead. It will be removed in version 3.0.0.
+     */
     public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
     {
-        return $this->dmlBuilder->batchInsert($table, $columns, $rows, $params);
+        return $this->dmlBuilder->insertBatch($table, $rows, $columns, $params);
+    }
+
+    public function insertBatch(string $table, iterable $rows, array $columns = [], array &$params = []): string
+    {
+        return $this->dmlBuilder->insertBatch($table, $rows, $columns, $params);
     }
 
     public function bindParam(mixed $value, array &$params = []): string
