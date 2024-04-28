@@ -352,12 +352,11 @@ abstract class AbstractCommand implements CommandInterface
 
             $value = $param->getValue();
 
-            /** @psalm-suppress ParadoxicalCondition */
             $params[$name] = match ($param->getType()) {
                 DataType::INTEGER => (string) (int) $value,
                 DataType::STRING, DataType::LOB => match (gettype($value)) {
                     SchemaInterface::PHP_TYPE_RESOURCE => $name,
-                    SchemaInterface::PHP_TYPE_DOUBLE, SchemaInterface::PHP_TYPE_INTEGER => (string) $value,
+                    SchemaInterface::PHP_TYPE_DOUBLE => (string) $value,
                     default => $value instanceof Expression
                         ? (string) $value
                         : $quoter->quoteValue((string) $value),
