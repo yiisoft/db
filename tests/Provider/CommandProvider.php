@@ -743,12 +743,12 @@ class CommandProvider
             ],
             [
                 <<<SQL
-                SELECT * FROM [[customer]] WHERE [[price]] = :price
+                SELECT * FROM [[product]] WHERE [[price]] = :price
                 SQL,
                 ['price' => 123.45],
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    SELECT * FROM [[customer]] WHERE [[price]] = 123.45
+                    SELECT * FROM [[product]] WHERE [[price]] = 123.45
                     SQL,
                     static::$driverName,
                 ),
