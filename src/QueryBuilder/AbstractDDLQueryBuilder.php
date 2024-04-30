@@ -6,7 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -46,7 +46,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' ADD '
             . $this->quoter->quoteColumnName($column)
             . ' '
-            . $this->queryBuilder->getColumnType($type);
+            . $this->queryBuilder->buildColumnDefinition($type);
     }
 
     public function addCommentOnColumn(string $table, string $column, string $comment): string
@@ -144,7 +144,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . $this->quoter->quoteColumnName($column)
             . ' '
             . $this->quoter->quoteColumnName($column) . ' '
-            . $this->queryBuilder->getColumnType($type);
+            . $this->queryBuilder->buildColumnDefinition($type);
     }
 
     public function checkIntegrity(string $schema = '', string $table = '', bool $check = true): string
@@ -174,9 +174,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
                 $cols[] = "\t"
                     . $this->quoter->quoteColumnName($name)
                     . ' '
-                    . $this->queryBuilder->getColumnType($type);
+                    . $this->queryBuilder->buildColumnDefinition($type);
             } else {
-                /** @psalm-var string $type */
                 $cols[] = "\t" . $type;
             }
         }

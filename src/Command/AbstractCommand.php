@@ -11,7 +11,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function explode;
 use function get_resource_type;

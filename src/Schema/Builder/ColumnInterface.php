@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Builder;
 
+use Yiisoft\Db\Schema\Column\ColumnInterface;
+
 /**
  * This interface defines the methods that must be implemented by classes that build the schema of a database column.
  *
  * It provides methods for setting the column name, type, length, precision, scale, default value, and other properties
  * of the column, as well as methods for adding constraints, such as a primary key, unique, and not null.
+ *
+ * @deprecated Use {@see ColumnInterface}. Will be removed in version 3.0.0.
  */
 interface ColumnInterface
 {

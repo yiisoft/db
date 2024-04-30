@@ -9,7 +9,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * Defines methods for building SQL statements for DDL (data definition language).

@@ -12,9 +12,9 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\Stub\QueryBuilder;
 use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -108,9 +108,9 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
             DbHelper::replaceQuotes(
                 <<<SQL
                 CREATE TABLE [[test]] (
-                \t[[id]] pk,
-                \t[[name]] string(255) NOT NULL,
-                \t[[email]] string(255) NOT NULL,
+                \t[[id]] integer PRIMARY KEY,
+                \t[[name]] varchar(255) NOT NULL,
+                \t[[email]] varchar(255) NOT NULL,
                 \t[[status]] integer NOT NULL,
                 \t[[created_at]] datetime NOT NULL,
                 \tUNIQUE test_email_unique (email)
@@ -123,7 +123,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 [
                     'id' => 'pk',
                     'name' => 'string(255) NOT NULL',
-                    'email' => (new Column('string(255)'))->notNull(),
+                    'email' => ColumnBuilder::string(255)->allowNull(false),
                     'status' => 'integer NOT NULL',
                     'created_at' => 'datetime NOT NULL',
                     'UNIQUE test_email_unique (email)',

@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Schema\Builder;
 
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\DbStringHelper;
+use Yiisoft\Db\Schema\Column\Column;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 use function gettype;
@@ -26,6 +27,8 @@ use function strtr;
  *
  * Provides a fluent interface, which means that the methods can be chained together to create a column schema with
  * many properties in a single line of code.
+ *
+ * @deprecated Use {@see Column}. Will be removed in version 3.0.0.
  */
 abstract class AbstractColumn implements ColumnInterface
 {
