@@ -35,3 +35,22 @@ Add support any scalar values for `$columns` parameter of these methods in your 
 `Expression::$params` can contain:
 - non-unique placeholder names, they will be replaced with unique names.
 - `Expression` instances, they will be built when building a query using `QueryBuilder`.
+
+### Rename `batchInsert()` to `insertBatch()`
+
+`batchInsert()` method is renamed to `insertBatch()` in `DMLQueryBuilderInterface` and `CommandInterface`.
+The parameters order is changed from `$table, $columns, $rows` to `$table, $rows, $columns = []`.
+It allows to use the method without columns, for example:
+
+```php
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+$values = [
+    ['name' => 'Tom', 'age' => 30],
+    ['name' => 'Jane', 'age' => 20],
+    ['name' => 'Linda', 'age' => 25],
+];
+
+/** @var ConnectionInterface $db */
+$db->createCommand()->insertBatch('user', $values)->execute();
+```

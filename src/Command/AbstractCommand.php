@@ -203,7 +203,7 @@ abstract class AbstractCommand implements CommandInterface
      *
      * @psalm-param BatchValues $rows
      *
-     * @deprecated Use (@see insertBatch()) instead. It will be removed in version 3.0.0.
+     * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
      */
     public function batchInsert(string $table, array $columns, iterable $rows): static
     {

@@ -69,7 +69,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @psalm-param BatchValues $rows
      * @psalm-param ParamsType $params
      *
-     * @deprecated Use (@see insertBatch()) instead. It will be removed in version 3.0.0.
+     * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
      */
     public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
     {
