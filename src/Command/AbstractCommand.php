@@ -13,9 +13,11 @@ use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\SchemaInterface;
 
 use function explode;
 use function get_resource_type;
+use function gettype;
 use function is_array;
 use function is_int;
 use function is_resource;
@@ -366,11 +368,13 @@ abstract class AbstractCommand implements CommandInterface
             $value = $param->getValue();
 
             $params[$name] = match ($param->getType()) {
-                DataType::INTEGER => (string)(int)$value,
-                DataType::STRING, DataType::LOB => match (true) {
-                    $value instanceof Expression => (string)$value,
-                    is_resource($value) => $name,
-                    default => $quoter->quoteValue((string)$value),
+                DataType::INTEGER => (string) (int) $value,
+                DataType::STRING, DataType::LOB => match (gettype($value)) {
+                    SchemaInterface::PHP_TYPE_RESOURCE => $name,
+                    SchemaInterface::PHP_TYPE_DOUBLE => (string) $value,
+                    default => $value instanceof Expression
+                        ? (string) $value
+                        : $quoter->quoteValue((string) $value),
                 },
                 DataType::BOOLEAN => $value ? 'TRUE' : 'FALSE',
                 DataType::NULL => 'NULL',
