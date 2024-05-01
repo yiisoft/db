@@ -81,4 +81,63 @@ abstract class CommonQueryTest extends AbstractQueryTest
 
         $db->close();
     }
+
+    public function testCallbackAll(): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))
+            ->from('customer')
+            ->callback(fn (array $row) => (object) $row);
+
+        $this->assertEquals([
+            (object) [
+                'id' => '1',
+                'email' => 'user1@example.com',
+                'name' => 'user1',
+                'address' => 'address1',
+                'status' => '1',
+                'profile_id' => '1',
+            ],
+            (object) [
+                'id' => '2',
+                'email' => 'user2@example.com',
+                'name' => 'user2',
+                'address' => 'address2',
+                'status' => '1',
+                'profile_id' => null,
+            ],
+            (object) [
+                'id' => '3',
+                'email' => 'user3@example.com',
+                'name' => 'user3',
+                'address' => 'address3',
+                'status' => '2',
+                'profile_id' => '2',
+            ],
+        ], $query->all());
+
+        $db->close();
+    }
+
+    public function testCallbackOne(): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))
+            ->from('customer')
+            ->where(['id' => 2])
+            ->callback(fn (array $row) => (object) $row);
+
+        $this->assertEquals((object) [
+            'id' => '2',
+            'email' => 'user2@example.com',
+            'name' => 'user2',
+            'address' => 'address2',
+            'status' => '1',
+            'profile_id' => null,
+        ], $query->one());
+
+        $db->close();
+    }
 }
