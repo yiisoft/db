@@ -10,7 +10,7 @@
 - Enh #766: Allow `ColumnInterface` as column type. (@Tigrov)
 - Bug #828: Fix `float` type when use `AbstractCommand::getRawSql()` method (@Tigrov)
 - Enh #829: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilderInterface` and `CommandInterface`
-  and change parameters order from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
+  and change parameters from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

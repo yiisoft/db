@@ -39,7 +39,7 @@ Add support any scalar values for `$columns` parameter of these methods in your 
 ### Rename `batchInsert()` to `insertBatch()`
 
 `batchInsert()` method is renamed to `insertBatch()` in `DMLQueryBuilderInterface` and `CommandInterface`.
-The parameters order is changed from `$table, $columns, $rows` to `$table, $rows, $columns = []`.
+The parameters are changed from `$table, $columns, $rows` to `$table, $rows, $columns = []`.
 It allows to use the method without columns, for example:
 
 ```php
