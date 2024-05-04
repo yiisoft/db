@@ -21,8 +21,6 @@ abstract class AbstractPdoSchema extends AbstractSchema
      */
     protected function generateCacheKey(): array
     {
-        $cacheKey = [];
-
         if ($this->db instanceof PdoConnectionInterface) {
             $cacheKey = [$this->db->getDriver()->getDsn(), $this->db->getDriver()->getUsername()];
         } else {

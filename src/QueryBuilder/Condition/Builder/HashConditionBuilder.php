@@ -44,7 +44,6 @@ class HashConditionBuilder implements ExpressionBuilderInterface
 
         /**
          * @psalm-var array<string, array|mixed> $hash
-         * @psalm-var array|mixed $value
          */
         foreach ($hash as $column => $value) {
             if (is_iterable($value) || $value instanceof QueryInterface) {

@@ -144,7 +144,6 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
             $this->bindPendingParams();
         } catch (PDOException $e) {
             $message = $e->getMessage() . "\nFailed to prepare SQL: $sql";
-            /** @psalm-var array|null $errorInfo */
             $errorInfo = $e->errorInfo ?? null;
 
             throw new Exception($message, $errorInfo, $e);
