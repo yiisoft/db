@@ -6,7 +6,7 @@
 </p>
 
 Yii Database is a framework-agnostic package to work with different types of databases,
-such as [MariaDB], [MSSQL], [MySQL], [Oracle], [PostgreSQL], and [SQLite].
+such as [MariaDB], [MSSQL], [MySQL], [Oracle], [PostgreSQL] and [SQLite].
 
 Using the package, you can perform common database tasks such as creating, reading, updating, and deleting
 records in a database table, as well as executing raw SQL queries.

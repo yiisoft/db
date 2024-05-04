@@ -23,10 +23,6 @@ Yii DB supports the following databases out of the box:
 - [PostgreSQL](https://www.postgresql.org/) of versions **9.6 - 15**.
 - [SQLite](https://www.sqlite.org/) of version **3.3 and above**.
 
-## Requirements
-
-- PHP 8.0 or higher.
-
 ## Installation
 
 To install Yii DB, you must select the driver you want to use and install it with [Composer](https://getcomposer.org/).
@@ -60,8 +56,6 @@ For [SQLite](https://github.com/yiisoft/db-sqlite):
 ```shell
 composer require yiisoft/db-sqlite
 ```
-
-## Prerequisites
 
 ## Configure schema cache
 
