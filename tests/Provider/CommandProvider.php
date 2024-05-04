@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use ArrayIterator;
+use IteratorAggregate;
+use Traversable;
 use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
@@ -463,10 +465,32 @@ class CommandProvider
                     ':qp3' => true,
                 ],
             ],
-            'empty columns and Traversable' => [
+            'empty columns and a Traversable value' => [
                 'type',
                 [],
                 'values' => [new ArrayIterator(['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1])],
+                'expected' => DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
+                    SQL,
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 2.0,
+                    ':qp2' => '10',
+                    ':qp3' => true,
+                ],
+            ],
+            'empty columns and Traversable values' => [
+                'type',
+                [],
+                'values' => new class () implements IteratorAggregate {
+                    public function getIterator(): Traversable
+                    {
+                        yield ['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1];
+                    }
+                },
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
@@ -713,6 +737,18 @@ class CommandProvider
                 DbHelper::replaceQuotes(
                     <<<SQL
                     SELECT * FROM [[customer]] WHERE [[name]] = 'Alfa'
+                    SQL,
+                    static::$driverName,
+                ),
+            ],
+            [
+                <<<SQL
+                SELECT * FROM [[product]] WHERE [[price]] = :price
+                SQL,
+                ['price' => 123.45],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    SELECT * FROM [[product]] WHERE [[price]] = 123.45
                     SQL,
                     static::$driverName,
                 ),

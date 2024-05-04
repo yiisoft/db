@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Iterator;
+use IteratorAggregate;
 use JsonException;
 use Traversable;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -62,16 +64,16 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
     public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
     {
+        if (!is_array($rows)) {
+            $rows = $this->prepareTraversable($rows);
+        }
+
         if (empty($rows)) {
             return '';
         }
 
         $columns = $this->extractColumnNames($rows, $columns);
         $values = $this->prepareBatchInsertValues($table, $rows, $columns, $params);
-
-        if (empty($values)) {
-            return '';
-        }
 
         $query = 'INSERT INTO ' . $this->quoter->quoteTableName($table);
 
@@ -131,6 +133,29 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
+     * Prepare traversable for batch insert.
+     *
+     * @param Traversable $rows The rows to be batch inserted into the table.
+     *
+     * @return array|Iterator The prepared rows.
+     *
+     * @psalm-return Iterator|array<iterable<array-key, mixed>>
+     */
+    final protected function prepareTraversable(Traversable $rows): Iterator|array
+    {
+        while ($rows instanceof IteratorAggregate) {
+            $rows = $rows->getIterator();
+        }
+
+        /** @var Iterator $rows */
+        if (!$rows->valid()) {
+            return [];
+        }
+
+        return $rows;
+    }
+
+    /**
      * Prepare values for batch insert.
      *
      * @param string $table The table name.
@@ -180,21 +205,27 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Extract column names from columns and rows.
      *
-     * @param string $table The column schemas.
-     * @param iterable $rows The rows to be batch inserted into the table.
+     * @param array[]|Iterator $rows The rows to be batch inserted into the table.
      * @param string[] $columns The column names.
      *
      * @return string[] The column names.
+     *
+     * @psalm-param Iterator|non-empty-array<iterable<array-key, mixed>> $rows
      */
-    protected function extractColumnNames(iterable $rows, array $columns): array
+    protected function extractColumnNames(array|Iterator $rows, array $columns): array
     {
         $columns = $this->getNormalizeColumnNames('', $columns);
 
-        if ($columns !== [] || !is_array($rows)) {
+        if (!empty($columns)) {
             return $columns;
         }
 
-        $row = reset($rows);
+        if ($rows instanceof Iterator) {
+            $row = $rows->current();
+        } else {
+            $row = reset($rows);
+        }
+
         $row = match (true) {
             is_array($row) => $row,
             $row instanceof Traversable => iterator_to_array($row),

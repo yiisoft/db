@@ -2,11 +2,13 @@
 
 ## 2.0.0 under development
 
+- Enh #820: Support `Traversable` values for `AbstractDMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #815: Refactor `Query::column()` method (@Tigrov) 
 - Enh #816: Allow scalar values for `$columns` parameter of `Query::select()` and `Query::addSelect()` methods (@Tigrov)
 - Enh #806: Non-unique placeholder names inside `Expression::$params` will be replaced with unique names (@Tigrov)
 - Enh #806: Build `Expression` instances inside `Expression::$params` when build a query using `QueryBuilder` (@Tigrov)
 - Enh #766: Allow `ColumnInterface` as column type. (@Tigrov)
+- Bug #828: Fix `float` type when use `AbstractCommand::getRawSql()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
