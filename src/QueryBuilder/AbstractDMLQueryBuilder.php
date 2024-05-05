@@ -32,10 +32,10 @@ use function array_unique;
 use function array_values;
 use function count;
 use function get_object_vars;
+use function gettype;
 use function implode;
 use function in_array;
 use function is_array;
-use function is_object;
 use function is_string;
 use function iterator_to_array;
 use function json_encode;
@@ -52,6 +52,7 @@ use function sort;
  * @link https://en.wikipedia.org/wiki/Data_manipulation_language
  *
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type BatchValues from DMLQueryBuilderInterface
  */
 abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 {
@@ -62,7 +63,20 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     ) {
     }
 
+    /**
+     * @param string[] $columns
+     *
+     * @psalm-param BatchValues $rows
+     * @psalm-param ParamsType $params
+     *
+     * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
+     */
     public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
+    {
+        return $this->insertBatch($table, $rows, $columns, $params);
+    }
+
+    public function insertBatch(string $table, iterable $rows, array $columns = [], array &$params = []): string
     {
         if (!is_array($rows)) {
             $rows = $this->prepareTraversable($rows);
@@ -226,10 +240,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $row = reset($rows);
         }
 
-        $row = match (true) {
-            is_array($row) => $row,
-            $row instanceof Traversable => iterator_to_array($row),
-            is_object($row) => get_object_vars($row),
+        $row = match (gettype($row)) {
+            'array' => $row,
+            'object' => $row instanceof Traversable
+                ? iterator_to_array($row)
+                : get_object_vars($row),
             default => [],
         };
 

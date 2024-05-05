@@ -13,20 +13,36 @@ You can use the DML to perform the following operations:
 
 ## Batch insert
 
-To insert multiple rows into a table, you can use the `Yiisoft\Db\Command\CommandInterface::batchInsert()` method:
+To insert multiple rows into a table, you can use the `Yiisoft\Db\Command\CommandInterface::insertBatch()` method:
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->batchInsert(
+$db->createCommand()->insertBatch(
     '{{%customer}}',
-    ['name', 'email'],
     [
         ['user1', 'email1@email.com'],
         ['user2', 'email2@email.com'],
         ['user3', 'email3@email.com'],
-    ]
+    ],
+    ['name', 'email'],
+)->execute();
+```
+
+It is possible to insert rows as associative arrays, where the keys are column names.
+
+```php
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+$db->createCommand()->insertBatch(
+    '{{%customer}}',
+    [
+        ['name' => 'user1', 'email' => 'email1@email.com'],
+        ['name' => 'user2', 'email' => 'email2@email.com'],
+        ['name' => 'user3', 'email' => 'email3@email.com'],
+    ],
 )->execute();
 ```
 

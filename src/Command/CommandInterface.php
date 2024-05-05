@@ -15,6 +15,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 
 /**
@@ -23,6 +24,7 @@ use Yiisoft\Db\Schema\Builder\ColumnInterface;
  * A command instance is usually created by calling {@see ConnectionInterface::createCommand}.
  *
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type BatchValues from DMLQueryBuilderInterface
  */
 interface CommandInterface
 {
@@ -156,13 +158,26 @@ interface CommandInterface
      * For example,
      *
      * ```php
-     * $connectionInterface->createCommand()->batchInsert(
+     * $connectionInterface->createCommand()->insertBatch(
      *     'user',
-     *     ['name', 'age'],
      *     [
      *         ['Tom', 30],
      *         ['Jane', 20],
      *         ['Linda', 25],
+     *     ],
+     *     ['name', 'age']
+     * )->execute();
+     * ```
+     *
+     * or as associative arrays where the keys are column names
+     *
+     * ```php
+     * $connectionInterface->createCommand()->insertBatch(
+     *     'user',
+     *     [
+     *         ['name' => 'Tom', 'age' => 30],
+     *         ['name' => 'Jane', 'age' => 20],
+     *         ['name' => 'Linda', 'age' => 25],
      *     ]
      * )->execute();
      * ```
@@ -174,17 +189,17 @@ interface CommandInterface
      * Also note that the created command isn't executed until {@see execute()} is called.
      *
      * @param string $table The name of the table to insert new rows into.
-     * @param array $columns The column names.
      * @param iterable $rows The rows to be batch inserted into the table.
+     * @param string[] $columns The column names.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * @psalm-param iterable<array-key, array<array-key, mixed>> $rows
+     * @psalm-param BatchValues $rows
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function batchInsert(string $table, array $columns, iterable $rows): static;
+    public function insertBatch(string $table, iterable $rows, array $columns = []): static;
 
     /**
      * Binds a parameter to the SQL statement to be executed.

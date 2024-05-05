@@ -50,8 +50,8 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
      */
     public function testBatchInsert(
         string $table,
-        array $columns,
         iterable $rows,
+        array $columns,
         string $expected,
         array $expectedParams = [],
     ): void {
@@ -62,7 +62,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $params = [];
 
         try {
-            $this->assertSame($expected, $qb->batchInsert($table, $columns, $rows, $params));
+            $this->assertSame($expected, $qb->insertBatch($table, $rows, $columns, $params));
             $this->assertSame($expectedParams, $params);
         } catch (InvalidArgumentException|Exception) {
         }
