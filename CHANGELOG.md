@@ -11,6 +11,7 @@
 - Bug #828: Fix `float` type when use `AbstractCommand::getRawSql()` method (@Tigrov)
 - Enh #829: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilderInterface` and `CommandInterface`
   and change parameters from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
+- Enh #834: Refactor `AbstractCommand::insertBatch()`, add `Quoter::getRawTableName()` to `QuoterInterface` (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
