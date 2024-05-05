@@ -27,4 +27,9 @@ class StringColumnSchema extends AbstractColumnSchema
             default => $value instanceof ExpressionInterface ? $value : (string) $value,
         };
     }
+
+    public function phpTypecast(mixed $value): mixed
+    {
+        return $value;
+    }
 }

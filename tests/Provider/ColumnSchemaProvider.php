@@ -27,7 +27,7 @@ class ColumnSchemaProvider
         return [
             // [class, type, phpType]
             'integer' => [IntegerColumnSchema::class, SchemaInterface::TYPE_INTEGER, SchemaInterface::PHP_TYPE_INTEGER],
-            'bigint' => [BigIntColumnSchema::class, SchemaInterface::TYPE_BIGINT, SchemaInterface::PHP_TYPE_INTEGER],
+            'bigint' => [BigIntColumnSchema::class, SchemaInterface::TYPE_BIGINT, SchemaInterface::PHP_TYPE_STRING],
             'double' => [DoubleColumnSchema::class, SchemaInterface::TYPE_DOUBLE, SchemaInterface::PHP_TYPE_DOUBLE],
             'string' => [StringColumnSchema::class, SchemaInterface::TYPE_STRING, SchemaInterface::PHP_TYPE_STRING],
             'binary' => [BinaryColumnSchema::class, SchemaInterface::TYPE_BINARY, SchemaInterface::PHP_TYPE_RESOURCE],
@@ -156,8 +156,8 @@ class ColumnSchemaProvider
                 BigIntColumnSchema::class,
                 [
                     [null, null],
-                    [1, 1],
-                    [1, '1'],
+                    ['1', 1],
+                    ['1', '1'],
                     ['12345678901234567890', '12345678901234567890'],
                 ],
             ],

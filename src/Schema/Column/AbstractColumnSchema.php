@@ -78,11 +78,6 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         $this->dbType = $value;
     }
 
-    public function dbTypecast(mixed $value): mixed
-    {
-        return $value;
-    }
-
     public function defaultValue(mixed $value): void
     {
         $this->defaultValue = $value;
@@ -186,11 +181,6 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     public function phpType(string|null $value): void
     {
         $this->phpType = $value;
-    }
-
-    public function phpTypecast(mixed $value): mixed
-    {
-        return $value;
     }
 
     public function precision(int|null $value): void

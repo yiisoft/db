@@ -16,7 +16,7 @@ class BigIntColumnSchema extends AbstractColumnSchema
 {
     public function __construct(
         string $type = SchemaInterface::TYPE_BIGINT,
-        string|null $phpType = SchemaInterface::PHP_TYPE_INTEGER,
+        string|null $phpType = SchemaInterface::PHP_TYPE_STRING,
     ) {
         parent::__construct($type, $phpType);
     }
@@ -33,19 +33,15 @@ class BigIntColumnSchema extends AbstractColumnSchema
             default => $value instanceof ExpressionInterface
                 ? $value
                 : (($val = (string) $value) <= PHP_INT_MAX && $val >= PHP_INT_MIN
-                    ? (int) $value
+                    ? (int) $val
                     : $val),
         };
     }
 
-    public function phpTypecast(mixed $value): int|string|null
+    public function phpTypecast(mixed $value): string|null
     {
         if ($value === null) {
             return null;
-        }
-
-        if ($value <= PHP_INT_MAX && $value >= PHP_INT_MIN) {
-            return (int) $value;
         }
 
         return (string) $value;

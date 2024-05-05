@@ -412,18 +412,10 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function createColumnSchema(string $type, mixed ...$info): ColumnSchemaInterface
     {
-        $phpType = $this->getColumnPhpType($type);
         $isUnsigned = !empty($info['unsigned']);
+        $phpType = $this->getColumnPhpType($type, $isUnsigned);
 
-        if (
-            $isUnsigned && PHP_INT_SIZE === 4 && $type === SchemaInterface::TYPE_INTEGER
-            || ($isUnsigned || PHP_INT_SIZE !== 8) && $type === SchemaInterface::TYPE_BIGINT
-        ) {
-            $column = new BigIntColumnSchema($type, $phpType);
-        } else {
-            $column = $this->createPhpTypeColumnSchema($phpType, $type);
-        }
-
+        $column = $this->createColumnSchemaFromPhpType($phpType, $type);
         $column->unsigned($isUnsigned);
 
         return $column;
@@ -436,14 +428,18 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @return string The PHP type name.
      */
-    protected function getColumnPhpType(string $type): string
+    protected function getColumnPhpType(string $type, bool $isUnsigned = false): string
     {
         return match ($type) {
             // abstract type => php type
             SchemaInterface::TYPE_TINYINT => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_SMALLINT => SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_INTEGER => SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_BIGINT => SchemaInterface::PHP_TYPE_INTEGER,
+            SchemaInterface::TYPE_INTEGER => PHP_INT_SIZE !== 8 && $isUnsigned
+                ? SchemaInterface::PHP_TYPE_STRING
+                : SchemaInterface::PHP_TYPE_INTEGER,
+            SchemaInterface::TYPE_BIGINT => PHP_INT_SIZE !== 8 || $isUnsigned
+                ? SchemaInterface::PHP_TYPE_STRING
+                : SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_BOOLEAN => SchemaInterface::PHP_TYPE_BOOLEAN,
             SchemaInterface::TYPE_DECIMAL => SchemaInterface::PHP_TYPE_DOUBLE,
             SchemaInterface::TYPE_FLOAT => SchemaInterface::PHP_TYPE_DOUBLE,
@@ -454,9 +450,14 @@ abstract class AbstractSchema implements SchemaInterface
         };
     }
 
-    protected function createPhpTypeColumnSchema(string $phpType, string $type): ColumnSchemaInterface
+    protected function createColumnSchemaFromPhpType(string $phpType, string $type): ColumnSchemaInterface
     {
         return match ($phpType) {
+            SchemaInterface::PHP_TYPE_STRING => match ($type) {
+                SchemaInterface::TYPE_INTEGER => new BigIntColumnSchema($type, $phpType),
+                SchemaInterface::TYPE_BIGINT => new BigIntColumnSchema($type, $phpType),
+                default => new StringColumnSchema($type, $phpType),
+            },
             SchemaInterface::PHP_TYPE_INTEGER => new IntegerColumnSchema($type, $phpType),
             SchemaInterface::PHP_TYPE_DOUBLE => new DoubleColumnSchema($type, $phpType),
             SchemaInterface::PHP_TYPE_BOOLEAN => new BooleanColumnSchema($type, $phpType),
