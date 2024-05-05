@@ -187,7 +187,7 @@ final class CommandTest extends AbstractCommandTest
             'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
         );
 
-        $command->batchInsert('table', ['column1', 'column2'], [['value1', 'value2'], ['value3', 'value4']]);
+        $command->insertBatch('table', [['value1', 'value2'], ['value3', 'value4']], ['column1', 'column2']);
     }
 
     /**

@@ -13,13 +13,13 @@ Você pode usar o DML para realizar as seguintes operações:
 
 ## Inserção em lote
 
-Para inserir múltiplas linhas em uma tabela, você pode usar o método `Yiisoft\Db\Command\CommandInterface::batchInsert()`:
+Para inserir múltiplas linhas em uma tabela, você pode usar o método `Yiisoft\Db\Command\CommandInterface::insertBatch()`:
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
 
 /** @var ConnectionInterface $db */
-$db->createCommand()->batchInsert(
+$db->createCommand()->insertBatch(
     '{{%customer}}',
     ['name', 'email'],
     [
@@ -27,6 +27,22 @@ $db->createCommand()->batchInsert(
         ['user2', 'email2@email.com'],
         ['user3', 'email3@email.com'],
     ]
+)->execute();
+```
+
+It is possible to insert rows as associative arrays, where the keys are column names.
+
+```php
+use Yiisoft\Db\Connection\ConnectionInterface;
+
+/** @var ConnectionInterface $db */
+$db->createCommand()->insertBatch(
+    '{{%customer}}',
+    [
+        ['name' => 'user1', 'email' => 'email1@email.com'],
+        ['name' => 'user2', 'email' => 'email2@email.com'],
+        ['name' => 'user3', 'email' => 'email3@email.com'],
+    ],
 )->execute();
 ```
 
