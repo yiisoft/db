@@ -263,11 +263,11 @@ class CommandProvider
         return [
             'multirow' => [
                 'type',
-                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 'values' => [
                     ['0', '0.0', 'test string', true],
                     [false, 0, 'test string2', false],
                 ],
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3), (:qp4, :qp5, :qp6, :qp7)
@@ -288,8 +288,8 @@ class CommandProvider
             ],
             'issue11242' => [
                 'type',
-                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 'values' => [[1.0, 1.1, 'Kyiv {{city}}, Ukraine', true]],
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 /**
                  * {@see https://github.com/yiisoft/yii2/issues/11242}
                  *
@@ -310,8 +310,8 @@ class CommandProvider
             ],
             'table name with column name with brackets' => [
                 '{{%type}}',
-                ['{{%type}}.[[int_col]]', '[[float_col]]', 'char_col', 'bool_col'],
                 'values' => [['0', '0.0', 'Kyiv {{city}}, Ukraine', false]],
+                ['{{%type}}.[[int_col]]', '[[float_col]]', 'char_col', 'bool_col'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
@@ -325,14 +325,14 @@ class CommandProvider
                     ':qp3' => false,
                 ],
             ],
-            'batchInsert binds params from expression' => [
+            'binds params from expression' => [
                 '{{%type}}',
-                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 /**
                  * This example is completely useless. This feature of batchInsert is intended to be used with complex
                  * expression objects, such as JsonExpression.
                  */
                 'values' => [[new Expression(':exp1', [':exp1' => 42]), 1, 'test', false]],
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:exp1, :qp1, :qp2, :qp3)
@@ -348,8 +348,8 @@ class CommandProvider
             ],
             'with associative values with different keys' => [
                 'type',
-                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 'values' => [['int' => '1.0', 'float' => '2', 'char' => 10, 'bool' => 1]],
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
@@ -365,8 +365,8 @@ class CommandProvider
             ],
             'with associative values with different keys and columns with keys' => [
                 'type',
-                ['a' => 'int_col', 'b' => 'float_col', 'c' => 'char_col', 'd' => 'bool_col'],
                 'values' => [['int' => '1.0', 'float' => '2', 'char' => 10, 'bool' => 1]],
+                ['a' => 'int_col', 'b' => 'float_col', 'c' => 'char_col', 'd' => 'bool_col'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
@@ -382,8 +382,8 @@ class CommandProvider
             ],
             'with associative values with keys of column names' => [
                 'type',
-                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 'values' => [['bool_col' => 1, 'char_col' => 10, 'int_col' => '1.0', 'float_col' => '2']],
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp2, :qp3, :qp1, :qp0)
@@ -399,8 +399,8 @@ class CommandProvider
             ],
             'with associative values with keys of column keys' => [
                 'type',
-                ['int' => 'int_col', 'float' => 'float_col', 'char' => 'char_col', 'bool' => 'bool_col'],
                 'values' => [['bool' => 1, 'char' => 10, 'int' => '1.0', 'float' => '2']],
+                ['int' => 'int_col', 'float' => 'float_col', 'char' => 'char_col', 'bool' => 'bool_col'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp2, :qp3, :qp1, :qp0)
@@ -416,8 +416,8 @@ class CommandProvider
             ],
             'with shuffled indexes of values' => [
                 'type',
-                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 'values' => [[3 => 1, 2 => 10, 0 => '1.0', 1 => '2']],
+                ['int_col', 'float_col', 'char_col', 'bool_col'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp2, :qp3, :qp1, :qp0)
@@ -433,8 +433,8 @@ class CommandProvider
             ],
             'empty columns and associative values' => [
                 'type',
-                [],
                 'values' => [['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
+                [],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
@@ -450,8 +450,8 @@ class CommandProvider
             ],
             'empty columns and objects' => [
                 'type',
-                [],
                 'values' => [(object)['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1]],
+                [],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
@@ -467,8 +467,8 @@ class CommandProvider
             ],
             'empty columns and a Traversable value' => [
                 'type',
-                [],
                 'values' => [new ArrayIterator(['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1])],
+                [],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)
@@ -484,13 +484,13 @@ class CommandProvider
             ],
             'empty columns and Traversable values' => [
                 'type',
-                [],
                 'values' => new class () implements IteratorAggregate {
                     public function getIterator(): Traversable
                     {
                         yield ['int_col' => '1.0', 'float_col' => '2', 'char_col' => 10, 'bool_col' => 1];
                     }
                 },
+                [],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[int_col]], [[float_col]], [[char_col]], [[bool_col]]) VALUES (:qp0, :qp1, :qp2, :qp3)

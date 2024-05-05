@@ -305,8 +305,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
      */
     public function testBatchInsert(
         string $table,
-        array $columns,
         iterable $values,
+        array $columns,
         string $expected,
         array $expectedParams = [],
         int $insertedRow = 1
@@ -314,7 +314,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->batchInsert($table, $columns, $values);
+        $command->insertBatch($table, $values, $columns);
 
         $this->assertSame($expected, $command->getSql());
         $this->assertSame($expectedParams, $command->getParams());
@@ -370,7 +370,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             }
 
             /* batch insert on "type" table */
-            $command->batchInsert('{{type}}', $cols, $data)->execute();
+            $command->insertBatch('{{type}}', $data, $cols)->execute();
             $data = $command->setSql(
                 <<<SQL
                 SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]
@@ -413,10 +413,10 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->batchInsert(
+        $command->insertBatch(
             '{{customer}}',
-            ['email', 'name', 'address'],
             [['t1@example.com', 'test_name', 'test_address']],
+            ['email', 'name', 'address'],
         );
 
         $this->assertSame(1, $command->execute());
@@ -450,7 +450,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $values[$i] = ['t' . $i . '@any.com', 't' . $i, 't' . $i . ' address'];
         }
 
-        $command->batchInsert('{{customer}}', ['email', 'name', 'address'], $values);
+        $command->insertBatch('{{customer}}', $values, ['email', 'name', 'address']);
 
         $this->assertSame($attemptsInsertRows, $command->execute());
 
@@ -476,7 +476,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             }
         )();
         $command = $db->createCommand();
-        $command->batchInsert('{{customer}}', ['email', 'name', 'address'], $rows);
+        $command->insertBatch('{{customer}}', $rows, ['email', 'name', 'address']);
 
         $this->assertSame(1, $command->execute());
 

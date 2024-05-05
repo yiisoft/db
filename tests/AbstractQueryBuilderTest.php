@@ -214,8 +214,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
      */
     public function testBatchInsert(
         string $table,
-        array $columns,
         iterable $rows,
+        array $columns,
         string $expected,
         array $expectedParams = [],
     ): void {
@@ -223,7 +223,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $params = [];
-        $sql = $qb->batchInsert($table, $columns, $rows, $params);
+        $sql = $qb->insertBatch($table, $rows, $columns, $params);
 
         $this->assertSame($expected, $sql);
         $this->assertSame($expectedParams, $params);
