@@ -33,7 +33,7 @@ Add support any scalar values for `$columns` parameter of these methods in your 
 `QueryBuilderInterface` parameter in the constructor. Each DBMS driver should implement its own expression builder.
 
 `Expression::$params` can contain:
-- non-unique placeholder names, they will be replaced with unique names.
+- non-unique placeholder names, they will be replaced with unique names;
 - `Expression` instances, they will be built when building a query using `QueryBuilder`.
 
 ### Rename `batchInsert()` to `insertBatch()`
@@ -54,3 +54,24 @@ $values = [
 /** @var ConnectionInterface $db */
 $db->createCommand()->insertBatch('user', $values)->execute();
 ```
+
+### `ColumnSchemaInterface` changes
+
+The interface and the abstract implementation `AbstractColumnSchema` were moved to `Yiisoft\Db\Schema\Column` namespace 
+and the following changes were made:
+
+- `getName()` method can return `string` or `null`;
+- `name(string|null $name)` method is added;
+- constructor of `AbstractColumnSchema` class is changed to `__construct(string $type, string|null $phpType = null)`.
+
+### New classes for table columns
+
+Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace according to the data type:
+
+- `BooleanColumnSchema` for columns with boolean type;
+- `IntegerColumnSchema` for columns with integer type (tinyint, smallint, integer, bigint);
+- `BigIntColumnSchema` for columns with integer type with range outside `PHP_INT_MIN` and `PHP_INT_MAX`;
+- `DoubleColumnSchema` for columns with fractional number type (float, double, decimal, money);
+- `StringColumnSchema` for columns with string or datetime type (char, string, text, datetime, timestamp, date, time);
+- `BinaryColumnSchema` for columns with binary type;
+- `JsonColumnSchema` for columns with json type.
