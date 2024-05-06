@@ -54,3 +54,7 @@ $values = [
 /** @var ConnectionInterface $db */
 $db->createCommand()->insertBatch('user', $values)->execute();
 ```
+
+### New methods in `QuoterInterface`
+
+* `QuoterInterface::getRawTableName()` - returns the raw table name without quotes.
