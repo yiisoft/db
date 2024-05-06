@@ -58,3 +58,7 @@ $db->createCommand()->insertBatch('user', $values)->execute();
 ### New methods in `QuoterInterface`
 
 * `QuoterInterface::getRawTableName()` - returns the raw table name without quotes.
+
+### Remove deprecated methods
+
+- `AbstractDMLQueryBuilder::getTypecastValue()`

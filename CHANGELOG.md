@@ -12,6 +12,7 @@
 - Enh #829: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilderInterface` and `CommandInterface`
   and change parameters from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
 - Enh #834: Refactor `AbstractCommand::insertBatch()`, add `Quoter::getRawTableName()` to `QuoterInterface` (@Tigrov)
+- Chg #836: Remove `AbstractDMLQueryBuilder::getTypecastValue()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
