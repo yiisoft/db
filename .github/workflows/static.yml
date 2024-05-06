@@ -3,18 +3,23 @@ on:
     paths:
       - 'src/**'
       - 'config/**'
+      - '.github/workflows/static.yml'
       - 'psalm*.xml'
+      - 'composer.json'
 
   push:
     paths:
       - 'src/**'
       - 'config/**'
+      - '.github/workflows/static.yml'
       - 'psalm*.xml'
+      - 'composer.json'
 
 name: static analysis
 
 jobs:
   psalm:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.fork }}
     uses: yiisoft/actions/.github/workflows/psalm.yml@master
     with:
       os: >-
@@ -22,6 +27,7 @@ jobs:
       php: >-
         ['8.1', '8.2']
   psalm83:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.fork }}
     uses: yiisoft/actions/.github/workflows/psalm.yml@master
     with:
       psalm-config: psalm83.xml
