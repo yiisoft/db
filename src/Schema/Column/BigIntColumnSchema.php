@@ -7,8 +7,6 @@ namespace Yiisoft\Db\Schema\Column;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
-use function is_int;
-
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
 
@@ -23,18 +21,20 @@ class BigIntColumnSchema extends AbstractColumnSchema
 
     public function dbTypecast(mixed $value): int|string|ExpressionInterface|null
     {
-        if (is_int($value)) {
-            return $value;
-        }
-
-        return match ($value) {
-            null, '' => null,
-            false => 0,
-            default => $value instanceof ExpressionInterface
-                ? $value
-                : (($val = (string) $value) <= PHP_INT_MAX && $val >= PHP_INT_MIN
+        return match (gettype($value)) {
+            'string' => $value === '' ? null : (
+                $value <= PHP_INT_MAX && $value >= PHP_INT_MIN
+                    ? (int) $value
+                    : $value
+            ),
+            'NULL' => null,
+            'integer' => $value,
+            'boolean' => $value ? 1 : 0,
+            default => $value instanceof ExpressionInterface ? $value : (
+                ($val = (string) $value) <= PHP_INT_MAX && $val >= PHP_INT_MIN
                     ? (int) $val
-                    : $val),
+                    : $val
+            ),
         };
     }
 
