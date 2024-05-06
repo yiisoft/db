@@ -25,7 +25,7 @@ Yii DB suporta os seguintes bancos de dados prontos para uso:
 
 ## Installation
 
-Para instalar o Yii DB, você deve selecionar o driver que deseja usar e instalá-lo com o [Composer](https://getcomposer.org/).
+Para instalar o Yii DB, você deve selecionar o driver que deseja usar e instalá-lo com o [Composer](https://getcomposer.org).
 
 Para [MSSQL](https://github.com/yiisoft/db-mssql):
 

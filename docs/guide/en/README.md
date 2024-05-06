@@ -25,7 +25,7 @@ Yii DB supports the following databases out of the box:
 
 ## Installation
 
-To install Yii DB, you must select the driver you want to use and install it with [Composer](https://getcomposer.org/).
+To install Yii DB, you must select the driver you want to use and install it with [Composer](https://getcomposer.org).
 
 For [MSSQL](https://github.com/yiisoft/db-mssql):
 
