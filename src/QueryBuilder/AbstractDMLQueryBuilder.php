@@ -512,20 +512,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * @return mixed The typecast value of the given column.
-     *
-     * @deprecated will be removed in version 2.0.0
-     */
-    protected function getTypecastValue(mixed $value, ColumnSchemaInterface $columnSchema = null): mixed
-    {
-        if ($columnSchema) {
-            return $columnSchema->dbTypecast($value);
-        }
-
-        return $value;
-    }
-
-    /**
      * Normalizes the column names.
      *
      * @param string $table Not used. Could be empty string. Will be removed in version 2.0.0.
