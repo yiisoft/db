@@ -62,3 +62,8 @@ $db->createCommand()->insertBatch('user', $values)->execute();
 ### Remove deprecated methods
 
 - `AbstractDMLQueryBuilder::getTypecastValue()`
+
+### Remove deprecated parameters
+
+- `$table` parameter from `AbstractDMLQueryBuilder::normalizeColumnNames()` method
+- `$table` parameter from `AbstractDMLQueryBuilder::getNormalizeColumnNames()` method
