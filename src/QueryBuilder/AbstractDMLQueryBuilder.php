@@ -227,7 +227,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      */
     protected function extractColumnNames(array|Iterator $rows, array $columns): array
     {
-        $columns = $this->getNormalizeColumnNames('', $columns);
+        $columns = $this->getNormalizeColumnNames($columns);
 
         if (!empty($columns)) {
             return $columns;
@@ -332,7 +332,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
         $names = [];
         $placeholders = [];
-        $columns = $this->normalizeColumnNames('', $columns);
+        $columns = $this->normalizeColumnNames($columns);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
         foreach ($columns as $name => $value) {
@@ -366,7 +366,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     protected function prepareUpdateSets(string $table, array $columns, array $params = []): array
     {
         $sets = [];
-        $columns = $this->normalizeColumnNames('', $columns);
+        $columns = $this->normalizeColumnNames($columns);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
         foreach ($columns as $name => $value) {
@@ -410,7 +410,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         if ($insertColumns instanceof QueryInterface) {
             [$insertNames] = $this->prepareInsertSelectSubQuery($insertColumns);
         } else {
-            $insertNames = $this->getNormalizeColumnNames('', array_keys($insertColumns));
+            $insertNames = $this->getNormalizeColumnNames(array_keys($insertColumns));
 
             $insertNames = array_map(
                 [$this->quoter, 'quoteColumnName'],
@@ -513,18 +513,17 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Normalizes the column names.
      *
-     * @param string $table Not used. Could be empty string. Will be removed in version 2.0.0.
      * @param array $columns The column data (name => value).
      *
      * @return array The normalized column names (name => value).
      *
      * @psalm-return array<string, mixed>
      */
-    protected function normalizeColumnNames(string $table, array $columns): array
+    protected function normalizeColumnNames(array $columns): array
     {
         /** @var string[] $columnNames */
         $columnNames = array_keys($columns);
-        $normalizedNames = $this->getNormalizeColumnNames('', $columnNames);
+        $normalizedNames = $this->getNormalizeColumnNames($columnNames);
 
         return array_combine($normalizedNames, $columns);
     }
@@ -532,12 +531,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Get normalized column names
      *
-     * @param string $table Not used. Could be empty string. Will be removed in version 2.0.0.
      * @param string[] $columns The column names.
      *
      * @return string[] Normalized column names.
      */
-    protected function getNormalizeColumnNames(string $table, array $columns): array
+    protected function getNormalizeColumnNames(array $columns): array
     {
         foreach ($columns as &$name) {
             $name = $this->quoter->ensureColumnName($name);
