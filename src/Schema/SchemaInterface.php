@@ -218,12 +218,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * Define the abstract column type as `json`.
      */
     public const TYPE_JSON = 'json';
-    /**
-     * Define the abstract column type as `jsonb`.
-     *
-     * @deprecated will be removed in version 2.0.0. Use `SchemaInterface::TYPE_JSON` instead.
-     */
-    public const TYPE_JSONB = 'jsonb';
 
     /**
      * Define the php type as `integer` for cast to php value.
