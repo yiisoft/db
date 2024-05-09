@@ -59,15 +59,17 @@ $db->createCommand()->insertBatch('user', $values)->execute();
 
 - `QuoterInterface::getRawTableName()` - returns the raw table name without quotes.
 
-### Remove deprecated methods
+### Remove methods
 
 - `AbstractDMLQueryBuilder::getTypecastValue()`
 - `TableSchemaInterface::compositeForeignKey()`
+- `Quoter::unquoteParts()`
 
 ### Remove deprecated parameters
 
-- `$table` parameter from `AbstractDMLQueryBuilder::normalizeColumnNames()` method
-- `$table` parameter from `AbstractDMLQueryBuilder::getNormalizeColumnNames()` method
+- `$table` from `AbstractDMLQueryBuilder::normalizeColumnNames()` method
+- `$table` from `AbstractDMLQueryBuilder::getNormalizeColumnNames()` method
+- `$withColumn` from `QuoterInterface::getTableNameParts()` method
 
 ### Remove deprecated constants
 

@@ -17,6 +17,8 @@
   of `AbstractDMLQueryBuilder` class (@Tigrov)
 - Chg #838: Remove `SchemaInterface::TYPE_JSONB` constant (@Tigrov)
 - Chg #839: Remove `TableSchemaInterface::compositeForeignKey()` method (@Tigrov)
+- Chg #840: Remove parameter `$withColumn` from `QuoterInterface::getTableNameParts()` method (@Tigrov)
+- Chg #840: Remove `Quoter::unquoteParts()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
