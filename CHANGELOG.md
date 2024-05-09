@@ -16,6 +16,7 @@
 - Chg #837: Remove `$table` parameter from `normalizeColumnNames()` and `getNormalizeColumnNames()` methods 
   of `AbstractDMLQueryBuilder` class (@Tigrov)
 - Chg #838: Remove `SchemaInterface::TYPE_JSONB` constant (@Tigrov)
+- Chg #839: Remove `TableSchemaInterface::compositeForeignKey()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

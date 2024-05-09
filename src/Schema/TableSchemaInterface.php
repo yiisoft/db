@@ -201,17 +201,4 @@ interface TableSchemaInterface
      * @param array $to The foreign key.
      */
     public function foreignKey(string|int $id, array $to): void;
-
-    /**
-     * Set composite foreign key.
-     *
-     * @param int $id The index of foreign key.
-     * @param string $from The column name in current table.
-     * @param string $to The column name in foreign table.
-     *
-     * @throws NotSupportedException
-     *
-     * @deprecated will be removed in version 2.0.0
-     */
-    public function compositeForeignKey(int $id, string $from, string $to): void;
 }
