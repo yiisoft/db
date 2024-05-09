@@ -70,6 +70,8 @@ $db->createCommand()->insertBatch('user', $values)->execute();
 - `$table` from `AbstractDMLQueryBuilder::normalizeColumnNames()` method
 - `$table` from `AbstractDMLQueryBuilder::getNormalizeColumnNames()` method
 - `$withColumn` from `QuoterInterface::getTableNameParts()` method
+- `$rawSql` from `AbstractCommand::internalExecute()` method
+- `$rawSql` from `AbstractPdoCommand::internalExecute()` method
 
 ### Remove deprecated constants
 
