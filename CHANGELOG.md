@@ -13,8 +13,9 @@
   and change parameters from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
 - Enh #834: Refactor `AbstractCommand::insertBatch()`, add `Quoter::getRawTableName()` to `QuoterInterface` (@Tigrov)
 - Chg #836: Remove `AbstractDMLQueryBuilder::getTypecastValue()` method (@Tigrov)
-- Chg #767: Remove `$table` parameter from `normalizeColumnNames()` and `getNormalizeColumnNames()` methods 
+- Chg #837: Remove `$table` parameter from `normalizeColumnNames()` and `getNormalizeColumnNames()` methods 
   of `AbstractDMLQueryBuilder` class (@Tigrov)
+- Chg #838: Remove `SchemaInterface::TYPE_JSONB` constant (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
