@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Exception\NotSupportedException;
-
 use function array_keys;
 
 /**
