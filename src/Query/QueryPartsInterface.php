@@ -684,7 +684,11 @@ interface QueryPartsInterface
      * To specify the alias in plain SQL, you may pass an instance of {@see ExpressionInterface}.
      * @param bool $recursive Its `true` if using `WITH RECURSIVE` and `false` if using `WITH`.
      */
-    public function withQuery(QueryInterface|string $query, ExpressionInterface|string $alias, bool $recursive = false): static;
+    public function withQuery(
+        QueryInterface|string $query,
+        ExpressionInterface|string $alias,
+        bool $recursive = false
+    ): static;
 
     /**
      * Specifies the `WITH` query clause for the query.

@@ -669,8 +669,11 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function withQuery(QueryInterface|string $query, ExpressionInterface|string $alias, bool $recursive = false): static
-    {
+    public function withQuery(
+        QueryInterface|string $query,
+        ExpressionInterface|string $alias,
+        bool $recursive = false
+    ): static {
         $this->withQueries[] = ['query' => $query, 'alias' => $alias, 'recursive' => $recursive];
         return $this;
     }
