@@ -270,20 +270,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function getDataType(mixed $data): int;
 
     /**
-     * Returns the actual name of a given table name.
-     *
-     * This method will strip off curly brackets from the given table name and replace the percentage character '%' with
-     * {@see ConnectionInterface::tablePrefix}.
-     *
-     * @param string $name The table name to convert.
-     *
-     * @return string The real name of the given table name.
-     *
-     * @deprecated Use {@see Quoter::getRawTableName()}. Will be removed in version 2.0.0.
-     */
-    public function getRawTableName(string $name): string;
-
-    /**
      * Returns all schema names in the database, except system schemas.
      *
      * @param bool $refresh Whether to fetch the latest available schema names. If this is `false`, schema names fetched
