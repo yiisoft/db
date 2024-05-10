@@ -13,8 +13,6 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 
-use function array_change_key_case;
-use function array_map;
 use function gettype;
 use function is_array;
 use function preg_match;
@@ -527,26 +525,6 @@ abstract class AbstractSchema implements SchemaInterface
             SchemaInterface::CHECKS => $this->getTableChecks($name, $refresh),
             default => null,
         };
-    }
-
-    /**
-     * Change row's array key case to lower.
-     *
-     * @param array $row Thew row's array or an array of row arrays.
-     * @param bool $multiple Whether many rows or a single row passed.
-     *
-     * @return array The normalized row or rows.
-     *
-     * @deprecated Use `array_change_key_case($row)` or `array_map('array_change_key_case', $row)`.
-     * Will be removed in version 2.0.0.
-     */
-    protected function normalizeRowKeyCase(array $row, bool $multiple): array
-    {
-        if ($multiple) {
-            return array_map(static fn (array $row) => array_change_key_case($row), $row);
-        }
-
-        return array_change_key_case($row);
     }
 
     /**

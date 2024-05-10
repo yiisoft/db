@@ -65,6 +65,7 @@ $db->createCommand()->insertBatch('user', $values)->execute();
 
 - `AbstractDMLQueryBuilder::getTypecastValue()`
 - `TableSchemaInterface::compositeForeignKey()`
+- `AbstractSchema::normalizeRowKeyCase()`
 - `Quoter::unquoteParts()`
 - `AbstractPdoCommand::logQuery()`
 
