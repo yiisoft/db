@@ -15,7 +15,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 
 use function gettype;
 use function is_array;
-use function preg_match;
 use function preg_replace;
 use function str_contains;
 use function str_replace;
@@ -312,14 +311,6 @@ abstract class AbstractSchema implements SchemaInterface
         /** @psalm-var mixed $tableUniques */
         $tableUniques = $this->getTableMetadata($name, SchemaInterface::UNIQUES, $refresh);
         return is_array($tableUniques) ? $tableUniques : [];
-    }
-
-    /** @deprecated Use {@see DbStringHelper::isReadQuery()}. Will be removed in version 2.0.0. */
-    public function isReadQuery(string $sql): bool
-    {
-        $pattern = '/^\s*(SELECT|SHOW|DESCRIBE)\b/i';
-
-        return preg_match($pattern, $sql) > 0;
     }
 
     /**

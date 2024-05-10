@@ -358,17 +358,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function getTableSchemas(string $schema = '', bool $refresh = false): array;
 
     /**
-     * Returns a value indicating whether an SQL statement is for read purpose.
-     *
-     * @param string $sql The SQL statement.
-     *
-     * @return bool Whether an SQL statement is for read purpose.
-     *
-     * @deprecated Use {@see DbStringHelper::isReadQuery()}. Will be removed in version 2.0.0.
-     */
-    public function isReadQuery(string $sql): bool;
-
-    /**
      * Refreshes the schema.
      *
      * This method cleans up all cached table schemas so that they can be re-created later to reflect the database
