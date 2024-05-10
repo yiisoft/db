@@ -36,7 +36,7 @@ docker compose up -d
 
 The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
 
-1. Run all Docker containers for each dbms.
+1. Run all Docker containers for each DBMS.
 2. Install the dependencies of the project with composer.
 3. Run the tests.
 
