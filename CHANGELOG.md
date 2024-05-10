@@ -24,7 +24,8 @@
 - Enh #842: Allow `ExpressionInterface` for `$alias` parameter of `QueryPartsInterface::withQuery()` method (@Tigrov)
 - Enh #843: Remove `AbstractPdoCommand::logQuery()` method (@Tigrov)
 - Chg #845: Remove `AbstractSchema::normalizeRowKeyCase()` method (@Tigrov)
-- Chg #846: Remove `SchemaInterface::isReadQuery()` method (@Tigrov)
+- Chg #846: Remove `SchemaInterface::isReadQuery()` and `AbstractSchema::isReadQuery()` methods (@Tigrov)
+- Chg #847: Remove `SchemaInterface::getRawTableName()` and `AbstractSchema::getRawTableName()` methods (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
