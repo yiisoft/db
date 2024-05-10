@@ -530,26 +530,6 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * Change row's array key case to lower.
-     *
-     * @param array $row Thew row's array or an array of row arrays.
-     * @param bool $multiple Whether many rows or a single row passed.
-     *
-     * @return array The normalized row or rows.
-     *
-     * @deprecated Use `array_change_key_case($row)` or `array_map('array_change_key_case', $row)`.
-     * Will be removed in version 2.0.0.
-     */
-    protected function normalizeRowKeyCase(array $row, bool $multiple): array
-    {
-        if ($multiple) {
-            return array_map(static fn (array $row) => array_change_key_case($row), $row);
-        }
-
-        return array_change_key_case($row);
-    }
-
-    /**
      * Resolves the table name and schema name (if any).
      *
      * @param string $name The table name.
