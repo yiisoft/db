@@ -15,7 +15,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 
 use function gettype;
 use function is_array;
-use function preg_match;
 use function preg_replace;
 use function str_contains;
 use function str_replace;
