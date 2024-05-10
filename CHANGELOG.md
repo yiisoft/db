@@ -22,6 +22,7 @@
 - Chg #841: Remove `$rawSql` parameter from `AbstractCommand::internalExecute()` method
   and `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #842: Allow `ExpressionInterface` for `$alias` parameter of `QueryPartsInterface::withQuery()` method (@Tigrov)
+- Enh #843: Remove `AbstractPdoCommand::logQuery()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

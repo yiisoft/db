@@ -1,11 +1,9 @@
 # Yii Database Upgrading Instructions
 
-> **!!!IMPORTANT!!!**
+> **IMPORTANT**
 >
-> The following upgrading instructions are *cumulative*. That is,
-> if you want to upgrade from version A to version C and there is
-> version B between A and C, you need to following the instructions
-> for both A and B.
+> The following upgrading instructions are *cumulative*. That is, if you want to upgrade from version A to version C 
+> and there is version B between A and C, you need to following the instructions for both A and B.
 
 ## Upgrade from 1.x to 2.x
 
@@ -68,6 +66,7 @@ $db->createCommand()->insertBatch('user', $values)->execute();
 - `AbstractDMLQueryBuilder::getTypecastValue()`
 - `TableSchemaInterface::compositeForeignKey()`
 - `Quoter::unquoteParts()`
+- `AbstractPdoCommand::logQuery()`
 
 ### Remove deprecated parameters
 
