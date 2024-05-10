@@ -76,3 +76,7 @@ $db->createCommand()->insertBatch('user', $values)->execute();
 ### Remove deprecated constants
 
 - `SchemaInterface::TYPE_JSONB`
+
+### Other changes
+
+- Allow `ExpressionInterface` for `$alias` parameter of `QueryPartsInterface::withQuery()` method

@@ -18,9 +18,10 @@
 - Chg #838: Remove `SchemaInterface::TYPE_JSONB` constant (@Tigrov)
 - Chg #839: Remove `TableSchemaInterface::compositeForeignKey()` method (@Tigrov)
 - Chg #840: Remove parameter `$withColumn` from `QuoterInterface::getTableNameParts()` method (@Tigrov)
-- Chg #840: Remove `Quoter::unquoteParts()` method (@Tigrov)
-- Chg #841: Remove `$rawSql` parameter from `AbstractCommand::internalExecute()` method 
+- Enh #840: Remove `Quoter::unquoteParts()` method (@Tigrov)
+- Chg #841: Remove `$rawSql` parameter from `AbstractCommand::internalExecute()` method
   and `AbstractPdoCommand::internalExecute()` method (@Tigrov)
+- Enh #842: Allow `ExpressionInterface` for `$alias` parameter of `QueryPartsInterface::withQuery()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
