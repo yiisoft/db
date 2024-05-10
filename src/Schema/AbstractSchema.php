@@ -13,8 +13,6 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 
-use function array_change_key_case;
-use function array_map;
 use function gettype;
 use function is_array;
 use function preg_match;
