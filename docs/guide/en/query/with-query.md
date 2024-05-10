@@ -2,7 +2,7 @@
 
 The `\Yiisoft\Db\Query\Query::withQuery()` method specifies the `WITH` prefix of a SQL query.
 You can use it instead of subquery for more readability and some unique features (recursive CTE).
-[Read more at modern SQL](https://modern-sql.com/).
+[Read more at Modern SQL](https://modern-sql.com/).
 
 For example, this query will select all nested permissions of admin with their children recursively.
 

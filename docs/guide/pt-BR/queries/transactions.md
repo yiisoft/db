@@ -1,4 +1,4 @@
-# Executar muitos comandos em uma transação
+# Executar vários comandos em uma transação
 
 Para que os dados sejam consistentes quando vários comandos estiverem envolvidos, você pode usar transações.
 

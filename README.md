@@ -13,7 +13,7 @@
 [![type-coverage](https://shepherd.dev/github/yiisoft/db/coverage.svg)](https://shepherd.dev/github/yiisoft/db)
 
 Yii Database is a framework-agnostic package to work with different types of databases,
-such as [MariaDB], [MSSQL], [MySQL], [Oracle], [PostgreSQL] and [SQLite].
+such as [MariaDB](https://mariadb.org), [MySQL](https://www.mysql.com), [MSSQL](https://www.microsoft.com/sql-server), [Oracle](https://www.oracle.com/database), [PostgreSQL](https://www.postgresql.org) and [SQLite](https://www.sqlite.org).
 
 Using the package, you can perform common database tasks such as creating, reading, updating, and deleting
 records in a database table, as well as executing raw SQL queries.
@@ -30,18 +30,10 @@ $rows = (new Query($db))
 The package is designed to be flexible
 and can be extended to support extra database types or to customize the way it interacts with databases.
 
-There is an [ActiveRecord] implementation built on top of it.
+There is an [ActiveRecord](https://github.com/yiisoft/active-record) implementation built on top of it.
 It allows interacting with database tables using objects,
 similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
-
-[ActiveRecord]: https://github.com/yiisoft/active-record
-[MariaDB]: https://mariadb.org
-[MSSQL]: https://www.microsoft.com/sql-server
-[MySQL]: https://www.mysql.com
-[Oracle]: https://www.oracle.com/database
-[PostgreSQL]: https://www.postgresql.org
-[SQLite]: https://www.sqlite.org
-
+ 
 ## Requirements
 
 - PHP 8.0 or higher.
