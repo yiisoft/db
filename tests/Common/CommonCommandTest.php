@@ -1973,7 +1973,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             {
             }
 
-            protected function internalExecute(string|null $rawSql): void
+            protected function internalExecute(): void
             {
             }
         };

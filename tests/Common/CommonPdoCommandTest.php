@@ -218,7 +218,7 @@ abstract class CommonPdoCommandTest extends TestCase
             {
             }
 
-            protected function internalExecute(?string $rawSql): void
+            protected function internalExecute(): void
             {
             }
         };

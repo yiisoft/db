@@ -33,20 +33,20 @@ final class DbArrayHelperTest extends TestCase
      * @dataProvider \Yiisoft\Db\Tests\Provider\PopulateProvider::populateWithIncorrectIndexBy
      * @dataProvider \Yiisoft\Db\Tests\Provider\PopulateProvider::populateWithIndexByClosure
      */
-    public function testPopulateWithIndexBy(Closure|string|null $indexBy, array $rows, array $populated): void
+    public function testPopulateWithIndexBy(Closure|string|null $indexBy, array $rows, array $expected): void
     {
-        $this->assertSame($populated, DbArrayHelper::populate($rows, $indexBy));
+        $this->assertSame($expected, DbArrayHelper::populate($rows, $indexBy));
     }
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\PopulateProvider::populateWithIndexBy
      */
-    public function testPopulateWithIndexByWithObject(Closure|string|null $indexBy, array $rows, array $expectedPopulated): void
+    public function testPopulateWithIndexByWithObject(Closure|string|null $indexBy, array $rows, array $expected): void
     {
         $rows = json_decode(json_encode($rows));
         $populated = json_decode(json_encode(DbArrayHelper::populate($rows, $indexBy)), true);
 
-        $this->assertSame($expectedPopulated, $populated);
+        $this->assertSame($expected, $populated);
     }
 
     /**

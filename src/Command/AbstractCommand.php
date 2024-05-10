@@ -212,14 +212,7 @@ abstract class AbstractCommand implements CommandInterface
 
     public function insertBatch(string $table, iterable $rows, array $columns = []): static
     {
-        $table = $this->getQueryBuilder()->quoter()->quoteSql($table);
-
-        /** @psalm-var string[] $columns */
-        foreach ($columns as &$column) {
-            $column = $this->getQueryBuilder()->quoter()->quoteSql($column);
-        }
-
-        unset($column);
+        $table = $this->getQueryBuilder()->quoter()->getRawTableName($table);
 
         $params = [];
         $sql = $this->getQueryBuilder()->insertBatch($table, $rows, $columns, $params);
@@ -563,12 +556,10 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * Executes a prepared statement.
      *
-     * @param string|null $rawSql Deprecated. Use `null` value. Will be removed in version 2.0.0.
-     *
      * @throws Exception
      * @throws Throwable
      */
-    abstract protected function internalExecute(string|null $rawSql): void;
+    abstract protected function internalExecute(): void;
 
     /**
      * Check if the value has a given flag.
@@ -596,7 +587,7 @@ abstract class AbstractCommand implements CommandInterface
         $isReadMode = $this->isReadMode($queryMode);
         $this->prepare($isReadMode);
 
-        $this->internalExecute(null);
+        $this->internalExecute();
 
         /** @psalm-var mixed $result */
         $result = $this->internalGetQueryResult($queryMode);
