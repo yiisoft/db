@@ -1,6 +1,6 @@
 <p align="center" style="text-align: center">
     <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px" alt="YiiFramework">
+        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px" alt="Yii">
     </a>
     <h1 align="center">Yii Database</h1>
 </p>
@@ -33,7 +33,7 @@ and can be extended to support extra database types or to customize the way it i
 There is an [ActiveRecord](https://github.com/yiisoft/active-record) implementation built on top of it.
 It allows interacting with database tables using objects,
 similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
- 
+
 ## Requirements
 
 - PHP 8.0 or higher.
