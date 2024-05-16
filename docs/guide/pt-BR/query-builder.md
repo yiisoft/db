@@ -28,7 +28,7 @@ $rows = (new Query($db))
     ->all();
 ```
 
-O código acima gera e executa a seguinte consulta SQL, onde o parâmetro `:last_name` está vinculado a
+O código acima gera e executa a seguinte consulta SQL, onde o parâmetro `:last_name` está vinculado
 à string `Smith`:
 
 ```sql
@@ -45,4 +45,4 @@ LIMIT 10
 
 ## Uso
 
-- [Construindo consultas](/docs/guide/pt-BR/query-builder/building-queries.md).
+- [Construindo consultas](query-builder/building-queries.md).

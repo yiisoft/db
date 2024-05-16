@@ -1,6 +1,6 @@
 # Execute a command
 
-All methods introduced in the [Create a command and fetch data](create-command-fetch-data.md) deal with
+All methods introduced in the [create a command and fetch data](create-command-fetch-data.md) deal with
 `SELECT` queries which fetch data from databases.
 
 For queries that don't return any data, you should call the `Yiisoft\Db\Command\CommandInterface::execute()` method:

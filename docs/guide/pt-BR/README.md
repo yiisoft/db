@@ -16,12 +16,14 @@ criar um aplicativo independente de banco de dados.
 
 Yii DB suporta os seguintes bancos de dados prontos para uso:
 
-- [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) das versões **2017, 2019, 2022**.
-- [MySQL](https://www.mysql.com/) das versões **5.7 - 8.0**.
-- [MariaDB](https://mariadb.org/) das versões **10.4 - 10.9**.
-- [Oracle](https://www.oracle.com/database/) das versões **12c - 21c**.
-- [PostgreSQL](https://www.postgresql.org/) das versões **9.6 - 15**.
-- [SQLite](https://www.sqlite.org/) da versão **3.3 e superior**.
+| DB | Versões |
+|----|---------|
+| [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) | **2017, 2019, 2022** |
+| [MySQL](https://www.mysql.com/) | **5.7 - 8.0** |
+| [MariaDB](https://mariadb.org/) | **10.4 - 10.9** |
+| [Oracle](https://www.oracle.com/database/) | **12c - 21c** |
+| [PostgreSQL](https://www.postgresql.org/) | **9.6 - 15** |
+| [SQLite](https://www.sqlite.org/) | **3.3 e superior** |
 
 ## Installation
 
@@ -71,7 +73,7 @@ Você pode criar uma instância de conexão de banco de dados usando um [contêi
 - [Servidor PostgreSQL](connection/pgsql.md)
 - [Servidor SQLite](connection/sqlite.md)
 
-> Info: Quando você cria uma instância de conexão de banco de dados, a conexão real com o banco de dados não é estabelecida até
+> Nota: Quando você cria uma instância de conexão de banco de dados, a conexão real com o banco de dados não é estabelecida até
 > você executar o primeiro SQL ou chamar o método `Yiisoft\Db\Connection\ConnectionInterface::open()` explicitamente.
 
 ### Logger e profiler (criador de perfil)

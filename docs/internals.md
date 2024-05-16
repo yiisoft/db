@@ -1,5 +1,11 @@
 # Internals
 
+## Github actions
+
+All our packages have github actions by default, so you can test your [contribution](https://github.com/yiisoft/db/blob/master/.github/CONTRIBUTING.md) in the cloud.
+
+> Note: We recommend pull requesting in draft mode until all tests pass.
+
 ## Unit testing
 
 This package can be tested globally or individually for each DBMS.
@@ -9,12 +15,6 @@ This package can be tested globally or individually for each DBMS.
 - [Oracle](https://github.com/yiisoft/db-oracle)
 - [PostgreSQL](https://github.com/yiisoft/db-pgsql)
 - [SQLite](https://github.com/yiisoft/db-sqlite)
-
-### Github actions
-
-All our packages have github actions by default, so you can test your [contribution](https://github.com/yiisoft/db/blob/master/.github/CONTRIBUTING.md) in the cloud.
-
-> Note: We recommend pull requesting in draft mode until all tests pass.
 
 ### Docker images
 
@@ -34,7 +34,7 @@ docker compose up -d
 
 ### Global testing
 
-The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
+The following steps are required to run the tests.
 
 1. Run all Docker containers for each DBMS.
 2. Install the dependencies of the project with composer.
@@ -46,7 +46,7 @@ The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
 
 ### Individual testing
 
-The package is tested with [PHPUnit](https://phpunit.de/). To run tests:
+The following steps are required to run the tests.
 
 1. Run the Docker container for the dbms you want to test.
 2. Install the dependencies of the project with composer.
