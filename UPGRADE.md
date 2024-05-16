@@ -67,6 +67,8 @@ $db->createCommand()->insertBatch('user', $values)->execute();
 - `TableSchemaInterface::compositeForeignKey()`
 - `SchemaInterface::isReadQuery()`
 - `AbstractSchema::isReadQuery()`
+- `SchemaInterface::getRawTableName()`
+- `AbstractSchema::getRawTableName()`
 - `AbstractSchema::normalizeRowKeyCase()`
 - `Quoter::unquoteParts()`
 - `AbstractPdoCommand::logQuery()`
