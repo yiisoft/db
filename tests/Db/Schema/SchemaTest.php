@@ -324,25 +324,6 @@ final class SchemaTest extends AbstractSchemaTest
         $this->assertSame([], $schema->getViewNames());
     }
 
-    /**
-     * @throws ReflectionException
-     */
-    public function testNormaliceRowKeyCase(): void
-    {
-        $db = $this->getConnection();
-
-        $schema = $db->getSchema();
-
-        $this->assertSame(
-            ['fk_test' => 1],
-            Assert::InvokeMethod($schema, 'normalizeRowKeyCase', [['Fk_test' => 1], false]),
-        );
-        $this->assertSame(
-            ['FK_test' => ['uk_test' => 1]],
-            Assert::InvokeMethod($schema, 'normalizeRowKeyCase', [['FK_test' => ['UK_test' => 1]], true]),
-        );
-    }
-
     public function testRefreshTableSchema(): void
     {
         $db = $this->getConnection(true);

@@ -25,7 +25,7 @@ final class Command extends AbstractPdoCommand
         return $this->db->getQueryBuilder();
     }
 
-    protected function internalExecute(string|null $rawSql): void
+    protected function internalExecute(): void
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }

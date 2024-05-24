@@ -13,6 +13,21 @@
   for type casting performance (@Tigrov)
 - Enh #829: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilderInterface` and `CommandInterface`
   and change parameters from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
+- Enh #834: Refactor `AbstractCommand::insertBatch()`, add `Quoter::getRawTableName()` to `QuoterInterface` (@Tigrov)
+- Chg #836: Remove `AbstractDMLQueryBuilder::getTypecastValue()` method (@Tigrov)
+- Chg #837: Remove `$table` parameter from `normalizeColumnNames()` and `getNormalizeColumnNames()` methods 
+  of `AbstractDMLQueryBuilder` class (@Tigrov)
+- Chg #838: Remove `SchemaInterface::TYPE_JSONB` constant (@Tigrov)
+- Chg #839: Remove `TableSchemaInterface::compositeForeignKey()` method (@Tigrov)
+- Chg #840: Remove parameter `$withColumn` from `QuoterInterface::getTableNameParts()` method (@Tigrov)
+- Enh #840: Remove `Quoter::unquoteParts()` method (@Tigrov)
+- Chg #841: Remove `$rawSql` parameter from `AbstractCommand::internalExecute()` method
+  and `AbstractPdoCommand::internalExecute()` method (@Tigrov)
+- Enh #842: Allow `ExpressionInterface` for `$alias` parameter of `QueryPartsInterface::withQuery()` method (@Tigrov)
+- Enh #843: Remove `AbstractPdoCommand::logQuery()` method (@Tigrov)
+- Chg #845: Remove `AbstractSchema::normalizeRowKeyCase()` method (@Tigrov)
+- Chg #846: Remove `SchemaInterface::isReadQuery()` and `AbstractSchema::isReadQuery()` methods (@Tigrov)
+- Chg #847: Remove `SchemaInterface::getRawTableName()` and `AbstractSchema::getRawTableName()` methods (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

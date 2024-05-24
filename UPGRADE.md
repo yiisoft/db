@@ -1,7 +1,9 @@
-# Upgrading Instructions for Yii Database
+# Yii Database Upgrading Instructions
 
-The following upgrading instructions are cumulative. That is, if you want to upgrade from version A to version C and 
-there is version B between A and C, you need to following the instructions for both A and B.
+> **IMPORTANT**
+>
+> The following upgrading instructions are *cumulative*. That is, if you want to upgrade from version A to version C 
+> and there is version B between A and C, you need to following the instructions for both A and B.
 
 ## Upgrade from 1.x to 2.x
 
@@ -75,3 +77,35 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `StringColumnSchema` for columns with string or datetime type (char, string, text, datetime, timestamp, date, time);
 - `BinaryColumnSchema` for columns with binary type;
 - `JsonColumnSchema` for columns with json type.
+
+### New methods in `QuoterInterface`
+
+- `QuoterInterface::getRawTableName()` - returns the raw table name without quotes.
+
+### Remove methods
+
+- `AbstractDMLQueryBuilder::getTypecastValue()`
+- `TableSchemaInterface::compositeForeignKey()`
+- `SchemaInterface::isReadQuery()`
+- `AbstractSchema::isReadQuery()`
+- `SchemaInterface::getRawTableName()`
+- `AbstractSchema::getRawTableName()`
+- `AbstractSchema::normalizeRowKeyCase()`
+- `Quoter::unquoteParts()`
+- `AbstractPdoCommand::logQuery()`
+
+### Remove deprecated parameters
+
+- `$table` from `AbstractDMLQueryBuilder::normalizeColumnNames()` method
+- `$table` from `AbstractDMLQueryBuilder::getNormalizeColumnNames()` method
+- `$withColumn` from `QuoterInterface::getTableNameParts()` method
+- `$rawSql` from `AbstractCommand::internalExecute()` method
+- `$rawSql` from `AbstractPdoCommand::internalExecute()` method
+
+### Remove deprecated constants
+
+- `SchemaInterface::TYPE_JSONB`
+
+### Other changes
+
+- Allow `ExpressionInterface` for `$alias` parameter of `QueryPartsInterface::withQuery()` method
