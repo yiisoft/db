@@ -10,13 +10,13 @@ informações de esquema do banco de dados em [SchemaCache](https://github.com/y
 Quando o [Schema](https://github.com/yiisoft/db/blob/master/src/Schema/AbstractSchema.php) precisa
 recuperar informações sobre o esquema do banco de dados, primeiro ele verifica o cache.
 
-Você pode configurar [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php) para usar
+Você pode configurar [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Cache/SchemaCache.php) para usar a
 [Implementação de cache PSR-16](https://github.com/php-fig/simple-cache) de duas maneiras:
 
 - Usar a ligação automática do [contêiner DI](https://github.com/yiisoft/di).
 - Configurá-lo manualmente.
 
-Os exemplos abaixo usam [yiisoft/cache](https://github.com/yiisoft/cache). Certifique-se de tê-lo instalado via Composer
+Os exemplos abaixo usam [yiisoft/cache](https://github.com/yiisoft/cache). Certifique-se de tê-lo instalado via [Composer](https://getcomposer.org)
 usando `composer require yiisoft/cache`.
 
 ## Cache PSR-16 com conexão automática

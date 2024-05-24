@@ -52,7 +52,7 @@ return [
 ];
 ```
 
-Para outros DBMS, consulte a seção ["Criar conexão"](/docs/guide/pt-BR/README.md#criar-conexão).
+Para outros DBMS, consulte a seção ["Criar conexão"](../README.md#criar-conexão).
 
 ## Uso avançado do Logger
 

@@ -16,7 +16,7 @@ You can configure [SchemaCache](https://github.com/yiisoft/db/blob/master/src/Ca
 - Use [DI container](https://github.com/yiisoft/di) autowiring.
 - Configure it manually.
 
-Examples below use [yiisoft/cache](https://github.com/yiisoft/cache). Make sure you have installed it via Composer
+Examples below use [yiisoft/cache](https://github.com/yiisoft/cache). Make sure you have installed it via [Composer](https://getcomposer.org)
 using `composer require yiisoft/cache`.
 
 ## Autowired PSR-16 cache

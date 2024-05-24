@@ -45,4 +45,4 @@ LIMIT 10
 
 ## Usage
 
-- [Building queries](docs/guide/en/query-builder/building-queries.md).
+- [Building queries](query-builder/building-queries.md).
