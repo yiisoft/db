@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
 use Yiisoft\Db\Tests\Support\Stub\TableSchema;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -13,16 +12,6 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 abstract class AbstractTableSchemaTest extends TestCase
 {
     use TestTrait;
-
-    public function testCompositeFk(): void
-    {
-        $tableSchema = new TableSchema();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\Tests\Support\Stub\TableSchema does not support composite FK.');
-
-        $tableSchema->compositeForeignKey(1, 'from', 'to');
-    }
 
     public function testGetCatalogName(): void
     {

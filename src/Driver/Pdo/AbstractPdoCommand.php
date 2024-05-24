@@ -185,12 +185,10 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      *
      * It's a wrapper around {@see PDOStatement::execute()} to support transactions and retry handlers.
      *
-     * @param string|null $rawSql Deprecated. Use `null` value. Will be removed in version 2.0.0.
-     *
      * @throws Exception
      * @throws Throwable
      */
-    protected function internalExecute(string|null $rawSql): void
+    protected function internalExecute(): void
     {
         $attempt = 0;
 
@@ -202,7 +200,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
                     && $this->db->getTransaction() === null
                 ) {
                     $this->db->transaction(
-                        fn () => $this->internalExecute($rawSql),
+                        fn () => $this->internalExecute(),
                         $this->isolationLevel
                     );
                 } else {
@@ -254,31 +252,17 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         return $result;
     }
 
-    /**
-     * Logs the current database query if query logging is on and returns the profiling token if profiling is on.
-     */
-    protected function logQuery(string $rawSql, string $category): void
-    {
-        $this->logger?->log(LogLevel::INFO, $rawSql, [$category, 'type' => LogType::QUERY]);
-    }
-
     protected function queryInternal(int $queryMode): mixed
     {
         $logCategory = self::class . '::' . $this->getQueryMode($queryMode);
 
-        if ($this->logger !== null) {
-            $rawSql = $this->getRawSql();
-            $this->logQuery($rawSql, $logCategory);
-        }
+        $this->logger?->log(LogLevel::INFO, $rawSql = $this->getRawSql(), [$logCategory, 'type' => LogType::QUERY]);
 
         $queryContext = new CommandContext(__METHOD__, $logCategory, $this->getSql(), $this->getParams());
 
-        /**
-         * @psalm-var string $rawSql
-         * @psalm-suppress RedundantConditionGivenDocblockType
-         * @psalm-suppress DocblockTypeContradiction
-         */
+        /** @psalm-var string|null $rawSql */
         $this->profiler?->begin($rawSql ??= $this->getRawSql(), $queryContext);
+        /** @psalm-var string $rawSql */
         try {
             /** @psalm-var mixed $result */
             $result = parent::queryInternal($queryMode);
