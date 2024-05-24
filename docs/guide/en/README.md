@@ -16,12 +16,14 @@ create a database agnostic application.
 
 Yii DB supports the following databases out of the box:
 
-- [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) of versions **2017, 2019, 2022**.
-- [MySQL](https://www.mysql.com/) of versions **5.7 - 8.0**.
-- [MariaDB](https://mariadb.org/) of versions **10.4 - 10.9**.
-- [Oracle](https://www.oracle.com/database/) of versions **12c - 21c**.
-- [PostgreSQL](https://www.postgresql.org/) of versions **9.6 - 15**.
-- [SQLite](https://www.sqlite.org/) of version **3.3 and above**.
+| DB | Version |
+|----|----------|
+| [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) | **2017, 2019, 2022** |
+| [MySQL](https://www.mysql.com/) | **5.7 - 8.0** |
+| [MariaDB](https://mariadb.org/) | **10.4 - 10.9** |
+| [Oracle](https://www.oracle.com/database/) | **12c - 21c** |
+| [PostgreSQL](https://www.postgresql.org/) | **9.6 - 15** |
+| [SQLite](https://www.sqlite.org/) | **3.3 or higher** |
 
 ## Installation
 
@@ -71,7 +73,7 @@ You can create a database connection instance using a [DI container](https://git
 - [PostgreSQL Server](connection/pgsql.md)
 - [SQLite Server](connection/sqlite.md)
 
-> Info: When you create a DB connection instance, the actual connection to the database isn't established until
+> Note: When you create a DB connection instance, the actual connection to the database isn't established until
 > you execute the first SQL or call the `Yiisoft\Db\Connection\ConnectionInterface::open()` method explicitly.
 
 ### Logger and profiler

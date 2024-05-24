@@ -1,6 +1,6 @@
-# Comandos de linguagem de definição de dados (DDL)
+# Comandos de Linguagem de Definição de Dados (DDL)
 
-Linguagem de definição de dados (DDL) é um conjunto de instruções SQL para definir a estrutura do banco de dados.
+Linguagem de Definição de Dados (DDL) é um conjunto de instruções SQL para definir a estrutura do banco de dados.
 
 Instruções DDL são usadas para criar e alterar os objetos de banco de dados em um banco de dados.
 Esses objetos podem ser tabelas, índices, visualizações, procedimentos armazenados, gatilhos e assim por diante.
@@ -64,7 +64,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->dropTable('{{%customer}}')->execute();
 ```
 
-> Aviso: Todos os dados existentes serão excluídos.
+> **Aviso:** Todos os dados existentes serão excluídos.
 
 ### Truncar uma tabela
 
@@ -78,7 +78,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->truncateTable('{{%customer}}')->execute();
 ```
 
-> Aviso: Todos os dados existentes serão excluídos.
+> **Aviso:** Todos os dados existentes serão excluídos.
 
 ## Colunas
 
@@ -236,7 +236,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->dropIndex('{{%customer}}', 'idx-customer-name')->execute();
 ```
 
-### Adicionar índice exclusivo
+### Adicionar um índice exclusivo
 
 Você pode criar um índice único especificando a opção `UNIQUE` no parâmetro `$indexType`, é suportado por todos SGBDs:
 
@@ -247,7 +247,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'UNIQUE')->execute();
 ```
 
-> Info: índices exclusivos são índices que ajudam a manter a integridade dos dados, garantindo que nenhuma linha de dados em uma tabela tenha valores idênticos nos valores da chave.
+> Nota: índices exclusivos são índices que ajudam a manter a integridade dos dados, garantindo que nenhuma linha de dados em uma tabela tenha valores idênticos nos valores da chave.
 > Quando você cria um índice exclusivo para uma tabela existente com dados, valores nas colunas ou expressões que compõem a
 > chave de índice são verificadas quanto à exclusividade.
 
@@ -262,7 +262,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'CLUSTERED')->execute();
 ```
 
-> Info: Um índice clusterizado é um índice que define a ordem física na qual os registros da tabela são armazenados em um banco de dados.
+> Nota: Um índice clusterizado é um índice que define a ordem física na qual os registros da tabela são armazenados em um banco de dados.
 > Como só pode haver uma maneira pela qual os registros são armazenados fisicamente em uma tabela de banco de dados, só pode haver um
 > índice clusterizado por tabela. Por padrão, um índice clusterizado é criado em uma coluna de chave primária.
 
@@ -277,7 +277,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'NONCLUSTERED')->execute();
 ```
 
-> Info: Um índice não clusterizado também é usado para acelerar as operações de pesquisa. Ao contrário de um índice clusterizado, um índice não clusterizado não
+> Nota: Um índice não clusterizado também é usado para acelerar as operações de pesquisa. Ao contrário de um índice clusterizado, um índice não clusterizado não
 > define fisicamente a ordem em que os registros são inseridos em uma tabela. Na verdade, um índice não clusterizado é armazenado em um
 > local separado da tabela de dados.
 >
@@ -295,7 +295,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'name', 'FULLTEXT')->execute();
 ```
 
-> Info: índices de texto completo são criados em colunas baseadas em texto (colunas `CHAR`, `VARCHAR` ou `TEXT`) para acelerar consultas e operações DML
+> Nota: índices de texto completo são criados em colunas baseadas em texto (colunas `CHAR`, `VARCHAR` ou `TEXT`) para acelerar consultas e operações DML
 > nos dados contidos nessas colunas.
 >
 > Um índice de texto completo é definido como parte de uma instrução `CREATE TABLE` ou adicionado a uma tabela existente usando `ALTER TABLE` ou `CREATE INDEX`.
@@ -312,7 +312,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 $db->createCommand()->createIndex('test', 'idx_test_name', 'id', 'BITMAP')->execute();
 ```
 
-> Info: Um índice de bitmap é uma especificação
+> Nota: Um índice de bitmap é uma especificação
 tipo especial de índice de banco de dados que usa bitmaps ou matriz de bits. No índice de bitmap, o Oracle armazena um
 > bitmap para cada chave de índice.
 >

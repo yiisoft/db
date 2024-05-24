@@ -2,7 +2,7 @@
 
 O método `\Yiisoft\Db\Query\Query::withQuery()` especifica o prefixo  `WITH` de uma consulta SQL.
 Você pode usá-lo em vez da subconsulta para obter mais legibilidade e alguns recursos exclusivos (CTE recursivo).
-[Leia mais em SQL moderno](https://modern-sql.com/).
+[Leia mais em Modern SQL](https://modern-sql.com/).
 
 Por exemplo, esta consulta selecionará todas as permissões aninhadas de admin com seus filhos recursivamente.
 

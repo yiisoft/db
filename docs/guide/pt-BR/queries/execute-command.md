@@ -1,6 +1,6 @@
 # Executar um comando
 
-Todos os métodos introduzidos em [Criar um comando e buscar dados](create-command-fetch-data.md) lidam com
+Todos os métodos introduzidos em [criar um comando e buscar dados](create-command-fetch-data.md) lidam com
 consultas `SELECT` que buscam dados de bancos de dados.
 
 Para consultas que não retornam nenhum dado, você deve chamar o método `Yiisoft\Db\Command\CommandInterface::execute()`:

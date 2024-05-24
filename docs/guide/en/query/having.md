@@ -15,7 +15,7 @@ The relevant part of SQL is:
 HAVING `status` = 1
 ```
 
-Refer to the documentation for [Where](/docs/guide/en/query/where.md) for more details about how to specify a condition.
+Refer to the documentation for [Where](where.md) for more details about how to specify a condition.
 
 You can call `Yiisoft\Db\Query\Query::andHaving()` or `Yiisoft\Db\Query\Query::orHaving()` to append more conditions
 to the `HAVING` fragment.

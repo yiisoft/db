@@ -54,4 +54,4 @@ return [
 ];
 ```
 
-For other DBMS refer to ["Create connection"](/docs/guide/en/README.md#create-connection) section.
+For other DBMS refer to ["Create connection"](../README.md#create-connection) section.

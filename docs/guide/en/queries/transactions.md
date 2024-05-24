@@ -1,4 +1,4 @@
-# Execute many commands in a transaction
+# Execute several commands in a transaction
 
 In order for the data to be consistent when multiple commands are involved, you can use transactions.
 
