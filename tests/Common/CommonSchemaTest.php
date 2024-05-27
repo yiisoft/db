@@ -885,9 +885,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                     $column->getDefaultValue(),
                     "defaultValue of column $name is expected to be an object but it is not."
                 );
-                $this->assertSame(
-                    (string) $expected['defaultValue'],
-                    (string) $column->getDefaultValue(),
+                $this->assertEquals(
+                    $expected['defaultValue'],
+                    $column->getDefaultValue(),
                     "defaultValue of column $name does not match."
                 );
             } else {
@@ -905,6 +905,14 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                     $expected['dimension'],
                     $column->getDimension(),
                     "dimension of column $name does not match"
+                );
+            }
+
+            if (isset($expected['dateTimeFormat'])) {
+                $this->assertSame(
+                    $expected['dateTimeFormat'],
+                    $column->getDateTimeFormat(),
+                    "dateTimeFormat of column $name does not match"
                 );
             }
         }
