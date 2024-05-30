@@ -17,7 +17,7 @@ final class ColumnSchemaTest extends TestCase
 {
     public function testAllowNull(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertFalse($column->isAllowNull());
 
@@ -32,7 +32,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testAutoIncrement(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertFalse($column->isAutoIncrement());
 
@@ -47,7 +47,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testComment(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertNull($column->getComment());
 
@@ -62,7 +62,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testComputed(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertFalse($column->isComputed());
 
@@ -77,7 +77,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testDbType(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertNull($column->getDbType());
 
@@ -90,16 +90,9 @@ final class ColumnSchemaTest extends TestCase
         $this->assertNull($column->getDbType());
     }
 
-    public function testDbTypecast(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $this->assertNull($column->dbTypecast(''));
-    }
-
     public function testDefaultValue(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertNull($column->getDefaultValue());
 
@@ -114,7 +107,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testEnumValues(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertNull($column->getEnumValues());
 
@@ -129,7 +122,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testExtra(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertNull($column->getExtra());
 
@@ -142,28 +135,24 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('', $column->getExtra());
     }
 
-    /**
-     * @link https://github.com/yiisoft/db/issues/718
-     */
-    public function testTypecastIssue718(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $param = [1, 2];
-        $result = $column->dbTypecast($param);
-        $this->assertSame([1, 2], $result);
-    }
-
     public function testName(): void
     {
-        $column = new ColumnSchema('test');
+        $column = new ColumnSchema();
+
+        $this->assertNull($column->getName());
+
+        $column->name('test');
 
         $this->assertSame('test', $column->getName());
+
+        $column->name('');
+
+        $this->assertSame('', $column->getName());
     }
 
     public function testPhpType(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertNull($column->getPhpType());
 
@@ -176,90 +165,9 @@ final class ColumnSchemaTest extends TestCase
         $this->assertNull($column->getPhpType());
     }
 
-    public function testPhpTypecast(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
-
-        $this->assertSame('test', $column->phpTypecast('test'));
-    }
-
-    public function testPhpTypecastWithBoolean(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_BOOLEAN);
-
-        $this->assertTrue($column->phpTypecast(1));
-    }
-
-    public function testPhpTypecastWithDouble(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_DOUBLE);
-
-        $this->assertSame(1.2, $column->phpTypecast('1.2'));
-    }
-
-    public function testPhpTypecastWithInteger(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_INTEGER);
-
-        $this->assertSame(1, $column->phpTypecast('1'));
-    }
-
-    public function testPhpTypecastWithStringBooleanValue(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
-
-        $this->assertSame('1', $column->phpTypecast(true));
-    }
-
-    public function testPhpTypecastWithStringFloatValue(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
-
-        $this->assertSame('1.1', $column->phpTypecast(1.1));
-    }
-
-    public function testPhpTypecastWithStringIntegerValue(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
-
-        $this->assertSame('1', $column->phpTypecast(1));
-    }
-
-    public function testPhpTypecastWithStringNullValue(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
-
-        $this->assertNull($column->phpTypecast(null));
-    }
-
-    public function testPhpTypecastWithStringResourceValue(): void
-    {
-        $column = new ColumnSchema('new');
-
-        $column->phpType(SchemaInterface::PHP_TYPE_STRING);
-
-        $this->assertIsResource($column->phpTypecast(fopen('php://memory', 'rb')));
-    }
-
     public function testPrecision(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertNull($column->getPrecision());
 
@@ -274,7 +182,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testPrimaryKey(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertFalse($column->isPrimaryKey());
 
@@ -289,7 +197,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testScale(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertNull($column->getScale());
 
@@ -304,7 +212,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testSize(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertNull($column->getSize());
 
@@ -319,7 +227,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testType(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertSame('', $column->getType());
 
@@ -334,7 +242,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testUnsigned(): void
     {
-        $column = new ColumnSchema('new');
+        $column = new ColumnSchema();
 
         $this->assertFalse($column->isUnsigned());
 

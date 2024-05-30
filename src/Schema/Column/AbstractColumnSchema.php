@@ -2,16 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Schema;
-
-use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Helper\DbStringHelper;
-
-use function gettype;
-use function in_array;
-use function is_bool;
-use function is_float;
-use function is_resource;
+namespace Yiisoft\Db\Schema\Column;
 
 /**
  * Represents the metadata of a column in a database table.
@@ -50,15 +41,16 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     private array|null $enumValues = null;
     private string|null $extra = null;
     private bool $isPrimaryKey = false;
-    private string|null $phpType = null;
+    private string|null $name = null;
     private int|null $precision = null;
     private int|null $scale = null;
     private int|null $size = null;
-    private string $type = '';
     private bool $unsigned = false;
 
-    public function __construct(private string $name)
-    {
+    public function __construct(
+        private string $type,
+        private string|null $phpType = null,
+    ) {
     }
 
     public function allowNull(bool $value): void
@@ -84,15 +76,6 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     public function dbType(string|null $value): void
     {
         $this->dbType = $value;
-    }
-
-    public function dbTypecast(mixed $value): mixed
-    {
-        /**
-         * The default implementation does the same as casting for PHP, but it should be possible to override this with
-         * annotation of an explicit PDO type.
-         */
-        return $this->typecast($value);
     }
 
     public function defaultValue(mixed $value): void
@@ -135,7 +118,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->extra;
     }
 
-    public function getName(): string
+    public function getName(): string|null
     {
         return $this->name;
     }
@@ -190,14 +173,14 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->unsigned;
     }
 
+    public function name(string|null $name): void
+    {
+        $this->name = $name;
+    }
+
     public function phpType(string|null $value): void
     {
         $this->phpType = $value;
-    }
-
-    public function phpTypecast(mixed $value): mixed
-    {
-        return $this->typecast($value);
     }
 
     public function precision(int|null $value): void
@@ -228,51 +211,5 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     public function unsigned(bool $value): void
     {
         $this->unsigned = $value;
-    }
-
-    /**
-     * Converts the input value according to {@see phpType} after retrieval from the database.
-     *
-     * If the value is null or an {@see Expression}, it won't be converted.
-     *
-     * @param mixed $value The value to be converted.
-     *
-     * @return mixed The converted value.
-     */
-    protected function typecast(mixed $value): mixed
-    {
-        if (
-            $value === null
-            || $value === '' && !in_array($this->type, [
-                SchemaInterface::TYPE_TEXT,
-                SchemaInterface::TYPE_STRING,
-                SchemaInterface::TYPE_BINARY,
-                SchemaInterface::TYPE_CHAR,
-            ], true)
-        ) {
-            return null;
-        }
-
-        if ($value instanceof ExpressionInterface) {
-            return $value;
-        }
-
-        return match ($this->phpType) {
-            gettype($value) => $value,
-            SchemaInterface::PHP_TYPE_RESOURCE,
-            SchemaInterface::PHP_TYPE_STRING
-                => match (true) {
-                    is_resource($value) => $value,
-                    /** ensure type cast always has . as decimal separator in all locales */
-                    is_float($value) => DbStringHelper::normalizeFloat($value),
-                    is_bool($value) => $value ? '1' : '0',
-                    default => (string) $value,
-                },
-            SchemaInterface::PHP_TYPE_INTEGER => (int) $value,
-            /** Treating a 0-bit value as false too (@link https://github.com/yiisoft/yii2/issues/9006) */
-            SchemaInterface::PHP_TYPE_BOOLEAN => $value && $value !== "\0",
-            SchemaInterface::PHP_TYPE_DOUBLE => (float) $value,
-            default => $value,
-        };
     }
 }

@@ -898,13 +898,40 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 );
             }
 
-            /* Pgsql only */
+            if (isset($expected['unsigned'])) {
+                $this->assertSame(
+                    $expected['unsigned'],
+                    $column->isUnsigned(),
+                    "unsigned of column $name does not match"
+                );
+            }
+
+            /* For array types */
             if (isset($expected['dimension'])) {
                 /** @psalm-suppress UndefinedMethod */
                 $this->assertSame(
                     $expected['dimension'],
                     $column->getDimension(),
                     "dimension of column $name does not match"
+                );
+            }
+
+            if (isset($expected['column'])) {
+                /** @psalm-suppress UndefinedMethod */
+                $arrayColumn = $column->getColumn();
+
+                $this->assertSame(
+                    $expected['column'],
+                    [
+                        'type' => $arrayColumn->getType(),
+                        'dbType' => $arrayColumn->getDbType(),
+                        'phpType' => $arrayColumn->getPhpType(),
+                        'enumValues' => $arrayColumn->getEnumValues(),
+                        'size' => $arrayColumn->getSize(),
+                        'precision' => $arrayColumn->getPrecision(),
+                        'scale' => $arrayColumn->getScale(),
+                    ],
+                    "array column of column $name does not match"
                 );
             }
         }

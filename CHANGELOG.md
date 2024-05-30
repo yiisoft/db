@@ -9,6 +9,8 @@
 - Enh #806: Build `Expression` instances inside `Expression::$params` when build a query using `QueryBuilder` (@Tigrov)
 - Enh #766: Allow `ColumnInterface` as column type. (@Tigrov)
 - Bug #828: Fix `float` type when use `AbstractCommand::getRawSql()` method (@Tigrov)
+- Enh #752: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
+  for type casting performance (@Tigrov)
 - Enh #829: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilderInterface` and `CommandInterface`
   and change parameters from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
 - Enh #834: Refactor `AbstractCommand::insertBatch()`, add `Quoter::getRawTableName()` to `QuoterInterface` (@Tigrov)
