@@ -249,7 +249,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'description' => $this->primaryKey()->name('id'),
+     *     'id' => $this->primaryKey()->name('id'),
      * ];
      * ```
      */
