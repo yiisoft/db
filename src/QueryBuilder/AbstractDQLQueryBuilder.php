@@ -544,7 +544,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     /**
      * Checks to see if the given limit is effective.
      *
-     *
      * @return bool Whether the limit is effective.
      */
     protected function hasLimit(mixed $limit): bool
@@ -554,7 +553,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     /**
      * Checks to see if the given offset is effective.
-     *
      *
      * @return bool Whether the offset is effective.
      */

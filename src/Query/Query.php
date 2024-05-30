@@ -821,7 +821,6 @@ class Query implements QueryInterface
      * - a string containing only space characters,
      * - or an empty array.
      *
-     *
      * @return bool If the value is empty.
      */
     private function isEmpty(mixed $value): bool
