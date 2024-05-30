@@ -57,8 +57,6 @@ interface ColumnInterface
 
     /**
      * Specify the default value for the column.
-     *
-     * @param mixed $default The default value to use.
      */
     public function defaultValue(mixed $default): self;
 

@@ -65,7 +65,6 @@ final class Assert extends TestCase
      *
      * @param object $object The object to set the property on.
      * @param string $propertyName The name of the property to set.
-     * @param mixed $value The value to set.
      */
     public static function setInaccessibleProperty(object $object, string $propertyName, mixed $value): void
     {

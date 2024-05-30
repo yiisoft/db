@@ -48,7 +48,6 @@ final class SchemaCache
     /**
      * Remove a value with the specified key from cache.
      *
-     * @param mixed $key A key identifying the value to delete from cache.
      *
      * @throws InvalidArgumentException
      */
@@ -61,7 +60,6 @@ final class SchemaCache
     /**
      * Retrieve value from cache.
      *
-     * @param mixed $key The key identifying the value to cache.
      * @throws InvalidArgumentException
      * @return mixed Cache value.
      */
@@ -74,10 +72,7 @@ final class SchemaCache
     /**
      * Persists data in the cache, uniquely referenced by a key with an optional tag.
      *
-     * @param mixed $key The key of the item to store.
-     * @param mixed $value The value of the item to store.
      * @param string|null $tag Cache tag.
-     *
      * @throws InvalidArgumentException If the $key string isn't a legal value.
      * @throws RuntimeException If cache value isn't set.
      */
@@ -190,10 +185,8 @@ final class SchemaCache
      *
      * @link https://www.php-fig.org/psr/psr-16/#12-definitions
      *
-     * @param mixed $key A key to normalize.
      *
      * @throws InvalidArgumentException For invalid key.
-     *
      * @return string The normalized cache key.
      */
     private function normalize(mixed $key): string

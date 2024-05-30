@@ -140,7 +140,6 @@ interface QuoterInterface
      * Attention: The usage of this method isn't safe.
      * Use prepared statements.
      *
-     * @param mixed $value The value to quote.
      *
      * @return mixed The quoted value.
      */

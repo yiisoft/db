@@ -378,9 +378,7 @@ abstract class AbstractSchema implements SchemaInterface
      * This method may be overridden by child classes to create a DBMS-specific column schema.
      *
      * @param string $type The abstract data type.
-     * @param mixed ...$info The column information.
      * @psalm-param array{unsigned?: bool} $info The set of parameters may be different for a specific DBMS.
-     *
      * @return ColumnSchemaInterface
      */
     protected function createColumnSchema(string $type, mixed ...$info): ColumnSchemaInterface
@@ -569,7 +567,6 @@ abstract class AbstractSchema implements SchemaInterface
      *
      * @param string $name The table name.
      * @param string $type The metadata type.
-     * @param mixed $data The metadata to set.
      */
     protected function setTableMetadata(string $name, string $type, mixed $data): void
     {

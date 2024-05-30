@@ -261,10 +261,8 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Determines the SQL data type for the given PHP data value.
      *
-     * @param mixed $data The data to find a type for.
      *
      * @return int The type.
-     *
      * @see DataType
      */
     public function getDataType(mixed $data): int;

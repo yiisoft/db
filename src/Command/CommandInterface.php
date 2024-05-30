@@ -84,7 +84,6 @@ interface CommandInterface
      * @param string $table The name of the table to add constraint to.
      * @param string $name The name of the default value constraint.
      * @param string $column The name of the column to add constraint to.
-     * @param mixed $value Default value.
      *
      * @throws Exception
      * @throws NotSupportedException
@@ -207,12 +206,10 @@ interface CommandInterface
      * @param int|string $name The parameter identifier. For a prepared statement using named placeholders, this will be
      * a parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
-     * @param mixed $value The PHP variable to bind to the SQL statement parameter (passed by reference).
      * @param int|null $dataType The {@see DataType SQL data type} of the parameter. If `null`, the type is determined
      * by the PHP type of the value.
      * @param int|null $length The length of the data type.
      * @param mixed|null $driverOptions The driver-specific options.
-     *
      * @throws Exception
      */
     public function bindParam(
@@ -241,7 +238,6 @@ interface CommandInterface
      * @param int|string $name Parameter identifier. For a prepared statement using named placeholders, this will be a
      * parameter name of the form `:name`. For a prepared statement using question mark placeholders, this will be the
      * 1-indexed position of the parameter.
-     * @param mixed $value The value to bind to the parameter.
      * @param int|null $dataType The {@see DataType SQL data type} of the parameter. If null, the type is determined
      * by the PHP type of the value.
      */
