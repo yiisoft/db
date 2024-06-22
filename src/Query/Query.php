@@ -821,6 +821,7 @@ class Query implements QueryInterface
      * - a string containing only space characters,
      * - or an empty array.
      *
+     * @param mixed $value The value to check.
      *
      * @return bool If the value is empty.
      */

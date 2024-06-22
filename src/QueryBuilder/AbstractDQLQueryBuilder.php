@@ -544,6 +544,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     /**
      * Checks to see if the given limit is effective.
      *
+     * @param mixed $limit The given limit.
      *
      * @return bool Whether the limit is effective.
      */
@@ -555,6 +556,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     /**
      * Checks to see if the given offset is effective.
      *
+     * @param mixed $offset The given offset.
      *
      * @return bool Whether the offset is effective.
      */

@@ -84,9 +84,11 @@ interface DDLQueryBuilderInterface
      * @param string $table The table toi add the default value constraint to.
      * @param string $name The name of the default value constraint.
      * @param string $column The name of the column to add constraint on.
+     * @param mixed $value The default value to set for the column.
      *
      * @throws Exception
      * @throws NotSupportedException If this isn't supported by the underlying DBMS.
+     *
      * @return string the SQL statement for adding a default value constraint to an existing table.
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
