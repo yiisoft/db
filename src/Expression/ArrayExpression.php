@@ -70,6 +70,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @link https://php.net/manual/en/arrayaccess.offsetexists.php
      *
+     *
      * @throws InvalidConfigException If offset isn't an integer.
      * @return bool Its `true` on success or `false` on failure. The return value will be cast to boolean if non-boolean
      * was returned.
@@ -85,6 +86,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      *
      * @link https://php.net/manual/en/arrayaccess.offsetget.php
      *
+     *
      * @throws InvalidConfigException If offset isn't an integer.
      * @return mixed Can return all value types.
      */
@@ -99,6 +101,7 @@ class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, It
      * Offset to set.
      *
      * @link https://php.net/manual/en/arrayaccess.offsetset.php
+     *
      *
      * @throws InvalidConfigException If offset isn't an integer.
      */

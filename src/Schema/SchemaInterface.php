@@ -261,6 +261,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Determines the SQL data type for the given PHP data value.
      *
+     *
      * @return int The type.
      * @see DataType
      */
