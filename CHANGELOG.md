@@ -28,6 +28,7 @@
 - Chg #845: Remove `AbstractSchema::normalizeRowKeyCase()` method (@Tigrov)
 - Chg #846: Remove `SchemaInterface::isReadQuery()` and `AbstractSchema::isReadQuery()` methods (@Tigrov)
 - Chg #847: Remove `SchemaInterface::getRawTableName()` and `AbstractSchema::getRawTableName()` methods (@Tigrov)
+- Enh #852: Add method chaining for column classes (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
