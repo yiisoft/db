@@ -66,7 +66,8 @@ and the following changes were made:
 
 - `getName()` method can return `string` or `null`;
 - `name(string|null $name)` method is added;
-- constructor of `AbstractColumnSchema` class is changed to `__construct(string $type, string|null $phpType = null)`.
+- constructor of `AbstractColumnSchema` class is changed to `__construct(string $type, string|null $phpType = null)`;
+- added method chaining.
 
 ### New classes for table columns
 

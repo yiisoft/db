@@ -19,16 +19,16 @@ namespace Yiisoft\Db\Schema\Column;
  * ```php
  * use Yiisoft\Db\Schema\ColumnSchema;
  *
- * $column = new ColumnSchema();
- * $column->name('id');
- * $column->allowNull(false);
- * $column->dbType('int(11)');
- * $column->phpType('integer');
- * $column->type('integer');
- * $column->defaultValue(0);
- * $column->autoIncrement(true);
- * $column->primaryKey(true);
- * ``
+ * $column = (new ColumnSchema())
+ *     ->name('id')
+ *     ->allowNull(false)
+ *     ->dbType('int(11)')
+ *     ->phpType('integer')
+ *     ->type('integer')
+ *     ->defaultValue(0)
+ *     ->autoIncrement()
+ *     ->primaryKey();
+ * ```
  */
 abstract class AbstractColumnSchema implements ColumnSchemaInterface
 {
@@ -53,44 +53,52 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     ) {
     }
 
-    public function allowNull(bool $value): void
+    public function allowNull(bool $allowNull = true): static
     {
-        $this->allowNull = $value;
+        $this->allowNull = $allowNull;
+        return $this;
     }
 
-    public function autoIncrement(bool $value): void
+    public function autoIncrement(bool $autoIncrement = true): static
     {
-        $this->autoIncrement = $value;
+        $this->autoIncrement = $autoIncrement;
+        return $this;
     }
 
-    public function comment(string|null $value): void
+    public function comment(string|null $comment): static
     {
-        $this->comment = $value;
+        $this->comment = $comment;
+        return $this;
     }
 
-    public function computed(bool $value): void
+    public function computed(bool $computed = true): static
     {
-        $this->computed = $value;
+        $this->computed = $computed;
+        return $this;
     }
 
-    public function dbType(string|null $value): void
+    public function dbType(string|null $dbType): static
     {
-        $this->dbType = $value;
+        $this->dbType = $dbType;
+        return $this;
     }
 
-    public function defaultValue(mixed $value): void
+    public function defaultValue(mixed $defaultValue): static
     {
-        $this->defaultValue = $value;
+        $this->defaultValue = $defaultValue;
+        return $this;
     }
 
-    public function enumValues(array|null $value): void
+    public function enumValues(array|null $enumValues): static
     {
-        $this->enumValues = $value;
+        $this->enumValues = $enumValues;
+        return $this;
     }
 
-    public function extra(string|null $value): void
+    public function extra(string|null $extra): static
     {
-        $this->extra = $value;
+        $this->extra = $extra;
+        return $this;
     }
 
     public function getComment(): string|null
@@ -173,43 +181,51 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->unsigned;
     }
 
-    public function name(string|null $name): void
+    public function name(string|null $name): static
     {
         $this->name = $name;
+        return $this;
     }
 
-    public function phpType(string|null $value): void
+    public function phpType(string|null $phpType): static
     {
-        $this->phpType = $value;
+        $this->phpType = $phpType;
+        return $this;
     }
 
-    public function precision(int|null $value): void
+    public function precision(int|null $precision): static
     {
-        $this->precision = $value;
+        $this->precision = $precision;
+        return $this;
     }
 
-    public function primaryKey(bool $value): void
+    public function primaryKey(bool $isPrimaryKey = true): static
     {
-        $this->isPrimaryKey = $value;
+        $this->isPrimaryKey = $isPrimaryKey;
+        return $this;
     }
 
-    public function scale(int|null $value): void
+    public function scale(int|null $scale): static
     {
-        $this->scale = $value;
+        $this->scale = $scale;
+        return $this;
     }
 
-    public function size(int|null $value): void
+    public function size(int|null $size): static
     {
-        $this->size = $value;
+        $this->size = $size;
+        return $this;
     }
 
-    public function type(string $value): void
+    public function type(string $type): static
     {
-        $this->type = $value;
+        $this->type = $type;
+        return $this;
     }
 
-    public function unsigned(bool $value): void
+    public function unsigned(bool $unsigned = true): static
     {
-        $this->unsigned = $value;
+        $this->unsigned = $unsigned;
+        return $this;
     }
 }
