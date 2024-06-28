@@ -17,11 +17,11 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'description' => $this->text()->allowNull(true),
+     *     'description' => $this->text()->allowNull(),
      * ];
      * ```
      */
-    public function allowNull(bool $value): void;
+    public function allowNull(bool $allowNull = true): static;
 
     /**
      * The database assigns auto incremented column a unique value automatically whenever you insert a new row into
@@ -32,11 +32,11 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'id' => $this->primaryKey()->autoIncrement(true),
+     *     'id' => $this->primaryKey()->autoIncrement(),
      * ];
      * ```
      */
-    public function autoIncrement(bool $value): void;
+    public function autoIncrement(bool $autoIncrement = true): static;
 
     /**
      * The comment for a column in a database table.
@@ -49,7 +49,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function comment(string|null $value): void;
+    public function comment(string|null $comment): static;
 
     /**
      * A computed column is a virtual column that computes its values from an expression.
@@ -62,13 +62,13 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function computed(bool $value): void;
+    public function computed(bool $computed = true): static;
 
     /**
-     * The database data-type of column.
+     * Sets a database data type for the column.
      *
-     * The data type can be one of the built-in data types supported by the database server (such as `INTEGER`, `VARCHAR`,
-     * `DATETIME`, etc.), a custom data type defined by the database server, or `null` if the database
+     * The data type can be one of the built-in data types supported by the database server (such as `INTEGER`,
+     * `VARCHAR`, `DATETIME`, etc.), a custom data type defined by the database server, or `null` if the database
      * allows untyped columns.
      *
      * ```php
@@ -77,7 +77,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function dbType(string|null $value): void;
+    public function dbType(string|null $dbType): static;
 
     /**
      * Convert a value from its PHP representation to a database-specific representation.
@@ -100,7 +100,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function defaultValue(mixed $value): void;
+    public function defaultValue(mixed $defaultValue): static;
 
     /**
      * The list of possible values for the `ENUM` column.
@@ -111,7 +111,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function enumValues(array|null $value): void;
+    public function enumValues(array|null $enumValues): static;
 
     /**
      * Extra SQL to append to the generated SQL for a column.
@@ -125,7 +125,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function extra(string|null $value): void;
+    public function extra(string|null $extra): static;
 
     /**
      * @return string|null The comment of the column.
@@ -135,7 +135,7 @@ interface ColumnSchemaInterface
     public function getComment(): string|null;
 
     /**
-     * @return string|null The database type of the column.
+     * @return string|null The database data type of the column.
      * Null means the column has no type in the database.
      *
      * Note that the type includes size for columns supporting it, e.g. `varchar(128)`. The size can be obtained
@@ -230,14 +230,14 @@ interface ColumnSchemaInterface
     public function isComputed(): bool;
 
     /**
-     * Whether this column is a primary key.
+     * Whether this column is a part of primary key.
      *
      * @see primaryKey()
      */
     public function isPrimaryKey(): bool;
 
     /**
-     * Whether this column is unsigned. This is only meaningful when {@see type} is `smallint`, `integer`
+     * Whether this column is unsigned. This is only meaningful when {@see type} is `tinyint`, `smallint`, `integer`
      * or `bigint`.
      *
      * @see unsigned()
@@ -253,7 +253,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function name(string|null $name): void;
+    public function name(string|null $name): static;
 
     /**
      * The PHP data type for representing the data stored in the column.
@@ -270,7 +270,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function phpType(string|null $value): void;
+    public function phpType(string|null $phpType): static;
 
     /**
      * Converts the input value according to {@see phpType} after retrieval from the database.
@@ -288,7 +288,7 @@ interface ColumnSchemaInterface
      *     'price' => $this->decimal(10, 2)->precision(10),
      * ];
      */
-    public function precision(int|null $value): void;
+    public function precision(int|null $precision): static;
 
     /**
      * The primary key is a column or set of columns that uniquely identifies each row in a table.
@@ -299,7 +299,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function primaryKey(bool $value): void;
+    public function primaryKey(bool $isPrimaryKey = true): static;
 
     /**
      * The scale is the number of digits to the right of the decimal point and is only meaningful when {@see type} is
@@ -311,12 +311,12 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function scale(int|null $value): void;
+    public function scale(int|null $scale): static;
 
     /**
      * The size refers to the number of characters or digits allowed in a column of a database table. The size is
-     * typically used for character or numeric data types, such as `VARCHAR` or `INT`, to specify the maximum length or
-     * precision of the data in the column.
+     * typically used for character or numeric data types, such as `VARCHAR`, `INT` or DECIMAL, to specify the maximum
+     * length or precision of the data in the column.
      *
      * ```php
      * $columns = [
@@ -324,7 +324,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function size(int|null $value): void;
+    public function size(int|null $size): static;
 
     /**
      * The database type of the column.
@@ -334,7 +334,7 @@ interface ColumnSchemaInterface
      *     'description' => $this->text()->type('text'),
      * ];
      */
-    public function type(string $value): void;
+    public function type(string $type): static;
 
     /**
      * Whether the column type is an unsigned integer.
@@ -346,5 +346,5 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function unsigned(bool $value): void;
+    public function unsigned(bool $unsigned = true): static;
 }
