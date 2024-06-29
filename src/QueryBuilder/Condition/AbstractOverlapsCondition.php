@@ -40,7 +40,7 @@ abstract class AbstractOverlapsCondition implements OverlapsConditionInterface
     public static function fromArrayDefinition(string $operator, array $operands): static
     {
         if (!isset($operands[0], $operands[1])) {
-            throw new InvalidArgumentException("Operator '$operator' requires three operands.");
+            throw new InvalidArgumentException("Operator \"$operator\" requires three operands.");
         }
 
         /** @psalm-suppress UnsafeInstantiation */
@@ -62,7 +62,7 @@ abstract class AbstractOverlapsCondition implements OverlapsConditionInterface
         }
 
         throw new InvalidArgumentException(
-            "Operator '$operator' requires column to be string or ExpressionInterface."
+            "Operator \"$operator\" requires column to be string or ExpressionInterface."
         );
     }
 
@@ -78,7 +78,7 @@ abstract class AbstractOverlapsCondition implements OverlapsConditionInterface
         }
 
         throw new InvalidArgumentException(
-            "Operator '$operator' requires values to be iterable or ExpressionInterface."
+            "Operator \"$operator\" requires values to be iterable or ExpressionInterface."
         );
     }
 }
