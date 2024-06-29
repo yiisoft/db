@@ -6,7 +6,10 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Interface;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
 
-interface OverlapConditionInterface extends ConditionInterface
+/**
+ * Represents array and JSON overlaps conditions.
+ */
+interface OverlapsConditionInterface extends ConditionInterface
 {
     /**
      * @return ExpressionInterface|string The column name. If it's an array, a composite `IN` condition will be

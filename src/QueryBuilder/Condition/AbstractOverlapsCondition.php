@@ -6,15 +6,15 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\OverlapConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\Interface\OverlapsConditionInterface;
 
 use function is_iterable;
 use function is_string;
 
 /**
- * Condition that's represented `OVERLAP` operator is used to check if a value is between two values.
+ * The base class for classes representing the array and JSON overlaps conditions.
  */
-abstract class AbstractOverlapCondition implements OverlapConditionInterface
+abstract class AbstractOverlapsCondition implements OverlapsConditionInterface
 {
     public function __construct(
         private string|ExpressionInterface $column,
