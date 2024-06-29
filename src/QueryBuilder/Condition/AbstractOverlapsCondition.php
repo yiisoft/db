@@ -37,12 +37,13 @@ abstract class AbstractOverlapsCondition implements OverlapsConditionInterface
      *
      * @throws InvalidArgumentException If the number of operands isn't 2.
      */
-    public static function fromArrayDefinition(string $operator, array $operands): self
+    public static function fromArrayDefinition(string $operator, array $operands): static
     {
         if (!isset($operands[0], $operands[1])) {
             throw new InvalidArgumentException("Operator '$operator' requires three operands.");
         }
 
+        /** @psalm-suppress UnsafeInstantiation */
         return new static(
             self::validateColumn($operator, $operands[0]),
             self::validateValues($operator, $operands[1])
