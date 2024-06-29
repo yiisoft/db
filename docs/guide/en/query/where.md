@@ -211,7 +211,7 @@ Similar to the `not like` operator except that `OR` is used to concatenate the `
 Requires one operand which must be an instance of `Yiisoft\Db\Query\Query` representing the sub-query.
 It will build an `EXISTS` (sub-query) expression.
 
-## not exists
+### not exists
 
 Similar to the `exists` operator and builds a `NOT EXISTS` (sub-query) expression.
 
@@ -236,6 +236,28 @@ $value = $request->get('value');
 $query->where(['=', $column, $value]);
 // $value is safe, but $column name won't be encoded!
 ```
+
+### array overlaps
+
+Requires two operands:
+
+- Operator 1 should be a column name of an array type or DB expression representing an array;
+- Operator 2 should be an array, iterator or DB expression representing an array.
+
+Checks if the first array contains at least one element from the second array. Currently supported only by PostgreSQL 
+and equals to `&&` operator.
+
+For example, `['array overlaps', 'ids', [1, 2, 3]]` will generate `"ids"::text[] && ARRAY[1,2,3]::text[]`.
+
+### json overlaps
+
+Requires two operands:
+
+- Operator 1 should be a column name of a json type or DB expression representing a json;
+- Operator 2 should be an array, iterator or DB expression representing an array.
+
+Checks if the json contains at least one element from the array. Currently supported only by PostgreSQL, MySQL and 
+SQLite. 
 
 ## Object format
 
@@ -272,10 +294,12 @@ Conversion from operator format into object format is performed according
 to `Yiisoft\Db\QueryBuilder\AbstractDQLQueryBuilder::conditionClasses` property
 that maps operator names to representative class names.
 
-- `AND`, `OR` => `Yiisoft\Db\QueryBuilder\Condition\ConjunctionCondition`.
-- `NOT` => `Yiisoft\Db\QueryBuilder\Condition\NotCondition`.
-- `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\InCondition`.
-- `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\BetweenCondition`.
+- `AND`, `OR` => `Yiisoft\Db\QueryBuilder\Condition\ConjunctionCondition`;
+- `NOT` => `Yiisoft\Db\QueryBuilder\Condition\NotCondition`;
+- `IN`, `NOT IN` => `Yiisoft\Db\QueryBuilder\Condition\InCondition`;
+- `BETWEEN`, `NOT BETWEEN` => `Yiisoft\Db\QueryBuilder\Condition\BetweenCondition`;
+- `ARRAY OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition`;
+- `JSON OVERLAPS` => `Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition`.
 
 ## Appending conditions
 
