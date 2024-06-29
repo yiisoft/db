@@ -18,7 +18,7 @@ interface OverlapsConditionInterface extends ConditionInterface
     public function getColumn(): string|ExpressionInterface;
 
     /**
-     * @return iterable|ExpressionInterface An array of values that {@see columns} value should overlap.
+     * @return ExpressionInterface|iterable An array of values that {@see columns} value should overlap.
      */
     public function getValues(): iterable|ExpressionInterface;
 }
