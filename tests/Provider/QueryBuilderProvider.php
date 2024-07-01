@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use ArrayIterator;
 use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
@@ -1536,6 +1538,27 @@ class QueryBuilderProvider
         return [
             [SchemaInterface::TYPE_STRING],
             [new Column('string(100)')],
+        ];
+    }
+
+    public static function overlapsCondition(): array
+    {
+        return [
+            [[], 0],
+            [[0], 0],
+            [[1], 1],
+            [[4], 1],
+            [[3], 2],
+            [[0, 1], 1],
+            [[1, 2], 1],
+            [[1, 4], 2],
+            [[0, 1, 2, 3, 4, 5, 6], 2],
+            [[6, 7, 8, 9], 0],
+            [new ArrayIterator([0, 1, 2, 7]), 1],
+            'null' => [[null], 1],
+            'expression' => [new Expression("'[0,1,2,7]'"), 1],
+            'json expression' => [new JsonExpression([0,1,2,7]), 1],
+            'query expression' => [(new Query(static::getDb()))->select(new JsonExpression([0,1,2,7])), 1],
         ];
     }
 }

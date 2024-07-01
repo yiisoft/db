@@ -496,6 +496,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             'OR NOT LIKE' => Condition\LikeCondition::class,
             'EXISTS' => Condition\ExistsCondition::class,
             'NOT EXISTS' => Condition\ExistsCondition::class,
+            'ARRAY OVERLAPS' => Condition\ArrayOverlapsCondition::class,
+            'JSON OVERLAPS' => Condition\JsonOverlapsCondition::class,
         ];
     }
 
