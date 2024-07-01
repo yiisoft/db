@@ -239,25 +239,25 @@ $query->where(['=', $column, $value]);
 
 ### array overlaps
 
+Checks if the first array contains at least one element from the second array. Currently supported only by PostgreSQL
+and equals to `&&` operator.
+
 Requires two operands:
 
 - Operator 1 should be a column name of an array type or DB expression returning an array;
 - Operator 2 should be an array, iterator or DB expression returning an array.
 
-Checks if the first array contains at least one element from the second array. Currently supported only by PostgreSQL 
-and equals to `&&` operator.
-
 For example, `['array overlaps', 'ids', [1, 2, 3]]` will generate `"ids"::text[] && ARRAY[1,2,3]::text[]`.
 
 ### JSON overlaps
+
+Checks if the JSON contains at least one element from the array. Currently supported only by PostgreSQL, MySQL and
+SQLite.
 
 Requires two operands:
 
 - Operator 1 should be a column name of a JSON type or DB expression returning a JSON;
 - Operator 2 should be an array, iterator or DB expression returning an array.
-
-Checks if the JSON contains at least one element from the array. Currently supported only by PostgreSQL, MySQL and 
-SQLite. 
 
 ## Object format
 

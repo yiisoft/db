@@ -1571,7 +1571,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires three operands.');
+        $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires two operands.');
 
         $qb->createConditionFromArray(['json overlaps', 'column']);
     }
