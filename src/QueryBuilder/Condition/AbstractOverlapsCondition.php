@@ -40,7 +40,7 @@ abstract class AbstractOverlapsCondition implements OverlapsConditionInterface
     public static function fromArrayDefinition(string $operator, array $operands): static
     {
         if (!isset($operands[0], $operands[1])) {
-            throw new InvalidArgumentException("Operator \"$operator\" requires three operands.");
+            throw new InvalidArgumentException("Operator \"$operator\" requires two operands.");
         }
 
         /** @psalm-suppress UnsafeInstantiation */
