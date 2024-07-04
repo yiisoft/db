@@ -20,6 +20,8 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
@@ -1543,6 +1545,57 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ['a = 1', ['or', 'b = 2', ['and', 'c = 3', ['or', 'd = 4', 'e = 5']]]],
             $condition->getExpressions(),
         );
+    }
+
+    public function testCreateOverlapsConditionFromArray(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $condition = $qb->createConditionFromArray(['array overlaps', 'column', [1, 2, 3]]);
+
+        $this->assertInstanceOf(ArrayOverlapsCondition::class, $condition);
+        $this->assertSame('column', $condition->getColumn());
+        $this->assertSame([1, 2, 3], $condition->getValues());
+
+        $condition = $qb->createConditionFromArray(['json overlaps', 'column', [1, 2, 3]]);
+
+        $this->assertInstanceOf(JsonOverlapsCondition::class, $condition);
+        $this->assertSame('column', $condition->getColumn());
+        $this->assertSame([1, 2, 3], $condition->getValues());
+    }
+
+    public function testCreateOverlapsConditionFromArrayWithInvalidOperandsCount(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires two operands.');
+
+        $qb->createConditionFromArray(['json overlaps', 'column']);
+    }
+
+    public function testCreateOverlapsConditionFromArrayWithInvalidColumn(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires column to be string or ExpressionInterface.');
+
+        $qb->createConditionFromArray(['json overlaps', ['column'], [1, 2, 3]]);
+    }
+
+    public function testCreateOverlapsConditionFromArrayWithInvalidValues(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires values to be iterable or ExpressionInterface.');
+
+        $qb->createConditionFromArray(['json overlaps', 'column', 1]);
     }
 
     /**
