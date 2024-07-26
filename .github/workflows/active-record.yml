@@ -148,6 +148,9 @@ jobs:
       - name: Install yiisoft/factory
         run: composer require yiisoft/factory
 
+      - name: Install yiisoft/middleware-dispatcher
+        run: composer require yiisoft/middleware-dispatcher
+
       - name: Install active-record.
         uses: yiisoft/actions/db/subpackage-install@master
         with:
