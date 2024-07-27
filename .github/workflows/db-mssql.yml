@@ -20,7 +20,7 @@ name: db-mssql
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql }}
+    name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql.server }}
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
@@ -50,7 +50,7 @@ jobs:
 
     services:
       mssql:
-          image: mcr.microsoft.com/mssql/${{ matrix.mssql }}
+          image: mcr.microsoft.com/mssql/server:${{ matrix.mssql.server }}
           env:
               SA_PASSWORD: YourStrong!Passw0rd
               ACCEPT_EULA: Y
