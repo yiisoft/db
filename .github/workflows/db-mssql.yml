@@ -27,13 +27,10 @@ jobs:
       CURRENT_PACKAGE: db-mssql
       EXTENSIONS: pdo, pdo_sqlsrv-5.10.1
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        os:
-          - ubuntu-latest
-
         php:
           - 8.0
           - 8.1
@@ -41,9 +38,15 @@ jobs:
           - 8.3
 
         mssql:
-          - server:2017-latest
-          - server:2019-latest
-          - server:2022-latest
+          - server: 2022-latest
+            odbc-version: 18
+            flag: "-C"
+
+        include:
+          - php: 8.3
+            mssql: { server: 2017-latest }
+          - php: 8.3
+            mssql: { server: 2019-latest }
 
     services:
       mssql:
@@ -54,14 +57,14 @@ jobs:
               MSSQL_PID: Developer
           ports:
               - 1433:1433
-          options: --name=mssql --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
+          options: --name=mssql --health-cmd="/opt/mssql-tools${{ matrix.mssql.odbc-version }}/bin/sqlcmd ${{ matrix.mssql.flag }} -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout.
         uses: actions/checkout@v3
 
       - name: Create MS SQL Database.
-        run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
+        run: docker exec -i mssql /opt/mssql-tools${{ matrix.mssql.odbc-version }}/bin/sqlcmd ${{ matrix.mssql.flag }} -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
 
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
