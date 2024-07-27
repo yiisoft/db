@@ -36,7 +36,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql:8
+        image: mysql:latest
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_PASSWORD: ''
@@ -58,7 +58,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
       postgres:
-        image: postgres:14
+        image: postgres:16
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: root
@@ -67,7 +67,7 @@ jobs:
           - 5432:5432
         options: --name=postgres --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
       mssql:
-          image: mcr.microsoft.com/mssql/server:2019-latest
+          image: mcr.microsoft.com/mssql/server:2022-latest
           env:
               SA_PASSWORD: YourStrong!Passw0rd
               ACCEPT_EULA: Y
@@ -165,7 +165,7 @@ jobs:
         run: vendor/bin/phpunit --testsuite ActiveRecord --coverage-clover=coverage.xml --colors=always
 
       - name: Upload coverage to Codecov.
-        if: matrix.php == '8.1'
+        if: matrix.php == '8.3'
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
