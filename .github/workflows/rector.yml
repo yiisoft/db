@@ -4,8 +4,8 @@ on:
       - 'src/**'
       - 'config/**'
       - '.github/workflows/rector.yml'
-      - 'rector.php'
       - 'composer.json'
+      - 'rector.php'
 
 name: rector
 
