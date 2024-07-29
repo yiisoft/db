@@ -11,6 +11,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Schema\Column\BigIntColumnSchema;
 use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
+use Yiisoft\Db\Schema\Column\BitColumnSchema;
 use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
 use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
 use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
@@ -31,6 +32,7 @@ class ColumnSchemaProvider
             'double' => [DoubleColumnSchema::class, SchemaInterface::TYPE_DOUBLE, SchemaInterface::PHP_TYPE_DOUBLE],
             'string' => [StringColumnSchema::class, SchemaInterface::TYPE_STRING, SchemaInterface::PHP_TYPE_STRING],
             'binary' => [BinaryColumnSchema::class, SchemaInterface::TYPE_BINARY, SchemaInterface::PHP_TYPE_RESOURCE],
+            'bit' => [BitColumnSchema::class, SchemaInterface::TYPE_BIT, SchemaInterface::PHP_TYPE_INTEGER],
             'boolean' => [BooleanColumnSchema::class, SchemaInterface::TYPE_BOOLEAN, SchemaInterface::PHP_TYPE_BOOLEAN],
             'json' => [JsonColumnSchema::class, SchemaInterface::TYPE_JSON, SchemaInterface::PHP_TYPE_ARRAY],
         ];
@@ -102,6 +104,21 @@ class ColumnSchemaProvider
                     ['0', false],
                     [new Param("\x10\x11\x12", PDO::PARAM_LOB), "\x10\x11\x12"],
                     [$resource = fopen('php://memory', 'rb'), $resource],
+                    [$expression = new Expression('expression'), $expression],
+                ],
+            ],
+            'bit' => [
+                BitColumnSchema::class,
+                [
+                    [null, null],
+                    [null, ''],
+                    [1, 1],
+                    [1, 1.0],
+                    [1, '1'],
+                    [10, 10],
+                    [10, '10'],
+                    [1, true],
+                    [0, false],
                     [$expression = new Expression('expression'), $expression],
                 ],
             ],
@@ -185,6 +202,16 @@ class ColumnSchemaProvider
                     ['', ''],
                     ["\x10\x11\x12", "\x10\x11\x12"],
                     [$resource = fopen('php://memory', 'rb'), $resource],
+                ],
+            ],
+            'bit' => [
+                BitColumnSchema::class,
+                [
+                    [null, null],
+                    [1, 1],
+                    [1, '1'],
+                    [10, 10],
+                    [10, '10'],
                 ],
             ],
             'boolean' => [
