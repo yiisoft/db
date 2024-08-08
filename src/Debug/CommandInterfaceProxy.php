@@ -389,7 +389,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress PossiblyUndefinedArrayOffset
      */
-    public function queryOne(): array|null
+    public function queryOne(): array|object|null
     {
         [$callStack] = debug_backtrace();
 
