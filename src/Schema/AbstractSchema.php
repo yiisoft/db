@@ -13,6 +13,7 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
+use Yiisoft\Db\Schema\Column\BitColumnSchema;
 use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
@@ -413,6 +414,7 @@ abstract class AbstractSchema implements SchemaInterface
             SchemaInterface::TYPE_BIGINT => PHP_INT_SIZE !== 8 || $isUnsigned
                 ? SchemaInterface::PHP_TYPE_STRING
                 : SchemaInterface::PHP_TYPE_INTEGER,
+            SchemaInterface::TYPE_BIT => SchemaInterface::PHP_TYPE_INTEGER,
             SchemaInterface::TYPE_BOOLEAN => SchemaInterface::PHP_TYPE_BOOLEAN,
             SchemaInterface::TYPE_DECIMAL => SchemaInterface::PHP_TYPE_DOUBLE,
             SchemaInterface::TYPE_FLOAT => SchemaInterface::PHP_TYPE_DOUBLE,
@@ -425,6 +427,10 @@ abstract class AbstractSchema implements SchemaInterface
 
     protected function createColumnSchemaFromPhpType(string $phpType, string $type): ColumnSchemaInterface
     {
+        if ($type === SchemaInterface::TYPE_BIT) {
+            return new BitColumnSchema($type, $phpType);
+        }
+
         return match ($phpType) {
             SchemaInterface::PHP_TYPE_STRING => match ($type) {
                 SchemaInterface::TYPE_INTEGER => new BigIntColumnSchema($type, $phpType),

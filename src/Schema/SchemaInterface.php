@@ -211,6 +211,10 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const TYPE_BOOLEAN = 'boolean';
     /**
+     * Define the abstract column type as `bit`.
+     */
+    public const TYPE_BIT = 'bit';
+    /**
      * Define the abstract column type as `money`.
      */
     public const TYPE_MONEY = 'money';
