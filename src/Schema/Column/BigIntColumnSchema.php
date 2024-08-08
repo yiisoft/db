@@ -24,6 +24,7 @@ class BigIntColumnSchema extends AbstractColumnSchema
 
     public function dbTypecast(mixed $value): int|string|ExpressionInterface|null
     {
+        /** @var int|string|ExpressionInterface|null */
         return match (gettype($value)) {
             GettypeResult::STRING => $value === '' ? null : (
                 $value <= PHP_INT_MAX && $value >= PHP_INT_MIN
