@@ -29,6 +29,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  *
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface
+ * @psalm-import-type IndexBy from QueryPartsInterface
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
@@ -103,10 +104,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function createCommand(): CommandInterface;
 
     /**
-     * Starts a batch query and retrieves data row by row.
-     *
-     * This method is similar to {@see batch()} except that in each iteration of the result,
-     * it returns only one row of data.
+     * Creates data reader to retrieve data row by row.
      *
      * For example,
      *
@@ -117,12 +115,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * }
      * ```
      *
-     * @param int $batchSize The number of records to fetch in each batch.
-     *
-     * @return BatchQueryResultInterface The batch query result. It implements the {@see \Iterator} interface and can be
-     * traversed to retrieve the data in batches.
+     * @return DataReaderInterface The data reader. It implements the {@see \Iterator} interface and can be
+     * traversed to retrieve each row of data.
      */
-    public function each(int $batchSize = 100): BatchQueryResultInterface;
+    public function each(): DataReaderInterface;
 
     /**
      * Sets whether to emulate query execution without actually executing a query.
@@ -170,7 +166,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     /**
      * @return Closure|string|null The "index by" value.
      *
-     * @psalm-return Closure(array):array-key|string|null
+     * @psalm-return IndexBy
      */
     public function getIndexBy(): Closure|string|null;
 
