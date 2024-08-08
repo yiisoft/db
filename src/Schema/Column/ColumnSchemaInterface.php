@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use Yiisoft\Db\Constant\PhpType;
+
 /**
  * This interface defines a set of methods that must be implemented by a class that represents the column schema of a
  * database table column.
@@ -179,11 +181,13 @@ interface ColumnSchemaInterface
     public function getPrecision(): int|null;
 
     /**
-     * @return string|null The PHP type of the column.
+     * Returns the PHP type of the column. Used for generating Active Record model properties.
      *
-     * @see phpType()
+     * @return string The PHP type of the column.
+     *
+     * @see PhpType
      */
-    public function getPhpType(): string|null;
+    public function getPhpType(): string;
 
     /**
      * @return int|null The scale of the column.
@@ -254,23 +258,6 @@ interface ColumnSchemaInterface
      * ```
      */
     public function name(string|null $name): static;
-
-    /**
-     * The PHP data type for representing the data stored in the column.
-     * It's determined based on the data type of the column as defined in the database schema.
-     * For example, if the column is a `varchar` or `text`, the `phpType()` method may return `string`.
-     * If the column is `int` or `tinyint`, the `phpType()` method may return `integer`.
-     *
-     * If set to `null`, the {@see ColumnSchema} will get PHP type automatically based on the
-     * column type.
-     *
-     * ```php
-     * $columns = [
-     *     'description' => $this->text()->phpType('string'),
-     * ];
-     * ```
-     */
-    public function phpType(string|null $phpType): static;
 
     /**
      * Converts the input value according to {@see phpType} after retrieval from the database.

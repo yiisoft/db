@@ -10,9 +10,8 @@ final class ColumnSchema extends AbstractColumnSchema
 {
     public function __construct(
         private string $type = '',
-        private string|null $phpType = null,
     ) {
-        parent::__construct($type, $phpType);
+        parent::__construct($type);
     }
 
     public function dbTypecast(mixed $value): mixed

@@ -144,19 +144,6 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('', $column->getName());
     }
 
-    public function testPhpType(): void
-    {
-        $column = new ColumnSchema();
-
-        $this->assertNull($column->getPhpType());
-        $this->assertSame($column, $column->phpType(SchemaInterface::PHP_TYPE_STRING));
-        $this->assertSame(SchemaInterface::PHP_TYPE_STRING, $column->getPhpType());
-
-        $column->phpType(null);
-
-        $this->assertNull($column->getPhpType());
-    }
-
     public function testPrecision(): void
     {
         $column = new ColumnSchema();

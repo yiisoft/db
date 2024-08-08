@@ -224,35 +224,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const TYPE_JSON = 'json';
 
     /**
-     * Define the php type as `integer` for cast to php value.
-     */
-    public const PHP_TYPE_INTEGER = 'integer';
-    /**
-     * Define the php type as `string` for cast to php value.
-     */
-    public const PHP_TYPE_STRING = 'string';
-    /**
-     * Define the php type as `boolean` for cast to php value.
-     */
-    public const PHP_TYPE_BOOLEAN = 'boolean';
-    /**
-     * Define the php type as `double` for cast to php value.
-     */
-    public const PHP_TYPE_DOUBLE = 'double';
-    /**
-     * Define the php type as `resource` for cast to php value.
-     */
-    public const PHP_TYPE_RESOURCE = 'resource';
-    /**
-     * Define the php type as `array` for cast to php value.
-     */
-    public const PHP_TYPE_ARRAY = 'array';
-    /**
-     * Define the php type as `null` for cast to php value.
-     */
-    public const PHP_TYPE_NULL = 'NULL';
-
-    /**
      * @psalm-param string[]|int[]|int|string|null $length
      */
     public function createColumn(string $type, array|int|string $length = null): ColumnInterface;

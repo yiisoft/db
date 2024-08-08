@@ -11,6 +11,8 @@ use Yiisoft\Db\Constraint\DefaultValueConstraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
+use Yiisoft\Db\Schema\Column\StringColumnSchema;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -54,33 +56,6 @@ final class SchemaTest extends AbstractSchemaTest
         $schema = $db->getSchema();
 
         $this->assertSame([], Assert::invokeMethod($schema, 'findViewNames', ['dbo']));
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    public function testGetColumnPhpType(): void
-    {
-        $db = $this->getConnection();
-
-        $schema = $db->getSchema();
-
-        $this->assertSame(
-            'integer',
-            Assert::invokeMethod($schema, 'getColumnPhpType', ['bigint']),
-        );
-        $this->assertSame(
-            'boolean',
-            Assert::invokeMethod($schema, 'getColumnPhpType', ['boolean']),
-        );
-        $this->assertSame(
-            'integer',
-            Assert::invokeMethod($schema, 'getColumnPhpType', ['integer']),
-        );
-        $this->assertSame(
-            'string',
-            Assert::invokeMethod($schema, 'getColumnPhpType', ['string']),
-        );
     }
 
     /**
@@ -406,36 +381,26 @@ final class SchemaTest extends AbstractSchemaTest
     private function createTableSchemaStub(): TableSchemaInterface
     {
         // defined column C_id
-        $columnCid = new ColumnSchema('C_id');
-        $columnCid->autoIncrement(true);
+        $columnCid = new IntegerColumnSchema();
+        $columnCid->autoIncrement();
         $columnCid->dbType('int');
-        $columnCid->primaryKey(true);
-        $columnCid->phpType('integer');
-        $columnCid->type('integer');
+        $columnCid->primaryKey();
 
         // defined column C_not_null
-        $columnCNotNull = new ColumnSchema('C_not_null');
+        $columnCNotNull = new IntegerColumnSchema();
         $columnCNotNull->dbType('int');
-        $columnCNotNull->phpType('int');
-        $columnCNotNull->type('int');
 
         // defined column C_check
-        $columnCCheck = new ColumnSchema('C_check');
+        $columnCCheck = new StringColumnSchema();
         $columnCCheck->dbType('varchar(255)');
-        $columnCCheck->phpType('string');
-        $columnCCheck->type('string');
 
         // defined column C_default
-        $columnCDefault = new ColumnSchema('C_default');
+        $columnCDefault = new IntegerColumnSchema();
         $columnCDefault->dbType('int');
-        $columnCDefault->phpType('integer');
-        $columnCDefault->type('integer');
 
         // defined column C_unique
-        $columnCUnique = new ColumnSchema('C_unique');
+        $columnCUnique = new IntegerColumnSchema();
         $columnCUnique->dbType('int');
-        $columnCUnique->phpType('integer');
-        $columnCUnique->type('integer');
 
         // defined table T_constraints_1
         $tableSchema = new TableSchema();
