@@ -46,7 +46,10 @@ jobs:
           - php: 8.3
             mssql: { server: 2017-latest }
           - php: 8.3
-            mssql: { server: 2019-latest }
+            mssql:
+              server: 2019-latest
+              odbc-version: 18
+              flag: "-C"
 
     services:
       mssql:
