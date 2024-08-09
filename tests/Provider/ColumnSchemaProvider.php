@@ -9,6 +9,7 @@ use stdClass;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
+use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Schema\Column\BigIntColumnSchema;
 use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
 use Yiisoft\Db\Schema\Column\BitColumnSchema;
@@ -27,14 +28,14 @@ class ColumnSchemaProvider
     {
         return [
             // [class, type, phpType]
-            'integer' => [IntegerColumnSchema::class, SchemaInterface::TYPE_INTEGER, SchemaInterface::PHP_TYPE_INTEGER],
-            'bigint' => [BigIntColumnSchema::class, SchemaInterface::TYPE_BIGINT, SchemaInterface::PHP_TYPE_STRING],
-            'double' => [DoubleColumnSchema::class, SchemaInterface::TYPE_DOUBLE, SchemaInterface::PHP_TYPE_DOUBLE],
-            'string' => [StringColumnSchema::class, SchemaInterface::TYPE_STRING, SchemaInterface::PHP_TYPE_STRING],
-            'binary' => [BinaryColumnSchema::class, SchemaInterface::TYPE_BINARY, SchemaInterface::PHP_TYPE_RESOURCE],
-            'bit' => [BitColumnSchema::class, SchemaInterface::TYPE_BIT, SchemaInterface::PHP_TYPE_INTEGER],
-            'boolean' => [BooleanColumnSchema::class, SchemaInterface::TYPE_BOOLEAN, SchemaInterface::PHP_TYPE_BOOLEAN],
-            'json' => [JsonColumnSchema::class, SchemaInterface::TYPE_JSON, SchemaInterface::PHP_TYPE_ARRAY],
+            'integer' => [IntegerColumnSchema::class, SchemaInterface::TYPE_INTEGER, PhpType::INT],
+            'bigint' => [BigIntColumnSchema::class, SchemaInterface::TYPE_BIGINT, PhpType::STRING],
+            'double' => [DoubleColumnSchema::class, SchemaInterface::TYPE_DOUBLE, PhpType::FLOAT],
+            'string' => [StringColumnSchema::class, SchemaInterface::TYPE_STRING, PhpType::STRING],
+            'binary' => [BinaryColumnSchema::class, SchemaInterface::TYPE_BINARY, PhpType::MIXED],
+            'bit' => [BitColumnSchema::class, SchemaInterface::TYPE_BIT, PhpType::INT],
+            'boolean' => [BooleanColumnSchema::class, SchemaInterface::TYPE_BOOLEAN, PhpType::BOOL],
+            'json' => [JsonColumnSchema::class, SchemaInterface::TYPE_JSON, PhpType::MIXED],
         ];
     }
 
@@ -192,7 +193,6 @@ class ColumnSchemaProvider
                     [null, null],
                     ['', ''],
                     ['string', 'string'],
-                    [$resource = fopen('php://memory', 'rb'), $resource],
                 ],
             ],
             'binary' => [

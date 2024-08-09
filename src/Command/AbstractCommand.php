@@ -8,12 +8,12 @@ use Closure;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function explode;
 use function get_resource_type;
@@ -363,8 +363,8 @@ abstract class AbstractCommand implements CommandInterface
             $params[$name] = match ($param->getType()) {
                 DataType::INTEGER => (string) (int) $value,
                 DataType::STRING, DataType::LOB => match (gettype($value)) {
-                    SchemaInterface::PHP_TYPE_RESOURCE => $name,
-                    SchemaInterface::PHP_TYPE_DOUBLE => (string) $value,
+                    GettypeResult::RESOURCE => $name,
+                    GettypeResult::DOUBLE => (string) $value,
                     default => $value instanceof Expression
                         ? (string) $value
                         : $quoter->quoteValue((string) $value),

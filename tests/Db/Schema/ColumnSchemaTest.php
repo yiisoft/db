@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Schema;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
 
 /**
@@ -142,19 +141,6 @@ final class ColumnSchemaTest extends TestCase
         $column->name('');
 
         $this->assertSame('', $column->getName());
-    }
-
-    public function testPhpType(): void
-    {
-        $column = new ColumnSchema();
-
-        $this->assertNull($column->getPhpType());
-        $this->assertSame($column, $column->phpType(SchemaInterface::PHP_TYPE_STRING));
-        $this->assertSame(SchemaInterface::PHP_TYPE_STRING, $column->getPhpType());
-
-        $column->phpType(null);
-
-        $this->assertNull($column->getPhpType());
     }
 
     public function testPrecision(): void

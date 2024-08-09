@@ -15,9 +15,8 @@ class JsonColumnSchema extends AbstractColumnSchema
 {
     public function __construct(
         string $type = SchemaInterface::TYPE_JSON,
-        string|null $phpType = SchemaInterface::PHP_TYPE_ARRAY,
     ) {
-        parent::__construct($type, $phpType);
+        parent::__construct($type);
     }
 
     public function dbTypecast(mixed $value): ExpressionInterface|null

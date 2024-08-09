@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use Yiisoft\Db\Constant\PhpType;
+
 /**
  * Represents the metadata of a column in a database table.
  *
@@ -49,7 +51,6 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
 
     public function __construct(
         private string $type,
-        private string|null $phpType = null,
     ) {
     }
 
@@ -136,9 +137,9 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->precision;
     }
 
-    public function getPhpType(): string|null
+    public function getPhpType(): string
     {
-        return $this->phpType;
+        return PhpType::MIXED;
     }
 
     public function getScale(): int|null
@@ -184,12 +185,6 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     public function name(string|null $name): static
     {
         $this->name = $name;
-        return $this;
-    }
-
-    public function phpType(string|null $phpType): static
-    {
-        $this->phpType = $phpType;
         return $this;
     }
 
