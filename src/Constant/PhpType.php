@@ -13,7 +13,7 @@ use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
  * @see ColumnSchemaInterface::getPhpType()
  * @see https://www.php.net/manual/en/language.types.type-system.php
  */
-class PhpType
+final class PhpType
 {
     /**
      * Define the php type as `array`.

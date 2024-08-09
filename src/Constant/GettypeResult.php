@@ -9,7 +9,7 @@ namespace Yiisoft\Db\Constant;
  *
  * @link https://www.php.net/manual/en/function.gettype.php
  */
-class GettypeResult
+final class GettypeResult
 {
     /**
      *  Define the php type as `array`.
