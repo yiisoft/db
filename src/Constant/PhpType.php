@@ -8,7 +8,7 @@ use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
 /**
  * Defines the available PHP types.
- * Used to generate properties of Active Record model or other user defined models.
+ * Used to generate properties of a related model class.
  *
  * @see ColumnSchemaInterface::getPhpType()
  * @see https://www.php.net/manual/en/language.types.type-system.php

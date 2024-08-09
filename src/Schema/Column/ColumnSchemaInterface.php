@@ -181,7 +181,7 @@ interface ColumnSchemaInterface
     public function getPrecision(): int|null;
 
     /**
-     * Returns the PHP type of the column. Used for generating Active Record model properties.
+     * Returns the PHP type of the column. Used for generating properties of a related model class.
      *
      * @return string The PHP type of the column.
      *

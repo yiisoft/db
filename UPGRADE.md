@@ -65,15 +65,22 @@ The interface and the abstract implementation `AbstractColumnSchema` were moved 
 and the following changes were made:
 
 - `getName()` method can return `string` or `null`;
+- `getPhpType()` method must return `string` PHP type of the column which used for generating related model properties;
 - `name(string|null $name)` method is added;
 - constructor of `AbstractColumnSchema` class is changed to `__construct(string $type, string|null $phpType = null)`;
 - added method chaining.
+
+### New classes with constants
+
+- `Yiisoft\Db\Constant\PhpType` with PHP types constants;
+- `Yiisoft\Db\Constant\GettypeResult` with `gettype()` function results constants.
 
 ### New classes for table columns
 
 Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace according to the data type:
 
 - `BooleanColumnSchema` for columns with boolean type;
+- `BitColumnSchema` for columns with bit type;
 - `IntegerColumnSchema` for columns with integer type (tinyint, smallint, integer, bigint);
 - `BigIntColumnSchema` for columns with integer type with range outside `PHP_INT_MIN` and `PHP_INT_MAX`;
 - `DoubleColumnSchema` for columns with fractional number type (float, double, decimal, money);
@@ -96,6 +103,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `AbstractSchema::normalizeRowKeyCase()`
 - `Quoter::unquoteParts()`
 - `AbstractPdoCommand::logQuery()`
+- `ColumnSchemaInterface::phpType()`
 
 ### Remove deprecated parameters
 
@@ -105,9 +113,16 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `$rawSql` from `AbstractCommand::internalExecute()` method
 - `$rawSql` from `AbstractPdoCommand::internalExecute()` method
 
-### Remove deprecated constants
+### Remove constants
 
 - `SchemaInterface::TYPE_JSONB`
+- `SchemaInterface::PHP_TYPE_INTEGER`
+- `SchemaInterface::PHP_TYPE_STRING`
+- `SchemaInterface::PHP_TYPE_BOOLEAN`
+- `SchemaInterface::PHP_TYPE_DOUBLE`
+- `SchemaInterface::PHP_TYPE_RESOURCE`
+- `SchemaInterface::PHP_TYPE_ARRAY`
+- `SchemaInterface::PHP_TYPE_NULL`
 
 ### Other changes
 

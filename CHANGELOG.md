@@ -30,7 +30,8 @@
 - Chg #847: Remove `SchemaInterface::getRawTableName()` and `AbstractSchema::getRawTableName()` methods (@Tigrov)
 - Enh #852: Add method chaining for column classes (@Tigrov)
 - Enh #855: Add array and JSON overlaps conditions (@Tigrov)
-- Enh #860 Add `bit` abstract type (@Tigrov)
+- Enh #860: Add `bit` abstract type (@Tigrov)
+- Enh #862: Refactor PHP type of `SchemaInterface` instances (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
