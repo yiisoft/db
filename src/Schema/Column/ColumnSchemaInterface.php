@@ -184,6 +184,7 @@ interface ColumnSchemaInterface
      * Returns the PHP type of the column. Used for generating properties of a related model class.
      *
      * @return string The PHP type of the column.
+     * @psalm-return PhpType::*     
      *
      * @see PhpType
      */
