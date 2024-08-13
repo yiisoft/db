@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Schema\Column\StringColumnSchema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class AbstractColumnFactoryTest extends TestCase
@@ -55,5 +56,18 @@ abstract class AbstractColumnFactoryTest extends TestCase
 
         $this->assertInstanceOf($expectedInstanceOf, $column);
         $this->assertSame($expectedType, $column->getType());
+    }
+
+    public function testFromDefinitionWithExtra(): void
+    {
+        $db = $this->getConnection();
+        $factory = $db->getSchema()->getColumnFactory();
+
+        $column = $factory->fromDefinition('char(1) NOT NULL', ['extra' => 'UNIQUE']);
+
+        $this->assertInstanceOf(StringColumnSchema::class, $column);
+        $this->assertSame('char', $column->getType());
+        $this->assertSame(1, $column->getSize());
+        $this->assertSame('NOT NULL UNIQUE', $column->getExtra());
     }
 }
