@@ -25,7 +25,6 @@ abstract class AbstractColumnFactoryTest extends TestCase
 
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\ColumnFactoryProvider::definitions
-     * @dataProvider \Yiisoft\Db\Tests\Provider\ColumnFactoryProvider::types
      */
     public function testFromDefinition(
         string $definition,
