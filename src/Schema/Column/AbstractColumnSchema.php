@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\PhpType;
 
+use function is_array;
+
 /**
  * Represents the metadata of a column in a database table.
  *
@@ -21,11 +23,10 @@ use Yiisoft\Db\Constant\PhpType;
  * ```php
  * use Yiisoft\Db\Schema\ColumnSchema;
  *
- * $column = (new ColumnSchema())
+ * $column = (new IntegerColumnSchema())
  *     ->name('id')
  *     ->allowNull(false)
  *     ->dbType('int(11)')
- *     ->phpType('integer')
  *     ->type('integer')
  *     ->defaultValue(0)
  *     ->autoIncrement()
@@ -180,6 +181,35 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     public function isUnsigned(): bool
     {
         return $this->unsigned;
+    }
+
+    public function load(array $info): static
+    {
+        foreach ($info as $key => $value) {
+            /**
+             * @psalm-suppress PossiblyInvalidCast
+             * @psalm-suppress RiskyCast
+             */
+            match ($key) {
+                'allow_null' => $this->allowNull((bool) $value),
+                'auto_increment' => $this->autoIncrement((bool) $value),
+                'comment' => $this->comment($value !== null ? (string) $value : null),
+                'computed' => $this->computed((bool) $value),
+                'db_type' => $this->dbType($value !== null ? (string) $value : null),
+                'default_value' => $this->defaultValue($value),
+                'enum_values' => $this->enumValues(is_array($value) ? $value : null),
+                'extra' => $this->extra($value !== null ? (string) $value : null),
+                'name' => $this->name($value !== null ? (string) $value : null),
+                'primary_key' => $this->primaryKey((bool) $value),
+                'precision' => $this->precision($value !== null ? (int) $value : null),
+                'scale' => $this->scale($value !== null ? (int) $value : null),
+                'size' => $this->size($value !== null ? (int) $value : null),
+                'unsigned' => $this->unsigned((bool) $value),
+                default => null,
+            };
+        }
+
+        return $this;
     }
 
     public function name(string|null $name): static
