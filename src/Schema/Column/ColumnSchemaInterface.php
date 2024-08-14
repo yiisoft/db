@@ -20,7 +20,7 @@ use Yiisoft\Db\Constant\PhpType;
  *     enum_values?: array|null,
  *     extra?: string|null,
  *     primary_key?: bool|string,
- *     name?: string,
+ *     name?: string|null,
  *     precision?: int|string|null,
  *     scale?: int|string|null,
  *     schema?: string|null,
@@ -28,7 +28,6 @@ use Yiisoft\Db\Constant\PhpType;
  *     table?: string|null,
  *     type?: string,
  *     unsigned?: bool|string,
- *     ...
  * }
  */
 interface ColumnSchemaInterface
