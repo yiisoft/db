@@ -28,6 +28,7 @@ use Yiisoft\Db\Constant\PhpType;
  *     table?: string|null,
  *     type?: string,
  *     unsigned?: bool|string,
+ *     ...<string, mixed>
  * }
  */
 interface ColumnSchemaInterface

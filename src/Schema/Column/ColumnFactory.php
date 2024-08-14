@@ -21,6 +21,7 @@ use const PHP_INT_SIZE;
  * The default implementation of the {@see ColumnFactoryInterface}.
  *
  * @psalm-import-type ColumnInfo from ColumnSchemaInterface
+ * @psalm-suppress MixedArgumentTypeCoercion
  */
 class ColumnFactory implements ColumnFactoryInterface
 {
@@ -60,6 +61,7 @@ class ColumnFactory implements ColumnFactoryInterface
                 if (empty($info['extra'])) {
                     $info['extra'] = $extra;
                 } else {
+                    /** @psalm-suppress MixedOperand */
                     $info['extra'] = $extra . ' ' . $info['extra'];
                 }
             }
