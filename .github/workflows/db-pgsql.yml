@@ -45,8 +45,6 @@ jobs:
           - 16
 
         include:
-          - php: 8.0
-            pgsql: 16
           - php: 8.1
             pgsql: 16
           - php: 8.2
