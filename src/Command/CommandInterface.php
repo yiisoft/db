@@ -623,10 +623,8 @@ interface CommandInterface
      * @throws Exception
      * @throws Throwable If execution failed.
      *
-     * @return array All rows of the query result. Each array element is an `array` or `object` representing a row of
-     * data. Empty array if the query results in nothing.
-     *
-     * @psalm-return array<array-key,array|object>
+     * @return array[]|object[] All rows of the query result. Each array element is an `array` or `object` representing
+     * a row of data. Empty array if the query results in nothing.
      */
     public function queryAll(): array;
 
