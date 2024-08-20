@@ -1,23 +1,20 @@
 on:
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '.github/workflows/db-sqlite.yml'
+      - 'composer.json'
+      - 'phpunit.xml.dist'
 
   push:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
+    branches: ['master']
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '.github/workflows/db-sqlite.yml'
+      - 'composer.json'
+      - 'phpunit.xml.dist'
 
 name: db-sqlite
 
@@ -26,7 +23,7 @@ jobs:
     name: PHP ${{ matrix.php }}-sqlite-${{ matrix.os }}
 
     env:
-      COMPOSER_ROOT_VERSION: 1.2.0
+      COMPOSER_ROOT_VERSION: dev-master
       CURRENT_PACKAGE: db-sqlite
       EXTENSIONS: pdo, pdo_sqlite
 
@@ -42,6 +39,7 @@ jobs:
           - 8.0
           - 8.1
           - 8.2
+          - 8.3
 
     steps:
       - name: Checkout.
@@ -80,7 +78,7 @@ jobs:
         run: vendor/bin/phpunit --testsuite Sqlite --coverage-clover=coverage.xml --colors=always
 
       - name: Upload coverage to Codecov.
-        if: matrix.os == 'ubuntu-latest' && matrix.php == '8.1'
+        if: matrix.os == 'ubuntu-latest' && matrix.php == '8.3'
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

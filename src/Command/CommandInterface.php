@@ -15,6 +15,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 
 /**
@@ -23,6 +24,7 @@ use Yiisoft\Db\Schema\Builder\ColumnInterface;
  * A command instance is usually created by calling {@see ConnectionInterface::createCommand}.
  *
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type BatchValues from DMLQueryBuilderInterface
  */
 interface CommandInterface
 {
@@ -42,13 +44,13 @@ interface CommandInterface
      *
      * @param string $table The name of the table to add new column to.
      * @param string $column The name of the new column.
-     * @param string $type The column type. {@see QueryBuilder::getColumnType()} will be called to convert the given
-     * column type to the database one.
+     * @param ColumnInterface|string $type The column type. {@see QueryBuilder::getColumnType()} will be called
+     * to convert the given column type to the database one.
      * For example, `string` will be converted to `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function addColumn(string $table, string $column, string $type): static;
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): static;
 
     /**
      * Builds an SQL command for adding a comment to a column.
@@ -156,13 +158,26 @@ interface CommandInterface
      * For example,
      *
      * ```php
-     * $connectionInterface->createCommand()->batchInsert(
+     * $connectionInterface->createCommand()->insertBatch(
      *     'user',
-     *     ['name', 'age'],
      *     [
      *         ['Tom', 30],
      *         ['Jane', 20],
      *         ['Linda', 25],
+     *     ],
+     *     ['name', 'age']
+     * )->execute();
+     * ```
+     *
+     * or as associative arrays where the keys are column names
+     *
+     * ```php
+     * $connectionInterface->createCommand()->insertBatch(
+     *     'user',
+     *     [
+     *         ['name' => 'Tom', 'age' => 30],
+     *         ['name' => 'Jane', 'age' => 20],
+     *         ['name' => 'Linda', 'age' => 25],
      *     ]
      * )->execute();
      * ```
@@ -174,17 +189,17 @@ interface CommandInterface
      * Also note that the created command isn't executed until {@see execute()} is called.
      *
      * @param string $table The name of the table to insert new rows into.
-     * @param array $columns The column names.
      * @param iterable $rows The rows to be batch inserted into the table.
+     * @param string[] $columns The column names.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * @psalm-param iterable<array-key, array<array-key, mixed>> $rows
+     * @psalm-param BatchValues $rows
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function batchInsert(string $table, array $columns, iterable $rows): static;
+    public function insertBatch(string $table, iterable $rows, array $columns = []): static;
 
     /**
      * Binds a parameter to the SQL statement to be executed.
@@ -241,10 +256,10 @@ interface CommandInterface
      *
      * @param array|ParamInterface[] $values The values to bind. This must be given in terms of an associative
      * array with array keys being the parameter names, and an array values the corresponding parameter values,
-     * for example, `[':name' => 'John', ':age' => 25]`.
+     * for example, `[':name' => 'John Doe', ':age' => 25]`.
      * By default, the SQL data type of each value is determined by its PHP type.
      * You may explicitly specify the {@see DataType SQL data type} type by using a {@see Param} class:
-     * `new Param(value, type)`, for example, `[':name' => 'John', ':profile' => new Param($profile, DataType::LOB)]`.
+     * `new Param(value, type)`, for example, `[':name' => 'John Doe', ':profile' => new Param($profile, DataType::LOB)]`.
      */
     public function bindValues(array $values): static;
 
@@ -309,6 +324,7 @@ interface CommandInterface
      *
      * @param string $table The name of the table to create.
      * @param array $columns The columns (name => definition) in the new table.
+     * The definition can be `string` or {@see ColumnInterface} instance.
      * @param string|null $options More SQL fragments to append to the generated SQL.
      *
      * @throws Exception
@@ -316,6 +332,8 @@ interface CommandInterface
      * @throws NotSupportedException
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
+     *
+     * @psalm-param array<string, ColumnInterface>|string[] $columns
      */
     public function createTable(string $table, array $columns, string $options = null): static;
 

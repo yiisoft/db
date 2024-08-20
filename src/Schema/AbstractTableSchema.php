@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
 use function array_keys;
 
@@ -151,10 +151,5 @@ abstract class AbstractTableSchema implements TableSchemaInterface
     public function foreignKey(string|int $id, array $to): void
     {
         $this->foreignKeys[$id] = $to;
-    }
-
-    public function compositeForeignKey(int $id, string $from, string $to): void
-    {
-        throw new NotSupportedException(static::class . ' does not support composite FK.');
     }
 }

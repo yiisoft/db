@@ -28,6 +28,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * Sorting is supported via {@see orderBy()} and items can be limited to match some conditions using {@see where()}.
  *
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type SelectValue from QueryPartsInterface
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
@@ -169,6 +170,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     /**
      * @return Closure|string|null The "index by" value.
+     *
+     * @psalm-return Closure(array):array-key|string|null
      */
     public function getIndexBy(): Closure|string|null;
 
@@ -208,6 +211,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     /**
      * @return array The "select" value.
+     * @psalm-return SelectValue
      */
     public function getSelect(): array;
 

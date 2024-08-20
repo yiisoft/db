@@ -1,23 +1,16 @@
 on:
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
+    paths:
+      - 'src/**'
+      - '.github/workflows/active-record.yml'
+      - 'composer.json'
 
   push:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
+    branches: ['master']
+    paths:
+      - 'src/**'
+      - '.github/workflows/active-record.yml'
+      - 'composer.json'
 
 name: active-record
 
@@ -26,7 +19,7 @@ jobs:
     name: PHP ${{ matrix.php }}-active-record-${{ matrix.os }}
 
     env:
-      COMPOSER_ROOT_VERSION: 1.2.0
+      COMPOSER_ROOT_VERSION: dev-master
       EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1
 
     runs-on: ${{ matrix.os }}
@@ -39,10 +32,11 @@ jobs:
         php:
           - 8.1
           - 8.2
+          - 8.3
 
     services:
       mysql:
-        image: mysql:8
+        image: mysql:latest
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_PASSWORD: ''
@@ -64,7 +58,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
       postgres:
-        image: postgres:14
+        image: postgres:16
         env:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: root
@@ -73,21 +67,21 @@ jobs:
           - 5432:5432
         options: --name=postgres --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
       mssql:
-          image: mcr.microsoft.com/mssql/server:2019-latest
+          image: mcr.microsoft.com/mssql/server:2022-latest
           env:
               SA_PASSWORD: YourStrong!Passw0rd
               ACCEPT_EULA: Y
               MSSQL_PID: Developer
           ports:
               - 1433:1433
-          options: --name=mssql --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
+          options: --name=mssql --health-cmd="/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout.
         uses: actions/checkout@v3
 
       - name: Create MS SQL Database.
-        run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
+        run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
 
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
@@ -152,6 +146,12 @@ jobs:
       - name: Install yiisoft/cache
         run: composer require yiisoft/cache
 
+      - name: Install yiisoft/factory
+        run: composer require yiisoft/factory
+
+      - name: Install yiisoft/middleware-dispatcher
+        run: composer require yiisoft/middleware-dispatcher
+
       - name: Install active-record.
         uses: yiisoft/actions/db/subpackage-install@master
         with:
@@ -165,7 +165,7 @@ jobs:
         run: vendor/bin/phpunit --testsuite ActiveRecord --coverage-clover=coverage.xml --colors=always
 
       - name: Upload coverage to Codecov.
-        if: matrix.php == '8.1'
+        if: matrix.php == '8.3'
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

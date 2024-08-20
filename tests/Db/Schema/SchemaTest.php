@@ -11,11 +11,12 @@ use Yiisoft\Db\Constraint\DefaultValueConstraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
+use Yiisoft\Db\Schema\Column\StringColumnSchema;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
 use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\Stub\TableSchema;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -54,45 +55,6 @@ final class SchemaTest extends AbstractSchemaTest
         $schema = $db->getSchema();
 
         $this->assertSame([], Assert::invokeMethod($schema, 'findViewNames', ['dbo']));
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    public function testGetColumnPhpType(): void
-    {
-        $db = $this->getConnection();
-
-        $schema = $db->getSchema();
-
-        $columnBigInt = new ColumnSchema('bigint');
-        $columnBigInt->type('bigint');
-
-        $columnBoolean = new ColumnSchema('boolean');
-        $columnBoolean->type('boolean');
-
-        $columnInteger = new ColumnSchema('integer');
-        $columnInteger->type('integer');
-
-        $columnString = new ColumnSchema('string');
-        $columnString->type('string');
-
-        $this->assertSame(
-            'integer',
-            Assert::invokeMethod($schema, 'getColumnPhpType', [$columnBigInt]),
-        );
-        $this->assertSame(
-            'boolean',
-            Assert::invokeMethod($schema, 'getColumnPhpType', [$columnBoolean]),
-        );
-        $this->assertSame(
-            'integer',
-            Assert::invokeMethod($schema, 'getColumnPhpType', [$columnInteger]),
-        );
-        $this->assertSame(
-            'string',
-            Assert::invokeMethod($schema, 'getColumnPhpType', [$columnString]),
-        );
     }
 
     /**
@@ -336,25 +298,6 @@ final class SchemaTest extends AbstractSchemaTest
         $this->assertSame([], $schema->getViewNames());
     }
 
-    /**
-     * @throws ReflectionException
-     */
-    public function testNormaliceRowKeyCase(): void
-    {
-        $db = $this->getConnection();
-
-        $schema = $db->getSchema();
-
-        $this->assertSame(
-            ['fk_test' => 1],
-            Assert::InvokeMethod($schema, 'normalizeRowKeyCase', [['Fk_test' => 1], false]),
-        );
-        $this->assertSame(
-            ['FK_test' => ['uk_test' => 1]],
-            Assert::InvokeMethod($schema, 'normalizeRowKeyCase', [['FK_test' => ['UK_test' => 1]], true]),
-        );
-    }
-
     public function testRefreshTableSchema(): void
     {
         $db = $this->getConnection(true);
@@ -437,36 +380,26 @@ final class SchemaTest extends AbstractSchemaTest
     private function createTableSchemaStub(): TableSchemaInterface
     {
         // defined column C_id
-        $columnCid = new ColumnSchema('C_id');
-        $columnCid->autoIncrement(true);
+        $columnCid = new IntegerColumnSchema();
+        $columnCid->autoIncrement();
         $columnCid->dbType('int');
-        $columnCid->primaryKey(true);
-        $columnCid->phpType('integer');
-        $columnCid->type('integer');
+        $columnCid->primaryKey();
 
         // defined column C_not_null
-        $columnCNotNull = new ColumnSchema('C_not_null');
+        $columnCNotNull = new IntegerColumnSchema();
         $columnCNotNull->dbType('int');
-        $columnCNotNull->phpType('int');
-        $columnCNotNull->type('int');
 
         // defined column C_check
-        $columnCCheck = new ColumnSchema('C_check');
+        $columnCCheck = new StringColumnSchema();
         $columnCCheck->dbType('varchar(255)');
-        $columnCCheck->phpType('string');
-        $columnCCheck->type('string');
 
         // defined column C_default
-        $columnCDefault = new ColumnSchema('C_default');
+        $columnCDefault = new IntegerColumnSchema();
         $columnCDefault->dbType('int');
-        $columnCDefault->phpType('integer');
-        $columnCDefault->type('integer');
 
         // defined column C_unique
-        $columnCUnique = new ColumnSchema('C_unique');
+        $columnCUnique = new IntegerColumnSchema();
         $columnCUnique->dbType('int');
-        $columnCUnique->phpType('integer');
-        $columnCUnique->type('integer');
 
         // defined table T_constraints_1
         $tableSchema = new TableSchema();

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Iterator;
+use IteratorAggregate;
 use JsonException;
 use Traversable;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -14,7 +16,6 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -30,10 +31,10 @@ use function array_unique;
 use function array_values;
 use function count;
 use function get_object_vars;
+use function gettype;
 use function implode;
 use function in_array;
 use function is_array;
-use function is_object;
 use function is_string;
 use function iterator_to_array;
 use function json_encode;
@@ -50,6 +51,7 @@ use function sort;
  * @link https://en.wikipedia.org/wiki/Data_manipulation_language
  *
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type BatchValues from DMLQueryBuilderInterface
  */
 abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 {
@@ -60,18 +62,31 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     ) {
     }
 
+    /**
+     * @param string[] $columns
+     *
+     * @psalm-param BatchValues $rows
+     * @psalm-param ParamsType $params
+     *
+     * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
+     */
     public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
     {
+        return $this->insertBatch($table, $rows, $columns, $params);
+    }
+
+    public function insertBatch(string $table, iterable $rows, array $columns = [], array &$params = []): string
+    {
+        if (!is_array($rows)) {
+            $rows = $this->prepareTraversable($rows);
+        }
+
         if (empty($rows)) {
             return '';
         }
 
         $columns = $this->extractColumnNames($rows, $columns);
         $values = $this->prepareBatchInsertValues($table, $rows, $columns, $params);
-
-        if (empty($values)) {
-            return '';
-        }
 
         $query = 'INSERT INTO ' . $this->quoter->quoteTableName($table);
 
@@ -131,6 +146,29 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
+     * Prepare traversable for batch insert.
+     *
+     * @param Traversable $rows The rows to be batch inserted into the table.
+     *
+     * @return array|Iterator The prepared rows.
+     *
+     * @psalm-return Iterator|array<iterable<array-key, mixed>>
+     */
+    final protected function prepareTraversable(Traversable $rows): Iterator|array
+    {
+        while ($rows instanceof IteratorAggregate) {
+            $rows = $rows->getIterator();
+        }
+
+        /** @var Iterator $rows */
+        if (!$rows->valid()) {
+            return [];
+        }
+
+        return $rows;
+    }
+
+    /**
      * Prepare values for batch insert.
      *
      * @param string $table The table name.
@@ -180,25 +218,32 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Extract column names from columns and rows.
      *
-     * @param string $table The column schemas.
-     * @param iterable $rows The rows to be batch inserted into the table.
+     * @param array[]|Iterator $rows The rows to be batch inserted into the table.
      * @param string[] $columns The column names.
      *
      * @return string[] The column names.
+     *
+     * @psalm-param Iterator|non-empty-array<iterable<array-key, mixed>> $rows
      */
-    protected function extractColumnNames(iterable $rows, array $columns): array
+    protected function extractColumnNames(array|Iterator $rows, array $columns): array
     {
-        $columns = $this->getNormalizeColumnNames('', $columns);
+        $columns = $this->getNormalizeColumnNames($columns);
 
-        if ($columns !== [] || !is_array($rows)) {
+        if (!empty($columns)) {
             return $columns;
         }
 
-        $row = reset($rows);
-        $row = match (true) {
-            is_array($row) => $row,
-            $row instanceof Traversable => iterator_to_array($row),
-            is_object($row) => get_object_vars($row),
+        if ($rows instanceof Iterator) {
+            $row = $rows->current();
+        } else {
+            $row = reset($rows);
+        }
+
+        $row = match (gettype($row)) {
+            'array' => $row,
+            'object' => $row instanceof Traversable
+                ? iterator_to_array($row)
+                : get_object_vars($row),
             default => [],
         };
 
@@ -287,7 +332,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
         $names = [];
         $placeholders = [];
-        $columns = $this->normalizeColumnNames('', $columns);
+        $columns = $this->normalizeColumnNames($columns);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
         foreach ($columns as $name => $value) {
@@ -321,7 +366,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     protected function prepareUpdateSets(string $table, array $columns, array $params = []): array
     {
         $sets = [];
-        $columns = $this->normalizeColumnNames('', $columns);
+        $columns = $this->normalizeColumnNames($columns);
         $columnSchemas = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
         foreach ($columns as $name => $value) {
@@ -365,7 +410,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         if ($insertColumns instanceof QueryInterface) {
             [$insertNames] = $this->prepareInsertSelectSubQuery($insertColumns);
         } else {
-            $insertNames = $this->getNormalizeColumnNames('', array_keys($insertColumns));
+            $insertNames = $this->getNormalizeColumnNames(array_keys($insertColumns));
 
             $insertNames = array_map(
                 [$this->quoter, 'quoteColumnName'],
@@ -466,34 +511,19 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
-     * @return mixed The typecast value of the given column.
-     *
-     * @deprecated will be removed in version 2.0.0
-     */
-    protected function getTypecastValue(mixed $value, ColumnSchemaInterface $columnSchema = null): mixed
-    {
-        if ($columnSchema) {
-            return $columnSchema->dbTypecast($value);
-        }
-
-        return $value;
-    }
-
-    /**
      * Normalizes the column names.
      *
-     * @param string $table Not used. Could be empty string. Will be removed in version 2.0.0.
      * @param array $columns The column data (name => value).
      *
      * @return array The normalized column names (name => value).
      *
      * @psalm-return array<string, mixed>
      */
-    protected function normalizeColumnNames(string $table, array $columns): array
+    protected function normalizeColumnNames(array $columns): array
     {
         /** @var string[] $columnNames */
         $columnNames = array_keys($columns);
-        $normalizedNames = $this->getNormalizeColumnNames('', $columnNames);
+        $normalizedNames = $this->getNormalizeColumnNames($columnNames);
 
         return array_combine($normalizedNames, $columns);
     }
@@ -501,12 +531,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Get normalized column names
      *
-     * @param string $table Not used. Could be empty string. Will be removed in version 2.0.0.
      * @param string[] $columns The column names.
      *
      * @return string[] Normalized column names.
      */
-    protected function getNormalizeColumnNames(string $table, array $columns): array
+    protected function getNormalizeColumnNames(array $columns): array
     {
         foreach ($columns as &$name) {
             $name = $this->quoter->ensureColumnName($name);

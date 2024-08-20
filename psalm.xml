@@ -3,6 +3,8 @@
   errorLevel="1"
   findUnusedBaselineEntry="true"
   findUnusedCode="false"
+  findUnusedVariablesAndParams="true"
+  findUnusedPsalmSuppress="true"
   resolveFromConfigFile="true"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="https://getpsalm.org/schema/config"
@@ -10,9 +12,7 @@
 >
   <projectFiles>
     <directory name="src" />
-      <ignoreFiles>
-        <directory name="vendor" />
-    </ignoreFiles>
+    <directory name="config" />
   </projectFiles>
   <issueHandlers>
     <MixedAssignment errorLevel="suppress" />

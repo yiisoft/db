@@ -211,6 +211,10 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public const TYPE_BOOLEAN = 'boolean';
     /**
+     * Define the abstract column type as `bit`.
+     */
+    public const TYPE_BIT = 'bit';
+    /**
      * Define the abstract column type as `money`.
      */
     public const TYPE_MONEY = 'money';
@@ -218,41 +222,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * Define the abstract column type as `json`.
      */
     public const TYPE_JSON = 'json';
-    /**
-     * Define the abstract column type as `jsonb`.
-     *
-     * @deprecated will be removed in version 2.0.0. Use `SchemaInterface::TYPE_JSON` instead.
-     */
-    public const TYPE_JSONB = 'jsonb';
-
-    /**
-     * Define the php type as `integer` for cast to php value.
-     */
-    public const PHP_TYPE_INTEGER = 'integer';
-    /**
-     * Define the php type as `string` for cast to php value.
-     */
-    public const PHP_TYPE_STRING = 'string';
-    /**
-     * Define the php type as `boolean` for cast to php value.
-     */
-    public const PHP_TYPE_BOOLEAN = 'boolean';
-    /**
-     * Define the php type as `double` for cast to php value.
-     */
-    public const PHP_TYPE_DOUBLE = 'double';
-    /**
-     * Define the php type as `resource` for cast to php value.
-     */
-    public const PHP_TYPE_RESOURCE = 'resource';
-    /**
-     * Define the php type as `array` for cast to php value.
-     */
-    public const PHP_TYPE_ARRAY = 'array';
-    /**
-     * Define the php type as `null` for cast to php value.
-     */
-    public const PHP_TYPE_NULL = 'NULL';
 
     /**
      * @psalm-param string[]|int[]|int|string|null $length
@@ -274,20 +243,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @see DataType
      */
     public function getDataType(mixed $data): int;
-
-    /**
-     * Returns the actual name of a given table name.
-     *
-     * This method will strip off curly brackets from the given table name and replace the percentage character '%' with
-     * {@see ConnectionInterface::tablePrefix}.
-     *
-     * @param string $name The table name to convert.
-     *
-     * @return string The real name of the given table name.
-     *
-     * @deprecated Use {@see Quoter::getRawTableName()}. Will be removed in version 2.0.0.
-     */
-    public function getRawTableName(string $name): string;
 
     /**
      * Returns all schema names in the database, except system schemas.
@@ -362,17 +317,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @psalm-return list<TableSchemaInterface>
      */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array;
-
-    /**
-     * Returns a value indicating whether an SQL statement is for read purpose.
-     *
-     * @param string $sql The SQL statement.
-     *
-     * @return bool Whether an SQL statement is for read purpose.
-     *
-     * @deprecated Use {@see DbStringHelper::isReadQuery()}. Will be removed in version 2.0.0.
-     */
-    public function isReadQuery(string $sql): bool;
 
     /**
      * Refreshes the schema.

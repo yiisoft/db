@@ -12,15 +12,19 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Constant\GettypeResult;
+use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
+use Yiisoft\Db\Schema\Column\BitColumnSchema;
+use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
+use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
+use Yiisoft\Db\Schema\Column\JsonColumnSchema;
+use Yiisoft\Db\Schema\Column\StringColumnSchema;
+use Yiisoft\Db\Schema\Column\BigIntColumnSchema;
 
-use function array_change_key_case;
-use function array_map;
 use function gettype;
 use function is_array;
-use function preg_match;
-use function preg_replace;
-use function str_contains;
-use function str_replace;
 
 /**
  * Provides a set of methods for working with database schemas such as creating, modifying, and inspecting tables,
@@ -136,24 +140,12 @@ abstract class AbstractSchema implements SchemaInterface
     {
         return match (gettype($data)) {
             // php type => SQL data type
-            SchemaInterface::PHP_TYPE_BOOLEAN => DataType::BOOLEAN,
-            SchemaInterface::PHP_TYPE_INTEGER => DataType::INTEGER,
-            SchemaInterface::PHP_TYPE_RESOURCE => DataType::LOB,
-            SchemaInterface::PHP_TYPE_NULL => DataType::NULL,
+            GettypeResult::BOOLEAN => DataType::BOOLEAN,
+            GettypeResult::INTEGER => DataType::INTEGER,
+            GettypeResult::RESOURCE => DataType::LOB,
+            GettypeResult::NULL => DataType::NULL,
             default => DataType::STRING,
         };
-    }
-
-    /** @deprecated Use {@see Quoter::getRawTableName()}. Will be removed in version 2.0.0. */
-    public function getRawTableName(string $name): string
-    {
-        if (str_contains($name, '{{')) {
-            $name = preg_replace('/{{(.*?)}}/', '\1', $name);
-
-            return str_replace('%', $this->db->getTablePrefix(), $name);
-        }
-
-        return $name;
     }
 
     /**
@@ -316,14 +308,6 @@ abstract class AbstractSchema implements SchemaInterface
         return is_array($tableUniques) ? $tableUniques : [];
     }
 
-    /** @deprecated Use {@see DbStringHelper::isReadQuery()}. Will be removed in version 2.0.0. */
-    public function isReadQuery(string $sql): bool
-    {
-        $pattern = '/^\s*(SELECT|SHOW|DESCRIBE)\b/i';
-
-        return preg_match($pattern, $sql) > 0;
-    }
-
     /**
      * @throws InvalidArgumentException
      */
@@ -342,8 +326,7 @@ abstract class AbstractSchema implements SchemaInterface
      */
     public function refreshTableSchema(string $name): void
     {
-        /** @psalm-suppress DeprecatedMethod */
-        $rawName = $this->getRawTableName($name);
+        $rawName = $this->db->getQuoter()->getRawTableName($name);
 
         unset($this->tableMetadata[$rawName]);
 
@@ -392,31 +375,45 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * Extracts the PHP type from an abstract DB type.
+     * Creates a column schema for the database.
      *
-     * @param ColumnSchemaInterface $column The column schema information.
+     * This method may be overridden by child classes to create a DBMS-specific column schema.
      *
-     * @return string The PHP type name.
+     * @param string $type The abstract data type.
+     * @param mixed ...$info The column information.
+     * @psalm-param array{unsigned?: bool} $info The set of parameters may be different for a specific DBMS.
+     *
+     * @return ColumnSchemaInterface
      */
-    protected function getColumnPhpType(ColumnSchemaInterface $column): string
+    protected function createColumnSchema(string $type, mixed ...$info): ColumnSchemaInterface
     {
-        return match ($column->getType()) {
-            // abstract type => php type
-            SchemaInterface::TYPE_TINYINT => SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_SMALLINT => SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_INTEGER => PHP_INT_SIZE === 4 && $column->isUnsigned()
-                ? SchemaInterface::PHP_TYPE_STRING
-                : SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_BIGINT => PHP_INT_SIZE === 8 && !$column->isUnsigned()
-                ? SchemaInterface::PHP_TYPE_INTEGER
-                : SchemaInterface::PHP_TYPE_STRING,
-            SchemaInterface::TYPE_BOOLEAN => SchemaInterface::PHP_TYPE_BOOLEAN,
-            SchemaInterface::TYPE_DECIMAL => SchemaInterface::PHP_TYPE_DOUBLE,
-            SchemaInterface::TYPE_FLOAT => SchemaInterface::PHP_TYPE_DOUBLE,
-            SchemaInterface::TYPE_DOUBLE => SchemaInterface::PHP_TYPE_DOUBLE,
-            SchemaInterface::TYPE_BINARY => SchemaInterface::PHP_TYPE_RESOURCE,
-            SchemaInterface::TYPE_JSON => SchemaInterface::PHP_TYPE_ARRAY,
-            default => SchemaInterface::PHP_TYPE_STRING,
+        $isUnsigned = !empty($info['unsigned']);
+
+        $column = $this->createColumnSchemaFromType($type, $isUnsigned);
+        $column->unsigned($isUnsigned);
+
+        return $column;
+    }
+
+    protected function createColumnSchemaFromType(string $type, bool $isUnsigned = false): ColumnSchemaInterface
+    {
+        return match ($type) {
+            SchemaInterface::TYPE_BOOLEAN => new BooleanColumnSchema($type),
+            SchemaInterface::TYPE_BIT => new BitColumnSchema($type),
+            SchemaInterface::TYPE_TINYINT => new IntegerColumnSchema($type),
+            SchemaInterface::TYPE_SMALLINT => new IntegerColumnSchema($type),
+            SchemaInterface::TYPE_INTEGER => PHP_INT_SIZE !== 8 && $isUnsigned
+                ? new BigIntColumnSchema($type)
+                : new IntegerColumnSchema($type),
+            SchemaInterface::TYPE_BIGINT => PHP_INT_SIZE !== 8 || $isUnsigned
+                ? new BigIntColumnSchema($type)
+                : new IntegerColumnSchema($type),
+            SchemaInterface::TYPE_DECIMAL => new DoubleColumnSchema($type),
+            SchemaInterface::TYPE_FLOAT => new DoubleColumnSchema($type),
+            SchemaInterface::TYPE_DOUBLE => new DoubleColumnSchema($type),
+            SchemaInterface::TYPE_BINARY => new BinaryColumnSchema($type),
+            SchemaInterface::TYPE_JSON => new JsonColumnSchema($type),
+            default => new StringColumnSchema($type),
         };
     }
 
@@ -473,8 +470,7 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false): mixed
     {
-        /** @psalm-suppress DeprecatedMethod */
-        $rawName = $this->getRawTableName($name);
+        $rawName = $this->db->getQuoter()->getRawTableName($name);
 
         if (!isset($this->tableMetadata[$rawName])) {
             $this->loadTableMetadataFromCache($rawName);
@@ -530,26 +526,6 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * Change row's array key case to lower.
-     *
-     * @param array $row Thew row's array or an array of row arrays.
-     * @param bool $multiple Whether many rows or a single row passed.
-     *
-     * @return array The normalized row or rows.
-     *
-     * @deprecated Use `array_change_key_case($row)` or `array_map('array_change_key_case', $row)`.
-     * Will be removed in version 2.0.0.
-     */
-    protected function normalizeRowKeyCase(array $row, bool $multiple): array
-    {
-        if ($multiple) {
-            return array_map(static fn (array $row) => array_change_key_case($row), $row);
-        }
-
-        return array_change_key_case($row);
-    }
-
-    /**
      * Resolves the table name and schema name (if any).
      *
      * @param string $name The table name.
@@ -574,11 +550,8 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function setTableMetadata(string $name, string $type, mixed $data): void
     {
-        /**
-         * @psalm-suppress MixedArrayAssignment
-         * @psalm-suppress DeprecatedMethod
-         */
-        $this->tableMetadata[$this->getRawTableName($name)][$type] = $data;
+        /** @psalm-suppress MixedArrayAssignment */
+        $this->tableMetadata[$this->db->getQuoter()->getRawTableName($name)][$type] = $data;
     }
 
     /**

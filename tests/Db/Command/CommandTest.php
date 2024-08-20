@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Command;
 
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -39,17 +40,20 @@ final class CommandTest extends AbstractCommandTest
         );
     }
 
-    public function testAddColumn(): void
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::columnTypes */
+    public function testAddColumn(ColumnInterface|string $type): void
     {
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->addColumn('table', 'column', SchemaInterface::TYPE_INTEGER)->getSql();
+        $sql = $command->addColumn('table', 'column', $type)->getSql();
+
+        $columnType = $db->getQueryBuilder()->getColumnType($type);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                ALTER TABLE [[table]] ADD [[column]] integer
+                ALTER TABLE [[table]] ADD [[column]] {$columnType}
                 SQL,
                 $db->getDriverName(),
             ),
@@ -183,7 +187,7 @@ final class CommandTest extends AbstractCommandTest
             'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
         );
 
-        $command->batchInsert('table', ['column1', 'column2'], [['value1', 'value2'], ['value3', 'value4']]);
+        $command->insertBatch('table', [['value1', 'value2'], ['value3', 'value4']], ['column1', 'column2']);
     }
 
     /**

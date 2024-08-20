@@ -8,13 +8,16 @@ use Closure;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 
 use function explode;
 use function get_resource_type;
+use function gettype;
 use function is_array;
 use function is_int;
 use function is_resource;
@@ -63,6 +66,8 @@ use function stream_get_contents;
  * ```
  *
  * To build `SELECT` SQL statements, please use {@see QueryInterface} and its implementations instead.
+ *
+ * @psalm-import-type BatchValues from DMLQueryBuilderInterface
  */
 abstract class AbstractCommand implements CommandInterface
 {
@@ -130,7 +135,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function addColumn(string $table, string $column, string $type): static
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): static
     {
         $sql = $this->getQueryBuilder()->addColumn($table, $column, $type);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -193,19 +198,24 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
+    /**
+     * @param string[] $columns
+     *
+     * @psalm-param BatchValues $rows
+     *
+     * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
+     */
     public function batchInsert(string $table, array $columns, iterable $rows): static
     {
-        $table = $this->getQueryBuilder()->quoter()->quoteSql($table);
+        return $this->insertBatch($table, $rows, $columns);
+    }
 
-        /** @psalm-var string[] $columns */
-        foreach ($columns as &$column) {
-            $column = $this->getQueryBuilder()->quoter()->quoteSql($column);
-        }
-
-        unset($column);
+    public function insertBatch(string $table, iterable $rows, array $columns = []): static
+    {
+        $table = $this->getQueryBuilder()->quoter()->getRawTableName($table);
 
         $params = [];
-        $sql = $this->getQueryBuilder()->batchInsert($table, $columns, $rows, $params);
+        $sql = $this->getQueryBuilder()->insertBatch($table, $rows, $columns, $params);
 
         $this->setRawSql($sql);
         $this->bindValues($params);
@@ -351,11 +361,13 @@ abstract class AbstractCommand implements CommandInterface
             $value = $param->getValue();
 
             $params[$name] = match ($param->getType()) {
-                DataType::INTEGER => (string)(int)$value,
-                DataType::STRING, DataType::LOB => match (true) {
-                    $value instanceof Expression => (string)$value,
-                    is_resource($value) => $name,
-                    default => $quoter->quoteValue((string)$value),
+                DataType::INTEGER => (string) (int) $value,
+                DataType::STRING, DataType::LOB => match (gettype($value)) {
+                    GettypeResult::RESOURCE => $name,
+                    GettypeResult::DOUBLE => (string) $value,
+                    default => $value instanceof Expression
+                        ? (string) $value
+                        : $quoter->quoteValue((string) $value),
                 },
                 DataType::BOOLEAN => $value ? 'TRUE' : 'FALSE',
                 DataType::NULL => 'NULL',
@@ -544,12 +556,10 @@ abstract class AbstractCommand implements CommandInterface
     /**
      * Executes a prepared statement.
      *
-     * @param string|null $rawSql Deprecated. Use `null` value. Will be removed in version 2.0.0.
-     *
      * @throws Exception
      * @throws Throwable
      */
-    abstract protected function internalExecute(string|null $rawSql): void;
+    abstract protected function internalExecute(): void;
 
     /**
      * Check if the value has a given flag.
@@ -577,7 +587,7 @@ abstract class AbstractCommand implements CommandInterface
         $isReadMode = $this->isReadMode($queryMode);
         $this->prepare($isReadMode);
 
-        $this->internalExecute(null);
+        $this->internalExecute();
 
         /** @psalm-var mixed $result */
         $result = $this->internalGetQueryResult($queryMode);

@@ -20,7 +20,10 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
+use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -52,18 +55,19 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    public function testAddColumn(): void
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::columnTypes */
+    public function testAddColumn(ColumnInterface|string $type): void
     {
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $sql = $qb->addColumn('table', 'column', SchemaInterface::TYPE_STRING);
+        $sql = $qb->addColumn('table', 'column', $type);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
-                SQL . ' ' . $qb->getColumnType(SchemaInterface::TYPE_STRING),
+                SQL . ' ' . $qb->getColumnType($type),
                 $db->getDriverName(),
             ),
             $sql,
@@ -212,8 +216,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
      */
     public function testBatchInsert(
         string $table,
-        array $columns,
         iterable $rows,
+        array $columns,
         string $expected,
         array $expectedParams = [],
     ): void {
@@ -221,7 +225,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $params = [];
-        $sql = $qb->batchInsert($table, $columns, $rows, $params);
+        $sql = $qb->insertBatch($table, $rows, $columns, $params);
 
         $this->assertSame($expected, $sql);
         $this->assertSame($expectedParams, $params);
@@ -1543,6 +1547,57 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
+    public function testCreateOverlapsConditionFromArray(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $condition = $qb->createConditionFromArray(['array overlaps', 'column', [1, 2, 3]]);
+
+        $this->assertInstanceOf(ArrayOverlapsCondition::class, $condition);
+        $this->assertSame('column', $condition->getColumn());
+        $this->assertSame([1, 2, 3], $condition->getValues());
+
+        $condition = $qb->createConditionFromArray(['json overlaps', 'column', [1, 2, 3]]);
+
+        $this->assertInstanceOf(JsonOverlapsCondition::class, $condition);
+        $this->assertSame('column', $condition->getColumn());
+        $this->assertSame([1, 2, 3], $condition->getValues());
+    }
+
+    public function testCreateOverlapsConditionFromArrayWithInvalidOperandsCount(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires two operands.');
+
+        $qb->createConditionFromArray(['json overlaps', 'column']);
+    }
+
+    public function testCreateOverlapsConditionFromArrayWithInvalidColumn(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires column to be string or ExpressionInterface.');
+
+        $qb->createConditionFromArray(['json overlaps', ['column'], [1, 2, 3]]);
+    }
+
+    public function testCreateOverlapsConditionFromArrayWithInvalidValues(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires values to be iterable or ExpressionInterface.');
+
+        $qb->createConditionFromArray(['json overlaps', 'column', 1]);
+    }
+
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::createIndex
      */
@@ -2089,6 +2144,24 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEmpty($params);
     }
 
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::selectScalar */
+    public function testSelectScalar(array|bool|float|int|string $columns, string $expected): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $query = (new Query($db))->select($columns);
+
+        [$sql, $params] = $qb->build($query);
+
+        if ($db->getDriverName() === 'oci') {
+            $expected .= ' FROM DUAL';
+        }
+
+        $this->assertSame($expected, $sql);
+        $this->assertEmpty($params);
+    }
+
     public function testSetConditionClasses(): void
     {
         $db = $this->getConnection();
@@ -2194,16 +2267,18 @@ abstract class AbstractQueryBuilderTest extends TestCase
         string $table,
         array $columns,
         array|string $condition,
-        string $expectedSQL,
+        array $params,
+        string $expectedSql,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
-        $actualParams = [];
 
-        $this->assertSame($expectedSQL, $qb->update($table, $columns, $condition, $actualParams));
-        $this->assertSame($expectedParams, $actualParams);
+        $sql = $qb->update($table, $columns, $condition, $params);
+        $sql = $qb->quoter()->quoteSql($sql);
+
+        $this->assertSame($expectedSql, $sql);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**
@@ -2274,7 +2349,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     {
         $db = $this->getConnection();
 
-        $params = [':id' => 1, ':pv2' => new Expression('(select type from {{%animal}}) where id=1')];
+        $params = [':id' => 1, ':pv2' => 'test'];
         $expression = new Expression('id = :id AND type = :pv2', $params);
 
         $query = new Query($db);
@@ -2289,7 +2364,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals([':id', ':pv2', ':pv2_0',], array_keys($command->getParams()));
         $this->assertEquals(
             DbHelper::replaceQuotes(
-                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = (select type from {{%animal}}) where id=1) AND ([[type]]=\'test1\')',
+                'SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]]=\'test1\')',
                 $db->getDriverName()
             ),
             $command->getRawSql()

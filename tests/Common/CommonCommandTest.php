@@ -24,6 +24,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function call_user_func_array;
@@ -304,8 +305,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
      */
     public function testBatchInsert(
         string $table,
+        iterable $values,
         array $columns,
-        array $values,
         string $expected,
         array $expectedParams = [],
         int $insertedRow = 1
@@ -313,7 +314,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->batchInsert($table, $columns, $values);
+        $command->insertBatch($table, $values, $columns);
 
         $this->assertSame($expected, $command->getSql());
         $this->assertSame($expectedParams, $command->getParams());
@@ -369,7 +370,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             }
 
             /* batch insert on "type" table */
-            $command->batchInsert('{{type}}', $cols, $data)->execute();
+            $command->insertBatch('{{type}}', $data, $cols)->execute();
             $data = $command->setSql(
                 <<<SQL
                 SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]
@@ -412,10 +413,10 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->batchInsert(
+        $command->insertBatch(
             '{{customer}}',
-            ['email', 'name', 'address'],
             [['t1@example.com', 'test_name', 'test_address']],
+            ['email', 'name', 'address'],
         );
 
         $this->assertSame(1, $command->execute());
@@ -449,7 +450,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $values[$i] = ['t' . $i . '@any.com', 't' . $i, 't' . $i . ' address'];
         }
 
-        $command->batchInsert('{{customer}}', ['email', 'name', 'address'], $values);
+        $command->insertBatch('{{customer}}', $values, ['email', 'name', 'address']);
 
         $this->assertSame($attemptsInsertRows, $command->execute());
 
@@ -475,7 +476,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             }
         )();
         $command = $db->createCommand();
-        $command->batchInsert('{{customer}}', ['email', 'name', 'address'], $rows);
+        $command->insertBatch('{{customer}}', $rows, ['email', 'name', 'address']);
 
         $this->assertSame(1, $command->execute());
 
@@ -544,16 +545,23 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable(
             '{{testCreateTable}}',
-            ['[[id]]' => SchemaInterface::TYPE_PK, '[[bar]]' => SchemaInterface::TYPE_INTEGER],
+            [
+                '[[id]]' => SchemaInterface::TYPE_PK,
+                '[[bar]]' => SchemaInterface::TYPE_INTEGER,
+                '[[name]]' => (new Column('string(100)'))->notNull(),
+            ],
         )->execute();
-        $command->insert('{{testCreateTable}}', ['[[bar]]' => 1])->execute();
+        $command->insert('{{testCreateTable}}', ['[[bar]]' => 1, '[[name]]' => 'Lilo'])->execute();
         $records = $command->setSql(
             <<<SQL
-            SELECT [[id]], [[bar]] FROM [[testCreateTable]];
+            SELECT [[id]], [[bar]], [[name]] FROM [[testCreateTable]];
             SQL
         )->queryAll();
 
-        $this->assertEquals([['id' => 1, 'bar' => 1]], $records);
+        $nameCol = $schema->getTableSchema('{{testCreateTable}}', true)->getColumn('name');
+
+        $this->assertFalse($nameCol->isAllowNull());
+        $this->assertEquals([['id' => 1, 'bar' => 1, 'name' => 'Lilo']], $records);
 
         $db->close();
     }
@@ -1888,14 +1896,25 @@ abstract class CommonCommandTest extends AbstractCommandTest
         array $columns,
         array|string $conditions,
         array $params,
-        string $expected
+        array $expectedValues,
+        int $expectedCount,
     ): void {
-        $db = $this->getConnection();
+        $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $sql = $command->update($table, $columns, $conditions, $params)->getSql();
+        $count = $command->update($table, $columns, $conditions, $params)->execute();
 
-        $this->assertSame($expected, $sql);
+        $this->assertSame($expectedCount, $count);
+
+        $values = (new Query($db))
+            ->from($table)
+            ->where($conditions, $params)
+            ->limit(1)
+            ->one();
+
+        foreach ($expectedValues as $name => $expectedValue) {
+            $this->assertEquals($expectedValue, $values[$name]);
+        }
 
         $db->close();
     }
@@ -1954,7 +1973,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             {
             }
 
-            protected function internalExecute(string|null $rawSql): void
+            protected function internalExecute(): void
             {
             }
         };

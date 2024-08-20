@@ -1,8 +1,37 @@
 # Yii Database Change Log
 
-## 1.3.1 under development
+## 2.0.0 under development
 
-- no changes in this release.
+- Enh #820: Support `Traversable` values for `AbstractDMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
+- Enh #815: Refactor `Query::column()` method (@Tigrov) 
+- Enh #816: Allow scalar values for `$columns` parameter of `Query::select()` and `Query::addSelect()` methods (@Tigrov)
+- Enh #806: Non-unique placeholder names inside `Expression::$params` will be replaced with unique names (@Tigrov)
+- Enh #806: Build `Expression` instances inside `Expression::$params` when build a query using `QueryBuilder` (@Tigrov)
+- Enh #766: Allow `ColumnInterface` as column type. (@Tigrov)
+- Bug #828: Fix `float` type when use `AbstractCommand::getRawSql()` method (@Tigrov)
+- Enh #752: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
+  for type casting performance (@Tigrov)
+- Enh #829: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilderInterface` and `CommandInterface`
+  and change parameters from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
+- Enh #834: Refactor `AbstractCommand::insertBatch()`, add `Quoter::getRawTableName()` to `QuoterInterface` (@Tigrov)
+- Chg #836: Remove `AbstractDMLQueryBuilder::getTypecastValue()` method (@Tigrov)
+- Chg #837: Remove `$table` parameter from `normalizeColumnNames()` and `getNormalizeColumnNames()` methods 
+  of `AbstractDMLQueryBuilder` class (@Tigrov)
+- Chg #838: Remove `SchemaInterface::TYPE_JSONB` constant (@Tigrov)
+- Chg #839: Remove `TableSchemaInterface::compositeForeignKey()` method (@Tigrov)
+- Chg #840: Remove parameter `$withColumn` from `QuoterInterface::getTableNameParts()` method (@Tigrov)
+- Enh #840: Remove `Quoter::unquoteParts()` method (@Tigrov)
+- Chg #841: Remove `$rawSql` parameter from `AbstractCommand::internalExecute()` method
+  and `AbstractPdoCommand::internalExecute()` method (@Tigrov)
+- Enh #842: Allow `ExpressionInterface` for `$alias` parameter of `QueryPartsInterface::withQuery()` method (@Tigrov)
+- Enh #843: Remove `AbstractPdoCommand::logQuery()` method (@Tigrov)
+- Chg #845: Remove `AbstractSchema::normalizeRowKeyCase()` method (@Tigrov)
+- Chg #846: Remove `SchemaInterface::isReadQuery()` and `AbstractSchema::isReadQuery()` methods (@Tigrov)
+- Chg #847: Remove `SchemaInterface::getRawTableName()` and `AbstractSchema::getRawTableName()` methods (@Tigrov)
+- Enh #852: Add method chaining for column classes (@Tigrov)
+- Enh #855: Add array and JSON overlaps conditions (@Tigrov)
+- Enh #860: Add `bit` abstract type (@Tigrov)
+- Enh #862: Refactor PHP type of `ColumnSchemaInterface` instances (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

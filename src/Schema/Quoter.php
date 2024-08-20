@@ -8,6 +8,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 use function addcslashes;
+use function array_map;
 use function array_slice;
 use function count;
 use function explode;
@@ -83,16 +84,6 @@ class Quoter implements QuoterInterface
         return $cleanedUpTableNames;
     }
 
-    /**
-     * Returns the actual name of a given table name.
-     *
-     * This method will strip off curly brackets from the given table name and replace the percentage character '%' with
-     * {@see ConnectionInterface::tablePrefix}.
-     *
-     * @param string $name The table name to convert.
-     *
-     * @return string The real name of the given table name.
-     */
     public function getRawTableName(string $name): string
     {
         if (str_contains($name, '{{')) {
@@ -104,11 +95,11 @@ class Quoter implements QuoterInterface
         return $name;
     }
 
-    public function getTableNameParts(string $name, bool $withColumn = false): array
+    public function getTableNameParts(string $name): array
     {
         $parts = array_slice(explode('.', $name), -2, 2);
 
-        return $this->unquoteParts($parts, $withColumn);
+        return array_map([$this, 'unquoteSimpleTableName'], $parts);
     }
 
     public function ensureNameQuoted(string $name): string
@@ -254,23 +245,5 @@ class Quoter implements QuoterInterface
         return !str_starts_with($name, $startingCharacter)
             ? $name
             : substr($name, 1, -1);
-    }
-
-    /**
-     * @psalm-param string[] $parts Parts of table name
-     *
-     * @psalm-return string[]
-     */
-    protected function unquoteParts(array $parts, bool $withColumn): array
-    {
-        $lastKey = count($parts) - 1;
-
-        foreach ($parts as $k => &$part) {
-            $part = ($withColumn && $lastKey === $k) ?
-                $this->unquoteSimpleColumnName($part) :
-                $this->unquoteSimpleTableName($part);
-        }
-
-        return $parts;
     }
 }
