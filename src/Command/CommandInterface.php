@@ -651,7 +651,7 @@ interface CommandInterface
      *
      * @return array|null The first row as an `array` of the query result. `null` if the query results in nothing.
      */
-    public function queryOne(): array|object|null;
+    public function queryOne(): array|null;
 
     /**
      * Execute the SQL statement and returns the value of the first column in the first row of data.
