@@ -51,8 +51,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array The query results. If the query results in nothing, it returns an empty array.
-     * @psalm-return array[]|object[]
+     * @return array All rows of the query result. Each array element is an `array` or `object` representing a row of
+     * data. Empty array if the query results in nothing.
+     *
+     * @psalm-return array<array-key,array|object>
      */
     public function all(): array;
 
@@ -259,8 +261,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array|object|null The first row (as array or object) of the query result.
-     * It returns `null` if the query results in nothing.
+     * @return array|object|null The first row as an `array` or as an `object` of the query result. `null` if the query
+     * results in nothing.
      */
     public function one(): array|object|null;
 
