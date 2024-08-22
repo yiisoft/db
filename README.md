@@ -5,9 +5,9 @@
     <h1 align="center">Yii Database</h1>
 </p>
 
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/db/v/stable.png)](https://packagist.org/packages/yiisoft/db)
-[![Total Downloads](https://poser.pugx.org/yiisoft/db/downloads.png)](https://packagist.org/packages/yiisoft/db)
-[![Build status](https://github.com/yiisoft/db/workflows/build/badge.svg)](https://github.com/yiisoft/db/actions?query=workflow%3Abuild)
+[![Latest Stable Version](https://poser.pugx.org/yiisoft/db/v)](https://packagist.org/packages/yiisoft/db)
+[![Total Downloads](https://poser.pugx.org/yiisoft/db/downloads)](https://packagist.org/packages/yiisoft/db)
+[![Build status](https://github.com/yiisoft/db/actions/workflows/build.yml/badge.svg)](https://github.com/yiisoft/db/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/yiisoft/db/branch/master/graph/badge.svg?token=pRr4gci2qj)](https://codecov.io/gh/yiisoft/db)
 [![static analysis](https://github.com/yiisoft/db/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db/actions/workflows/static.yml)
 [![type-coverage](https://shepherd.dev/github/yiisoft/db/coverage.svg)](https://shepherd.dev/github/yiisoft/db)
