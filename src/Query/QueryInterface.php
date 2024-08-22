@@ -51,7 +51,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array[] The query results. If the query results in nothing, it returns an empty array.
+     * @return array[]|object[] All rows of the query result. Each array element is an `array` or `object` representing
+     * a row of data. Empty array if the query results in nothing.
      */
     public function all(): array;
 
@@ -258,10 +259,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array|null The first row (in terms of an array) of the query result. It returns `null` if the query
+     * @return array|object|null The first row as an `array` or as an `object` of the query result. `null` if the query
      * results in nothing.
      */
-    public function one(): array|null;
+    public function one(): array|object|null;
 
     /**
      * Sets the parameters to bind to the query.

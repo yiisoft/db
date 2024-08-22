@@ -126,4 +126,6 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 
 ### Other changes
 
-- Allow `ExpressionInterface` for `$alias` parameter of `QueryPartsInterface::withQuery()` method
+- Allow `ExpressionInterface` for `$alias` parameter of `QueryPartsInterface::withQuery()` method;
+- Allow `QueryInterface::one()` to return an object;
+- Allow `QueryInterface::all()` to return array of objects;
