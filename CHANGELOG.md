@@ -33,6 +33,7 @@
 - Enh #860: Add `bit` abstract type (@Tigrov)
 - Enh #862: Refactor PHP type of `ColumnSchemaInterface` instances (@Tigrov)
 - Chg #865: Raise minimum PHP version to `^8.1` (@Tigrov)
+- Enh #798: Allow `QueryInterface::one()` and `QueryInterface::all()` to return objects (@darkdef, @Tigrov)
 
 ## 1.3.0 March 21, 2024
 
