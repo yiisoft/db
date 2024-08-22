@@ -2002,7 +2002,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $db->createCommand();
 
-        call_user_func_array([$command, 'upsert'], $params);
+        call_user_func_array($command->upsert(...), $params);
 
         $command->execute();
 
