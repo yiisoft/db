@@ -44,8 +44,6 @@ jobs:
           - mariadb:latest
 
         include:
-          - php: 8.0
-            mariadb: mariadb:latest
           - php: 8.1
             mariadb: mariadb:latest
           - php: 8.2

@@ -27,7 +27,6 @@ use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
-use function call_user_func_array;
 use function is_string;
 use function setlocale;
 
@@ -2002,7 +2001,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $db->createCommand();
 
-        call_user_func_array([$command, 'upsert'], $params);
+        ($command->upsert(...))(...$params);
 
         $command->execute();
 

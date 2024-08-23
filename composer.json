@@ -30,7 +30,7 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "ext-ctype": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
@@ -40,11 +40,11 @@
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.2",
-        "phpunit/phpunit": "^9.6|^10.0",
+        "phpunit/phpunit": "^10.0",
         "rector/rector": "^1.1.1",
         "roave/infection-static-analysis-plugin": "^1.16",
         "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.30|^5.24",
+        "vimeo/psalm": "^5.25",
         "yiisoft/aliases": "^3.0",
         "yiisoft/cache-file": "^3.1",
         "yiisoft/di": "^1.0",
@@ -52,7 +52,7 @@
         "yiisoft/json": "^1.0",
         "yiisoft/log": "^2.0",
         "yiisoft/var-dumper": "^1.5",
-        "yiisoft/yii-debug": "dev-master|dev-php80"
+        "yiisoft/yii-debug": "dev-master"
     },
     "autoload": {
         "psr-4": {

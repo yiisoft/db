@@ -91,7 +91,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $query = 'INSERT INTO ' . $this->quoter->quoteTableName($table);
 
         if (count($columns) > 0) {
-            $quotedColumnNames = array_map([$this->quoter, 'quoteColumnName'], $columns);
+            $quotedColumnNames = array_map($this->quoter->quoteColumnName(...), $columns);
 
             $query .= ' (' . implode(', ', $quotedColumnNames) . ')';
         }
@@ -413,7 +413,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $insertNames = $this->getNormalizeColumnNames(array_keys($insertColumns));
 
             $insertNames = array_map(
-                [$this->quoter, 'quoteColumnName'],
+                $this->quoter->quoteColumnName(...),
                 $insertNames,
             );
         }
@@ -491,7 +491,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                     $constraintColumnNames = (array) $constraint->getColumnNames();
 
                     $constraintColumnNames = array_map(
-                        [$quoter, 'quoteColumnName'],
+                        $quoter->quoteColumnName(...),
                         $constraintColumnNames,
                     );
 
