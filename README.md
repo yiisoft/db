@@ -36,7 +36,7 @@ similar to the way you would use ORM (Object-Relational Mapping) frameworks like
 
 ## Requirements
 
-- PHP 8.0 or higher.
+- PHP 8.1 or higher.
 
 ## Documentation
 

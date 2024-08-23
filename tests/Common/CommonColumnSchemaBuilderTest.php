@@ -12,7 +12,6 @@ use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function array_shift;
-use function call_user_func_array;
 
 abstract class CommonColumnSchemaBuilderTest extends TestCase
 {
@@ -87,7 +86,7 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
 
         foreach ($calls as $call) {
             $method = array_shift($call);
-            call_user_func_array([$builder, $method], $call);
+            ($builder->$method(...))(...$call);
         }
 
         $this->assertSame($expected, $builder->asString());
@@ -116,7 +115,7 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
 
         foreach ($calls as $call) {
             $method = array_shift($call);
-            call_user_func_array([$builder, $method], $call);
+            ($builder->$method(...))(...$call);
         }
 
         $tableName = '{{%column_schema_builder_types}}';
