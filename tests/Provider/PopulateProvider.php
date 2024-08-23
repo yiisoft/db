@@ -28,9 +28,7 @@ class PopulateProvider
     {
         return [
             [
-                static function ($row) {
-                    return $row['key'];
-                },
+                static fn($row) => $row['key'],
                 [
                     ['key' => 'value1'],
                     ['key' => 'value2'],

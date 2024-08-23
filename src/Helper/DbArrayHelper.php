@@ -52,9 +52,7 @@ final class DbArrayHelper
     public static function getColumn(array $array, string $name): array
     {
         return array_map(
-            static function (array|object $element) use ($name): mixed {
-                return self::getValueByPath($element, $name);
-            },
+            static fn (array|object $element): mixed => self::getValueByPath($element, $name),
             $array
         );
     }
