@@ -8,7 +8,6 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\AbstractSchema;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\Column\ColumnFactory;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 

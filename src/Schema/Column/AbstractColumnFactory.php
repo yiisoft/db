@@ -23,8 +23,20 @@ use const PHP_INT_SIZE;
  * @psalm-import-type ColumnInfo from ColumnSchemaInterface
  * @psalm-suppress MixedArgumentTypeCoercion
  */
-class ColumnFactory implements ColumnFactoryInterface
+abstract class AbstractColumnFactory implements ColumnFactoryInterface
 {
+    /**
+     * Get the abstract database type for a database column type.
+     *
+     * @param string $dbType The database column type.
+     * @param array $info The column information.
+     *
+     * @return string The abstract database type.
+     *
+     * @psalm-param ColumnInfo $info
+     */
+    abstract protected function getType(string $dbType, array $info = []): string;
+
     public function fromDbType(string $dbType, array $info = []): ColumnSchemaInterface
     {
         $info['db_type'] = $dbType;
@@ -92,46 +104,5 @@ class ColumnFactory implements ColumnFactoryInterface
         };
 
         return $column->load($info);
-    }
-
-    /**
-     * Get the abstract database type for a database column type.
-     *
-     * @param string $dbType The database column type.
-     * @param array $info The column information.
-     *
-     * @return string The abstract database type.
-     *
-     * @psalm-param ColumnInfo $info
-     */
-    protected function getType(string $dbType, array $info = []): string
-    {
-        return $this->isType($dbType) ? $dbType : SchemaInterface::TYPE_STRING;
-    }
-
-    protected function isType(string $dbType): bool
-    {
-        return match ($dbType) {
-            SchemaInterface::TYPE_UUID,
-            SchemaInterface::TYPE_CHAR,
-            SchemaInterface::TYPE_STRING,
-            SchemaInterface::TYPE_TEXT,
-            SchemaInterface::TYPE_BINARY,
-            SchemaInterface::TYPE_BOOLEAN,
-            SchemaInterface::TYPE_TINYINT,
-            SchemaInterface::TYPE_SMALLINT,
-            SchemaInterface::TYPE_INTEGER,
-            SchemaInterface::TYPE_BIGINT,
-            SchemaInterface::TYPE_FLOAT,
-            SchemaInterface::TYPE_DOUBLE,
-            SchemaInterface::TYPE_DECIMAL,
-            SchemaInterface::TYPE_MONEY,
-            SchemaInterface::TYPE_DATETIME,
-            SchemaInterface::TYPE_TIMESTAMP,
-            SchemaInterface::TYPE_TIME,
-            SchemaInterface::TYPE_DATE,
-            SchemaInterface::TYPE_JSON => true,
-            default => false,
-        };
     }
 }
