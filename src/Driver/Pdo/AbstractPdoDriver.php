@@ -21,7 +21,7 @@ abstract class AbstractPdoDriver implements PdoDriverInterface
     public function __construct(
         protected string $dsn,
         protected string $username = '',
-        protected string $password = '',
+        #[\SensitiveParameter] protected string $password = '',
         protected array $attributes = []
     ) {
     }
