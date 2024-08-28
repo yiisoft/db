@@ -61,7 +61,7 @@ abstract class AbstractPdoDriver implements PdoDriverInterface
         return $this->username;
     }
 
-    public function password(string $password): void
+    public function password(#[\SensitiveParameter] string $password): void
     {
         $this->password = $password;
     }

@@ -78,7 +78,7 @@ interface PdoDriverInterface extends DriverInterface
      *
      * @param string $password The password for establishing DB connection.
      */
-    public function password(#[\SensitiveParameter] string $password): void;
+    public function password(string $password): void;
 
     /**
      * Set username for establishing DB connection. Defaults to `null` meaning use no username.
