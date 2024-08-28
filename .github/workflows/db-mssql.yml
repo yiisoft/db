@@ -95,7 +95,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Run mssql tests with phpunit and code coverage.
-        run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always
+        run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
 
       - name: Upload coverage to Codecov.
         if: matrix.php == '8.3'
