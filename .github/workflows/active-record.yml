@@ -162,7 +162,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Run tests with phpunit with code coverage.
-        run: vendor/bin/phpunit --testsuite ActiveRecord --coverage-clover=coverage.xml --colors=always
+        run: vendor/bin/phpunit --testsuite ActiveRecord --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
 
       - name: Upload coverage to Codecov.
         if: matrix.php == '8.3'
