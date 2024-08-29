@@ -208,7 +208,11 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
                         $this->isolationLevel
                     );
                 } else {
-                    set_error_handler(static fn(int $errorNumber, string $errorString): bool => str_starts_with($errorString, 'Packets out of order. Expected '), E_WARNING);
+                    set_error_handler(
+                        static fn(int $errorNumber, string $errorString): bool =>
+                            str_starts_with($errorString, 'Packets out of order. Expected '),
+                        E_WARNING,
+                    );
 
                     try {
                         $this->pdoStatement?->execute();

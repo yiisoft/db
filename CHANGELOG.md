@@ -34,6 +34,7 @@
 - Enh #862: Refactor PHP type of `ColumnSchemaInterface` instances (@Tigrov)
 - Enh #865: Raise minimum PHP version to `^8.1` with minor refactoring (@Tigrov, @vjik)
 - Enh #798: Allow `QueryInterface::one()` and `QueryInterface::all()` to return objects (@darkdef, @Tigrov)
+- Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
