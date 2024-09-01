@@ -243,4 +243,49 @@ class ColumnSchemaProvider
             ],
         ];
     }
+
+    public static function load(): array
+    {
+        return [
+            // parameter, value, method to get value, expected value
+            ['allow_null', true, 'isAllowNull', true],
+            ['allow_null', false, 'isAllowNull', false],
+            ['allow_null', '1', 'isAllowNull', true],
+            ['allow_null', '0', 'isAllowNull', false],
+            ['auto_increment', true, 'isAutoIncrement', true],
+            ['auto_increment', false, 'isAutoIncrement', false],
+            ['auto_increment', '1', 'isAutoIncrement', true],
+            ['auto_increment', '0', 'isAutoIncrement', false],
+            ['comment', 'Lorem ipsum', 'getComment', 'Lorem ipsum'],
+            ['comment', null, 'getComment', null],
+            ['computed', true, 'isComputed', true],
+            ['computed', false, 'isComputed', false],
+            ['computed', '1', 'isComputed', true],
+            ['computed', '0', 'isComputed', false],
+            ['db_type', 'integer', 'getDbType', 'integer'],
+            ['db_type', null, 'getDbType', null],
+            ['default_value', 'default_value', 'getDefaultValue', 'default_value'],
+            ['default_value', null, 'getDefaultValue', null],
+            ['enum_values', ['value1', 'value2'], 'getEnumValues', ['value1', 'value2']],
+            ['enum_values', null, 'getEnumValues', null],
+            ['extra', 'CHARACTER SET utf8mb4', 'getExtra', 'CHARACTER SET utf8mb4'],
+            ['extra', null, 'getExtra', null],
+            ['name', 'name', 'getName', 'name'],
+            ['name', null, 'getName', null],
+            ['precision', 10, 'getPrecision', 10],
+            ['precision', null, 'getPrecision', null],
+            ['primary_key', true, 'isPrimaryKey', true],
+            ['primary_key', false, 'isPrimaryKey', false],
+            ['primary_key', '1', 'isPrimaryKey', true],
+            ['primary_key', '0', 'isPrimaryKey', false],
+            ['scale', 2, 'getScale', 2],
+            ['scale', null, 'getScale', null],
+            ['size', 255, 'getSize', 255],
+            ['size', null, 'getSize', null],
+            ['unsigned', true, 'isUnsigned', true],
+            ['unsigned', false, 'isUnsigned', false],
+            ['unsigned', '1', 'isUnsigned', true],
+            ['unsigned', '0', 'isUnsigned', false],
+        ];
+    }
 }

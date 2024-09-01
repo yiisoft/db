@@ -13,15 +13,6 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Constant\GettypeResult;
-use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
-use Yiisoft\Db\Schema\Column\BitColumnSchema;
-use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
-use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
-use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
-use Yiisoft\Db\Schema\Column\JsonColumnSchema;
-use Yiisoft\Db\Schema\Column\StringColumnSchema;
-use Yiisoft\Db\Schema\Column\BigIntColumnSchema;
 
 use function gettype;
 use function is_array;
@@ -372,49 +363,6 @@ abstract class AbstractSchema implements SchemaInterface
     protected function findTableNames(string $schema): array
     {
         throw new NotSupportedException(static::class . ' does not support fetching all table names.');
-    }
-
-    /**
-     * Creates a column schema for the database.
-     *
-     * This method may be overridden by child classes to create a DBMS-specific column schema.
-     *
-     * @param string $type The abstract data type.
-     * @param mixed ...$info The column information.
-     * @psalm-param array{unsigned?: bool} $info The set of parameters may be different for a specific DBMS.
-     *
-     * @return ColumnSchemaInterface
-     */
-    protected function createColumnSchema(string $type, mixed ...$info): ColumnSchemaInterface
-    {
-        $isUnsigned = !empty($info['unsigned']);
-
-        $column = $this->createColumnSchemaFromType($type, $isUnsigned);
-        $column->unsigned($isUnsigned);
-
-        return $column;
-    }
-
-    protected function createColumnSchemaFromType(string $type, bool $isUnsigned = false): ColumnSchemaInterface
-    {
-        return match ($type) {
-            SchemaInterface::TYPE_BOOLEAN => new BooleanColumnSchema($type),
-            SchemaInterface::TYPE_BIT => new BitColumnSchema($type),
-            SchemaInterface::TYPE_TINYINT => new IntegerColumnSchema($type),
-            SchemaInterface::TYPE_SMALLINT => new IntegerColumnSchema($type),
-            SchemaInterface::TYPE_INTEGER => PHP_INT_SIZE !== 8 && $isUnsigned
-                ? new BigIntColumnSchema($type)
-                : new IntegerColumnSchema($type),
-            SchemaInterface::TYPE_BIGINT => PHP_INT_SIZE !== 8 || $isUnsigned
-                ? new BigIntColumnSchema($type)
-                : new IntegerColumnSchema($type),
-            SchemaInterface::TYPE_DECIMAL => new DoubleColumnSchema($type),
-            SchemaInterface::TYPE_FLOAT => new DoubleColumnSchema($type),
-            SchemaInterface::TYPE_DOUBLE => new DoubleColumnSchema($type),
-            SchemaInterface::TYPE_BINARY => new BinaryColumnSchema($type),
-            SchemaInterface::TYPE_JSON => new JsonColumnSchema($type),
-            default => new StringColumnSchema($type),
-        };
     }
 
     /**

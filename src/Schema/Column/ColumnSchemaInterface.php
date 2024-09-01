@@ -9,6 +9,27 @@ use Yiisoft\Db\Constant\PhpType;
 /**
  * This interface defines a set of methods that must be implemented by a class that represents the column schema of a
  * database table column.
+ *
+ * @psalm-type ColumnInfo = array{
+ *     allow_null?: bool|string|null,
+ *     auto_increment?: bool|string,
+ *     comment?: string|null,
+ *     computed?: bool|string,
+ *     db_type?: string|null,
+ *     default_value?: mixed,
+ *     enum_values?: array|null,
+ *     extra?: string|null,
+ *     primary_key?: bool|string,
+ *     name?: string|null,
+ *     precision?: int|string|null,
+ *     scale?: int|string|null,
+ *     schema?: string|null,
+ *     size?: int|string|null,
+ *     table?: string|null,
+ *     type?: string,
+ *     unsigned?: bool|string,
+ *     ...<string, mixed>
+ * }
  */
 interface ColumnSchemaInterface
 {
@@ -250,7 +271,14 @@ interface ColumnSchemaInterface
     public function isUnsigned(): bool;
 
     /**
-     * Sets the name of the column.
+     * Loads the column's schema information from an array.
+     *
+     * @psalm-param ColumnInfo $info
+     */
+    public function load(array $info): static;
+
+    /**
+     * Sets a name of the column.
      *
      * ```php
      * $columns = [

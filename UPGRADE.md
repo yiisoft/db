@@ -67,6 +67,7 @@ and the following changes were made:
 - `getName()` method can return `string` or `null`;
 - `getPhpType()` method must return `string` PHP type of the column which used for generating related model properties;
 - `name(string|null $name)` method is added;
+- `load(array $info)` method is added;
 - constructor of `AbstractColumnSchema` class is changed to `__construct(string $type, string|null $phpType = null)`;
 - added method chaining.
 
@@ -88,9 +89,10 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `BinaryColumnSchema` for columns with binary type;
 - `JsonColumnSchema` for columns with json type.
 
-### New methods in `QuoterInterface`
+### New methods
 
-- `QuoterInterface::getRawTableName()` - returns the raw table name without quotes.
+- `QuoterInterface::getRawTableName()` - returns the raw table name without quotes;
+- `SchemaInterface::getColumnFactory()` - returns the column factory.
 
 ### Remove methods
 
