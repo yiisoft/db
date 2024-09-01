@@ -229,6 +229,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
      */
     public function createColumn(string $type, array|int|string $length = null): ColumnInterface;
 
+    /**
+     * Returns the column factory for creating column instances.
+     */
     public function getColumnFactory(): ColumnFactoryInterface;
 
     /**
