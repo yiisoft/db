@@ -23,6 +23,10 @@ use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
+use function restore_error_handler;
+use function set_error_handler;
+use function str_starts_with;
+
 /**
  * Represents a database command that can be executed using a PDO (PHP Data Object) database connection.
  *
@@ -204,7 +208,17 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
                         $this->isolationLevel
                     );
                 } else {
-                    $this->pdoStatement?->execute();
+                    set_error_handler(
+                        static fn(int $errorNumber, string $errorString): bool =>
+                            str_starts_with($errorString, 'Packets out of order. Expected '),
+                        E_WARNING,
+                    );
+
+                    try {
+                        $this->pdoStatement?->execute();
+                    } finally {
+                        restore_error_handler();
+                    }
                 }
                 break;
             } catch (PDOException $e) {
