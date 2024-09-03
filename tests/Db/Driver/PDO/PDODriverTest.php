@@ -65,14 +65,20 @@ final class PDODriverTest extends TestCase
 
     public function testSensitiveParameter(): void
     {
-        try {
-            $fn = static function(#[\SensitiveParameter] string $password): void {
-            };
-            $fn(null);
-        } catch (\Throwable $e) {
-            $trace = $e->getTrace()[0];
-            $valid = isset($trace['args']) && $trace['args'][0] instanceof \SensitiveParameterValue;
-            var_dump($valid);
+        if (PHP_VERSION_ID < 80200) {
+            $this->markTestSkipped('SensitiveParameterValue is not available in PHP < 8.2');
         }
+        $dsn = 'sqlite::memory:';
+        try {
+            new PDODriver($dsn, password: null);
+        } catch (\TypeError $e) {
+            $this->assertTrue($e->getTrace()[0]['args'][2] instanceof \SensitiveParameterValue);
+        }
+        $pdoDriver = new PDODriver($dsn);
+        try {
+            $pdoDriver->password(null);
+        } catch (\TypeError $e) {
+            $this->assertTrue($e->getTrace()[0]['args'][0] instanceof \SensitiveParameterValue);
+        } 
     }
 }
