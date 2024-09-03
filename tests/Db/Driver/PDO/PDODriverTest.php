@@ -62,4 +62,17 @@ final class PDODriverTest extends TestCase
 
         $this->assertSame('username', $pdoDriver->getUsername());
     }
+
+    public function testSensitiveParameter(): void
+    {
+        try {
+            $fn = static function(#[\SensitiveParameter] string $password): void {
+            };
+            $fn(null);
+        } catch (\Throwable $e) {
+            $trace = $e->getTrace()[0];
+            $valid = isset($trace['args']) && $trace['args'][0] instanceof \SensitiveParameterValue;
+            var_dump($valid);
+        }
+    }
 }
