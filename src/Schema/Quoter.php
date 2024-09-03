@@ -99,7 +99,7 @@ class Quoter implements QuoterInterface
     {
         $parts = array_slice(explode('.', $name), -2, 2);
 
-        return array_map($this->unquoteSimpleTableName(...), $parts);
+        return array_map([$this, 'unquoteSimpleTableName'], $parts);
     }
 
     public function ensureNameQuoted(string $name): string
