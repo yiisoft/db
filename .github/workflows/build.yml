@@ -47,7 +47,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: ${{ env.extensions }}
-          ini-values: date.timezone='UTC'
+          ini-values: date.timezone='UTC', zend.exception_ignore_args=0
           coverage: pcov
           tools: composer:v2, pecl
 
