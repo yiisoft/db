@@ -79,6 +79,6 @@ final class PDODriverTest extends TestCase
             $pdoDriver->password(null);
         } catch (\TypeError $e) {
             $this->assertTrue($e->getTrace()[0]['args'][0] instanceof \SensitiveParameterValue);
-        } 
+        }
     }
 }
