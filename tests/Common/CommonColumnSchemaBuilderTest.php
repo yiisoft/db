@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\DbUuidHelper;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function array_shift;
@@ -44,8 +45,8 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
         }
 
         $db->createCommand()->createTable($tableName, [
-            'uuid_pk' => $schema->createColumn(SchemaInterface::TYPE_UUID_PK),
-            'int_col' => $schema->createColumn(SchemaInterface::TYPE_INTEGER),
+            'uuid_pk' => $schema->createColumn(PseudoType::UUID_PK),
+            'int_col' => $schema->createColumn(ColumnType::INTEGER),
         ])->execute();
         $tableSchema = $db->getTableSchema($tableName, true);
         $this->assertNotNull($tableSchema);

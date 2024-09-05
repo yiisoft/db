@@ -75,6 +75,8 @@ and the following changes were made:
 
 - `Yiisoft\Db\Constant\PhpType` with PHP types constants;
 - `Yiisoft\Db\Constant\GettypeResult` with `gettype()` function results constants.
+- `Yiisoft\Db\Constant\ColumnType` with abstract column types constants.
+- `Yiisoft\Db\Constant\PseudoType` with column pseudo-types constants.
 
 ### New classes for table columns
 

@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 class BitColumnSchema extends AbstractColumnSchema
 {
+    /**
+     * @psalm-param ColumnType::* $type
+     */
     public function __construct(
-        string $type = SchemaInterface::TYPE_BIT,
+        string $type = ColumnType::BIT,
     ) {
         parent::__construct($type);
     }

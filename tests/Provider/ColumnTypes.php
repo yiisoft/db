@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function array_key_exists;
 use function array_values;
@@ -24,7 +25,7 @@ final class ColumnTypes
     {
         $items = [
             '$this->bigInteger()' => [
-                SchemaInterface::TYPE_BIGINT,
+                ColumnType::BIGINT,
                 [
                     'mysql' => 'bigint(20)',
                     'pgsql' => 'bigint',
@@ -34,7 +35,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->bigInteger()->notNull()' => [
-                SchemaInterface::TYPE_BIGINT . ' NOT NULL',
+                ColumnType::BIGINT . ' NOT NULL',
                 [
                     'mysql' => 'bigint(20) NOT NULL',
                     'pgsql' => 'bigint NOT NULL',
@@ -44,7 +45,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->bigInteger()->check(\'value > 5\')' => [
-                SchemaInterface::TYPE_BIGINT . ' CHECK (value > 5)',
+                ColumnType::BIGINT . ' CHECK (value > 5)',
                 [
                     'mysql' => 'bigint(20) CHECK (value > 5)',
                     'pgsql' => 'bigint CHECK (value > 5)',
@@ -54,7 +55,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->bigInteger(8)' => [
-                SchemaInterface::TYPE_BIGINT . '(8)',
+                ColumnType::BIGINT . '(8)',
                 [
                     'mysql' => 'bigint(8)',
                     'pgsql' => 'bigint',
@@ -64,7 +65,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->bigInteger(8)->check(\'value > 5\')' => [
-                SchemaInterface::TYPE_BIGINT . '(8) CHECK (value > 5)',
+                ColumnType::BIGINT . '(8) CHECK (value > 5)',
                 [
                     'mysql' => 'bigint(8) CHECK (value > 5)',
                     'pgsql' => 'bigint CHECK (value > 5)',
@@ -74,7 +75,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->bigPrimaryKey()' => [
-                SchemaInterface::TYPE_BIGPK,
+                PseudoType::BIGPK,
                 [
                     'mysql' => 'bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY',
                     'pgsql' => 'bigserial NOT NULL PRIMARY KEY',
@@ -82,7 +83,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->binary()' => [
-                SchemaInterface::TYPE_BINARY,
+                ColumnType::BINARY,
                 [
                     'mysql' => 'blob',
                     'pgsql' => 'bytea',
@@ -92,7 +93,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->boolean()->notNull()->defaultValue(1)' => [
-                SchemaInterface::TYPE_BOOLEAN . ' NOT NULL DEFAULT 1',
+                ColumnType::BOOLEAN . ' NOT NULL DEFAULT 1',
                 [
                     'mysql' => 'bit(1) NOT NULL DEFAULT 1',
                     'sqlite' => 'boolean NOT NULL DEFAULT 1',
@@ -100,13 +101,13 @@ final class ColumnTypes
                 ],
             ],
             '$this->boolean()->notNull()->defaultValue(true)' => [
-                SchemaInterface::TYPE_BOOLEAN . ' NOT NULL DEFAULT TRUE',
+                ColumnType::BOOLEAN . ' NOT NULL DEFAULT TRUE',
                 [
                     'pgsql' => 'boolean NOT NULL DEFAULT TRUE',
                 ],
             ],
             '$this->boolean()' => [
-                SchemaInterface::TYPE_BOOLEAN,
+                ColumnType::BOOLEAN,
                 [
                     'mysql' => 'bit(1)',
                     'pgsql' => 'boolean',
@@ -116,20 +117,20 @@ final class ColumnTypes
                 ],
             ],
             '$this->char()->check(\'value LIKE \\\'test%\\\'\')' => [
-                SchemaInterface::TYPE_CHAR . ' CHECK (value LIKE \'test%\')',
+                ColumnType::CHAR . ' CHECK (value LIKE \'test%\')',
                 [
                     'pgsql' => 'char(1) CHECK (value LIKE \'test%\')',
                     'mysql' => 'char(1) CHECK (value LIKE \'test%\')',
                 ],
             ],
             '$this->char()->check(\'value LIKE "test%"\')' => [
-                SchemaInterface::TYPE_CHAR . ' CHECK (value LIKE "test%")',
+                ColumnType::CHAR . ' CHECK (value LIKE "test%")',
                 [
                     'sqlite' => 'char(1) CHECK (value LIKE "test%")',
                 ],
             ],
             '$this->char()->notNull()' => [
-                SchemaInterface::TYPE_CHAR . ' NOT NULL',
+                ColumnType::CHAR . ' NOT NULL',
                 [
                     'mysql' => 'char(1) NOT NULL',
                     'pgsql' => 'char(1) NOT NULL',
@@ -138,25 +139,25 @@ final class ColumnTypes
                 ],
             ],
             '$this->char(6)->check(\'value LIKE "test%"\')' => [
-                SchemaInterface::TYPE_CHAR . '(6) CHECK (value LIKE "test%")',
+                ColumnType::CHAR . '(6) CHECK (value LIKE "test%")',
                 [
                     'sqlite' => 'char(6) CHECK (value LIKE "test%")',
                 ],
             ],
             '$this->char(6)->check(\'value LIKE \\\'test%\\\'\')' => [
-                SchemaInterface::TYPE_CHAR . '(6) CHECK (value LIKE \'test%\')',
+                ColumnType::CHAR . '(6) CHECK (value LIKE \'test%\')',
                 [
                     'mysql' => 'char(6) CHECK (value LIKE \'test%\')',
                 ],
             ],
             '$this->char(6)->unsigned()' => [
-                SchemaInterface::TYPE_CHAR . '(6)',
+                ColumnType::CHAR . '(6)',
                 [
                     'pgsql' => 'char(6)',
                 ],
             ],
             '$this->char(6)' => [
-                SchemaInterface::TYPE_CHAR . '(6)',
+                ColumnType::CHAR . '(6)',
                 [
                     'mysql' => 'char(6)',
                     'pgsql' => 'char(6)',
@@ -165,7 +166,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->char()' => [
-                SchemaInterface::TYPE_CHAR,
+                ColumnType::CHAR,
                 [
                     'mysql' => 'char(1)',
                     'pgsql' => 'char(1)',
@@ -174,7 +175,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->date()->notNull()' => [
-                SchemaInterface::TYPE_DATE . ' NOT NULL',
+                ColumnType::DATE . ' NOT NULL',
                 [
                     'pgsql' => 'date NOT NULL',
                     'sqlite' => 'date NOT NULL',
@@ -183,7 +184,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->date()' => [
-                SchemaInterface::TYPE_DATE,
+                ColumnType::DATE,
                 [
                     'mysql' => 'date',
                     'pgsql' => 'date',
@@ -193,7 +194,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->dateTime()->notNull()' => [
-                SchemaInterface::TYPE_DATETIME . ' NOT NULL',
+                ColumnType::DATETIME . ' NOT NULL',
                 [
                     'mysql' => 'datetime(0) NOT NULL',
                     'pgsql' => 'timestamp(0) NOT NULL',
@@ -203,7 +204,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->dateTime()' => [
-                SchemaInterface::TYPE_DATETIME,
+                ColumnType::DATETIME,
                 [
                     'mysql' => 'datetime(0)',
                     'pgsql' => 'timestamp(0)',
@@ -213,7 +214,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->decimal()->check(\'value > 5.6\')' => [
-                SchemaInterface::TYPE_DECIMAL . ' CHECK (value > 5.6)',
+                ColumnType::DECIMAL . ' CHECK (value > 5.6)',
                 [
                     'mysql' => 'decimal(10,0) CHECK (value > 5.6)',
                     'pgsql' => 'numeric(10,0) CHECK (value > 5.6)',
@@ -223,7 +224,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->decimal()->notNull()' => [
-                SchemaInterface::TYPE_DECIMAL . ' NOT NULL',
+                ColumnType::DECIMAL . ' NOT NULL',
                 [
                     'mysql' => 'decimal(10,0) NOT NULL',
                     'pgsql' => 'numeric(10,0) NOT NULL',
@@ -233,7 +234,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->decimal(12, 4)->check(\'value > 5.6\')' => [
-                SchemaInterface::TYPE_DECIMAL . '(12,4) CHECK (value > 5.6)',
+                ColumnType::DECIMAL . '(12,4) CHECK (value > 5.6)',
                 [
                     'mysql' => 'decimal(12,4) CHECK (value > 5.6)',
                     'pgsql' => 'numeric(12,4) CHECK (value > 5.6)',
@@ -243,7 +244,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->decimal(12, 4)' => [
-                SchemaInterface::TYPE_DECIMAL . '(12,4)',
+                ColumnType::DECIMAL . '(12,4)',
                 [
                     'mysql' => 'decimal(12,4)',
                     'pgsql' => 'numeric(12,4)',
@@ -253,7 +254,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->decimal()' => [
-                SchemaInterface::TYPE_DECIMAL,
+                ColumnType::DECIMAL,
                 [
                     'mysql' => 'decimal(10,0)',
                     'pgsql' => 'numeric(10,0)',
@@ -263,7 +264,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->double()->check(\'value > 5.6\')' => [
-                SchemaInterface::TYPE_DOUBLE . ' CHECK (value > 5.6)',
+                ColumnType::DOUBLE . ' CHECK (value > 5.6)',
                 [
                     'mysql' => 'double CHECK (value > 5.6)',
                     'pgsql' => 'double precision CHECK (value > 5.6)',
@@ -273,7 +274,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->double()->notNull()' => [
-                SchemaInterface::TYPE_DOUBLE . ' NOT NULL',
+                ColumnType::DOUBLE . ' NOT NULL',
                 [
                     'mysql' => 'double NOT NULL',
                     'pgsql' => 'double precision NOT NULL',
@@ -283,7 +284,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->double(16)->check(\'value > 5.6\')' => [
-                SchemaInterface::TYPE_DOUBLE . '(16) CHECK (value > 5.6)',
+                ColumnType::DOUBLE . '(16) CHECK (value > 5.6)',
                 [
                     'mysql' => 'double CHECK (value > 5.6)',
                     'pgsql' => 'double precision CHECK (value > 5.6)',
@@ -293,7 +294,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->double(16)' => [
-                SchemaInterface::TYPE_DOUBLE . '(16)',
+                ColumnType::DOUBLE . '(16)',
                 [
                     'mysql' => 'double',
                     'sqlite' => 'double',
@@ -302,7 +303,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->double()' => [
-                SchemaInterface::TYPE_DOUBLE,
+                ColumnType::DOUBLE,
                 [
                     'mysql' => 'double',
                     'pgsql' => 'double precision',
@@ -312,7 +313,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->float()->check(\'value > 5.6\')' => [
-                SchemaInterface::TYPE_FLOAT . ' CHECK (value > 5.6)',
+                ColumnType::FLOAT . ' CHECK (value > 5.6)',
                 [
                     'mysql' => 'float CHECK (value > 5.6)',
                     'pgsql' => 'double precision CHECK (value > 5.6)',
@@ -322,7 +323,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->float()->notNull()' => [
-                SchemaInterface::TYPE_FLOAT . ' NOT NULL',
+                ColumnType::FLOAT . ' NOT NULL',
                 [
                     'mysql' => 'float NOT NULL',
                     'pgsql' => 'double precision NOT NULL',
@@ -332,7 +333,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->float(16)->check(\'value > 5.6\')' => [
-                SchemaInterface::TYPE_FLOAT . '(16) CHECK (value > 5.6)',
+                ColumnType::FLOAT . '(16) CHECK (value > 5.6)',
                 [
                     'mysql' => 'float CHECK (value > 5.6)',
                     'pgsql' => 'double precision CHECK (value > 5.6)',
@@ -342,7 +343,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->float(16)' => [
-                SchemaInterface::TYPE_FLOAT . '(16)',
+                ColumnType::FLOAT . '(16)',
                 [
                     'mysql' => 'float',
                     'sqlite' => 'float',
@@ -351,7 +352,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->float()' => [
-                SchemaInterface::TYPE_FLOAT,
+                ColumnType::FLOAT,
                 [
                     'mysql' => 'float',
                     'pgsql' => 'double precision',
@@ -361,7 +362,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->integer()->check(\'value > 5\')' => [
-                SchemaInterface::TYPE_INTEGER . ' CHECK (value > 5)',
+                ColumnType::INTEGER . ' CHECK (value > 5)',
                 [
                     'mysql' => 'int(11) CHECK (value > 5)',
                     'pgsql' => 'integer CHECK (value > 5)',
@@ -371,7 +372,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->integer()->notNull()' => [
-                SchemaInterface::TYPE_INTEGER . ' NOT NULL',
+                ColumnType::INTEGER . ' NOT NULL',
                 [
                     'mysql' => 'int(11) NOT NULL',
                     'pgsql' => 'integer NOT NULL',
@@ -381,7 +382,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->integer(8)->check(\'value > 5\')' => [
-                SchemaInterface::TYPE_INTEGER . '(8) CHECK (value > 5)',
+                ColumnType::INTEGER . '(8) CHECK (value > 5)',
                 [
                     'mysql' => 'int(8) CHECK (value > 5)',
                     'pgsql' => 'integer CHECK (value > 5)',
@@ -391,13 +392,13 @@ final class ColumnTypes
                 ],
             ],
             '$this->integer(8)->unsigned()' => [
-                SchemaInterface::TYPE_INTEGER . '(8)',
+                ColumnType::INTEGER . '(8)',
                 [
                     'pgsql' => 'integer',
                 ],
             ],
             '$this->integer(8)' => [
-                SchemaInterface::TYPE_INTEGER . '(8)',
+                ColumnType::INTEGER . '(8)',
                 [
                     'mysql' => 'int(8)',
                     'pgsql' => 'integer',
@@ -407,7 +408,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->integer()' => [
-                SchemaInterface::TYPE_INTEGER,
+                ColumnType::INTEGER,
                 [
                     'mysql' => 'int(11)',
                     'pgsql' => 'integer',
@@ -417,7 +418,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->money()->check(\'value > 0.0\')' => [
-                SchemaInterface::TYPE_MONEY . ' CHECK (value > 0.0)',
+                ColumnType::MONEY . ' CHECK (value > 0.0)',
                 [
                     'mysql' => 'decimal(19,4) CHECK (value > 0.0)',
                     'pgsql' => 'numeric(19,4) CHECK (value > 0.0)',
@@ -427,7 +428,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->money()->notNull()' => [
-                SchemaInterface::TYPE_MONEY . ' NOT NULL',
+                ColumnType::MONEY . ' NOT NULL',
                 [
                     'mysql' => 'decimal(19,4) NOT NULL',
                     'pgsql' => 'numeric(19,4) NOT NULL',
@@ -437,7 +438,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->money(16, 2)->check(\'value > 0.0\')' => [
-                SchemaInterface::TYPE_MONEY . '(16,2) CHECK (value > 0.0)',
+                ColumnType::MONEY . '(16,2) CHECK (value > 0.0)',
                 [
                     'mysql' => 'decimal(16,2) CHECK (value > 0.0)',
                     'pgsql' => 'numeric(16,2) CHECK (value > 0.0)',
@@ -447,7 +448,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->money(16, 2)' => [
-                SchemaInterface::TYPE_MONEY . '(16,2)',
+                ColumnType::MONEY . '(16,2)',
                 [
                     'mysql' => 'decimal(16,2)',
                     'pgsql' => 'numeric(16,2)',
@@ -457,7 +458,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->money()' => [
-                SchemaInterface::TYPE_MONEY,
+                ColumnType::MONEY,
                 [
                     'mysql' => 'decimal(19,4)',
                     'pgsql' => 'numeric(19,4)',
@@ -467,7 +468,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->primaryKey()->check(\'value > 5\')' => [
-                SchemaInterface::TYPE_PK . ' CHECK (value > 5)',
+                PseudoType::PK . ' CHECK (value > 5)',
                 [
                     'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY CHECK (value > 5)',
                     'pgsql' => 'serial NOT NULL PRIMARY KEY CHECK (value > 5)',
@@ -477,21 +478,21 @@ final class ColumnTypes
                 ],
             ],
             '$this->primaryKey(8)->check(\'value > 5\')' => [
-                SchemaInterface::TYPE_PK . '(8) CHECK (value > 5)',
+                PseudoType::PK . '(8) CHECK (value > 5)',
                 [
                     'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY CHECK (value > 5)',
                     'oci' => 'NUMBER(8) GENERATED BY DEFAULT AS IDENTITY NOT NULL PRIMARY KEY CHECK (value > 5)',
                 ],
             ],
             '$this->primaryKey(8)' => [
-                SchemaInterface::TYPE_PK . '(8)',
+                PseudoType::PK . '(8)',
                 [
                     'mysql' => 'int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY',
                     'oci' => 'NUMBER(8) GENERATED BY DEFAULT AS IDENTITY NOT NULL PRIMARY KEY',
                 ],
             ],
             '$this->primaryKey()' => [
-                SchemaInterface::TYPE_PK,
+                PseudoType::PK,
                 [
                     'mysql' => 'int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY',
                     'pgsql' => 'serial NOT NULL PRIMARY KEY',
@@ -501,7 +502,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->tinyInteger(2)' => [
-                SchemaInterface::TYPE_TINYINT . '(2)',
+                ColumnType::TINYINT . '(2)',
                 [
                     'mysql' => 'tinyint(2)',
                     'pgsql' => 'smallint',
@@ -511,14 +512,14 @@ final class ColumnTypes
                 ],
             ],
             '$this->tinyInteger()->unsigned()' => [
-                SchemaInterface::TYPE_TINYINT . ' UNSIGNED',
+                ColumnType::TINYINT . ' UNSIGNED',
                 [
                     'mysql' => 'tinyint(3) UNSIGNED',
                     'sqlite' => 'tinyint UNSIGNED',
                 ],
             ],
             '$this->tinyInteger()' => [
-                SchemaInterface::TYPE_TINYINT,
+                ColumnType::TINYINT,
                 [
                     'mysql' => 'tinyint(3)',
                     'pgsql' => 'smallint',
@@ -528,7 +529,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->smallInteger(8)' => [
-                SchemaInterface::TYPE_SMALLINT . '(8)',
+                ColumnType::SMALLINT . '(8)',
                 [
                     'mysql' => 'smallint(8)',
                     'pgsql' => 'smallint',
@@ -538,7 +539,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->smallInteger()' => [
-                SchemaInterface::TYPE_SMALLINT,
+                ColumnType::SMALLINT,
                 [
                     'mysql' => 'smallint(6)',
                     'pgsql' => 'smallint',
@@ -548,7 +549,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->string()->check("value LIKE \'test%\'")' => [
-                SchemaInterface::TYPE_STRING . " CHECK (value LIKE 'test%')",
+                ColumnType::STRING . " CHECK (value LIKE 'test%')",
                 [
                     'mysql' => "varchar(255) CHECK (value LIKE 'test%')",
                     'sqlite' => "varchar(255) CHECK (value LIKE 'test%')",
@@ -556,14 +557,14 @@ final class ColumnTypes
                 ],
             ],
             '$this->string()->check(\'value LIKE \\\'test%\\\'\')' => [
-                SchemaInterface::TYPE_STRING . ' CHECK (value LIKE \'test%\')',
+                ColumnType::STRING . ' CHECK (value LIKE \'test%\')',
                 [
                     'pgsql' => 'varchar(255) CHECK (value LIKE \'test%\')',
                     'oci' => 'VARCHAR2(255) CHECK (value LIKE \'test%\')',
                 ],
             ],
             '$this->string()->notNull()' => [
-                SchemaInterface::TYPE_STRING . ' NOT NULL',
+                ColumnType::STRING . ' NOT NULL',
                 [
                     'mysql' => 'varchar(255) NOT NULL',
                     'pgsql' => 'varchar(255) NOT NULL',
@@ -573,7 +574,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->string(32)->check("value LIKE \'test%\'")' => [
-                SchemaInterface::TYPE_STRING . "(32) CHECK (value LIKE 'test%')",
+                ColumnType::STRING . "(32) CHECK (value LIKE 'test%')",
                 [
                     'mysql' => "varchar(32) CHECK (value LIKE 'test%')",
                     'sqlite' => "varchar(32) CHECK (value LIKE 'test%')",
@@ -581,14 +582,14 @@ final class ColumnTypes
                 ],
             ],
             '$this->string(32)->check(\'value LIKE \\\'test%\\\'\')' => [
-                SchemaInterface::TYPE_STRING . '(32) CHECK (value LIKE \'test%\')',
+                ColumnType::STRING . '(32) CHECK (value LIKE \'test%\')',
                 [
                     'pgsql' => 'varchar(32) CHECK (value LIKE \'test%\')',
                     'oci' => 'VARCHAR2(32) CHECK (value LIKE \'test%\')',
                 ],
             ],
             '$this->string(32)' => [
-                SchemaInterface::TYPE_STRING . '(32)',
+                ColumnType::STRING . '(32)',
                 [
                     'mysql' => 'varchar(32)',
                     'pgsql' => 'varchar(32)',
@@ -598,7 +599,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->string()' => [
-                SchemaInterface::TYPE_STRING,
+                ColumnType::STRING,
                 [
                     'mysql' => 'varchar(255)',
                     'pgsql' => 'varchar(255)',
@@ -608,7 +609,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->text()->check("value LIKE \'test%\'")' => [
-                SchemaInterface::TYPE_TEXT . " CHECK (value LIKE 'test%')",
+                ColumnType::TEXT . " CHECK (value LIKE 'test%')",
                 [
                     'mysql' => "text CHECK (value LIKE 'test%')",
                     'sqlite' => "text CHECK (value LIKE 'test%')",
@@ -616,7 +617,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->text()->notNull()' => [
-                SchemaInterface::TYPE_TEXT . ' NOT NULL',
+                ColumnType::TEXT . ' NOT NULL',
                 [
                     'mysql' => 'text NOT NULL',
                     'pgsql' => 'text NOT NULL',
@@ -626,14 +627,14 @@ final class ColumnTypes
                 ],
             ],
             '$this->text()->check(\'value LIKE \\\'test%\\\'\')' => [
-                SchemaInterface::TYPE_TEXT . ' CHECK (value LIKE \'test%\')',
+                ColumnType::TEXT . ' CHECK (value LIKE \'test%\')',
                 [
                     'pgsql' => 'text CHECK (value LIKE \'test%\')',
                     'oci' => 'CLOB CHECK (value LIKE \'test%\')',
                 ],
             ],
             '$this->text()' => [
-                SchemaInterface::TYPE_TEXT,
+                ColumnType::TEXT,
                 [
                     'mysql' => 'text',
                     'pgsql' => 'text',
@@ -643,7 +644,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->time()->notNull()' => [
-                SchemaInterface::TYPE_TIME . ' NOT NULL',
+                ColumnType::TIME . ' NOT NULL',
                 [
                     'mysql' => 'time(0) NOT NULL',
                     'pgsql' => 'time(0) NOT NULL',
@@ -653,7 +654,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->time()' => [
-                SchemaInterface::TYPE_TIME,
+                ColumnType::TIME,
                 [
                     'mysql' => 'time(0)',
                     'pgsql' => 'time(0)',
@@ -663,7 +664,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->timestamp()->notNull()' => [
-                SchemaInterface::TYPE_TIMESTAMP . ' NOT NULL',
+                ColumnType::TIMESTAMP . ' NOT NULL',
                 [
                     'mysql' => 'timestamp(0) NOT NULL',
                     'pgsql' => 'timestamp(0) NOT NULL',
@@ -673,7 +674,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->timestamp()->defaultValue(null)' => [
-                SchemaInterface::TYPE_TIMESTAMP . ' NULL DEFAULT NULL',
+                ColumnType::TIMESTAMP . ' NULL DEFAULT NULL',
                 [
                     'mysql' => 'timestamp(0) NULL DEFAULT NULL',
                     'pgsql' => 'timestamp(0) NULL DEFAULT NULL',
@@ -682,14 +683,14 @@ final class ColumnTypes
                 ],
             ],
             '$this->timestamp(4)' => [
-                SchemaInterface::TYPE_TIMESTAMP . '(4)',
+                ColumnType::TIMESTAMP . '(4)',
                 [
                     'pgsql' => 'timestamp(4)',
                     'oci' => 'TIMESTAMP(4)',
                 ],
             ],
             '$this->timestamp()' => [
-                SchemaInterface::TYPE_TIMESTAMP,
+                ColumnType::TIMESTAMP,
                 [
                     /**
                      * MySQL has its own TIMESTAMP test realization.
@@ -703,7 +704,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->primaryKey()->unsigned()' => [
-                SchemaInterface::TYPE_UPK,
+                PseudoType::UPK,
                 [
                     'mysql' => 'int(10) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
                     'pgsql' => 'serial NOT NULL PRIMARY KEY',
@@ -711,7 +712,7 @@ final class ColumnTypes
                 ],
             ],
             '$this->bigPrimaryKey()->unsigned()' => [
-                SchemaInterface::TYPE_UBIGPK,
+                PseudoType::UBIGPK,
                 [
                     'mysql' => 'bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
                     'pgsql' => 'bigserial NOT NULL PRIMARY KEY',
@@ -719,21 +720,21 @@ final class ColumnTypes
                 ],
             ],
             '$this->integer()->comment(\'test comment\')' => [
-                SchemaInterface::TYPE_INTEGER . " COMMENT 'test comment'",
+                ColumnType::INTEGER . " COMMENT 'test comment'",
                 [
                     'mysql' => "int(11) COMMENT 'test comment'",
                     'sqlsrv' => 'int',
                 ],
             ],
             '$this->primaryKey()->comment(\'test comment\')' => [
-                SchemaInterface::TYPE_PK . " COMMENT 'test comment'",
+                PseudoType::PK . " COMMENT 'test comment'",
                 [
                     'mysql' => "int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'test comment'",
                     'sqlsrv' => 'int IDENTITY PRIMARY KEY',
                 ],
             ],
             '$this->json()' => [
-                SchemaInterface::TYPE_JSON,
+                ColumnType::JSON,
                 [
                     'pgsql' => 'jsonb',
                 ],

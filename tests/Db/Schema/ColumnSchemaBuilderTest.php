@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Schema;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\Stub\Column;
 
 /**
@@ -264,7 +264,7 @@ final class ColumnSchemaBuilderTest extends TestCase
 
     public function testUnsignedTypePk(): void
     {
-        $column = new Column(SchemaInterface::TYPE_PK);
+        $column = new Column(PseudoType::PK);
 
         $this->assertSame('pk', $column->asString());
         $this->assertSame('upk', $column->unsigned()->asString());
@@ -272,7 +272,7 @@ final class ColumnSchemaBuilderTest extends TestCase
 
     public function testUnsignedTypeUbigPk(): void
     {
-        $column = new Column(SchemaInterface::TYPE_BIGPK);
+        $column = new Column(PseudoType::BIGPK);
 
         $this->assertSame('bigpk', $column->asString());
         $this->assertSame('ubigpk', $column->unsigned()->asString());

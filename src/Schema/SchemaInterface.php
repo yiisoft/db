@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Schema;
 
 use Throwable;
 use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -121,106 +123,158 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const INDEX_BITMAP = 'BITMAP';
     /**
      * Define the abstract column type as a primary key.
+     *
+     * @deprecated Use {@see PseudoType::PK} instead. Will be removed in 2.0.
      */
     public const TYPE_PK = 'pk';
     /**
      * Define the abstract column type as an `unsigned` primary key.
+     *
+     * @deprecated Use {@see PseudoType::UPK} instead. Will be removed in 2.0.
      */
     public const TYPE_UPK = 'upk';
     /**
      * Define the abstract column type as big primary key.
+     *
+     * @deprecated Use {@see PseudoType::BIGPK} instead. Will be removed in 2.0.
      */
     public const TYPE_BIGPK = 'bigpk';
     /**
      * Define the abstract column type as `unsigned` big primary key.
+     *
+     * @deprecated Use {@see PseudoType::UBIGPK} instead. Will be removed in 2.0.
      */
     public const TYPE_UBIGPK = 'ubigpk';
     /**
      * Define the abstract column type as an `uuid` primary key.
+     *
+     * @deprecated Use {@see PseudoType::UUID_PK} instead. Will be removed in 2.0.
      */
     public const TYPE_UUID_PK = 'uuid_pk';
     /**
      * Define the abstract column type as an`uuid` primary key with a sequence.
+     *
+     * @deprecated Use {@see PseudoType::UUID_PK_SEQ} instead. Will be removed in 2.0.
      */
     public const TYPE_UUID_PK_SEQ = 'uuid_pk_seq';
     /**
      * Define the abstract column type as `uuid`.
+     *
+     * @deprecated Use {@see ColumnType::UUID} instead. Will be removed in 2.0.
      */
     public const TYPE_UUID = 'uuid';
     /**
      * Define the abstract column type as `char`.
+     *
+     * @deprecated Use {@see ColumnType::CHAR} instead. Will be removed in 2.0.
      */
     public const TYPE_CHAR = 'char';
     /**
      * Define the abstract column type as `string`.
+     *
+     * @deprecated Use {@see ColumnType::STRING} instead. Will be removed in 2.0.
      */
     public const TYPE_STRING = 'string';
     /**
      * Define the abstract column type as `text`.
+     *
+     * @deprecated Use {@see ColumnType::TEXT} instead. Will be removed in 2.0.
      */
     public const TYPE_TEXT = 'text';
     /**
      * Define the abstract column type as `tinyint`.
+     *
+     * @deprecated Use {@see ColumnType::TINYINT} instead. Will be removed in 2.0.
      */
     public const TYPE_TINYINT = 'tinyint';
     /**
      * Define the abstract column type as `smallint`.
+     *
+     * @deprecated Use {@see ColumnType::SMALLINT} instead. Will be removed in 2.0.
      */
     public const TYPE_SMALLINT = 'smallint';
     /**
      * Define the abstract column type as `integer`.
+     *
+     * @deprecated Use {@see ColumnType::INTEGER} instead. Will be removed in 2.0.
      */
     public const TYPE_INTEGER = 'integer';
     /**
      * Define the abstract column type as `bigint`.
+     *
+     * @deprecated Use {@see ColumnType::BIGINT} instead. Will be removed in 2.0.
      */
     public const TYPE_BIGINT = 'bigint';
     /**
      * Define the abstract column type as `float`.
+     *
+     * @deprecated Use {@see ColumnType::FLOAT} instead. Will be removed in 2.0.
      */
     public const TYPE_FLOAT = 'float';
     /**
      * Define the abstract column type as `double`.
+     *
+     * @deprecated Use {@see ColumnType::DOUBLE} instead. Will be removed in 2.0.
      */
     public const TYPE_DOUBLE = 'double';
     /**
      * Define the abstract column type as `decimal`.
+     *
+     * @deprecated Use {@see ColumnType::DECIMAL} instead. Will be removed in 2.0.
      */
     public const TYPE_DECIMAL = 'decimal';
     /**
      * Define the abstract column type as `datetime`.
+     *
+     * @deprecated Use {@see ColumnType::DATETIME} instead. Will be removed in 2.0.
      */
     public const TYPE_DATETIME = 'datetime';
     /**
      * Define the abstract column type as `timestamp`.
+     *
+     * @deprecated Use {@see ColumnType::TIMESTAMP} instead. Will be removed in 2.0.
      */
     public const TYPE_TIMESTAMP = 'timestamp';
     /**
      * Define the abstract column type as `time`.
+     *
+     * @deprecated Use {@see ColumnType::TIME} instead. Will be removed in 2.0.
      */
     public const TYPE_TIME = 'time';
     /**
      * Define the abstract column type as `date`.
+     *
+     * @deprecated Use {@see ColumnType::DATE} instead. Will be removed in 2.0.
      */
     public const TYPE_DATE = 'date';
     /**
      * Define the abstract column type as `binary`.
+     *
+     * @deprecated Use {@see ColumnType::BINARY} instead. Will be removed in 2.0.
      */
     public const TYPE_BINARY = 'binary';
     /**
      * Define the abstract column type as `boolean`.
+     *
+     * @deprecated Use {@see ColumnType::BOOLEAN} instead. Will be removed in 2.0.
      */
     public const TYPE_BOOLEAN = 'boolean';
     /**
      * Define the abstract column type as `bit`.
+     *
+     * @deprecated Use {@see ColumnType::BIT} instead. Will be removed in 2.0.
      */
     public const TYPE_BIT = 'bit';
     /**
      * Define the abstract column type as `money`.
+     *
+     * @deprecated Use {@see ColumnType::MONEY} instead. Will be removed in 2.0.
      */
     public const TYPE_MONEY = 'money';
     /**
      * Define the abstract column type as `json`.
+     *
+     * @deprecated Use {@see ColumnType::JSON} instead. Will be removed in 2.0.
      */
     public const TYPE_JSON = 'json';
 

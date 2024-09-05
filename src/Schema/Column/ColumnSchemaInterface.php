@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
 
 /**
@@ -26,7 +27,7 @@ use Yiisoft\Db\Constant\PhpType;
  *     schema?: string|null,
  *     size?: int|string|null,
  *     table?: string|null,
- *     type?: string,
+ *     type?: ColumnType::*,
  *     unsigned?: bool|string,
  *     ...<string, mixed>
  * }
@@ -206,8 +207,6 @@ interface ColumnSchemaInterface
      *
      * @return string The PHP type of the column.
      * @psalm-return PhpType::*
-     *
-     * @see PhpType
      */
     public function getPhpType(): string;
 
@@ -227,6 +226,7 @@ interface ColumnSchemaInterface
 
     /**
      * @return string The type of the column.
+     * @psalm-return ColumnType::*
      *
      * @see type()
      */
@@ -349,6 +349,8 @@ interface ColumnSchemaInterface
      * $columns = [
      *     'description' => $this->text()->type('text'),
      * ];
+     *
+     * @psalm-param ColumnType::* $type
      */
     public function type(string $type): static;
 

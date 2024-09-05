@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Command;
 
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -163,7 +164,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->alterColumn('table', 'column', SchemaInterface::TYPE_INTEGER)->getSql();
+        $sql = $command->alterColumn('table', 'column', ColumnType::INTEGER)->getSql();
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -243,14 +244,14 @@ final class CommandTest extends AbstractCommandTest
         ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
         SQL;
         $columns = [
-            'id' => SchemaInterface::TYPE_PK,
-            'name' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
-            'email' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
-            'address' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
-            'status' => SchemaInterface::TYPE_INTEGER . ' NOT NULL',
-            'profile_id' => SchemaInterface::TYPE_INTEGER . ' NOT NULL',
-            'created_at' => SchemaInterface::TYPE_TIMESTAMP . ' NOT NULL',
-            'updated_at' => SchemaInterface::TYPE_TIMESTAMP . ' NOT NULL',
+            'id' => PseudoType::PK,
+            'name' => ColumnType::STRING . '(255) NOT NULL',
+            'email' => ColumnType::STRING . '(255) NOT NULL',
+            'address' => ColumnType::STRING . '(255) NOT NULL',
+            'status' => ColumnType::INTEGER . ' NOT NULL',
+            'profile_id' => ColumnType::INTEGER . ' NOT NULL',
+            'created_at' => ColumnType::TIMESTAMP . ' NOT NULL',
+            'updated_at' => ColumnType::TIMESTAMP . ' NOT NULL',
         ];
         $options = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         $sql = $command->createTable('test_table', $columns, $options)->getSql();
