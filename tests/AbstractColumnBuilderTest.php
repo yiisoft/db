@@ -28,10 +28,10 @@ abstract class AbstractColumnBuilderTest extends TestCase
      */
     public function testBuildingMethods(
         string $buildingMethod,
-        array  $args,
+        array $args,
         string $expectedInstanceOf,
         string $expectedType,
-        array  $expectedMethodResults = [],
+        array $expectedMethodResults = [],
     ): void {
         $db = $this->getConnection();
         $columnBuilderClass = $db->getColumnBuilderClass();
