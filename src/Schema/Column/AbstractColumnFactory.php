@@ -5,15 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
-
-use function explode;
-use function preg_match;
-use function str_ireplace;
-use function stripos;
-use function strlen;
-use function strtolower;
-use function substr;
-use function trim;
+use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Syntax\ColumnDefinitionParser;
 
 use const PHP_INT_SIZE;
 
@@ -38,6 +31,11 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      */
     abstract protected function getType(string $dbType, array $info = []): string;
 
+    /**
+     * Checks if the column type is a database type.
+     */
+    abstract protected function isDbType(string $dbType): bool;
+
     public function fromDbType(string $dbType, array $info = []): ColumnSchemaInterface
     {
         $info['db_type'] = $dbType;
@@ -48,39 +46,43 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
 
     public function fromDefinition(string $definition, array $info = []): ColumnSchemaInterface
     {
-        preg_match('/^(\w*)(?:\(([^)]+)\))?\s*/', $definition, $matches);
+        $definitionInfo = $this->columnDefinitionParser()->parse($definition);
 
-        $dbType = strtolower($matches[1]);
-
-        if (isset($matches[2])) {
-            $values = explode(',', $matches[2]);
-            $info['size'] = (int) $values[0];
-            $info['precision'] = (int) $values[0];
-
-            if (isset($values[1])) {
-                $info['scale'] = (int) $values[1];
-            }
+        if (isset($info['extra'], $definitionInfo['extra'])) {
+            $info['extra'] = $definitionInfo['extra'] . ' ' . $info['extra'];
         }
 
-        $extra = substr($definition, strlen($matches[0]));
+        /** @var string $dbType */
+        $dbType = $definitionInfo['db_type'] ?? '';
+        unset($definitionInfo['db_type']);
 
-        if (!empty($extra)) {
-            if (stripos($extra, 'unsigned') !== false) {
-                $info['unsigned'] = true;
-                $extra = trim(str_ireplace('unsigned', '', $extra));
-            }
+        $info += $definitionInfo;
 
-            if (!empty($extra)) {
-                if (empty($info['extra'])) {
-                    $info['extra'] = $extra;
-                } else {
-                    /** @psalm-suppress MixedOperand */
-                    $info['extra'] = $extra . ' ' . $info['extra'];
-                }
-            }
+        if ($this->isDbType($dbType)) {
+            return $this->fromDbType($dbType, $info);
+        }
+
+        if ($this->isType($dbType)) {
+            return $this->fromType($dbType, $info);
+        }
+
+        if ($this->isPseudoType($dbType)) {
+            return $this->fromPseudoType($dbType, $info);
         }
 
         return $this->fromDbType($dbType, $info);
+    }
+
+    public function fromPseudoType(string $pseudoType, array $info = []): ColumnSchemaInterface
+    {
+        return match ($pseudoType) {
+            PseudoType::PK => ColumnBuilder::primaryKey()->load($info),
+            PseudoType::UPK => ColumnBuilder::primaryKey()->unsigned()->load($info),
+            PseudoType::BIGPK => ColumnBuilder::bigPrimaryKey()->load($info),
+            PseudoType::UBIGPK => ColumnBuilder::bigPrimaryKey()->unsigned()->load($info),
+            PseudoType::UUID_PK => ColumnBuilder::uuidPrimaryKey()->load($info),
+            PseudoType::UUID_PK_SEQ => ColumnBuilder::uuidPrimaryKey(true)->load($info),
+        };
     }
 
     public function fromType(string $type, array $info = []): ColumnSchemaInterface
@@ -105,5 +107,63 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
         };
 
         return $column->load($info);
+    }
+
+    /**
+     * Returns the column definition parser.
+     */
+    protected function columnDefinitionParser(): ColumnDefinitionParser
+    {
+        return new ColumnDefinitionParser();
+    }
+
+    /**
+     * Checks if the column type is a pseudo-type.
+     *
+     * @psalm-assert-if-true PseudoType::* $pseudoType
+     */
+    protected function isPseudoType(string $pseudoType): bool
+    {
+        return match ($pseudoType) {
+            PseudoType::PK,
+            PseudoType::UPK,
+            PseudoType::BIGPK,
+            PseudoType::UBIGPK,
+            PseudoType::UUID_PK,
+            PseudoType::UUID_PK_SEQ => true,
+            default => false,
+        };
+    }
+
+    /**
+     * Checks if the column type is an abstract type.
+     *
+     * @psalm-assert-if-true ColumnType::* $type
+     */
+    protected function isType(string $type): bool
+    {
+        return match ($type) {
+            ColumnType::BOOLEAN,
+            ColumnType::BIT,
+            ColumnType::TINYINT,
+            ColumnType::SMALLINT,
+            ColumnType::INTEGER,
+            ColumnType::BIGINT,
+            ColumnType::FLOAT,
+            ColumnType::DOUBLE,
+            ColumnType::DECIMAL,
+            ColumnType::MONEY,
+            ColumnType::CHAR,
+            ColumnType::STRING,
+            ColumnType::TEXT,
+            ColumnType::BINARY,
+            ColumnType::UUID,
+            ColumnType::DATETIME,
+            ColumnType::TIMESTAMP,
+            ColumnType::DATE,
+            ColumnType::TIME,
+            ColumnType::JSON => true,
+            default => false,
+        };
     }
 }

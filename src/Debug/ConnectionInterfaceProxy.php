@@ -62,6 +62,11 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
         $this->connection->close();
     }
 
+    public function getColumnBuilderClass(): string
+    {
+        return $this->connection->getColumnBuilderClass();
+    }
+
     public function getLastInsertID(string $sequenceName = null): string
     {
         return $this->connection->getLastInsertID($sequenceName);

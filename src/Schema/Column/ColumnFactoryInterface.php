@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
 
 /**
  * The interface must be implemented by a column factory class. It should create a column schema for a database column
@@ -26,6 +27,9 @@ interface ColumnFactoryInterface
 
     /**
      * Creates a column schema for a database column definition and initializes column information.
+     * The definition string can contain the database type of the column, its size, default value, etc.
+     *
+     * For example, `varchar(255) NOT NULL` is a database type with a size and a NOT NULL constraint.
      *
      * @param string $definition The database column definition.
      * @param array $info The column information.
@@ -33,6 +37,19 @@ interface ColumnFactoryInterface
      * @psalm-param ColumnInfo $info The set of parameters may be different for a specific DBMS.
      */
     public function fromDefinition(string $definition, array $info = []): ColumnSchemaInterface;
+
+    /**
+     * Creates a column schema for a pseudo-type and initializes column information.
+     *
+     * @param string $pseudoType The pseudo-type.
+     * @param array $info The column information.
+     *
+     * @return ColumnSchemaInterface The column schema.
+     *
+     * @psalm-param PseudoType::* $pseudoType
+     * @psalm-param ColumnInfo $info
+     */
+    public function fromPseudoType(string $pseudoType, array $info = []): ColumnSchemaInterface;
 
     /**
      * Creates a column schema for an abstract database type and initializes column information.

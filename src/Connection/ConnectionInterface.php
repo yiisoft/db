@@ -14,6 +14,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
@@ -84,6 +85,13 @@ interface ConnectionInterface
      * It does nothing if the connection is already closed.
      */
     public function close(): void;
+
+    /**
+     * Returns the column builder class name for creating column instances.
+     *
+     * @psalm-return class-string<ColumnBuilder>
+     */
+    public function getColumnBuilderClass(): string;
 
     /**
      * Returns the name of the DB driver for the current `dsn`.
