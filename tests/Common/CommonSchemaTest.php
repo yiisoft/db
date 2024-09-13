@@ -8,6 +8,7 @@ use JsonException;
 use PDO;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\DefaultValueConstraint;
@@ -54,7 +55,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $command->dropTable('testCommentTable')->execute();
         }
 
-        $command->createTable('testCommentTable', ['bar' => SchemaInterface::TYPE_INTEGER,])->execute();
+        $command->createTable('testCommentTable', ['bar' => ColumnType::INTEGER,])->execute();
         $command->addCommentOnColumn('testCommentTable', 'bar', 'Test comment for column.')->execute();
 
         $this->assertSame(

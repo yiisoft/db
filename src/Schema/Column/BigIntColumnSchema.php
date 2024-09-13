@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Constant\PhpType;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function gettype;
 
@@ -16,8 +16,11 @@ use const PHP_INT_MIN;
 
 class BigIntColumnSchema extends AbstractColumnSchema
 {
+    /**
+     * @psalm-param ColumnType::* $type
+     */
     public function __construct(
-        string $type = SchemaInterface::TYPE_BIGINT,
+        string $type = ColumnType::BIGINT,
     ) {
         parent::__construct($type);
     }

@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Tests\Provider;
 use ArrayIterator;
 use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
@@ -1536,7 +1537,7 @@ class QueryBuilderProvider
     public static function columnTypes(): array
     {
         return [
-            [SchemaInterface::TYPE_STRING],
+            [ColumnType::STRING],
             [new Column('string(100)')],
         ];
     }

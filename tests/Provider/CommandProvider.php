@@ -9,6 +9,7 @@ use IteratorAggregate;
 use Traversable;
 use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -921,7 +922,7 @@ class CommandProvider
     public static function columnTypes(): array
     {
         return [
-            [SchemaInterface::TYPE_INTEGER],
+            [ColumnType::INTEGER],
             [new Column('string(100)')],
         ];
     }

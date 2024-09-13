@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Tests\Common;
 
 use ReflectionException;
 use Throwable;
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
@@ -21,7 +23,6 @@ use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\Stub\Column;
@@ -72,11 +73,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->addColumn('{{customer}}', '{{city}}', SchemaInterface::TYPE_STRING)->execute();
+        $command->addColumn('{{customer}}', '{{city}}', ColumnType::STRING)->execute();
 
         $this->assertTrue($db->getTableSchema('{{customer}}')->getColumn('city') !== null);
         $this->assertSame(
-            SchemaInterface::TYPE_STRING,
+            ColumnType::STRING,
             $db->getTableSchema('{{customer}}')->getColumn('city')->getType(),
         );
 
@@ -155,7 +156,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->dropTable('{{test_def}}')->execute();
         }
 
-        $command->createTable('{{test_def}}', ['int1' => SchemaInterface::TYPE_INTEGER])->execute();
+        $command->createTable('{{test_def}}', ['int1' => ColumnType::INTEGER])->execute();
 
         $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}', true));
 
@@ -545,8 +546,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->createTable(
             '{{testCreateTable}}',
             [
-                '[[id]]' => SchemaInterface::TYPE_PK,
-                '[[bar]]' => SchemaInterface::TYPE_INTEGER,
+                '[[id]]' => PseudoType::PK,
+                '[[bar]]' => ColumnType::INTEGER,
                 '[[name]]' => (new Column('string(100)'))->notNull(),
             ],
         )->execute();
@@ -588,7 +589,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable(
             '{{testCreateViewTable}}',
-            ['id' => SchemaInterface::TYPE_PK, 'bar' => SchemaInterface::TYPE_INTEGER],
+            ['id' => PseudoType::PK, 'bar' => ColumnType::INTEGER],
         )->execute();
         $command->insert('{{testCreateViewTable}}', ['bar' => 1])->execute();
         $command->insert('{{testCreateViewTable}}', ['bar' => 6])->execute();
@@ -720,9 +721,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->createTable(
             '{{testDropColumn}}',
             [
-                'id' => SchemaInterface::TYPE_PK,
-                'bar' => SchemaInterface::TYPE_INTEGER,
-                'baz' => SchemaInterface::TYPE_INTEGER,
+                'id' => PseudoType::PK,
+                'bar' => ColumnType::INTEGER,
+                'baz' => ColumnType::INTEGER,
             ],
         )->execute();
         $command->dropColumn('{{testDropColumn}}', 'bar')->execute();
@@ -836,7 +837,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->dropTable('{{test_fk}}')->execute();
         }
 
-        $command->createTable('{{test_fk}}', ['id' => SchemaInterface::TYPE_PK, 'int1' => 'integer'])->execute();
+        $command->createTable('{{test_fk}}', ['id' => PseudoType::PK, 'int1' => 'integer'])->execute();
 
         $this->assertEmpty($schema->getTableForeignKeys('{{test_fk}}', true));
 
@@ -930,7 +931,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->dropTable('{{testDropTable}}')->execute();
         }
 
-        $command->createTable('{{testDropTable}}', ['id' => SchemaInterface::TYPE_PK, 'foo' => 'integer'])->execute();
+        $command->createTable('{{testDropTable}}', ['id' => PseudoType::PK, 'foo' => 'integer'])->execute();
 
         $this->assertNotNull($schema->getTableSchema('{{testDropTable}}', true));
 

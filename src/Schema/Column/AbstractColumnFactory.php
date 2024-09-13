@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
-use Yiisoft\Db\Schema\SchemaInterface;
+use Yiisoft\Db\Constant\ColumnType;
 
 use function explode;
 use function preg_match;
@@ -34,6 +34,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      * @return string The abstract database type.
      *
      * @psalm-param ColumnInfo $info
+     * @psalm-return ColumnType::*
      */
     abstract protected function getType(string $dbType, array $info = []): string;
 
@@ -85,21 +86,21 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     public function fromType(string $type, array $info = []): ColumnSchemaInterface
     {
         $column = match ($type) {
-            SchemaInterface::TYPE_BOOLEAN => new BooleanColumnSchema($type),
-            SchemaInterface::TYPE_BIT => new BitColumnSchema($type),
-            SchemaInterface::TYPE_TINYINT => new IntegerColumnSchema($type),
-            SchemaInterface::TYPE_SMALLINT => new IntegerColumnSchema($type),
-            SchemaInterface::TYPE_INTEGER => PHP_INT_SIZE !== 8 && !empty($info['unsigned'])
+            ColumnType::BOOLEAN => new BooleanColumnSchema($type),
+            ColumnType::BIT => new BitColumnSchema($type),
+            ColumnType::TINYINT => new IntegerColumnSchema($type),
+            ColumnType::SMALLINT => new IntegerColumnSchema($type),
+            ColumnType::INTEGER => PHP_INT_SIZE !== 8 && !empty($info['unsigned'])
                 ? new BigIntColumnSchema($type)
                 : new IntegerColumnSchema($type),
-            SchemaInterface::TYPE_BIGINT => PHP_INT_SIZE !== 8 || !empty($info['unsigned'])
+            ColumnType::BIGINT => PHP_INT_SIZE !== 8 || !empty($info['unsigned'])
                 ? new BigIntColumnSchema($type)
                 : new IntegerColumnSchema($type),
-            SchemaInterface::TYPE_DECIMAL => new DoubleColumnSchema($type),
-            SchemaInterface::TYPE_FLOAT => new DoubleColumnSchema($type),
-            SchemaInterface::TYPE_DOUBLE => new DoubleColumnSchema($type),
-            SchemaInterface::TYPE_BINARY => new BinaryColumnSchema($type),
-            SchemaInterface::TYPE_JSON => new JsonColumnSchema($type),
+            ColumnType::DECIMAL => new DoubleColumnSchema($type),
+            ColumnType::FLOAT => new DoubleColumnSchema($type),
+            ColumnType::DOUBLE => new DoubleColumnSchema($type),
+            ColumnType::BINARY => new BinaryColumnSchema($type),
+            ColumnType::JSON => new JsonColumnSchema($type),
             default => new StringColumnSchema($type),
         };
 

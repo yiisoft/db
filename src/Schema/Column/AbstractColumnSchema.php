@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
 
 use function is_array;
@@ -50,6 +51,9 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     private int|null $size = null;
     private bool $unsigned = false;
 
+    /**
+     * @psalm-param ColumnType::* $type
+     */
     public function __construct(
         private string $type,
     ) {

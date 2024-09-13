@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use Yiisoft\Db\Constant\ColumnType;
+
 /**
  * The interface must be implemented by a column factory class. It should create a column schema for a database column
  * type and initialize column information.
@@ -38,6 +40,7 @@ interface ColumnFactoryInterface
      * @param string $type The abstract database type.
      * @param array $info The column information.
      *
+     * @psalm-param ColumnType::* $type
      * @psalm-param ColumnInfo $info The set of parameters may be different for a specific DBMS.
      */
     public function fromType(string $type, array $info = []): ColumnSchemaInterface;

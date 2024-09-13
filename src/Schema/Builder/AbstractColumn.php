@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Builder;
 
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\DbStringHelper;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function gettype;
 use function implode;
@@ -21,7 +22,7 @@ use function strtr;
  * For example, the following code creates a column schema for an integer column:
  *
  * ```php
- * $column = (new Column(SchemaInterface::TYPE_INTEGER))->notNull()->defaultValue(0);
+ * $column = (new Column(ColumnType::INTEGER))->notNull()->defaultValue(0);
  * ```
  *
  * Provides a fluent interface, which means that the methods can be chained together to create a column schema with
@@ -69,29 +70,29 @@ abstract class AbstractColumn implements ColumnInterface
 
     /** @psalm-var string[] */
     private array $categoryMap = [
-        SchemaInterface::TYPE_PK => self::TYPE_CATEGORY_PK,
-        SchemaInterface::TYPE_UPK => self::TYPE_CATEGORY_PK,
-        SchemaInterface::TYPE_BIGPK => self::TYPE_CATEGORY_PK,
-        SchemaInterface::TYPE_UBIGPK => self::TYPE_CATEGORY_PK,
-        SchemaInterface::TYPE_CHAR => self::TYPE_CATEGORY_STRING,
-        SchemaInterface::TYPE_STRING => self::TYPE_CATEGORY_STRING,
-        SchemaInterface::TYPE_TEXT => self::TYPE_CATEGORY_STRING,
-        SchemaInterface::TYPE_TINYINT => self::TYPE_CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_SMALLINT => self::TYPE_CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_INTEGER => self::TYPE_CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_BIGINT => self::TYPE_CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_FLOAT => self::TYPE_CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_DOUBLE => self::TYPE_CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_DECIMAL => self::TYPE_CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_DATETIME => self::TYPE_CATEGORY_TIME,
-        SchemaInterface::TYPE_TIMESTAMP => self::TYPE_CATEGORY_TIME,
-        SchemaInterface::TYPE_TIME => self::TYPE_CATEGORY_TIME,
-        SchemaInterface::TYPE_DATE => self::TYPE_CATEGORY_TIME,
-        SchemaInterface::TYPE_BINARY => self::TYPE_CATEGORY_OTHER,
-        SchemaInterface::TYPE_BOOLEAN => self::TYPE_CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_MONEY => self::TYPE_CATEGORY_NUMERIC,
-        SchemaInterface::TYPE_UUID => self::TYPE_CATEGORY_UUID,
-        SchemaInterface::TYPE_UUID_PK => self::TYPE_CATEGORY_UUID_PK,
+        PseudoType::PK => self::TYPE_CATEGORY_PK,
+        PseudoType::UPK => self::TYPE_CATEGORY_PK,
+        PseudoType::BIGPK => self::TYPE_CATEGORY_PK,
+        PseudoType::UBIGPK => self::TYPE_CATEGORY_PK,
+        ColumnType::CHAR => self::TYPE_CATEGORY_STRING,
+        ColumnType::STRING => self::TYPE_CATEGORY_STRING,
+        ColumnType::TEXT => self::TYPE_CATEGORY_STRING,
+        ColumnType::TINYINT => self::TYPE_CATEGORY_NUMERIC,
+        ColumnType::SMALLINT => self::TYPE_CATEGORY_NUMERIC,
+        ColumnType::INTEGER => self::TYPE_CATEGORY_NUMERIC,
+        ColumnType::BIGINT => self::TYPE_CATEGORY_NUMERIC,
+        ColumnType::FLOAT => self::TYPE_CATEGORY_NUMERIC,
+        ColumnType::DOUBLE => self::TYPE_CATEGORY_NUMERIC,
+        ColumnType::DECIMAL => self::TYPE_CATEGORY_NUMERIC,
+        ColumnType::DATETIME => self::TYPE_CATEGORY_TIME,
+        ColumnType::TIMESTAMP => self::TYPE_CATEGORY_TIME,
+        ColumnType::TIME => self::TYPE_CATEGORY_TIME,
+        ColumnType::DATE => self::TYPE_CATEGORY_TIME,
+        ColumnType::BINARY => self::TYPE_CATEGORY_OTHER,
+        ColumnType::BOOLEAN => self::TYPE_CATEGORY_NUMERIC,
+        ColumnType::MONEY => self::TYPE_CATEGORY_NUMERIC,
+        ColumnType::UUID => self::TYPE_CATEGORY_UUID,
+        PseudoType::UUID_PK => self::TYPE_CATEGORY_UUID_PK,
     ];
 
     /**
@@ -150,8 +151,8 @@ abstract class AbstractColumn implements ColumnInterface
     public function unsigned(): static
     {
         $this->type = match ($this->type) {
-            SchemaInterface::TYPE_PK => SchemaInterface::TYPE_UPK,
-            SchemaInterface::TYPE_BIGPK => SchemaInterface::TYPE_UBIGPK,
+            PseudoType::PK => PseudoType::UPK,
+            PseudoType::BIGPK => PseudoType::UBIGPK,
             default => $this->type,
         };
 

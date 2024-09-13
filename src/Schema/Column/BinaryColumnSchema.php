@@ -6,16 +6,19 @@ namespace Yiisoft\Db\Schema\Column;
 
 use PDO;
 use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\GettypeResult;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function gettype;
 
 class BinaryColumnSchema extends AbstractColumnSchema
 {
+    /**
+     * @psalm-param ColumnType::* $type
+     */
     public function __construct(
-        string $type = SchemaInterface::TYPE_BINARY,
+        string $type = ColumnType::BINARY,
     ) {
         parent::__construct($type);
     }

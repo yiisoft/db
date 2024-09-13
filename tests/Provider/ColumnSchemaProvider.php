@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Tests\Provider;
 use PDO;
 use stdClass;
 use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Constant\PhpType;
@@ -18,7 +19,6 @@ use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
 use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
 use Yiisoft\Db\Schema\Column\JsonColumnSchema;
 use Yiisoft\Db\Schema\Column\StringColumnSchema;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function fopen;
 
@@ -28,14 +28,14 @@ class ColumnSchemaProvider
     {
         return [
             // [class, type, phpType]
-            'integer' => [IntegerColumnSchema::class, SchemaInterface::TYPE_INTEGER, PhpType::INT],
-            'bigint' => [BigIntColumnSchema::class, SchemaInterface::TYPE_BIGINT, PhpType::STRING],
-            'double' => [DoubleColumnSchema::class, SchemaInterface::TYPE_DOUBLE, PhpType::FLOAT],
-            'string' => [StringColumnSchema::class, SchemaInterface::TYPE_STRING, PhpType::STRING],
-            'binary' => [BinaryColumnSchema::class, SchemaInterface::TYPE_BINARY, PhpType::MIXED],
-            'bit' => [BitColumnSchema::class, SchemaInterface::TYPE_BIT, PhpType::INT],
-            'boolean' => [BooleanColumnSchema::class, SchemaInterface::TYPE_BOOLEAN, PhpType::BOOL],
-            'json' => [JsonColumnSchema::class, SchemaInterface::TYPE_JSON, PhpType::MIXED],
+            'integer' => [IntegerColumnSchema::class, ColumnType::INTEGER, PhpType::INT],
+            'bigint' => [BigIntColumnSchema::class, ColumnType::BIGINT, PhpType::STRING],
+            'double' => [DoubleColumnSchema::class, ColumnType::DOUBLE, PhpType::FLOAT],
+            'string' => [StringColumnSchema::class, ColumnType::STRING, PhpType::STRING],
+            'binary' => [BinaryColumnSchema::class, ColumnType::BINARY, PhpType::MIXED],
+            'bit' => [BitColumnSchema::class, ColumnType::BIT, PhpType::INT],
+            'boolean' => [BooleanColumnSchema::class, ColumnType::BOOLEAN, PhpType::BOOL],
+            'json' => [JsonColumnSchema::class, ColumnType::JSON, PhpType::MIXED],
         ];
     }
 
