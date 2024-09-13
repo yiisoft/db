@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Constant;
 
 /**
  * Defines the available column pseudo-types.
+ * Used to define column primary key types when creating or updating a table schema.
  */
 final class PseudoType
 {
@@ -18,11 +19,11 @@ final class PseudoType
      */
     public const UPK = 'upk';
     /**
-     * Define the column pseudo-type as big primary key.
+     * Define the column pseudo-type as a big primary key.
      */
     public const BIGPK = 'bigpk';
     /**
-     * Define the column pseudo-type as `unsigned` big primary key.
+     * Define the column pseudo-type as an `unsigned` big primary key.
      */
     public const UBIGPK = 'ubigpk';
     /**
