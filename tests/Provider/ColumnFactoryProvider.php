@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Schema\Column\BigIntColumnSchema;
 use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
 use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
@@ -19,12 +20,25 @@ class ColumnFactoryProvider
     {
         return [
             // definition, expected type, expected instance of, expected column method results
-            '' => ['', ColumnType::STRING, StringColumnSchema::class],
-            'text' => ['text', ColumnType::TEXT, StringColumnSchema::class],
-            'text NOT NULL' => ['text NOT NULL', ColumnType::TEXT, StringColumnSchema::class],
-            'char(1)' => ['char(1)', ColumnType::CHAR, StringColumnSchema::class],
-            'decimal(10,2)' => ['decimal(10,2)', ColumnType::DECIMAL, DoubleColumnSchema::class],
-            'bigint UNSIGNED' => ['bigint UNSIGNED', ColumnType::BIGINT, BigIntColumnSchema::class],
+            '' => ['', ColumnType::STRING, StringColumnSchema::class, ['getDbType' => '']],
+            'text' => ['text', ColumnType::TEXT, StringColumnSchema::class, ['getDbType' => 'text']],
+            'text NOT NULL' => ['text NOT NULL', ColumnType::TEXT, StringColumnSchema::class, ['getDbType' => 'text', 'getExtra' => 'NOT NULL']],
+            'char(1)' => ['char(1)', ColumnType::CHAR, StringColumnSchema::class, ['getDbType' => 'char', 'getSize' => 1]],
+            'decimal(10,2)' => ['decimal(10,2)', ColumnType::DECIMAL, DoubleColumnSchema::class, ['getDbType' => 'decimal', 'getSize' => 10, 'getScale' => 2]],
+            'bigint UNSIGNED' => ['bigint UNSIGNED', ColumnType::BIGINT, BigIntColumnSchema::class, ['getDbType' => 'bigint', 'isUnsigned' => true]],
+        ];
+    }
+
+    public static function pseudoTypes(): array
+    {
+        return [
+            // pseudo-type, expected type, expected instance of, expected column method results
+            'pk' => [PseudoType::PK, ColumnType::INTEGER, IntegerColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
+            'upk' => [PseudoType::UPK, ColumnType::INTEGER, IntegerColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true, 'isUnsigned' => true]],
+            'bigpk' => [PseudoType::BIGPK, ColumnType::BIGINT, IntegerColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
+            'ubigpk' => [PseudoType::UBIGPK, ColumnType::BIGINT, IntegerColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true, 'isUnsigned' => true]],
+            'uuid_pk' => [PseudoType::UUID_PK, ColumnType::UUID, StringColumnSchema::class, ['isPrimaryKey' => true]],
+            'uuid_pk_seq' => [PseudoType::UUID_PK_SEQ, ColumnType::UUID, StringColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
         ];
     }
 

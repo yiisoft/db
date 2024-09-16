@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Schema\Column\StringColumnSchema;
+use Yiisoft\Db\Tests\Provider\ColumnBuilderProvider;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class AbstractColumnFactoryTest extends TestCase
@@ -16,12 +17,13 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromDbType(string $dbType, string $expectedType, string $expectedInstanceOf): void
     {
         $db = $this->getConnection();
-        $factory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
-        $column = $factory->fromDbType($dbType);
+        $column = $columnFactory->fromDbType($dbType);
 
         $this->assertInstanceOf($expectedInstanceOf, $column);
         $this->assertSame($expectedType, $column->getType());
+        $this->assertSame($dbType, $column->getDbType());
     }
 
     /**
@@ -31,18 +33,48 @@ abstract class AbstractColumnFactoryTest extends TestCase
         string $definition,
         string $expectedType,
         string $expectedInstanceOf,
-        array $expectedInfo = []
+        array $expectedMethodResults = []
     ): void {
         $db = $this->getConnection();
-        $factory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
-        $column = $factory->fromDefinition($definition);
+        $column = $columnFactory->fromDefinition($definition);
 
         $this->assertInstanceOf($expectedInstanceOf, $column);
         $this->assertSame($expectedType, $column->getType());
 
-        foreach ($expectedInfo as $method => $value) {
-            $this->assertSame($value, $column->$method());
+        $columnMethodResults = array_merge(
+            ColumnBuilderProvider::DEFAULT_COLUMN_METHOD_RESULTS,
+            $expectedMethodResults,
+        );
+
+        foreach ($columnMethodResults as $method => $result) {
+            $this->assertSame($result, $column->$method());
+        }
+    }
+
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnFactoryProvider::pseudoTypes */
+    public function testFromPseudoType(
+        string $pseudoType,
+        string $expectedType,
+        string $expectedInstanceOf,
+        array $expectedMethodResults = []
+    ): void {
+        $db = $this->getConnection();
+        $columnFactory = $db->getColumnFactory();
+
+        $column = $columnFactory->fromPseudoType($pseudoType);
+
+        $this->assertInstanceOf($expectedInstanceOf, $column);
+        $this->assertSame($expectedType, $column->getType());
+
+        $columnMethodResults = array_merge(
+            ColumnBuilderProvider::DEFAULT_COLUMN_METHOD_RESULTS,
+            $expectedMethodResults,
+        );
+
+        foreach ($columnMethodResults as $method => $result) {
+            $this->assertSame($result, $column->$method());
         }
     }
 
@@ -50,9 +82,9 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromType(string $type, string $expectedType, string $expectedInstanceOf): void
     {
         $db = $this->getConnection();
-        $factory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
-        $column = $factory->fromType($type);
+        $column = $columnFactory->fromType($type);
 
         $this->assertInstanceOf($expectedInstanceOf, $column);
         $this->assertSame($expectedType, $column->getType());
@@ -61,9 +93,9 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromDefinitionWithExtra(): void
     {
         $db = $this->getConnection();
-        $factory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
-        $column = $factory->fromDefinition('char(1) NOT NULL', ['extra' => 'UNIQUE']);
+        $column = $columnFactory->fromDefinition('char(1) NOT NULL', ['extra' => 'UNIQUE']);
 
         $this->assertInstanceOf(StringColumnSchema::class, $column);
         $this->assertSame('char', $column->getType());

@@ -11,8 +11,7 @@ use Yiisoft\Db\Constraint\DefaultValueConstraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
-use Yiisoft\Db\Schema\Column\StringColumnSchema;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -379,35 +378,13 @@ final class SchemaTest extends AbstractSchemaTest
 
     private function createTableSchemaStub(): TableSchemaInterface
     {
-        // defined column C_id
-        $columnCid = new IntegerColumnSchema();
-        $columnCid->autoIncrement();
-        $columnCid->dbType('int');
-        $columnCid->primaryKey();
-
-        // defined column C_not_null
-        $columnCNotNull = new IntegerColumnSchema();
-        $columnCNotNull->dbType('int');
-
-        // defined column C_check
-        $columnCCheck = new StringColumnSchema();
-        $columnCCheck->dbType('varchar(255)');
-
-        // defined column C_default
-        $columnCDefault = new IntegerColumnSchema();
-        $columnCDefault->dbType('int');
-
-        // defined column C_unique
-        $columnCUnique = new IntegerColumnSchema();
-        $columnCUnique->dbType('int');
-
         // defined table T_constraints_1
         $tableSchema = new TableSchema();
-        $tableSchema->column('C_id', $columnCid);
-        $tableSchema->column('C_not_null', $columnCNotNull);
-        $tableSchema->column('C_check', $columnCCheck);
-        $tableSchema->column('C_default', $columnCDefault);
-        $tableSchema->column('C_unique', $columnCUnique);
+        $tableSchema->column('C_id', ColumnBuilder::primaryKey()->dbType('int'));
+        $tableSchema->column('C_not_null', ColumnBuilder::integer()->dbType('int'));
+        $tableSchema->column('C_check', ColumnBuilder::string()->dbType('varchar(255)'));
+        $tableSchema->column('C_default', ColumnBuilder::integer()->dbType('int'));
+        $tableSchema->column('C_unique', ColumnBuilder::integer()->dbType('int'));
         $tableSchema->fullName('T_constraints_1');
         $tableSchema->name('T_constraints_1');
         $tableSchema->primaryKey('C_id');
