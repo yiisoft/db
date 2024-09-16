@@ -64,7 +64,7 @@ class ColumnBuilder
      */
     public static function boolean(): ColumnSchemaInterface
     {
-        return (new BooleanColumnSchema(ColumnType::BOOLEAN));
+        return new BooleanColumnSchema(ColumnType::BOOLEAN);
     }
 
     /**
@@ -193,7 +193,7 @@ class ColumnBuilder
      */
     public static function uuid(): ColumnSchemaInterface
     {
-        return (new StringColumnSchema(ColumnType::UUID));
+        return new StringColumnSchema(ColumnType::UUID);
     }
 
     /**
@@ -219,7 +219,7 @@ class ColumnBuilder
      */
     public static function date(): ColumnSchemaInterface
     {
-        return (new StringColumnSchema(ColumnType::DATE));
+        return new StringColumnSchema(ColumnType::DATE);
     }
 
     /**
@@ -236,6 +236,6 @@ class ColumnBuilder
      */
     public static function json(): ColumnSchemaInterface
     {
-        return (new JsonColumnSchema(ColumnType::JSON));
+        return new JsonColumnSchema(ColumnType::JSON);
     }
 }
