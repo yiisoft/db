@@ -94,7 +94,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 ### New methods
 
 - `QuoterInterface::getRawTableName()` - returns the raw table name without quotes;
-- `SchemaInterface::getColumnFactory()` - returns the column factory.
+- `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS.
 
 ### Remove methods
 

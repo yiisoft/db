@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Schema\Column\ColumnFactory;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Provider\ColumnBuilderProvider;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -15,12 +15,9 @@ abstract class AbstractColumnBuilderTest extends TestCase
 {
     use TestTrait;
 
-    public function testColumnFactory(): void
+    public function getColumnBuilderClass(): string
     {
-        $db = $this->getConnection();
-        $columnBuilderClass = $db->getColumnBuilderClass();
-
-        $this->assertInstanceOf(ColumnFactory::class, $columnBuilderClass::columnFactory());
+        return ColumnBuilder::class;
     }
 
     /**
@@ -33,8 +30,7 @@ abstract class AbstractColumnBuilderTest extends TestCase
         string $expectedType,
         array $expectedMethodResults = [],
     ): void {
-        $db = $this->getConnection();
-        $columnBuilderClass = $db->getColumnBuilderClass();
+        $columnBuilderClass = $this->getColumnBuilderClass();
 
         $column = $columnBuilderClass::$buildingMethod(...$args);
 

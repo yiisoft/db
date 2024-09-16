@@ -311,7 +311,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
             'createTransaction',
             'createCommand',
             'close',
-            'getColumnBuilderClass',
+            'getColumnFactory',
             'getDriverName',
             'getLastInsertID',
             'getQueryBuilder',
@@ -346,7 +346,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
         $db = $this->getMockBuilder(AbstractPdoConnection::class)->onlyMethods([
             'createCommand',
             'createTransaction',
-            'getColumnBuilderClass',
+            'getColumnFactory',
             'getPdo',
             'getQueryBuilder',
             'getQuoter',

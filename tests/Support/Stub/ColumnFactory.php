@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Schema\Column;
+namespace Yiisoft\Db\Tests\Support\Stub;
 
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Schema\Column\AbstractColumnFactory;
 
 class ColumnFactory extends AbstractColumnFactory
 {

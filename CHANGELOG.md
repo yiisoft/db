@@ -38,6 +38,7 @@
 - Enh #864: Realize column factory (@Tigrov)
 - Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #877: Separate column type constants (@Tigrov)
+- Enh #878: Realize `ColumnBuilder` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
