@@ -21,7 +21,7 @@ use function trim;
  *
  * @psalm-import-type ColumnInfo from ColumnSchemaInterface
  */
-class ColumnDefinitionParser
+final class ColumnDefinitionParser
 {
     /**
      * Parses column definition string.
@@ -53,14 +53,14 @@ class ColumnDefinitionParser
         return $info + $this->extraInfo($extra);
     }
 
-    protected function enumInfo(string $values): array
+    private function enumInfo(string $values): array
     {
         preg_match_all("/'([^']*)'/", $values, $matches);
 
         return ['enum_values' => $matches[1]];
     }
 
-    protected function extraInfo(string $extra): array
+    private function extraInfo(string $extra): array
     {
         if (empty($extra)) {
             return [];
@@ -80,7 +80,7 @@ class ColumnDefinitionParser
         return $info;
     }
 
-    protected function sizeInfo(string $size): array
+    private function sizeInfo(string $size): array
     {
         $values = explode(',', $size);
 
