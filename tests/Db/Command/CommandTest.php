@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Command;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -459,22 +460,38 @@ final class CommandTest extends AbstractCommandTest
         );
     }
 
-    public function testDropTable(): void
+    public static function dataDropTable(): iterable
+    {
+        yield ['DROP TABLE [[table]]', null, null];
+        yield ['DROP TABLE IF EXISTS [[table]]', true, null];
+        yield ['DROP TABLE [[table]]', false, null];
+        yield ['DROP TABLE [[table]] CASCADE', null, true];
+        yield ['DROP TABLE [[table]]', null, false];
+        yield ['DROP TABLE [[table]]', false, false];
+        yield ['DROP TABLE IF EXISTS [[table]] CASCADE', true, true];
+        yield ['DROP TABLE IF EXISTS [[table]]', true, false];
+        yield ['DROP TABLE [[table]] CASCADE', false, true];
+    }
+
+    #[DataProvider('dataDropTable')]
+    public function testDropTable(string $expected, ?bool $ifExists, ?bool $cascade): void
     {
         $db = $this->getConnection();
-
         $command = $db->createCommand();
-        $sql = $command->dropTable('table')->getSql();
 
-        $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                DROP TABLE [[table]]
-                SQL,
-                $db->getDriverName(),
-            ),
-            $sql,
-        );
+        if ($ifExists === null && $cascade === null) {
+            $command = $command->dropTable('table');
+        } elseif ($ifExists === null) {
+            $command = $command->dropTable('table', cascade: $cascade);
+        } elseif ($cascade === null) {
+            $command = $command->dropTable('table', ifExists: $ifExists);
+        } else {
+            $command = $command->dropTable('table', ifExists: $ifExists, cascade: $cascade);
+        }
+
+        $expectedSql = DbHelper::replaceQuotes($expected, $db->getDriverName());
+
+        $this->assertSame($expectedSql, $command->getSql());
     }
 
     public function testDropUnique(): void

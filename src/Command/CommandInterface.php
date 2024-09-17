@@ -471,10 +471,12 @@ interface CommandInterface
      * Creates an SQL command for dropping a DB table.
      *
      * @param string $table The name of the table to drop.
+     * @param bool $ifExists Do not throw an error if the table does not exist.
+     * @param bool $cascade Automatically drop objects that depend on the table.
      *
      * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
-    public function dropTable(string $table): static;
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): static;
 
     /**
      * Creates an SQL command for dropping a unique constraint.
