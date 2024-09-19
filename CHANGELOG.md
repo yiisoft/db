@@ -40,7 +40,7 @@
 - Enh #877: Separate column type constants (@Tigrov)
 - Enh #878: Realize `ColumnBuilder` class (@Tigrov)
 - New #773: Add parameters `$ifExists` and `$cascade` to `CommandInterface::dropTable()` and
- `DDLQueryBuilderInterface::dropTable()` methods (@Tigrov)
+ `DDLQueryBuilderInterface::dropTable()` methods (@vjik)
 
 ## 1.3.0 March 21, 2024
 
