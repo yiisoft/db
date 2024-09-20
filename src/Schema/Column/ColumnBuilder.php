@@ -21,8 +21,7 @@ class ColumnBuilder
     {
         return static::integer()
             ->primaryKey()
-            ->autoIncrement($autoIncrement)
-            ->allowNull(false);
+            ->autoIncrement($autoIncrement);
     }
 
     /**
@@ -32,8 +31,7 @@ class ColumnBuilder
     {
         return static::smallint()
             ->primaryKey()
-            ->autoIncrement($autoIncrement)
-            ->allowNull(false);
+            ->autoIncrement($autoIncrement);
     }
 
     /**
@@ -43,8 +41,7 @@ class ColumnBuilder
     {
         return static::bigint()
             ->primaryKey()
-            ->autoIncrement($autoIncrement)
-            ->allowNull(false);
+            ->autoIncrement($autoIncrement);
     }
 
     /**
@@ -54,8 +51,7 @@ class ColumnBuilder
     {
         return static::uuid()
             ->primaryKey()
-            ->autoIncrement($autoIncrement)
-            ->allowNull(false);
+            ->autoIncrement($autoIncrement);
     }
 
     // Abstract type column builders
