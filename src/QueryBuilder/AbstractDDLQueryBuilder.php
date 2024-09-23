@@ -265,9 +265,12 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . $this->quoter->quoteColumnName($name);
     }
 
-    public function dropTable(string $table): string
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): string
     {
-        return 'DROP TABLE ' . $this->quoter->quoteTableName($table);
+        return 'DROP TABLE '
+            . ($ifExists ? 'IF EXISTS ' : '')
+            . $this->quoter->quoteTableName($table)
+            . ($cascade ? ' CASCADE' : '');
     }
 
     public function dropUnique(string $table, string $name): string

@@ -915,11 +915,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testDropTable(): void
     {
         $db = $this->getConnection();
