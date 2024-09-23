@@ -461,7 +461,7 @@ final class CommandTest extends AbstractCommandTest
         );
     }
 
-    #[DataProvider(CommandProvider::class.'::dropTable')]
+    #[DataProvider(CommandProvider::class . '::dropTable')]
     public function testDropTable(string $expected, ?bool $ifExists, ?bool $cascade): void
     {
         $db = $this->getConnection();
