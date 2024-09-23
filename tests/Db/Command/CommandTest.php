@@ -10,7 +10,6 @@ use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
-use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
