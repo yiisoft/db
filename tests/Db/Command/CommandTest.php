@@ -10,6 +10,7 @@ use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
+use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -460,20 +461,7 @@ final class CommandTest extends AbstractCommandTest
         );
     }
 
-    public static function dataDropTable(): iterable
-    {
-        yield ['DROP TABLE [[table]]', null, null];
-        yield ['DROP TABLE IF EXISTS [[table]]', true, null];
-        yield ['DROP TABLE [[table]]', false, null];
-        yield ['DROP TABLE [[table]] CASCADE', null, true];
-        yield ['DROP TABLE [[table]]', null, false];
-        yield ['DROP TABLE [[table]]', false, false];
-        yield ['DROP TABLE IF EXISTS [[table]] CASCADE', true, true];
-        yield ['DROP TABLE IF EXISTS [[table]]', true, false];
-        yield ['DROP TABLE [[table]] CASCADE', false, true];
-    }
-
-    #[DataProvider('dataDropTable')]
+    #[DataProvider(CommandProvider::class.'::dropTable')]
     public function testDropTable(string $expected, ?bool $ifExists, ?bool $cascade): void
     {
         $db = $this->getConnection();
