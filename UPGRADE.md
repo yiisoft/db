@@ -167,6 +167,8 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `AbstractSchema::getResultColumnCacheKey()` - returns the cache key for the column metadata received from the query;
 - `AbstractSchema::loadResultColumn()` - creates a new column instance according to the column metadata from the query;
 - `DataReaderInterface::typecastColumns()` - sets columns for type casting the query results;
+- `AbstractSchema::resolveFullName()` - resolves the full name of the table, view, index, etc.;
+- `AbstractSchema::clarifyFullName()` - clarifies the full name of the table, view, index, etc.;
 
 ### Remove methods
 
@@ -175,6 +177,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `TableSchemaInterface::compositeForeignKey()`;
 - `SchemaInterface::createColumn()` - use `ColumnBuilder` instead;
 - `SchemaInterface::isReadQuery()` - use `DbStringHelper::isReadQuery()` instead;
+- `AbstractSchema::resolveTableName()` - use `QuoterInterface::getTableNameParts()` instead;
 - `SchemaInterface::getRawTableName()` - use `QuoterInterface::getRawTableName()` instead;
 - `AbstractSchema::isReadQuery()` - use `DbStringHelper::isReadQuery()` instead;
 - `AbstractSchema::getRawTableName()` - use `QuoterInterface::getRawTableName()` instead;

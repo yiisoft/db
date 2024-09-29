@@ -10,12 +10,12 @@ use Yiisoft\Db\Constraint\ForeignKey;
 use Yiisoft\Db\Constraint\Index;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\TableSchema;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\Schema;
-use Yiisoft\Db\Tests\Support\Stub\TableSchema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -160,11 +160,11 @@ final class SchemaTest extends AbstractSchemaTest
 
         $pksConstraint = new Index('PK__T_constr__A9FAE80AC2B18E65', ['"C_id'], true, true);
         $schemaMock = $this->getMockBuilder(Schema::class)
-            ->onlyMethods(['findTableNames', 'loadTablePrimaryKey'])
+            ->onlyMethods(['findTableNames', 'getTablePrimaryKey'])
             ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
-        $schemaMock->expects($this->once())->method('loadTablePrimaryKey')->willReturn($pksConstraint);
+        $schemaMock->expects($this->once())->method('getTablePrimaryKey')->willReturn($pksConstraint);
         $tablePks = $schemaMock->getSchemaPrimaryKeys();
 
         $this->assertIsArray($tablePks);
@@ -177,11 +177,11 @@ final class SchemaTest extends AbstractSchemaTest
 
         $uniquesConstraint = [new Index('CN_unique', ['C_unique'], true)];
         $schemaMock = $this->getMockBuilder(Schema::class)
-            ->onlyMethods(['findTableNames', 'loadTableUniques'])
+            ->onlyMethods(['findTableNames', 'getTableUniques'])
             ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
             ->getMock();
         $schemaMock->expects($this->once())->method('findTableNames')->willReturn(['T_constraints_1']);
-        $schemaMock->expects($this->once())->method('loadTableUniques')->willReturn($uniquesConstraint);
+        $schemaMock->expects($this->once())->method('getTableUniques')->willReturn($uniquesConstraint);
         $tableUniques = $schemaMock->getSchemaUniques();
 
         $this->assertIsArray($tableUniques);
@@ -284,18 +284,6 @@ final class SchemaTest extends AbstractSchemaTest
         $this->assertNotSame($noCacheTable, $refreshedTable);
     }
 
-    public function testResolveTableName(): void
-    {
-        $db = $this->getConnection();
-
-        $schema = $db->getSchema();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage('Yiisoft\Db\Tests\Support\Stub\Schema does not support resolving table names.');
-
-        Assert::invokeMethod($schema, 'resolveTableName', ['customer']);
-    }
-
     public function testSetTableMetadata(): void
     {
         $db = $this->getConnection();
@@ -324,17 +312,13 @@ final class SchemaTest extends AbstractSchemaTest
     private function createTableSchemaStub(): TableSchemaInterface
     {
         // defined table T_constraints_1
-        $tableSchema = new TableSchema();
-        $tableSchema->column('C_id', ColumnBuilder::primaryKey()->dbType('int'));
-        $tableSchema->column('C_not_null', ColumnBuilder::integer()->dbType('int'));
-        $tableSchema->column('C_check', ColumnBuilder::string()->dbType('varchar(255)'));
-        $tableSchema->column('C_default', ColumnBuilder::integer()->dbType('int'));
-        $tableSchema->column('C_unique', ColumnBuilder::integer()->dbType('int'));
-        $tableSchema->fullName('T_constraints_1');
-        $tableSchema->name('T_constraints_1');
-        $tableSchema->primaryKey('C_id');
-        $tableSchema->schemaName('dbo');
-
-        return $tableSchema;
+        return (new TableSchema('T_constraints_1','dbo'))
+            ->columns([
+                'C_id' => ColumnBuilder::primaryKey()->dbType('int'),
+                'C_not_null' => ColumnBuilder::integer()->dbType('int'),
+                'C_check' => ColumnBuilder::string()->dbType('varchar(255)'),
+                'C_default' => ColumnBuilder::integer()->dbType('int'),
+                'C_unique' => ColumnBuilder::integer()->dbType('int'),
+            ]);
     }
 }
