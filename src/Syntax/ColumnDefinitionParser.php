@@ -86,7 +86,6 @@ final class ColumnDefinitionParser
 
         $info = [
             'size' => (int) $values[0],
-            'precision' => (int) $values[0],
         ];
 
         if (isset($values[1])) {

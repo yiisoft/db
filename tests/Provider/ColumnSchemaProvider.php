@@ -8,6 +8,7 @@ use PDO;
 use stdClass;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Constant\PhpType;
@@ -256,6 +257,8 @@ class ColumnSchemaProvider
             ['auto_increment', false, 'isAutoIncrement', false],
             ['auto_increment', '1', 'isAutoIncrement', true],
             ['auto_increment', '0', 'isAutoIncrement', false],
+            ['check', 'age > 0', 'getCheck', 'age > 0'],
+            ['check', null, 'getCheck', null],
             ['comment', 'Lorem ipsum', 'getComment', 'Lorem ipsum'],
             ['comment', null, 'getComment', null],
             ['computed', true, 'isComputed', true],
@@ -272,16 +275,26 @@ class ColumnSchemaProvider
             ['extra', null, 'getExtra', null],
             ['name', 'name', 'getName', 'name'],
             ['name', null, 'getName', null],
+            ['not_null', true, 'isNotNull', true],
+            ['not_null', false, 'isNotNull', false],
+            ['not_null', '1', 'isNotNull', true],
+            ['not_null', '0', 'isNotNull', false],
             ['precision', 10, 'getPrecision', 10],
             ['precision', null, 'getPrecision', null],
             ['primary_key', true, 'isPrimaryKey', true],
             ['primary_key', false, 'isPrimaryKey', false],
             ['primary_key', '1', 'isPrimaryKey', true],
             ['primary_key', '0', 'isPrimaryKey', false],
+            ['reference', $fk = new ForeignKeyConstraint(), 'getReference', $fk],
+            ['reference', null, 'getReference', null],
             ['scale', 2, 'getScale', 2],
             ['scale', null, 'getScale', null],
             ['size', 255, 'getSize', 255],
             ['size', null, 'getSize', null],
+            ['unique', true, 'isUnique', true],
+            ['unique', false, 'isUnique', false],
+            ['unique', '1', 'isUnique', true],
+            ['unique', '0', 'isUnique', false],
             ['unsigned', true, 'isUnsigned', true],
             ['unsigned', false, 'isUnsigned', false],
             ['unsigned', '1', 'isUnsigned', true],

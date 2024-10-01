@@ -23,9 +23,9 @@ class ColumnBuilderProvider
         'getExtra' => null,
         'getScale' => null,
         'getSize' => null,
-        'isAllowNull' => false,
         'isAutoIncrement' => false,
         'isComputed' => false,
+        'isNotNull' => false,
         'isPrimaryKey' => false,
         'isUnsigned' => false,
     ];

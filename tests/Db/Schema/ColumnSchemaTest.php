@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Schema;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
 
 /**
@@ -18,7 +19,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
-        $this->assertFalse($column->isAllowNull());
+        $this->assertTrue($column->isAllowNull());
         $this->assertSame($column, $column->allowNull());
         $this->assertTrue($column->isAllowNull());
 
@@ -46,6 +47,19 @@ final class ColumnSchemaTest extends TestCase
         $column->autoIncrement(true);
 
         $this->assertTrue($column->isAutoIncrement());
+    }
+
+    public function testCheck(): void
+    {
+        $column = new ColumnSchema();
+
+        $this->assertNull($column->getCheck());
+        $this->assertSame($column, $column->check('age > 0'));
+        $this->assertSame('age > 0', $column->getCheck());
+
+        $column->check(null);
+
+        $this->assertNull($column->getCheck());
     }
 
     public function testComment(): void
@@ -153,6 +167,23 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('', $column->getName());
     }
 
+    public function testNotNull(): void
+    {
+        $column = new ColumnSchema();
+
+        $this->assertFalse($column->isNotNull());
+        $this->assertSame($column, $column->notNull());
+        $this->assertTrue($column->isNotNull());
+
+        $column->notNull(false);
+
+        $this->assertFalse($column->isNotNull());
+
+        $column->notNull(true);
+
+        $this->assertTrue($column->isNotNull());
+    }
+
     public function testPrecision(): void
     {
         $column = new ColumnSchema();
@@ -181,6 +212,20 @@ final class ColumnSchemaTest extends TestCase
         $column->primaryKey(true);
 
         $this->assertTrue($column->isPrimaryKey());
+    }
+
+    public function testReference(): void
+    {
+        $column = new ColumnSchema();
+        $fk = new ForeignKeyConstraint();
+
+        $this->assertNull($column->getReference());
+        $this->assertSame($column, $column->reference($fk));
+        $this->assertSame($fk, $column->getReference());
+
+        $column->reference(null);
+
+        $this->assertNull($column->getReference());
     }
 
     public function testScale(): void
@@ -220,6 +265,23 @@ final class ColumnSchemaTest extends TestCase
         $column->type('');
 
         $this->assertSame('', $column->getType());
+    }
+
+    public function testUnique(): void
+    {
+        $column = new ColumnSchema();
+
+        $this->assertFalse($column->isUnique());
+        $this->assertSame($column, $column->unique());
+        $this->assertTrue($column->isUnique());
+
+        $column->unique(false);
+
+        $this->assertFalse($column->isUnique());
+
+        $column->unique(true);
+
+        $this->assertTrue($column->isUnique());
     }
 
     public function testUnsigned(): void
