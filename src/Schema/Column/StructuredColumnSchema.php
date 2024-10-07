@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
-use Traversable;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -13,9 +12,7 @@ use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Syntax\ParserToArrayInterface;
 
 use function array_keys;
-use function is_iterable;
 use function is_string;
-use function iterator_to_array;
 
 class StructuredColumnSchema extends AbstractColumnSchema
 {
