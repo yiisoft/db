@@ -26,7 +26,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
  *
  * @psalm-import-type ParamsType from ConnectionInterface
  */
-class Expression implements ExpressionInterface, Stringable
+final class Expression implements ExpressionInterface, Stringable
 {
     /**
      * @psalm-param ParamsType $params

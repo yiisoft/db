@@ -74,7 +74,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         );
 
         foreach ($columnMethodResults as $method => $result) {
-            $this->assertSame($result, $column->$method());
+            $this->assertEquals($result, $column->$method());
         }
     }
 

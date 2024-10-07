@@ -102,6 +102,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::FLOAT => new DoubleColumnSchema($type),
             ColumnType::DOUBLE => new DoubleColumnSchema($type),
             ColumnType::BINARY => new BinaryColumnSchema($type),
+            ColumnType::STRUCTURED => new StructuredColumnSchema($type),
             ColumnType::JSON => new JsonColumnSchema($type),
             default => new StringColumnSchema($type),
         };
