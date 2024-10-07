@@ -84,14 +84,12 @@ class StructuredColumnSchema extends AbstractColumnSchema
             $value = $this->getParser()->parse($value);
         }
 
-        if (!is_iterable($value)) {
+        if (!is_array($value)) {
             return null;
         }
 
         if (empty($this->columns)) {
-            return $value instanceof Traversable
-                ? iterator_to_array($value)
-                : $value;
+            return $value;
         }
 
         $fields = [];

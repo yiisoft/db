@@ -120,11 +120,11 @@ class ArrayColumnSchema extends AbstractColumnSchema
             return null;
         }
 
-        if ($this->getType() === ColumnType::STRING) {
+        $column = $this->getColumn();
+
+        if ($column->getType() === ColumnType::STRING) {
             return $value;
         }
-
-        $column = $this->getColumn();
 
         if ($this->dimension === 1 && $column->getType() !== ColumnType::JSON) {
             return array_map($column->phpTypecast(...), $value);

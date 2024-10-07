@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema;
 
+use ArrayIterator;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -357,6 +358,7 @@ final class ColumnSchemaTest extends TestCase
 
         $this->assertNull($arrayCol->dbTypecast(null));
         $this->assertEquals(new ArrayExpression([]), $arrayCol->dbTypecast(''));
+        $this->assertEquals(new ArrayExpression([1, 2, 3]), $arrayCol->dbTypecast(new ArrayIterator([1, 2, 3])));
         $this->assertSame($expression = new Expression('expression'), $arrayCol->dbTypecast($expression));
     }
 
