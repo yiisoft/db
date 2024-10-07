@@ -81,7 +81,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             PseudoType::BIGPK => ColumnBuilder::bigPrimaryKey()->load($info),
             PseudoType::UBIGPK => ColumnBuilder::bigPrimaryKey()->unsigned()->load($info),
             PseudoType::UUID_PK => ColumnBuilder::uuidPrimaryKey()->load($info),
-            PseudoType::UUID_PK_SEQ => ColumnBuilder::uuidPrimaryKey(true)->load($info),
+            PseudoType::UUID_PK_SEQ => ColumnBuilder::uuidPrimaryKey()->load($info),
         };
     }
 
@@ -102,6 +102,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::FLOAT => new DoubleColumnSchema($type),
             ColumnType::DOUBLE => new DoubleColumnSchema($type),
             ColumnType::BINARY => new BinaryColumnSchema($type),
+            ColumnType::STRUCTURED => new StructuredColumnSchema($type),
             ColumnType::JSON => new JsonColumnSchema($type),
             default => new StringColumnSchema($type),
         };

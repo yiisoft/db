@@ -21,20 +21,20 @@ use function trim;
  *
  * @psalm-import-type ColumnInfo from ColumnSchemaInterface
  */
-final class ColumnDefinitionParser
+final class ColumnDefinitionParser implements ParserToArrayInterface
 {
     /**
      * Parses column definition string.
      *
-     * @param string $definition The column definition string. For example, `string(255)` or `int unsigned`.
+     * @param string $value The column definition string. For example, `string(255)` or `int unsigned`.
      *
      * @return array The column information.
      *
      * @psalm-return ColumnInfo
      */
-    public function parse(string $definition): array
+    public function parse(string $value): array
     {
-        preg_match('/^(\w*)(?:\(([^)]+)\))?\s*/', $definition, $matches);
+        preg_match('/^(\w*)(?:\(([^)]+)\))?\s*/', $value, $matches);
 
         $dbType = strtolower($matches[1]);
         $info = ['db_type' => $dbType];
@@ -47,7 +47,7 @@ final class ColumnDefinitionParser
             }
         }
 
-        $extra = substr($definition, strlen($matches[0]));
+        $extra = substr($value, strlen($matches[0]));
 
         /** @var ColumnInfo */
         return $info + $this->extraInfo($extra);

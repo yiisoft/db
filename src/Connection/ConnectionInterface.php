@@ -87,11 +87,6 @@ interface ConnectionInterface
     public function close(): void;
 
     /**
-     * Returns the column factory for creating column instances.
-     */
-    public function getColumnFactory(): ColumnFactoryInterface;
-
-    /**
      * Returns the name of the DB driver for the current `dsn`.
      *
      * Use this method for information only.

@@ -47,7 +47,7 @@ class ColumnBuilder
     /**
      * Builds a column as an `uuid` primary key.
      */
-    public static function uuidPrimaryKey(bool $autoIncrement = false): ColumnSchemaInterface
+    public static function uuidPrimaryKey(bool $autoIncrement = true): ColumnSchemaInterface
     {
         return static::uuid()
             ->primaryKey()
@@ -65,6 +65,8 @@ class ColumnBuilder
 
     /**
      * Builds a column with the abstract type `bit`.
+     *
+     * @param int|null $size The number of bits that the column can store.
      */
     public static function bit(int|null $size = null): ColumnSchemaInterface
     {
@@ -225,6 +227,32 @@ class ColumnBuilder
     {
         return (new StringColumnSchema(ColumnType::TIME))
             ->size($size);
+    }
+
+    /**
+     * Builds a column with the abstract type `array`.
+     *
+     * @param ColumnSchemaInterface|null $column The column schema of the array elements.
+     */
+    public static function array(ColumnSchemaInterface|null $column = null): ColumnSchemaInterface
+    {
+        return (new ArrayColumnSchema(ColumnType::ARRAY))
+            ->column($column);
+    }
+
+    /**
+     * Builds a column with the abstract type `structured`.
+     *
+     * @param string|null $dbType The DB type of the column.
+     * @param ColumnSchemaInterface[] $columns The columns (name -> instance) that the structured column should contain.
+     *
+     * @psalm-param array<string, ColumnSchemaInterface> $columns
+     */
+    public static function structured(string|null $dbType = null, array $columns = []): ColumnSchemaInterface
+    {
+        return (new StructuredColumnSchema(ColumnType::STRUCTURED))
+            ->dbType($dbType)
+            ->columns($columns);
     }
 
     /**

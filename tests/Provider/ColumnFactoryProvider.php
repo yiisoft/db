@@ -37,7 +37,7 @@ class ColumnFactoryProvider
             'upk' => [PseudoType::UPK, ColumnType::INTEGER, IntegerColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true, 'isUnsigned' => true]],
             'bigpk' => [PseudoType::BIGPK, ColumnType::BIGINT, IntegerColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
             'ubigpk' => [PseudoType::UBIGPK, ColumnType::BIGINT, IntegerColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true, 'isUnsigned' => true]],
-            'uuid_pk' => [PseudoType::UUID_PK, ColumnType::UUID, StringColumnSchema::class, ['isPrimaryKey' => true]],
+            'uuid_pk' => [PseudoType::UUID_PK, ColumnType::UUID, StringColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
             'uuid_pk_seq' => [PseudoType::UUID_PK_SEQ, ColumnType::UUID, StringColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
         ];
     }

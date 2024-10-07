@@ -10,10 +10,12 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 use function count;
+use function is_string;
 use function preg_match;
 use function preg_replace;
 
@@ -44,11 +46,12 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected array $typeMap = [];
 
     public function __construct(
-        private QuoterInterface $quoter,
-        private SchemaInterface $schema,
-        private AbstractDDLQueryBuilder $ddlBuilder,
-        private AbstractDMLQueryBuilder $dmlBuilder,
-        private AbstractDQLQueryBuilder $dqlBuilder
+        private QuoterInterface                 $quoter,
+        private SchemaInterface                 $schema,
+        private AbstractDDLQueryBuilder         $ddlBuilder,
+        private AbstractDMLQueryBuilder         $dmlBuilder,
+        private AbstractDQLQueryBuilder         $dqlBuilder,
+        private AbstractColumnDefinitionBuilder $columnDefinitionBuilder,
     ) {
     }
 
@@ -322,6 +325,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->dropView($viewName);
     }
 
+    /** @deprecated Use {@see buildColumnDefinition()}. Will be removed in version 2.0. */
     public function getColumnType(ColumnInterface|string $type): string
     {
         if ($type instanceof ColumnInterface) {
@@ -421,5 +425,14 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         array &$params = []
     ): string {
         return $this->dmlBuilder->upsert($table, $insertColumns, $updateColumns, $params);
+    }
+
+    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string
+    {
+        if (is_string($column)) {
+            $column = $this->schema->getColumnFactory()->fromDefinition($column);
+        }
+
+        return $this->columnDefinitionBuilder->build($column);
     }
 }
