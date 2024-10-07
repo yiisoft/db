@@ -13,6 +13,7 @@ use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
 use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
 use Yiisoft\Db\Schema\Column\JsonColumnSchema;
 use Yiisoft\Db\Schema\Column\StringColumnSchema;
+use Yiisoft\Db\Schema\Column\StructuredColumnSchema;
 
 class ColumnFactoryProvider
 {
@@ -64,6 +65,7 @@ class ColumnFactoryProvider
             'timestamp' => [ColumnType::TIMESTAMP, ColumnType::TIMESTAMP, StringColumnSchema::class],
             'time' => [ColumnType::TIME, ColumnType::TIME, StringColumnSchema::class],
             'date' => [ColumnType::DATE, ColumnType::DATE, StringColumnSchema::class],
+            'structured' => [ColumnType::STRUCTURED, ColumnType::STRUCTURED, StructuredColumnSchema::class],
             'json' => [ColumnType::JSON, ColumnType::JSON, JsonColumnSchema::class],
         ];
     }
