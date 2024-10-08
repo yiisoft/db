@@ -102,6 +102,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::FLOAT => new DoubleColumnSchema($type),
             ColumnType::DOUBLE => new DoubleColumnSchema($type),
             ColumnType::BINARY => new BinaryColumnSchema($type),
+            ColumnType::STRUCTURED => new StructuredColumnSchema($type),
             ColumnType::JSON => new JsonColumnSchema($type),
             default => new StringColumnSchema($type),
         };
@@ -162,6 +163,8 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::TIMESTAMP,
             ColumnType::DATE,
             ColumnType::TIME,
+            ColumnType::ARRAY,
+            ColumnType::STRUCTURED,
             ColumnType::JSON => true,
             default => false,
         };

@@ -17,7 +17,7 @@ use Yiisoft\Db\Query\QueryInterface;
  * new JsonExpression(['a' => 1, 'b' => 2]); // will be encoded to '{"a": 1, "b": 2}'
  * ```
  */
-class JsonExpression implements ExpressionInterface, JsonSerializable
+final class JsonExpression implements ExpressionInterface, JsonSerializable
 {
     public function __construct(protected mixed $value, private string|null $type = null)
     {

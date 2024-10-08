@@ -12,14 +12,18 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Constant\PhpType;
+use Yiisoft\Db\Expression\StructuredExpression;
+use Yiisoft\Db\Schema\Column\ArrayColumnSchema;
 use Yiisoft\Db\Schema\Column\BigIntColumnSchema;
 use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
 use Yiisoft\Db\Schema\Column\BitColumnSchema;
 use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
 use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
 use Yiisoft\Db\Schema\Column\JsonColumnSchema;
 use Yiisoft\Db\Schema\Column\StringColumnSchema;
+use Yiisoft\Db\Schema\Column\StructuredColumnSchema;
 
 use function fopen;
 
@@ -36,6 +40,8 @@ class ColumnSchemaProvider
             'binary' => [BinaryColumnSchema::class, ColumnType::BINARY, PhpType::MIXED],
             'bit' => [BitColumnSchema::class, ColumnType::BIT, PhpType::INT],
             'boolean' => [BooleanColumnSchema::class, ColumnType::BOOLEAN, PhpType::BOOL],
+            'array' => [ArrayColumnSchema::class, ColumnType::ARRAY, PhpType::ARRAY],
+            'structured' => [StructuredColumnSchema::class, ColumnType::STRUCTURED, PhpType::ARRAY],
             'json' => [JsonColumnSchema::class, ColumnType::JSON, PhpType::MIXED],
         ];
     }
@@ -240,6 +246,121 @@ class ColumnSchemaProvider
                     [[1, 2, 3], '[1,2,3]'],
                     [['key' => 'value'], '{"key":"value"}'],
                     [['a' => 1], '{"a":1}'],
+                ],
+            ],
+        ];
+    }
+
+    public static function dbTypecastArrayColumns()
+    {
+        return [
+            // [column, values]
+            ColumnType::BOOLEAN => [
+                ColumnBuilder::boolean(),
+                [
+                    // [dimension, expected, typecast value]
+                    [1, [true, true, true, false, false, false, null], [true, 1, '1', false, 0, '0', null]],
+                    [2, [[true, true, true, false, false, false, null]], [[true, 1, '1', false, 0, '0', null]]],
+                ],
+            ],
+            ColumnType::BIT => [
+                ColumnBuilder::bit(),
+                [
+                    [1, [0b1011, 1001, null], [0b1011, '1001', null]],
+                    [2, [[0b1011, 1001, null]], [[0b1011, '1001', null]]],
+                ],
+            ],
+            ColumnType::INTEGER => [
+                ColumnBuilder::integer(),
+                [
+                    [1, [1, 2, 3, null], [1, 2.0, '3', null]],
+                    [2, [[1, 2], [3], null], [[1, 2.0], ['3'], null]],
+                    [2, [null, null], [null, null]],
+                ],
+            ],
+            ColumnType::BIGINT => [
+                new BigIntColumnSchema(),
+                [
+                    [1, ['1', '2', '3', '9223372036854775807'], [1, 2.0, '3', '9223372036854775807']],
+                    [2, [['1', '2'], ['3'], ['9223372036854775807']], [[1, 2.0], ['3'], ['9223372036854775807']]],
+                ],
+            ],
+            ColumnType::DOUBLE => [
+                ColumnBuilder::double(),
+                [
+                    [1, [1.0, 2.2, 3.3, null], [1, 2.2, '3.3', null]],
+                    [2, [[1.0, 2.2], [3.3, null]], [[1, 2.2], ['3.3', null]]],
+                ],
+            ],
+            ColumnType::STRING => [
+                ColumnBuilder::string(),
+                [
+                    [1, ['1', '2', '1', '0', '', null], [1, '2', true, false, '', null]],
+                    [2, [['1', '2', '1', '0'], [''], [null]], [[1, '2', true, false], [''], [null]]],
+                ],
+            ],
+            ColumnType::BINARY => [
+                ColumnBuilder::binary(),
+                [
+                    [1, [
+                        '1',
+                        new Param("\x10", PDO::PARAM_LOB),
+                        $resource = fopen('php://memory', 'rb'),
+                        null,
+                    ], [1, "\x10", $resource, null]],
+                    [2, [[
+                        '1',
+                        new Param("\x10", PDO::PARAM_LOB),
+                        $resource = fopen('php://memory', 'rb'),
+                        null,
+                    ]], [[1, "\x10", $resource, null]]],
+                ],
+            ],
+            ColumnType::JSON => [
+                ColumnBuilder::json(),
+                [
+                    [1, [
+                        new JsonExpression([1, 2, 3]),
+                        new JsonExpression(['key' => 'value']),
+                        new JsonExpression(['key' => 'value']),
+                        null,
+                    ], [[1, 2, 3], ['key' => 'value'], new JsonExpression(['key' => 'value']), null]],
+                    [2, [
+                        [
+                            new JsonExpression([1, 2, 3]),
+                            new JsonExpression(['key' => 'value']),
+                            new JsonExpression(['key' => 'value']),
+                            null,
+                        ],
+                        null,
+                    ], [[[1, 2, 3], ['key' => 'value'], new JsonExpression(['key' => 'value']), null], null]],
+                ],
+            ],
+            ColumnType::STRUCTURED => [
+                ColumnBuilder::structured('structured_type'),
+                [
+                    [
+                        1,
+                        [
+                            new StructuredExpression(['value' => 10, 'currency' => 'USD'], 'structured_type'),
+                            null,
+                        ],
+                        [
+                            ['value' => 10, 'currency' => 'USD'],
+                            null,
+                        ],
+                    ],
+                    [
+                        2,
+                        [[
+                            new StructuredExpression(['value' => 10, 'currency' => 'USD'], 'structured_type'),
+                            null,
+                        ]],
+                        [[
+                            ['value' => 10, 'currency' => 'USD'],
+                            null,
+                        ]],
+                    ],
                 ],
             ],
         ];

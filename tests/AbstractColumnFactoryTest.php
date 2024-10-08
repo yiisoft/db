@@ -24,6 +24,8 @@ abstract class AbstractColumnFactoryTest extends TestCase
         $this->assertInstanceOf($expectedInstanceOf, $column);
         $this->assertSame($expectedType, $column->getType());
         $this->assertSame($dbType, $column->getDbType());
+
+        $db->close();
     }
 
     /**
@@ -51,6 +53,8 @@ abstract class AbstractColumnFactoryTest extends TestCase
         foreach ($columnMethodResults as $method => $result) {
             $this->assertSame($result, $column->$method());
         }
+
+        $db->close();
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnFactoryProvider::pseudoTypes */
@@ -74,8 +78,10 @@ abstract class AbstractColumnFactoryTest extends TestCase
         );
 
         foreach ($columnMethodResults as $method => $result) {
-            $this->assertSame($result, $column->$method());
+            $this->assertEquals($result, $column->$method());
         }
+
+        $db->close();
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnFactoryProvider::types */
@@ -88,6 +94,8 @@ abstract class AbstractColumnFactoryTest extends TestCase
 
         $this->assertInstanceOf($expectedInstanceOf, $column);
         $this->assertSame($expectedType, $column->getType());
+
+        $db->close();
     }
 
     public function testFromDefinitionWithExtra(): void
@@ -101,5 +109,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         $this->assertSame('char', $column->getType());
         $this->assertSame(1, $column->getSize());
         $this->assertSame('NOT NULL UNIQUE', $column->getExtra());
+
+        $db->close();
     }
 }
