@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
-use ArrayIterator;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
@@ -38,13 +38,13 @@ class StructuredTypeProvider
                 ['value' => 10.0, 'currency_code' => 'USD'],
                 $price5UsdColumns,
             ],
-            'Fill default values and column names for iterable object' => [
+            'Fill default values and column names for an iterable object' => [
                 new TraversableObject([10.0]),
                 ['value' => 10.0, 'currency_code' => 'USD'],
                 $price5UsdColumns,
             ],
-            'Fill default values for iterable object' => [
-                new ArrayIterator(['currency_code' => 'CNY']),
+            'Fill default values for an object' => [
+                (object) ['currency_code' => 'CNY'],
                 ['value' => 5.0, 'currency_code' => 'CNY'],
                 $price5UsdColumns,
             ],
@@ -53,9 +53,9 @@ class StructuredTypeProvider
                 ['value' => 5.0, 'currency_code' => 'USD'],
                 $price5UsdColumns,
             ],
-            'Do not normalize scalar values' => [
-                1,
-                1,
+            'Do not normalize expressions' => [
+                $expression = new Expression('(5,USD)'),
+                $expression,
                 $price5UsdColumns,
             ],
             'Do not normalize with empty columns' => [

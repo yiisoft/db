@@ -23,9 +23,9 @@ final class StructuredExpressionTest extends TestCase
             'currency' => ColumnBuilder::char(3),
         ];
 
-        $expression = new StructuredExpression(123.45, 'currency_money_structured', $columns);
+        $expression = new StructuredExpression([5, 'USD'], 'currency_money_structured', $columns);
 
-        $this->assertSame(123.45, $expression->getValue());
+        $this->assertSame([5, 'USD'], $expression->getValue());
         $this->assertSame('currency_money_structured', $expression->getType());
         $this->assertSame($columns, $expression->getColumns());
     }
