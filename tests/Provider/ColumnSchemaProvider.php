@@ -23,6 +23,7 @@ use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
 use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
 use Yiisoft\Db\Schema\Column\JsonColumnSchema;
 use Yiisoft\Db\Schema\Column\StringColumnSchema;
+use Yiisoft\Db\Schema\Column\StructuredColumnSchema;
 
 use Yiisoft\Db\Schema\Column\StructuredColumnSchema;
 use function fopen;

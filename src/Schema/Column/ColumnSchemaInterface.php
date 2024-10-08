@@ -15,10 +15,13 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
  * @psalm-type ColumnInfo = array{
  *     auto_increment?: bool|string,
  *     check?: string|null,
+ *     column?: ColumnSchemaInterface|null,
+ *     columns?: array<string, ColumnSchemaInterface>,
  *     comment?: string|null,
  *     computed?: bool|string,
  *     db_type?: string|null,
  *     default_value?: mixed,
+ *     dimension?: int|string,
  *     enum_values?: array|null,
  *     extra?: string|null,
  *     primary_key?: bool|string,

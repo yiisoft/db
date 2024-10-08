@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
-use Traversable;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -13,14 +12,12 @@ use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Syntax\ParserToArrayInterface;
 
 use function array_keys;
-use function is_iterable;
 use function is_string;
-use function iterator_to_array;
 
-class StructuredColumnSchema extends AbstractColumnSchema implements StructuredColumnSchemaInterface
+class StructuredColumnSchema extends AbstractColumnSchema
 {
     /**
-     * @var ColumnSchemaInterface[] Columns metadata of the composite type.
+     * @var ColumnSchemaInterface[] Columns metadata of the structured type.
      * @psalm-var array<string, ColumnSchemaInterface>
      */
     private array $columns = [];
@@ -42,12 +39,23 @@ class StructuredColumnSchema extends AbstractColumnSchema implements StructuredC
         parent::__construct($type);
     }
 
+    /**
+     * Set columns of the structured type.
+     *
+     * @param ColumnSchemaInterface[] $columns The metadata of the structured type columns.
+     * @psalm-param array<string, ColumnSchemaInterface> $columns
+     */
     public function columns(array $columns): static
     {
         $this->columns = $columns;
         return $this;
     }
 
+    /**
+     * Get the metadata of the structured type columns.
+     *
+     * @return ColumnSchemaInterface[]
+     */
     public function getColumns(): array
     {
         return $this->columns;
@@ -64,6 +72,7 @@ class StructuredColumnSchema extends AbstractColumnSchema implements StructuredC
             return $value;
         }
 
+        /** @psalm-suppress MixedArgument */
         return new StructuredExpression($value, $this->getDbType(), $this->columns);
     }
 
@@ -73,14 +82,12 @@ class StructuredColumnSchema extends AbstractColumnSchema implements StructuredC
             $value = $this->getParser()->parse($value);
         }
 
-        if (!is_iterable($value)) {
+        if (!is_array($value)) {
             return null;
         }
 
         if (empty($this->columns)) {
-            return $value instanceof Traversable
-                ? iterator_to_array($value)
-                : $value;
+            return $value;
         }
 
         $fields = [];

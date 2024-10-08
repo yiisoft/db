@@ -163,6 +163,8 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::TIMESTAMP,
             ColumnType::DATE,
             ColumnType::TIME,
+            ColumnType::ARRAY,
+            ColumnType::STRUCTURED,
             ColumnType::JSON => true,
             default => false,
         };
