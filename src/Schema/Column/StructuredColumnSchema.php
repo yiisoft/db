@@ -72,6 +72,7 @@ class StructuredColumnSchema extends AbstractColumnSchema
             return $value;
         }
 
+        /** @psalm-suppress MixedArgument */
         return new StructuredExpression($value, $this->getDbType(), $this->columns);
     }
 

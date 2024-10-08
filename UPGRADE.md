@@ -97,6 +97,8 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `DoubleColumnSchema` for columns with fractional number type (float, double, decimal, money);
 - `StringColumnSchema` for columns with string or datetime type (char, string, text, datetime, timestamp, date, time);
 - `BinaryColumnSchema` for columns with binary type;
+- `ArrayColumnSchema` for columns with array type;
+- `StructuredColumnSchema` for columns with structured type (composite type in PostgreSQL);
 - `JsonColumnSchema` for columns with json type.
 
 ### New methods
