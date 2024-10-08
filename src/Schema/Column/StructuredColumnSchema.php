@@ -17,7 +17,7 @@ use function is_string;
 class StructuredColumnSchema extends AbstractColumnSchema
 {
     /**
-     * @var ColumnSchemaInterface[] Columns metadata of the composite type.
+     * @var ColumnSchemaInterface[] Columns metadata of the structured type.
      * @psalm-var array<string, ColumnSchemaInterface>
      */
     private array $columns = [];
@@ -40,9 +40,9 @@ class StructuredColumnSchema extends AbstractColumnSchema
     }
 
     /**
-     * Set columns of the composite type.
+     * Set columns of the structured type.
      *
-     * @param ColumnSchemaInterface[] $columns The metadata of the composite type columns.
+     * @param ColumnSchemaInterface[] $columns The metadata of the structured type columns.
      * @psalm-param array<string, ColumnSchemaInterface> $columns
      */
     public function columns(array $columns): static
@@ -52,7 +52,7 @@ class StructuredColumnSchema extends AbstractColumnSchema
     }
 
     /**
-     * Get the metadata of the composite type columns.
+     * Get the metadata of the structured type columns.
      *
      * @return ColumnSchemaInterface[]
      */
