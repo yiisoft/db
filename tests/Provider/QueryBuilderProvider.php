@@ -1661,7 +1661,7 @@ class QueryBuilderProvider
             "defaultValue('value')" => ["varchar(255) DEFAULT 'value'", ColumnBuilder::string()->defaultValue('value')],
             "defaultValue('')" => ["varchar(255) DEFAULT ''", ColumnBuilder::string()->defaultValue('')],
             'defaultValue(null)' => ['varchar(255)', ColumnBuilder::string()->defaultValue(null)],
-            'defaultValue($expression)' => ["varchar(255) DEFAULT expression", ColumnBuilder::string()->defaultValue(new Expression('expression'))],
+            'defaultValue($expression)' => ['varchar(255) DEFAULT expression', ColumnBuilder::string()->defaultValue(new Expression('expression'))],
             'notNull()' => ['varchar(255) NOT NULL', ColumnBuilder::string()->notNull()],
             'integer()->primaryKey()' => ['integer PRIMARY KEY', ColumnBuilder::integer()->primaryKey()],
             'size(10)' => ['varchar(10)', ColumnBuilder::string()->size(10)],
@@ -1676,7 +1676,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                ColumnBuilder::integer()->reference($reference)
+                ColumnBuilder::integer()->reference($reference),
             ],
         ];
     }

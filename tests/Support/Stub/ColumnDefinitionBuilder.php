@@ -31,10 +31,10 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         'timestamp',
         'time',
 
-//        'bool',
-//        'boolean',
-//        'date',
-//        'json',
+        //        'bool',
+        //        'boolean',
+        //        'date',
+        //        'json',
     ];
 
     protected const TYPES_WITH_SCALE = [
