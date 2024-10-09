@@ -25,23 +25,6 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     protected const AUTO_INCREMENT_KEYWORD = '';
 
     /**
-     * @var string[] The list of clauses that are used in column definition.
-     */
-    protected const CLAUSES = [
-        'type',
-        'unsigned',
-        'not_null',
-        'primary_key',
-        'auto_increment',
-        'unique',
-        'default',
-        'comment',
-        'check',
-        'references',
-        'extra',
-    ];
-
-    /**
      * @var string The expression used to generate a UUID value.
      */
     protected const GENERATE_UUID_EXPRESSION = '';
@@ -72,26 +55,17 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
 
     public function build(ColumnSchemaInterface $column): string
     {
-        $result = '';
-
-        foreach (static::CLAUSES as $clause) {
-            $result .= match ($clause) {
-                'auto_increment' => $this->buildAutoIncrement($column),
-                'check' => $this->buildCheck($column),
-                'comment' => $this->buildComment($column),
-                'default' => $this->buildDefault($column),
-                'extra' => $this->buildExtra($column),
-                'not_null' => $this->buildNotNull($column),
-                'primary_key' => $this->buildPrimaryKey($column),
-                'references' => $this->buildReferences($column),
-                'type' => $this->buildType($column),
-                'unique' => $this->buildUnique($column),
-                'unsigned' => $this->buildUnsigned($column),
-                default => '',
-            };
-        }
-
-        return $result;
+        return $this->buildType($column)
+            . $this->buildUnsigned($column)
+            . $this->buildNotNull($column)
+            . $this->buildPrimaryKey($column)
+            . $this->buildAutoIncrement($column)
+            . $this->buildUnique($column)
+            . $this->buildDefault($column)
+            . $this->buildComment($column)
+            . $this->buildCheck($column)
+            . $this->buildReferences($column)
+            . $this->buildExtra($column);
     }
 
     /**
