@@ -1662,6 +1662,7 @@ class QueryBuilderProvider
             "defaultValue('')" => ["varchar(255) DEFAULT ''", ColumnBuilder::string()->defaultValue('')],
             'defaultValue(null)' => ['varchar(255)', ColumnBuilder::string()->defaultValue(null)],
             'defaultValue($expression)' => ['varchar(255) DEFAULT expression', ColumnBuilder::string()->defaultValue(new Expression('expression'))],
+            "integer()->defaultValue('')" => ['integer', ColumnBuilder::integer()->defaultValue('')],
             'notNull()' => ['varchar(255) NOT NULL', ColumnBuilder::string()->notNull()],
             'integer()->primaryKey()' => ['integer PRIMARY KEY', ColumnBuilder::integer()->primaryKey()],
             'size(10)' => ['varchar(10)', ColumnBuilder::string()->size(10)],
