@@ -46,11 +46,11 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected array $typeMap = [];
 
     public function __construct(
-        private QuoterInterface                 $quoter,
-        private SchemaInterface                 $schema,
-        private AbstractDDLQueryBuilder         $ddlBuilder,
-        private AbstractDMLQueryBuilder         $dmlBuilder,
-        private AbstractDQLQueryBuilder         $dqlBuilder,
+        private QuoterInterface $quoter,
+        private SchemaInterface $schema,
+        private AbstractDDLQueryBuilder $ddlBuilder,
+        private AbstractDMLQueryBuilder $dmlBuilder,
+        private AbstractDQLQueryBuilder $dqlBuilder,
         private AbstractColumnDefinitionBuilder $columnDefinitionBuilder,
     ) {
     }
