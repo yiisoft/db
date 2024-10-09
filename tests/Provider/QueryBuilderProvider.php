@@ -1574,6 +1574,9 @@ class QueryBuilderProvider
         $reference->onDelete('CASCADE');
         $reference->onUpdate('CASCADE');
 
+        $referenceWithSchema = clone $reference;
+        $referenceWithSchema->foreignSchemaName('ref_schema');
+
         return [
             PseudoType::PK => ['integer PRIMARY KEY AUTO_INCREMENT', PseudoType::PK],
             PseudoType::UPK => ['integer UNSIGNED PRIMARY KEY AUTO_INCREMENT', PseudoType::UPK],
@@ -1678,6 +1681,15 @@ class QueryBuilderProvider
                     static::$driverName,
                 ),
                 ColumnBuilder::integer()->reference($reference),
+            ],
+            'reference($referenceWithSchema)' => [
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    integer REFERENCES [[ref_schema]].[[ref_table]] ([[id]]) ON DELETE CASCADE ON UPDATE CASCADE
+                    SQL,
+                    static::$driverName,
+                ),
+                ColumnBuilder::integer()->reference($referenceWithSchema),
             ],
         ];
     }

@@ -267,14 +267,24 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
         }
 
         if (null !== $onDelete = $reference?->getOnDelete()) {
-            $sql .= ' ON DELETE ' . $onDelete;
+            $sql .= $this->buildOnDeleteClause($onDelete);
         }
 
         if (null !== $onUpdate = $reference?->getOnUpdate()) {
-            $sql .= ' ON UPDATE ' . $onUpdate;
+            $sql .= $this->buildOnUpdateClause($onUpdate);
         }
 
         return $sql;
+    }
+
+    protected function buildOnDeleteClause(string $onDelete): string
+    {
+        return " ON DELETE $onDelete";
+    }
+
+    protected function buildOnUpdateClause(string $onUpdate): string
+    {
+        return " ON UPDATE $onUpdate";
     }
 
     /**
