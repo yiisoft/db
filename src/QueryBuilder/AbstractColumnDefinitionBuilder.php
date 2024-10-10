@@ -69,7 +69,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     }
 
     /**
-     * Builds the auto increment clause for column.
+     * Builds the auto increment clause for the column.
      *
      * @return string A string containing the {@see AUTO_INCREMENT_KEYWORD} keyword.
      */
@@ -181,8 +181,8 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     /**
      * Builds the not null constraint for the column.
      *
-     * @return string A string 'NOT NULL' if {@see ColumnSchemaInterface::isNotNull()} is `true` or an empty string
-     * otherwise.
+     * @return string A string 'NOT NULL' if {@see ColumnSchemaInterface::isNotNull()} is `true`
+     * or an empty string otherwise.
      */
     protected function buildNotNull(ColumnSchemaInterface $column): string
     {
@@ -228,10 +228,10 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
         $quoter = $this->queryBuilder->quoter();
         $schema = $reference?->getForeignSchemaName();
 
+        $sql = $quoter->quoteTableName($table);
+
         if ($schema !== null) {
-            $sql = $quoter->quoteTableName($schema) . '.' . $quoter->quoteTableName($table);
-        } else {
-            $sql = $quoter->quoteTableName($table);
+            $sql = $quoter->quoteTableName($schema) . '.' . $sql;
         }
 
         $columns = $reference?->getForeignColumnNames();
@@ -305,7 +305,8 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     /**
      * Builds the unique constraint for the column.
      *
-     * @return string A string 'UNIQUE' if {@see isUnique} is true, otherwise it returns an empty string.
+     * @return string A string 'UNIQUE' if {@see ColumnSchemaInterface::isUnique()} is true
+     * or an empty string otherwise.
      */
     protected function buildUnique(ColumnSchemaInterface $column): string
     {
@@ -317,7 +318,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     }
 
     /**
-     * Builds the unsigned string for column. Default is empty string.
+     * Builds the unsigned string for the column.
      *
      * @return string A string containing the UNSIGNED keyword.
      */
