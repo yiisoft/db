@@ -47,7 +47,7 @@ class ColumnBuilder
     /**
      * Builds a column as an `uuid` primary key.
      */
-    public static function uuidPrimaryKey(bool $autoIncrement = false): ColumnSchemaInterface
+    public static function uuidPrimaryKey(bool $autoIncrement = true): ColumnSchemaInterface
     {
         return static::uuid()
             ->primaryKey()
@@ -65,6 +65,8 @@ class ColumnBuilder
 
     /**
      * Builds a column with the abstract type `bit`.
+     *
+     * @param int|null $size The number of bits that the column can store.
      */
     public static function bit(int|null $size = null): ColumnSchemaInterface
     {

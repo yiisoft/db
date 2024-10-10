@@ -8,6 +8,8 @@ use ArrayIterator;
 use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
@@ -15,6 +17,7 @@ use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\Column;
@@ -1560,6 +1563,134 @@ class QueryBuilderProvider
             'expression' => [new Expression("'[0,1,2,7]'"), 1],
             'json expression' => [new JsonExpression([0,1,2,7]), 1],
             'query expression' => [(new Query(static::getDb()))->select(new JsonExpression([0,1,2,7])), 1],
+        ];
+    }
+
+    public static function buildColumnDefinition(): array
+    {
+        $reference = new ForeignKeyConstraint();
+        $reference->foreignColumnNames(['id']);
+        $reference->foreignTableName('ref_table');
+        $reference->onDelete('CASCADE');
+        $reference->onUpdate('CASCADE');
+
+        $referenceWithSchema = clone $reference;
+        $referenceWithSchema->foreignSchemaName('ref_schema');
+
+        return [
+            PseudoType::PK => ['integer PRIMARY KEY AUTO_INCREMENT', PseudoType::PK],
+            PseudoType::UPK => ['integer UNSIGNED PRIMARY KEY AUTO_INCREMENT', PseudoType::UPK],
+            PseudoType::BIGPK => ['bigint PRIMARY KEY AUTO_INCREMENT', PseudoType::BIGPK],
+            PseudoType::UBIGPK => ['bigint UNSIGNED PRIMARY KEY AUTO_INCREMENT', PseudoType::UBIGPK],
+            PseudoType::UUID_PK => ['uuid PRIMARY KEY DEFAULT uuid()', PseudoType::UUID_PK],
+            PseudoType::UUID_PK_SEQ => ['uuid PRIMARY KEY DEFAULT uuid()', PseudoType::UUID_PK_SEQ],
+            'STRING' => ['varchar', ColumnType::STRING],
+            'STRING(100)' => ['varchar(100)', ColumnType::STRING . '(100)'],
+
+            'primaryKey()' => ['integer PRIMARY KEY AUTO_INCREMENT', ColumnBuilder::primaryKey()],
+            'primaryKey(false)' => ['integer PRIMARY KEY', ColumnBuilder::primaryKey(false)],
+            'smallPrimaryKey()' => ['smallint PRIMARY KEY AUTO_INCREMENT', ColumnBuilder::smallPrimaryKey()],
+            'smallPrimaryKey(false)' => ['smallint PRIMARY KEY', ColumnBuilder::smallPrimaryKey(false)],
+            'bigPrimaryKey()' => ['bigint PRIMARY KEY AUTO_INCREMENT', ColumnBuilder::bigPrimaryKey()],
+            'bigPrimaryKey(false)' => ['bigint PRIMARY KEY', ColumnBuilder::bigPrimaryKey(false)],
+            'uuidPrimaryKey()' => ['uuid PRIMARY KEY DEFAULT uuid()', ColumnBuilder::uuidPrimaryKey()],
+            'uuidPrimaryKey(false)' => ['uuid PRIMARY KEY', ColumnBuilder::uuidPrimaryKey(false)],
+
+            'boolean()' => ['boolean', ColumnBuilder::boolean()],
+            'boolean(100)' => ['boolean', ColumnBuilder::boolean()->size(100)],
+            'bit()' => ['bit', ColumnBuilder::bit()],
+            'bit(1)' => ['bit(1)', ColumnBuilder::bit(1)],
+            'bit(8)' => ['bit(8)', ColumnBuilder::bit(8)],
+            'bit(1000)' => ['bit(1000)', ColumnBuilder::bit(1000)],
+            'tinyint()' => ['tinyint', ColumnBuilder::tinyint()],
+            'tinyint(2)' => ['tinyint(2)', ColumnBuilder::tinyint(2)],
+            'smallint()' => ['smallint', ColumnBuilder::smallint()],
+            'smallint(4)' => ['smallint(4)', ColumnBuilder::smallint(4)],
+            'integer()' => ['integer', ColumnBuilder::integer()],
+            'integer(8)' => ['integer(8)', ColumnBuilder::integer(8)],
+            'bigint()' => ['bigint', ColumnBuilder::bigint()],
+            'bigint(15)' => ['bigint(15)', ColumnBuilder::bigint(15)],
+            'float()' => ['float', ColumnBuilder::float()],
+            'float(10)' => ['float(10)', ColumnBuilder::float(10)],
+            'float(10,2)' => ['float(10,2)', ColumnBuilder::float(10, 2)],
+            'double()' => ['double', ColumnBuilder::double()],
+            'double(10)' => ['double(10)', ColumnBuilder::double(10)],
+            'double(10,2)' => ['double(10,2)', ColumnBuilder::double(10, 2)],
+            'decimal()' => ['decimal(10,0)', ColumnBuilder::decimal()],
+            'decimal(5)' => ['decimal(5,0)', ColumnBuilder::decimal(5)],
+            'decimal(5,2)' => ['decimal(5,2)', ColumnBuilder::decimal(5, 2)],
+            'decimal(null)' => ['decimal', ColumnBuilder::decimal(null)],
+            'money()' => ['money', ColumnBuilder::money()],
+            'money(10)' => ['money', ColumnBuilder::money(10)],
+            'money(10,2)' => ['money', ColumnBuilder::money(10, 2)],
+            'money(null)' => ['money', ColumnBuilder::money(null)],
+            'char()' => ['char(1)', ColumnBuilder::char()],
+            'char(10)' => ['char(10)', ColumnBuilder::char(10)],
+            'char(null)' => ['char', ColumnBuilder::char(null)],
+            'string()' => ['varchar(255)', ColumnBuilder::string()],
+            'string(100)' => ['varchar(100)', ColumnBuilder::string(100)],
+            'string(null)' => ['varchar', ColumnBuilder::string(null)],
+            'text()' => ['text', ColumnBuilder::text()],
+            'text(1000)' => ['text(1000)', ColumnBuilder::text(1000)],
+            'binary()' => ['binary', ColumnBuilder::binary()],
+            'binary(1000)' => ['binary(1000)', ColumnBuilder::binary(1000)],
+            'uuid()' => ['uuid', ColumnBuilder::uuid()],
+            'datetime()' => ['datetime(0)', ColumnBuilder::datetime()],
+            'datetime(6)' => ['datetime(6)', ColumnBuilder::datetime(6)],
+            'datetime(null)' => ['datetime', ColumnBuilder::datetime(null)],
+            'timestamp()' => ['timestamp(0)', ColumnBuilder::timestamp()],
+            'timestamp(6)' => ['timestamp(6)', ColumnBuilder::timestamp(6)],
+            'timestamp(null)' => ['timestamp', ColumnBuilder::timestamp(null)],
+            'date()' => ['date', ColumnBuilder::date()],
+            'date(100)' => ['date', ColumnBuilder::date()->size(100)],
+            'time()' => ['time(0)', ColumnBuilder::time()],
+            'time(6)' => ['time(6)', ColumnBuilder::time(6)],
+            'time(null)' => ['time', ColumnBuilder::time(null)],
+            'array()' => ['json', ColumnBuilder::array()],
+            'structured()' => ['json', ColumnBuilder::structured()],
+            "structured('structured_type')" => ['structured_type', ColumnBuilder::structured('structured_type')],
+            'json()' => ['json', ColumnBuilder::json()],
+            'json(100)' => ['json', ColumnBuilder::json()->size(100)],
+
+            "enum('a','b','c')" => ["enum('a','b','c')", ColumnBuilder::string()->dbType("enum('a','b','c')")],
+            "extra('bar')" => ['varchar(255) bar', ColumnBuilder::string()->extra('bar')],
+            "extra('')" => ['varchar(255)', ColumnBuilder::string()->extra('')],
+            "check('value > 5')" => ['varchar(255) CHECK (value > 5)', ColumnBuilder::string()->check('value > 5')],
+            "check('')" => ['varchar(255)', ColumnBuilder::string()->check('')],
+            'check(null)' => ['varchar(255)', ColumnBuilder::string()->check(null)],
+            "comment('comment')" => ['varchar(255)', ColumnBuilder::string()->comment('comment')],
+            "comment('')" => ['varchar(255)', ColumnBuilder::string()->comment('')],
+            'comment(null)' => ['varchar(255)', ColumnBuilder::string()->comment(null)],
+            "defaultValue('value')" => ["varchar(255) DEFAULT 'value'", ColumnBuilder::string()->defaultValue('value')],
+            "defaultValue('')" => ["varchar(255) DEFAULT ''", ColumnBuilder::string()->defaultValue('')],
+            'defaultValue(null)' => ['varchar(255)', ColumnBuilder::string()->defaultValue(null)],
+            'defaultValue($expression)' => ['varchar(255) DEFAULT expression', ColumnBuilder::string()->defaultValue(new Expression('expression'))],
+            "integer()->defaultValue('')" => ['integer', ColumnBuilder::integer()->defaultValue('')],
+            'notNull()' => ['varchar(255) NOT NULL', ColumnBuilder::string()->notNull()],
+            'integer()->primaryKey()' => ['integer PRIMARY KEY', ColumnBuilder::integer()->primaryKey()],
+            'size(10)' => ['varchar(10)', ColumnBuilder::string()->size(10)],
+            'unique()' => ['varchar(255) UNIQUE', ColumnBuilder::string()->unique()],
+            'unsigned()' => ['integer UNSIGNED', ColumnBuilder::integer()->unsigned()],
+            'scale(2)' => ['decimal(10,2)', ColumnBuilder::decimal()->scale(2)],
+            'integer(8)->scale(2)' => ['integer(8)', ColumnBuilder::integer(8)->scale(2)],
+            'reference($reference)' => [
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    integer REFERENCES [[ref_table]] ([[id]]) ON DELETE CASCADE ON UPDATE CASCADE
+                    SQL,
+                    static::$driverName,
+                ),
+                ColumnBuilder::integer()->reference($reference),
+            ],
+            'reference($referenceWithSchema)' => [
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    integer REFERENCES [[ref_schema]].[[ref_table]] ([[id]]) ON DELETE CASCADE ON UPDATE CASCADE
+                    SQL,
+                    static::$driverName,
+                ),
+                ColumnBuilder::integer()->reference($referenceWithSchema),
+            ],
         ];
     }
 }

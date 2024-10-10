@@ -14,7 +14,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
@@ -85,11 +84,6 @@ interface ConnectionInterface
      * It does nothing if the connection is already closed.
      */
     public function close(): void;
-
-    /**
-     * Returns the column factory for creating column instances.
-     */
-    public function getColumnFactory(): ColumnFactoryInterface;
 
     /**
      * Returns the name of the DB driver for the current `dsn`.

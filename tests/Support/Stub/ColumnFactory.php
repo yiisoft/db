@@ -16,6 +16,7 @@ class ColumnFactory extends AbstractColumnFactory
 
     protected function isDbType(string $dbType): bool
     {
-        return $this->isType($dbType);
+        return $dbType === 'varchar'
+            || $dbType !== 'string' && $this->isType($dbType);
     }
 }
