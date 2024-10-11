@@ -154,6 +154,15 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->build($query, $params);
     }
 
+    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string
+    {
+        if (is_string($column)) {
+            $column = $this->schema->getColumnFactory()->fromDefinition($column);
+        }
+
+        return $this->columnDefinitionBuilder->build($column);
+    }
+
     public function buildColumns(array|string $columns): string
     {
         return $this->dqlBuilder->buildColumns($columns);
@@ -425,14 +434,5 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         array &$params = []
     ): string {
         return $this->dmlBuilder->upsert($table, $insertColumns, $updateColumns, $params);
-    }
-
-    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string
-    {
-        if (is_string($column)) {
-            $column = $this->schema->getColumnFactory()->fromDefinition($column);
-        }
-
-        return $this->columnDefinitionBuilder->build($column);
     }
 }

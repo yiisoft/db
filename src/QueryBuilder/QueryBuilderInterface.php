@@ -38,6 +38,16 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
     public function bindParam(mixed $value, array &$params = []): string;
 
     /**
+     * Builds column definition based on given column instance.
+     *
+     * @param ColumnSchemaInterface|string $column the column instance or string column definition which should be
+     * converted into a database string representation.
+     *
+     * @return string the SQL column definition.
+     */
+    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string;
+
+    /**
      * Converts an abstract column type into a physical column type.
      *
      * The conversion is done using the type map specified in {@see typeMap}.
@@ -102,14 +112,4 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * @return QuoterInterface The quoter instance.
      */
     public function quoter(): QuoterInterface;
-
-    /**
-     * Builds column definition based on given column instance.
-     *
-     * @param ColumnSchemaInterface|string $column the column instance or string column definition which should be
-     * converted into a database string representation.
-     *
-     * @return string the SQL column definition.
-     */
-    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string;
 }
