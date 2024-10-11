@@ -87,6 +87,11 @@ jobs:
       - name: Set environment variables pull request linux.
         uses: yiisoft/actions/db/environment-linux@master
 
+      - name: Install ODBC driver.
+        run: |
+          curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
+          ACCEPT_EULA=Y apt-get install -y msodbcsql18
+
       - name: Install db.
         uses: yiisoft/actions/db/subpackage-install@master
         with:
