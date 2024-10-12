@@ -6,8 +6,6 @@ namespace Yiisoft\Db\Connection;
 
 use Stringable;
 
-use function implode;
-
 /**
  * It's typically used to parse a DSN string, which is a string that has all the necessary information to connect
  * to a database, such as the database driver, hostname, database name, port, and options.
