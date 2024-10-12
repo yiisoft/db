@@ -17,37 +17,37 @@ use function implode;
 abstract class AbstractDsn implements DsnInterface, Stringable
 {
     /**
-     * @psalm-param string[] $options
+     * @param string $driver The database driver name.
+     * @param string $host The database host name or IP address.
+     * @param string|null $databaseName The database name to connect to.
+     * @param string|null $port The database port. Null if isn't set.
+     * @param string[] $options The database connection options. Default value to an empty array.
+     *
+     * @psalm-param array<string,string> $options
      */
     public function __construct(
-        private string $driver,
-        private string $host,
-        private string|null $databaseName = null,
-        private string|null $port = null,
-        private array $options = []
+        private readonly string $driver,
+        private readonly string $host,
+        private readonly string|null $databaseName = null,
+        private readonly string|null $port = null,
+        private readonly array $options = []
     ) {
     }
 
     public function asString(): string
     {
-        $dsn = "$this->driver:" . "host=$this->host";
+        $dsn = "$this->driver:host=$this->host";
 
         if ($this->databaseName !== null && $this->databaseName !== '') {
-            $dsn .= ';' . "dbname=$this->databaseName";
+            $dsn .= ";dbname=$this->databaseName";
         }
 
         if ($this->port !== null) {
-            $dsn .= ';' . "port=$this->port";
+            $dsn .= ";port=$this->port";
         }
-
-        $parts = [];
 
         foreach ($this->options as $key => $value) {
-            $parts[] = "$key=$value";
-        }
-
-        if (!empty($parts)) {
-            $dsn .= ';' . implode(';', $parts);
+            $dsn .= ";$key=$value";
         }
 
         return $dsn;
@@ -86,7 +86,9 @@ abstract class AbstractDsn implements DsnInterface, Stringable
     }
 
     /**
-     * @return array The database connection options. Default value to an empty array.
+     * @return string[] The database connection options. Default value to an empty array.
+     *
+     * @psalm-return array<string,string>
      */
     public function getOptions(): array
     {
