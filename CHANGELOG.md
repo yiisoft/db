@@ -42,7 +42,6 @@
 - Enh #881: Refactor `ColumnSchemaInterface` and `AbstractColumnSchema` (@Tigrov)
 - New #882: Move `ArrayColumnSchema` and `StructuredColumnSchema` classes from `db-pgsql` package (@Tigrov)
 - New #883: Add `ColumnDefinitionBuilder` class and `QueryBuilderInterface::buildColumnDefinition()` method (@Tigrov)
-- End #882: Move `ArrayColumnSchema` and `StructuredColumnSchema` classes from `db-pgsql` package (@Tigrov)
 - Enh #885: Refactor `AbstractDsn` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
