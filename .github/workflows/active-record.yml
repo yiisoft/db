@@ -20,7 +20,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.10.1
+      EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.12
 
     runs-on: ${{ matrix.os }}
 
@@ -77,6 +77,11 @@ jobs:
           options: --name=mssql --health-cmd="/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
+      - name: Install ODBC driver.
+        run: |
+          sudo curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
+
       - name: Checkout.
         uses: actions/checkout@v3
 
