@@ -17,7 +17,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromDbType(string $dbType, string $expectedType, string $expectedInstanceOf): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getColumnFactory();
+        $columnFactory = $db->getSchema()->getColumnFactory();
 
         $column = $columnFactory->fromDbType($dbType);
 
@@ -38,7 +38,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         array $expectedMethodResults = []
     ): void {
         $db = $this->getConnection();
-        $columnFactory = $db->getColumnFactory();
+        $columnFactory = $db->getSchema()->getColumnFactory();
 
         $column = $columnFactory->fromDefinition($definition);
 
@@ -65,7 +65,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         array $expectedMethodResults = []
     ): void {
         $db = $this->getConnection();
-        $columnFactory = $db->getColumnFactory();
+        $columnFactory = $db->getSchema()->getColumnFactory();
 
         $column = $columnFactory->fromPseudoType($pseudoType);
 
@@ -88,7 +88,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromType(string $type, string $expectedType, string $expectedInstanceOf): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getColumnFactory();
+        $columnFactory = $db->getSchema()->getColumnFactory();
 
         $column = $columnFactory->fromType($type);
 
@@ -101,7 +101,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromDefinitionWithExtra(): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getColumnFactory();
+        $columnFactory = $db->getSchema()->getColumnFactory();
 
         $column = $columnFactory->fromDefinition('char(1) NOT NULL', ['extra' => 'UNIQUE']);
 

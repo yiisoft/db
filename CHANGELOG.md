@@ -9,7 +9,7 @@
 - Enh #806: Build `Expression` instances inside `Expression::$params` when build a query using `QueryBuilder` (@Tigrov)
 - Enh #766: Allow `ColumnInterface` as column type. (@Tigrov)
 - Bug #828: Fix `float` type when use `AbstractCommand::getRawSql()` method (@Tigrov)
-- Enh #752: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
+- New #752: Implement `ColumnSchemaInterface` classes according to the data type of database table columns
   for type casting performance (@Tigrov)
 - Enh #829: Rename `batchInsert()` to `insertBatch()` in `DMLQueryBuilderInterface` and `CommandInterface`
   and change parameters from `$table, $columns, $rows` to `$table, $rows, $columns = []` (@Tigrov)
@@ -29,18 +29,19 @@
 - Chg #846: Remove `SchemaInterface::isReadQuery()` and `AbstractSchema::isReadQuery()` methods (@Tigrov)
 - Chg #847: Remove `SchemaInterface::getRawTableName()` and `AbstractSchema::getRawTableName()` methods (@Tigrov)
 - Enh #852: Add method chaining for column classes (@Tigrov)
-- Enh #855: Add array and JSON overlaps conditions (@Tigrov)
-- Enh #860: Add `bit` abstract type (@Tigrov)
+- New #855: Add array and JSON overlaps conditions (@Tigrov)
+- New #860: Add `bit` abstract type (@Tigrov)
 - Enh #862: Refactor PHP type of `ColumnSchemaInterface` instances (@Tigrov)
 - Enh #865: Raise minimum PHP version to `^8.1` with minor refactoring (@Tigrov, @vjik)
 - Enh #798: Allow `QueryInterface::one()` and `QueryInterface::all()` to return objects (@darkdef, @Tigrov)
 - Enh #872: Use `#[\SensitiveParameter]` attribute to mark sensitive parameters (@heap-s)
-- Enh #864: Realize column factory (@Tigrov)
+- New #864: Realize column factory (@Tigrov)
 - Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #877: Separate column type constants (@Tigrov)
 - Enh #878: Realize `ColumnBuilder` class (@Tigrov)
 - Enh #881: Refactor `ColumnSchemaInterface` and `AbstractColumnSchema` (@Tigrov)
-- End #882: Move `ArrayColumnSchema` and `StructuredColumnSchema` classes from `db-pgsql` package (@Tigrov)
+- New #882: Move `ArrayColumnSchema` and `StructuredColumnSchema` classes from `db-pgsql` package (@Tigrov)
+- New #883: Add `ColumnDefinitionBuilder` class and `QueryBuilderInterface::buildColumnDefinition()` method (@Tigrov)
 - Enh #885: Refactor `AbstractDsn` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024

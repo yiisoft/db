@@ -81,7 +81,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             PseudoType::BIGPK => ColumnBuilder::bigPrimaryKey()->load($info),
             PseudoType::UBIGPK => ColumnBuilder::bigPrimaryKey()->unsigned()->load($info),
             PseudoType::UUID_PK => ColumnBuilder::uuidPrimaryKey()->load($info),
-            PseudoType::UUID_PK_SEQ => ColumnBuilder::uuidPrimaryKey(true)->load($info),
+            PseudoType::UUID_PK_SEQ => ColumnBuilder::uuidPrimaryKey()->load($info),
         };
     }
 

@@ -36,7 +36,7 @@ abstract class CommonColumnSchemaTest extends TestCase
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider::phpTypecastColumns */
     public function testPhpTypecastColumns(string $className, array $values)
     {
-        $column = new $className('column_name');
+        $column = new $className();
 
         foreach ($values as [$expected, $value]) {
             $this->assertSame($expected, $column->phpTypecast($value));

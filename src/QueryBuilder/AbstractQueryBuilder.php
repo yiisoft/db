@@ -10,10 +10,12 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 use function count;
+use function is_string;
 use function preg_match;
 use function preg_replace;
 
@@ -48,7 +50,8 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         private SchemaInterface $schema,
         private AbstractDDLQueryBuilder $ddlBuilder,
         private AbstractDMLQueryBuilder $dmlBuilder,
-        private AbstractDQLQueryBuilder $dqlBuilder
+        private AbstractDQLQueryBuilder $dqlBuilder,
+        private AbstractColumnDefinitionBuilder $columnDefinitionBuilder,
     ) {
     }
 
@@ -149,6 +152,15 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function build(QueryInterface $query, array $params = []): array
     {
         return $this->dqlBuilder->build($query, $params);
+    }
+
+    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string
+    {
+        if (is_string($column)) {
+            $column = $this->schema->getColumnFactory()->fromDefinition($column);
+        }
+
+        return $this->columnDefinitionBuilder->build($column);
     }
 
     public function buildColumns(array|string $columns): string
@@ -322,6 +334,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->dropView($viewName);
     }
 
+    /** @deprecated Use {@see buildColumnDefinition()}. Will be removed in version 2.0. */
     public function getColumnType(ColumnInterface|string $type): string
     {
         if ($type instanceof ColumnInterface) {

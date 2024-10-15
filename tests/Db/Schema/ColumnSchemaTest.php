@@ -307,7 +307,7 @@ final class ColumnSchemaTest extends TestCase
 
         $this->assertFalse($column->isUnsigned());
 
-        $column->unsigned(true);
+        $column->unsigned();
 
         $this->assertTrue($column->isUnsigned());
     }
