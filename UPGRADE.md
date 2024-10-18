@@ -75,7 +75,8 @@ and the following changes were made:
 - `isNotNull()` method is added;
 - `unique(bool $unique = true)` method is added;
 - `isUnique()` method is added;
-- all `AbstractColumnSchema` class properties moved to constructor;
+- all `AbstractColumnSchema` class properties except `$type` moved to constructor;
+- added `DEFAULT_TYPE` constant to `AbstractColumnSchema` class;
 - added method chaining.
 
 ### New classes with constants

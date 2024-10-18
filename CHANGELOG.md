@@ -44,6 +44,7 @@
 - New #883: Add `ColumnDefinitionBuilder` class and `QueryBuilderInterface::buildColumnDefinition()` method (@Tigrov)
 - Enh #885: Refactor `AbstractDsn` class (@Tigrov)
 - Chg #889: Update `AbstractDMLQueryBuilder::insertBatch()` method (@Tigrov)
+- Enh #890: Add properties of `AbstractColumnSchema` class to constructor (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
