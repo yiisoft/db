@@ -21,7 +21,18 @@ final class DbHelper
 {
     public static function changeSqlForOracleBatchInsert(string &$str): void
     {
-        $str = str_replace('INSERT INTO', 'INSERT ALL INTO', $str) . ' SELECT 1 FROM SYS.DUAL';
+        if (empty($str)) {
+            return;
+        }
+
+        $str = str_replace(
+                ' VALUES (',
+                "\nSELECT ",
+                str_replace(
+                    '), (',
+                    " FROM DUAL UNION ALL\nSELECT ",
+                    substr($str, 0, -1))
+            ) . ' FROM DUAL';
     }
 
     public static function getPsrCache(): CacheInterface
