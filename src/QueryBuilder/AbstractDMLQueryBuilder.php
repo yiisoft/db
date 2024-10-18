@@ -96,7 +96,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $query .= ' (' . implode(', ', $quotedColumnNames) . ')';
         }
 
-        return $query . ' VALUES ' . implode(', ', $values);
+        return $query . ' VALUES (' . implode('), (', $values) . ')';
     }
 
     public function delete(string $table, array|string $condition, array &$params): string
@@ -209,7 +209,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 ++$i;
             }
 
-            $values[] = '(' . implode(', ', $placeholders) . ')';
+            $values[] = implode(', ', $placeholders);
         }
 
         return $values;

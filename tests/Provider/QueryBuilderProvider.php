@@ -172,7 +172,7 @@ class QueryBuilderProvider
                 'customer',
                 [],
                 ['address'],
-                '',
+                'expected' => '',
             ],
             'customer3' => [
                 'customer',
@@ -242,7 +242,7 @@ class QueryBuilderProvider
                     }
                 })(),
                 [],
-                '',
+                'expected' => '',
             ],
             'empty columns and non-exists table' => [
                 'non_exists_table',
