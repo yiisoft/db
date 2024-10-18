@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Syntax;
 
-use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
-
 use function explode;
 use function preg_match;
 use function preg_match_all;
@@ -18,8 +16,6 @@ use function trim;
 
 /**
  * Parses column definition string. For example, `string(255)` or `int unsigned`.
- *
- * @psalm-import-type ColumnInfo from ColumnFactoryInterface
  */
 final class ColumnDefinitionParser
 {
@@ -30,7 +26,14 @@ final class ColumnDefinitionParser
      *
      * @return array The column information.
      *
-     * @psalm-return ColumnInfo
+     * @psalm-return array{
+     *     enumValues?: list<string>,
+     *     extra?: string,
+     *     scale?: int,
+     *     size?: int,
+     *     type: lowercase-string,
+     *     unsigned?: bool,
+     * }
      */
     public function parse(string $definition): array
     {
@@ -49,10 +52,12 @@ final class ColumnDefinitionParser
 
         $extra = substr($definition, strlen($matches[0]));
 
-        /** @var ColumnInfo */
         return $info + $this->extraInfo($extra);
     }
 
+    /**
+     * @psalm-return array{enumValues: list<string>}
+     */
     private function enumInfo(string $values): array
     {
         preg_match_all("/'([^']*)'/", $values, $matches);
@@ -60,6 +65,9 @@ final class ColumnDefinitionParser
         return ['enumValues' => $matches[1]];
     }
 
+    /**
+     * @psalm-return array{unsigned?: bool, extra?: string}
+     */
     private function extraInfo(string $extra): array
     {
         if (empty($extra)) {
@@ -80,6 +88,9 @@ final class ColumnDefinitionParser
         return $info;
     }
 
+    /**
+     * @psalm-return array{size: int, scale?: int}
+     */
     private function sizeInfo(string $size): array
     {
         $values = explode(',', $size);
