@@ -13,8 +13,7 @@ use const PHP_INT_SIZE;
 /**
  * The default implementation of the {@see ColumnFactoryInterface}.
  *
- * @psalm-import-type ColumnInfo from ColumnSchemaInterface
- * @psalm-suppress MixedArgumentTypeCoercion
+ * @psalm-import-type ColumnInfo from ColumnFactoryInterface
  */
 abstract class AbstractColumnFactory implements ColumnFactoryInterface
 {
@@ -38,8 +37,10 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
 
     public function fromDbType(string $dbType, array $info = []): ColumnSchemaInterface
     {
-        $info['db_type'] = $dbType;
+        unset($info['dbType']);
         $type = $info['type'] ?? $this->getType($dbType, $info);
+        unset($info['type']);
+        $info['dbType'] = $dbType;
 
         return $this->fromType($type, $info);
     }
@@ -52,62 +53,76 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             $info['extra'] = $definitionInfo['extra'] . ' ' . $info['extra'];
         }
 
-        /** @var string $dbType */
-        $dbType = $definitionInfo['db_type'] ?? '';
-        unset($definitionInfo['db_type']);
+        /** @var string $type */
+        $type = $definitionInfo['type'] ?? '';
+        unset($definitionInfo['type']);
 
         $info += $definitionInfo;
 
-        if ($this->isDbType($dbType)) {
-            return $this->fromDbType($dbType, $info);
+        if ($this->isDbType($type)) {
+            unset($info['dbType']);
+            return $this->fromDbType($type, $info);
         }
 
-        if ($this->isType($dbType)) {
-            return $this->fromType($dbType, $info);
+        if ($this->isType($type)) {
+            unset($info['type']);
+            return $this->fromType($type, $info);
         }
 
-        if ($this->isPseudoType($dbType)) {
-            return $this->fromPseudoType($dbType, $info);
+        if ($this->isPseudoType($type)) {
+            return $this->fromPseudoType($type, $info);
         }
 
-        return $this->fromDbType($dbType, $info);
+        unset($info['dbType']);
+        return $this->fromDbType($type, $info);
     }
 
+    /**
+     * @psalm-suppress MixedArgument
+     * @psalm-suppress InvalidArgument
+     * @psalm-suppress InvalidNamedArgument
+     */
     public function fromPseudoType(string $pseudoType, array $info = []): ColumnSchemaInterface
     {
+        $info['primaryKey'] = true;
+        $info['autoIncrement'] = true;
+
         return match ($pseudoType) {
-            PseudoType::PK => ColumnBuilder::primaryKey()->load($info),
-            PseudoType::UPK => ColumnBuilder::primaryKey()->unsigned()->load($info),
-            PseudoType::BIGPK => ColumnBuilder::bigPrimaryKey()->load($info),
-            PseudoType::UBIGPK => ColumnBuilder::bigPrimaryKey()->unsigned()->load($info),
-            PseudoType::UUID_PK => ColumnBuilder::uuidPrimaryKey()->load($info),
-            PseudoType::UUID_PK_SEQ => ColumnBuilder::uuidPrimaryKey()->load($info),
+            PseudoType::PK => new IntegerColumnSchema(ColumnType::INTEGER, ...$info),
+            PseudoType::UPK => new IntegerColumnSchema(ColumnType::INTEGER, ...[...$info, 'unsigned' => true]),
+            PseudoType::BIGPK => PHP_INT_SIZE !== 8
+                ? new BigIntColumnSchema(ColumnType::BIGINT, ...$info)
+                : new IntegerColumnSchema(ColumnType::BIGINT, ...$info),
+            PseudoType::UBIGPK => new BigIntColumnSchema(ColumnType::BIGINT, ...[...$info, 'unsigned' => true]),
+            PseudoType::UUID_PK => new StringColumnSchema(ColumnType::UUID, ...$info),
+            PseudoType::UUID_PK_SEQ => new StringColumnSchema(ColumnType::UUID, ...$info),
         };
     }
 
+    /**
+     * @psalm-suppress InvalidNamedArgument
+     */
     public function fromType(string $type, array $info = []): ColumnSchemaInterface
     {
-        $column = match ($type) {
-            ColumnType::BOOLEAN => new BooleanColumnSchema($type),
-            ColumnType::BIT => new BitColumnSchema($type),
-            ColumnType::TINYINT => new IntegerColumnSchema($type),
-            ColumnType::SMALLINT => new IntegerColumnSchema($type),
+        return match ($type) {
+            ColumnType::BOOLEAN => new BooleanColumnSchema($type, ...$info),
+            ColumnType::BIT => new BitColumnSchema($type, ...$info),
+            ColumnType::TINYINT => new IntegerColumnSchema($type, ...$info),
+            ColumnType::SMALLINT => new IntegerColumnSchema($type, ...$info),
             ColumnType::INTEGER => PHP_INT_SIZE !== 8 && !empty($info['unsigned'])
-                ? new BigIntColumnSchema($type)
-                : new IntegerColumnSchema($type),
+                ? new BigIntColumnSchema($type, ...$info)
+                : new IntegerColumnSchema($type, ...$info),
             ColumnType::BIGINT => PHP_INT_SIZE !== 8 || !empty($info['unsigned'])
-                ? new BigIntColumnSchema($type)
-                : new IntegerColumnSchema($type),
-            ColumnType::DECIMAL => new DoubleColumnSchema($type),
-            ColumnType::FLOAT => new DoubleColumnSchema($type),
-            ColumnType::DOUBLE => new DoubleColumnSchema($type),
-            ColumnType::BINARY => new BinaryColumnSchema($type),
-            ColumnType::STRUCTURED => new StructuredColumnSchema($type),
-            ColumnType::JSON => new JsonColumnSchema($type),
-            default => new StringColumnSchema($type),
+                ? new BigIntColumnSchema($type, ...$info)
+                : new IntegerColumnSchema($type, ...$info),
+            ColumnType::DECIMAL => new DoubleColumnSchema($type, ...$info),
+            ColumnType::FLOAT => new DoubleColumnSchema($type, ...$info),
+            ColumnType::DOUBLE => new DoubleColumnSchema($type, ...$info),
+            ColumnType::BINARY => new BinaryColumnSchema($type, ...$info),
+            ColumnType::STRUCTURED => new StructuredColumnSchema($type, ...$info),
+            ColumnType::JSON => new JsonColumnSchema($type, ...$info),
+            default => new StringColumnSchema($type, ...$info),
         };
-
-        return $column->load($info);
     }
 
     /**

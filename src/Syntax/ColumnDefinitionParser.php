@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Syntax;
 
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 
 use function explode;
 use function preg_match;
@@ -19,7 +19,7 @@ use function trim;
 /**
  * Parses column definition string. For example, `string(255)` or `int unsigned`.
  *
- * @psalm-import-type ColumnInfo from ColumnSchemaInterface
+ * @psalm-import-type ColumnInfo from ColumnFactoryInterface
  */
 final class ColumnDefinitionParser
 {
@@ -36,11 +36,11 @@ final class ColumnDefinitionParser
     {
         preg_match('/^(\w*)(?:\(([^)]+)\))?\s*/', $definition, $matches);
 
-        $dbType = strtolower($matches[1]);
-        $info = ['db_type' => $dbType];
+        $type = strtolower($matches[1]);
+        $info = ['type' => $type];
 
         if (isset($matches[2])) {
-            if ($dbType === 'enum') {
+            if ($type === 'enum') {
                 $info += $this->enumInfo($matches[2]);
             } else {
                 $info += $this->sizeInfo($matches[2]);
@@ -57,7 +57,7 @@ final class ColumnDefinitionParser
     {
         preg_match_all("/'([^']*)'/", $values, $matches);
 
-        return ['enum_values' => $matches[1]];
+        return ['enumValues' => $matches[1]];
     }
 
     private function extraInfo(string $extra): array

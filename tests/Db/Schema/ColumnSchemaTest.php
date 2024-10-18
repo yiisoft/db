@@ -155,12 +155,10 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('', $column->getExtra());
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider::load */
-    public function testLoad(string $parameter, mixed $value, string $method, mixed $expected): void
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider::construct */
+    public function testConstruct(string $parameter, mixed $value, string $method, mixed $expected): void
     {
-        $column = new ColumnSchema();
-
-        $column->load([$parameter => $value]);
+        $column = new ColumnSchema(...[$parameter => $value]);
 
         $this->assertSame($expected, $column->$method());
     }

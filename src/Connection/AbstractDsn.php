@@ -25,7 +25,7 @@ abstract class AbstractDsn implements DsnInterface, Stringable
      */
     public function __construct(
         private readonly string $driver,
-        private readonly string $host,
+        private readonly string $host = '127.0.0.1',
         private readonly string|null $databaseName = null,
         private readonly string|null $port = null,
         private readonly array $options = []

@@ -19,17 +19,23 @@ use function is_iterable;
 use function is_string;
 use function iterator_to_array;
 
+/**
+ * Represents the schema for an array column.
+ */
 class ArrayColumnSchema extends AbstractColumnSchema
 {
+    protected const DEFAULT_TYPE = ColumnType::ARRAY;
+
     /**
      * @var ColumnSchemaInterface|null The column of an array item.
      */
-    private ColumnSchemaInterface|null $column = null;
+    protected ColumnSchemaInterface|null $column = null;
 
     /**
      * @var int The dimension of array, must be greater than 0.
+     * @psalm-var positive-int
      */
-    private int $dimension = 1;
+    protected int $dimension = 1;
 
     /**
      * Returns the parser for the column value.
@@ -37,15 +43,6 @@ class ArrayColumnSchema extends AbstractColumnSchema
     protected function getParser(): ParserToArrayInterface
     {
         throw new NotSupportedException(__METHOD__ . '() is not supported. Use concrete DBMS implementation.');
-    }
-
-    /**
-     * @psalm-param ColumnType::* $type
-     */
-    public function __construct(
-        string $type = ColumnType::ARRAY,
-    ) {
-        parent::__construct($type);
     }
 
     /**
@@ -74,7 +71,9 @@ class ArrayColumnSchema extends AbstractColumnSchema
     }
 
     /**
-     * Set dimension of an array, must be greater than 0.
+     * Set dimension of an array, must be greater than
+     *
+     * @psalm-param positive-int $dimension
      */
     public function dimension(int $dimension): static
     {
@@ -84,6 +83,8 @@ class ArrayColumnSchema extends AbstractColumnSchema
 
     /**
      * @return int the dimension of the array.
+     *
+     * @psalm-return positive-int
      */
     public function getDimension(): int
     {
@@ -142,6 +143,8 @@ class ArrayColumnSchema extends AbstractColumnSchema
      *
      * @param mixed $value The array or iterable object.
      * @param int $dimension The array dimension. Should be more than 0.
+     *
+     * @psalm-param positive-int $dimension
      *
      * @return array|null Converted values.
      */
