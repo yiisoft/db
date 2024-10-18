@@ -10,16 +10,12 @@ use Yiisoft\Db\Constant\PhpType;
 
 use function is_float;
 
+/**
+ * Represents the metadata for a double column.
+ */
 class DoubleColumnSchema extends AbstractColumnSchema
 {
-    /**
-     * @psalm-param ColumnType::* $type
-     */
-    public function __construct(
-        string $type = ColumnType::DOUBLE,
-    ) {
-        parent::__construct($type);
-    }
+    protected const DEFAULT_TYPE = ColumnType::DOUBLE;
 
     public function dbTypecast(mixed $value): float|ExpressionInterface|null
     {

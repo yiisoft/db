@@ -11,31 +11,6 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 /**
  * This interface defines a set of methods that must be implemented by a class that represents the column schema of a
  * database table column.
- *
- * @psalm-type ColumnInfo = array{
- *     auto_increment?: bool|string,
- *     check?: string|null,
- *     column?: ColumnSchemaInterface|null,
- *     columns?: array<string, ColumnSchemaInterface>,
- *     comment?: string|null,
- *     computed?: bool|string,
- *     db_type?: string|null,
- *     default_value?: mixed,
- *     dimension?: int|string,
- *     enum_values?: array|null,
- *     extra?: string|null,
- *     primary_key?: bool|string,
- *     not_null?: bool|string,
- *     reference?: ForeignKeyConstraint|null,
- *     scale?: int|string|null,
- *     schema?: string|null,
- *     size?: int|string|null,
- *     table?: string|null,
- *     type?: ColumnType::*,
- *     unique?: bool|string,
- *     unsigned?: bool|string,
- *     ...<string, mixed>
- * }
  */
 interface ColumnSchemaInterface
 {
@@ -323,13 +298,6 @@ interface ColumnSchemaInterface
     public function isUnsigned(): bool;
 
     /**
-     * Loads the column's schema information from an array.
-     *
-     * @psalm-param ColumnInfo $info
-     */
-    public function load(array $info): static;
-
-    /**
      * Sets a name of the column.
      *
      * ```php
@@ -382,7 +350,7 @@ interface ColumnSchemaInterface
      * ];
      * ```
      */
-    public function primaryKey(bool $isPrimaryKey = true): static;
+    public function primaryKey(bool $primaryKey = true): static;
 
     /**
      * The reference to the foreign key constraint.

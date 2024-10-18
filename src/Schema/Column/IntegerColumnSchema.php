@@ -10,16 +10,12 @@ use Yiisoft\Db\Constant\PhpType;
 
 use function is_int;
 
+/**
+ * Represents the schema for an integer column.
+ */
 class IntegerColumnSchema extends AbstractColumnSchema
 {
-    /**
-     * @psalm-param ColumnType::* $type
-     */
-    public function __construct(
-        string $type = ColumnType::INTEGER,
-    ) {
-        parent::__construct($type);
-    }
+    protected const DEFAULT_TYPE = ColumnType::INTEGER;
 
     public function dbTypecast(mixed $value): int|ExpressionInterface|null
     {

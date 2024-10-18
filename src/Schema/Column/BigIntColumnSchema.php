@@ -14,16 +14,12 @@ use function gettype;
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
 
+/**
+ * Represents the metadata for a bigint column.
+ */
 class BigIntColumnSchema extends AbstractColumnSchema
 {
-    /**
-     * @psalm-param ColumnType::* $type
-     */
-    public function __construct(
-        string $type = ColumnType::BIGINT,
-    ) {
-        parent::__construct($type);
-    }
+    protected const DEFAULT_TYPE = ColumnType::BIGINT;
 
     public function dbTypecast(mixed $value): int|string|ExpressionInterface|null
     {

@@ -11,16 +11,12 @@ use Yiisoft\Db\Expression\JsonExpression;
 use function is_string;
 use function json_decode;
 
+/**
+ * Represents the schema for a json column.
+ */
 class JsonColumnSchema extends AbstractColumnSchema
 {
-    /**
-     * @psalm-param ColumnType::* $type
-     */
-    public function __construct(
-        string $type = ColumnType::JSON,
-    ) {
-        parent::__construct($type);
-    }
+    protected const DEFAULT_TYPE = ColumnType::JSON;
 
     public function dbTypecast(mixed $value): ExpressionInterface|null
     {

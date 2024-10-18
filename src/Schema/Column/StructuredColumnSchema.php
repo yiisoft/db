@@ -12,15 +12,21 @@ use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Syntax\ParserToArrayInterface;
 
 use function array_keys;
+use function is_array;
 use function is_string;
 
+/**
+ * Represents the schema for a structured column.
+ */
 class StructuredColumnSchema extends AbstractColumnSchema
 {
+    protected const DEFAULT_TYPE = ColumnType::STRUCTURED;
+
     /**
      * @var ColumnSchemaInterface[] Columns metadata of the structured type.
      * @psalm-var array<string, ColumnSchemaInterface>
      */
-    private array $columns = [];
+    protected array $columns = [];
 
     /**
      * Returns the parser for the column value.
@@ -28,15 +34,6 @@ class StructuredColumnSchema extends AbstractColumnSchema
     protected function getParser(): ParserToArrayInterface
     {
         throw new NotSupportedException(__METHOD__ . '() is not supported. Use concrete DBMS implementation.');
-    }
-
-    /**
-     * @psalm-param ColumnType::* $type
-     */
-    public function __construct(
-        string $type = ColumnType::STRUCTURED,
-    ) {
-        parent::__construct($type);
     }
 
     /**
