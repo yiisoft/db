@@ -11,6 +11,7 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
 use function implode;
+use function is_bool;
 use function is_string;
 use function preg_split;
 
@@ -304,5 +305,22 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     public function truncateTable(string $table): string
     {
         return 'TRUNCATE TABLE ' . $this->quoter->quoteTableName($table);
+    }
+
+    public function refreshMaterializedView(string $viewName, bool $concurrently = false, ?bool $withData = null): string
+    {
+        $sql = 'REFRESH MATERIALIZED VIEW ';
+
+        if ($concurrently) {
+            $sql .= 'CONCURRENTLY ';
+        }
+
+        $sql .= $this->quoter->quoteTableName($viewName);
+
+        if (is_bool($withData)) {
+            $sql .= ' WITH ' . ($withData ? 'DATA' : 'NO DATA');
+        }
+
+        return $sql;
     }
 }
