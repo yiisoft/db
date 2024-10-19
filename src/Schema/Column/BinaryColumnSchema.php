@@ -12,16 +12,12 @@ use Yiisoft\Db\Constant\GettypeResult;
 
 use function gettype;
 
+/**
+ * Represents the metadata for a binary column.
+ */
 class BinaryColumnSchema extends AbstractColumnSchema
 {
-    /**
-     * @psalm-param ColumnType::* $type
-     */
-    public function __construct(
-        string $type = ColumnType::BINARY,
-    ) {
-        parent::__construct($type);
-    }
+    protected const DEFAULT_TYPE = ColumnType::BINARY;
 
     public function dbTypecast(mixed $value): mixed
     {

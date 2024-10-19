@@ -858,9 +858,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             );
             $this->assertSame($expected['type'], $column->getType(), "type of column $name does not match.");
             $this->assertSame(
-                $expected['allowNull'],
-                $column->isAllowNull(),
-                "allowNull of column $name does not match."
+                $expected['notNull'],
+                $column->isNotNull(),
+                "notNull of column $name does not match."
             );
             $this->assertSame(
                 $expected['autoIncrement'],
@@ -873,11 +873,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 "enumValues of column $name does not match."
             );
             $this->assertSame($expected['size'], $column->getSize(), "size of column $name does not match.");
-            $this->assertSame(
-                $expected['precision'],
-                $column->getPrecision(),
-                "precision of column $name does not match."
-            );
 
             $this->assertSame($expected['scale'], $column->getScale(), "scale of column $name does not match.");
 
@@ -896,6 +891,14 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                     $expected['defaultValue'],
                     $column->getDefaultValue(),
                     "defaultValue of column $name does not match."
+                );
+            }
+
+            if (isset($expected['unique'])) {
+                $this->assertSame(
+                    $expected['unique'],
+                    $column->isUnique(),
+                    "unique of column $name does not match"
                 );
             }
 
@@ -929,7 +932,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                         'phpType' => $arrayColumn->getPhpType(),
                         'enumValues' => $arrayColumn->getEnumValues(),
                         'size' => $arrayColumn->getSize(),
-                        'precision' => $arrayColumn->getPrecision(),
                         'scale' => $arrayColumn->getScale(),
                     ],
                     "array column of column $name does not match"

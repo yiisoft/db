@@ -7,12 +7,14 @@ namespace Yiisoft\Db\Schema\Column;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
 
-use function is_array;
+use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+
+use function property_exists;
 
 /**
  * Represents the metadata of a column in a database table.
  *
- * It provides information about the column's name, type, size, precision, and other details.
+ * It provides information about the column's type, size, scale, and other details.
  *
  * The `ColumnSchema` class is used to store and retrieve metadata about a column in a database table.
  *
@@ -25,10 +27,9 @@ use function is_array;
  * use Yiisoft\Db\Schema\ColumnSchema;
  *
  * $column = (new IntegerColumnSchema())
- *     ->name('id')
- *     ->allowNull(false)
- *     ->dbType('int(11)')
- *     ->type('integer')
+ *     ->notNull()
+ *     ->dbType('int')
+ *     ->size(11)
  *     ->defaultValue(0)
  *     ->autoIncrement()
  *     ->primaryKey();
@@ -36,38 +37,89 @@ use function is_array;
  */
 abstract class AbstractColumnSchema implements ColumnSchemaInterface
 {
-    private bool $allowNull = false;
-    private bool $autoIncrement = false;
-    private string|null $comment = null;
-    private bool $computed = false;
-    private string|null $dbType = null;
-    private mixed $defaultValue = null;
-    private array|null $enumValues = null;
-    private string|null $extra = null;
-    private bool $isPrimaryKey = false;
-    private string|null $name = null;
-    private int|null $precision = null;
-    private int|null $scale = null;
-    private int|null $size = null;
-    private bool $unsigned = false;
+    /**
+     * @var string The default column abstract type
+     * @psalm-var ColumnType::*
+     */
+    protected const DEFAULT_TYPE = ColumnType::STRING;
 
     /**
+     * @var string The column abstract type
+     * @psalm-var ColumnType::*
+     */
+    private string $type;
+
+    /**
+     * @param string|null $type The column's abstract type.
+     * @param bool $autoIncrement Whether the column is auto-incremental.
+     * @param string|null $check The check constraint for the column.
+     * @param string|null $comment The column's comment.
+     * @param bool $computed Whether the column is a computed column.
+     * @param string|null $dbType The column's database type.
+     * @param mixed $defaultValue The default value of the column.
+     * @param array|null $enumValues The list of possible values for an ENUM column.
+     * @param string|null $extra Any extra information that needs to be appended to the column's definition.
+     * @param bool $primaryKey Whether the column is a primary key.
+     * @param string|null $name The column's name.
+     * @param bool $notNull Whether the column is not nullable.
+     * @param ForeignKeyConstraint|null $reference The foreign key constraint.
+     * @param int|null $scale The number of digits to the right of the decimal point.
+     * @param int|null $size The column's size.
+     * @param bool $unique Whether the column is unique.
+     * @param bool $unsigned Whether the column is unsigned.
+     * @param mixed ...$args Additional arguments to be passed to the constructor.
+     *
      * @psalm-param ColumnType::* $type
+     * @psalm-param array<string, mixed> $args
      */
     public function __construct(
-        private string $type,
+        string|null $type = null,
+        private bool $autoIncrement = false,
+        private string|null $check = null,
+        private string|null $comment = null,
+        private bool $computed = false,
+        private string|null $dbType = null,
+        private mixed $defaultValue = null,
+        private array|null $enumValues = null,
+        private string|null $extra = null,
+        private bool $primaryKey = false,
+        private string|null $name = null,
+        private bool $notNull = false,
+        private ForeignKeyConstraint|null $reference = null,
+        private int|null $scale = null,
+        private int|null $size = null,
+        private bool $unique = false,
+        private bool $unsigned = false,
+        mixed ...$args,
     ) {
+        $this->type = $type ?? static::DEFAULT_TYPE;
+
+        /** @var array<string, mixed> $args */
+        foreach ($args as $property => $value) {
+            if (property_exists($this, $property)) {
+                $this->$property = $value;
+            }
+        }
     }
 
+    /**
+     * @deprecated Use {@see notNull()} instead. Will be removed in version 2.0.
+     */
     public function allowNull(bool $allowNull = true): static
     {
-        $this->allowNull = $allowNull;
+        $this->notNull(!$allowNull);
         return $this;
     }
 
     public function autoIncrement(bool $autoIncrement = true): static
     {
         $this->autoIncrement = $autoIncrement;
+        return $this;
+    }
+
+    public function check(string|null $check): static
+    {
+        $this->check = $check;
         return $this;
     }
 
@@ -107,6 +159,11 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this;
     }
 
+    public function getCheck(): string|null
+    {
+        return $this->check;
+    }
+
     public function getComment(): string|null
     {
         return $this->comment;
@@ -132,19 +189,30 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->extra;
     }
 
+    /**
+     * @deprecated Will be removed in version 2.0.
+     */
     public function getName(): string|null
     {
         return $this->name;
     }
 
+    /**
+     * @deprecated Use {@see getSize()} instead. Will be removed in version 2.0.
+     */
     public function getPrecision(): int|null
     {
-        return $this->precision;
+        return $this->getSize();
     }
 
     public function getPhpType(): string
     {
         return PhpType::MIXED;
+    }
+
+    public function getReference(): ForeignKeyConstraint|null
+    {
+        return $this->reference;
     }
 
     public function getScale(): int|null
@@ -162,9 +230,12 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->type;
     }
 
+    /**
+     * @deprecated Use {@see isNotNull()} instead. Will be removed in version 2.0.
+     */
     public function isAllowNull(): bool
     {
-        return $this->allowNull;
+        return !$this->isNotNull();
     }
 
     public function isAutoIncrement(): bool
@@ -177,9 +248,19 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->computed;
     }
 
+    public function isNotNull(): bool
+    {
+        return $this->notNull;
+    }
+
     public function isPrimaryKey(): bool
     {
-        return $this->isPrimaryKey;
+        return $this->primaryKey;
+    }
+
+    public function isUnique(): bool
+    {
+        return $this->unique;
     }
 
     public function isUnsigned(): bool
@@ -187,50 +268,38 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->unsigned;
     }
 
-    public function load(array $info): static
-    {
-        foreach ($info as $key => $value) {
-            /**
-             * @psalm-suppress PossiblyInvalidCast
-             * @psalm-suppress RiskyCast
-             */
-            match ($key) {
-                'allow_null' => $this->allowNull((bool) $value),
-                'auto_increment' => $this->autoIncrement((bool) $value),
-                'comment' => $this->comment($value !== null ? (string) $value : null),
-                'computed' => $this->computed((bool) $value),
-                'db_type' => $this->dbType($value !== null ? (string) $value : null),
-                'default_value' => $this->defaultValue($value),
-                'enum_values' => $this->enumValues(is_array($value) ? $value : null),
-                'extra' => $this->extra($value !== null ? (string) $value : null),
-                'name' => $this->name($value !== null ? (string) $value : null),
-                'primary_key' => $this->primaryKey((bool) $value),
-                'precision' => $this->precision($value !== null ? (int) $value : null),
-                'scale' => $this->scale($value !== null ? (int) $value : null),
-                'size' => $this->size($value !== null ? (int) $value : null),
-                'unsigned' => $this->unsigned((bool) $value),
-                default => null,
-            };
-        }
-
-        return $this;
-    }
-
+    /**
+     * @deprecated Will be removed in version 2.0.
+     */
     public function name(string|null $name): static
     {
         $this->name = $name;
         return $this;
     }
 
-    public function precision(int|null $precision): static
+    public function notNull(bool $notNull = true): static
     {
-        $this->precision = $precision;
+        $this->notNull = $notNull;
         return $this;
     }
 
-    public function primaryKey(bool $isPrimaryKey = true): static
+    /**
+     * @deprecated Use {@see size()} instead. Will be removed in version 2.0.
+     */
+    public function precision(int|null $precision): static
     {
-        $this->isPrimaryKey = $isPrimaryKey;
+        return $this->size($precision);
+    }
+
+    public function primaryKey(bool $primaryKey = true): static
+    {
+        $this->primaryKey = $primaryKey;
+        return $this;
+    }
+
+    public function reference(ForeignKeyConstraint|null $reference): static
+    {
+        $this->reference = $reference;
         return $this;
     }
 
@@ -249,6 +318,12 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     public function type(string $type): static
     {
         $this->type = $type;
+        return $this;
+    }
+
+    public function unique(bool $unique = true): static
+    {
+        $this->unique = $unique;
         return $this;
     }
 

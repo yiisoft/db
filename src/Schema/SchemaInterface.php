@@ -13,6 +13,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 
 /**
  * Represents the schema for a database table.
@@ -279,8 +280,15 @@ interface SchemaInterface extends ConstraintSchemaInterface
 
     /**
      * @psalm-param string[]|int[]|int|string|null $length
+     *
+     * @deprecated Use {@see ColumnBuilder} instead. Will be removed in 2.0.
      */
     public function createColumn(string $type, array|int|string $length = null): ColumnInterface;
+
+    /**
+     * Returns the column factory for creating column instances.
+     */
+    public function getColumnFactory(): ColumnFactoryInterface;
 
     /**
      * @return string|null The default schema name.

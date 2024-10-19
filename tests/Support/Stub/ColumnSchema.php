@@ -8,11 +8,7 @@ use Yiisoft\Db\Schema\Column\AbstractColumnSchema;
 
 final class ColumnSchema extends AbstractColumnSchema
 {
-    public function __construct(
-        private string $type = '',
-    ) {
-        parent::__construct($type);
-    }
+    protected const DEFAULT_TYPE = '';
 
     public function dbTypecast(mixed $value): mixed
     {

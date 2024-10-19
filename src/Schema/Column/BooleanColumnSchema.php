@@ -8,16 +8,12 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\PhpType;
 
+/**
+ * Represents the metadata for a boolean column.
+ */
 class BooleanColumnSchema extends AbstractColumnSchema
 {
-    /**
-     * @psalm-param ColumnType::* $type
-     */
-    public function __construct(
-        string $type = ColumnType::BOOLEAN,
-    ) {
-        parent::__construct($type);
-    }
+    protected const DEFAULT_TYPE = ColumnType::BOOLEAN;
 
     public function dbTypecast(mixed $value): bool|ExpressionInterface|null
     {

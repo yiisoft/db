@@ -13,6 +13,7 @@ use Yiisoft\Db\Schema\Column\DoubleColumnSchema;
 use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
 use Yiisoft\Db\Schema\Column\JsonColumnSchema;
 use Yiisoft\Db\Schema\Column\StringColumnSchema;
+use Yiisoft\Db\Schema\Column\StructuredColumnSchema;
 
 class ColumnFactoryProvider
 {
@@ -36,8 +37,8 @@ class ColumnFactoryProvider
             'pk' => [PseudoType::PK, ColumnType::INTEGER, IntegerColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
             'upk' => [PseudoType::UPK, ColumnType::INTEGER, IntegerColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true, 'isUnsigned' => true]],
             'bigpk' => [PseudoType::BIGPK, ColumnType::BIGINT, IntegerColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
-            'ubigpk' => [PseudoType::UBIGPK, ColumnType::BIGINT, IntegerColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true, 'isUnsigned' => true]],
-            'uuid_pk' => [PseudoType::UUID_PK, ColumnType::UUID, StringColumnSchema::class, ['isPrimaryKey' => true]],
+            'ubigpk' => [PseudoType::UBIGPK, ColumnType::BIGINT, BigIntColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true, 'isUnsigned' => true]],
+            'uuid_pk' => [PseudoType::UUID_PK, ColumnType::UUID, StringColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
             'uuid_pk_seq' => [PseudoType::UUID_PK_SEQ, ColumnType::UUID, StringColumnSchema::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
         ];
     }
@@ -64,6 +65,7 @@ class ColumnFactoryProvider
             'timestamp' => [ColumnType::TIMESTAMP, ColumnType::TIMESTAMP, StringColumnSchema::class],
             'time' => [ColumnType::TIME, ColumnType::TIME, StringColumnSchema::class],
             'date' => [ColumnType::DATE, ColumnType::DATE, StringColumnSchema::class],
+            'structured' => [ColumnType::STRUCTURED, ColumnType::STRUCTURED, StructuredColumnSchema::class],
             'json' => [ColumnType::JSON, ColumnType::JSON, JsonColumnSchema::class],
         ];
     }

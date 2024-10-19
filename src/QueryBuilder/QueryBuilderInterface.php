@@ -9,6 +9,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 
 /**
@@ -35,6 +36,16 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * @psalm-param ParamsType $params
      */
     public function bindParam(mixed $value, array &$params = []): string;
+
+    /**
+     * Builds column definition based on given column instance.
+     *
+     * @param ColumnSchemaInterface|string $column the column instance or string column definition which should be
+     * converted into a database string representation.
+     *
+     * @return string the SQL column definition.
+     */
+    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string;
 
     /**
      * Converts an abstract column type into a physical column type.
@@ -81,6 +92,8 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * @param ColumnInterface|string $type Abstract column type.
      *
      * @return string Physical column type.
+     *
+     * @deprecated Use {@see buildColumnDefinition()}. Will be removed in version 2.0.
      */
     public function getColumnType(ColumnInterface|string $type): string;
 

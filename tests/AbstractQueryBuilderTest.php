@@ -27,6 +27,7 @@ use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -2419,5 +2420,14 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $command->getRawSql()
         );
+    }
+
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildColumnDefinition() */
+    public function testBuildColumnDefinition(string $expected, ColumnSchemaInterface|string $column): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->assertSame($expected, $qb->buildColumnDefinition($column));
     }
 }

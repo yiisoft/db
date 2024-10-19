@@ -8,7 +8,6 @@ use PDO;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoConnection;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\Quoter;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -41,11 +40,6 @@ final class Connection extends AbstractPdoConnection
     public function createTransaction(): TransactionInterface
     {
         return new Transaction($this);
-    }
-
-    public function getColumnFactory(): ColumnFactoryInterface
-    {
-        return new ColumnFactory();
     }
 
     public function getQueryBuilder(): QueryBuilderInterface

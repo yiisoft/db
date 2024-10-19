@@ -11,16 +11,12 @@ use Yiisoft\Db\Constant\PhpType;
 
 use function gettype;
 
+/**
+ * Represents the metadata for a string column.
+ */
 class StringColumnSchema extends AbstractColumnSchema
 {
-    /**
-     * @psalm-param ColumnType::* $type
-     */
-    public function __construct(
-        string $type = ColumnType::STRING,
-    ) {
-        parent::__construct($type);
-    }
+    protected const DEFAULT_TYPE = ColumnType::STRING;
 
     public function dbTypecast(mixed $value): mixed
     {

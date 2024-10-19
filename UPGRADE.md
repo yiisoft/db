@@ -67,8 +67,16 @@ and the following changes were made:
 - `getName()` method can return `string` or `null`;
 - `getPhpType()` method must return `string` PHP type of the column which used for generating related model properties;
 - `name(string|null $name)` method is added;
-- `load(array $info)` method is added;
-- constructor of `AbstractColumnSchema` class is changed to `__construct(string $type, string|null $phpType = null)`;
+- `check(string|null $check)` method is added;
+- `getCheck()` method is added;
+- `reference(ForeignKeyConstraint|null $reference)` method is added;
+- `getReference()` method is added;
+- `notNull(bool $notNull = true)` method is added;
+- `isNotNull()` method is added;
+- `unique(bool $unique = true)` method is added;
+- `isUnique()` method is added;
+- all `AbstractColumnSchema` class properties except `$type` moved to constructor;
+- added `DEFAULT_TYPE` constant to `AbstractColumnSchema` class;
 - added method chaining.
 
 ### New classes with constants
@@ -89,12 +97,15 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `DoubleColumnSchema` for columns with fractional number type (float, double, decimal, money);
 - `StringColumnSchema` for columns with string or datetime type (char, string, text, datetime, timestamp, date, time);
 - `BinaryColumnSchema` for columns with binary type;
+- `ArrayColumnSchema` for columns with array type;
+- `StructuredColumnSchema` for columns with structured type (composite type in PostgreSQL);
 - `JsonColumnSchema` for columns with json type.
 
 ### New methods
 
 - `QuoterInterface::getRawTableName()` - returns the raw table name without quotes;
-- `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS.
+- `SchemaInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
+- `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement.
 
 ### Remove methods
 

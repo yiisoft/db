@@ -41,6 +41,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
 
     public function addColumn(string $table, string $column, ColumnInterface|string $type): string
     {
+        /** @psalm-suppress DeprecatedMethod */
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
             . ' ADD '
@@ -138,6 +139,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         string $column,
         ColumnInterface|string $type
     ): string {
+        /** @psalm-suppress DeprecatedMethod */
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
             . ' CHANGE '
@@ -171,6 +173,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
 
         foreach ($columns as $name => $type) {
             if (is_string($name)) {
+                /** @psalm-suppress DeprecatedMethod */
                 $cols[] = "\t"
                     . $this->quoter->quoteColumnName($name)
                     . ' '

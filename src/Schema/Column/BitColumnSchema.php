@@ -8,16 +8,12 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
+/**
+ * Represents the metadata for a bit column.
+ */
 class BitColumnSchema extends AbstractColumnSchema
 {
-    /**
-     * @psalm-param ColumnType::* $type
-     */
-    public function __construct(
-        string $type = ColumnType::BIT,
-    ) {
-        parent::__construct($type);
-    }
+    protected const DEFAULT_TYPE = ColumnType::BIT;
 
     public function dbTypecast(mixed $value): int|string|ExpressionInterface|null
     {

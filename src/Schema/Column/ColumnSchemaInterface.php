@@ -6,31 +6,11 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
+use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 
 /**
  * This interface defines a set of methods that must be implemented by a class that represents the column schema of a
  * database table column.
- *
- * @psalm-type ColumnInfo = array{
- *     allow_null?: bool|string|null,
- *     auto_increment?: bool|string,
- *     comment?: string|null,
- *     computed?: bool|string,
- *     db_type?: string|null,
- *     default_value?: mixed,
- *     enum_values?: array|null,
- *     extra?: string|null,
- *     primary_key?: bool|string,
- *     name?: string|null,
- *     precision?: int|string|null,
- *     scale?: int|string|null,
- *     schema?: string|null,
- *     size?: int|string|null,
- *     table?: string|null,
- *     type?: ColumnType::*,
- *     unsigned?: bool|string,
- *     ...<string, mixed>
- * }
  */
 interface ColumnSchemaInterface
 {
@@ -41,9 +21,11 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'description' => $this->text()->allowNull(),
+     *     'description' => ColumnBuilder::text()->allowNull(),
      * ];
      * ```
+     *
+     * @deprecated Use {@see notNull()} instead. Will be removed in version 2.0.
      */
     public function allowNull(bool $allowNull = true): static;
 
@@ -56,11 +38,22 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'id' => $this->primaryKey()->autoIncrement(),
+     *     'id' => ColumnBuilder::primaryKey()->autoIncrement(),
      * ];
      * ```
      */
     public function autoIncrement(bool $autoIncrement = true): static;
+
+    /**
+     * The check constraint for the column to specify an expression that must be true for each row in the table.
+     *
+     * ```php
+     * $columns = [
+     *     'age' => ColumnBuilder::integer()->check('age > 0'),
+     * ];
+     * ```
+     */
+    public function check(string|null $check): static;
 
     /**
      * The comment for a column in a database table.
@@ -69,7 +62,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'description' => $this->text()->comment('Description of the product'),
+     *     'description' => ColumnBuilder::text()->comment('Description of the product'),
      * ];
      * ```
      */
@@ -82,7 +75,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'description' => $this->text()->computed(true),
+     *     'full_name' => ColumnBuilder::text()->computed(true),
      * ];
      * ```
      */
@@ -97,7 +90,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'description' => $this->text()->dbType('text'),
+     *     'description' => ColumnBuilder::text()->dbType('text'),
      * ];
      * ```
      */
@@ -120,7 +113,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'description' => $this->text()->defaultValue('Description of the product'),
+     *     'description' => ColumnBuilder::text()->defaultValue('Description of the product'),
      * ];
      * ```
      */
@@ -131,7 +124,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'status' => $this->string(16)->enumValues(['active', 'inactive']),
+     *     'status' => ColumnBuilder::string(16)->enumValues(['active', 'inactive']),
      * ];
      * ```
      */
@@ -145,11 +138,18 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'description' => $this->text()->extra('ON UPDATE CURRENT_TIMESTAMP'),
+     *     'updated_at' => ColumnBuilder::integer()->extra('ON UPDATE CURRENT_TIMESTAMP'),
      * ];
      * ```
      */
     public function extra(string|null $extra): static;
+
+    /**
+     * Returns the check constraint for the column.
+     *
+     * @see check()
+ */
+    public function getCheck(): string|null;
 
     /**
      * @return string|null The comment of the column.
@@ -192,6 +192,8 @@ interface ColumnSchemaInterface
 
     /**
      * @return string|null The name of the column.
+     *
+     * @deprecated Will be removed in version 2.0.
      */
     public function getName(): string|null;
 
@@ -199,6 +201,8 @@ interface ColumnSchemaInterface
      * @return int|null The precision of the column.
      *
      * @see precision()
+     *
+     * @deprecated Use {@see getSize()} instead. Will be removed in version 2.0.
      */
     public function getPrecision(): int|null;
 
@@ -209,6 +213,13 @@ interface ColumnSchemaInterface
      * @psalm-return PhpType::*
      */
     public function getPhpType(): string;
+
+    /**
+     * Returns the reference to the foreign key constraint.
+     *
+     * @see reference()
+     */
+    public function getReference(): ForeignKeyConstraint|null;
 
     /**
      * @return int|null The scale of the column.
@@ -236,6 +247,8 @@ interface ColumnSchemaInterface
      * Whether this column is nullable.
      *
      * @see allowNull()
+     *
+     * @deprecated Use {@see isNotNull()} instead. Will be removed in version 2.0.
      */
     public function isAllowNull(): bool;
 
@@ -256,11 +269,25 @@ interface ColumnSchemaInterface
     public function isComputed(): bool;
 
     /**
+     * Whether this column is not nullable.
+     *
+     * @see notNull()
+     */
+    public function isNotNull(): bool;
+
+    /**
      * Whether this column is a part of primary key.
      *
      * @see primaryKey()
      */
     public function isPrimaryKey(): bool;
+
+    /**
+     * Whether this column has a unique index.
+     *
+     * @see unique()
+     */
+    public function isUnique(): bool;
 
     /**
      * Whether this column is unsigned. This is only meaningful when {@see type} is `tinyint`, `smallint`, `integer`
@@ -271,22 +298,28 @@ interface ColumnSchemaInterface
     public function isUnsigned(): bool;
 
     /**
-     * Loads the column's schema information from an array.
-     *
-     * @psalm-param ColumnInfo $info
-     */
-    public function load(array $info): static;
-
-    /**
      * Sets a name of the column.
      *
      * ```php
      * $columns = [
-     *     'id' => $this->primaryKey()->name('id'),
+     *     'id' => ColumnBuilder::primaryKey()->name('id'),
+     * ];
+     * ```
+     *
+     * @deprecated Will be removed in version 2.0.
+     */
+    public function name(string|null $name): static;
+
+    /**
+     * Whether the column is not nullable.
+     *
+     * ```php
+     * $columns = [
+     *     'description' => ColumnBuilder::text()->notNull(),
      * ];
      * ```
      */
-    public function name(string|null $name): static;
+    public function notNull(bool $notNull = true): static;
 
     /**
      * Converts the input value according to {@see phpType} after retrieval from the database.
@@ -301,8 +334,10 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'price' => $this->decimal(10, 2)->precision(10),
+     *     'price' => ColumnBuilder::decimal(10, 2)->precision(10),
      * ];
+     *
+     * @deprecated Use {@see size()} instead. Will be removed in version 2.0.
      */
     public function precision(int|null $precision): static;
 
@@ -311,11 +346,26 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'id' => $this->primaryKey(true),
+     *     'id' => ColumnBuilder::primaryKey(),
      * ];
      * ```
      */
-    public function primaryKey(bool $isPrimaryKey = true): static;
+    public function primaryKey(bool $primaryKey = true): static;
+
+    /**
+     * The reference to the foreign key constraint.
+     *
+     * ```php
+     * $reference = new ForeignKeyConstraint();
+     * $reference->foreignTableName('user');
+     * $reference->foreignColumnNames(['id']);
+     *
+     * $columns = [
+     *     'user_id' => ColumnBuilder::integer()->reference($reference),
+     * ];
+     * ```
+     */
+    public function reference(ForeignKeyConstraint|null $reference): static;
 
     /**
      * The scale is the number of digits to the right of the decimal point and is only meaningful when {@see type} is
@@ -323,7 +373,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'price' => $this->decimal(10, 2)->scale(2),
+     *     'price' => ColumnBuilder::decimal(10, 2)->scale(2),
      * ];
      * ```
      */
@@ -336,7 +386,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'name' => $this->string()->size(255),
+     *     'name' => ColumnBuilder::string()->size(255),
      * ];
      * ```
      */
@@ -347,7 +397,7 @@ interface ColumnSchemaInterface
      *
      * ```php
      * $columns = [
-     *     'description' => $this->text()->type('text'),
+     *     'description' => ColumnBuilder::text()->type('text'),
      * ];
      *
      * @psalm-param ColumnType::* $type
@@ -355,12 +405,23 @@ interface ColumnSchemaInterface
     public function type(string $type): static;
 
     /**
+     * Whether the column has a unique index.
+     *
+     * ```php
+     *  $columns = [
+     *      'username' => ColumnBuilder::string()->unique(),
+     *  ];
+     *  ```
+     */
+    public function unique(bool $unique = true): static;
+
+    /**
      * Whether the column type is an unsigned integer.
      * It's a data type that can only represent positive whole numbers only.
      *
      * ```php
      * $columns = [
-     *     'age' => $this->integer()->unsigned(),
+     *     'age' => ColumnBuilder::integer()->unsigned(),
      * ];
      * ```
      */

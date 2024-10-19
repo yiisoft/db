@@ -17,13 +17,15 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromDbType(string $dbType, string $expectedType, string $expectedInstanceOf): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getColumnFactory();
+        $columnFactory = $db->getSchema()->getColumnFactory();
 
         $column = $columnFactory->fromDbType($dbType);
 
         $this->assertInstanceOf($expectedInstanceOf, $column);
         $this->assertSame($expectedType, $column->getType());
         $this->assertSame($dbType, $column->getDbType());
+
+        $db->close();
     }
 
     /**
@@ -36,7 +38,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         array $expectedMethodResults = []
     ): void {
         $db = $this->getConnection();
-        $columnFactory = $db->getColumnFactory();
+        $columnFactory = $db->getSchema()->getColumnFactory();
 
         $column = $columnFactory->fromDefinition($definition);
 
@@ -51,6 +53,8 @@ abstract class AbstractColumnFactoryTest extends TestCase
         foreach ($columnMethodResults as $method => $result) {
             $this->assertSame($result, $column->$method());
         }
+
+        $db->close();
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnFactoryProvider::pseudoTypes */
@@ -61,7 +65,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         array $expectedMethodResults = []
     ): void {
         $db = $this->getConnection();
-        $columnFactory = $db->getColumnFactory();
+        $columnFactory = $db->getSchema()->getColumnFactory();
 
         $column = $columnFactory->fromPseudoType($pseudoType);
 
@@ -74,26 +78,30 @@ abstract class AbstractColumnFactoryTest extends TestCase
         );
 
         foreach ($columnMethodResults as $method => $result) {
-            $this->assertSame($result, $column->$method());
+            $this->assertEquals($result, $column->$method());
         }
+
+        $db->close();
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnFactoryProvider::types */
     public function testFromType(string $type, string $expectedType, string $expectedInstanceOf): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getColumnFactory();
+        $columnFactory = $db->getSchema()->getColumnFactory();
 
         $column = $columnFactory->fromType($type);
 
         $this->assertInstanceOf($expectedInstanceOf, $column);
         $this->assertSame($expectedType, $column->getType());
+
+        $db->close();
     }
 
     public function testFromDefinitionWithExtra(): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getColumnFactory();
+        $columnFactory = $db->getSchema()->getColumnFactory();
 
         $column = $columnFactory->fromDefinition('char(1) NOT NULL', ['extra' => 'UNIQUE']);
 
@@ -101,5 +109,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
         $this->assertSame('char', $column->getType());
         $this->assertSame(1, $column->getSize());
         $this->assertSame('NOT NULL UNIQUE', $column->getExtra());
+
+        $db->close();
     }
 }

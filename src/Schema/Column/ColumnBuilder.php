@@ -9,7 +9,7 @@ use Yiisoft\Db\Constant\ColumnType;
 /**
  * Column builder for database {@see ColumnSchemaInterface} instances.
  *
- * @psalm-import-type ColumnInfo from ColumnSchemaInterface
+ * @psalm-import-type ColumnInfo from ColumnFactoryInterface
  */
 class ColumnBuilder
 {
@@ -21,8 +21,7 @@ class ColumnBuilder
     {
         return static::integer()
             ->primaryKey()
-            ->autoIncrement($autoIncrement)
-            ->allowNull(false);
+            ->autoIncrement($autoIncrement);
     }
 
     /**
@@ -32,8 +31,7 @@ class ColumnBuilder
     {
         return static::smallint()
             ->primaryKey()
-            ->autoIncrement($autoIncrement)
-            ->allowNull(false);
+            ->autoIncrement($autoIncrement);
     }
 
     /**
@@ -43,19 +41,17 @@ class ColumnBuilder
     {
         return static::bigint()
             ->primaryKey()
-            ->autoIncrement($autoIncrement)
-            ->allowNull(false);
+            ->autoIncrement($autoIncrement);
     }
 
     /**
      * Builds a column as an `uuid` primary key.
      */
-    public static function uuidPrimaryKey(bool $autoIncrement = false): ColumnSchemaInterface
+    public static function uuidPrimaryKey(bool $autoIncrement = true): ColumnSchemaInterface
     {
         return static::uuid()
             ->primaryKey()
-            ->autoIncrement($autoIncrement)
-            ->allowNull(false);
+            ->autoIncrement($autoIncrement);
     }
 
     // Abstract type column builders
@@ -69,11 +65,12 @@ class ColumnBuilder
 
     /**
      * Builds a column with the abstract type `bit`.
+     *
+     * @param int|null $size The number of bits that the column can store.
      */
     public static function bit(int|null $size = null): ColumnSchemaInterface
     {
-        return (new BitColumnSchema(ColumnType::BIT))
-            ->size($size);
+        return new BitColumnSchema(ColumnType::BIT, size: $size);
     }
 
     /**
@@ -81,8 +78,7 @@ class ColumnBuilder
      */
     public static function tinyint(int|null $size = null): ColumnSchemaInterface
     {
-        return (new IntegerColumnSchema(ColumnType::TINYINT))
-            ->size($size);
+        return new IntegerColumnSchema(ColumnType::TINYINT, size: $size);
     }
 
     /**
@@ -90,8 +86,7 @@ class ColumnBuilder
      */
     public static function smallint(int|null $size = null): ColumnSchemaInterface
     {
-        return (new IntegerColumnSchema(ColumnType::SMALLINT))
-            ->size($size);
+        return new IntegerColumnSchema(ColumnType::SMALLINT, size: $size);
     }
 
     /**
@@ -99,8 +94,7 @@ class ColumnBuilder
      */
     public static function integer(int|null $size = null): ColumnSchemaInterface
     {
-        return (new IntegerColumnSchema(ColumnType::INTEGER))
-            ->size($size);
+        return new IntegerColumnSchema(ColumnType::INTEGER, size: $size);
     }
 
     /**
@@ -108,8 +102,7 @@ class ColumnBuilder
      */
     public static function bigint(int|null $size = null): ColumnSchemaInterface
     {
-        return (new IntegerColumnSchema(ColumnType::BIGINT))
-            ->size($size);
+        return new IntegerColumnSchema(ColumnType::BIGINT, size: $size);
     }
 
     /**
@@ -117,9 +110,7 @@ class ColumnBuilder
      */
     public static function float(int|null $size = null, int|null $scale = null): ColumnSchemaInterface
     {
-        return (new DoubleColumnSchema(ColumnType::FLOAT))
-            ->size($size)
-            ->scale($scale);
+        return new DoubleColumnSchema(ColumnType::FLOAT, scale: $scale, size: $size);
     }
 
     /**
@@ -127,9 +118,7 @@ class ColumnBuilder
      */
     public static function double(int|null $size = null, int|null $scale = null): ColumnSchemaInterface
     {
-        return (new DoubleColumnSchema(ColumnType::DOUBLE))
-            ->size($size)
-            ->scale($scale);
+        return new DoubleColumnSchema(ColumnType::DOUBLE, scale: $scale, size: $size);
     }
 
     /**
@@ -137,9 +126,7 @@ class ColumnBuilder
      */
     public static function decimal(int|null $size = 10, int|null $scale = 0): ColumnSchemaInterface
     {
-        return (new DoubleColumnSchema(ColumnType::DECIMAL))
-            ->size($size)
-            ->scale($scale);
+        return new DoubleColumnSchema(ColumnType::DECIMAL, scale: $scale, size: $size);
     }
 
     /**
@@ -147,9 +134,7 @@ class ColumnBuilder
      */
     public static function money(int|null $size = 19, int|null $scale = 4): ColumnSchemaInterface
     {
-        return (new DoubleColumnSchema(ColumnType::MONEY))
-            ->size($size)
-            ->scale($scale);
+        return new DoubleColumnSchema(ColumnType::MONEY, scale: $scale, size: $size);
     }
 
     /**
@@ -157,8 +142,7 @@ class ColumnBuilder
      */
     public static function char(int|null $size = 1): ColumnSchemaInterface
     {
-        return (new StringColumnSchema(ColumnType::CHAR))
-            ->size($size);
+        return new StringColumnSchema(ColumnType::CHAR, size: $size);
     }
 
     /**
@@ -166,8 +150,7 @@ class ColumnBuilder
      */
     public static function string(int|null $size = 255): ColumnSchemaInterface
     {
-        return (new StringColumnSchema(ColumnType::STRING))
-            ->size($size);
+        return new StringColumnSchema(ColumnType::STRING, size: $size);
     }
 
     /**
@@ -175,8 +158,7 @@ class ColumnBuilder
      */
     public static function text(int|null $size = null): ColumnSchemaInterface
     {
-        return (new StringColumnSchema(ColumnType::TEXT))
-            ->size($size);
+        return new StringColumnSchema(ColumnType::TEXT, size: $size);
     }
 
     /**
@@ -184,8 +166,7 @@ class ColumnBuilder
      */
     public static function binary(int|null $size = null): ColumnSchemaInterface
     {
-        return (new BinaryColumnSchema(ColumnType::BINARY))
-            ->size($size);
+        return new BinaryColumnSchema(ColumnType::BINARY, size: $size);
     }
 
     /**
@@ -201,8 +182,7 @@ class ColumnBuilder
      */
     public static function datetime(int|null $size = 0): ColumnSchemaInterface
     {
-        return (new StringColumnSchema(ColumnType::DATETIME))
-            ->size($size);
+        return new StringColumnSchema(ColumnType::DATETIME, size: $size);
     }
 
     /**
@@ -210,8 +190,7 @@ class ColumnBuilder
      */
     public static function timestamp(int|null $size = 0): ColumnSchemaInterface
     {
-        return (new StringColumnSchema(ColumnType::TIMESTAMP))
-            ->size($size);
+        return new StringColumnSchema(ColumnType::TIMESTAMP, size: $size);
     }
 
     /**
@@ -227,8 +206,30 @@ class ColumnBuilder
      */
     public static function time(int|null $size = 0): ColumnSchemaInterface
     {
-        return (new StringColumnSchema(ColumnType::TIME))
-            ->size($size);
+        return new StringColumnSchema(ColumnType::TIME, size: $size);
+    }
+
+    /**
+     * Builds a column with the abstract type `array`.
+     *
+     * @param ColumnSchemaInterface|null $column The column schema of the array elements.
+     */
+    public static function array(ColumnSchemaInterface|null $column = null): ColumnSchemaInterface
+    {
+        return new ArrayColumnSchema(ColumnType::ARRAY, column: $column);
+    }
+
+    /**
+     * Builds a column with the abstract type `structured`.
+     *
+     * @param string|null $dbType The DB type of the column.
+     * @param ColumnSchemaInterface[] $columns The columns (name -> instance) that the structured column should contain.
+     *
+     * @psalm-param array<string, ColumnSchemaInterface> $columns
+     */
+    public static function structured(string|null $dbType = null, array $columns = []): ColumnSchemaInterface
+    {
+        return new StructuredColumnSchema(ColumnType::STRUCTURED, dbType: $dbType, columns: $columns);
     }
 
     /**

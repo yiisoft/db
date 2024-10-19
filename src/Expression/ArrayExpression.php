@@ -29,7 +29,7 @@ use function count;
  * @template-implements ArrayAccess<int, mixed>
  * @template-implements IteratorAggregate<int>
  */
-class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
+final class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
 {
     public function __construct(private mixed $value = [], private string|null $type = null, private int $dimension = 1)
     {
