@@ -858,4 +858,14 @@ interface CommandInterface
         bool|array $updateColumns = true,
         array $params = []
     ): static;
+
+    /**
+     *
+     * Execute `REFRESH MATERIALIZED VIEW` command
+     * @param string $viewName
+     * @param bool|null $concurrently If `null` then auto choice from depends on DBMS
+     * @param bool|null $withData
+     * @return bool
+     */
+    public function refreshMaterializedView(string $viewName, ?bool $concurrently = null, ?bool $withData = null): bool;
 }
