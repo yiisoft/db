@@ -19,7 +19,7 @@ use Yiisoft\Db\Query\QueryInterface;
  */
 final class JsonExpression implements ExpressionInterface, JsonSerializable
 {
-    public function __construct(protected mixed $value, private string|null $type = null)
+    public function __construct(protected mixed $value, private readonly string|null $type = null)
     {
         if ($value instanceof self) {
             $this->value = $value->getValue();

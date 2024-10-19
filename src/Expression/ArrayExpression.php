@@ -31,8 +31,11 @@ use function count;
  */
 final class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
 {
-    public function __construct(private mixed $value = [], private string|null $type = null, private int $dimension = 1)
-    {
+    public function __construct(
+        private mixed $value = [],
+        private readonly string|null $type = null,
+        private readonly int $dimension = 1
+    ) {
     }
 
     /**

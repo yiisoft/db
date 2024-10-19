@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
+use JsonSerializable;
 use Traversable;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
@@ -32,9 +33,10 @@ final class StructuredExpression implements ExpressionInterface
      * @param array|object $value The content of the structured type. It can be represented as
      * - an associative `array` of column names and values;
      * - an indexed `array` of column values in the order of structured type columns;
+     * - an {@see JsonSerializable} object that can be converted to an `array` using `jsonSerialize()`;
      * - an `iterable` object that can be converted to an `array` using `iterator_to_array()`;
      * - an `object` that can be converted to an `array` using `get_object_vars()`;
-     * - an `ExpressionInterface` object that represents a SQL expression.
+     * - an {@see ExpressionInterface} object that represents a SQL expression.
      * @param string|null $type The structured database type name. Defaults to `null` which means the type is not
      * explicitly specified. Note that in the case where a type is not specified explicitly and DBMS cannot guess it
      * from the context, SQL error will be raised.
@@ -44,9 +46,9 @@ final class StructuredExpression implements ExpressionInterface
      * @psalm-param array<string, ColumnSchemaInterface> $columns
      */
     public function __construct(
-        private array|object $value,
-        private string|null $type = null,
-        private array $columns = [],
+        private readonly array|object $value,
+        private readonly string|null $type = null,
+        private readonly array $columns = [],
     ) {
     }
 
@@ -105,9 +107,14 @@ final class StructuredExpression implements ExpressionInterface
         }
 
         if (is_object($value)) {
-            $value = $value instanceof Traversable
-                ? iterator_to_array($value)
-                : get_object_vars($value);
+            if ($value instanceof JsonSerializable) {
+                /** @var array */
+                $value = $value->jsonSerialize();
+            } elseif ($value instanceof Traversable) {
+                $value = iterator_to_array($value);
+            } else {
+                $value = get_object_vars($value);
+            }
         }
 
         $normalized = [];

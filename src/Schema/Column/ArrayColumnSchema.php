@@ -7,10 +7,8 @@ namespace Yiisoft\Db\Schema\Column;
 use Traversable;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Syntax\ParserToArrayInterface;
 
 use function array_map;
 use function array_walk_recursive;
@@ -18,6 +16,7 @@ use function is_array;
 use function is_iterable;
 use function is_string;
 use function iterator_to_array;
+use function json_decode;
 
 /**
  * Represents the schema for an array column.
@@ -38,11 +37,12 @@ class ArrayColumnSchema extends AbstractColumnSchema
     protected int $dimension = 1;
 
     /**
-     * Returns the parser for the column value.
+     * Parses a string into an array. Default implementation uses `json_decode()`.
      */
-    protected function getParser(): ParserToArrayInterface
+    protected function parse(string $value): array|null
     {
-        throw new NotSupportedException(__METHOD__ . '() is not supported. Use concrete DBMS implementation.');
+        /** @var array|null */
+        return json_decode($value, true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -114,7 +114,7 @@ class ArrayColumnSchema extends AbstractColumnSchema
     public function phpTypecast(mixed $value): array|null
     {
         if (is_string($value)) {
-            $value = $this->getParser()->parse($value);
+            $value = $this->parse($value);
         }
 
         if (!is_array($value)) {
