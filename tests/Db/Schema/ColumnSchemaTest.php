@@ -11,7 +11,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\StructuredExpression;
-use Yiisoft\Db\Schema\Column\ArrayColumnSchema;
+use Yiisoft\Db\Schema\Column\ArrayColumnLazySchema;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
@@ -312,7 +312,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testArrayColumnGetColumn(): void
     {
-        $arrayCol = new ArrayColumnSchema();
+        $arrayCol = new ArrayColumnLazySchema();
         $intCol = new IntegerColumnSchema();
 
         $this->assertInstanceOf(StringColumnSchema::class, $arrayCol->getColumn());
@@ -326,7 +326,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testArrayColumnGetDimension(): void
     {
-        $arrayCol = new ArrayColumnSchema();
+        $arrayCol = new ArrayColumnLazySchema();
 
         $this->assertSame(1, $arrayCol->getDimension());
 
@@ -352,7 +352,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testArrayColumnDbTypecastSimple()
     {
-        $arrayCol = new ArrayColumnSchema();
+        $arrayCol = new ArrayColumnLazySchema();
 
         $this->assertNull($arrayCol->dbTypecast(null));
         $this->assertEquals(new ArrayExpression([]), $arrayCol->dbTypecast(''));
@@ -362,19 +362,12 @@ final class ColumnSchemaTest extends TestCase
 
     public function testArrayColumnPhpTypecast()
     {
-        $arrayCol = new ArrayColumnSchema();
+        $arrayCol = new ArrayColumnLazySchema();
 
         $this->assertNull($arrayCol->phpTypecast(null));
-        $this->assertNull($arrayCol->phpTypecast(1));
         $this->assertSame([], $arrayCol->phpTypecast([]));
         $this->assertSame(['1', '2', '3'], $arrayCol->phpTypecast(['1', '2', '3']));
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Schema\Column\ArrayColumnSchema::getParser() is not supported. Use concrete DBMS implementation.'
-        );
-
-        $arrayCol->phpTypecast('{1,2,3}');
+        $this->assertSame(['1', '2', '3'], $arrayCol->phpTypecast('[1,2,3]'));
     }
 
     public function testStructuredColumnGetColumns(): void

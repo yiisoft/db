@@ -8,11 +8,12 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\StructuredExpression;
+use Yiisoft\Db\Syntax\JsonParser;
+use Yiisoft\Db\Syntax\StructuredParserInterface;
 
 use function array_keys;
 use function is_array;
 use function is_string;
-use function json_decode;
 
 /**
  * Represents the schema for a structured column.
@@ -28,12 +29,11 @@ class StructuredColumnSchema extends AbstractColumnSchema
     protected array $columns = [];
 
     /**
-     * Parses a string into an array. Default implementation uses `json_decode()`.
+     * The parser that will be used to parse values fetched from the database.
      */
-    protected function parse(string $value): array|null
+    protected function getParser(): StructuredParserInterface
     {
-        /** @var array|null */
-        return json_decode($value, true, 512, JSON_THROW_ON_ERROR);
+        return new JsonParser();
     }
 
     /**
@@ -76,7 +76,7 @@ class StructuredColumnSchema extends AbstractColumnSchema
     public function phpTypecast(mixed $value): array|null
     {
         if (is_string($value)) {
-            $value = $this->parse($value);
+            $value = $this->getParser()->parse($value);
         }
 
         if (!is_array($value)) {

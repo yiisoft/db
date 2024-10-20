@@ -216,7 +216,7 @@ class ColumnBuilder
      */
     public static function array(ColumnSchemaInterface|null $column = null): ColumnSchemaInterface
     {
-        return new ArrayColumnSchema(ColumnType::ARRAY, column: $column);
+        return new ArrayColumnLazySchema(ColumnType::ARRAY, column: $column);
     }
 
     /**
