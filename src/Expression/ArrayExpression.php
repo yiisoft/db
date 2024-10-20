@@ -40,7 +40,7 @@ use function iterator_to_array;
 final class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
 {
     /**
-     * @param iterable|string|ExpressionInterface $value The array's content. In can be represented as
+     * @param ExpressionInterface|iterable|string $value The array's content. In can be represented as
      * - an array of values;
      * - an instance of {@see Traversable} that represents an array of values;
      * - an instance of {@see ExpressionInterface} that represents an SQL expression (e.g. a sub-query)

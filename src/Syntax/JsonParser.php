@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Syntax;
 
-
 final class JsonParser implements ArrayParserInterface, StructuredParserInterface
 {
     public function parse(string $value): array|null
