@@ -10,10 +10,8 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Syntax\StructuredParserInterface;
 
-use function array_key_exists;
 use function array_keys;
 use function get_object_vars;
-use function is_object;
 use function iterator_to_array;
 
 /**

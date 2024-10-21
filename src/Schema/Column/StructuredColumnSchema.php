@@ -11,10 +11,6 @@ use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Syntax\JsonParser;
 use Yiisoft\Db\Syntax\StructuredParserInterface;
 
-use function array_keys;
-use function is_array;
-use function is_string;
-
 /**
  * Represents the schema for a structured column.
  */
