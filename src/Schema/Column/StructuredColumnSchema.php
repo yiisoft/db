@@ -29,14 +29,6 @@ class StructuredColumnSchema extends AbstractColumnSchema
     protected array $columns = [];
 
     /**
-     * The parser that will be used to parse values fetched from the database.
-     */
-    protected function getParser(): StructuredParserInterface
-    {
-        return new JsonParser();
-    }
-
-    /**
      * Set columns of the structured type.
      *
      * @param ColumnSchemaInterface[] $columns The metadata of the structured type columns.
@@ -73,34 +65,21 @@ class StructuredColumnSchema extends AbstractColumnSchema
         return new StructuredExpression($value, $this->getDbType(), $this->columns);
     }
 
-    public function phpTypecast(mixed $value): array|null
+    public function phpTypecast(mixed $value): array|null|StructuredExpression
     {
-        if (is_string($value)) {
-            $value = $this->getParser()->parse($value);
-        }
-
-        if (!is_array($value)) {
+        if ($value === null) {
             return null;
         }
 
-        if (empty($this->columns)) {
-            return $value;
-        }
+        /** @psalm-suppress MixedArgument */
+        return new StructuredExpression($value, $this->getDbType(), $this->columns, $this->getParser());
+    }
 
-        $fields = [];
-        $columnNames = array_keys($this->columns);
-
-        /** @psalm-var int|string $columnName */
-        foreach ($value as $columnName => $item) {
-            $columnName = $columnNames[$columnName] ?? $columnName;
-
-            if (isset($this->columns[$columnName])) {
-                $fields[$columnName] = $this->columns[$columnName]->phpTypecast($item);
-            } else {
-                $fields[$columnName] = $item;
-            }
-        }
-
-        return $fields;
+    /**
+     * The parser that will be used to parse values fetched from the database.
+     */
+    protected function getParser(): StructuredParserInterface
+    {
+        return new JsonParser();
     }
 }

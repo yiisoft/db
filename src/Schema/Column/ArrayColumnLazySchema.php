@@ -32,14 +32,6 @@ class ArrayColumnLazySchema extends AbstractColumnSchema
     protected int $dimension = 1;
 
     /**
-     * The parser that will be used to parse values fetched from the database.
-     */
-    protected function getParser(): ArrayParserInterface
-    {
-        return new JsonParser();
-    }
-
-    /**
      * Set column of an array item.
      */
     public function column(ColumnSchemaInterface|null $column): static
@@ -126,5 +118,13 @@ class ArrayColumnLazySchema extends AbstractColumnSchema
             $column,
             $this->getParser()
         );
+    }
+
+    /**
+     * The parser that will be used to parse values fetched from the database.
+     */
+    protected function getParser(): ArrayParserInterface
+    {
+        return new JsonParser();
     }
 }

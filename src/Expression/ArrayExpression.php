@@ -213,6 +213,11 @@ final class ArrayExpression implements ExpressionInterface, ArrayAccess, Countab
         return new ArrayIterator($this->value);
     }
 
+    /**
+     * Converts the value to an array.
+     *
+     * @throws InvalidConfigException If the value cannot be converted to an array.
+     */
     public function toArray(): array
     {
         if (is_string($this->value)) {

@@ -6,7 +6,9 @@ namespace Yiisoft\Db\Expression;
 
 use JsonSerializable;
 use Traversable;
+use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Syntax\StructuredParserInterface;
 
 use function array_key_exists;
 use function array_keys;
@@ -30,13 +32,14 @@ use function iterator_to_array;
 final class StructuredExpression implements ExpressionInterface
 {
     /**
-     * @param array|object $value The content of the structured type. It can be represented as
+     * @param array|object|string $value The content of the structured type. It can be represented as
      * - an associative `array` of column names and values;
      * - an indexed `array` of column values in the order of structured type columns;
      * - an {@see JsonSerializable} object that can be converted to an `array` using `jsonSerialize()`;
      * - an `iterable` object that can be converted to an `array` using `iterator_to_array()`;
      * - an `object` that can be converted to an `array` using `get_object_vars()`;
-     * - an {@see ExpressionInterface} object that represents a SQL expression.
+     * - an {@see ExpressionInterface} object that represents a SQL expression;
+     * - a `string` retrieved value from the database that can be parsed into an array.
      * @param string|null $type The structured database type name. Defaults to `null` which means the type is not
      * explicitly specified. Note that in the case where a type is not specified explicitly and DBMS cannot guess it
      * from the context, SQL error will be raised.
@@ -46,9 +49,10 @@ final class StructuredExpression implements ExpressionInterface
      * @psalm-param array<string, ColumnSchemaInterface> $columns
      */
     public function __construct(
-        private readonly array|object $value,
+        private readonly array|object|string $value,
         private readonly string|null $type = null,
         private readonly array $columns = [],
+        private readonly StructuredParserInterface|null $parser = null
     ) {
     }
 
@@ -69,6 +73,8 @@ final class StructuredExpression implements ExpressionInterface
      * The structured type columns that are used for value normalization and type casting.
      *
      * @return ColumnSchemaInterface[]
+     *
+     * @psalm-return array<string, ColumnSchemaInterface>
      */
     public function getColumns(): array
     {
@@ -83,51 +89,69 @@ final class StructuredExpression implements ExpressionInterface
      *  - an `object` that can be converted to an `array` using `get_object_vars()`;
      *  - an `ExpressionInterface` object that represents a SQL expression.
      */
-    public function getValue(): array|object
+    public function getValue(): array|object|string
     {
         return $this->value;
     }
 
     /**
-     * Returns the normalized value of the structured type, where:
-     * - values sorted according to the order of structured type columns;
-     * - indexed keys are replaced with column names;
-     * - missing elements are filled in with default values;
-     * - excessive elements are removed.
+     * Converts the value to an array.
      *
-     * If the structured type columns are not specified or the value is an `ExpressionInterface` object,
-     * it will be returned as is.
+     * @throws InvalidConfigException If the value cannot be converted to an array.
      */
-    public function getNormalizedValue(): array|object
+    public function toArray(): array
     {
-        $value = $this->value;
+        if (is_string($this->value)) {
+            $value = $this->parse($this->value);
+            return $this->phpTypecast($value);
+        }
 
-        if (empty($this->columns) || $value instanceof ExpressionInterface) {
+        if (is_array($this->value)) {
+            return $this->value;
+        }
+
+        if ($this->value instanceof Traversable) {
+            return iterator_to_array($this->value, false);
+        }
+
+        throw new InvalidConfigException('The StructuredExpression value cannot be converted to array.');
+    }
+
+    private function parse(string $value): array
+    {
+        if ($this->parser === null) {
+            throw new InvalidConfigException('The StructuredExpression parser must be set to parse the string value.');
+        }
+
+        $parsed = $this->parser->parse($value);
+
+        if ($parsed === null) {
+            throw new InvalidConfigException('The StructuredExpression value cannot be parsed into array.');
+        }
+
+        return $parsed;
+    }
+
+    private function phpTypecast(array $value): array
+    {
+        if (empty($this->columns)) {
             return $value;
         }
 
-        if (is_object($value)) {
-            if ($value instanceof JsonSerializable) {
-                /** @var array */
-                $value = $value->jsonSerialize();
-            } elseif ($value instanceof Traversable) {
-                $value = iterator_to_array($value);
+        $fields = [];
+        $columnNames = array_keys($this->columns);
+
+        /** @psalm-var int|string $columnName */
+        foreach ($value as $columnName => $item) {
+            $columnName = $columnNames[$columnName] ?? $columnName;
+
+            if (isset($this->columns[$columnName])) {
+                $fields[$columnName] = $this->columns[$columnName]->phpTypecast($item);
             } else {
-                $value = get_object_vars($value);
+                $fields[$columnName] = $item;
             }
         }
 
-        $normalized = [];
-        $columnsNames = array_keys($this->columns);
-
-        foreach ($columnsNames as $i => $columnsName) {
-            $normalized[$columnsName] = match (true) {
-                array_key_exists($columnsName, $value) => $value[$columnsName],
-                array_key_exists($i, $value) => $value[$i],
-                default => $this->columns[$columnsName]->getDefaultValue(),
-            };
-        }
-
-        return $normalized;
+        return $fields;
     }
 }
