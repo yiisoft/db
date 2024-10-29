@@ -1,0 +1,65 @@
+services:
+  php:
+    build: .
+    volumes:
+      - ./src:/code/src
+      - ./tests:/code/tests
+      - ./phpunit.xml.dist:/code/phpunit.xml.dist
+    command: tail -F anything
+    depends_on:
+      mysql:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+  mysql:
+    image: mysql:9
+    ports:
+      - "3306:3306"
+    volumes:
+      - type: tmpfs
+        target: /var/lib/mysql
+    environment:
+      MYSQL_DATABASE: yii
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: "%"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  postgres:
+    image: postgres:17
+    ports:
+      - "5432:5432"
+    volumes:
+      - type: tmpfs
+        target: /var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: yii
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: YourStrong!Passw0rd
+      ACCEPT_EULA: Y
+    ports:
+      - "1433:1433"
+    expose:
+      - "1433"
+  oracle:
+    image: gvenzl/oracle-xe:21
+    ports:
+      - "1521:1521"
+    expose:
+      - "1521"
+    environment:
+      ORACLE_PASSWORD : root
+      ORACLE_DATABASE : yiitest
+      APP_USER: yiitest
+      APP_USER_PASSWORD: root
