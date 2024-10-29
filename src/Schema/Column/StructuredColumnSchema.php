@@ -8,11 +8,14 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\StructuredExpression;
-use Yiisoft\Db\Syntax\JsonParser;
-use Yiisoft\Db\Syntax\StructuredParserInterface;
+
+use function is_string;
+use function json_decode;
 
 /**
- * Represents the schema for a structured column.
+ * Represents the schema for a structured column with eager parsing values retrieved from the database.
+ *
+ * @see StructuredColumnLazySchema for a structured column with lazy parsing values retrieved from the database.
  */
 class StructuredColumnSchema extends AbstractColumnSchema
 {
@@ -51,7 +54,7 @@ class StructuredColumnSchema extends AbstractColumnSchema
         return PhpType::ARRAY;
     }
 
-    public function dbTypecast(mixed $value): mixed
+    public function dbTypecast(mixed $value): ExpressionInterface|null
     {
         if ($value === null || $value instanceof ExpressionInterface) {
             return $value;
@@ -61,21 +64,18 @@ class StructuredColumnSchema extends AbstractColumnSchema
         return new StructuredExpression($value, $this->getDbType(), $this->columns);
     }
 
-    public function phpTypecast(mixed $value): array|null|StructuredExpression
+    /**
+     * @param string|null $value The string retrieved value from the database that can be parsed into an array.
+     *
+     * @psalm-suppress MoreSpecificImplementedParamType
+     */
+    public function phpTypecast(mixed $value): array|null|object
     {
-        if ($value === null) {
-            return null;
+        if (is_string($value)) {
+            /** @var array|null */
+            return json_decode($value, true, 512, JSON_THROW_ON_ERROR);
         }
 
-        /** @psalm-suppress MixedArgument */
-        return new StructuredExpression($value, $this->getDbType(), $this->columns, $this->getParser());
-    }
-
-    /**
-     * The parser that will be used to parse values fetched from the database.
-     */
-    protected function getParser(): StructuredParserInterface
-    {
-        return new JsonParser();
+        return $value;
     }
 }

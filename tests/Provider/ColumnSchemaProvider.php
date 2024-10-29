@@ -13,7 +13,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Expression\StructuredExpression;
-use Yiisoft\Db\Schema\Column\ArrayColumnLazySchema;
+use Yiisoft\Db\Schema\Column\ArrayColumnSchema;
 use Yiisoft\Db\Schema\Column\BigIntColumnSchema;
 use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
 use Yiisoft\Db\Schema\Column\BitColumnSchema;
@@ -40,7 +40,7 @@ class ColumnSchemaProvider
             'binary' => [BinaryColumnSchema::class, ColumnType::BINARY, PhpType::MIXED],
             'bit' => [BitColumnSchema::class, ColumnType::BIT, PhpType::INT],
             'boolean' => [BooleanColumnSchema::class, ColumnType::BOOLEAN, PhpType::BOOL],
-            'array' => [ArrayColumnLazySchema::class, ColumnType::ARRAY, PhpType::ARRAY],
+            'array' => [ArrayColumnSchema::class, ColumnType::ARRAY, PhpType::ARRAY],
             'structured' => [StructuredColumnSchema::class, ColumnType::STRUCTURED, PhpType::ARRAY],
             'json' => [JsonColumnSchema::class, ColumnType::JSON, PhpType::MIXED],
         ];

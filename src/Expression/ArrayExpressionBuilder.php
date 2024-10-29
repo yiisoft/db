@@ -4,27 +4,34 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
-use JsonException;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
-use function array_map;
+use Yiisoft\Db\Schema\Data\LazyArrayInterface;
+use Yiisoft\Db\Schema\Data\LazyArrayJson;
 use function is_array;
-use function is_iterable;
 use function is_string;
 use function iterator_to_array;
 use function json_encode;
 
+use const JSON_THROW_ON_ERROR;
+
 /**
  * Default expression builder for {@see ArrayExpression}. Builds an expression as a JSON.
  */
-final class ArrayExpressionBuilder implements ExpressionBuilderInterface
+class ArrayExpressionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
+    /**
+     * The class name of the {@see LazyArrayInterface} object. This constant is used to determine if the value can be
+     * used as a raw string. If the value is an instance of this class, the value will be used as a raw string.
+     *
+     * @var string
+     * @psalm-var class-string<LazyArrayInterface>
+     */
+    protected const LAZY_ARRAY_CLASS = LazyArrayJson::class;
+
+    public function __construct(protected readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
@@ -34,89 +41,59 @@ final class ArrayExpressionBuilder implements ExpressionBuilderInterface
      * @param ArrayExpression $expression The expression to build.
      * @param array $params The binding parameters.
      *
-     * @throws Exception
-     * @throws JsonException
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     *
      * @return string The raw SQL that won't be additionally escaped or quoted.
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $value = $expression->getValue();
 
-        if (is_iterable($value)) {
-            $value = $this->dbTypecast($value, $expression);
+        if ($value instanceof LazyArrayInterface) {
+            if ($value instanceof (static::LAZY_ARRAY_CLASS)) {
+                $value = $value->getRawValue();
 
-            return $this->queryBuilder->bindParam(json_encode($value, JSON_THROW_ON_ERROR), $params);
-        }
-
-        if (is_string($value)) {
-            return $value;
-        }
-
-        return $this->queryBuilder->buildExpression($value, $params);
-    }
-
-    protected function dbTypecast(iterable $value, ArrayExpression $expression): array
-    {
-        $column = $expression->getColumn();
-
-        if ($column === null) {
-            if (is_array($value)) {
-                return $value;
+                if (is_string($value)) {
+                    return $value;
+                }
+            } else {
+                $value = $value->getValue();
             }
-
-            return iterator_to_array($value, false);
         }
 
-        $dimension = $expression->getDimension();
-
-        if (is_array($value) && $dimension === 1) {
-            return array_map($column->dbTypecast(...), $value);
+        if ($value instanceof QueryInterface) {
+            return $this->buildSubquery($value, $expression, $params);
         }
 
-        /** @var array */
-        return $this->dbTypecastArray($value, $dimension, $column);
+        return $this->buildValue($value, $expression, $params);
     }
 
     /**
-     * Recursively converts array values for use in a db query.
+     * Build an array expression from a sub-query object.
      *
-     * @param mixed $value The array or iterable object.
-     * @param int $dimension The array dimension. Should be more than 0.
-     * @param ColumnSchemaInterface $column The column schema to typecast values.
+     * @param QueryInterface $query The sub-query object.
+     * @param ArrayExpression $expression The array expression.
+     * @param array $params The binding parameters.
      *
-     * @psalm-param positive-int $dimension
-     *
-     * @return array|null Converted values.
+     * @return string The sub-query array expression.
      */
-    protected function dbTypecastArray(mixed $value, int $dimension, ColumnSchemaInterface $column): array|null
+    protected function buildSubquery(
+        QueryInterface $query,
+        ArrayExpression $expression,
+        array &$params
+    ): string {
+        throw new NotSupportedException('Sub-query for array expression is not supported by this query builder.');
+    }
+
+    /**
+     * Builds a SQL expression for an array value.
+     *
+     * @param array $params The binding parameters.
+     */
+    protected function buildValue(mixed $value, ArrayExpression $expression, array &$params): string
     {
-        if ($value === null) {
-            return null;
+        if (!is_array($value)) {
+            $value = iterator_to_array($value, false);
         }
 
-        if (!is_iterable($value)) {
-            return [];
-        }
-
-        if ($dimension <= 1) {
-            return array_map(
-                $column->dbTypecast(...),
-                is_array($value)
-                    ? $value
-                    : iterator_to_array($value, false)
-            );
-        }
-
-        $items = [];
-
-        foreach ($value as $val) {
-            $items[] = $this->dbTypecastArray($val, $dimension - 1, $column);
-        }
-
-        return $items;
+        return $this->queryBuilder->bindParam(json_encode($value, JSON_THROW_ON_ERROR), $params);
     }
 }

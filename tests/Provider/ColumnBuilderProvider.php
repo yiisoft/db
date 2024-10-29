@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Schema\Column\ArrayColumnLazySchema;
+use Yiisoft\Db\Schema\Column\ArrayColumnSchema;
 use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
 use Yiisoft\Db\Schema\Column\BitColumnSchema;
 use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
@@ -87,8 +87,8 @@ class ColumnBuilderProvider
             'date()' => ['date', [], StringColumnSchema::class, ColumnType::DATE],
             'time()' => ['time', [], StringColumnSchema::class, ColumnType::TIME, ['getSize' => 0]],
             'time(3)' => ['time', [3], StringColumnSchema::class, ColumnType::TIME, ['getSize' => 3]],
-            'array()' => ['array', [], ArrayColumnLazySchema::class, ColumnType::ARRAY],
-            'array($column)' => ['array', [$column], ArrayColumnLazySchema::class, ColumnType::ARRAY, ['getColumn' => $column]],
+            'array()' => ['array', [], ArrayColumnSchema::class, ColumnType::ARRAY],
+            'array($column)' => ['array', [$column], ArrayColumnSchema::class, ColumnType::ARRAY, ['getColumn' => $column]],
             'structured()' => ['structured', [], StructuredColumnSchema::class, ColumnType::STRUCTURED],
             "structured('money_currency')" => [
                 'structured',

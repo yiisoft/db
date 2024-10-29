@@ -11,7 +11,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\StructuredExpression;
-use Yiisoft\Db\Schema\Column\ArrayColumnLazySchema;
+use Yiisoft\Db\Schema\Column\ArrayColumnSchema;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
@@ -312,7 +312,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testArrayColumnGetColumn(): void
     {
-        $arrayCol = new ArrayColumnLazySchema();
+        $arrayCol = new ArrayColumnSchema();
         $intCol = new IntegerColumnSchema();
 
         $this->assertInstanceOf(StringColumnSchema::class, $arrayCol->getColumn());
@@ -326,7 +326,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testArrayColumnGetDimension(): void
     {
-        $arrayCol = new ArrayColumnLazySchema();
+        $arrayCol = new ArrayColumnSchema();
 
         $this->assertSame(1, $arrayCol->getDimension());
 
@@ -352,17 +352,18 @@ final class ColumnSchemaTest extends TestCase
 
     public function testArrayColumnDbTypecastSimple()
     {
-        $arrayCol = new ArrayColumnLazySchema();
+        $arrayCol = new ArrayColumnSchema();
 
         $this->assertNull($arrayCol->dbTypecast(null));
-        $this->assertEquals(new ArrayExpression([]), $arrayCol->dbTypecast(''));
+        $this->assertNull($arrayCol->dbTypecast(''));
+        $this->assertEquals(new ArrayExpression([]), $arrayCol->dbTypecast([]));
         $this->assertEquals(new ArrayExpression([1, 2, 3]), $arrayCol->dbTypecast(new ArrayIterator([1, 2, 3])));
         $this->assertSame($expression = new Expression('expression'), $arrayCol->dbTypecast($expression));
     }
 
     public function testArrayColumnPhpTypecast()
     {
-        $arrayCol = new ArrayColumnLazySchema();
+        $arrayCol = new ArrayColumnSchema();
 
         $this->assertNull($arrayCol->phpTypecast(null));
         $this->assertSame([], $arrayCol->phpTypecast([]));
