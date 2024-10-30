@@ -4,6 +4,7 @@ services:
     volumes:
       - ./src:/code/src
       - ./tests:/code/tests
+      - ./composer.json:/code/composer.json
       - ./phpunit.xml.dist:/code/phpunit.xml.dist
     command: tail -F anything
     depends_on:
@@ -11,6 +12,12 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+    environment:
+      YII_MYSQL_DATABASE: yii
+      YII_MYSQL_HOST: mysql
+      YII_MYSQL_PORT: 3306
+      YII_MYSQL_USER: root
+      YII_MYSQL_PASSWORD: root
   mysql:
     image: mysql:9
     ports:
