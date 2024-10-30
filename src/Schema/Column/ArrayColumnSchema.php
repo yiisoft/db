@@ -10,6 +10,7 @@ use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
+
 use function is_iterable;
 
 /**

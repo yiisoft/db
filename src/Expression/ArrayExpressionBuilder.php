@@ -10,6 +10,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
 use Yiisoft\Db\Schema\Data\LazyArrayJson;
+
 use function is_array;
 use function is_string;
 use function iterator_to_array;
