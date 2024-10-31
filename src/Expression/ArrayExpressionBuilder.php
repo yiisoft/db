@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Expression;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
 use Yiisoft\Db\Schema\Data\LazyArrayJson;
 
@@ -89,7 +88,7 @@ class ArrayExpressionBuilder implements ExpressionBuilderInterface
      *
      * @param array $params The binding parameters.
      */
-    protected function buildValue(mixed $value, ArrayExpression $expression, array &$params): string
+    protected function buildValue(iterable $value, ArrayExpression $expression, array &$params): string
     {
         if (!is_array($value)) {
             $value = iterator_to_array($value, false);
