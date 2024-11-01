@@ -18,6 +18,18 @@ services:
       YII_MYSQL_PORT: 3306
       YII_MYSQL_USER: root
       YII_MYSQL_PASSWORD: root
+
+      YII_PGSQL_DATABASE: yii
+      YII_PGSQL_HOST: postgres
+      YII_PGSQL_PORT: 5432
+      YII_PGSQL_USER: postgres
+      YII_PGSQL_PASSWORD: postgres
+
+      YII_MSSQL_DATABASE: tempdb
+      YII_MSSQL_HOST: mssql
+      YII_MSSQL_PORT: 1433
+      YII_MSSQL_USER: SA
+      YII_MSSQL_PASSWORD: YourStrong!Passw0rd
   mysql:
     image: mysql:9
     ports:
