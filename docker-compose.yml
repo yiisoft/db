@@ -30,6 +30,12 @@ services:
       YII_MSSQL_PORT: 1433
       YII_MSSQL_USER: SA
       YII_MSSQL_PASSWORD: YourStrong!Passw0rd
+
+      YII_ORACLE_DATABASE:
+      YII_ORACLE_HOST: oracle
+      YII_ORACLE_PORT:
+      YII_ORACLE_USER: system
+      YII_ORACLE_PASSWORD: root
   mysql:
     image: mysql:9
     ports:
