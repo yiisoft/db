@@ -113,7 +113,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      */
     protected function getColumnClass(string $type, array $info = []): string
     {
-        return match($type) {
+        return match ($type) {
             ColumnType::BOOLEAN => BooleanColumnSchema::class,
             ColumnType::BIT => BitColumnSchema::class,
             ColumnType::TINYINT => IntegerColumnSchema::class,
