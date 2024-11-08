@@ -19,15 +19,6 @@ class SchemaProvider
         return [];
     }
 
-    public static function columnsTypeChar(): array
-    {
-        return [
-            ['char_col', 'char', 100, 'char(100)'],
-            ['char_col2', 'string', 100, 'varchar(100)'],
-            ['char_col3', 'text', null, 'text'],
-        ];
-    }
-
     public static function constraints(): array
     {
         return [
