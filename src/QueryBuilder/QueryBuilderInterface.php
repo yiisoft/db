@@ -41,12 +41,12 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
     /**
      * Builds column definition based on given column instance.
      *
-     * @param ColumnSchemaInterface|string $column the column instance or string column definition which should be
-     * converted into a database string representation.
+     * @param ColumnInterface|ColumnSchemaInterface|string $column the column instance or string column definition which
+     * should be converted into a database string representation.
      *
      * @return string the SQL column definition.
      */
-    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string;
+    public function buildColumnDefinition(ColumnInterface|ColumnSchemaInterface|string $column): string;
 
     /**
      * Converts an abstract column type into a physical column type.
@@ -97,6 +97,11 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * @deprecated Use {@see buildColumnDefinition()}. Will be removed in version 2.0.
      */
     public function getColumnType(ColumnInterface|string $type): string;
+
+    /**
+     * Returns the column definition builder for the current DBMS.
+     */
+    public function getColumnDefinitionBuilder(): ColumnDefinitionBuilderInterface;
 
     /**
      * Gets an object of {@see ExpressionBuilderInterface} that's suitable for $expression.

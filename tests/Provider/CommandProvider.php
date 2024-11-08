@@ -12,10 +12,10 @@ use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
-use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 class CommandProvider
@@ -923,7 +923,7 @@ class CommandProvider
     {
         return [
             [ColumnType::INTEGER],
-            [new Column('string(100)')],
+            [ColumnBuilder::string(100)],
         ];
     }
 }

@@ -17,6 +17,7 @@ use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
 /**
  * This interface represents a database command, such as a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement.
@@ -44,13 +45,13 @@ interface CommandInterface
      *
      * @param string $table The name of the table to add new column to.
      * @param string $column The name of the new column.
-     * @param ColumnInterface|string $type The column type. {@see QueryBuilder::getColumnType()} will be called
-     * to convert the given column type to the database one.
+     * @param ColumnInterface|ColumnSchemaInterface|string $type The column type.
+     * {@see QueryBuilder::buildColumnDefinition()} will be called to convert the given column type to the database one.
      * For example, `string` will be converted to `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function addColumn(string $table, string $column, ColumnInterface|string $type): static;
+    public function addColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): static;
 
     /**
      * Builds an SQL command for adding a comment to a column.
@@ -144,13 +145,13 @@ interface CommandInterface
      *
      * @param string $table The table whose column is to change.
      * @param string $column The name of the column to change.
-     * @param ColumnInterface|string $type The column type. {@see QueryBuilder::getColumnType()} will be called to
-     * convert the give column type to the physical one. For example, `string` will be converted as `varchar(255)`, and
-     * `string not null` becomes `varchar(255) not null`.
+     * @param ColumnInterface|ColumnSchemaInterface|string $type The column type.
+     * {@see QueryBuilder::buildColumnDefinition()} will be called to convert the give column type to the physical one.
+     * For example, `string` will be converted as `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function alterColumn(string $table, string $column, ColumnInterface|string $type): static;
+    public function alterColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): static;
 
     /**
      * Creates a batch INSERT command.
@@ -327,8 +328,8 @@ interface CommandInterface
      * into the generated SQL.
      *
      * @param string $table The name of the table to create.
-     * @param array $columns The columns (name => definition) in the new table.
-     * The definition can be `string` or {@see ColumnInterface} instance.
+     * @param (ColumnSchemaInterface|string)[] $columns The columns (name => definition) in the new table.
+     * The definition can be `string` or {@see ColumnSchemaInterface} instance.
      * @param string|null $options More SQL fragments to append to the generated SQL.
      *
      * @throws Exception
@@ -337,7 +338,7 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      *
-     * @psalm-param array<string, ColumnInterface>|string[] $columns
+     * @psalm-param array<string, ColumnSchemaInterface>|string[] $columns
      */
     public function createTable(string $table, array $columns, string $options = null): static;
 

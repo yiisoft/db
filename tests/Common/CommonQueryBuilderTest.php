@@ -4,50 +4,19 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
-use Yiisoft\Db\Constant\PseudoType;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\ColumnTypes;
-
-use function str_replace;
-use function str_starts_with;
-use function strncmp;
-use function substr;
+use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 
 abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
 {
-    public function testCreateTableWithGetColumnTypes(): void
+    public function getBuildColumnDefinitionProvider(): array
     {
-        $db = $this->getConnection(true);
-
-        $qb = $db->getQueryBuilder();
-
-        if ($db->getTableSchema('column_type_table', true) !== null) {
-            $db->createCommand($qb->dropTable('column_type_table'))->execute();
-        }
-
-        $columnTypes = (new ColumnTypes($db))->getColumnTypes();
-        $columns = [];
-        $i = 0;
-
-        foreach ($columnTypes as [$column, $expected]) {
-            if (
-                !(
-                    strncmp($column, PseudoType::PK, 2) === 0 ||
-                    strncmp($column, PseudoType::UPK, 3) === 0 ||
-                    strncmp($column, PseudoType::BIGPK, 5) === 0 ||
-                    strncmp($column, PseudoType::UBIGPK, 6) === 0 ||
-                    str_starts_with(substr($column, -5), 'FIRST')
-                )
-            ) {
-                $columns['col' . ++$i] = str_replace('CHECK (value', 'CHECK ([[col' . $i . ']]', $column);
-            }
-        }
-
-        $db->createCommand($qb->createTable('column_type_table', $columns))->execute();
-
-        $this->assertNotEmpty($db->getTableSchema('column_type_table', true));
-
-        $db->close();
+        return QueryBuilderProvider::buildColumnDefinition();
     }
 
     public function testGetColumnType(): void
@@ -61,5 +30,56 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         }
 
         $db->close();
+    }
+
+    #[DoesNotPerformAssertions]
+    public function testCreateTableWithBuildColumnDefinition(): void
+    {
+        $db = $this->getConnection();
+        $schema = $db->getSchema();
+        $columnFactory = $schema->getColumnFactory();
+        $command = $db->createCommand();
+
+        $provider = $this->getBuildColumnDefinitionProvider();
+
+        $i = 0;
+        $columns = [];
+
+        foreach ($provider as $data) {
+            $column = $data[1];
+
+            if ($column instanceof ColumnSchemaInterface) {
+                if ($column->isPrimaryKey()) {
+                    $this->createTebleWithColumn($command, $column);
+                    continue;
+                }
+
+                if ($column->getReference() !== null) {
+                    continue;
+                }
+            } elseif ($columnFactory->fromDefinition($column)->isPrimaryKey()) {
+                $this->createTebleWithColumn($command, $column);
+                continue;
+            }
+
+            $columns['col_' . $i++] = $column;
+        }
+
+        try {
+            $command->dropTable('build_column_definition')->execute();
+        } catch (Exception) {
+        }
+
+        $command->createTable('build_column_definition', $columns)->execute();
+    }
+
+    private function createTebleWithColumn(CommandInterface $command, string|ColumnSchemaInterface $column)
+    {
+        try {
+            $command->dropTable('build_column_definition_primary_key')->execute();
+        } catch (Exception) {
+        }
+
+        $command->createTable('build_column_definition_primary_key', ['id' => $column])->execute();
     }
 }

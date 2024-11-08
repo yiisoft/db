@@ -8,6 +8,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Helper\DbStringHelper;
+use Yiisoft\Db\Schema\Column\AbstractColumnSchema;
 
 use function gettype;
 use function implode;
@@ -27,6 +28,8 @@ use function strtr;
  *
  * Provides a fluent interface, which means that the methods can be chained together to create a column schema with
  * many properties in a single line of code.
+ *
+ * @deprecated Use {@see AbstractColumnSchema} instead. Will be removed in 2.0.0.
  */
 abstract class AbstractColumn implements ColumnInterface
 {

@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests\Db\Command;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -42,14 +42,14 @@ final class CommandTest extends AbstractCommandTest
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::columnTypes */
-    public function testAddColumn(ColumnInterface|string $type): void
+    public function testAddColumn(ColumnSchemaInterface|string $type): void
     {
         $db = $this->getConnection();
 
         $command = $db->createCommand();
         $sql = $command->addColumn('table', 'column', $type)->getSql();
 
-        $columnType = $db->getQueryBuilder()->getColumnType($type);
+        $columnType = $db->getQueryBuilder()->buildColumnDefinition($type);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -233,10 +233,10 @@ final class CommandTest extends AbstractCommandTest
 
         $expected = <<<SQL
         CREATE TABLE [test_table] (
-        \t[id] pk,
-        \t[name] string(255) NOT NULL,
-        \t[email] string(255) NOT NULL,
-        \t[address] string(255) NOT NULL,
+        \t[id] integer PRIMARY KEY AUTOINCREMENT,
+        \t[name] varchar(255) NOT NULL,
+        \t[email] varchar(255) NOT NULL,
+        \t[address] varchar(255) NOT NULL,
         \t[status] integer NOT NULL,
         \t[profile_id] integer NOT NULL,
         \t[created_at] timestamp NOT NULL,
