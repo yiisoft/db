@@ -21,6 +21,7 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
  *     computed?: bool,
  *     dbType?: string|null,
  *     defaultValue?: mixed,
+ *     defaultValueRaw?: string|null,
  *     dimension?: positive-int,
  *     enumValues?: array|null,
  *     extra?: string|null,

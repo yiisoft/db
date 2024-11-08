@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Column\BigIntColumnSchema;
 use Yiisoft\Db\Schema\Column\BinaryColumnSchema;
 use Yiisoft\Db\Schema\Column\BooleanColumnSchema;
@@ -67,6 +68,35 @@ class ColumnFactoryProvider
             'date' => [ColumnType::DATE, ColumnType::DATE, StringColumnSchema::class],
             'structured' => [ColumnType::STRUCTURED, ColumnType::STRUCTURED, StructuredColumnSchema::class],
             'json' => [ColumnType::JSON, ColumnType::JSON, JsonColumnSchema::class],
+        ];
+    }
+
+    public static function defaultValueRaw(): array
+    {
+        return [
+            // type, default value, expected value
+            'null' => [ColumnType::STRING, null, null],
+            '(null)' => [ColumnType::STRING, '(null)', null],
+            'NULL' => [ColumnType::STRING, 'NULL', null],
+            '(NULL)' => [ColumnType::STRING, '(NULL)', null],
+            '' => [ColumnType::STRING, '', null],
+            '(0)' => [ColumnType::INTEGER, '(0)', 0],
+            '-1' => [ColumnType::INTEGER, '-1', -1],
+            '(-1)' => [ColumnType::INTEGER, '(-1)', -1],
+            '0.0' => [ColumnType::DOUBLE, '0.0', 0.0],
+            '(0.0)' => [ColumnType::DOUBLE, '(0.0)', 0.0],
+            '-1.1' => [ColumnType::DOUBLE, '-1.1', -1.1],
+            '(-1.1)' => [ColumnType::DOUBLE, '(-1.1)', -1.1],
+            'true' => [ColumnType::BOOLEAN, 'true', true],
+            'false' => [ColumnType::BOOLEAN, 'false', false],
+            '1' => [ColumnType::BOOLEAN, '1', true],
+            '0' => [ColumnType::BOOLEAN, '0', false],
+            "''" => [ColumnType::STRING, "''", ''],
+            "('')" => [ColumnType::STRING, "('')", ''],
+            "'str''ing'" => [ColumnType::STRING, "'str''ing'", "str'ing"],
+            "('str''ing')" => [ColumnType::STRING, "('str''ing')", "str'ing"],
+            'CURRENT_TIMESTAMP' => [ColumnType::TIMESTAMP, 'CURRENT_TIMESTAMP', new Expression('CURRENT_TIMESTAMP')],
+            '(now())' => [ColumnType::TIMESTAMP, '(now())', new Expression('(now())')],
         ];
     }
 }
