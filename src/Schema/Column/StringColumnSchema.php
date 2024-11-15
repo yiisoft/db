@@ -29,6 +29,7 @@ class StringColumnSchema extends AbstractColumnSchema
         };
     }
 
+    /** @psalm-mutation-free */
     public function getPhpType(): string
     {
         return PhpType::STRING;

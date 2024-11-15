@@ -27,6 +27,7 @@ class BitColumnSchema extends AbstractColumnSchema
         };
     }
 
+    /** @psalm-mutation-free */
     public function getPhpType(): string
     {
         return PhpType::INT;

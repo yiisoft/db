@@ -28,7 +28,7 @@ class ColumnBuilderProvider
         'getSize' => null,
         'isAutoIncrement' => false,
         'isComputed' => false,
-        'isNotNull' => false,
+        'isNotNull' => null,
         'isPrimaryKey' => false,
         'isUnsigned' => false,
     ];

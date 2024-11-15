@@ -85,12 +85,14 @@ class ArrayColumnSchema extends AbstractColumnSchema
      * @return int the dimension of the array.
      *
      * @psalm-return positive-int
+     * @psalm-mutation-free
      */
     public function getDimension(): int
     {
         return $this->dimension;
     }
 
+    /** @psalm-mutation-free */
     public function getPhpType(): string
     {
         return PhpType::ARRAY;

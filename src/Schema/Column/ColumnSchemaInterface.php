@@ -148,13 +148,15 @@ interface ColumnSchemaInterface
      * Returns the check constraint for the column.
      *
      * @see check()
- */
+     * @psalm-mutation-free
+    */
     public function getCheck(): string|null;
 
     /**
      * @return string|null The comment of the column.
      *
      * @see comment()
+     * @psalm-mutation-free
      */
     public function getComment(): string|null;
 
@@ -166,6 +168,7 @@ interface ColumnSchemaInterface
      * separately via {@see getSize()}.
      *
      * @see dbType()
+     * @psalm-mutation-free
      */
     public function getDbType(): string|null;
 
@@ -173,6 +176,7 @@ interface ColumnSchemaInterface
      * @return mixed The default value of the column.
      *
      * @see defaultValue()
+     * @psalm-mutation-free
      */
     public function getDefaultValue(): mixed;
 
@@ -180,6 +184,7 @@ interface ColumnSchemaInterface
      * @return array|null The enum values of the column.
      *
      * @see enumValues()
+     * @psalm-mutation-free
      */
     public function getEnumValues(): array|null;
 
@@ -187,6 +192,7 @@ interface ColumnSchemaInterface
      * @return string|null The extra SQL for the column.
      *
      * @see extra()
+     * @psalm-mutation-free
      */
     public function getExtra(): string|null;
 
@@ -194,6 +200,7 @@ interface ColumnSchemaInterface
      * @return string|null The name of the column.
      *
      * @deprecated Will be removed in version 2.0.
+     * @psalm-mutation-free
      */
     public function getName(): string|null;
 
@@ -203,6 +210,7 @@ interface ColumnSchemaInterface
      * @see precision()
      *
      * @deprecated Use {@see getSize()} instead. Will be removed in version 2.0.
+     * @psalm-mutation-free
      */
     public function getPrecision(): int|null;
 
@@ -211,6 +219,7 @@ interface ColumnSchemaInterface
      *
      * @return string The PHP type of the column.
      * @psalm-return PhpType::*
+     * @psalm-mutation-free
      */
     public function getPhpType(): string;
 
@@ -218,6 +227,7 @@ interface ColumnSchemaInterface
      * Returns the reference to the foreign key constraint.
      *
      * @see reference()
+     * @psalm-mutation-free
      */
     public function getReference(): ForeignKeyConstraint|null;
 
@@ -225,6 +235,7 @@ interface ColumnSchemaInterface
      * @return int|null The scale of the column.
      *
      * @see scale()
+     * @psalm-mutation-free
      */
     public function getScale(): int|null;
 
@@ -232,6 +243,7 @@ interface ColumnSchemaInterface
      * @return int|null The size of the column.
      *
      * @see size()
+     * @psalm-mutation-free
      */
     public function getSize(): int|null;
 
@@ -240,8 +252,12 @@ interface ColumnSchemaInterface
      * @psalm-return ColumnType::*
      *
      * @see type()
+     * @psalm-mutation-free
      */
     public function getType(): string;
+
+    /** @psalm-mutation-free */
+    public function hasDefaultValue(): bool;
 
     /**
      * Whether this column is nullable.
@@ -249,6 +265,7 @@ interface ColumnSchemaInterface
      * @see allowNull()
      *
      * @deprecated Use {@see isNotNull()} instead. Will be removed in version 2.0.
+     * @psalm-mutation-free
      */
     public function isAllowNull(): bool;
 
@@ -258,6 +275,7 @@ interface ColumnSchemaInterface
      * This is only meaningful when {@see type} is `smallint`, `integer` or `bigint`.
      *
      * @see autoIncrement()
+     * @psalm-mutation-free
      */
     public function isAutoIncrement(): bool;
 
@@ -265,6 +283,7 @@ interface ColumnSchemaInterface
      * Whether this column is computed.
      *
      * @see computed()
+     * @psalm-mutation-free
      */
     public function isComputed(): bool;
 
@@ -272,13 +291,15 @@ interface ColumnSchemaInterface
      * Whether this column is not nullable.
      *
      * @see notNull()
+     * @psalm-mutation-free
      */
-    public function isNotNull(): bool;
+    public function isNotNull(): bool|null;
 
     /**
      * Whether this column is a part of primary key.
      *
      * @see primaryKey()
+     * @psalm-mutation-free
      */
     public function isPrimaryKey(): bool;
 
@@ -286,6 +307,7 @@ interface ColumnSchemaInterface
      * Whether this column has a unique index.
      *
      * @see unique()
+     * @psalm-mutation-free
      */
     public function isUnique(): bool;
 
@@ -294,6 +316,7 @@ interface ColumnSchemaInterface
      * or `bigint`.
      *
      * @see unsigned()
+     * @psalm-mutation-free
      */
     public function isUnsigned(): bool;
 
@@ -320,6 +343,11 @@ interface ColumnSchemaInterface
      * ```
      */
     public function notNull(bool $notNull = true): static;
+
+    /**
+     * Whether the column is nullable. Alias of {@see notNull(false)}.
+     */
+    public function null(): static;
 
     /**
      * Converts the input value according to {@see phpType} after retrieval from the database.
