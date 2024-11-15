@@ -125,9 +125,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             return ' DEFAULT ' . static::GENERATE_UUID_EXPRESSION;
         }
 
-        if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID
-            || $column->getDefaultValue() === null
-        ) {
+        if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID) {
             return '';
         }
 
@@ -149,7 +147,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     {
         $value = $column->dbTypecast($column->getDefaultValue());
 
-        if ($value === null) {
+        if ($value === null && (!$column->hasDefaultValue() || $column->isNotNull())) {
             return null;
         }
 
@@ -162,6 +160,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             GettypeResult::INTEGER => (string) $value,
             GettypeResult::DOUBLE => (string) $value,
             GettypeResult::BOOLEAN => $value ? 'TRUE' : 'FALSE',
+            GettypeResult::NULL => 'NULL',
             default => $this->queryBuilder->quoter()->quoteValue((string) $value),
         };
     }
@@ -186,7 +185,11 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      */
     protected function buildNotNull(ColumnSchemaInterface $column): string
     {
-        return $column->isNotNull() ? ' NOT NULL' : '';
+        return match ($column->isNotNull()) {
+            true => ' NOT NULL',
+            false => ' NULL',
+            default => '',
+        };
     }
 
     /**
