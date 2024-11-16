@@ -45,6 +45,7 @@
 - Enh #885: Refactor `AbstractDsn` class (@Tigrov)
 - Chg #889: Update `AbstractDMLQueryBuilder::insertBatch()` method (@Tigrov)
 - Enh #890: Add properties of `AbstractColumnSchema` class to constructor (@Tigrov)
+- New #899: Add `ColumnSchemaInterface::hasDefaultValue()` and `ColumnSchemaInterface::null()` methods (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
