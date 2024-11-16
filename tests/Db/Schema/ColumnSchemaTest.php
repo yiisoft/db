@@ -120,12 +120,15 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
+        $this->assertFalse($column->hasDefaultValue());
         $this->assertNull($column->getDefaultValue());
         $this->assertSame($column, $column->defaultValue('test'));
+        $this->assertTrue($column->hasDefaultValue());
         $this->assertSame('test', $column->getDefaultValue());
 
         $column->defaultValue(null);
 
+        $this->assertTrue($column->hasDefaultValue());
         $this->assertNull($column->getDefaultValue());
     }
 
@@ -180,7 +183,7 @@ final class ColumnSchemaTest extends TestCase
     {
         $column = new ColumnSchema();
 
-        $this->assertFalse($column->isNotNull());
+        $this->assertNull($column->isNotNull());
         $this->assertSame($column, $column->notNull());
         $this->assertTrue($column->isNotNull());
 
@@ -188,9 +191,13 @@ final class ColumnSchemaTest extends TestCase
 
         $this->assertFalse($column->isNotNull());
 
-        $column->notNull(true);
+        $column->notNull(null);
 
-        $this->assertTrue($column->isNotNull());
+        $this->assertNull($column->isNotNull());
+
+        $column->null();
+
+        $this->assertFalse($column->isNotNull());
     }
 
     public function testPrecision(): void

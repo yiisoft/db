@@ -126,7 +126,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
         }
 
         if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID
-            || $column->getDefaultValue() === null
+            || !$column->hasDefaultValue()
         ) {
             return '';
         }
@@ -149,19 +149,15 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     {
         $value = $column->dbTypecast($column->getDefaultValue());
 
-        if ($value === null) {
-            return null;
-        }
-
-        if ($value instanceof ExpressionInterface) {
-            return $this->queryBuilder->buildExpression($value);
-        }
-
         /** @var string */
         return match (gettype($value)) {
             GettypeResult::INTEGER => (string) $value,
             GettypeResult::DOUBLE => (string) $value,
             GettypeResult::BOOLEAN => $value ? 'TRUE' : 'FALSE',
+            GettypeResult::NULL => $column->isNotNull() !== true ? 'NULL' : null,
+            GettypeResult::OBJECT => $value instanceof ExpressionInterface
+                ? $this->queryBuilder->buildExpression($value)
+                : $this->queryBuilder->quoter()->quoteValue((string) $value),
             default => $this->queryBuilder->quoter()->quoteValue((string) $value),
         };
     }
@@ -186,7 +182,11 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      */
     protected function buildNotNull(ColumnSchemaInterface $column): string
     {
-        return $column->isNotNull() ? ' NOT NULL' : '';
+        return match ($column->isNotNull()) {
+            true => ' NOT NULL',
+            false => ' NULL',
+            default => '',
+        };
     }
 
     /**

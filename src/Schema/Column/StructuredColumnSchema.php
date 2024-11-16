@@ -52,12 +52,14 @@ class StructuredColumnSchema extends AbstractColumnSchema
      * Get the metadata of the structured type columns.
      *
      * @return ColumnSchemaInterface[]
+     * @psalm-mutation-free
      */
     public function getColumns(): array
     {
         return $this->columns;
     }
 
+    /** @psalm-mutation-free */
     public function getPhpType(): string
     {
         return PhpType::ARRAY;
