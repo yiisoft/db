@@ -125,7 +125,9 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             return ' DEFAULT ' . static::GENERATE_UUID_EXPRESSION;
         }
 
-        if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID) {
+        if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID
+            || !$column->hasDefaultValue()
+        ) {
             return '';
         }
 
@@ -147,20 +149,15 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     {
         $value = $column->dbTypecast($column->getDefaultValue());
 
-        if ($value === null && (!$column->hasDefaultValue() || $column->isNotNull())) {
-            return null;
-        }
-
-        if ($value instanceof ExpressionInterface) {
-            return $this->queryBuilder->buildExpression($value);
-        }
-
         /** @var string */
         return match (gettype($value)) {
             GettypeResult::INTEGER => (string) $value,
             GettypeResult::DOUBLE => (string) $value,
             GettypeResult::BOOLEAN => $value ? 'TRUE' : 'FALSE',
-            GettypeResult::NULL => 'NULL',
+            GettypeResult::NULL => $column->isNotNull() !== true ? 'NULL' : null,
+            GettypeResult::OBJECT => $value instanceof ExpressionInterface
+                ? $this->queryBuilder->buildExpression($value)
+                : $this->queryBuilder->quoter()->quoteValue((string) $value),
             default => $this->queryBuilder->quoter()->quoteValue((string) $value),
         };
     }
