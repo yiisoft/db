@@ -6,7 +6,14 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Syntax\ColumnDefinitionParser;
+
+use function array_diff_key;
+use function is_numeric;
+use function preg_match;
+use function str_replace;
+use function substr;
 
 use const PHP_INT_SIZE;
 
@@ -89,12 +96,22 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
         unset($info['type']);
 
         if ($type === ColumnType::ARRAY && empty($info['column']) && !empty($info['dbType'])) {
-            $info['column'] = $this->fromDbType($info['dbType'], $info);
+            /** @psalm-suppress ArgumentTypeCoercion */
+            $info['column'] = $this->fromDbType(
+                $info['dbType'],
+                array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1])
+            );
         }
 
         $columnClass = $this->getColumnClass($type, $info);
 
-        return new $columnClass($type, ...$info);
+        $column = new $columnClass($type, ...$info);
+
+        if (isset($info['defaultValueRaw'])) {
+            $column->defaultValue($this->normalizeDefaultValue($info['defaultValueRaw'], $column));
+        }
+
+        return $column;
     }
 
     /**
@@ -208,6 +225,59 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::STRUCTURED,
             ColumnType::JSON => true,
             default => false,
+        };
+    }
+
+    /**
+     * Converts column's default value according to {@see ColumnSchemaInterface::getPhpType()} after retrieval from the
+     * database.
+     *
+     * @param string|null $defaultValue The default value retrieved from the database.
+     * @param ColumnSchemaInterface $column The column schema object.
+     *
+     * @return mixed The normalized default value.
+     */
+    protected function normalizeDefaultValue(string|null $defaultValue, ColumnSchemaInterface $column): mixed
+    {
+        if (
+            $defaultValue === null
+            || $defaultValue === ''
+            || $column->isPrimaryKey()
+            || $column->isComputed()
+            || preg_match('/^\(?NULL\b/i', $defaultValue) === 1
+        ) {
+            return null;
+        }
+
+        return $this->normalizeNotNullDefaultValue($defaultValue, $column);
+    }
+
+    /**
+     * Converts a not null default value according to {@see ColumnSchemaInterface::getPhpType()}.
+     */
+    protected function normalizeNotNullDefaultValue(string $defaultValue, ColumnSchemaInterface $column): mixed
+    {
+        $value = $defaultValue;
+
+        if ($value[0] === '(' && $value[-1] === ')') {
+            $value = substr($value, 1, -1);
+        }
+
+        if (is_numeric($value)) {
+            return $column->phpTypecast($value);
+        }
+
+        if ($value[0] === "'" && $value[-1] === "'") {
+            $value = substr($value, 1, -1);
+            $value = str_replace("''", "'", $value);
+
+            return $column->phpTypecast($value);
+        }
+
+        return match ($value) {
+            'true' => true,
+            'false' => false,
+            default => new Expression($defaultValue),
         };
     }
 }
