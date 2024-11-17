@@ -125,9 +125,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             return ' DEFAULT ' . static::GENERATE_UUID_EXPRESSION;
         }
 
-        if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID
-            || !$column->hasDefaultValue()
-        ) {
+        if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID) {
             return '';
         }
 
@@ -147,6 +145,10 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      */
     protected function buildDefaultValue(ColumnSchemaInterface $column): string|null
     {
+        if (!$column->hasDefaultValue()) {
+            return null;
+        }
+
         $value = $column->dbTypecast($column->getDefaultValue());
 
         /** @var string */
@@ -274,11 +276,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      */
     protected function buildType(ColumnSchemaInterface $column): string
     {
-        $dbType = $column->getDbType();
-
-        if ($dbType === null) {
-            $dbType = $this->getDbType($column);
-        }
+        $dbType = $this->getDbType($column);
 
         if (empty($dbType)
             || $dbType[-1] === ')'
