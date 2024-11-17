@@ -10,7 +10,7 @@ use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
 final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
 {
-    protected const AUTO_INCREMENT_KEYWORD = 'AUTO_INCREMENT';
+    protected const AUTO_INCREMENT_KEYWORD = 'AUTOINCREMENT';
 
     protected const GENERATE_UUID_EXPRESSION = 'uuid()';
 
@@ -40,7 +40,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
 
     protected function getDbType(ColumnSchemaInterface $column): string
     {
-        return match ($column->getType()) {
+        return $column->getDbType() ?? match ($column->getType()) {
             ColumnType::BOOLEAN => 'boolean',
             ColumnType::BIT => 'bit',
             ColumnType::TINYINT => 'tinyint',
@@ -52,7 +52,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             ColumnType::DECIMAL => 'decimal',
             ColumnType::MONEY => 'money',
             ColumnType::CHAR => 'char',
-            ColumnType::STRING => 'varchar',
+            ColumnType::STRING => 'varchar(' . ($column->getSize() ?? 255) . ')',
             ColumnType::TEXT => 'text',
             ColumnType::BINARY => 'binary',
             ColumnType::UUID => 'uuid',
