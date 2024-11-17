@@ -104,12 +104,12 @@ abstract class AbstractColumnFactoryTest extends TestCase
         $db = $this->getConnection();
         $columnFactory = $db->getSchema()->getColumnFactory();
 
-        $column = $columnFactory->fromDefinition('char(1) NOT NULL', ['extra' => 'UNIQUE']);
+        $column = $columnFactory->fromDefinition('char(1) INVISIBLE', ['extra' => 'COLLATE utf8mb4']);
 
         $this->assertInstanceOf(StringColumnSchema::class, $column);
         $this->assertSame('char', $column->getType());
         $this->assertSame(1, $column->getSize());
-        $this->assertSame('NOT NULL UNIQUE', $column->getExtra());
+        $this->assertSame('INVISIBLE COLLATE utf8mb4', $column->getExtra());
 
         $db->close();
     }
