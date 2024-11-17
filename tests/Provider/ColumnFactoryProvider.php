@@ -24,7 +24,7 @@ class ColumnFactoryProvider
             // definition, expected type, expected instance of, expected column method results
             '' => ['', ColumnType::STRING, StringColumnSchema::class, ['getDbType' => '']],
             'text' => ['text', ColumnType::TEXT, StringColumnSchema::class, ['getDbType' => 'text']],
-            'text NOT NULL' => ['text NOT NULL', ColumnType::TEXT, StringColumnSchema::class, ['getDbType' => 'text', 'getExtra' => 'NOT NULL']],
+            'text NOT NULL' => ['text NOT NULL', ColumnType::TEXT, StringColumnSchema::class, ['getDbType' => 'text', 'isNotNull' => true]],
             'char(1)' => ['char(1)', ColumnType::CHAR, StringColumnSchema::class, ['getDbType' => 'char', 'getSize' => 1]],
             'decimal(10,2)' => ['decimal(10,2)', ColumnType::DECIMAL, DoubleColumnSchema::class, ['getDbType' => 'decimal', 'getSize' => 10, 'getScale' => 2]],
             'bigint UNSIGNED' => ['bigint UNSIGNED', ColumnType::BIGINT, BigIntColumnSchema::class, ['getDbType' => 'bigint', 'isUnsigned' => true]],

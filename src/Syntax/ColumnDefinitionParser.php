@@ -7,8 +7,7 @@ namespace Yiisoft\Db\Syntax;
 use function explode;
 use function preg_match;
 use function preg_match_all;
-use function str_ireplace;
-use function stripos;
+use function str_replace;
 use function strlen;
 use function strtolower;
 use function substr;
@@ -27,11 +26,15 @@ final class ColumnDefinitionParser
      * @return array The column information.
      *
      * @psalm-return array{
+     *     check?: string,
+     *     defaultValueRaw?: string,
      *     enumValues?: list<string>,
      *     extra?: string,
+     *     notNull?: bool,
      *     scale?: int,
      *     size?: int,
      *     type: lowercase-string,
+     *     unique?: bool,
      *     unsigned?: bool,
      * }
      */
@@ -66,7 +69,14 @@ final class ColumnDefinitionParser
     }
 
     /**
-     * @psalm-return array{unsigned?: bool, extra?: string}
+     * @psalm-return array{
+     *     check?: string,
+     *     defaultValueRaw?: string,
+     *     extra?: string,
+     *     notNull?: bool,
+     *     unique?: bool,
+     *     unsigned?: bool
+     * }
      */
     private function extraInfo(string $extra): array
     {
@@ -75,11 +85,40 @@ final class ColumnDefinitionParser
         }
 
         $info = [];
+        $bracketsPattern = '(\(((?>[^()]+)|(?-2))*\))';
+        $defaultPattern = "/\\s*\\bDEFAULT\\s+('(?:[^']|'')*'|\"(?:[^\"]|\"\")*\"|[^(\\s]*$bracketsPattern?\\S*)/i";
 
-        if (stripos($extra, 'unsigned') !== false) {
-            $info['unsigned'] = true;
-            $extra = trim(str_ireplace('unsigned', '', $extra));
+        if (preg_match($defaultPattern, $extra, $matches) === 1) {
+            $info['defaultValueRaw'] = $matches[1];
+            $extra = str_replace($matches[0], '', $extra);
         }
+
+        if (preg_match("/\\s*\\bCHECK\\s+$bracketsPattern/i", $extra, $matches) === 1) {
+            $info['check'] = substr($matches[1], 1, -1);
+            $extra = str_replace($matches[0], '', $extra);
+        }
+
+        $extra = preg_replace('/\s*\bUNSIGNED\b/i', '', $extra, 1, $count);
+        if ($count > 0) {
+            $info['unsigned'] = true;
+        }
+
+        $extra = preg_replace('/\s*\bUNIQUE\b/i', '', $extra, 1, $count);
+        if ($count > 0) {
+            $info['unique'] = true;
+        }
+
+        $extra = preg_replace('/\s*\bNOT\s+NULL\b/i', '', $extra, 1, $count);
+        if ($count > 0) {
+            $info['notNull'] = true;
+        } else {
+            $extra = preg_replace('/\s*\bNULL\b/i', '', $extra, 1, $count);
+            if ($count > 0) {
+                $info['notNull'] = false;
+            }
+        }
+
+        $extra = trim($extra);
 
         if (!empty($extra)) {
             $info['extra'] = $extra;
