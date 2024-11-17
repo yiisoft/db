@@ -179,7 +179,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->expectException(Exception::class);
 
-        $expression = new class () implements ExpressionInterface {
+        $expression = new class() implements ExpressionInterface {
         };
         $qb = $db->getQueryBuilder();
         $qb->getExpressionBuilder($expression);
@@ -313,5 +313,65 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $actualParams = [];
         $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
+    }
+
+
+    public static function refreshMaterializedViewDataProvider(): array
+    {
+        return [
+            [
+                'concurrently_mt',
+                true,
+                null,
+                'REFRESH MATERIALIZED VIEW CONCURRENTLY [[concurrently_mt]]',
+            ],
+            [
+                'concurrently_with_data_mt',
+                true,
+                true,
+                'REFRESH MATERIALIZED VIEW CONCURRENTLY [[concurrently_with_data_mt]] WITH DATA',
+            ],
+            [
+                'concurrently_without_data_mt',
+                true,
+                false,
+                'REFRESH MATERIALIZED VIEW CONCURRENTLY [[concurrently_without_data_mt]] WITH NO DATA',
+            ],
+            [
+                'not_concurrently_mt',
+                false,
+                null,
+                'REFRESH MATERIALIZED VIEW [[not_concurrently_mt]]',
+            ],
+            [
+                'not_concurrently_with_data_mt',
+                false,
+                true,
+                'REFRESH MATERIALIZED VIEW [[not_concurrently_with_data_mt]] WITH DATA',
+            ],
+            [
+                'not_concurrently_without_data_mt',
+                false,
+                false,
+                'REFRESH MATERIALIZED VIEW [[not_concurrently_without_data_mt]] WITH NO DATA',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider refreshMaterializedViewDataProvider
+     * @param bool $concurrently
+     * @param bool|null $withData
+     * @return void
+     */
+    public function testRefreshMaterializedView(string $viewName, bool $concurrently, ?bool $withData, string $expected): void
+    {
+        $db = $this->getConnection();
+        $driver = $db->getDriverName();
+        $sql = $db->getQueryBuilder()->refreshMaterializedView($viewName, $concurrently, $withData);
+        $actual = DbHelper::replaceQuotes($sql, $driver);
+        $expected = DbHelper::replaceQuotes($expected, $driver);
+
+        $this->assertSame($expected, $actual);
     }
 }

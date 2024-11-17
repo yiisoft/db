@@ -427,4 +427,15 @@ interface DDLQueryBuilderInterface
      * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
     public function truncateTable(string $table): string;
+
+    /**
+     * Refresh materialized view
+     *
+     * @param string $viewName The name of the view to refresh.
+     * @param bool $concurrently Refresh the materialized view without locking out concurrent selects on the materialized view.
+     * @param bool|null $withData When `true` then the backing query is executed to provide the new data. Otherwise if `false` then no new data is generated and the materialized view is left in an unscannable state
+     *
+     * @return string The `REFRESH MATERIALIZED VIEW` SQL statement
+     */
+    public function refreshMaterializedView(string $viewName, bool $concurrently = false, ?bool $withData = null): string;
 }
