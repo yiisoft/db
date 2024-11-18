@@ -12,6 +12,10 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+      mssql:
+        condition: service_healthy
+      oracle:
+        condition: service_healthy
     environment:
       YII_MYSQL_DATABASE: yii
       YII_MYSQL_HOST: mysql
@@ -31,11 +35,11 @@ services:
       YII_MSSQL_USER: SA
       YII_MSSQL_PASSWORD: YourStrong!Passw0rd
 
-      YII_ORACLE_DATABASE:
+      YII_ORACLE_SID: FREE
       YII_ORACLE_HOST: oracle
-      YII_ORACLE_PORT:
+      YII_ORACLE_PORT: 1521
       YII_ORACLE_USER: system
-      YII_ORACLE_PASSWORD: root
+      YII_ORACLE_PASSWORD: sys_user_password
   mysql:
     image: mysql:9
     ports:
@@ -52,6 +56,23 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
+  mariadb:
+    image: mariadb:11
+    ports:
+      - "13306:3306"
+    volumes:
+      - type: tmpfs
+        target: /var/lib/mysql
+    environment:
+      MYSQL_DATABASE: yii
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: "%"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
   postgres:
     image: postgres:17
     ports:
@@ -75,16 +96,37 @@ services:
       ACCEPT_EULA: Y
     ports:
       - "1433:1433"
-    expose:
-      - "1433"
+    user: root
+    volumes:
+      - mssql-data:/var/opt/mssql/data
+      - mssql-log:/var/opt/mssql/log
+      - mssql-secrets:/var/opt/mssql/secrets
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$${SA_PASSWORD}" -Q "SELECT 1" -b -C -o /dev/null
+      interval: 10s
+      timeout: 3s
+      retries: 100
+      start_period: 10s
   oracle:
-    image: gvenzl/oracle-xe:21
+    build:
+      context:  docker/oracle
     ports:
       - "1521:1521"
-    expose:
-      - "1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
     environment:
-      ORACLE_PASSWORD : root
-      ORACLE_DATABASE : yiitest
-      APP_USER: yiitest
-      APP_USER_PASSWORD: root
+      ORACLE_PASSWORD: sys_user_password
+      APP_USER: my_user
+      APP_USER_PASSWORD: password_i_should_change
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 100
+      start_period: 5s
+      start_interval: 5s
+volumes:
+  mssql-data:
+  mssql-log:
+  mssql-secrets:
+  oracle-data:
