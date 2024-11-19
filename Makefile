@@ -3,11 +3,18 @@ run:
 
 test-all: test-sqlite \
 	test-mysql \
+	test-mariadb \
 	test-pgsql \
 	test-mssql \
 	test-oracle
 test-sqlite: testsuite-Sqlite
 test-mysql: testsuite-Mysql
+test-mariadb:
+	docker compose run \
+	--rm \
+	--entrypoint "vendor/bin/phpunit --testsuite Mysql" \
+	-e YII_MYSQL_TYPE=mariadb \
+	php
 test-pgsql: testsuite-Pgsql
 test-mssql: testsuite-Mssql
 test-oracle:
