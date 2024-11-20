@@ -347,14 +347,14 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         $params = [];
-        $getQueryBuilder = $this->getQueryBuilder();
+        $queryBuilder = $this->getQueryBuilder();
 
         foreach ($this->params as $name => $param) {
             if (is_string($name) && $name[0] !== ':') {
                 $name = ':' . $name;
             }
 
-            $params[$name] = $getQueryBuilder->prepareParam($param);
+            $params[$name] = $queryBuilder->prepareParam($param);
         }
 
         /** @var string[] $params */
