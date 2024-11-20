@@ -486,7 +486,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Prepare resource for use in a SQL query.
+     * Converts a resource value to its SQL representation or throws an exception if conversion is not possible.
      *
      * @param resource $value
      */
@@ -506,7 +506,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Prepare binary string for use in a SQL query.
+     * Converts a binary value to its SQL representation using hexadecimal encoding.
      */
     protected function prepareBinary(string $binary): string
     {

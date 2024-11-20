@@ -136,7 +136,6 @@ interface QuoterInterface
     /**
      * Quotes a string value for use in a query.
      *
-     * Note: That if the parameter isn't a string, it will be returned without change.
      * Attention: The usage of this method isn't safe.
      * Use prepared statements.
      *
