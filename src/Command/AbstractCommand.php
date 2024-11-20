@@ -351,28 +351,14 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         $params = [];
-        $quoter = $this->getQueryBuilder()->quoter();
+        $getQueryBuilder = $this->getQueryBuilder();
 
         foreach ($this->params as $name => $param) {
-            if (is_string($name) && !str_starts_with($name, ':')) {
+            if (is_string($name) && $name[0] !== ':') {
                 $name = ':' . $name;
             }
 
-            $value = $param->getValue();
-
-            $params[$name] = match ($param->getType()) {
-                DataType::INTEGER => (string) (int) $value,
-                DataType::STRING, DataType::LOB => match (gettype($value)) {
-                    GettypeResult::RESOURCE => $name,
-                    GettypeResult::DOUBLE => (string) $value,
-                    default => $value instanceof Expression
-                        ? (string) $value
-                        : $quoter->quoteValue((string) $value),
-                },
-                DataType::BOOLEAN => $value ? 'TRUE' : 'FALSE',
-                DataType::NULL => 'NULL',
-                default => $name,
-            };
+            $params[$name] = $getQueryBuilder->prepareParam($param);
         }
 
         /** @var string[] $params */

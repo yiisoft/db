@@ -40,6 +40,10 @@ final class GettypeResult
      */
     public const RESOURCE = 'resource';
     /**
+     *  Define the php type as `resource (closed)`.
+     */
+    public const RESOURCE_CLOSED = 'resource (closed)';
+    /**
      *  Define the php type as `string`.
      */
     public const STRING = 'string';

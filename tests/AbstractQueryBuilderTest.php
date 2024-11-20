@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use Closure;
 use JsonException;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Throwable;
@@ -28,6 +29,7 @@ use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
+use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -2404,12 +2406,44 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildColumnDefinition() */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildColumnDefinition')]
     public function testBuildColumnDefinition(string $expected, ColumnSchemaInterface|string $column): void
     {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expected, $qb->buildColumnDefinition($column));
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'prepareParam')]
+    public function testPrepareParam(string $expected, mixed $value, int $type): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $param = new Param($value, $type);
+        $this->assertSame($expected, $qb->prepareParam($param));
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'prepareValue')]
+    public function testPrepareValue(string $expected, mixed $value): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->assertSame($expected, $qb->prepareValue($value));
+    }
+
+    public function testPrepareValueClosedResource(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectExceptionObject(new InvalidArgumentException('Resource is closed.'));
+
+        $resource = fopen('php://memory', 'r');
+        fclose($resource);
+
+        $qb->prepareValue($resource);
     }
 }

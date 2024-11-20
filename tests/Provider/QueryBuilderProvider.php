@@ -20,9 +20,12 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
+
+use function fopen;
 
 /**
  * @psalm-suppress MixedAssignment
@@ -1664,7 +1667,6 @@ class QueryBuilderProvider
             "defaultValue('')" => ["varchar(255) DEFAULT ''", ColumnBuilder::string()->defaultValue('')],
             'defaultValue(null)' => ['varchar(255) DEFAULT NULL', ColumnBuilder::string()->defaultValue(null)],
             'defaultValue($expression)' => ['integer DEFAULT (1 + 2)', ColumnBuilder::integer()->defaultValue(new Expression('(1 + 2)'))],
-            'notNull()->defaultValue(null)' => ['varchar(255) NOT NULL', ColumnBuilder::string()->notNull()->defaultValue(null)],
             "integer()->defaultValue('')" => ['integer DEFAULT NULL', ColumnBuilder::integer()->defaultValue('')],
             'notNull()' => ['varchar(255) NOT NULL', ColumnBuilder::string()->notNull()],
             'null()' => ['varchar(255) NULL', ColumnBuilder::string()->null()],
@@ -1692,6 +1694,38 @@ class QueryBuilderProvider
                 ),
                 ColumnBuilder::integer()->reference($referenceWithSchema),
             ],
+        ];
+    }
+
+    public static function prepareParam(): array
+    {
+        return [
+            'null' => ['NULL', null, DataType::NULL],
+            'true' => ['TRUE', true, DataType::BOOLEAN],
+            'false' => ['FALSE', false, DataType::BOOLEAN],
+            'integer' => ['1', 1, DataType::INTEGER],
+            'integerString' => ['1', '1 or 1=1', DataType::INTEGER],
+            'float' => ['1.1', 1.1, DataType::STRING],
+            'string' => ["'string'", 'string', DataType::STRING],
+            'binary' => ['0x737472696e67', 'string', DataType::LOB],
+        ];
+    }
+
+    public static function prepareValue(): array
+    {
+        return [
+            'null' => ['NULL', null],
+            'true' => ['TRUE', true],
+            'false' => ['FALSE', false],
+            'integer' => ['1', 1],
+            'float' => ['1.1', 1.1],
+            'string' => ["'string'", 'string'],
+            'binary' => ['0x737472696e67', fopen(__DIR__ . '/../Support/string.txt', 'rb')],
+            'paramBinary' => ['0x737472696e67', new Param('string', DataType::LOB)],
+            'paramString' => ["'string'", new Param('string', DataType::STRING)],
+            'paramInteger' => ['1', new Param(1, DataType::INTEGER)],
+            'expression' => ['(1 + 2)', new Expression('(1 + 2)')],
+            'Stringable' => ["'string'", new Stringable('string')],
         ];
     }
 }

@@ -302,7 +302,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @return int The type.
      *
-     * @see DataType
+     * @psalm-return DataType::*
      */
     public function getDataType(mixed $data): int;
 
