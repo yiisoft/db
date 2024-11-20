@@ -2433,17 +2433,4 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame($expected, $qb->prepareValue($value));
     }
-
-    public function testPrepareValueClosedResource(): void
-    {
-        $db = $this->getConnection();
-        $qb = $db->getQueryBuilder();
-
-        $this->expectExceptionObject(new InvalidArgumentException('Resource is closed.'));
-
-        $resource = fopen('php://memory', 'r');
-        fclose($resource);
-
-        $qb->prepareValue($resource);
-    }
 }

@@ -108,7 +108,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QuoterInterface::getRawTableName()` - returns the raw table name without quotes;
 - `SchemaInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
-- `QueryBuilderInterface::prepareParam()` - converts a {@see ParamInterface} object to its SQL representation;
+- `QueryBuilderInterface::prepareParam()` - converts a `ParamInterface` object to its SQL representation;
 - `QueryBuilderInterface::prepareValue()` - converts a value to its SQL representation;
 
 ### Remove methods
