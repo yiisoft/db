@@ -47,6 +47,8 @@
 - Chg #889: Update `AbstractDMLQueryBuilder::insertBatch()` method (@Tigrov)
 - Enh #890: Add properties of `AbstractColumnSchema` class to constructor (@Tigrov)
 - New #899: Add `ColumnSchemaInterface::hasDefaultValue()` and `ColumnSchemaInterface::null()` methods (@Tigrov)
+- New #902: Add `QueryBuilderInterface::prepareParam()` and `QueryBuilderInterface::prepareValue()` methods (@Tigrov)
+- Enh #902: Refactor `Quoter::quoteValue()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
