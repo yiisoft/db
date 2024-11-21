@@ -72,9 +72,11 @@ and the following changes were made:
 - `reference(ForeignKeyConstraint|null $reference)` method is added;
 - `getReference()` method is added;
 - `notNull(bool $notNull = true)` method is added;
+- `null()` method is added;
 - `isNotNull()` method is added;
 - `unique(bool $unique = true)` method is added;
 - `isUnique()` method is added;
+- `hasDefaultValue()` method is added;
 - all `AbstractColumnSchema` class properties except `$type` moved to constructor;
 - added `DEFAULT_TYPE` constant to `AbstractColumnSchema` class;
 - added method chaining.

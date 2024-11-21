@@ -35,16 +35,18 @@
 - Enh #865: Raise minimum PHP version to `^8.1` with minor refactoring (@Tigrov, @vjik)
 - Enh #798: Allow `QueryInterface::one()` and `QueryInterface::all()` to return objects (@darkdef, @Tigrov)
 - Enh #872: Use `#[\SensitiveParameter]` attribute to mark sensitive parameters (@heap-s)
-- New #864: Realize column factory (@Tigrov)
+- New #864, #897, #898: Realize column factory (@Tigrov)
 - Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #877: Separate column type constants (@Tigrov)
-- Enh #878: Realize `ColumnBuilder` class (@Tigrov)
+- New #878: Realize `ColumnBuilder` class (@Tigrov)
+- New #878, #900: Realize `ColumnDefinitionParser` class (@Tigrov)
 - Enh #881: Refactor `ColumnSchemaInterface` and `AbstractColumnSchema` (@Tigrov)
 - New #882: Move `ArrayColumnSchema` and `StructuredColumnSchema` classes from `db-pgsql` package (@Tigrov)
-- New #883: Add `ColumnDefinitionBuilder` class and `QueryBuilderInterface::buildColumnDefinition()` method (@Tigrov)
+- New #883, #901: Add `ColumnDefinitionBuilder` class and `QueryBuilderInterface::buildColumnDefinition()` method (@Tigrov)
 - Enh #885: Refactor `AbstractDsn` class (@Tigrov)
 - Chg #889: Update `AbstractDMLQueryBuilder::insertBatch()` method (@Tigrov)
 - Enh #890: Add properties of `AbstractColumnSchema` class to constructor (@Tigrov)
+- New #899: Add `ColumnSchemaInterface::hasDefaultValue()` and `ColumnSchemaInterface::null()` methods (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

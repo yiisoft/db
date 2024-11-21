@@ -125,9 +125,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             return ' DEFAULT ' . static::GENERATE_UUID_EXPRESSION;
         }
 
-        if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID
-            || $column->getDefaultValue() === null
-        ) {
+        if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID) {
             return '';
         }
 
@@ -147,21 +145,21 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      */
     protected function buildDefaultValue(ColumnSchemaInterface $column): string|null
     {
-        $value = $column->dbTypecast($column->getDefaultValue());
-
-        if ($value === null) {
+        if (!$column->hasDefaultValue()) {
             return null;
         }
 
-        if ($value instanceof ExpressionInterface) {
-            return $this->queryBuilder->buildExpression($value);
-        }
+        $value = $column->dbTypecast($column->getDefaultValue());
 
         /** @var string */
         return match (gettype($value)) {
             GettypeResult::INTEGER => (string) $value,
             GettypeResult::DOUBLE => (string) $value,
             GettypeResult::BOOLEAN => $value ? 'TRUE' : 'FALSE',
+            GettypeResult::NULL => $column->isNotNull() !== true ? 'NULL' : null,
+            GettypeResult::OBJECT => $value instanceof ExpressionInterface
+                ? $this->queryBuilder->buildExpression($value)
+                : $this->queryBuilder->quoter()->quoteValue((string) $value),
             default => $this->queryBuilder->quoter()->quoteValue((string) $value),
         };
     }
@@ -186,7 +184,11 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      */
     protected function buildNotNull(ColumnSchemaInterface $column): string
     {
-        return $column->isNotNull() ? ' NOT NULL' : '';
+        return match ($column->isNotNull()) {
+            true => ' NOT NULL',
+            false => ' NULL',
+            default => '',
+        };
     }
 
     /**
@@ -274,11 +276,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      */
     protected function buildType(ColumnSchemaInterface $column): string
     {
-        $dbType = $column->getDbType();
-
-        if ($dbType === null) {
-            $dbType = $this->getDbType($column);
-        }
+        $dbType = $this->getDbType($column);
 
         if (empty($dbType)
             || $dbType[-1] === ')'

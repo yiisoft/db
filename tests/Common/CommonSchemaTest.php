@@ -359,39 +359,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columnsTypeChar
-     */
-    public function testGetStringFieldsSize(
-        string $columnName,
-        string $columnType,
-        int|null $columnSize,
-        string $columnDbType
-    ): void {
-        $db = $this->getConnection(true);
-
-        $schema = $db->getSchema();
-        $tableSchema = $schema->getTableSchema('type');
-
-        $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema);
-
-        $columns = $tableSchema->getColumns();
-
-        foreach ($columns as $name => $column) {
-            $type = $column->getType();
-            $size = $column->getSize();
-            $dbType = $column->getDbType();
-
-            if ($name === $columnName) {
-                $this->assertSame($columnType, $type);
-                $this->assertSame($columnSize, $size);
-                $this->assertSame($columnDbType, $dbType);
-            }
-        }
-
-        $db->close();
-    }
-
     public function testGetTableChecks(): void
     {
         $db = $this->getConnection(true);

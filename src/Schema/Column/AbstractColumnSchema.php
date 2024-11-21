@@ -6,9 +6,9 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
-
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 
+use function array_key_exists;
 use function property_exists;
 
 /**
@@ -44,6 +44,11 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     protected const DEFAULT_TYPE = ColumnType::STRING;
 
     /**
+     * @var mixed $defaultValue The default value of the column.
+     */
+    private mixed $defaultValue;
+
+    /**
      * @var string The column abstract type
      * @psalm-var ColumnType::*
      */
@@ -56,12 +61,11 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
      * @param string|null $comment The column's comment.
      * @param bool $computed Whether the column is a computed column.
      * @param string|null $dbType The column's database type.
-     * @param mixed $defaultValue The default value of the column.
      * @param array|null $enumValues The list of possible values for an ENUM column.
      * @param string|null $extra Any extra information that needs to be appended to the column's definition.
      * @param bool $primaryKey Whether the column is a primary key.
      * @param string|null $name The column's name.
-     * @param bool $notNull Whether the column is not nullable.
+     * @param bool|null $notNull Whether the column is not nullable.
      * @param ForeignKeyConstraint|null $reference The foreign key constraint.
      * @param int|null $scale The number of digits to the right of the decimal point.
      * @param int|null $size The column's size.
@@ -79,12 +83,11 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         private string|null $comment = null,
         private bool $computed = false,
         private string|null $dbType = null,
-        private mixed $defaultValue = null,
         private array|null $enumValues = null,
         private string|null $extra = null,
         private bool $primaryKey = false,
         private string|null $name = null,
-        private bool $notNull = false,
+        private bool|null $notNull = null,
         private ForeignKeyConstraint|null $reference = null,
         private int|null $scale = null,
         private int|null $size = null,
@@ -93,6 +96,11 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         mixed ...$args,
     ) {
         $this->type = $type ?? static::DEFAULT_TYPE;
+
+        if (array_key_exists('defaultValue', $args)) {
+            $this->defaultValue = $args['defaultValue'];
+            unset($args['defaultValue']);
+        }
 
         /** @var array<string, mixed> $args */
         foreach ($args as $property => $value) {
@@ -159,31 +167,37 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this;
     }
 
+    /** @psalm-mutation-free */
     public function getCheck(): string|null
     {
         return $this->check;
     }
 
+    /** @psalm-mutation-free */
     public function getComment(): string|null
     {
         return $this->comment;
     }
 
+    /** @psalm-mutation-free */
     public function getDbType(): string|null
     {
         return $this->dbType;
     }
 
+    /** @psalm-mutation-free */
     public function getDefaultValue(): mixed
     {
-        return $this->defaultValue;
+        return $this->defaultValue ?? null;
     }
 
+    /** @psalm-mutation-free */
     public function getEnumValues(): array|null
     {
         return $this->enumValues;
     }
 
+    /** @psalm-mutation-free */
     public function getExtra(): string|null
     {
         return $this->extra;
@@ -191,6 +205,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
 
     /**
      * @deprecated Will be removed in version 2.0.
+     * @psalm-mutation-free
      */
     public function getName(): string|null
     {
@@ -199,70 +214,89 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
 
     /**
      * @deprecated Use {@see getSize()} instead. Will be removed in version 2.0.
+     * @psalm-mutation-free
      */
     public function getPrecision(): int|null
     {
         return $this->getSize();
     }
 
+    /** @psalm-mutation-free */
     public function getPhpType(): string
     {
         return PhpType::MIXED;
     }
 
+    /** @psalm-mutation-free */
     public function getReference(): ForeignKeyConstraint|null
     {
         return $this->reference;
     }
 
+    /** @psalm-mutation-free */
     public function getScale(): int|null
     {
         return $this->scale;
     }
 
+    /** @psalm-mutation-free */
     public function getSize(): int|null
     {
         return $this->size;
     }
 
+    /** @psalm-mutation-free */
     public function getType(): string
     {
         return $this->type;
     }
 
+    /** @psalm-mutation-free */
+    public function hasDefaultValue(): bool
+    {
+        return property_exists($this, 'defaultValue');
+    }
+
     /**
      * @deprecated Use {@see isNotNull()} instead. Will be removed in version 2.0.
+     * @psalm-mutation-free
      */
     public function isAllowNull(): bool
     {
         return !$this->isNotNull();
     }
 
+    /** @psalm-mutation-free */
     public function isAutoIncrement(): bool
     {
         return $this->autoIncrement;
     }
 
+    /** @psalm-mutation-free */
     public function isComputed(): bool
     {
         return $this->computed;
     }
 
-    public function isNotNull(): bool
+    /** @psalm-mutation-free */
+    public function isNotNull(): bool|null
     {
         return $this->notNull;
     }
 
+    /** @psalm-mutation-free */
     public function isPrimaryKey(): bool
     {
         return $this->primaryKey;
     }
 
+    /** @psalm-mutation-free */
     public function isUnique(): bool
     {
         return $this->unique;
     }
 
+    /** @psalm-mutation-free */
     public function isUnsigned(): bool
     {
         return $this->unsigned;
@@ -277,9 +311,15 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this;
     }
 
-    public function notNull(bool $notNull = true): static
+    public function notNull(bool|null $notNull = true): static
     {
         $this->notNull = $notNull;
+        return $this;
+    }
+
+    public function null(): static
+    {
+        $this->notNull = false;
         return $this;
     }
 

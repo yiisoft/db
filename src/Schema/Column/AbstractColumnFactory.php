@@ -6,7 +6,14 @@ namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Syntax\ColumnDefinitionParser;
+
+use function array_diff_key;
+use function is_numeric;
+use function preg_match;
+use function str_replace;
+use function substr;
 
 use const PHP_INT_SIZE;
 
@@ -18,29 +25,18 @@ use const PHP_INT_SIZE;
 abstract class AbstractColumnFactory implements ColumnFactoryInterface
 {
     /**
-     * Get the abstract database type for a database column type.
+     * The mapping from physical column types (keys) to abstract column types (values).
      *
-     * @param string $dbType The database column type.
-     * @param array $info The column information.
+     * @var string[]
      *
-     * @return string The abstract database type.
-     *
-     * @psalm-param ColumnInfo $info
-     * @psalm-return ColumnType::*
+     * @psalm-var array<string, ColumnType::*>
      */
-    abstract protected function getType(string $dbType, array $info = []): string;
-
-    /**
-     * Checks if the column type is a database type.
-     */
-    abstract protected function isDbType(string $dbType): bool;
+    protected const TYPE_MAP = [];
 
     public function fromDbType(string $dbType, array $info = []): ColumnSchemaInterface
     {
-        unset($info['dbType']);
-        $type = $info['type'] ?? $this->getType($dbType, $info);
-        unset($info['type']);
         $info['dbType'] = $dbType;
+        $type = $info['type'] ?? $this->getType($dbType, $info);
 
         return $this->fromType($type, $info);
     }
@@ -60,12 +56,10 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
         $info += $definitionInfo;
 
         if ($this->isDbType($type)) {
-            unset($info['dbType']);
             return $this->fromDbType($type, $info);
         }
 
         if ($this->isType($type)) {
-            unset($info['type']);
             return $this->fromType($type, $info);
         }
 
@@ -73,56 +67,51 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             return $this->fromPseudoType($type, $info);
         }
 
-        unset($info['dbType']);
         return $this->fromDbType($type, $info);
     }
 
-    /**
-     * @psalm-suppress MixedArgument
-     * @psalm-suppress InvalidArgument
-     * @psalm-suppress InvalidNamedArgument
-     */
     public function fromPseudoType(string $pseudoType, array $info = []): ColumnSchemaInterface
     {
         $info['primaryKey'] = true;
         $info['autoIncrement'] = true;
 
-        return match ($pseudoType) {
-            PseudoType::PK => new IntegerColumnSchema(ColumnType::INTEGER, ...$info),
-            PseudoType::UPK => new IntegerColumnSchema(ColumnType::INTEGER, ...[...$info, 'unsigned' => true]),
-            PseudoType::BIGPK => PHP_INT_SIZE !== 8
-                ? new BigIntColumnSchema(ColumnType::BIGINT, ...$info)
-                : new IntegerColumnSchema(ColumnType::BIGINT, ...$info),
-            PseudoType::UBIGPK => new BigIntColumnSchema(ColumnType::BIGINT, ...[...$info, 'unsigned' => true]),
-            PseudoType::UUID_PK => new StringColumnSchema(ColumnType::UUID, ...$info),
-            PseudoType::UUID_PK_SEQ => new StringColumnSchema(ColumnType::UUID, ...$info),
+        if ($pseudoType === PseudoType::UPK || $pseudoType === PseudoType::UBIGPK) {
+            $info['unsigned'] = true;
+        }
+
+        $type = match ($pseudoType) {
+            PseudoType::PK => ColumnType::INTEGER,
+            PseudoType::UPK => ColumnType::INTEGER,
+            PseudoType::BIGPK => ColumnType::BIGINT,
+            PseudoType::UBIGPK => ColumnType::BIGINT,
+            PseudoType::UUID_PK => ColumnType::UUID,
+            PseudoType::UUID_PK_SEQ => ColumnType::UUID,
         };
+
+        return $this->fromType($type, $info);
     }
 
-    /**
-     * @psalm-suppress InvalidNamedArgument
-     */
     public function fromType(string $type, array $info = []): ColumnSchemaInterface
     {
-        return match ($type) {
-            ColumnType::BOOLEAN => new BooleanColumnSchema($type, ...$info),
-            ColumnType::BIT => new BitColumnSchema($type, ...$info),
-            ColumnType::TINYINT => new IntegerColumnSchema($type, ...$info),
-            ColumnType::SMALLINT => new IntegerColumnSchema($type, ...$info),
-            ColumnType::INTEGER => PHP_INT_SIZE !== 8 && !empty($info['unsigned'])
-                ? new BigIntColumnSchema($type, ...$info)
-                : new IntegerColumnSchema($type, ...$info),
-            ColumnType::BIGINT => PHP_INT_SIZE !== 8 || !empty($info['unsigned'])
-                ? new BigIntColumnSchema($type, ...$info)
-                : new IntegerColumnSchema($type, ...$info),
-            ColumnType::DECIMAL => new DoubleColumnSchema($type, ...$info),
-            ColumnType::FLOAT => new DoubleColumnSchema($type, ...$info),
-            ColumnType::DOUBLE => new DoubleColumnSchema($type, ...$info),
-            ColumnType::BINARY => new BinaryColumnSchema($type, ...$info),
-            ColumnType::STRUCTURED => new StructuredColumnSchema($type, ...$info),
-            ColumnType::JSON => new JsonColumnSchema($type, ...$info),
-            default => new StringColumnSchema($type, ...$info),
-        };
+        unset($info['type']);
+
+        if ($type === ColumnType::ARRAY && empty($info['column']) && !empty($info['dbType'])) {
+            /** @psalm-suppress ArgumentTypeCoercion */
+            $info['column'] = $this->fromDbType(
+                $info['dbType'],
+                array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1])
+            );
+        }
+
+        $columnClass = $this->getColumnClass($type, $info);
+
+        $column = new $columnClass($type, ...$info);
+
+        if (isset($info['defaultValueRaw'])) {
+            $column->defaultValue($this->normalizeDefaultValue($info['defaultValueRaw'], $column));
+        }
+
+        return $column;
     }
 
     /**
@@ -131,6 +120,60 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     protected function columnDefinitionParser(): ColumnDefinitionParser
     {
         return new ColumnDefinitionParser();
+    }
+
+    /**
+     * @psalm-param ColumnType::* $type
+     * @param ColumnInfo $info
+     *
+     * @psalm-return class-string<ColumnSchemaInterface>
+     */
+    protected function getColumnClass(string $type, array $info = []): string
+    {
+        return match ($type) {
+            ColumnType::BOOLEAN => BooleanColumnSchema::class,
+            ColumnType::BIT => BitColumnSchema::class,
+            ColumnType::TINYINT => IntegerColumnSchema::class,
+            ColumnType::SMALLINT => IntegerColumnSchema::class,
+            ColumnType::INTEGER => PHP_INT_SIZE !== 8 && !empty($info['unsigned'])
+                ? BigIntColumnSchema::class
+                : IntegerColumnSchema::class,
+            ColumnType::BIGINT => PHP_INT_SIZE !== 8 || !empty($info['unsigned'])
+                ? BigIntColumnSchema::class
+                : IntegerColumnSchema::class,
+            ColumnType::DECIMAL => DoubleColumnSchema::class,
+            ColumnType::FLOAT => DoubleColumnSchema::class,
+            ColumnType::DOUBLE => DoubleColumnSchema::class,
+            ColumnType::BINARY => BinaryColumnSchema::class,
+            ColumnType::ARRAY => ArrayColumnSchema::class,
+            ColumnType::STRUCTURED => StructuredColumnSchema::class,
+            ColumnType::JSON => JsonColumnSchema::class,
+            default => StringColumnSchema::class,
+        };
+    }
+
+    /**
+     * Get the abstract database type for a database column type.
+     *
+     * @param string $dbType The database column type.
+     * @param array $info The column information.
+     *
+     * @return string The abstract database type.
+     *
+     * @psalm-param ColumnInfo $info
+     * @psalm-return ColumnType::*
+     */
+    protected function getType(string $dbType, array $info = []): string
+    {
+        return static::TYPE_MAP[$dbType] ?? ColumnType::STRING;
+    }
+
+    /**
+     * Checks if the column type is a database type.
+     */
+    protected function isDbType(string $dbType): bool
+    {
+        return isset(static::TYPE_MAP[$dbType]);
     }
 
     /**
@@ -182,6 +225,59 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::STRUCTURED,
             ColumnType::JSON => true,
             default => false,
+        };
+    }
+
+    /**
+     * Converts column's default value according to {@see ColumnSchemaInterface::getPhpType()} after retrieval from the
+     * database.
+     *
+     * @param string|null $defaultValue The default value retrieved from the database.
+     * @param ColumnSchemaInterface $column The column schema object.
+     *
+     * @return mixed The normalized default value.
+     */
+    protected function normalizeDefaultValue(string|null $defaultValue, ColumnSchemaInterface $column): mixed
+    {
+        if (
+            $defaultValue === null
+            || $defaultValue === ''
+            || $column->isPrimaryKey()
+            || $column->isComputed()
+            || preg_match('/^\(?NULL\b/i', $defaultValue) === 1
+        ) {
+            return null;
+        }
+
+        return $this->normalizeNotNullDefaultValue($defaultValue, $column);
+    }
+
+    /**
+     * Converts a not null default value according to {@see ColumnSchemaInterface::getPhpType()}.
+     */
+    protected function normalizeNotNullDefaultValue(string $defaultValue, ColumnSchemaInterface $column): mixed
+    {
+        $value = $defaultValue;
+
+        if ($value[0] === '(' && $value[-1] === ')') {
+            $value = substr($value, 1, -1);
+        }
+
+        if (is_numeric($value)) {
+            return $column->phpTypecast($value);
+        }
+
+        if ($value[0] === "'" && $value[-1] === "'") {
+            $value = substr($value, 1, -1);
+            $value = str_replace("''", "'", $value);
+
+            return $column->phpTypecast($value);
+        }
+
+        return match ($value) {
+            'true' => true,
+            'false' => false,
+            default => new Expression($defaultValue),
         };
     }
 }

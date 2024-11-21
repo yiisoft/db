@@ -29,6 +29,7 @@ class DoubleColumnSchema extends AbstractColumnSchema
         };
     }
 
+    /** @psalm-mutation-free */
     public function getPhpType(): string
     {
         return PhpType::FLOAT;
