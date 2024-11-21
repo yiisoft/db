@@ -332,7 +332,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->prepareValue($resource);
     }
 
-    public function testPrepareValueNonSteamResource(): void
+    public function testPrepareValueNonStreamResource(): void
     {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();

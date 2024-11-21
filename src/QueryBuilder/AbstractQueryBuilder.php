@@ -499,7 +499,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         $value = stream_get_contents($value);
 
         if ($value === false) {
-            throw new InvalidArgumentException('Cannot read steam contents.');
+            throw new InvalidArgumentException('Cannot read stream contents.');
         }
 
         return $this->prepareBinary($value);
