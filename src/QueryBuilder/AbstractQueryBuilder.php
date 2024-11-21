@@ -496,13 +496,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             throw new InvalidArgumentException('Supported only stream resource type.');
         }
 
-        $value = stream_get_contents($value);
-
-        if ($value === false) {
-            throw new InvalidArgumentException('Cannot read stream contents.');
-        }
-
-        return $this->prepareBinary($value);
+        return $this->prepareBinary(stream_get_contents($value));
     }
 
     /**
