@@ -16,6 +16,8 @@ services:
         condition: service_healthy
       mssql:
         condition: service_healthy
+#      mssql-init:
+#        condition: service_completed_successfully
       oracle:
         condition: service_healthy
     environment:
@@ -38,7 +40,7 @@ services:
       YII_PGSQL_USER: postgres
       YII_PGSQL_PASSWORD: postgres
 
-      YII_MSSQL_DATABASE: tempdb
+      YII_MSSQL_DATABASE: yii
       YII_MSSQL_HOST: mssql
       YII_MSSQL_PORT: 1433
       YII_MSSQL_USER: SA
@@ -76,12 +78,13 @@ services:
       MYSQL_DATABASE: yii
       MYSQL_ROOT_PASSWORD: root
       MYSQL_ROOT_HOST: "%"
+      MYSQL_TCP_PORT: 13306
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       start_period: 10s
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 30
   postgres:
     image: postgres:17
     ports:
@@ -100,9 +103,6 @@ services:
       retries: 5
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      SA_PASSWORD: YourStrong!Passw0rd
-      ACCEPT_EULA: Y
     ports:
       - "1433:1433"
     user: root
@@ -110,12 +110,24 @@ services:
       - mssql-data:/var/opt/mssql/data
       - mssql-log:/var/opt/mssql/log
       - mssql-secrets:/var/opt/mssql/secrets
+    environment:
+      SA_PASSWORD: YourStrong!Passw0rd
+      ACCEPT_EULA: Y
     healthcheck:
       test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$${SA_PASSWORD}" -Q "SELECT 1" -b -C -o /dev/null
       interval: 10s
       timeout: 3s
       retries: 100
       start_period: 10s
+  mssql-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    network_mode: service:mssql
+    command: >
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd"
+      -Q "IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'yii') BEGIN CREATE DATABASE yii END" -b -C
+    depends_on:
+      mssql:
+        condition: service_healthy
   oracle:
     build:
       context:  docker/oracle
