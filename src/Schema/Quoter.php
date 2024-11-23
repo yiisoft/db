@@ -207,12 +207,8 @@ class Quoter implements QuoterInterface
         return implode('.', $parts);
     }
 
-    public function quoteValue(mixed $value): mixed
+    public function quoteValue(string $value): string
     {
-        if (!is_string($value)) {
-            return $value;
-        }
-
         return "'" . str_replace("'", "''", addcslashes($value, "\000\032")) . "'";
     }
 

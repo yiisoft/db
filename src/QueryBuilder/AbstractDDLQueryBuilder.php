@@ -57,7 +57,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . '.'
             . $this->quoter->quoteColumnName($column)
             . ' IS '
-            . (string) $this->quoter->quoteValue($comment);
+            . $this->quoter->quoteValue($comment);
     }
 
     public function addCommentOnTable(string $table, string $comment): string
@@ -65,7 +65,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         return 'COMMENT ON TABLE '
             . $this->quoter->quoteTableName($table)
             . ' IS '
-            . (string) $this->quoter->quoteValue($comment);
+            . $this->quoter->quoteValue($comment);
     }
 
     public function addDefaultValue(string $table, string $name, string $column, mixed $value): string
@@ -195,10 +195,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         if ($subQuery instanceof QueryInterface) {
             [$rawQuery, $params] = $this->queryBuilder->build($subQuery);
 
-            /** @psalm-var mixed $value */
             foreach ($params as $key => $value) {
-                /** @psalm-var mixed */
-                $params[$key] = $this->quoter->quoteValue($value);
+                $params[$key] = $this->queryBuilder->prepareValue($value);
             }
 
             $subQuery = strtr($rawQuery, $params);

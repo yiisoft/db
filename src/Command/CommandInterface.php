@@ -213,6 +213,8 @@ interface CommandInterface
      * @param int|null $length The length of the data type.
      * @param mixed|null $driverOptions The driver-specific options.
      *
+     * @psalm-param DataType::*|null $dataType
+     *
      * @throws Exception
      */
     public function bindParam(
@@ -244,6 +246,8 @@ interface CommandInterface
      * @param mixed $value The value to bind to the parameter.
      * @param int|null $dataType The {@see DataType SQL data type} of the parameter. If null, the type is determined
      * by the PHP type of the value.
+     *
+     * @psalm-param DataType::*|null $dataType
      */
     public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
 

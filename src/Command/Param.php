@@ -18,10 +18,16 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  */
 final class Param implements ParamInterface, ExpressionInterface
 {
+    /**
+     * @psalm-param DataType::* $type
+     */
     public function __construct(private mixed $value, private int $type)
     {
     }
 
+    /**
+     * @psalm-return DataType::*
+     */
     public function getType(): int
     {
         return $this->type;
