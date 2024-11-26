@@ -67,7 +67,12 @@
             "Yiisoft\\Db\\Mysql\\Tests\\": "vendor/yiisoft/db-mysql/tests",
             "Yiisoft\\Db\\Oracle\\Tests\\": "vendor/yiisoft/db-oracle/tests",
             "Yiisoft\\Db\\Pgsql\\Tests\\": "vendor/yiisoft/db-pgsql/tests",
-            "Yiisoft\\Db\\Sqlite\\Tests\\": "vendor/yiisoft/db-sqlite/tests"
+            "Yiisoft\\Db\\Sqlite\\Tests\\": "vendor/yiisoft/db-sqlite/tests",
+            "Yiisoft\\Db\\Migration\\Tests\\": "vendor/yiisoft/db-migration/tests",
+            "Yiisoft\\Db\\Migration\\Tests\\Support\\MigrationsExtra\\": [
+                "vendor/yiisoft/db-migration/tests/Support/MigrationsExtra",
+                "vendor/yiisoft/db-migration/tests/Support/MigrationsExtra2"
+            ]
         }
     },
     "extra": {
