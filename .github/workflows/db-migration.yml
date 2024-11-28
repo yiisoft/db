@@ -20,7 +20,7 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv-5.12
+      EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
 
     runs-on: ${{ matrix.os }}
 
@@ -83,7 +83,7 @@ jobs:
           sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
       - name: Checkout.
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create MS SQL Database.
         run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
@@ -95,7 +95,6 @@ jobs:
           extensions: ${{ env.EXTENSIONS }}
           ini-values: date.timezone='UTC'
           coverage: pcov
-          tools: composer:v2, pecl
 
       - name: Update composer.
         run: composer self-update
@@ -164,7 +163,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Run tests with phpunit with code coverage.
-        run: vendor/bin/phpunit --testsuite DbMigration --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
+        run: vendor/bin/phpunit --testsuite=DbMigration --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
 
       - name: Upload coverage to Codecov.
         if: matrix.php == '8.3'
