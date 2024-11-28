@@ -69,8 +69,9 @@
             "Yiisoft\\Db\\Pgsql\\Tests\\": "vendor/yiisoft/db-pgsql/tests",
             "Yiisoft\\Db\\Sqlite\\Tests\\": "vendor/yiisoft/db-sqlite/tests",
             "Yiisoft\\Db\\Migration\\Tests\\": "vendor/yiisoft/db-migration/tests",
-            "Yiisoft\\Db\\Migration\\Tests\\Support\\": "vendor/yiisoft/db-migration/tests/Support",
+            "Yiisoft\\Db\\Migration\\Tests\\NonExistsDirectory\\": "vendor/yiisoft/db-migration/tests/non-exists-directory",
             "Yiisoft\\Db\\Migration\\Tests\\ForTest\\": "vendor/yiisoft/db-migration/tests/Support",
+            "Yiisoft\\Db\\Migration\\Tests\\Support\\": "vendor/yiisoft/db-migration/tests/Support",
             "Yiisoft\\Db\\Migration\\Tests\\Support\\MigrationsExtra\\": [
                 "vendor/yiisoft/db-migration/tests/Support/MigrationsExtra",
                 "vendor/yiisoft/db-migration/tests/Support/MigrationsExtra2"
