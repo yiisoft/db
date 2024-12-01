@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
@@ -48,7 +50,7 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
         $uuidValue = match ($db->getDriverName()) {
             'oci' => new Expression("HEXTORAW(REPLACE(:uuid, '-', ''))", [':uuid' => $uuidValue]),
             'mysql' => new Expression("UNHEX(REPLACE(:uuid, '-', ''))", [':uuid' => $uuidValue]),
-            'sqlite' => new Expression("UNHEX(REPLACE(:uuid, '-', ''))", [':uuid' => $uuidValue]),
+            'sqlite' => new Param(DbUuidHelper::uuidToBlob($uuidValue), DataType::LOB),
             'sqlsrv' => new Expression('CONVERT(uniqueidentifier, :uuid)', [':uuid' => $uuidValue]),
             default => $uuidValue,
         };
