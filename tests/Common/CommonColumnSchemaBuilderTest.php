@@ -49,7 +49,7 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
             'oci' => new Expression("HEXTORAW(REPLACE(:uuid, '-', ''))", [':uuid' => $uuidValue]),
             'mysql' => new Expression("UNHEX(REPLACE(:uuid, '-', ''))", [':uuid' => $uuidValue]),
             'sqlite' => new Expression("UNHEX(REPLACE(:uuid, '-', ''))", [':uuid' => $uuidValue]),
-            'sqlsrv' => new Expression("CONVERT(uniqueidentifier, :uuid)", [':uuid' => $uuidValue]),
+            'sqlsrv' => new Expression('CONVERT(uniqueidentifier, :uuid)', [':uuid' => $uuidValue]),
             default => $uuidValue,
         };
 

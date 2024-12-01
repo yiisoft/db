@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Tests\Support\DbHelper;
 
 class ColumnSchemaBuilderProvider
 {
