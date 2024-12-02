@@ -1,37 +1,36 @@
 run:
-	docker compose run --user root --rm --entrypoint $(CMD) php
-
-test-all: test-sqlite \
-	test-mysql \
-	test-mariadb \
-	test-pgsql \
-	test-mssql \
-	test-oracle
-test-sqlite: testsuite-Sqlite
-test-mysql: testsuite-Mysql
-test-mariadb:
 	docker compose run \
 	--rm \
-	--entrypoint "vendor/bin/phpunit --testsuite Mysql" \
+	--entrypoint $(CMD) \
+	php
+
+test-driver-all: test-driver-sqlite \
+	test-driver-mysql \
+	test-driver-mariadb \
+	test-driver-pgsql \
+	test-driver-mssql \
+	test-driver-oracle
+test-driver-sqlite: testsuite-Sqlite
+test-driver-mysql: testsuite-Mysql
+test-driver-mariadb:
+	docker compose run \
+	--rm \
+	--entrypoint "vendor/bin/phpunit --testsuite Mysql $(RUN_ARGS)" \
 	-e YII_MYSQL_TYPE=mariadb \
 	php
-test-pgsql: testsuite-Pgsql
-test-mssql: testsuite-Mssql
-test-oracle:
+test-driver-pgsql: testsuite-Pgsql
+test-driver-mssql: testsuite-Mssql
+test-driver-oracle:
 	docker compose run \
-	--user root \
-	--workdir /code \
 	--rm \
 	--entrypoint "bash -c -l 'vendor/bin/phpunit --testsuite Oracle $(RUN_ARGS)'" \
-	php-oracle
+	php
 
 testsuite-%:
 	docker compose run \
 	--rm \
-	--entrypoint "vendor/bin/phpunit --testsuite $(subst testsuite-,,$@)" \
+	--entrypoint "vendor/bin/phpunit --testsuite $(subst testsuite-,,$@) $(RUN_ARGS)" \
 	php
-
-# --filter showDatabases vendor/yiisoft/db-mssql/tests/CommandTest.php
 
 static-analysis: CMD="vendor/bin/psalm --no-cache"
 static-analysis: run

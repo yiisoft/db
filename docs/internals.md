@@ -64,6 +64,10 @@ Suites available:
 - Pgsql
 - Sqlite
 
+```shell
+make test-oracle RUN_ARGS="--group temp"
+```
+
 ## Static analysis
 
 The code is statically analyzed with [Psalm](https://psalm.dev/). To run static analysis:

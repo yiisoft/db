@@ -1,6 +1,6 @@
 FROM composer/composer:latest-bin AS composer
 
-FROM php:8.3-cli as php
+FROM php:8.3-cli
 
 # System packages
 
