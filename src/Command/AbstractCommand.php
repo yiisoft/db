@@ -7,8 +7,6 @@ namespace Yiisoft\Db\Command;
 use Closure;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
@@ -17,14 +15,12 @@ use Yiisoft\Db\Schema\Builder\ColumnInterface;
 
 use function explode;
 use function get_resource_type;
-use function gettype;
 use function is_array;
 use function is_int;
 use function is_resource;
 use function is_scalar;
 use function is_string;
 use function preg_replace_callback;
-use function str_starts_with;
 use function stream_get_contents;
 
 /**
@@ -351,28 +347,14 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         $params = [];
-        $quoter = $this->getQueryBuilder()->quoter();
+        $queryBuilder = $this->getQueryBuilder();
 
         foreach ($this->params as $name => $param) {
-            if (is_string($name) && !str_starts_with($name, ':')) {
+            if (is_string($name) && $name[0] !== ':') {
                 $name = ':' . $name;
             }
 
-            $value = $param->getValue();
-
-            $params[$name] = match ($param->getType()) {
-                DataType::INTEGER => (string) (int) $value,
-                DataType::STRING, DataType::LOB => match (gettype($value)) {
-                    GettypeResult::RESOURCE => $name,
-                    GettypeResult::DOUBLE => (string) $value,
-                    default => $value instanceof Expression
-                        ? (string) $value
-                        : $quoter->quoteValue((string) $value),
-                },
-                DataType::BOOLEAN => $value ? 'TRUE' : 'FALSE',
-                DataType::NULL => 'NULL',
-                default => $name,
-            };
+            $params[$name] = $queryBuilder->prepareParam($param);
         }
 
         /** @var string[] $params */

@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\GettypeResult;
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
-use function gettype;
 use function in_array;
 use function strtolower;
 
@@ -125,43 +122,20 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             return ' DEFAULT ' . static::GENERATE_UUID_EXPRESSION;
         }
 
-        if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID) {
+        if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID
+            || !$column->hasDefaultValue()
+        ) {
             return '';
         }
 
-        $defaultValue = $this->buildDefaultValue($column);
+        $defaultValue = $column->dbTypecast($column->getDefaultValue());
+        $defaultValue = $this->queryBuilder->prepareValue($defaultValue);
 
-        if ($defaultValue === null) {
+        if ($defaultValue === '') {
             return '';
         }
 
         return " DEFAULT $defaultValue";
-    }
-
-    /**
-     * Return the default value for the column.
-     *
-     * @return string|null string with default value of column.
-     */
-    protected function buildDefaultValue(ColumnSchemaInterface $column): string|null
-    {
-        if (!$column->hasDefaultValue()) {
-            return null;
-        }
-
-        $value = $column->dbTypecast($column->getDefaultValue());
-
-        /** @var string */
-        return match (gettype($value)) {
-            GettypeResult::INTEGER => (string) $value,
-            GettypeResult::DOUBLE => (string) $value,
-            GettypeResult::BOOLEAN => $value ? 'TRUE' : 'FALSE',
-            GettypeResult::NULL => $column->isNotNull() !== true ? 'NULL' : null,
-            GettypeResult::OBJECT => $value instanceof ExpressionInterface
-                ? $this->queryBuilder->buildExpression($value)
-                : $this->queryBuilder->quoter()->quoteValue((string) $value),
-            default => $this->queryBuilder->quoter()->quoteValue((string) $value),
-        };
     }
 
     /**

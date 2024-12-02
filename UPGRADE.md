@@ -107,7 +107,9 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 
 - `QuoterInterface::getRawTableName()` - returns the raw table name without quotes;
 - `SchemaInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
-- `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement.
+- `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
+- `QueryBuilderInterface::prepareParam()` - converts a `ParamInterface` object to its SQL representation;
+- `QueryBuilderInterface::prepareValue()` - converts a value to its SQL representation;
 
 ### Remove methods
 
@@ -146,3 +148,4 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Allow `ExpressionInterface` for `$alias` parameter of `QueryPartsInterface::withQuery()` method;
 - Allow `QueryInterface::one()` to return an object;
 - Allow `QueryInterface::all()` to return array of objects;
+- Change `Quoter::quoteValue()` parameter type and return type from `mixed` to `string`;

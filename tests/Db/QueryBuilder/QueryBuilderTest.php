@@ -19,6 +19,10 @@ use Yiisoft\Db\Tests\Support\Stub\QueryBuilder;
 use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
+use function fclose;
+use function fopen;
+use function stream_context_create;
+
 /**
  * @group db
  *
@@ -313,5 +317,28 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $actualParams = [];
         $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
+    }
+
+    public function testPrepareValueClosedResource(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectExceptionObject(new InvalidArgumentException('Resource is closed.'));
+
+        $resource = fopen('php://memory', 'r');
+        fclose($resource);
+
+        $qb->prepareValue($resource);
+    }
+
+    public function testPrepareValueNonStreamResource(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectExceptionObject(new InvalidArgumentException('Supported only stream resource type.'));
+
+        $qb->prepareValue(stream_context_create());
     }
 }

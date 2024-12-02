@@ -136,15 +136,14 @@ interface QuoterInterface
     /**
      * Quotes a string value for use in a query.
      *
-     * Note: That if the parameter isn't a string, it will be returned without change.
      * Attention: The usage of this method isn't safe.
      * Use prepared statements.
      *
-     * @param mixed $value The value to quote.
+     * @param string $value The value to quote.
      *
-     * @return mixed The quoted value.
+     * @return string The quoted value.
      */
-    public function quoteValue(mixed $value): mixed;
+    public function quoteValue(string $value): string;
 
     /**
      * Unquotes a simple column name.
