@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 db-php:latest AS php
+FROM php:8.3-cli AS php
 
 FROM gvenzl/oracle-free:23 AS oracle
 
@@ -11,18 +11,6 @@ COPY --from=php /usr/local/etc/php/ /usr/local/etc/php/
 
 COPY --from=php /usr/lib/x86_64-linux-gnu/*.so* /usr/lib/x86_64-linux-gnu/
 COPY --from=php /usr/lib/x86_64-linux-gnu/*.so* /usr/lib64/
-
-COPY --from=php /opt/* /opt/
-COPY --from=php /usr/local/instantclient_23_5/ /usr/local/instantclient_23_5/
-
-COPY --from=php /code/ /code/
-
-COPY --from=php /root/.bashrc /root/.bashrc
-
-USER root
-RUN ln -s /usr/local/instantclient_23_5 /usr/local/instantclient
-RUN ln -s /usr/local/instantclient/lib* /usr/lib
-RUN ln -s /usr/local/instantclient/sqlplus /usr/bin/sqlplus
-USER oracle
+COPY --from=php /usr/bin/ldd /usr/bin/ldd
 
 RUN chown -R 54321:54321 /opt/oracle/oradata && chmod 0777 /opt/oracle/oradata

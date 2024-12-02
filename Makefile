@@ -1,5 +1,5 @@
 run:
-	docker compose run --rm --entrypoint $(CMD) php
+	docker compose run --user root --rm --entrypoint $(CMD) php
 
 test-all: test-sqlite \
 	test-mysql \
@@ -19,15 +19,19 @@ test-pgsql: testsuite-Pgsql
 test-mssql: testsuite-Mssql
 test-oracle:
 	docker compose run \
+	--user root \
+	--workdir /code \
 	--rm \
-	--entrypoint 'bash -c -l "vendor/bin/phpunit --testsuite Oracle"' \
-	php
+	--entrypoint "bash -c -l 'vendor/bin/phpunit --testsuite Oracle $(RUN_ARGS)'" \
+	php-oracle
 
 testsuite-%:
 	docker compose run \
 	--rm \
 	--entrypoint "vendor/bin/phpunit --testsuite $(subst testsuite-,,$@)" \
 	php
+
+# --filter showDatabases vendor/yiisoft/db-mssql/tests/CommandTest.php
 
 static-analysis: CMD="vendor/bin/psalm --no-cache"
 static-analysis: run

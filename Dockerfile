@@ -1,5 +1,6 @@
 FROM composer/composer:latest-bin AS composer
-FROM php:8.3-cli
+
+FROM php:8.3-cli as php
 
 # System packages
 
@@ -44,7 +45,6 @@ RUN unzip -o /tmp/instantclient-sdk-linux.x64-23.5.0.24.07.zip -d /usr/local/
 RUN unzip -o /tmp/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip -d /usr/local/
 
 RUN ln -s /usr/local/instantclient_23_5 /usr/local/instantclient
-# Fixes error "libnnz19.so: cannot open shared object file: No such file or directory"
 RUN ln -s /usr/local/instantclient/lib* /usr/lib
 RUN ln -s /usr/local/instantclient/sqlplus /usr/bin/sqlplus
 
@@ -59,17 +59,17 @@ RUN docker-php-ext-install \
     # For Psalm, to make use of JIT for a 20%+ performance boost.
     opcache
 
-RUN echo 'instantclient,/usr/local/instantclient' | pecl install oci8
-RUN echo "extension=oci8.so" > /usr/local/etc/php/conf.d/php-oci8.ini
-
-RUN echo 'instantclient,/usr/local/instantclient' | pecl install pdo_oci
-RUN echo "extension=pdo_oci.so" > /usr/local/etc/php/conf.d/php-pdo-oci.ini
-
 RUN pecl install sqlsrv
 RUN printf "; priority=20\nextension=sqlsrv.so\n" > /usr/local/etc/php/conf.d/php-sqlsrv.ini
 
 RUN pecl install pdo_sqlsrv
 RUN printf "; priority=30\nextension=pdo_sqlsrv.so\n" > /usr/local/etc/php/conf.d/php-pdo-sqlsrv.ini
+
+RUN echo 'instantclient,/usr/local/instantclient' | pecl install oci8
+RUN echo "extension=oci8.so" > /usr/local/etc/php/conf.d/php-oci8.ini
+
+RUN echo 'instantclient,/usr/local/instantclient' | pecl install pdo_oci
+RUN echo "extension=pdo_oci.so" > /usr/local/etc/php/conf.d/php-pdo-oci.ini
 
 # For code coverage (mutation testing)
 RUN pecl install pcov && docker-php-ext-enable pcov
