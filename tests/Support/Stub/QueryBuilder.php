@@ -11,7 +11,8 @@ use Yiisoft\Db\Schema\SchemaInterface;
 
 final class QueryBuilder extends AbstractQueryBuilder
 {
-    public function __construct(QuoterInterface $quoter, SchemaInterface $schema, ServerInfoInterface $serverInfo) {
+    public function __construct(QuoterInterface $quoter, SchemaInterface $schema, ServerInfoInterface $serverInfo)
+    {
         parent::__construct(
             $quoter,
             $schema,
