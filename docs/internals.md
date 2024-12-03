@@ -6,90 +6,114 @@ All our packages have github actions by default, so you can test your [contribut
 
 > Note: We recommend pull requesting in draft mode until all tests pass.
 
-## Unit testing
+## Local development
 
-This package can be tested globally or individually for each DBMS.
+Docker is used to ease the local development.
 
-- [MSSQL](https://github.com/yiisoft/db-mssql)
-- [MySQL/MariaDB](https://github.com/yiisoft/db-mysql)
-- [Oracle](https://github.com/yiisoft/db-oracle)
-- [PostgreSQL](https://github.com/yiisoft/db-pgsql)
+### Setup
+
+Prerequisites:
+
+- Docker.
+- Docker Compose.
+- 
+Clone all repos of drivers' packages:
+
 - [SQLite](https://github.com/yiisoft/db-sqlite)
+- [MySQL](https://github.com/yiisoft/db-mysql)
+- [PostgreSQL](https://github.com/yiisoft/db-pgsql)
+- [Microsoft SQL Server](https://github.com/yiisoft/db-mssql)
+- [Oracle](https://github.com/yiisoft/oracle)
 
-### Docker images
+Create `docker-compose.override.yml` file in the root of the package. Add this contents:
 
-For greater ease it is recommended to use Docker containers for each DBMS, for this you can use the [docker-compose.yml](https://docs.docker.com/compose/compose-file/) file that in the root directory of each package.
-
-- [MSSQL 2022](https://github.com/yiisoft/db-mssql/blob/master/docker-compose.yml)
-- [MySQL 8](https://github.com/yiisoft/db-mysql/blob/master/docker-compose.yml)
-- [MariaDB 10.11](https://github.com/yiisoft/db-mysql/blob/master/docker-compose-mariadb.yml)
-- [Oracle 21](https://github.com/yiisoft/db-oracle/blob/master/docker-compose.yml)
-- [PostgreSQL 15](https://github.com/yiisoft/db-pgsql/blob/master/docker-compose.yml)
-
-For running the Docker containers you can use the following command:
-
-```shell
-docker compose up -d
+```yaml
+services:
+  php:
+    volumes:
+      - /path/to/packages/db-sqlite:/code/vendor/yiisoft/db-sqlite
+      - /path/to/packages/db-mysql:/code/vendor/yiisoft/db-mysql
+      - /path/to/packages/db-pgsql:/code/vendor/yiisoft/db-pgsql
+      - /path/to/packages/db-mssql:/code/vendor/yiisoft/db-mssql
+      - /path/to/packages/db-oracle:/code/vendor/yiisoft/db-oracle
 ```
 
-### Global testing
+Adjust the `/path/to/packages` to the path where packages are installed on your host machine.
 
-The following steps are required to run the tests.
+In case of ports' collisions, the mapping and enviroment variables can also be adjusted here.
 
-1. Run all Docker containers for each DBMS.
-2. Install the dependencies of the project with composer.
-3. Run the tests.
+### Unit testing
+
+#### Available commands
+
+`make test-all` - run all available tests.
+`make test-db` - run tests for base db package only.
+`make test-driver-all` - run tests for all drivers.
+`make test-driver-sqlite` - run tests for SQLite driver only.
+`make test-driver-mysql` - run tests for MySQL driver only (using MySQL database).
+`make test-driver-mariadb` - run tests for MySQL driver only (using MariaDB database).
+`make test-driver-pgsql` - run tests for PostgreSQL driver only.
+`make test-driver-mssql` - run tests for Microsoft SQL Server driver only.
+`make test-driver-oracle`- run tsets for Oracle driver only.
+
+#### Testing different versions
+
+Docker Compose services use the following stack:
+
+- PHP 8.3.
+- MySQL 9.
+- MariaDB 11.
+- PostgreSQL 19.
+- Microsoft SQL Server 2022.
+- Oracle Free 23.
+
+Different versions are available in GitHub Actions. Other versions of RDBMS might be added to Docker Compose in the 
+future.
+
+#### Slow execution time
+
+Running `make` command for the first time can take some time due to building and/or starting all required Docker Compose 
+services. All subsequent calls will be faster.
+
+The execution time of Oracle tests is the longest. The recommended flow is to run only changed / added tests. Add 
+`@group temp` PHPDoc annotation to changed / added tests temporarily. Then you can limit running tests with the 
+following command:
 
 ```shell
-./vendor/bin/phpunit
+make test-driver-oracle RUN_ARGS="--group temp"
 ```
 
-### Individual testing
+Don't forget to remove the temporary `@group` tags before marking PR as ready for review.
 
-The following steps are required to run the tests.
+Avoid mixing changes for altering test structure with actual changes in test code.
 
-1. Run the Docker container for the dbms you want to test.
-2. Install the dependencies of the project with composer.
-3. Run the tests.
-
-```shell
-./vendor/bin/phpunit --testsuite=Pgsql
-```
-
-Suites available:
-
-- Mssql
-- Mysql
-- Oracle
-- Pgsql
-- Sqlite
-
-```shell
-make test-oracle RUN_ARGS="--group temp"
-```
-
-## Static analysis
+### Static analysis
 
 The code is statically analyzed with [Psalm](https://psalm.dev/). To run static analysis:
 
 ```shell
-./vendor/bin/psalm
+make static-analysis
 ```
 
-## Code style
+### Code style
 
 Use [Rector](https://github.com/rectorphp/rector) to make codebase follow some specific rules or
 use either newest or any specific version of PHP:
 
 ```shell
-./vendor/bin/rector
+make rector
 ```
 
-## Dependencies
+### Dependencies
 
 This package uses [composer-require-checker](https://github.com/maglnet/ComposerRequireChecker) to check if all
 dependencies are correctly defined in `composer.json`. To run the checker, execute the following command:
 
 ```shell
-./vendor/bin/composer-require-checker
+make composer-require-checker
 ```
+
+### Miscellaneous commands
+
+`make shell` - open interactive shell.
+`make run command` - run arbitrary command.

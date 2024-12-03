@@ -33,6 +33,7 @@ services:
       YII_MSSQL_PASSWORD: YourStrong!Passw0rd
 
       YII_ORACLE_SID: FREE
+      YII_ORACLE_DATABASE: FREEPDB1
       YII_ORACLE_HOST: oracle
       YII_ORACLE_PORT: 1521
       YII_ORACLE_USER: system

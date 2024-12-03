@@ -4,12 +4,15 @@ run:
 	--entrypoint $(CMD) \
 	php
 
+test-all: test-base \
+	test-driver-all
 test-driver-all: test-driver-sqlite \
 	test-driver-mysql \
 	test-driver-mariadb \
 	test-driver-pgsql \
 	test-driver-mssql \
 	test-driver-oracle
+test-base: testsuite-Db
 test-driver-sqlite: testsuite-Sqlite
 test-driver-mysql: testsuite-Mysql
 test-driver-mariadb:
@@ -32,9 +35,6 @@ testsuite-%:
 	--entrypoint "vendor/bin/phpunit --testsuite $(subst testsuite-,,$@) $(RUN_ARGS)" \
 	php
 
-static-analysis: CMD="vendor/bin/psalm --no-cache"
-static-analysis: run
-
 mutation: CMD="\
 vendor/bin/roave-infection-static-analysis-plugin \
 --threads=2 \
@@ -43,6 +43,12 @@ vendor/bin/roave-infection-static-analysis-plugin \
 --ignore-msi-with-no-mutations \
 --only-covered"
 mutation: run
+
+static-analysis: CMD="vendor/bin/psalm --no-cache"
+static-analysis: run
+
+rector: CMD="vendor/bin/rector"
+rector: run
 
 composer-require-checker: CMD="vendor/bin/composer-require-checker"
 composer-require-checker: run
