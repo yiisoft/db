@@ -316,7 +316,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
             'getQueryBuilder',
             'getQuoter',
             'getSchema',
-            'getServerVersion',
+            'getServerInfo',
             'isActive',
             'open',
             'quoteValue',
