@@ -62,7 +62,7 @@
     "autoload-dev": {
         "psr-4": {
             "Yiisoft\\ActiveRecord\\": "vendor/yiisoft/active-record/src",
-            "Yiisoft\\Db\\Migration": "vendor/yiisoft/db-migration/src",
+            "Yiisoft\\Db\\Migration\\": "vendor/yiisoft/db-migration/src",
             "Yiisoft\\Db\\Mssql\\": "vendor/yiisoft/db-mssql/src",
             "Yiisoft\\Db\\Mysql\\": "vendor/yiisoft/db-mysql/src",
             "Yiisoft\\Db\\Oracle\\": "vendor/yiisoft/db-oracle/src",
