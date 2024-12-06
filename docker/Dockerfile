@@ -80,9 +80,9 @@ COPY --from=composer /composer /usr/bin/composer
 
 # Code
 
-COPY .. /code
+COPY . /code
 WORKDIR /code
 
 # PHP packages
 
-RUN composer install
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install

@@ -1,11 +1,13 @@
 services:
   php:
-    build: .
+    build:
+      context: ./..
+      dockerfile: ./docker/Dockerfile
     volumes:
-      - ./../src:/code/src
-      - ./../tests:/code/tests
-      - ./../composer.json:/code/composer.json
-      - ./../phpunit.xml.dist:/code/phpunit.xml.dist
+      - ./src:/code/src
+      - ./tests:/code/tests
+      - ./composer.json:/code/composer.json
+      - ./phpunit.xml.dist:/code/phpunit.xml.dist
     environment:
       YII_MYSQL_DATABASE: yii
       YII_MYSQL_HOST: mysql
