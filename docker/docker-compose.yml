@@ -2,10 +2,10 @@ services:
   php:
     build: .
     volumes:
-      - ./src:/code/src
-      - ./tests:/code/tests
-      - ./composer.json:/code/composer.json
-      - ./phpunit.xml.dist:/code/phpunit.xml.dist
+      - ./../src:/code/src
+      - ./../tests:/code/tests
+      - ./../composer.json:/code/composer.json
+      - ./../phpunit.xml.dist:/code/phpunit.xml.dist
     environment:
       YII_MYSQL_DATABASE: yii
       YII_MYSQL_HOST: mysql
@@ -124,7 +124,7 @@ services:
       start_period: 10s
   oracle:
     build:
-      context:  docker/oracle
+      context: oracle
     ports:
       - "1521:1521"
     volumes:

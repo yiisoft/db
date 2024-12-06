@@ -46,4 +46,4 @@ phpunit.phar
 c3.php
 
 # Docker
-docker-compose.override.yml
+docker/docker-compose.override.yml

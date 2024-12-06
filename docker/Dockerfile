@@ -80,7 +80,7 @@ COPY --from=composer /composer /usr/bin/composer
 
 # Code
 
-COPY . /code
+COPY .. /code
 WORKDIR /code
 
 # PHP packages
