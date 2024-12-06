@@ -25,7 +25,7 @@ Clone all repos of drivers' packages:
 - [Microsoft SQL Server](https://github.com/yiisoft/db-mssql)
 - [Oracle](https://github.com/yiisoft/oracle)
 
-Create `docker-compose.override.yml` file in the root of the package. Add this contents:
+Create `docker/docker-compose.override.yml` file with this content:
 
 ```yaml
 services:

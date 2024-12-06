@@ -1,5 +1,5 @@
 run: ## Run arbitrary command.
-	docker compose run \
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml run \
 	--rm \
 	--entrypoint $(CMD) \
 	php
@@ -16,7 +16,7 @@ test-base: testsuite-Db ## Run tests for base db package only.
 test-driver-sqlite: testsuite-Sqlite ## Run tests for SQLite driver only.
 test-driver-mysql: testsuite-Mysql ## Run tests for MySQL driver only (using MySQL database).
 test-driver-mariadb: ## Run tests for MySQL driver only (using MariaDB database).
-	docker compose run \
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml run \
 	--rm \
 	--entrypoint "vendor/bin/phpunit --testsuite Mysql $(RUN_ARGS)" \
 	-e YII_MYSQL_TYPE=mariadb \
@@ -24,13 +24,13 @@ test-driver-mariadb: ## Run tests for MySQL driver only (using MariaDB database)
 test-driver-pgsql: testsuite-Pgsql ## Run tests for PostgreSQL driver only.
 test-driver-mssql: testsuite-Mssql ## Run tests for Microsoft SQL Server driver only.
 test-driver-oracle: ## Run tsets for Oracle driver only.
-	docker compose run \
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml run \
 	--rm \
 	--entrypoint "bash -c -l 'vendor/bin/phpunit --testsuite Oracle $(RUN_ARGS)'" \
 	php
 
 testsuite-%:
-	docker compose run \
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml run \
 	--rm \
 	--entrypoint "vendor/bin/phpunit --testsuite $(subst testsuite-,,$@) $(RUN_ARGS)" \
 	php
