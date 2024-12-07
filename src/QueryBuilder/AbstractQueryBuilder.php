@@ -79,7 +79,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addCheck($table, $name, $expression);
     }
 
-    public function addColumn(string $table, string $column, ColumnInterface|string $type): string
+    public function addColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): string
     {
         return $this->ddlBuilder->addColumn($table, $column, $type);
     }
@@ -129,7 +129,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addUnique($table, $name, $columns);
     }
 
-    public function alterColumn(string $table, string $column, ColumnInterface|string $type): string
+    public function alterColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): string
     {
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
@@ -173,8 +173,12 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->build($query, $params);
     }
 
-    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string
+    public function buildColumnDefinition(ColumnInterface|ColumnSchemaInterface|string $column): string
     {
+        if ($column instanceof ColumnInterface) {
+            $column = $column->asString();
+        }
+
         if (is_string($column)) {
             $column = $this->schema->getColumnFactory()->fromDefinition($column);
         }
@@ -351,6 +355,11 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function dropView(string $viewName): string
     {
         return $this->ddlBuilder->dropView($viewName);
+    }
+
+    public function getColumnDefinitionBuilder(): ColumnDefinitionBuilderInterface
+    {
+        return $this->columnDefinitionBuilder;
     }
 
     /** @deprecated Use {@see buildColumnDefinition()}. Will be removed in version 2.0. */

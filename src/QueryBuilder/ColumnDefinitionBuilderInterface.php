@@ -16,4 +16,9 @@ interface ColumnDefinitionBuilderInterface
      * @return string the column SQL definition.
      */
     public function build(ColumnSchemaInterface $column): string;
+
+    /**
+     * Builds column definition for `ALTER` operation based on given column instance.
+     */
+    public function buildAlter(ColumnSchemaInterface $column): string;
 }

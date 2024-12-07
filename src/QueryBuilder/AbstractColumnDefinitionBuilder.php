@@ -65,6 +65,11 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             . $this->buildExtra($column);
     }
 
+    public function buildAlter(ColumnSchemaInterface $column): string
+    {
+        return $this->build($column);
+    }
+
     /**
      * Builds the auto increment clause for the column.
      *
