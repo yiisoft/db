@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 
 use JsonException;
+use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -62,7 +63,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $db = $this->getConnection();
 
         $schemaMock = $this->createMock(Schema::class);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
+        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
         $params = [];
 
         try {
@@ -147,7 +148,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $schemaMock = $this->createMock(Schema::class);
         $subQuery = (new Query($db))->select('{{bar}}')->from('{{testCreateViewTable}}')->where(['>', 'bar', '5']);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
+        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
 
         $this->assertSame(
             <<<SQL
@@ -204,7 +205,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $db = $this->getConnection();
 
         $schemaMock = $this->createMock(Schema::class);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
+        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
 
         $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
         $this->assertSame($expectedParams, $params);
@@ -265,7 +266,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $db = $this->getConnection();
 
         $schemaMock = $this->createMock(Schema::class);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
+        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
 
         $sql = $qb->update($table, $columns, $condition, $params);
         $sql = $qb->quoter()->quoteSql($sql);
@@ -340,5 +341,13 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $this->expectExceptionObject(new InvalidArgumentException('Supported only stream resource type.'));
 
         $qb->prepareValue(stream_context_create());
+    }
+
+    public function testGetServerInfo(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->assertInstanceOf(ServerInfoInterface::class, $qb->getServerInfo());
     }
 }

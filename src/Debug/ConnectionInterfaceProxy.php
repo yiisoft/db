@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Debug;
 use Closure;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -82,9 +83,9 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
         return $this->connection->getSchema();
     }
 
-    public function getServerVersion(): string
+    public function getServerInfo(): ServerInfoInterface
     {
-        return $this->connection->getServerVersion();
+        return $this->connection->getServerInfo();
     }
 
     public function getTablePrefix(): string
