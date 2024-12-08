@@ -110,6 +110,8 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
 - `QueryBuilderInterface::prepareParam()` - converts a `ParamInterface` object to its SQL representation;
 - `QueryBuilderInterface::prepareValue()` - converts a value to its SQL representation;
+- `QueryBuilderInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
+- `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 
 ### Remove methods
 
@@ -123,6 +125,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `Quoter::unquoteParts()`
 - `AbstractPdoCommand::logQuery()`
 - `ColumnSchemaInterface::phpType()`
+- `ConnectionInterface::getServerVersion()`
 
 ### Remove deprecated parameters
 

@@ -6,6 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -113,6 +114,11 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * @throws InvalidArgumentException When expression building isn't supported by this QueryBuilder.
      */
     public function getExpressionBuilder(ExpressionInterface $expression): object;
+
+    /**
+     * Returns {@see ServerInfoInterface} instance that provides information about the database server.
+     */
+    public function getServerInfo(): ServerInfoInterface;
 
     /**
      * @return QuoterInterface The quoter instance.
