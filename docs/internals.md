@@ -10,12 +10,24 @@ All our packages have github actions by default, so you can test your [contribut
 
 Docker is used to ease the local development.
 
+## Prerequisites:
+
+### Docker Compose
+
+Install [Docker](https://docs.docker.com/get-started/get-docker/) with 
+[Docker Compose](https://docs.docker.com/compose/install/).
+
+### make
+
+make is required for running commands. To get it working on Windows, some of the options are:
+
+- It ships with [Git BASH](https://git-scm.com/downloads/win).
+- Installation using [Chocolatey](https://chocolatey.org). [Install](https://chocolatey.org/install) Chocolatey first, 
+then run `choco install make`.
+- It is available within [Cygwin](https://www.cygwin.com/).
+- Use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install).
+
 ### Setup
-
-Prerequisites:
-
-- [Docker](https://docs.docker.com/get-started/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
 
 Clone all repos of drivers' packages:
 
