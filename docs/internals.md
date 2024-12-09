@@ -14,9 +14,9 @@ Docker is used to ease the local development.
 
 Prerequisites:
 
-- Docker.
-- Docker Compose.
-- 
+- [Docker](https://docs.docker.com/get-started/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
 Clone all repos of drivers' packages:
 
 - [SQLite](https://github.com/yiisoft/db-sqlite)
