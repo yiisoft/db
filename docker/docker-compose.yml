@@ -1,3 +1,4 @@
+name: yiisoft-db
 services:
   php:
     build:
