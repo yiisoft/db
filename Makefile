@@ -9,13 +9,15 @@ up: ## Start services.
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml up -d --remove-orphans
 build-up: # Build and start services.
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml up -d --remove-orphans --build
+ps: ## List running services
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml ps
 stop: ## Stop running services.
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml stop
 down: ## Stop running services and remove all services (not defined services, containers, networks, volumes, images).
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml down \
 	--remove-orphans \
 	--volumes \
-	--rmi
+	--rmi all
 
 run: ## Run arbitrary command.
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml run \

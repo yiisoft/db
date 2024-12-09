@@ -127,6 +127,7 @@ make composer-require-checker
 - `make build` - build services.
 - `make up` - start services.
 - `make build-up` - build and start services.
+- `make ps` - list running services.
 - `make stop` - stop running services.
 - `make down` - stop running services and remove all services (not defined services, containers, networks, volumes, 
 images).
