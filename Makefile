@@ -1,8 +1,30 @@
+.PHONY: help
+help: ## Show the list of available commands with description.
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+.DEFAULT_GOAL := help
+
+build: ## Build services.
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml build
+up: ## Start services.
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml up -d --remove-orphans
+build-up: # Build and start services.
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml up -d --remove-orphans --build
+stop: ## Stop running services.
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml stop
+down: ## Stop running services and remove all services (not defined services, containers, networks, volumes, images).
+	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml down \
+	--remove-orphans \
+	--volumes \
+	--rmi
+
 run: ## Run arbitrary command.
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml run \
 	--rm \
 	--entrypoint $(CMD) \
 	php
+
+shell: CMD="bash" ## Open interactive shell.
+shell: run
 
 test-all: test-base \ ## Run all available tests.
 	test-driver-all
@@ -52,11 +74,3 @@ rector: run
 
 composer-require-checker: CMD="vendor/bin/composer-require-checker" ## Check dependencies using Composer Require Checker.
 composer-require-checker: run
-
-shell: CMD="bash" ## Open interactive shell.
-shell: run
-
-.PHONY: help
-help: ## This help.
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
-.DEFAULT_GOAL := help

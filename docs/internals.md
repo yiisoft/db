@@ -46,15 +46,15 @@ In case of ports' collisions, the mapping and enviroment variables can also be a
 
 #### Available commands
 
-`make test-all` - run all available tests.
-`make test-db` - run tests for base db package only.
-`make test-driver-all` - run tests for all drivers.
-`make test-driver-sqlite` - run tests for SQLite driver only.
-`make test-driver-mysql` - run tests for MySQL driver only (using MySQL database).
-`make test-driver-mariadb` - run tests for MySQL driver only (using MariaDB database).
-`make test-driver-pgsql` - run tests for PostgreSQL driver only.
-`make test-driver-mssql` - run tests for Microsoft SQL Server driver only.
-`make test-driver-oracle`- run tsets for Oracle driver only.
+- `make test-all` - run all available tests.
+- `make test-db` - run tests for base db package only.
+- `make test-driver-all` - run tests for all drivers.
+- `make test-driver-sqlite` - run tests for SQLite driver only.
+- `make test-driver-mysql` - run tests for MySQL driver only (using MySQL database).
+- `make test-driver-mariadb` - run tests for MySQL driver only (using MariaDB database).
+- `make test-driver-pgsql` - run tests for PostgreSQL driver only.
+- `make test-driver-mssql` - run tests for Microsoft SQL Server driver only.
+- `make test-driver-oracle`- run tsets for Oracle driver only.
 
 #### Testing different versions
 
@@ -87,6 +87,14 @@ Don't forget to remove the temporary `@group` tags before marking PR as ready fo
 
 Avoid mixing changes for altering test structure with actual changes in test code.
 
+### Mutation testing
+
+The package tests are checked with Infection mutation framework with Infection Static Analysis Plugin. To run it:
+
+```shell
+make mutation
+```
+
 ### Static analysis
 
 The code is statically analyzed with [Psalm](https://psalm.dev/). To run static analysis:
@@ -113,7 +121,14 @@ dependencies are correctly defined in `composer.json`. To run the checker, execu
 make composer-require-checker
 ```
 
-### Miscellaneous commands
+### Other commands
 
-`make shell` - open interactive shell.
-`make run command` - run arbitrary command.
+- `make help` / `make` - show the list of available commands with description.
+- `make build` - build services.
+- `make up` - start services.
+- `make build-up` - build and start services.
+- `make stop` - stop running services.
+- `make down` - stop running services and remove all services (not defined services, containers, networks, volumes, 
+images).
+- `make run command` - run arbitrary command.
+- `make shell` - open interactive shell.
