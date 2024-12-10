@@ -52,7 +52,7 @@ services:
 
 Adjust the `/path/to/packages` to the path where packages are installed on your host machine.
 
-In case of ports' collisions, the mapping and enviroment variables can also be adjusted here.
+In case of ports' collisions, the mapping and environment variables can also be adjusted here.
 
 ### Unit testing
 
