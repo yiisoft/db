@@ -16,23 +16,14 @@ name: db-migration
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-db-migration-${{ matrix.os }}
+    name: DbMigration
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
+      PHP_VERSION: 8.3
       EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
 
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-
-        php:
-          - 8.1
-          - 8.2
-          - 8.3
+    runs-on: ubuntu-latest
 
     services:
       mysql:
@@ -91,7 +82,7 @@ jobs:
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: ${{ env.PHP_VERSION }}
           extensions: ${{ env.EXTENSIONS }}
           ini-values: date.timezone='UTC'
           coverage: pcov
@@ -166,8 +157,7 @@ jobs:
         run: vendor/bin/phpunit --testsuite=DbMigration --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
 
       - name: Upload coverage to Codecov.
-        if: matrix.php == '8.3'
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml

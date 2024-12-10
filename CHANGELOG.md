@@ -49,6 +49,7 @@
 - New #899: Add `ColumnSchemaInterface::hasDefaultValue()` and `ColumnSchemaInterface::null()` methods (@Tigrov)
 - New #902: Add `QueryBuilderInterface::prepareParam()` and `QueryBuilderInterface::prepareValue()` methods (@Tigrov)
 - Enh #902: Refactor `Quoter::quoteValue()` method (@Tigrov)
+- New #906: Add `ServerInfoInterface` and its implementation (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
