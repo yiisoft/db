@@ -28,14 +28,14 @@ run: ## Run arbitrary command.
 shell: CMD="bash" ## Open interactive shell.
 shell: run
 
-test-all: test-base \ ## Run all available tests.
-	test-driver-all
-test-driver-all: test-driver-sqlite \ ## Run tests for all drivers.
+test-all: test-base \
+	test-driver-all ## Run all available tests.
+test-driver-all: test-driver-sqlite \
 	test-driver-mysql \
 	test-driver-mariadb \
 	test-driver-pgsql \
 	test-driver-mssql \
-	test-driver-oracle
+	test-driver-oracle ## Run tests for all drivers.
 test-base: testsuite-Db ## Run tests for base db package only.
 test-driver-sqlite: testsuite-Sqlite ## Run tests for SQLite driver only.
 test-driver-mysql: testsuite-Mysql ## Run tests for MySQL driver only (using MySQL database).
@@ -47,7 +47,7 @@ test-driver-mariadb: ## Run tests for MySQL driver only (using MariaDB database)
 	php
 test-driver-pgsql: testsuite-Pgsql ## Run tests for PostgreSQL driver only.
 test-driver-mssql: testsuite-Mssql ## Run tests for Microsoft SQL Server driver only.
-test-driver-oracle: ## Run tsets for Oracle driver only.
+test-driver-oracle: ## Run tests for Oracle driver only.
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml run \
 	--rm \
 	--entrypoint "bash -c -l 'vendor/bin/phpunit --testsuite Oracle $(RUN_ARGS)'" \

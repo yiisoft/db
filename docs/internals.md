@@ -66,7 +66,7 @@ In case of ports' collisions, the mapping and enviroment variables can also be a
 - `make test-driver-mariadb` - run tests for MySQL driver only (using MariaDB database).
 - `make test-driver-pgsql` - run tests for PostgreSQL driver only.
 - `make test-driver-mssql` - run tests for Microsoft SQL Server driver only.
-- `make test-driver-oracle`- run tsets for Oracle driver only.
+- `make test-driver-oracle`- run tests for Oracle driver only.
 
 #### Testing different versions
 
