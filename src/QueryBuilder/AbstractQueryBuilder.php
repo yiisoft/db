@@ -8,6 +8,7 @@ use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\Expression;
@@ -67,6 +68,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function __construct(
         private QuoterInterface $quoter,
         private SchemaInterface $schema,
+        private ServerInfoInterface $serverInfo,
         private AbstractDDLQueryBuilder $ddlBuilder,
         private AbstractDMLQueryBuilder $dmlBuilder,
         private AbstractDQLQueryBuilder $dqlBuilder,
@@ -384,6 +386,11 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function getExpressionBuilder(ExpressionInterface $expression): object
     {
         return $this->dqlBuilder->getExpressionBuilder($expression);
+    }
+
+    public function getServerInfo(): ServerInfoInterface
+    {
+        return $this->serverInfo;
     }
 
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string

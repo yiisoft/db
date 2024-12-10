@@ -48,6 +48,7 @@ final class Connection extends AbstractPdoConnection
             $this->queryBuilder = new QueryBuilder(
                 $this->getQuoter(),
                 $this->getSchema(),
+                $this->getServerInfo(),
             );
         }
 

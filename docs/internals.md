@@ -52,14 +52,14 @@ services:
 
 Adjust the `/path/to/packages` to the path where packages are installed on your host machine.
 
-In case of ports' collisions, the mapping and enviroment variables can also be adjusted here.
+In case of ports' collisions, the mapping and environment variables can also be adjusted here.
 
 ### Unit testing
 
 #### Available commands
 
 - `make test-all` - run all available tests.
-- `make test-db` - run tests for base db package only.
+- `make test-base` - run tests for base db package only.
 - `make test-driver-all` - run tests for all drivers.
 - `make test-driver-sqlite` - run tests for SQLite driver only.
 - `make test-driver-mysql` - run tests for MySQL driver only (using MySQL database).
