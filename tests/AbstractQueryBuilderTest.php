@@ -2403,6 +2403,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expected, $qb->buildColumnDefinition($column));
+
+        $db->close();
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'prepareParam')]

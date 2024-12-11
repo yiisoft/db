@@ -22,11 +22,6 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     protected const AUTO_INCREMENT_KEYWORD = '';
 
     /**
-     * @var string The expression used to generate a UUID value.
-     */
-    protected const GENERATE_UUID_EXPRESSION = '';
-
-    /**
      * @var string[] The list of database column types (in lower case) that allow size specification.
      */
     protected const TYPES_WITH_SIZE = [];
@@ -119,12 +114,14 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      */
     protected function buildDefault(ColumnSchemaInterface $column): string
     {
-        if (!empty(static::GENERATE_UUID_EXPRESSION)
+        $uuidExpression = $this->getDefaultUuidExpression();
+
+        if (!empty($uuidExpression)
             && $column->getType() === ColumnType::UUID
             && $column->isAutoIncrement()
             && $column->getDefaultValue() === null
         ) {
-            return ' DEFAULT ' . static::GENERATE_UUID_EXPRESSION;
+            return " DEFAULT $uuidExpression";
         }
 
         if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID
@@ -302,5 +299,13 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     protected function buildUnsigned(ColumnSchemaInterface $column): string
     {
         return $column->isUnsigned() ? ' UNSIGNED' : '';
+    }
+
+    /**
+     * Get the expression used to generate a UUID as a default value.
+     */
+    protected function getDefaultUuidExpression(): string
+    {
+        return '';
     }
 }
