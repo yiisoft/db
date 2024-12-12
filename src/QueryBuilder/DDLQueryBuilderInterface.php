@@ -10,6 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
 /**
  * Defines methods for building SQL statements for DDL (data definition language).
@@ -36,7 +37,7 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table to add the new column will to.
      * @param string $column The name of the new column.
-     * @param ColumnInterface|string $type The column type.
+     * @param ColumnInterface|ColumnSchemaInterface|string $type The column type.
      * {@see getColumnType()} Method will be invoked to convert an abstract column type (if any) into the physical one.
      * Anything that isn't recognized as an abstract type will be kept in the generated SQL.
      * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become
@@ -46,7 +47,7 @@ interface DDLQueryBuilderInterface
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function addColumn(string $table, string $column, ColumnInterface|string $type): string;
+    public function addColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): string;
 
     /**
      * Builds an SQL command for adding comment to column.
@@ -159,7 +160,7 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table whose column is to change.
      * @param string $column The name of the column to change.
-     * @param ColumnInterface|string $type The new column type.
+     * @param ColumnInterface|ColumnSchemaInterface|string $type The new column type.
      * {@see getColumnType()} Method will be invoked to convert an abstract column type (if any) into the physical one.
      * Anything that isn't recognized as an abstract type will be kept in the generated SQL.
      * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become
@@ -169,7 +170,7 @@ interface DDLQueryBuilderInterface
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function alterColumn(string $table, string $column, ColumnInterface|string $type): string;
+    public function alterColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): string;
 
     /**
      * Builds an SQL statement for enabling or disabling integrity check.
@@ -233,14 +234,14 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The name of the table to create.
      * @param array $columns The columns (name => definition) in the new table.
-     * The definition can be `string` or {@see ColumnInterface} instance.
+     * The definition can be `string` or {@see ColumnInterface} or {@see ColumnSchemaInterface} instance.
      * @param string|null $options More SQL fragments to append to the generated SQL.
      *
      * @return string The SQL statement for creating a new DB table.
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      *
-     * @psalm-param array<string, ColumnInterface>|string[] $columns
+     * @psalm-param array<string, ColumnInterface|ColumnSchemaInterface>|string[] $columns
      */
     public function createTable(string $table, array $columns, string $options = null): string;
 

@@ -23,9 +23,9 @@ use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function is_string;
@@ -548,7 +548,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             [
                 '[[id]]' => PseudoType::PK,
                 '[[bar]]' => ColumnType::INTEGER,
-                '[[name]]' => (new Column('string(100)'))->notNull(),
+                '[[name]]' => ColumnBuilder::string(100)->notNull(),
             ],
         )->execute();
         $command->insert('{{testCreateTable}}', ['[[bar]]' => 1, '[[name]]' => 'Lilo'])->execute();
