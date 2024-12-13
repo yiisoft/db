@@ -224,7 +224,7 @@ interface DDLQueryBuilderInterface
      *
      * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
      * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
-     * and `pk` to `PRIMARY KEY AUTO_INCREMENT` (for MySQL).
+     * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
      *
      * The preferred method is to use {@see ColumnBuilder} to generate column definitions as instances of
      * {@see ColumnSchemaInterface}.
