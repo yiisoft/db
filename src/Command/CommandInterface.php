@@ -8,6 +8,8 @@ use Closure;
 use JsonException;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -315,17 +317,36 @@ interface CommandInterface
     /**
      * Creates an SQL command for creating a new DB table.
      *
-     * Specify the columns in the new table as name-definition pairs ('name' => 'string'), where name
-     * stands for a column name which will be quoted by the method, and definition stands for the column type
-     * which can contain an abstract DB type.
+     * The columns in the new table should be specified as name-definition pairs (e.g. 'name' => 'string'), where name
+     * is the name of the column which will be properly quoted by the method, and definition is the type of the column
+     * which can contain a native database column type, {@see ColumnType abstract} or {@see PseudoType pseudo} type,
+     * or can be represented as instance of {@see ColumnSchemaInterface}.
      *
-     * The method {@see QueryBuilder::getColumnType()} will be called to convert the abstract column types to physical
-     * ones.
-     * For example, it will convert `string` to `varchar(255)`, and `string not null` to
-     * `varchar(255) not null`.
+     * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
+     * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
+     * and `pk` to `PRIMARY KEY AUTO_INCREMENT` (for MySQL).
      *
-     * If you specify a column with definition only (`PRIMARY KEY (name, type)`), it will be directly inserted
-     * into the generated SQL.
+     * The preferred method is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * {@see ColumnSchemaInterface}.
+     *
+     * ```php
+     * $this->createTable(
+     *     'example_table',
+     *     [
+     *         'id' => ColumnBuilder::primaryKey(),
+     *         'name' => ColumnBuilder::string(64)->notNull(),
+     *         'type' => ColumnBuilder::integer()->notNull()->defaultValue(10),
+     *         'description' => ColumnBuilder::text(),
+     *         'rule_name' => ColumnBuilder::string(64),
+     *         'data' => ColumnBuilder::text(),
+     *         'created_at' => ColumnBuilder::datetime()->notNull(),
+     *         'updated_at' => ColumnBuilder::datetime(),
+     *     ],
+     * );
+     * ```
+     *
+     * If a column is specified with definition only (e.g. 'PRIMARY KEY (name, type)'), it will be directly put into the
+     * generated SQL.
      *
      * @param string $table The name of the table to create.
      * @param (ColumnSchemaInterface|string)[] $columns The columns (name => definition) in the new table.
