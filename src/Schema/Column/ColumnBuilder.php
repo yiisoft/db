@@ -155,6 +155,20 @@ class ColumnBuilder
 
     /**
      * Builds a column with the abstract type `text`.
+     *
+     * @param int|null $size The maximum length of the column or `null` if it is not limited.
+     *
+     * MySQL creates the column as the smallest `TEXT` type large enough to hold values of `$size` characters.
+     * This corresponds to `TINYTEXT`, `MEDIUMTEXT`, `TEXT`, and `LONGTEXT` column types and depends on the character
+     * set used.
+     *
+     * For example, the maximum sizes in different character sets are as follows:
+     * | Column type | latin1        | utf8          | utf8mb4
+     * |-------------|---------------|---------------|----------------
+     * | TINYTEXT    | 255           | 85            | 63
+     * | TEXT        | 65,535        | 21,845        | 16,383
+     * | MEDIUMTEXT  | 16,777,215    | 5,592,405     | 4,194,303
+     * | LONGTEXT    | 4,294,967,295 | 4,294,967,295 | 4,294,967,295
      */
     public static function text(int|null $size = null): ColumnSchemaInterface
     {
