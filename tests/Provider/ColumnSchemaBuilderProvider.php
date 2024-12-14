@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Tests\Support\DbHelper;
 
 class ColumnSchemaBuilderProvider
 {
@@ -25,54 +23,6 @@ class ColumnSchemaBuilderProvider
                 'timestamp() WITH TIME ZONE',
                 null,
                 [['defaultValue', new Expression('NOW()')]],
-            ],
-        ];
-    }
-
-    public static function createColumnTypes(): array
-    {
-        return [
-            'integer' => [
-                Dbhelper::replaceQuotes('[[column]] integer', static::$driverName),
-                ColumnType::INTEGER,
-                null,
-                [],
-            ],
-            'uuid' => [
-                '',
-                ColumnType::UUID,
-                null,
-                [],
-            ],
-            'uuid not null' => [
-                '',
-                ColumnType::UUID,
-                null,
-                [['notNull']],
-            ],
-            'uuid with default' => [
-                '',
-                ColumnType::UUID,
-                null,
-                [['defaultValue', '875343b3-6bd0-4bec-81bb-aa68bb52d945']],
-            ],
-            'uuid pk' => [
-                '',
-                PseudoType::UUID_PK,
-                null,
-                [],
-            ],
-            'uuid pk not null' => [
-                '',
-                PseudoType::UUID_PK,
-                null,
-                [['notNull']],
-            ],
-            'uuid pk not null with default' => [
-                '',
-                PseudoType::UUID_PK,
-                null,
-                [],
             ],
         ];
     }
