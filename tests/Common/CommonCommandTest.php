@@ -511,7 +511,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertCount($count + 1, $schema->getTableIndexes($tableName));
 
-        $index = array_filter($schema->getTableIndexes($tableName), static fn ($index) => !$index->isPrimary())[0];
+        $index = array_filter($schema->getTableIndexes($tableName), static fn ($index) => !$index->isPrimaryKey())[0];
 
         $this->assertSame($indexColumns, $index->getColumnNames());
 

@@ -6,10 +6,9 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Iterator;
 use IteratorAggregate;
-use JsonException;
 use Traversable;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -417,14 +416,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Prepare column names and constraints for "upsert" operation.
      *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     * @throws InvalidConfigException
-     * @throws JsonException
-     * @throws NotSupportedException
+     * @param IndexConstraint[] $constraints
      *
      * @psalm-param array<string, mixed>|QueryInterface $insertColumns
-     * @psalm-param Constraint[] $constraints
      *
      * @return array Array of unique, insert and update quoted column names.
      * @psalm-return array{0: string[], 1: string[], 2: string[]|null}
@@ -463,14 +457,10 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @param string $name The table name, may contain schema name if any. Don't quote the table name.
      * @param string[] $columns Source column list.
-     * @param array $constraints This parameter optionally receives a matched constraint list. The constraints
-     * will be unique by their column names.
-     *
-     * @throws JsonException
+     * @param IndexConstraint[] $constraints This parameter optionally receives a matched constraint list.
+     * The constraints will be unique by their column names.
      *
      * @return string[] The quoted column names.
-     *
-     * @psalm-param Constraint[] $constraints
     */
     private function getTableUniqueColumnNames(string $name, array $columns, array &$constraints = []): array
     {
@@ -493,14 +483,15 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         /**
          * Remove duplicates
          *
-         * @psalm-var Constraint[] $constraints
+         * @var IndexConstraint[] $constraints
          */
         $constraints = array_combine(
             array_map(
-                static function (Constraint $constraint): string {
-                    $columns = (array) $constraint->getColumnNames();
+                static function (IndexConstraint $constraint): string {
+                    $columns = $constraint->getColumnNames();
                     sort($columns, SORT_STRING);
-                    return json_encode($columns, JSON_THROW_ON_ERROR);
+                    /** @var string */
+                    return json_encode($columns);
                 },
                 $constraints
             ),
@@ -514,9 +505,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $constraints = array_values(
             array_filter(
                 $constraints,
-                static function (Constraint $constraint) use ($quoter, $columns, &$columnNames): bool {
-                    /** @psalm-var string[] $constraintColumnNames */
-                    $constraintColumnNames = (array) $constraint->getColumnNames();
+                static function (IndexConstraint $constraint) use ($quoter, $columns, &$columnNames): bool {
+                    $constraintColumnNames = $constraint->getColumnNames();
 
                     $constraintColumnNames = array_map(
                         $quoter->quoteColumnName(...),
@@ -534,7 +524,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             )
         );
 
-        /** @psalm-var string[] $columnNames */
+        /** @var string[] $columnNames */
         return array_unique($columnNames);
     }
 
