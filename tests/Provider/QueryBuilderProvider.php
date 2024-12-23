@@ -144,6 +144,13 @@ class QueryBuilderProvider
         ];
     }
 
+    public static function alterColumn(): array
+    {
+        return [
+            [ColumnType::STRING, 'ALTER TABLE [foo1] CHANGE [bar] [bar] varchar(255)'],
+        ];
+    }
+
     public static function batchInsert(): array
     {
         return [

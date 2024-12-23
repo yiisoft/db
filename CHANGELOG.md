@@ -50,6 +50,7 @@
 - New #902: Add `QueryBuilderInterface::prepareParam()` and `QueryBuilderInterface::prepareValue()` methods (@Tigrov)
 - Enh #902: Refactor `Quoter::quoteValue()` method (@Tigrov)
 - New #906: Add `ServerInfoInterface` and its implementation (@Tigrov)
+- Enh #905: Use `AbstractColumnDefinitionBuilder` to generate table column SQL representation (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

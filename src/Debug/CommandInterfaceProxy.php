@@ -10,6 +10,7 @@ use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
 final class CommandInterfaceProxy implements CommandInterface
 {
@@ -30,7 +31,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
-    public function addColumn(string $table, string $column, ColumnInterface|string $type): static
+    public function addColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
@@ -93,7 +94,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
-    public function alterColumn(string $table, string $column, ColumnInterface|string $type): static
+    public function alterColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }

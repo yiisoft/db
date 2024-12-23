@@ -12,8 +12,6 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
 {
     protected const AUTO_INCREMENT_KEYWORD = 'AUTOINCREMENT';
 
-    protected const GENERATE_UUID_EXPRESSION = 'uuid()';
-
     protected const TYPES_WITH_SIZE = [
         'bit',
         'tinyint',
@@ -65,5 +63,10 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             ColumnType::JSON => 'json',
             default => 'varchar',
         };
+    }
+
+    protected function getDefaultUuidExpression(): string
+    {
+        return 'uuid()';
     }
 }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\TestCase;
+use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
@@ -26,14 +28,6 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
         $this->checkBuildString($expected, $type, $length, $calls);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaBuilderProvider::createColumnTypes
-     */
-    public function testCreateColumnTypes(string $expected, string $type, int|null $length, array $calls): void
-    {
-        $this->checkCreateColumn($expected, $type, $length, $calls);
-    }
-
     public function testUuid(): void
     {
         $db = $this->getConnection();
@@ -53,11 +47,13 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
 
         $uuidValue = $uuidSource = '738146be-87b1-49f2-9913-36142fb6fcbe';
 
-        if ($db->getDriverName() === 'oci') {
-            $uuidValue = new Expression('HEXTORAW(REGEXP_REPLACE(:uuid, \'-\', \'\'))', [':uuid' => $uuidValue]);
-        } elseif ($db->getDriverName() === 'mysql') {
-            $uuidValue = DbUuidHelper::uuidToBlob($uuidValue);
-        }
+        $uuidValue = match ($db->getDriverName()) {
+            'oci' => new Expression("HEXTORAW(REPLACE(:uuid, '-', ''))", [':uuid' => $uuidValue]),
+            'mysql' => new Expression("UNHEX(REPLACE(:uuid, '-', ''))", [':uuid' => $uuidValue]),
+            'sqlite' => new Param(DbUuidHelper::uuidToBlob($uuidValue), DataType::LOB),
+            'sqlsrv' => new Expression('CONVERT(uniqueidentifier, :uuid)', [':uuid' => $uuidValue]),
+            default => $uuidValue,
+        };
 
         $db->createCommand()->insert($tableName, [
             'int_col' => 1,
@@ -91,49 +87,6 @@ abstract class CommonColumnSchemaBuilderTest extends TestCase
         }
 
         $this->assertSame($expected, $builder->asString());
-
-        $db->close();
-    }
-
-    protected function checkCreateColumn(string $expected, string $type, int|null $length, array $calls): void
-    {
-        $db = $this->getConnection();
-
-        if (str_contains($expected, 'UUID_TO_BIN')) {
-            $serverVersion = $db->getServerInfo()->getVersion();
-            if (str_contains($serverVersion, 'MariaDB')) {
-                $db->close();
-                $this->markTestSkipped('UUID_TO_BIN not supported MariaDB as defaultValue');
-            }
-            if (version_compare($serverVersion, '8', '<')) {
-                $db->close();
-                $this->markTestSkipped('UUID_TO_BIN not exists in MySQL 5.7');
-            }
-        }
-
-        $schema = $db->getSchema();
-        $builder = $schema->createColumn($type, $length);
-
-        foreach ($calls as $call) {
-            $method = array_shift($call);
-            ($builder->$method(...))(...$call);
-        }
-
-        $tableName = '{{%column_schema_builder_types}}';
-        if ($db->getTableSchema($tableName, true)) {
-            $db->createCommand()->dropTable($tableName)->execute();
-        }
-
-        $command = $db->createCommand()->createTable($tableName, [
-            'column' => $builder,
-        ]);
-
-        $this->assertStringContainsString("\t" . $expected . "\n", $command->getRawSql());
-
-        $command->execute();
-
-        $tableSchema = $db->getTableSchema($tableName, true);
-        $this->assertNotNull($tableSchema);
 
         $db->close();
     }

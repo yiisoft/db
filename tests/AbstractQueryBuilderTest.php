@@ -71,7 +71,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             DbHelper::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
-                SQL . ' ' . $qb->getColumnType($type),
+                SQL . ' ' . $qb->buildColumnDefinition($type),
                 $db->getDriverName(),
             ),
             $sql,
@@ -192,22 +192,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($expected, $sql);
     }
 
-    public function testAlterColumn(): void
+    #[DataProviderExternal(QueryBuilderProvider::class, 'alterColumn')]
+    public function testAlterColumn(string|ColumnSchemaInterface $type, string $expected): void
     {
-        $db = $this->getConnection();
+        $qb = $this->getConnection()->getQueryBuilder();
 
-        $qb = $db->getQueryBuilder();
-        $sql = $qb->alterColumn('customer', 'email', ColumnType::STRING);
-
-        $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                ALTER TABLE [[customer]] CHANGE [[email]] [[email]]
-                SQL . ' ' . $qb->getColumnType(ColumnType::STRING),
-                $db->getDriverName(),
-            ),
-            $sql,
-        );
+        $this->assertSame($expected, $qb->alterColumn('foo1', 'bar', $type));
     }
 
     /**
@@ -2413,6 +2403,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expected, $qb->buildColumnDefinition($column));
+
+        $db->close();
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'prepareParam')]
