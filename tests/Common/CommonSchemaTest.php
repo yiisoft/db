@@ -503,7 +503,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
-    public function hasView(): void
+    public function testHasView(): void
     {
         $db = $this->getConnection(true);
 
