@@ -416,4 +416,32 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @return array All view names in the database.
      */
     public function getViewNames(string $schema = '', bool $refresh = false): array;
+
+    /**
+     * Determines if a specified table exists in the database.
+     *
+     * @param string $tableName The table name to search for
+     * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
+     *  name. If not empty, the table will be searched in the specified schema.
+     * @return bool Whether table exists or not
+     */
+    public function hasTableName(string $tableName, string $schema = ''): bool;
+
+    /**
+     * Determines if a specified schema exists in the database.
+     *
+     * @param string $schema The table name to search for
+     * @return bool Whether schema exists or not
+     */
+    public function hasSchemaName(string $schema): bool;
+
+    /**
+     * Determines if a specified view exists in the database.
+     *
+     * @param string $viewName The table name to search for
+     * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
+     *   name. If not empty, the table will be searched in the specified schema.
+     * @return bool Whether view exists or not
+     */
+    public function hasViewName(string $viewName, string $schema = ''): bool;
 }

@@ -405,6 +405,27 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
+    public function testHasTableName(array $pdoAttributes): void
+    {
+        $db = $this->getConnection(true);
+
+        foreach ($pdoAttributes as $name => $value) {
+            if ($name === PDO::ATTR_EMULATE_PREPARES) {
+                continue;
+            }
+
+            $db->getPDO()?->setAttribute($name, $value);
+        }
+
+        $schema = $db->getSchema();
+
+        $this->assertTrue($schema->hasTableName('customer'));
+        $this->assertTrue($schema->hasTableName('category'));
+        $this->assertFalse($schema->hasTableName('no_such_table'));
+
+        $db->close();
+    }
+
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchema
      */
@@ -478,6 +499,18 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $views = $schema->getViewNames();
 
         $this->assertSame(['animal_view'], $views);
+
+        $db->close();
+    }
+
+    public function hasViewName(): void
+    {
+        $db = $this->getConnection(true);
+
+        $schema = $db->getSchema();
+
+        $this->assertTrue($schema->hasViewName('animal_view'));
+        $this->assertFalse($schema->hasViewName('no_such_view'));
 
         $db->close();
     }

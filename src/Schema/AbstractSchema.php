@@ -574,4 +574,42 @@ abstract class AbstractSchema implements SchemaInterface
 
         return (array) $this->viewNames[$schema];
     }
+
+    /**
+     * @param string $tableName The table name.
+     * @param string $schema The schema of the tables.
+     * @return bool
+     * @throws Throwable
+     */
+    public function hasTableName(string $tableName, string $schema = ''): bool
+    {
+        $tables = $this->getTableNames($schema);
+
+        return in_array($tableName, $tables);
+    }
+
+    /**
+     * @param string $schema The schema name.
+     * @return bool
+     * @throws Throwable
+     */
+    public function hasSchemaName(string $schema): bool
+    {
+        $schemas = $this->getSchemaNames();
+
+        return in_array($schema, $schemas);
+    }
+
+    /**
+     * @param string $viewName The view name.
+     * @param string $schema The schema of the views.
+     * @return bool
+     * @throws Throwable
+     */
+    public function hasViewName(string $viewName, string $schema = ''): bool
+    {
+        $views = $this->getViewNames($schema);
+
+        return in_array($viewName, $views);
+    }
 }
