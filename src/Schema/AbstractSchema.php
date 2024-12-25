@@ -576,12 +576,9 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * @param string $tableName The table name.
-     * @param string $schema The schema of the tables.
-     * @return bool
      * @throws Throwable
      */
-    public function hasTableName(string $tableName, string $schema = ''): bool
+    public function hasTable(string $tableName, string $schema = ''): bool
     {
         $tables = $this->getTableNames($schema);
 
@@ -589,11 +586,9 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * @param string $schema The schema name.
-     * @return bool
      * @throws Throwable
      */
-    public function hasSchemaName(string $schema): bool
+    public function hasSchema(string $schema): bool
     {
         $schemas = $this->getSchemaNames();
 
@@ -601,12 +596,9 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * @param string $viewName The view name.
-     * @param string $schema The schema of the views.
-     * @return bool
      * @throws Throwable
      */
-    public function hasViewName(string $viewName, string $schema = ''): bool
+    public function hasView(string $viewName, string $schema = ''): bool
     {
         $views = $this->getViewNames($schema);
 

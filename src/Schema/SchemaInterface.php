@@ -425,7 +425,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *  name. If not empty, the table will be searched in the specified schema.
      * @return bool Whether table exists or not
      */
-    public function hasTableName(string $tableName, string $schema = ''): bool;
+    public function hasTable(string $tableName, string $schema = ''): bool;
 
     /**
      * Determines if a specified schema exists in the database.
@@ -433,7 +433,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param string $schema The table name to search for
      * @return bool Whether schema exists or not
      */
-    public function hasSchemaName(string $schema): bool;
+    public function hasSchema(string $schema): bool;
 
     /**
      * Determines if a specified view exists in the database.
@@ -443,5 +443,5 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *   name. If not empty, the table will be searched in the specified schema.
      * @return bool Whether view exists or not
      */
-    public function hasViewName(string $viewName, string $schema = ''): bool;
+    public function hasView(string $viewName, string $schema = ''): bool;
 }
