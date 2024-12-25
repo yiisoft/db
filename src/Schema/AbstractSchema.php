@@ -578,9 +578,9 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * @throws Throwable
      */
-    public function hasTable(string $tableName, string $schema = ''): bool
+    public function hasTable(string $tableName, string $schema = '', bool $refresh = false): bool
     {
-        $tables = $this->getTableNames($schema);
+        $tables = $this->getTableNames($schema, $refresh);
 
         return in_array($tableName, $tables);
     }
@@ -588,9 +588,9 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * @throws Throwable
      */
-    public function hasSchema(string $schema): bool
+    public function hasSchema(string $schema, bool $refresh = false): bool
     {
-        $schemas = $this->getSchemaNames();
+        $schemas = $this->getSchemaNames($refresh);
 
         return in_array($schema, $schemas);
     }
@@ -598,9 +598,9 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * @throws Throwable
      */
-    public function hasView(string $viewName, string $schema = ''): bool
+    public function hasView(string $viewName, string $schema = '', bool $refresh = false): bool
     {
-        $views = $this->getViewNames($schema);
+        $views = $this->getViewNames($schema, $refresh);
 
         return in_array($viewName, $views);
     }
