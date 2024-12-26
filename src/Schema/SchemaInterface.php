@@ -420,37 +420,37 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Determines if a specified table exists in the database.
      *
-     * @param string $tableName The table name to search for. 
+     * @param string $tableName The table name to search for
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
      *  name. If not empty, the table will be searched in the specified schema.
      * @param bool $refresh Whether to fetch the latest available table names. If this is false, view names fetched
      *    before (if available) will be returned.
      *
-     * @return bool Whether table exists or not
+     * @return bool Whether table exists.
      */
     public function hasTable(string $tableName, string $schema = '', bool $refresh = false): bool;
 
     /**
      * Determines if a specified schema exists in the database.
      *
-     * @param string $schema The table name to search for
+     * @param string $schema The schema name to search for
      * @param bool $refresh Whether to fetch the latest available schema names. If this is false, view names fetched
      *   before (if available) will be returned.
      *
-     * @return bool Whether schema exists or not
+     * @return bool Whether schema exists.
      */
     public function hasSchema(string $schema, bool $refresh = false): bool;
 
     /**
      * Determines if a specified view exists in the database.
      *
-     * @param string $viewName The table name to search for
+     * @param string $viewName The view name to search for
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
      *   name. If not empty, the table will be searched in the specified schema.
      * @param bool $refresh Whether to fetch the latest available view names. If this is false, view names fetched
      *  before (if available) will be returned.
      *
-     * @return bool Whether view exists or not
+     * @return bool Whether view exists.
      */
     public function hasView(string $viewName, string $schema = '', bool $refresh = false): bool;
 }
