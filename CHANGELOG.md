@@ -1,7 +1,7 @@
 # Yii Database Change Log
 
 ## 2.0.0 under development
-- Enh #551: Added `hasSchema()`, `hasView()`, `hasTable()` methods to `SchemaInterface` and `AbstractSchema` (@evil1)
+- Enh #762: Added `hasSchema()`, `hasView()`, `hasTable()` methods to `SchemaInterface` and `AbstractSchema` (@evil1)
 - Enh #820: Support `Traversable` values for `AbstractDMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #815: Refactor `Query::column()` method (@Tigrov) 
 - Enh #816: Allow scalar values for `$columns` parameter of `Query::select()` and `Query::addSelect()` methods (@Tigrov)
