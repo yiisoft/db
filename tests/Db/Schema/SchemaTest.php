@@ -213,6 +213,10 @@ final class SchemaTest extends AbstractSchemaTest
         $this->assertTrue($schema->hasSchema('public'));
         $this->assertFalse($schema->hasSchema('no_such_schema'));
 
+        $this->assertTrue($schema->hasSchema('dbo', true));
+        $this->assertTrue($schema->hasSchema('public', true));
+        $this->assertFalse($schema->hasSchema('no_such_schema', true));
+
         $db->close();
     }
 
