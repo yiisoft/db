@@ -422,9 +422,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @param string $tableName The table name to search for
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
-     *  name. If not empty, the table will be searched in the specified schema.
+     * name. If not empty, the table will be searched in the specified schema.
      * @param bool $refresh Whether to fetch the latest available table names. If this is false, view names fetched
-     *    before (if available) will be returned.
+     * before (if available) will be returned.
      *
      * @return bool Whether table exists.
      */
@@ -435,7 +435,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @param string $schema The schema name to search for
      * @param bool $refresh Whether to fetch the latest available schema names. If this is false, view names fetched
-     *   before (if available) will be returned.
+     * before (if available) will be returned.
      *
      * @return bool Whether schema exists.
      */
@@ -446,9 +446,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @param string $viewName The view name to search for
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
-     *   name. If not empty, the table will be searched in the specified schema.
+     * name. If not empty, the table will be searched in the specified schema.
      * @param bool $refresh Whether to fetch the latest available view names. If this is false, view names fetched
-     *  before (if available) will be returned.
+     * before (if available) will be returned.
      *
      * @return bool Whether view exists.
      */
