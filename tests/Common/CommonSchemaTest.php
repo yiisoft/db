@@ -405,6 +405,11 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
+    /**
+     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::pdoAttributes
+     *
+     * @throws NotSupportedException
+     */
     public function testHasTable(array $pdoAttributes): void
     {
         $db = $this->getConnection(true);
