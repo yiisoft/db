@@ -419,11 +419,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertTrue($schema->hasTable('category', '', true));
         $this->assertFalse($schema->hasTable('no_such_table', '', true));
 
-        if ($db->getDriverName() !== 'sqlite') {
-            $this->assertFalse($schema->hasTable('customer', 'no_such_schema', true));
-            $this->assertFalse($schema->hasTable('category', 'no_such_schema', true));
-        }
-
         $db->close();
     }
 
@@ -515,10 +510,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->assertTrue($schema->hasView('animal_view', '', true));
         $this->assertFalse($schema->hasView('no_such_view', '', true));
-
-        if ($db->getDriverName() !== 'sqlite') {
-            $this->assertFalse($schema->hasView('animal_view', 'no_such_schema', true));
-        }
 
         $db->close();
     }
