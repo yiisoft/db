@@ -415,6 +415,10 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertTrue($schema->hasTable('category'));
         $this->assertFalse($schema->hasTable('no_such_table'));
 
+        $this->assertTrue($schema->hasTable('customer', '', true));
+        $this->assertTrue($schema->hasTable('category', '', true));
+        $this->assertFalse($schema->hasTable('no_such_table', '', true));
+
         $db->close();
     }
 
@@ -503,6 +507,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $this->assertTrue($schema->hasView('animal_view'));
         $this->assertFalse($schema->hasView('no_such_view'));
+
+        $this->assertTrue($schema->hasView('animal_view', '', true));
+        $this->assertFalse($schema->hasView('no_such_view', '', true));
 
         $db->close();
     }
