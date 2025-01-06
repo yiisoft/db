@@ -26,7 +26,6 @@ use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
@@ -60,7 +59,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::columnTypes */
-    public function testAddColumn(ColumnInterface|string $type): void
+    public function testAddColumn(ColumnSchemaInterface|string $type): void
     {
         $db = $this->getConnection();
 
@@ -1833,36 +1832,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropview('animal_view'),
         );
-    }
-
-    public function testGetColumnType(): void
-    {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
-
-        $this->assertSame('pk', $qb->getColumnType(PseudoType::PK));
-        $this->assertSame('upk', $qb->getColumnType(PseudoType::UPK));
-        $this->assertSame('bigpk', $qb->getColumnType(PseudoType::BIGPK));
-        $this->assertSame('ubigpk', $qb->getColumnType(PseudoType::UBIGPK));
-        $this->assertSame('char', $qb->getColumnType(ColumnType::CHAR));
-        $this->assertSame('string', $qb->getColumnType(ColumnType::STRING));
-        $this->assertSame('text', $qb->getColumnType(ColumnType::TEXT));
-        $this->assertSame('tinyint', $qb->getColumnType(ColumnType::TINYINT));
-        $this->assertSame('smallint', $qb->getColumnType(ColumnType::SMALLINT));
-        $this->assertSame('integer', $qb->getColumnType(ColumnType::INTEGER));
-        $this->assertSame('bigint', $qb->getColumnType(ColumnType::BIGINT));
-        $this->assertSame('float', $qb->getColumnType(ColumnType::FLOAT));
-        $this->assertSame('double', $qb->getColumnType(ColumnType::DOUBLE));
-        $this->assertSame('decimal', $qb->getColumnType(ColumnType::DECIMAL));
-        $this->assertSame('datetime', $qb->getColumnType(ColumnType::DATETIME));
-        $this->assertSame('timestamp', $qb->getColumnType(ColumnType::TIMESTAMP));
-        $this->assertSame('time', $qb->getColumnType(ColumnType::TIME));
-        $this->assertSame('date', $qb->getColumnType(ColumnType::DATE));
-        $this->assertSame('binary', $qb->getColumnType(ColumnType::BINARY));
-        $this->assertSame('boolean', $qb->getColumnType(ColumnType::BOOLEAN));
-        $this->assertSame('money', $qb->getColumnType(ColumnType::MONEY));
-        $this->assertSame('json', $qb->getColumnType(ColumnType::JSON));
     }
 
     /**

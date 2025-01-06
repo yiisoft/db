@@ -18,7 +18,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 
 /**
@@ -47,13 +46,13 @@ interface CommandInterface
      *
      * @param string $table The name of the table to add new column to.
      * @param string $column The name of the new column.
-     * @param ColumnInterface|ColumnSchemaInterface|string $type The column type.
+     * @param ColumnSchemaInterface|string $type The column type.
      * {@see QueryBuilder::buildColumnDefinition()} will be called to convert the given column type to the database one.
      * For example, `string` will be converted to `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function addColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): static;
+    public function addColumn(string $table, string $column, ColumnSchemaInterface|string $type): static;
 
     /**
      * Builds an SQL command for adding a comment to a column.
@@ -147,13 +146,13 @@ interface CommandInterface
      *
      * @param string $table The table whose column is to change.
      * @param string $column The name of the column to change.
-     * @param ColumnInterface|ColumnSchemaInterface|string $type The column type.
+     * @param ColumnSchemaInterface|string $type The column type.
      * {@see QueryBuilder::buildColumnDefinition()} will be called to convert the give column type to the physical one.
      * For example, `string` will be converted as `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function alterColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): static;
+    public function alterColumn(string $table, string $column, ColumnSchemaInterface|string $type): static;
 
     /**
      * Creates a batch INSERT command.
@@ -326,7 +325,7 @@ interface CommandInterface
      * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
      * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
      *
-     * The preferred method is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
      * {@see ColumnSchemaInterface}.
      *
      * ```php

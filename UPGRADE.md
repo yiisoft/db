@@ -9,9 +9,9 @@ application when you upgrade the package from one version to another.
 
 ## Upgrade from 1.x to 2.x
 
-### `ColumnInterface` as column type
+### `ColumnSchemaInterface` as column type
 
-Add `ColumnInterface` support and change type of parameter `$type` from `string` to `ColumnInterface|string` 
+Add `ColumnSchemaInterface` support and change type of parameter `$type` from `string` to `ColumnSchemaInterface|string` 
 in `addColumn()` method of your classes that implement the following interfaces:
 
 - `Yiisoft\Db\Command\CommandInterface`;
