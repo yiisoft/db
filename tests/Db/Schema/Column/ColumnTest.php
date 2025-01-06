@@ -171,12 +171,15 @@ final class ColumnTest extends TestCase
         $column = new Column();
 
         $this->assertNull($column->getName());
-        $this->assertSame($column, $column->name('test'));
-        $this->assertSame('test', $column->getName());
 
-        $column->name('');
+        $newColumn = $column->withName('test');
 
-        $this->assertSame('', $column->getName());
+        $this->assertNotSame($column, $newColumn);
+        $this->assertSame('test', $newColumn->getName());
+
+        $newColumn = $newColumn->withName('');
+
+        $this->assertSame('', $newColumn->getName());
     }
 
     public function testNotNull(): void

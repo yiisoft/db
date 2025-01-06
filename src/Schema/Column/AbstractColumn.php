@@ -203,10 +203,7 @@ abstract class AbstractColumn implements ColumnInterface
         return $this->extra;
     }
 
-    /**
-     * @deprecated Will be removed in version 2.0.
-     * @psalm-mutation-free
-     */
+    /** @psalm-mutation-free */
     public function getName(): string|null
     {
         return $this->name;
@@ -371,5 +368,12 @@ abstract class AbstractColumn implements ColumnInterface
     {
         $this->unsigned = $unsigned;
         return $this;
+    }
+
+    public function withName(string|null $name): static
+    {
+        $new = clone $this;
+        $new->name = $name;
+        return $new;
     }
 }
