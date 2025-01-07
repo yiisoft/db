@@ -12,8 +12,6 @@ use stdClass;
 use Throwable;
 use Yiisoft\Db\Command\DataType;
 use Yiisoft\Db\Command\Param;
-use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;

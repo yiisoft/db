@@ -24,8 +24,6 @@ use function count;
 use function get_resource_type;
 use function gettype;
 use function is_string;
-use function preg_match;
-use function preg_replace;
 use function stream_get_contents;
 
 /**
