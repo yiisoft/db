@@ -9,16 +9,22 @@ application when you upgrade the package from one version to another.
 
 ## Upgrade from 1.x to 2.x
 
+### Remove `ColumnInterface`
+
+Remove `ColumnInterface` and use `ColumnSchemaInterface` instead.
+
 ### `ColumnSchemaInterface` as column type
 
-Add `ColumnSchemaInterface` support and change type of parameter `$type` from `string` to `ColumnSchemaInterface|string` 
-in `addColumn()` method of your classes that implement the following interfaces:
+Add `ColumnSchemaInterface` support and change type of parameter `$type` to `ColumnSchemaInterface|string` 
+in the following methods: 
+- `addColumn()`
+- `alterColumn()`
 
+in classes that implement the following interfaces:
 - `Yiisoft\Db\Command\CommandInterface`;
 - `Yiisoft\Db\QueryBuilder\DDLQueryBuilderInterface`;
 
-… or inherit from the following classes:
-
+or inherit from the following classes:
 - `Yiisoft\Db\Command\AbstractCommand`;
 - `Yiisoft\Db\QueryBuilder\AbstractDDLQueryBuilder`;
 - `Yiisoft\Db\QueryBuilder\AbstractQueryBuilder`.
@@ -115,11 +121,13 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 
 ### Remove methods
 
+- `AbstractQueryBuilder::getColumnType()`
 - `AbstractDMLQueryBuilder::getTypecastValue()`
 - `TableSchemaInterface::compositeForeignKey()`
+- `SchemaInterface::createColumn()`
 - `SchemaInterface::isReadQuery()`
-- `AbstractSchema::isReadQuery()`
 - `SchemaInterface::getRawTableName()`
+- `AbstractSchema::isReadQuery()`
 - `AbstractSchema::getRawTableName()`
 - `AbstractSchema::normalizeRowKeyCase()`
 - `Quoter::unquoteParts()`
