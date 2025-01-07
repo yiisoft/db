@@ -27,6 +27,7 @@ final class ColumnDefinitionParser
      *
      * @psalm-return array{
      *     check?: string,
+     *     comment?: string,
      *     defaultValueRaw?: string,
      *     enumValues?: list<string>,
      *     extra?: string,
@@ -71,6 +72,7 @@ final class ColumnDefinitionParser
     /**
      * @psalm-return array{
      *     check?: string,
+     *     comment?: string,
      *     defaultValueRaw?: string,
      *     extra?: string,
      *     notNull?: bool,
@@ -90,6 +92,11 @@ final class ColumnDefinitionParser
 
         if (preg_match($defaultPattern, $extra, $matches) === 1) {
             $info['defaultValueRaw'] = $matches[1];
+            $extra = str_replace($matches[0], '', $extra);
+        }
+
+        if (preg_match("/\\s*\\bCOMMENT\\s+'((?:[^']|'')*)'/i", $extra, $matches) === 1) {
+            $info['comment'] = str_replace("''", "'", $matches[1]);
             $extra = str_replace($matches[0], '', $extra);
         }
 
