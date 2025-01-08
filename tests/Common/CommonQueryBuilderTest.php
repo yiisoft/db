@@ -9,7 +9,6 @@ use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
-use Yiisoft\Db\Tests\Provider\ColumnTypes;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 
 abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
@@ -17,19 +16,6 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
     public function getBuildColumnDefinitionProvider(): array
     {
         return QueryBuilderProvider::buildColumnDefinition();
-    }
-
-    public function testGetColumnType(): void
-    {
-        $db = $this->getConnection();
-        $qb = $db->getQueryBuilder();
-        $columnTypes = (new ColumnTypes($db))->getColumnTypes();
-
-        foreach ($columnTypes as [$column, $expected]) {
-            $this->assertEquals($expected, $qb->getColumnType($column));
-        }
-
-        $db->close();
     }
 
     #[DoesNotPerformAssertions]

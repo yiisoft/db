@@ -21,7 +21,6 @@ use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
-use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
@@ -1551,7 +1550,7 @@ class QueryBuilderProvider
     {
         return [
             [ColumnType::STRING],
-            [new Column('string(100)')],
+            [ColumnBuilder::string(100)],
         ];
     }
 

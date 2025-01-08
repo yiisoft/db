@@ -15,7 +15,6 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -25,8 +24,6 @@ use function count;
 use function get_resource_type;
 use function gettype;
 use function is_string;
-use function preg_match;
-use function preg_replace;
 use function stream_get_contents;
 
 /**
@@ -81,7 +78,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addCheck($table, $name, $expression);
     }
 
-    public function addColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): string
+    public function addColumn(string $table, string $column, ColumnSchemaInterface|string $type): string
     {
         return $this->ddlBuilder->addColumn($table, $column, $type);
     }
@@ -131,7 +128,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addUnique($table, $name, $columns);
     }
 
-    public function alterColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): string
+    public function alterColumn(string $table, string $column, ColumnSchemaInterface|string $type): string
     {
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
@@ -175,12 +172,8 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->build($query, $params);
     }
 
-    public function buildColumnDefinition(ColumnInterface|ColumnSchemaInterface|string $column): string
+    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string
     {
-        if ($column instanceof ColumnInterface) {
-            $column = $column->asString();
-        }
-
         if (is_string($column)) {
             $column = $this->schema->getColumnFactory()->fromDefinition($column);
         }
@@ -362,34 +355,6 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function getColumnDefinitionBuilder(): ColumnDefinitionBuilderInterface
     {
         return $this->columnDefinitionBuilder;
-    }
-
-    /** @deprecated Use {@see buildColumnDefinition()}. Will be removed in version 2.0. */
-    public function getColumnType(ColumnInterface|string $type): string
-    {
-        if ($type instanceof ColumnInterface) {
-            $type = $type->asString();
-        }
-
-        if (isset($this->typeMap[$type])) {
-            return $this->typeMap[$type];
-        }
-
-        if (preg_match('/^(\w+)\((.+?)\)(.*)$/', $type, $matches)) {
-            if (isset($this->typeMap[$matches[1]])) {
-                return preg_replace(
-                    '/\(.+\)/',
-                    '(' . $matches[2] . ')',
-                    $this->typeMap[$matches[1]]
-                ) . $matches[3];
-            }
-        } elseif (preg_match('/^(\w+)\s+/', $type, $matches)) {
-            if (isset($this->typeMap[$matches[1]])) {
-                return preg_replace('/^\w+/', $this->typeMap[$matches[1]], $type);
-            }
-        }
-
-        return $type;
     }
 
     public function getExpressionBuilder(ExpressionInterface $expression): object
