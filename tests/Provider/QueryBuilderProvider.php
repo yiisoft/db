@@ -1678,6 +1678,7 @@ class QueryBuilderProvider
             'notNull()' => ['varchar(255) NOT NULL', ColumnBuilder::string()->notNull()],
             'null()' => ['varchar(255) NULL', ColumnBuilder::string()->null()],
             'integer()->primaryKey()' => ['integer PRIMARY KEY', ColumnBuilder::integer()->primaryKey()],
+            'string()->primaryKey()' => ['varchar(255) PRIMARY KEY', ColumnBuilder::string()->primaryKey()],
             'size(10)' => ['varchar(10)', ColumnBuilder::string()->size(10)],
             'unique()' => ['varchar(255) UNIQUE', ColumnBuilder::string()->unique()],
             'unsigned()' => ['integer UNSIGNED', ColumnBuilder::integer()->unsigned()],
