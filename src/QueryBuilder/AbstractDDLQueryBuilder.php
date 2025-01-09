@@ -6,7 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -39,7 +39,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' CHECK (' . $this->quoter->quoteSql($expression) . ')';
     }
 
-    public function addColumn(string $table, string $column, ColumnSchemaInterface|string $type): string
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
@@ -133,7 +133,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' UNIQUE (' . implode(', ', $columns) . ')';
     }
 
-    public function alterColumn(string $table, string $column, ColumnSchemaInterface|string $type): string
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)

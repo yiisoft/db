@@ -9,10 +9,9 @@ use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 
 /**
- * This interface defines a set of methods that must be implemented by a class that represents the column schema of a
- * database table column.
+ * This interface defines a set of methods that must be implemented by a class that represents a database table column.
  */
-interface ColumnSchemaInterface
+interface ColumnInterface
 {
     /**
      * Whether to allow `null` values.

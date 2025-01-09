@@ -11,11 +11,12 @@ application when you upgrade the package from one version to another.
 
 ### Remove `ColumnInterface`
 
-Remove `ColumnInterface` and use `ColumnSchemaInterface` instead.
+- Remove `ColumnInterface` and use `ColumnSchemaInterface` instead;
+- Rename `ColumnSchemaInterface` to `ColumnInterface`.
 
-### `ColumnSchemaInterface` as column type
+### `ColumnInterface` as column type
 
-Add `ColumnSchemaInterface` support and change type of parameter `$type` to `ColumnSchemaInterface|string` 
+Add `ColumnInterface` support and change type of parameter `$type` to `ColumnInterface|string` 
 in the following methods: 
 - `addColumn()`
 - `alterColumn()`
@@ -67,7 +68,9 @@ $db->createCommand()->insertBatch('user', $values)->execute();
 
 ### `ColumnSchemaInterface` changes
 
-The interface and the abstract implementation `AbstractColumnSchema` were moved to `Yiisoft\Db\Schema\Column` namespace 
+Rename `ColumnSchemaInterface` to `ColumnInterface`.
+
+The interface and the abstract implementation `AbstractColumn` were moved to `Yiisoft\Db\Schema\Column` namespace 
 and the following changes were made:
 
 - `getName()` method can return `string` or `null`;
@@ -83,8 +86,8 @@ and the following changes were made:
 - `unique(bool $unique = true)` method is added;
 - `isUnique()` method is added;
 - `hasDefaultValue()` method is added;
-- all `AbstractColumnSchema` class properties except `$type` moved to constructor;
-- added `DEFAULT_TYPE` constant to `AbstractColumnSchema` class;
+- all `AbstractColumn` class properties except `$type` moved to constructor;
+- added `DEFAULT_TYPE` constant to `AbstractColumn` class;
 - added method chaining.
 
 ### New classes with constants
@@ -98,16 +101,16 @@ and the following changes were made:
 
 Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace according to the data type:
 
-- `BooleanColumnSchema` for columns with boolean type;
-- `BitColumnSchema` for columns with bit type;
-- `IntegerColumnSchema` for columns with integer type (tinyint, smallint, integer, bigint);
-- `BigIntColumnSchema` for columns with integer type with range outside `PHP_INT_MIN` and `PHP_INT_MAX`;
-- `DoubleColumnSchema` for columns with fractional number type (float, double, decimal, money);
-- `StringColumnSchema` for columns with string or datetime type (char, string, text, datetime, timestamp, date, time);
-- `BinaryColumnSchema` for columns with binary type;
-- `ArrayColumnSchema` for columns with array type;
-- `StructuredColumnSchema` for columns with structured type (composite type in PostgreSQL);
-- `JsonColumnSchema` for columns with json type.
+- `BooleanColumn` for columns with boolean type;
+- `BitColumn` for columns with bit type;
+- `IntegerColumn` for columns with integer type (tinyint, smallint, integer, bigint);
+- `BigIntColumn` for columns with integer type with range outside `PHP_INT_MIN` and `PHP_INT_MAX`;
+- `DoubleColumn` for columns with fractional number type (float, double, decimal, money);
+- `StringColumn` for columns with string or datetime type (char, string, text, datetime, timestamp, date, time);
+- `BinaryColumn` for columns with binary type;
+- `ArrayColumn` for columns with array type;
+- `StructuredColumn` for columns with structured type (composite type in PostgreSQL);
+- `JsonColumn` for columns with json type.
 
 ### New methods
 

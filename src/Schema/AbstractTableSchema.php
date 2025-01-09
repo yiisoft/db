@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function array_keys;
 
@@ -20,7 +20,7 @@ abstract class AbstractTableSchema implements TableSchemaInterface
     private string|null $sequenceName = null;
     /** @psalm-var string[] */
     private array $primaryKey = [];
-    /** @psalm-var array<string, ColumnSchemaInterface> */
+    /** @psalm-var array<string, ColumnInterface> */
     private array $columns = [];
     /** @psalm-var array<array-key, array> */
     protected array $foreignKeys = [];
@@ -28,7 +28,7 @@ abstract class AbstractTableSchema implements TableSchemaInterface
     private string|null $catalogName = null;
     private string|null $serverName = null;
 
-    public function getColumn(string $name): ColumnSchemaInterface|null
+    public function getColumn(string $name): ColumnInterface|null
     {
         return $this->columns[$name] ?? null;
     }
@@ -103,7 +103,7 @@ abstract class AbstractTableSchema implements TableSchemaInterface
         $this->primaryKey[] = $value;
     }
 
-    public function column(string $name, ColumnSchemaInterface $value): void
+    public function column(string $name, ColumnInterface $value): void
     {
         $this->columns[$name] = $value;
     }

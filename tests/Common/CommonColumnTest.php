@@ -8,9 +8,9 @@ use PHPUnit\Framework\TestCase;
 
 use function is_object;
 
-abstract class CommonColumnSchemaTest extends TestCase
+abstract class CommonColumnTest extends TestCase
 {
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider::predefinedTypes */
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::predefinedTypes */
     public function testPredefinedType(string $className, string $type, string $phpType)
     {
         $column = new $className();
@@ -19,7 +19,7 @@ abstract class CommonColumnSchemaTest extends TestCase
         $this->assertSame($phpType, $column->getPhpType());
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider::dbTypecastColumns */
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::dbTypecastColumns */
     public function testDbTypecastColumns(string $className, array $values)
     {
         $column = new $className();
@@ -33,7 +33,7 @@ abstract class CommonColumnSchemaTest extends TestCase
         }
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider::phpTypecastColumns */
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::phpTypecastColumns */
     public function testPhpTypecastColumns(string $className, array $values)
     {
         $column = new $className();

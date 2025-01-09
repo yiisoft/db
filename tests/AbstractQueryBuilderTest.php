@@ -24,7 +24,7 @@ use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -57,7 +57,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::columnTypes */
-    public function testAddColumn(ColumnSchemaInterface|string $type): void
+    public function testAddColumn(ColumnInterface|string $type): void
     {
         $db = $this->getConnection();
 
@@ -190,7 +190,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'alterColumn')]
-    public function testAlterColumn(string|ColumnSchemaInterface $type, string $expected): void
+    public function testAlterColumn(string|ColumnInterface $type, string $expected): void
     {
         $qb = $this->getConnection()->getQueryBuilder();
 
@@ -2364,7 +2364,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildColumnDefinition')]
-    public function testBuildColumnDefinition(string $expected, ColumnSchemaInterface|string $column): void
+    public function testBuildColumnDefinition(string $expected, ColumnInterface|string $column): void
     {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();

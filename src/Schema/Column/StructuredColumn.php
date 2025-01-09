@@ -18,13 +18,13 @@ use function is_string;
 /**
  * Represents the schema for a structured column.
  */
-class StructuredColumnSchema extends AbstractColumnSchema
+class StructuredColumn extends AbstractColumn
 {
     protected const DEFAULT_TYPE = ColumnType::STRUCTURED;
 
     /**
-     * @var ColumnSchemaInterface[] Columns metadata of the structured type.
-     * @psalm-var array<string, ColumnSchemaInterface>
+     * @var ColumnInterface[] Columns metadata of the structured type.
+     * @psalm-var array<string, ColumnInterface>
      */
     protected array $columns = [];
 
@@ -39,8 +39,8 @@ class StructuredColumnSchema extends AbstractColumnSchema
     /**
      * Set columns of the structured type.
      *
-     * @param ColumnSchemaInterface[] $columns The metadata of the structured type columns.
-     * @psalm-param array<string, ColumnSchemaInterface> $columns
+     * @param ColumnInterface[] $columns The metadata of the structured type columns.
+     * @psalm-param array<string, ColumnInterface> $columns
      */
     public function columns(array $columns): static
     {
@@ -51,7 +51,7 @@ class StructuredColumnSchema extends AbstractColumnSchema
     /**
      * Get the metadata of the structured type columns.
      *
-     * @return ColumnSchemaInterface[]
+     * @return ColumnInterface[]
      * @psalm-mutation-free
      */
     public function getColumns(): array

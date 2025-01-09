@@ -15,7 +15,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -78,7 +78,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addCheck($table, $name, $expression);
     }
 
-    public function addColumn(string $table, string $column, ColumnSchemaInterface|string $type): string
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return $this->ddlBuilder->addColumn($table, $column, $type);
     }
@@ -128,7 +128,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addUnique($table, $name, $columns);
     }
 
-    public function alterColumn(string $table, string $column, ColumnSchemaInterface|string $type): string
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
@@ -172,7 +172,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->build($query, $params);
     }
 
-    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string
+    public function buildColumnDefinition(ColumnInterface|string $column): string
     {
         if (is_string($column)) {
             $column = $this->schema->getColumnFactory()->fromDefinition($column);

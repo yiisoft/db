@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support\Stub;
 
-use Yiisoft\Db\Schema\Column\AbstractColumnSchema;
+use Yiisoft\Db\Schema\Column\AbstractColumn;
 
-final class ColumnSchema extends AbstractColumnSchema
+final class Column extends AbstractColumn
 {
     protected const DEFAULT_TYPE = '';
 
