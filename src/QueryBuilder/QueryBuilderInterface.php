@@ -10,7 +10,7 @@ use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 
 /**
@@ -41,12 +41,12 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
     /**
      * Builds column definition based on given column instance.
      *
-     * @param ColumnSchemaInterface|string $column the column instance or string column definition which should be
+     * @param ColumnInterface|string $column the column instance or string column definition which should be
      * converted into a database string representation.
      *
      * @return string the SQL column definition.
      */
-    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string;
+    public function buildColumnDefinition(ColumnInterface|string $column): string;
 
     /**
      * Returns the column definition builder for the current DBMS.

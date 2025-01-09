@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Schema\Column\StringColumnSchema;
+use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Tests\Provider\ColumnBuilderProvider;
 use Yiisoft\Db\Tests\Provider\ColumnFactoryProvider;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -106,7 +106,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
 
         $column = $columnFactory->fromDefinition('char(1) INVISIBLE', ['extra' => 'COLLATE utf8mb4']);
 
-        $this->assertInstanceOf(StringColumnSchema::class, $column);
+        $this->assertInstanceOf(StringColumn::class, $column);
         $this->assertSame('char', $column->getType());
         $this->assertSame(1, $column->getSize());
         $this->assertSame('INVISIBLE COLLATE utf8mb4', $column->getExtra());

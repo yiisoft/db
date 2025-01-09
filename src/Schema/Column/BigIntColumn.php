@@ -17,7 +17,7 @@ use const PHP_INT_MIN;
 /**
  * Represents the metadata for a bigint column.
  */
-class BigIntColumnSchema extends AbstractColumnSchema
+class BigIntColumn extends AbstractColumn
 {
     protected const DEFAULT_TYPE = ColumnType::BIGINT;
 

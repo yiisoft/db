@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests\Db\Command;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -42,7 +42,7 @@ final class CommandTest extends AbstractCommandTest
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::columnTypes */
-    public function testAddColumn(ColumnSchemaInterface|string $type): void
+    public function testAddColumn(ColumnInterface|string $type): void
     {
         $db = $this->getConnection();
 

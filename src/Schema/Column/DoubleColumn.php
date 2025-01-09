@@ -13,7 +13,7 @@ use function is_float;
 /**
  * Represents the metadata for a double column.
  */
-class DoubleColumnSchema extends AbstractColumnSchema
+class DoubleColumn extends AbstractColumn
 {
     protected const DEFAULT_TYPE = ColumnType::DOUBLE;
 

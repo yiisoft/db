@@ -18,7 +18,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * This interface represents a database command, such as a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement.
@@ -46,13 +46,13 @@ interface CommandInterface
      *
      * @param string $table The name of the table to add new column to.
      * @param string $column The name of the new column.
-     * @param ColumnSchemaInterface|string $type The column type.
+     * @param ColumnInterface|string $type The column type.
      * {@see QueryBuilder::buildColumnDefinition()} will be called to convert the given column type to the database one.
      * For example, `string` will be converted to `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function addColumn(string $table, string $column, ColumnSchemaInterface|string $type): static;
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): static;
 
     /**
      * Builds an SQL command for adding a comment to a column.
@@ -146,13 +146,13 @@ interface CommandInterface
      *
      * @param string $table The table whose column is to change.
      * @param string $column The name of the column to change.
-     * @param ColumnSchemaInterface|string $type The column type.
+     * @param ColumnInterface|string $type The column type.
      * {@see QueryBuilder::buildColumnDefinition()} will be called to convert the give column type to the physical one.
      * For example, `string` will be converted as `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function alterColumn(string $table, string $column, ColumnSchemaInterface|string $type): static;
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): static;
 
     /**
      * Creates a batch INSERT command.
@@ -319,14 +319,14 @@ interface CommandInterface
      * The columns in the new table should be specified as name-definition pairs (e.g. 'name' => 'string'), where name
      * is the name of the column which will be properly quoted by the method, and definition is the type of the column
      * which can contain a native database column type, {@see ColumnType abstract} or {@see PseudoType pseudo} type,
-     * or can be represented as instance of {@see ColumnSchemaInterface}.
+     * or can be represented as instance of {@see ColumnInterface}.
      *
      * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
      * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
      * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
      *
      * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
-     * {@see ColumnSchemaInterface}.
+     * {@see ColumnInterface}.
      *
      * ```php
      * $this->createTable(
@@ -348,8 +348,8 @@ interface CommandInterface
      * generated SQL.
      *
      * @param string $table The name of the table to create.
-     * @param (ColumnSchemaInterface|string)[] $columns The columns (name => definition) in the new table.
-     * The definition can be `string` or {@see ColumnSchemaInterface} instance.
+     * @param (ColumnInterface|string)[] $columns The columns (name => definition) in the new table.
+     * The definition can be `string` or {@see ColumnInterface} instance.
      * @param string|null $options More SQL fragments to append to the generated SQL.
      *
      * @throws Exception
@@ -358,7 +358,7 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      *
-     * @psalm-param array<string, ColumnSchemaInterface>|string[] $columns
+     * @psalm-param array<string, ColumnInterface>|string[] $columns
      */
     public function createTable(string $table, array $columns, string $options = null): static;
 

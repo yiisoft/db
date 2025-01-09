@@ -69,9 +69,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columns
      */
-    public function testColumnSchema(array $columns, string $tableName): void
+    public function testColumns(array $columns, string $tableName): void
     {
-        $this->columnSchema($columns, $tableName);
+        $this->assertTableColumns($columns, $tableName);
     }
 
     public function testCompositeFk(): void
@@ -790,7 +790,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertEquals($expected, $actual);
     }
 
-    protected function columnSchema(array $columns, string $table): void
+    protected function assertTableColumns(array $columns, string $table): void
     {
         $db = $this->getConnection(true);
 

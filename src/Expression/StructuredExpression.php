@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Expression;
 
 use Traversable;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function array_key_exists;
 use function array_keys;
@@ -38,10 +38,10 @@ final class StructuredExpression implements ExpressionInterface
      * @param string|null $type The structured database type name. Defaults to `null` which means the type is not
      * explicitly specified. Note that in the case where a type is not specified explicitly and DBMS cannot guess it
      * from the context, SQL error will be raised.
-     * @param ColumnSchemaInterface[] $columns The structured type columns that are used for value normalization and type
+     * @param ColumnInterface[] $columns The structured type columns that are used for value normalization and type
      * casting.
      *
-     * @psalm-param array<string, ColumnSchemaInterface> $columns
+     * @psalm-param array<string, ColumnInterface> $columns
      */
     public function __construct(
         private array|object $value,
@@ -66,7 +66,7 @@ final class StructuredExpression implements ExpressionInterface
     /**
      * The structured type columns that are used for value normalization and type casting.
      *
-     * @return ColumnSchemaInterface[]
+     * @return ColumnInterface[]
      */
     public function getColumns(): array
     {

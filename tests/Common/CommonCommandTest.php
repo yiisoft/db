@@ -2032,8 +2032,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ['id' => $inserted['id']]
         )->queryOne();
 
-        $columnSchema = $db->getTableSchema('{{%order}}')->getColumn('total');
-        $phpTypecastValue = $columnSchema->phpTypecast($result['total']);
+        $column = $db->getTableSchema('{{%order}}')->getColumn('total');
+        $phpTypecastValue = $column->phpTypecast($result['total']);
 
         $this->assertSame($decimalValue, $phpTypecastValue);
     }
