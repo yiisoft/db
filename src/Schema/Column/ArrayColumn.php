@@ -55,7 +55,7 @@ class ArrayColumn extends AbstractColumn
     }
 
     /**
-     * @return ColumnInterface the column of an array item.
+     * @return ColumnInterface The column of an array item.
      */
     public function getColumn(): ColumnInterface
     {
