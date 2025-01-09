@@ -288,8 +288,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
 
     /**
      * Returns the query results as a scalar value.
-     *
      * The value returned will be the first column in the first row of the query results.
+     * Do not use this method for `boolean` values as it returns `false` if the query result is empty.
      *
      * @throws Exception
      * @throws InvalidConfigException
