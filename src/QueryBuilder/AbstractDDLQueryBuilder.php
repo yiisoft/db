@@ -168,7 +168,6 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
 
         foreach ($columns as $name => $type) {
             if (is_string($name)) {
-                /** @var ColumnInterface $type */
                 $cols[] = "\t"
                     . $this->quoter->quoteColumnName($name)
                     . ' '
