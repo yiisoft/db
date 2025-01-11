@@ -9,6 +9,7 @@ use JsonException;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -296,12 +297,14 @@ interface CommandInterface
      * @param string $name The name of the index.
      * @param array|string $columns The column(s) to include in the index. If there are many columns,
      * separate them with commas.
-     * @param string|null $indexType The type of index-supported DBMS - for example: `UNIQUE`, `FULLTEXT`, `SPATIAL`,
-     * `BITMAP` or null as default.
-     * @param string|null $indexMethod The setting index organization method (with `USING`, not all DBMS).
+     * @param string|null $indexType The type of the index supported by DBMS {@see IndexType} - for example: `UNIQUE`,
+     * `FULLTEXT`, `SPATIAL`, `BITMAP` or null as default.
+     * @param string|null $indexMethod The index organization method (with `USING`, not all DBMS).
      *
      * @throws Exception
      * @throws InvalidArgumentException
+     *
+     * @psalm-param IndexType::*|null $indexType
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */

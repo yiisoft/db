@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use PDO;
+use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
@@ -190,7 +191,7 @@ class SchemaProvider
     {
         return [
             [
-                'indexType' => SchemaInterface::INDEX_UNIQUE,
+                'indexType' => IndexType::UNIQUE,
                 'indexMethod' => null,
                 'columnType' => null,
                 'isPrimary' => false,

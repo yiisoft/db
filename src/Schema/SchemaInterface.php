@@ -58,66 +58,88 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * Define the type of the index as `UNIQUE`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`, `MariaDB`, `MSSQL`, `Oracle`, `PostgreSQL`, `SQLite`.
+     *
+     * @deprecated Use {@see IndexType::UNIQUE} instead. Will be removed in 2.0.
      */
     public const INDEX_UNIQUE = 'UNIQUE';
     /**
      * Define the type of the index as `BTREE`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`, `PostgreSQL`.
+     *
+     * @deprecated Use {@see IndexType::BTREE} instead. Will be removed in 2.0.
      */
     public const INDEX_BTREE = 'BTREE';
     /**
      * Define the type of the index as `HASH`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`, `PostgreSQL`.
+     *
+     * @deprecated Use {@see IndexType::HASH} instead. Will be removed in 2.0.
      */
     public const INDEX_HASH = 'HASH';
     /**
      * Define the type of the index as `FULLTEXT`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`.
+     *
+     * @deprecated Use {@see IndexType::FULLTEXT} instead. Will be removed in 2.0.
      */
     public const INDEX_FULLTEXT = 'FULLTEXT';
     /**
      * Define the type of the index as `SPATIAL`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`.
+     *
+     * @deprecated Use {@see IndexType::SPATIAL} instead. Will be removed in 2.0.
      */
     public const INDEX_SPATIAL = 'SPATIAL';
     /**
      * Define the type of the index as `GIST`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `PostgreSQL`.
+     *
+     * @deprecated Use {@see IndexType::GIST} instead. Will be removed in 2.0.
      */
     public const INDEX_GIST = 'GIST';
     /**
      * Define the type of the index as `GIN`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `PostgreSQL`.
+     *
+     * @deprecated Use {@see IndexType::GIN} instead. Will be removed in 2.0.
      */
     public const INDEX_GIN = 'GIN';
     /**
      * Define the type of the index as `BRIN`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `PostgreSQL`.
+     *
+     * @deprecated Use {@see IndexType::BRIN} instead. Will be removed in 2.0.
      */
     public const INDEX_BRIN = 'BRIN';
     /**
      * Define the type of the index as `CLUSTERED`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MSSQL`.
+     *
+     * @deprecated Use {@see IndexType::CLUSTERED} instead. Will be removed in 2.0.
      */
     public const INDEX_CLUSTERED = 'CLUSTERED';
     /**
      * Define the type of the index as `NONCLUSTERED`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MSSQL`.
+     *
+     * @deprecated Use {@see IndexType::NONCLUSTERED} instead. Will be removed in 2.0.
      */
     public const INDEX_NONCLUSTERED = 'NONCLUSTERED';
     /**
      * Define the type of the index as `BITMAP`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `Oracle`.
+     *
+     * @deprecated Use {@see IndexType::BITMAP} instead. Will be removed in 2.0.
      */
     public const INDEX_BITMAP = 'BITMAP';
     /**
