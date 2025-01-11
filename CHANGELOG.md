@@ -53,6 +53,7 @@
 - Enh #905: Use `AbstractColumnDefinitionBuilder` to generate table column SQL representation (@Tigrov)
 - Enh #915: Remove `ColumnInterface` (@Tigrov)
 - Enh #917: Rename `ColumnSchemaInterface` to `ColumnInterface` (@Tigrov)
+- Enh #919: Replace `name()` with immutable `withName()` method in `ColumnInterface` interface (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
