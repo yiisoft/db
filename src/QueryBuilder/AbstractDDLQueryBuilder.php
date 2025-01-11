@@ -172,7 +172,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
                 $cols[] = "\t"
                     . $this->quoter->quoteColumnName($name)
                     . ' '
-                    . $this->queryBuilder->buildColumnDefinition($type instanceof ColumnInterface
+                    . $this->queryBuilder->buildColumnDefinition(
+                        $type instanceof ColumnInterface
                         ? $type->withName($name)
                         : $type
                     );
