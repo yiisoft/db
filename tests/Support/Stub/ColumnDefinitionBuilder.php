@@ -36,6 +36,23 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         'decimal',
     ];
 
+    protected function buildCheck(ColumnInterface $column): string
+    {
+        $check = $column->getCheck();
+
+        if (empty($check)) {
+            $columnName = $column->getName();
+
+            if (!empty($columnName) && $column->getType() === ColumnType::JSON) {
+                return ' CHECK (json_valid(' . $this->queryBuilder->quoter()->quoteColumnName($columnName) . '))';
+            }
+
+            return '';
+        }
+
+        return " CHECK ($check)";
+    }
+
     protected function getDbType(ColumnInterface $column): string
     {
         return $column->getDbType() ?? match ($column->getType()) {

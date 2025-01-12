@@ -198,7 +198,6 @@ interface ColumnInterface
     /**
      * @return string|null The name of the column.
      *
-     * @deprecated Will be removed in version 2.0.
      * @psalm-mutation-free
      */
     public function getName(): string|null;
@@ -318,19 +317,6 @@ interface ColumnInterface
      * @psalm-mutation-free
      */
     public function isUnsigned(): bool;
-
-    /**
-     * Sets a name of the column.
-     *
-     * ```php
-     * $columns = [
-     *     'id' => ColumnBuilder::primaryKey()->name('id'),
-     * ];
-     * ```
-     *
-     * @deprecated Will be removed in version 2.0.
-     */
-    public function name(string|null $name): static;
 
     /**
      * Whether the column is not nullable.
@@ -453,4 +439,15 @@ interface ColumnInterface
      * ```
      */
     public function unsigned(bool $unsigned = true): static;
+
+    /**
+     * Returns a new instance with the specified name of the column.
+     *
+     * ```php
+     * $columns = [
+     *     'id' => ColumnBuilder::primaryKey()->withName('id'),
+     * ];
+     * ```
+     */
+    public function withName(string|null $name): static;
 }

@@ -75,7 +75,7 @@ and the following changes were made:
 
 - `getName()` method can return `string` or `null`;
 - `getPhpType()` method must return `string` PHP type of the column which used for generating related model properties;
-- `name(string|null $name)` method is added;
+- `withName(string|null $name)` method is added;
 - `check(string|null $check)` method is added;
 - `getCheck()` method is added;
 - `reference(ForeignKeyConstraint|null $reference)` method is added;
