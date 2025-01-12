@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Command;
+namespace Yiisoft\Db\Constant;
 
 /**
  * Types of data.

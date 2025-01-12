@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 
 class CommandPDOProvider
 {
