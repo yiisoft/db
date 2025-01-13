@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\TestTrait;
 

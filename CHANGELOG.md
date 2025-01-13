@@ -54,6 +54,7 @@
 - Enh #915: Remove `ColumnInterface` (@Tigrov)
 - Enh #917: Rename `ColumnSchemaInterface` to `ColumnInterface` (@Tigrov)
 - Enh #919: Replace `name()` with immutable `withName()` method in `ColumnInterface` interface (@Tigrov)
+- Enh #921: Move `DataType` class to `Yiisoft\Db\Constant` namespace (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

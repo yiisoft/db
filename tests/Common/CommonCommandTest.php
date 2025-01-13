@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Tests\Common;
 
 use ReflectionException;
 use Throwable;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
