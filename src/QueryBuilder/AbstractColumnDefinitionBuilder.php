@@ -66,22 +66,6 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     }
 
     /**
-     * Check if the database column type allow scale specification.
-     */
-    protected function isAllowScale(string $dbType): bool
-    {
-        return in_array(strtolower($dbType), static::TYPES_WITH_SCALE, true);
-    }
-
-    /**
-     * Check if the database column type allow size specification.
-     */
-    protected function isAllowSize(string $dbType): bool
-    {
-        return in_array(strtolower($dbType), static::TYPES_WITH_SIZE, true);
-    }
-
-    /**
      * Builds the auto increment clause for the column.
      *
      * @return string A string containing the {@see AUTO_INCREMENT_KEYWORD} keyword.
@@ -320,5 +304,21 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     protected function getDefaultUuidExpression(): string
     {
         return '';
+    }
+
+    /**
+     * Check if the database column type allow scale specification.
+     */
+    protected function isAllowScale(string $dbType): bool
+    {
+        return in_array(strtolower($dbType), static::TYPES_WITH_SCALE, true);
+    }
+
+    /**
+     * Check if the database column type allow size specification.
+     */
+    protected function isAllowSize(string $dbType): bool
+    {
+        return in_array(strtolower($dbType), static::TYPES_WITH_SIZE, true);
     }
 }
