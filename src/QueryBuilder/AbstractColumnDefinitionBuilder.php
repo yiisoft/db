@@ -66,6 +66,22 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     }
 
     /**
+     * Check if the database column type allow scale specification.
+     */
+    protected function isAllowScale(string $dbType): bool
+    {
+        return in_array(strtolower($dbType), static::TYPES_WITH_SCALE, true);
+    }
+
+    /**
+     * Check if the database column type allow size specification.
+     */
+    protected function isAllowSize(string $dbType): bool
+    {
+        return in_array(strtolower($dbType), static::TYPES_WITH_SIZE, true);
+    }
+
+    /**
      * Builds the auto increment clause for the column.
      *
      * @return string A string containing the {@see AUTO_INCREMENT_KEYWORD} keyword.
@@ -254,10 +270,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     {
         $dbType = $this->getDbType($column);
 
-        if (empty($dbType)
-            || $dbType[-1] === ')'
-            || !in_array(strtolower($dbType), static::TYPES_WITH_SIZE, true)
-        ) {
+        if (empty($dbType) || $dbType[-1] === ')' || !$this->isAllowSize($dbType)) {
             return $dbType;
         }
 
@@ -269,7 +282,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
 
         $scale = $column->getScale();
 
-        if ($scale === null || !in_array(strtolower($dbType), static::TYPES_WITH_SCALE, true)) {
+        if ($scale === null || !$this->isAllowScale($dbType)) {
             return "$dbType($size)";
         }
 

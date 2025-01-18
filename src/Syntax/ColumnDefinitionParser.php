@@ -16,7 +16,7 @@ use function trim;
 /**
  * Parses column definition string. For example, `string(255)` or `int unsigned`.
  */
-final class ColumnDefinitionParser
+class ColumnDefinitionParser
 {
     /**
      * Parses column definition string.
@@ -62,7 +62,7 @@ final class ColumnDefinitionParser
     /**
      * @psalm-return array{enumValues: list<string>}
      */
-    private function enumInfo(string $values): array
+    protected function enumInfo(string $values): array
     {
         preg_match_all("/'([^']*)'/", $values, $matches);
 
@@ -80,7 +80,7 @@ final class ColumnDefinitionParser
      *     unsigned?: bool
      * }
      */
-    private function extraInfo(string $extra): array
+    protected function extraInfo(string $extra): array
     {
         if (empty($extra)) {
             return [];
@@ -137,7 +137,7 @@ final class ColumnDefinitionParser
     /**
      * @psalm-return array{size: int, scale?: int}
      */
-    private function sizeInfo(string $size): array
+    protected function sizeInfo(string $size): array
     {
         $values = explode(',', $size);
 
