@@ -254,7 +254,10 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     {
         $dbType = $this->getDbType($column);
 
-        if (empty($dbType) || $dbType[-1] === ')' || !$this->isAllowSize($dbType)) {
+        if (empty($dbType)
+            || $dbType[-1] === ')'
+            || !in_array(strtolower($dbType), static::TYPES_WITH_SIZE, true)
+        ) {
             return $dbType;
         }
 
@@ -266,7 +269,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
 
         $scale = $column->getScale();
 
-        if ($scale === null || !$this->isAllowScale($dbType)) {
+        if ($scale === null || !in_array(strtolower($dbType), static::TYPES_WITH_SCALE, true)) {
             return "$dbType($size)";
         }
 
@@ -304,21 +307,5 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     protected function getDefaultUuidExpression(): string
     {
         return '';
-    }
-
-    /**
-     * Check if the database column type allow scale specification.
-     */
-    protected function isAllowScale(string $dbType): bool
-    {
-        return in_array(strtolower($dbType), static::TYPES_WITH_SCALE, true);
-    }
-
-    /**
-     * Check if the database column type allow size specification.
-     */
-    protected function isAllowSize(string $dbType): bool
-    {
-        return in_array(strtolower($dbType), static::TYPES_WITH_SIZE, true);
     }
 }
