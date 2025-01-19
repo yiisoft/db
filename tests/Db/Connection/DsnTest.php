@@ -9,70 +9,38 @@ use Yiisoft\Db\Tests\Support\Stub\Dsn;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class DsnTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $dsn = new Dsn('mysql', 'localhost', 'yiitest');
-
-        $this->assertSame('mysql', $dsn->getDriver());
-        $this->assertSame('localhost', $dsn->getHost());
-        $this->assertSame('yiitest', $dsn->getDatabaseName());
-        $this->assertNull($dsn->getPort());
-        $this->assertSame([], $dsn->getOptions());
-    }
-
-    public function testGetDatabaseName(): void
-    {
         $dsn = new Dsn('mysql', 'localhost', 'yiitest', '3306', ['charset' => 'utf8']);
 
-        $this->assertSame('yiitest', $dsn->getDatabaseName());
+        $this->assertSame('mysql', $dsn->driver);
+        $this->assertSame('localhost', $dsn->host);
+        $this->assertSame('yiitest', $dsn->databaseName);
+        $this->assertSame('3306', $dsn->port);
+        $this->assertSame(['charset' => 'utf8'], $dsn->options);
+        $this->assertSame('mysql:host=localhost;dbname=yiitest;port=3306;charset=utf8', (string) $dsn);
     }
 
-    public function testGetDriver(): void
+    public function testConstructDefaults(): void
     {
-        $dsn = new Dsn('mysql', 'localhost', 'yiitest', '3306', ['charset' => 'utf8']);
+        $dsn = new Dsn('mysql');
 
-        $this->assertSame('mysql', $dsn->getDriver());
-    }
-
-    public function testGetDsn(): void
-    {
-        $dsn = new Dsn('mysql', 'localhost', 'yiitest', '3306', ['charset' => 'utf8']);
-
-        $this->assertSame('mysql:host=localhost;dbname=yiitest;port=3306;charset=utf8', $dsn->asString());
-        $this->assertSame('mysql:host=localhost;dbname=yiitest;port=3306;charset=utf8', $dsn->__toString());
+        $this->assertSame('mysql', $dsn->driver);
+        $this->assertSame('127.0.0.1', $dsn->host);
+        $this->assertSame('', $dsn->databaseName);
+        $this->assertSame('', $dsn->port);
+        $this->assertSame([], $dsn->options);
+        $this->assertSame('mysql:host=127.0.0.1', (string) $dsn);
     }
 
     public function testGetDsnWithoutDatabaseName(): void
     {
         $dsn = new Dsn('mysql', 'localhost', '', '3306', ['charset' => 'utf8']);
 
-        $this->assertSame('mysql:host=localhost;port=3306;charset=utf8', $dsn->asString());
-        $this->assertSame('mysql:host=localhost;port=3306;charset=utf8', $dsn->__toString());
-        $this->assertEmpty($dsn->getDatabaseName());
-
-        $dsn = new Dsn('mysql', 'localhost', null, '3306', ['charset' => 'utf8']);
-
-        $this->assertSame('mysql:host=localhost;port=3306;charset=utf8', $dsn->asString());
-        $this->assertSame('mysql:host=localhost;port=3306;charset=utf8', $dsn->__toString());
-        $this->assertNull($dsn->getDatabaseName());
-    }
-
-    public function testGetHost(): void
-    {
-        $dsn = new Dsn('mysql', 'localhost', 'yiitest', '3306', ['charset' => 'utf8']);
-
-        $this->assertSame('localhost', $dsn->getHost());
-    }
-
-    public function testGetPort(): void
-    {
-        $dsn = new Dsn('mysql', 'localhost', 'yiitest', '3306', ['charset' => 'utf8']);
-
-        $this->assertSame('3306', $dsn->getPort());
+        $this->assertSame('', $dsn->databaseName);
+        $this->assertSame('mysql:host=localhost;port=3306;charset=utf8', (string) $dsn);
     }
 }
