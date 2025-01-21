@@ -205,9 +205,10 @@ interface DDLQueryBuilderInterface
      * @param string $name The name of the index.
      * @param array|string $columns The column(s) to include in the index.
      * If there are many columns, separate them with commas or use an array to represent them.
-     * @param string|null $indexType The type of the index supported by DBMS {@see IndexType} - for example, `UNIQUE`,
-     * `FULLTEXT`, `SPATIAL`, `BITMAP` or `null` as default.
-     * @param string|null $indexMethod The index organization method (with `USING`, not all DBMS).
+     * @param string|null $indexType The index type, `UNIQUE` or a DBMS specific index type or `null` by default.
+     * See {@see IndexType} or driver specific `IndexType` class.
+     * @param string|null $indexMethod The index organization method, if supported by DBMS.
+     * See driver specific `IndexMethod` class.
      *
      * @throws Exception
      * @throws InvalidArgumentException
