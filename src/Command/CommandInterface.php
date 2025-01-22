@@ -9,6 +9,7 @@ use JsonException;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\Exception;
@@ -683,8 +684,8 @@ interface CommandInterface
 
     /**
      * Execute the SQL statement and returns the value of the first column in the first row of data.
-     *
      * This method is best used when you need only a single value.
+     * Do not use this method for `boolean` values as it returns `false` if there is no value.
      *
      * @throws Exception
      * @throws Throwable If execution failed.

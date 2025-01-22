@@ -164,3 +164,4 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Allow `QueryInterface::one()` to return an object;
 - Allow `QueryInterface::all()` to return array of objects;
 - Change `Quoter::quoteValue()` parameter type and return type from `mixed` to `string`;
+- Move `DataType` class to `Yiisoft\Db\Constant` namespace;
