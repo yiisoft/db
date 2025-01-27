@@ -72,12 +72,15 @@ use function trim;
  * Query internally uses the {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} class to generate the SQL statement.
  *
  * @psalm-import-type SelectValue from QueryPartsInterface
+ * @psalm-import-type CallbackType from QueryInterface
  */
 class Query implements QueryInterface
 {
     /** @psalm-var SelectValue $select */
     protected array $select = [];
     protected string|null $selectOption = null;
+    /** @psalm-var CallbackType|null $callback */
+    protected Closure|null $callback = null;
     protected bool|null $distinct = null;
     protected array $from = [];
     protected array $groupBy = [];
@@ -230,7 +233,26 @@ class Query implements QueryInterface
             return [];
         }
 
-        return DbArrayHelper::populate($this->createCommand()->queryAll(), $this->indexBy);
+        $rows = $this->createCommand()->queryAll();
+
+        if (empty($rows)) {
+            return [];
+        }
+
+        if ($this->indexBy !== null) {
+            if (is_string($this->indexBy)) {
+                $indexes = array_column($rows, $this->indexBy);
+            } else {
+                $indexes = array_map($this->indexBy, $rows);
+            }
+        }
+
+        if ($this->callback !== null) {
+            $rows = array_map($this->callback, $rows);
+        }
+
+        /** @psalm-suppress MixedArgument */
+        return isset($indexes) ? array_combine($indexes, $rows) : $rows;
     }
 
     public function average(string $sql): int|float|null|string
@@ -248,6 +270,12 @@ class Query implements QueryInterface
             ->batchSize($batchSize)
             ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::populate($rows, $indexBy))
         ;
+    }
+
+    public function callback(Closure|null $callback): static
+    {
+        $this->callback = $callback;
+        return $this;
     }
 
     public function column(): array
@@ -382,6 +410,11 @@ class Query implements QueryInterface
         $this->from = $tables;
 
         return $this;
+    }
+
+    public function getCallback(): Closure|null
+    {
+        return $this->callback;
     }
 
     public function getDistinct(): bool|null
@@ -533,10 +566,17 @@ class Query implements QueryInterface
 
     public function one(): array|object|null
     {
-        return match ($this->emulateExecution) {
-            true => null,
-            false => $this->createCommand()->queryOne(),
-        };
+        if ($this->emulateExecution) {
+            return null;
+        }
+
+        $row = $this->createCommand()->queryOne();
+
+        if ($this->callback === null || $row === null) {
+            return $row;
+        }
+
+        return ($this->callback)($row);
     }
 
     public function orderBy(array|string|ExpressionInterface $columns): static

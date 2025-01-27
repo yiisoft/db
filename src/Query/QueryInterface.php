@@ -29,6 +29,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  *
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface
+ * @psalm-type CallbackType = Closure(array):(array|object)
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
@@ -80,6 +81,13 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * traversed to retrieve the data in batches.
      */
     public function batch(int $batchSize = 100): BatchQueryResultInterface;
+
+    /**
+     * Sets callback, which should be called on each row of the query result.
+     *
+     * @psalm-param CallbackType|null $callback
+     */
+    public function callback(Closure|null $callback): static;
 
     /**
      * Executes the query and returns the first column of the result.
@@ -147,6 +155,13 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @return bool whether the query result has any row of data.
      */
     public function exists(): bool;
+
+    /**
+     * Returns the callback to be called on each row of the query result. `null` will be returned if no callback is set.
+     *
+     * @psalm-return CallbackType|null
+     */
+    public function getCallback(): Closure|null;
 
     /**
      * @return bool|null The "distinct" value.
