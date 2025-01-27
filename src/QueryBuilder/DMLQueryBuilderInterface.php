@@ -18,6 +18,7 @@ use Yiisoft\Db\Query\QueryInterface;
  * @link https://en.wikipedia.org/wiki/Data_manipulation_language
  *
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-type BatchValues = iterable<iterable<array-key, mixed>>
  */
 interface DMLQueryBuilderInterface
 {
@@ -27,16 +28,26 @@ interface DMLQueryBuilderInterface
      * For example,
      *
      * ```php
-     * $sql = $queryBuilder->batchInsert('user', ['name', 'age'], [
+     * $sql = $queryBuilder->insertBatch('user', [
      *     ['Tom', 30],
      *     ['Jane', 20],
      *     ['Linda', 25],
+     * ], ['name', 'age']);
+     * ```
+     *
+     * or as associative arrays where the keys are column names
+     *
+     * ```php
+     * $queryBuilder->insertBatch('user', [
+     *     ['name' => 'Tom', 'age' => 30],
+     *     ['name' => 'Jane', 'age' => 20],
+     *     ['name' => 'Linda', 'age' => 25],
      * ]);
      * ```
      *
      * @param string $table The table to insert new rows into.
-     * @param string[] $columns The column names of the table.
      * @param iterable $rows The rows to batch-insert into the table.
+     * @param string[] $columns The column names of the table.
      * @param array $params The binding parameters. This parameter exists.
      *
      * @throws Exception
@@ -44,15 +55,14 @@ interface DMLQueryBuilderInterface
      *
      * @return string The batch INSERT SQL statement.
      *
-     * @psalm-param string[] $columns
-     * @psalm-param iterable<array-key, array<array-key, mixed>> $rows
+     * @psalm-param BatchValues $rows
      * @psalm-param ParamsType $params
      *
      * Note:
      * - That the values in each row must match the corresponding column names.
      * - The method will escape the column names, and quote the values to insert.
      */
-    public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string;
+    public function insertBatch(string $table, iterable $rows, array $columns = [], array &$params = []): string;
 
     /**
      * Creates a `DELETE` SQL statement.

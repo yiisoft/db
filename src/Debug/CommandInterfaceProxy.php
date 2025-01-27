@@ -9,7 +9,7 @@ use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 final class CommandInterfaceProxy implements CommandInterface
 {
@@ -20,7 +20,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function addCheck(string $table, string $name, string $expression): static
     {
@@ -28,7 +28,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function addColumn(string $table, string $column, ColumnInterface|string $type): static
     {
@@ -36,7 +36,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function addCommentOnColumn(string $table, string $column, string $comment): static
     {
@@ -44,7 +44,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function addCommentOnTable(string $table, string $comment): static
     {
@@ -52,7 +52,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function addDefaultValue(string $table, string $name, string $column, mixed $value): static
     {
@@ -60,7 +60,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function addForeignKey(
         string $table,
@@ -75,7 +75,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function addPrimaryKey(string $table, string $name, array|string $columns): static
     {
@@ -83,7 +83,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function addUnique(string $table, string $name, array|string $columns): static
     {
@@ -91,7 +91,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function alterColumn(string $table, string $column, ColumnInterface|string $type): static
     {
@@ -99,15 +99,15 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
-    public function batchInsert(string $table, array $columns, iterable $rows): static
+    public function insertBatch(string $table, iterable $rows, array $columns = []): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function bindParam(
         int|string $name,
@@ -120,7 +120,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function bindValue(int|string $name, mixed $value, int $dataType = null): static
     {
@@ -128,7 +128,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function bindValues(array $values): static
     {
@@ -141,7 +141,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function checkIntegrity(string $schema, string $table, bool $check = true): static
     {
@@ -149,7 +149,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function createIndex(
         string $table,
@@ -162,7 +162,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function createTable(string $table, array $columns, string $options = null): static
     {
@@ -170,7 +170,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function createView(string $viewName, QueryInterface|string $subQuery): static
     {
@@ -178,7 +178,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function delete(string $table, array|string $condition = '', array $params = []): static
     {
@@ -186,7 +186,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function dropCheck(string $table, string $name): static
     {
@@ -194,7 +194,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function dropColumn(string $table, string $column): static
     {
@@ -202,7 +202,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function dropCommentFromColumn(string $table, string $column): static
     {
@@ -210,7 +210,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function dropCommentFromTable(string $table): static
     {
@@ -218,7 +218,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function dropDefaultValue(string $table, string $name): static
     {
@@ -226,7 +226,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function dropForeignKey(string $table, string $name): static
     {
@@ -234,7 +234,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function dropIndex(string $table, string $name): static
     {
@@ -242,7 +242,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function dropPrimaryKey(string $table, string $name): static
     {
@@ -250,7 +250,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function dropTable(string $table): static
     {
@@ -258,7 +258,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function dropUnique(string $table, string $name): static
     {
@@ -266,7 +266,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function dropView(string $viewName): static
     {
@@ -308,7 +308,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function insert(string $table, QueryInterface|array $columns): static
     {
@@ -425,7 +425,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function renameColumn(string $table, string $oldName, string $newName): static
     {
@@ -433,7 +433,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function renameTable(string $table, string $newName): static
     {
@@ -441,7 +441,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function resetSequence(string $table, int|string $value = null): static
     {
@@ -449,7 +449,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function setRawSql(string $sql): static
     {
@@ -457,7 +457,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function setRetryHandler(?Closure $handler): static
     {
@@ -465,7 +465,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function setSql(string $sql): static
     {
@@ -473,7 +473,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function truncateTable(string $table): static
     {
@@ -481,7 +481,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function update(string $table, array $columns, array|string $condition = '', array $params = []): static
     {
@@ -489,7 +489,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress  MixedArgument
+     * @psalm-suppress MixedArgument
      */
     public function upsert(
         string $table,

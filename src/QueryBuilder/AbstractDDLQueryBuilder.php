@@ -6,7 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -46,7 +46,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' ADD '
             . $this->quoter->quoteColumnName($column)
             . ' '
-            . $this->queryBuilder->getColumnType($type);
+            . $this->queryBuilder->buildColumnDefinition($type);
     }
 
     public function addCommentOnColumn(string $table, string $column, string $comment): string
@@ -56,7 +56,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . '.'
             . $this->quoter->quoteColumnName($column)
             . ' IS '
-            . (string) $this->quoter->quoteValue($comment);
+            . $this->quoter->quoteValue($comment);
     }
 
     public function addCommentOnTable(string $table, string $comment): string
@@ -64,7 +64,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         return 'COMMENT ON TABLE '
             . $this->quoter->quoteTableName($table)
             . ' IS '
-            . (string) $this->quoter->quoteValue($comment);
+            . $this->quoter->quoteValue($comment);
     }
 
     public function addDefaultValue(string $table, string $name, string $column, mixed $value): string
@@ -133,18 +133,15 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' UNIQUE (' . implode(', ', $columns) . ')';
     }
 
-    public function alterColumn(
-        string $table,
-        string $column,
-        ColumnInterface|string $type
-    ): string {
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): string
+    {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
             . ' CHANGE '
             . $this->quoter->quoteColumnName($column)
             . ' '
             . $this->quoter->quoteColumnName($column) . ' '
-            . $this->queryBuilder->getColumnType($type);
+            . $this->queryBuilder->buildColumnDefinition($type);
     }
 
     public function checkIntegrity(string $schema = '', string $table = '', bool $check = true): string
@@ -174,9 +171,13 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
                 $cols[] = "\t"
                     . $this->quoter->quoteColumnName($name)
                     . ' '
-                    . $this->queryBuilder->getColumnType($type);
+                    . $this->queryBuilder->buildColumnDefinition(
+                        $type instanceof ColumnInterface
+                        ? $type->withName($name)
+                        : $type
+                    );
             } else {
-                /** @psalm-var string $type */
+                /** @var string $type */
                 $cols[] = "\t" . $type;
             }
         }
@@ -192,10 +193,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         if ($subQuery instanceof QueryInterface) {
             [$rawQuery, $params] = $this->queryBuilder->build($subQuery);
 
-            /** @psalm-var mixed $value */
             foreach ($params as $key => $value) {
-                /** @psalm-var mixed */
-                $params[$key] = $this->quoter->quoteValue($value);
+                $params[$key] = $this->queryBuilder->prepareValue($value);
             }
 
             $subQuery = strtr($rawQuery, $params);

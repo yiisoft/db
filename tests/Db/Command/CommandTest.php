@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Command;
 
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -48,7 +50,7 @@ final class CommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $sql = $command->addColumn('table', 'column', $type)->getSql();
 
-        $columnType = $db->getQueryBuilder()->getColumnType($type);
+        $columnType = $db->getQueryBuilder()->buildColumnDefinition($type);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -163,7 +165,7 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $sql = $command->alterColumn('table', 'column', SchemaInterface::TYPE_INTEGER)->getSql();
+        $sql = $command->alterColumn('table', 'column', ColumnType::INTEGER)->getSql();
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -187,7 +189,7 @@ final class CommandTest extends AbstractCommandTest
             'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
         );
 
-        $command->batchInsert('table', ['column1', 'column2'], [['value1', 'value2'], ['value3', 'value4']]);
+        $command->insertBatch('table', [['value1', 'value2'], ['value3', 'value4']], ['column1', 'column2']);
     }
 
     /**
@@ -232,25 +234,27 @@ final class CommandTest extends AbstractCommandTest
 
         $expected = <<<SQL
         CREATE TABLE [test_table] (
-        \t[id] pk,
-        \t[name] string(255) NOT NULL,
-        \t[email] string(255) NOT NULL,
-        \t[address] string(255) NOT NULL,
+        \t[id] integer PRIMARY KEY AUTOINCREMENT,
+        \t[name] varchar(255) NOT NULL,
+        \t[email] varchar(255) NOT NULL,
+        \t[address] varchar(255) NOT NULL,
         \t[status] integer NOT NULL,
         \t[profile_id] integer NOT NULL,
+        \t[data] json CHECK (json_valid([data])),
         \t[created_at] timestamp NOT NULL,
         \t[updated_at] timestamp NOT NULL
         ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
         SQL;
         $columns = [
-            'id' => SchemaInterface::TYPE_PK,
-            'name' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
-            'email' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
-            'address' => SchemaInterface::TYPE_STRING . '(255) NOT NULL',
-            'status' => SchemaInterface::TYPE_INTEGER . ' NOT NULL',
-            'profile_id' => SchemaInterface::TYPE_INTEGER . ' NOT NULL',
-            'created_at' => SchemaInterface::TYPE_TIMESTAMP . ' NOT NULL',
-            'updated_at' => SchemaInterface::TYPE_TIMESTAMP . ' NOT NULL',
+            'id' => PseudoType::PK,
+            'name' => ColumnType::STRING . '(255) NOT NULL',
+            'email' => ColumnType::STRING . '(255) NOT NULL',
+            'address' => ColumnType::STRING . '(255) NOT NULL',
+            'status' => ColumnType::INTEGER . ' NOT NULL',
+            'profile_id' => ColumnType::INTEGER . ' NOT NULL',
+            'data' => ColumnBuilder::json(),
+            'created_at' => ColumnType::TIMESTAMP . ' NOT NULL',
+            'updated_at' => ColumnType::TIMESTAMP . ' NOT NULL',
         ];
         $options = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         $sql = $command->createTable('test_table', $columns, $options)->getSql();

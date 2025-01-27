@@ -9,7 +9,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * Defines methods for building SQL statements for DDL (data definition language).
@@ -36,11 +36,16 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table to add the new column will to.
      * @param string $column The name of the new column.
-     * @param ColumnInterface|string $type The column type.
-     * {@see getColumnType()} Method will be invoked to convert an abstract column type (if any) into the physical one.
-     * Anything that isn't recognized as an abstract type will be kept in the generated SQL.
-     * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become
-     * 'varchar(255) not null'.
+     * @param ColumnInterface|string $type The column type which can contain a native database column type,
+     * {@see ColumnType abstract} or {@see PseudoType pseudo} type, or can be represented as instance of
+     * {@see ColumnInterface}.
+     *
+     * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
+     * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
+     * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
+     *
+     * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * {@see ColumnInterface}.
      *
      * @return string The SQL statement for adding a new column.
      *
@@ -159,11 +164,16 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table whose column is to change.
      * @param string $column The name of the column to change.
-     * @param ColumnInterface|string $type The new column type.
-     * {@see getColumnType()} Method will be invoked to convert an abstract column type (if any) into the physical one.
-     * Anything that isn't recognized as an abstract type will be kept in the generated SQL.
-     * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become
-     * 'varchar(255) not null'.
+     * @param ColumnInterface|string $type The column type which can contain a native database column type,
+     * {@see ColumnType abstract} or {@see PseudoType pseudo} type, or can be represented as instance of
+     * {@see ColumnInterface}.
+     *
+     * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
+     * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
+     * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
+     *
+     * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * {@see ColumnInterface}.
      *
      * @return string The SQL statement for changing the definition of a column.
      *
@@ -216,20 +226,36 @@ interface DDLQueryBuilderInterface
     /**
      * Builds an SQL statement for creating a new DB table.
      *
-     * The columns in the new table should be specified as name-definition pairs ('name' => 'string'), where name
-     * stands for a column name which will be quoted by the method, and definition stands for the column type which can
-     * contain an abstract DB type.
+     * The columns in the new table should be specified as name-definition pairs (e.g. 'name' => 'string'), where name
+     * is the name of the column which will be properly quoted by the method, and definition is the type of the column
+     * which can contain a native database column type, {@see ColumnType abstract} or {@see PseudoType pseudo} type,
+     * or can be represented as instance of {@see ColumnInterface}.
      *
-     * The {@see getColumnType()} method will be invoked to convert any abstract type into a physical one.
+     * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
+     * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
+     * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
      *
-     * If a column is specified with definition only ('PRIMARY KEY (name, type)'), it will be directly inserted
-     * into the generated SQL.
-     *
-     * For example,
+     * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * {@see ColumnInterface}.
      *
      * ```php
-     * $sql = $queryBuilder->createTable('user', ['id' => 'pk', 'name' => 'string', 'age' => 'integer']);
+     * $this->createTable(
+     *     'example_table',
+     *     [
+     *         'id' => ColumnBuilder::primaryKey(),
+     *         'name' => ColumnBuilder::string(64)->notNull(),
+     *         'type' => ColumnBuilder::integer()->notNull()->defaultValue(10),
+     *         'description' => ColumnBuilder::text(),
+     *         'rule_name' => ColumnBuilder::string(64),
+     *         'data' => ColumnBuilder::text(),
+     *         'created_at' => ColumnBuilder::datetime()->notNull(),
+     *         'updated_at' => ColumnBuilder::datetime(),
+     *     ],
+     * );
      * ```
+     *
+     * If a column is specified with definition only (e.g. 'PRIMARY KEY (name, type)'), it will be directly put into the
+     * generated SQL.
      *
      * @param string $table The name of the table to create.
      * @param array $columns The columns (name => definition) in the new table.

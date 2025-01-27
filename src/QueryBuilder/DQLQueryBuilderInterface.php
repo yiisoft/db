@@ -301,8 +301,6 @@ interface DQLQueryBuilderInterface
      * @throws InvalidArgumentException
      *
      * @return object Instance of {@see ExpressionBuilderInterface} for the given expression.
-     *
-     * @psalm-suppress InvalidStringClass
      */
     public function getExpressionBuilder(ExpressionInterface $expression): object;
 

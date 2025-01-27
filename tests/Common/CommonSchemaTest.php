@@ -8,6 +8,7 @@ use JsonException;
 use PDO;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\DefaultValueConstraint;
@@ -54,7 +55,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             $command->dropTable('testCommentTable')->execute();
         }
 
-        $command->createTable('testCommentTable', ['bar' => SchemaInterface::TYPE_INTEGER,])->execute();
+        $command->createTable('testCommentTable', ['bar' => ColumnType::INTEGER,])->execute();
         $command->addCommentOnColumn('testCommentTable', 'bar', 'Test comment for column.')->execute();
 
         $this->assertSame(
@@ -68,9 +69,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columns
      */
-    public function testColumnSchema(array $columns, string $tableName): void
+    public function testColumns(array $columns, string $tableName): void
     {
-        $this->columnSchema($columns, $tableName);
+        $this->assertTableColumns($columns, $tableName);
     }
 
     public function testCompositeFk(): void
@@ -353,39 +354,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         foreach ($tableUniques as $uniques) {
             $this->assertIsArray($uniques);
             $this->assertContainsOnlyInstancesOf(Constraint::class, $uniques);
-        }
-
-        $db->close();
-    }
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columnsTypeChar
-     */
-    public function testGetStringFieldsSize(
-        string $columnName,
-        string $columnType,
-        int|null $columnSize,
-        string $columnDbType
-    ): void {
-        $db = $this->getConnection(true);
-
-        $schema = $db->getSchema();
-        $tableSchema = $schema->getTableSchema('type');
-
-        $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema);
-
-        $columns = $tableSchema->getColumns();
-
-        foreach ($columns as $name => $column) {
-            $type = $column->getType();
-            $size = $column->getSize();
-            $dbType = $column->getDbType();
-
-            if ($name === $columnName) {
-                $this->assertSame($columnType, $type);
-                $this->assertSame($columnSize, $size);
-                $this->assertSame($columnDbType, $dbType);
-            }
         }
 
         $db->close();
@@ -822,7 +790,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertEquals($expected, $actual);
     }
 
-    protected function columnSchema(array $columns, string $table): void
+    protected function assertTableColumns(array $columns, string $table): void
     {
         $db = $this->getConnection(true);
 
@@ -857,9 +825,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             );
             $this->assertSame($expected['type'], $column->getType(), "type of column $name does not match.");
             $this->assertSame(
-                $expected['allowNull'],
-                $column->isAllowNull(),
-                "allowNull of column $name does not match."
+                $expected['notNull'],
+                $column->isNotNull(),
+                "notNull of column $name does not match."
             );
             $this->assertSame(
                 $expected['autoIncrement'],
@@ -872,11 +840,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 "enumValues of column $name does not match."
             );
             $this->assertSame($expected['size'], $column->getSize(), "size of column $name does not match.");
-            $this->assertSame(
-                $expected['precision'],
-                $column->getPrecision(),
-                "precision of column $name does not match."
-            );
 
             $this->assertSame($expected['scale'], $column->getScale(), "scale of column $name does not match.");
 
@@ -898,13 +861,47 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 );
             }
 
-            /* Pgsql only */
+            if (isset($expected['unique'])) {
+                $this->assertSame(
+                    $expected['unique'],
+                    $column->isUnique(),
+                    "unique of column $name does not match"
+                );
+            }
+
+            if (isset($expected['unsigned'])) {
+                $this->assertSame(
+                    $expected['unsigned'],
+                    $column->isUnsigned(),
+                    "unsigned of column $name does not match"
+                );
+            }
+
+            /* For array types */
             if (isset($expected['dimension'])) {
                 /** @psalm-suppress UndefinedMethod */
                 $this->assertSame(
                     $expected['dimension'],
                     $column->getDimension(),
                     "dimension of column $name does not match"
+                );
+            }
+
+            if (isset($expected['column'])) {
+                /** @psalm-suppress UndefinedMethod */
+                $arrayColumn = $column->getColumn();
+
+                $this->assertSame(
+                    $expected['column'],
+                    [
+                        'type' => $arrayColumn->getType(),
+                        'dbType' => $arrayColumn->getDbType(),
+                        'phpType' => $arrayColumn->getPhpType(),
+                        'enumValues' => $arrayColumn->getEnumValues(),
+                        'size' => $arrayColumn->getSize(),
+                        'scale' => $arrayColumn->getScale(),
+                    ],
+                    "array column of column $name does not match"
                 );
             }
         }

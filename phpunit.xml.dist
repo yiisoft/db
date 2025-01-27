@@ -7,7 +7,7 @@
     executionOrder="default"
     failOnRisky="true"
     failOnWarning="true"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.2/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/10.2/phpunit.xsd"
 >
     <source>
         <include>
@@ -29,6 +29,9 @@
         </testsuite>
         <testsuite name="ActiveRecord">
             <directory>./vendor/yiisoft/active-record/tests/Driver</directory>
+        </testsuite>
+        <testsuite name="DbMigration">
+            <directory>./vendor/yiisoft/db-migration/tests/Driver</directory>
         </testsuite>
         <testsuite name="Mssql">
             <directory>./vendor/yiisoft/db-mssql/tests</directory>

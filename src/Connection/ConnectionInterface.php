@@ -127,14 +127,9 @@ interface ConnectionInterface
     public function getSchema(): SchemaInterface;
 
     /**
-     * Returns a server version as a string comparable by {@see \version_compare()}.
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     *
-     * @return string The server version as a string.
+     * Returns {@see ServerInfoInterface} instance that provides information about the database server.
      */
-    public function getServerVersion(): string;
+    public function getServerInfo(): ServerInfoInterface;
 
     /**
      * Return table prefix for current DB connection.

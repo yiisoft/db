@@ -6,6 +6,10 @@ namespace Yiisoft\Db\Tests\Common;
 
 use ReflectionException;
 use Throwable;
+use Yiisoft\Db\Constant\DataType;
+use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Driver\Pdo\PdoDataReader;
@@ -18,16 +22,15 @@ use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Helper\DbUuidHelper;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
-use function call_user_func_array;
 use function is_string;
 use function setlocale;
 
@@ -73,11 +76,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->addColumn('{{customer}}', '{{city}}', SchemaInterface::TYPE_STRING)->execute();
+        $command->addColumn('{{customer}}', '{{city}}', ColumnType::STRING)->execute();
 
         $this->assertTrue($db->getTableSchema('{{customer}}')->getColumn('city') !== null);
         $this->assertSame(
-            SchemaInterface::TYPE_STRING,
+            ColumnType::STRING,
             $db->getTableSchema('{{customer}}')->getColumn('city')->getType(),
         );
 
@@ -156,7 +159,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->dropTable('{{test_def}}')->execute();
         }
 
-        $command->createTable('{{test_def}}', ['int1' => SchemaInterface::TYPE_INTEGER])->execute();
+        $command->createTable('{{test_def}}', ['int1' => ColumnType::INTEGER])->execute();
 
         $this->assertEmpty($schema->getTableDefaultValues('{{test_def}}', true));
 
@@ -305,8 +308,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
      */
     public function testBatchInsert(
         string $table,
+        iterable $values,
         array $columns,
-        array $values,
         string $expected,
         array $expectedParams = [],
         int $insertedRow = 1
@@ -314,7 +317,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->batchInsert($table, $columns, $values);
+        $command->insertBatch($table, $values, $columns);
 
         $this->assertSame($expected, $command->getSql());
         $this->assertSame($expectedParams, $command->getParams());
@@ -370,7 +373,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             }
 
             /* batch insert on "type" table */
-            $command->batchInsert('{{type}}', $cols, $data)->execute();
+            $command->insertBatch('{{type}}', $data, $cols)->execute();
             $data = $command->setSql(
                 <<<SQL
                 SELECT [[int_col]], [[char_col]], [[float_col]], [[bool_col]] FROM {{type}} WHERE [[int_col]] IN (1,2,3) ORDER BY [[int_col]]
@@ -413,10 +416,10 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->batchInsert(
+        $command->insertBatch(
             '{{customer}}',
-            ['email', 'name', 'address'],
             [['t1@example.com', 'test_name', 'test_address']],
+            ['email', 'name', 'address'],
         );
 
         $this->assertSame(1, $command->execute());
@@ -450,7 +453,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $values[$i] = ['t' . $i . '@any.com', 't' . $i, 't' . $i . ' address'];
         }
 
-        $command->batchInsert('{{customer}}', ['email', 'name', 'address'], $values);
+        $command->insertBatch('{{customer}}', $values, ['email', 'name', 'address']);
 
         $this->assertSame($attemptsInsertRows, $command->execute());
 
@@ -476,7 +479,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             }
         )();
         $command = $db->createCommand();
-        $command->batchInsert('{{customer}}', ['email', 'name', 'address'], $rows);
+        $command->insertBatch('{{customer}}', $rows, ['email', 'name', 'address']);
 
         $this->assertSame(1, $command->execute());
 
@@ -546,9 +549,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->createTable(
             '{{testCreateTable}}',
             [
-                '[[id]]' => SchemaInterface::TYPE_PK,
-                '[[bar]]' => SchemaInterface::TYPE_INTEGER,
-                '[[name]]' => (new Column('string(100)'))->notNull(),
+                '[[id]]' => PseudoType::PK,
+                '[[bar]]' => ColumnType::INTEGER,
+                '[[name]]' => ColumnBuilder::string(100)->notNull(),
             ],
         )->execute();
         $command->insert('{{testCreateTable}}', ['[[bar]]' => 1, '[[name]]' => 'Lilo'])->execute();
@@ -589,7 +592,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->createTable(
             '{{testCreateViewTable}}',
-            ['id' => SchemaInterface::TYPE_PK, 'bar' => SchemaInterface::TYPE_INTEGER],
+            ['id' => PseudoType::PK, 'bar' => ColumnType::INTEGER],
         )->execute();
         $command->insert('{{testCreateViewTable}}', ['bar' => 1])->execute();
         $command->insert('{{testCreateViewTable}}', ['bar' => 6])->execute();
@@ -728,9 +731,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->createTable(
             '{{testDropColumn}}',
             [
-                'id' => SchemaInterface::TYPE_PK,
-                'bar' => SchemaInterface::TYPE_INTEGER,
-                'baz' => SchemaInterface::TYPE_INTEGER,
+                'id' => PseudoType::PK,
+                'bar' => ColumnType::INTEGER,
+                'baz' => ColumnType::INTEGER,
             ],
         )->execute();
         $command->dropColumn('{{testDropColumn}}', 'bar')->execute();
@@ -844,7 +847,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->dropTable('{{test_fk}}')->execute();
         }
 
-        $command->createTable('{{test_fk}}', ['id' => SchemaInterface::TYPE_PK, 'int1' => 'integer'])->execute();
+        $command->createTable('{{test_fk}}', ['id' => PseudoType::PK, 'int1' => 'integer'])->execute();
 
         $this->assertEmpty($schema->getTableForeignKeys('{{test_fk}}', true));
 
@@ -938,7 +941,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $command->dropTable('{{testDropTable}}')->execute();
         }
 
-        $command->createTable('{{testDropTable}}', ['id' => SchemaInterface::TYPE_PK, 'foo' => 'integer'])->execute();
+        $command->createTable('{{testDropTable}}', ['id' => PseudoType::PK, 'foo' => 'integer'])->execute();
 
         $this->assertNotNull($schema->getTableSchema('{{testDropTable}}', true));
 
@@ -1980,7 +1983,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             {
             }
 
-            protected function internalExecute(string|null $rawSql): void
+            protected function internalExecute(): void
             {
             }
         };
@@ -2009,7 +2012,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $db->createCommand();
 
-        call_user_func_array([$command, 'upsert'], $params);
+        ($command->upsert(...))(...$params);
 
         $command->execute();
 
@@ -2036,8 +2039,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ['id' => $inserted['id']]
         )->queryOne();
 
-        $columnSchema = $db->getTableSchema('{{%order}}')->getColumn('total');
-        $phpTypecastValue = $columnSchema->phpTypecast($result['total']);
+        $column = $db->getTableSchema('{{%order}}')->getColumn('total');
+        $phpTypecastValue = $column->phpTypecast($result['total']);
 
         $this->assertSame($decimalValue, $phpTypecastValue);
     }
@@ -2063,5 +2066,50 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $pkValues = $db->createCommand()->insertWithReturningPks('negative_default_values', []);
 
         $this->assertSame([], $pkValues);
+    }
+
+    public function testUuid(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        $tableName = '{{%test_uuid}}';
+        if ($db->getTableSchema($tableName, true)) {
+            $db->createCommand()->dropTable($tableName)->execute();
+        }
+
+        $command->createTable($tableName, [
+            'uuid_pk' => ColumnBuilder::uuidPrimaryKey(),
+            'int_col' => ColumnBuilder::integer(),
+        ])->execute();
+        $tableSchema = $db->getTableSchema($tableName, true);
+        $this->assertNotNull($tableSchema);
+
+        $uuidValue = $uuidSource = '738146be-87b1-49f2-9913-36142fb6fcbe';
+
+        $uuidValue = match ($db->getDriverName()) {
+            'oci' => new Expression("HEXTORAW(REPLACE(:uuid, '-', ''))", [':uuid' => $uuidValue]),
+            'mysql' => new Expression("UNHEX(REPLACE(:uuid, '-', ''))", [':uuid' => $uuidValue]),
+            'sqlite' => new Param(DbUuidHelper::uuidToBlob($uuidValue), DataType::LOB),
+            'sqlsrv' => new Expression('CONVERT(uniqueidentifier, :uuid)', [':uuid' => $uuidValue]),
+            default => $uuidValue,
+        };
+
+        $command->insert($tableName, [
+            'int_col' => 1,
+            'uuid_pk' => $uuidValue,
+        ])->execute();
+
+        $uuid = (new Query($db))
+            ->select(['[[uuid_pk]]'])
+            ->from($tableName)
+            ->where(['int_col' => 1])
+            ->scalar();
+
+        $uuidString = strtolower(DbUuidHelper::toUuid($uuid));
+
+        $this->assertSame($uuidSource, $uuidString);
+
+        $db->close();
     }
 }

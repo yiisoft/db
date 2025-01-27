@@ -528,7 +528,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function one(): array|null
+    public function one(): array|object|null
     {
         return match ($this->emulateExecution) {
             true => null,
@@ -666,8 +666,11 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function withQuery(QueryInterface|string $query, string $alias, bool $recursive = false): static
-    {
+    public function withQuery(
+        QueryInterface|string $query,
+        ExpressionInterface|string $alias,
+        bool $recursive = false
+    ): static {
         $this->withQueries[] = ['query' => $query, 'alias' => $alias, 'recursive' => $recursive];
         return $this;
     }

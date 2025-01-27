@@ -7,20 +7,15 @@ namespace Yiisoft\Db\Schema;
 use Psr\SimpleCache\InvalidArgumentException;
 use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Constant\GettypeResult;
 
-use function array_change_key_case;
-use function array_map;
 use function gettype;
 use function is_array;
-use function preg_match;
-use function preg_replace;
-use function str_contains;
-use function str_replace;
 
 /**
  * Provides a set of methods for working with database schemas such as creating, modifying, and inspecting tables,
@@ -136,24 +131,12 @@ abstract class AbstractSchema implements SchemaInterface
     {
         return match (gettype($data)) {
             // php type => SQL data type
-            SchemaInterface::PHP_TYPE_BOOLEAN => DataType::BOOLEAN,
-            SchemaInterface::PHP_TYPE_INTEGER => DataType::INTEGER,
-            SchemaInterface::PHP_TYPE_RESOURCE => DataType::LOB,
-            SchemaInterface::PHP_TYPE_NULL => DataType::NULL,
+            GettypeResult::BOOLEAN => DataType::BOOLEAN,
+            GettypeResult::INTEGER => DataType::INTEGER,
+            GettypeResult::RESOURCE => DataType::LOB,
+            GettypeResult::NULL => DataType::NULL,
             default => DataType::STRING,
         };
-    }
-
-    /** @deprecated Use {@see Quoter::getRawTableName()}. Will be removed in version 2.0.0. */
-    public function getRawTableName(string $name): string
-    {
-        if (str_contains($name, '{{')) {
-            $name = preg_replace('/{{(.*?)}}/', '\1', $name);
-
-            return str_replace('%', $this->db->getTablePrefix(), $name);
-        }
-
-        return $name;
     }
 
     /**
@@ -316,14 +299,6 @@ abstract class AbstractSchema implements SchemaInterface
         return is_array($tableUniques) ? $tableUniques : [];
     }
 
-    /** @deprecated Use {@see DbStringHelper::isReadQuery()}. Will be removed in version 2.0.0. */
-    public function isReadQuery(string $sql): bool
-    {
-        $pattern = '/^\s*(SELECT|SHOW|DESCRIBE)\b/i';
-
-        return preg_match($pattern, $sql) > 0;
-    }
-
     /**
      * @throws InvalidArgumentException
      */
@@ -342,8 +317,7 @@ abstract class AbstractSchema implements SchemaInterface
      */
     public function refreshTableSchema(string $name): void
     {
-        /** @psalm-suppress DeprecatedMethod */
-        $rawName = $this->getRawTableName($name);
+        $rawName = $this->db->getQuoter()->getRawTableName($name);
 
         unset($this->tableMetadata[$rawName]);
 
@@ -389,35 +363,6 @@ abstract class AbstractSchema implements SchemaInterface
     protected function findTableNames(string $schema): array
     {
         throw new NotSupportedException(static::class . ' does not support fetching all table names.');
-    }
-
-    /**
-     * Extracts the PHP type from an abstract DB type.
-     *
-     * @param ColumnSchemaInterface $column The column schema information.
-     *
-     * @return string The PHP type name.
-     */
-    protected function getColumnPhpType(ColumnSchemaInterface $column): string
-    {
-        return match ($column->getType()) {
-            // abstract type => php type
-            SchemaInterface::TYPE_TINYINT => SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_SMALLINT => SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_INTEGER => PHP_INT_SIZE === 4 && $column->isUnsigned()
-                ? SchemaInterface::PHP_TYPE_STRING
-                : SchemaInterface::PHP_TYPE_INTEGER,
-            SchemaInterface::TYPE_BIGINT => PHP_INT_SIZE === 8 && !$column->isUnsigned()
-                ? SchemaInterface::PHP_TYPE_INTEGER
-                : SchemaInterface::PHP_TYPE_STRING,
-            SchemaInterface::TYPE_BOOLEAN => SchemaInterface::PHP_TYPE_BOOLEAN,
-            SchemaInterface::TYPE_DECIMAL => SchemaInterface::PHP_TYPE_DOUBLE,
-            SchemaInterface::TYPE_FLOAT => SchemaInterface::PHP_TYPE_DOUBLE,
-            SchemaInterface::TYPE_DOUBLE => SchemaInterface::PHP_TYPE_DOUBLE,
-            SchemaInterface::TYPE_BINARY => SchemaInterface::PHP_TYPE_RESOURCE,
-            SchemaInterface::TYPE_JSON => SchemaInterface::PHP_TYPE_ARRAY,
-            default => SchemaInterface::PHP_TYPE_STRING,
-        };
     }
 
     /**
@@ -473,8 +418,7 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function getTableMetadata(string $name, string $type, bool $refresh = false): mixed
     {
-        /** @psalm-suppress DeprecatedMethod */
-        $rawName = $this->getRawTableName($name);
+        $rawName = $this->db->getQuoter()->getRawTableName($name);
 
         if (!isset($this->tableMetadata[$rawName])) {
             $this->loadTableMetadataFromCache($rawName);
@@ -530,26 +474,6 @@ abstract class AbstractSchema implements SchemaInterface
     }
 
     /**
-     * Change row's array key case to lower.
-     *
-     * @param array $row Thew row's array or an array of row arrays.
-     * @param bool $multiple Whether many rows or a single row passed.
-     *
-     * @return array The normalized row or rows.
-     *
-     * @deprecated Use `array_change_key_case($row)` or `array_map('array_change_key_case', $row)`.
-     * Will be removed in version 2.0.0.
-     */
-    protected function normalizeRowKeyCase(array $row, bool $multiple): array
-    {
-        if ($multiple) {
-            return array_map(static fn (array $row) => array_change_key_case($row), $row);
-        }
-
-        return array_change_key_case($row);
-    }
-
-    /**
      * Resolves the table name and schema name (if any).
      *
      * @param string $name The table name.
@@ -574,11 +498,8 @@ abstract class AbstractSchema implements SchemaInterface
      */
     protected function setTableMetadata(string $name, string $type, mixed $data): void
     {
-        /**
-         * @psalm-suppress MixedArrayAssignment
-         * @psalm-suppress DeprecatedMethod
-         */
-        $this->tableMetadata[$this->getRawTableName($name)][$type] = $data;
+        /** @psalm-suppress MixedArrayAssignment */
+        $this->tableMetadata[$this->db->getQuoter()->getRawTableName($name)][$type] = $data;
     }
 
     /**

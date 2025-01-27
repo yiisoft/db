@@ -1,12 +1,19 @@
 <p align="center" style="text-align: center">
     <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px" alt="YiiFramework">
+        <img src="https://yiisoft.github.io/docs/images/yii_logo.svg" height="100px" alt="Yii">
     </a>
     <h1 align="center">Yii Database</h1>
 </p>
 
+[![Latest Stable Version](https://poser.pugx.org/yiisoft/db/v)](https://packagist.org/packages/yiisoft/db)
+[![Total Downloads](https://poser.pugx.org/yiisoft/db/downloads)](https://packagist.org/packages/yiisoft/db)
+[![Build status](https://github.com/yiisoft/db/actions/workflows/build.yml/badge.svg)](https://github.com/yiisoft/db/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/yiisoft/db/branch/master/graph/badge.svg?token=pRr4gci2qj)](https://codecov.io/gh/yiisoft/db)
+[![static analysis](https://github.com/yiisoft/db/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db/actions/workflows/static.yml)
+[![type-coverage](https://shepherd.dev/github/yiisoft/db/coverage.svg)](https://shepherd.dev/github/yiisoft/db)
+
 Yii Database is a framework-agnostic package to work with different types of databases,
-such as [MariaDB], [MSSQL], [MySQL], [Oracle], [PostgreSQL], and [SQLite].
+such as [MariaDB](https://mariadb.org), [MySQL](https://www.mysql.com), [MSSQL](https://www.microsoft.com/sql-server), [Oracle](https://www.oracle.com/database), [PostgreSQL](https://www.postgresql.org) and [SQLite](https://www.sqlite.org).
 
 Using the package, you can perform common database tasks such as creating, reading, updating, and deleting
 records in a database table, as well as executing raw SQL queries.
@@ -23,37 +30,28 @@ $rows = (new Query($db))
 The package is designed to be flexible
 and can be extended to support extra database types or to customize the way it interacts with databases.
 
-There is an [ActiveRecord] implementation built on top of it.
+There is an [ActiveRecord](https://github.com/yiisoft/active-record) implementation built on top of it.
 It allows interacting with database tables using objects,
 similar to the way you would use ORM (Object-Relational Mapping) frameworks like Doctrine or Hibernate.
 
-[ActiveRecord]: https://github.com/yiisoft/active-record
-[MariaDB]: https://mariadb.org
-[MSSQL]: https://www.microsoft.com/sql-server
-[MySQL]: https://www.mysql.com
-[Oracle]: https://www.oracle.com/database
-[PostgreSQL]: https://www.postgresql.org
-[SQLite]: https://www.sqlite.org
+## Requirements
 
-[![Latest Stable Version](https://poser.pugx.org/yiisoft/db/v/stable.png)](https://packagist.org/packages/yiisoft/db)
-[![Total Downloads](https://poser.pugx.org/yiisoft/db/downloads.png)](https://packagist.org/packages/yiisoft/db)
-[![Build status](https://github.com/yiisoft/db/workflows/build/badge.svg)](https://github.com/yiisoft/db/actions?query=workflow%3Abuild)
-[![codecov](https://codecov.io/gh/yiisoft/db/branch/master/graph/badge.svg?token=pRr4gci2qj)](https://codecov.io/gh/yiisoft/db)
-[![static analysis](https://github.com/yiisoft/db/actions/workflows/static.yml/badge.svg?branch=dev)](https://github.com/yiisoft/db/actions/workflows/static.yml)
-[![type-coverage](https://shepherd.dev/github/yiisoft/db/coverage.svg)](https://shepherd.dev/github/yiisoft/db)
+- PHP 8.1 or higher.
 
-## Usage 
+## Documentation
 
-[Check the documentation](/docs/en/README.md) to learn about usage.
+- Guide: [English](docs/guide/en/README.md), [Português - Brasil](docs/guide/pt-BR/README.md)
+- [Internals](docs/internals.md)
 
-## Support
-
-If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/db/68) is a good place for that.
+If you need help or have a question, the [Yii Forum](https://forum.yiiframework.com/c/yii-3-0/63) is a good place for that.
 You may also check out other [Yii Community Resources](https://www.yiiframework.com/community).
 
-## Testing
+## License
 
-[Check the testing instructions](/docs/en/testing.md) to learn about testing.
+The Yii Database is free software. It is released under the terms of the BSD License.
+Please see [`LICENSE`](./LICENSE.md) for more information.
+
+Maintained by [Yii Software](https://www.yiiframework.com/).
 
 ## Support the project
 
@@ -66,10 +64,3 @@ You may also check out other [Yii Community Resources](https://www.yiiframework.
 [![Telegram](https://img.shields.io/badge/telegram-join-1DA1F2?style=flat&logo=telegram)](https://t.me/yii3en)
 [![Facebook](https://img.shields.io/badge/facebook-join-1DA1F2?style=flat&logo=facebook&logoColor=ffffff)](https://www.facebook.com/groups/yiitalk)
 [![Slack](https://img.shields.io/badge/slack-join-1DA1F2?style=flat&logo=slack)](https://yiiframework.com/go/slack)
-
-## License
-
-The Yii DataBase Library is free software. It's released under the terms of the BSD License.
-Please see [`LICENSE`](./LICENSE.md) for more information.
-
-Maintained by [Yii Software](https://www.yiiframework.com/).

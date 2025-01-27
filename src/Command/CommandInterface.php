@@ -8,6 +8,9 @@ use Closure;
 use JsonException;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\DataType;
+use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -15,7 +18,8 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * This interface represents a database command, such as a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement.
@@ -23,6 +27,7 @@ use Yiisoft\Db\Schema\Builder\ColumnInterface;
  * A command instance is usually created by calling {@see ConnectionInterface::createCommand}.
  *
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type BatchValues from DMLQueryBuilderInterface
  */
 interface CommandInterface
 {
@@ -42,8 +47,8 @@ interface CommandInterface
      *
      * @param string $table The name of the table to add new column to.
      * @param string $column The name of the new column.
-     * @param ColumnInterface|string $type The column type. {@see QueryBuilder::getColumnType()} will be called
-     * to convert the given column type to the database one.
+     * @param ColumnInterface|string $type The column type.
+     * {@see QueryBuilder::buildColumnDefinition()} will be called to convert the given column type to the database one.
      * For example, `string` will be converted to `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
@@ -142,9 +147,9 @@ interface CommandInterface
      *
      * @param string $table The table whose column is to change.
      * @param string $column The name of the column to change.
-     * @param ColumnInterface|string $type The column type. {@see QueryBuilder::getColumnType()} will be called to
-     * convert the give column type to the physical one. For example, `string` will be converted as `varchar(255)`, and
-     * `string not null` becomes `varchar(255) not null`.
+     * @param ColumnInterface|string $type The column type.
+     * {@see QueryBuilder::buildColumnDefinition()} will be called to convert the give column type to the physical one.
+     * For example, `string` will be converted as `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
@@ -156,13 +161,26 @@ interface CommandInterface
      * For example,
      *
      * ```php
-     * $connectionInterface->createCommand()->batchInsert(
+     * $connectionInterface->createCommand()->insertBatch(
      *     'user',
-     *     ['name', 'age'],
      *     [
      *         ['Tom', 30],
      *         ['Jane', 20],
      *         ['Linda', 25],
+     *     ],
+     *     ['name', 'age']
+     * )->execute();
+     * ```
+     *
+     * or as associative arrays where the keys are column names
+     *
+     * ```php
+     * $connectionInterface->createCommand()->insertBatch(
+     *     'user',
+     *     [
+     *         ['name' => 'Tom', 'age' => 30],
+     *         ['name' => 'Jane', 'age' => 20],
+     *         ['name' => 'Linda', 'age' => 25],
      *     ]
      * )->execute();
      * ```
@@ -174,17 +192,17 @@ interface CommandInterface
      * Also note that the created command isn't executed until {@see execute()} is called.
      *
      * @param string $table The name of the table to insert new rows into.
-     * @param array $columns The column names.
      * @param iterable $rows The rows to be batch inserted into the table.
+     * @param string[] $columns The column names.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * @psalm-param iterable<array-key, array<array-key, mixed>> $rows
+     * @psalm-param BatchValues $rows
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function batchInsert(string $table, array $columns, iterable $rows): static;
+    public function insertBatch(string $table, iterable $rows, array $columns = []): static;
 
     /**
      * Binds a parameter to the SQL statement to be executed.
@@ -197,6 +215,8 @@ interface CommandInterface
      * by the PHP type of the value.
      * @param int|null $length The length of the data type.
      * @param mixed|null $driverOptions The driver-specific options.
+     *
+     * @psalm-param DataType::*|null $dataType
      *
      * @throws Exception
      */
@@ -229,6 +249,8 @@ interface CommandInterface
      * @param mixed $value The value to bind to the parameter.
      * @param int|null $dataType The {@see DataType SQL data type} of the parameter. If null, the type is determined
      * by the PHP type of the value.
+     *
+     * @psalm-param DataType::*|null $dataType
      */
     public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
 
@@ -241,10 +263,10 @@ interface CommandInterface
      *
      * @param array|ParamInterface[] $values The values to bind. This must be given in terms of an associative
      * array with array keys being the parameter names, and an array values the corresponding parameter values,
-     * for example, `[':name' => 'John', ':age' => 25]`.
+     * for example, `[':name' => 'John Doe', ':age' => 25]`.
      * By default, the SQL data type of each value is determined by its PHP type.
      * You may explicitly specify the {@see DataType SQL data type} type by using a {@see Param} class:
-     * `new Param(value, type)`, for example, `[':name' => 'John', ':profile' => new Param($profile, DataType::LOB)]`.
+     * `new Param(value, type)`, for example, `[':name' => 'John Doe', ':profile' => new Param($profile, DataType::LOB)]`.
      */
     public function bindValues(array $values): static;
 
@@ -295,20 +317,39 @@ interface CommandInterface
     /**
      * Creates an SQL command for creating a new DB table.
      *
-     * Specify the columns in the new table as name-definition pairs ('name' => 'string'), where name
-     * stands for a column name which will be quoted by the method, and definition stands for the column type
-     * which can contain an abstract DB type.
+     * The columns in the new table should be specified as name-definition pairs (e.g. 'name' => 'string'), where name
+     * is the name of the column which will be properly quoted by the method, and definition is the type of the column
+     * which can contain a native database column type, {@see ColumnType abstract} or {@see PseudoType pseudo} type,
+     * or can be represented as instance of {@see ColumnInterface}.
      *
-     * The method {@see QueryBuilder::getColumnType()} will be called to convert the abstract column types to physical
-     * ones.
-     * For example, it will convert `string` to `varchar(255)`, and `string not null` to
-     * `varchar(255) not null`.
+     * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
+     * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
+     * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
      *
-     * If you specify a column with definition only (`PRIMARY KEY (name, type)`), it will be directly inserted
-     * into the generated SQL.
+     * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * {@see ColumnInterface}.
+     *
+     * ```php
+     * $this->createTable(
+     *     'example_table',
+     *     [
+     *         'id' => ColumnBuilder::primaryKey(),
+     *         'name' => ColumnBuilder::string(64)->notNull(),
+     *         'type' => ColumnBuilder::integer()->notNull()->defaultValue(10),
+     *         'description' => ColumnBuilder::text(),
+     *         'rule_name' => ColumnBuilder::string(64),
+     *         'data' => ColumnBuilder::text(),
+     *         'created_at' => ColumnBuilder::datetime()->notNull(),
+     *         'updated_at' => ColumnBuilder::datetime(),
+     *     ],
+     * );
+     * ```
+     *
+     * If a column is specified with definition only (e.g. 'PRIMARY KEY (name, type)'), it will be directly put into the
+     * generated SQL.
      *
      * @param string $table The name of the table to create.
-     * @param array $columns The columns (name => definition) in the new table.
+     * @param (ColumnInterface|string)[] $columns The columns (name => definition) in the new table.
      * The definition can be `string` or {@see ColumnInterface} instance.
      * @param string|null $options More SQL fragments to append to the generated SQL.
      *
@@ -608,7 +649,7 @@ interface CommandInterface
      * @throws Exception
      * @throws Throwable If execution failed.
      *
-     * @return array[] All rows of the query result. Each array element is an array representing a row of data.
+     * @return array[] All rows of the query result. Each array element is an `array` representing a row of data.
      * Empty array if the query results in nothing.
      */
     public function queryAll(): array;
@@ -634,15 +675,14 @@ interface CommandInterface
      * @throws Exception
      * @throws Throwable If execution failed.
      *
-     * @return array|null The first row (in terms of an array) of the query result. Null if the query
-     * results in nothing.
+     * @return array|null The first row as an `array` of the query result. `null` if the query results in nothing.
      */
     public function queryOne(): array|null;
 
     /**
      * Execute the SQL statement and returns the value of the first column in the first row of data.
-     *
      * This method is best used when you need only a single value.
+     * Do not use this method for `boolean` values as it returns `false` if there is no value.
      *
      * @throws Exception
      * @throws Throwable If execution failed.

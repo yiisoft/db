@@ -13,14 +13,24 @@
     "license": "BSD-3-Clause",
     "support": {
         "issues": "https://github.com/yiisoft/db/issues/issues?state=open",
+        "source": "https://github.com/yiisoft/db",
         "forum": "https://www.yiiframework.com/forum/",
         "wiki": "https://www.yiiframework.com/wiki/",
         "irc": "ircs://irc.libera.chat:6697/yii",
-        "chat": "https://t.me/yii3en",
-        "source": "https://github.com/yiisoft/db"
+        "chat": "https://t.me/yii3en"
     },
+    "funding": [
+        {
+            "type": "opencollective",
+            "url": "https://opencollective.com/yiisoft"
+        },
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/yiisoft"
+        }
+    ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "ext-ctype": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
@@ -30,11 +40,11 @@
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.2",
-        "phpunit/phpunit": "^9.6|^10.0",
-        "rector/rector": "^1.0",
+        "phpunit/phpunit": "^10.0",
+        "rector/rector": "^2.0.3",
         "roave/infection-static-analysis-plugin": "^1.16",
         "spatie/phpunit-watcher": "^1.23",
-        "vimeo/psalm": "^4.30|^5.20",
+        "vimeo/psalm": "^5.25",
         "yiisoft/aliases": "^3.0",
         "yiisoft/cache-file": "^3.1",
         "yiisoft/di": "^1.0",
@@ -42,7 +52,7 @@
         "yiisoft/json": "^1.0",
         "yiisoft/log": "^2.0",
         "yiisoft/var-dumper": "^1.5",
-        "yiisoft/yii-debug": "dev-master|dev-php80"
+        "yiisoft/yii-debug": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -57,7 +67,15 @@
             "Yiisoft\\Db\\Mysql\\Tests\\": "vendor/yiisoft/db-mysql/tests",
             "Yiisoft\\Db\\Oracle\\Tests\\": "vendor/yiisoft/db-oracle/tests",
             "Yiisoft\\Db\\Pgsql\\Tests\\": "vendor/yiisoft/db-pgsql/tests",
-            "Yiisoft\\Db\\Sqlite\\Tests\\": "vendor/yiisoft/db-sqlite/tests"
+            "Yiisoft\\Db\\Sqlite\\Tests\\": "vendor/yiisoft/db-sqlite/tests",
+            "Yiisoft\\Db\\Migration\\Tests\\": "vendor/yiisoft/db-migration/tests",
+            "Yiisoft\\Db\\Migration\\Tests\\NonExistsDirectory\\": "vendor/yiisoft/db-migration/tests/non-exists-directory",
+            "Yiisoft\\Db\\Migration\\Tests\\ForTest\\": "vendor/yiisoft/db-migration/tests/Support",
+            "Yiisoft\\Db\\Migration\\Tests\\Support\\": "vendor/yiisoft/db-migration/tests/Support",
+            "Yiisoft\\Db\\Migration\\Tests\\Support\\MigrationsExtra\\": [
+                "vendor/yiisoft/db-migration/tests/Support/MigrationsExtra",
+                "vendor/yiisoft/db-migration/tests/Support/MigrationsExtra2"
+            ]
         }
     },
     "extra": {

@@ -40,16 +40,6 @@ final class QuoterTest extends AbstractQuoterTest
         $this->assertSame('`schema`.`table`', $quoter->quoteTableName('schema.table'));
     }
 
-    public function testQuoteValueNotString(): void
-    {
-        $quoter = new Quoter('`', '`');
-
-        $this->assertFalse($quoter->quoteValue(false));
-        $this->assertTrue($quoter->quoteValue(true));
-        $this->assertSame(1, $quoter->quoteValue(1));
-        $this->assertSame([], $quoter->quoteValue([]));
-    }
-
     public function testUnquoteSimpleColumnNameWithStartingCharacterEndingCharacterEquals(): void
     {
         $quoter = new Quoter('`', '`');

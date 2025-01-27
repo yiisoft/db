@@ -1,13 +1,11 @@
 on:
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - '.gitignore'
-      - '.gitattributes'
-      - 'infection.json.dist'
-      - 'psalm.xml'
+  pull_request_target:
+    paths:
+      - 'src/**'
+      - 'config/**'
+      - '.github/workflows/rector.yml'
+      - 'composer.json'
+      - 'rector.php'
 
 name: rector
 
@@ -17,6 +15,7 @@ jobs:
     secrets:
       token: ${{ secrets.YIISOFT_GITHUB_TOKEN }}
     with:
+      repository: ${{ github.event.pull_request.head.repo.full_name }}
       os: >-
         ['ubuntu-latest']
       php: >-

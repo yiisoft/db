@@ -11,8 +11,9 @@ final class DQLQueryBuilder extends AbstractDQLQueryBuilder
 {
     protected function defaultExpressionBuilders(): array
     {
-        return array_merge(parent::defaultExpressionBuilders(), [
+        return [
+            ...parent::defaultExpressionBuilders(),
             Expression::class => ExpressionBuilder::class,
-        ]);
+        ];
     }
 }

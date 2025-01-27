@@ -6,10 +6,11 @@ namespace Yiisoft\Db\Tests;
 
 use Closure;
 use JsonException;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Throwable;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -20,10 +21,12 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
+use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -65,7 +68,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             DbHelper::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
-                SQL . ' ' . $qb->getColumnType($type),
+                SQL . ' ' . $qb->buildColumnDefinition($type),
                 $db->getDriverName(),
             ),
             $sql,
@@ -186,22 +189,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($expected, $sql);
     }
 
-    public function testAlterColumn(): void
+    #[DataProviderExternal(QueryBuilderProvider::class, 'alterColumn')]
+    public function testAlterColumn(string|ColumnInterface $type, string $expected): void
     {
-        $db = $this->getConnection();
+        $qb = $this->getConnection()->getQueryBuilder();
 
-        $qb = $db->getQueryBuilder();
-        $sql = $qb->alterColumn('customer', 'email', SchemaInterface::TYPE_STRING);
-
-        $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                ALTER TABLE [[customer]] CHANGE [[email]] [[email]]
-                SQL . ' ' . $qb->getColumnType(SchemaInterface::TYPE_STRING),
-                $db->getDriverName(),
-            ),
-            $sql,
-        );
+        $this->assertSame($expected, $qb->alterColumn('foo1', 'bar', $type));
     }
 
     /**
@@ -214,8 +207,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
      */
     public function testBatchInsert(
         string $table,
-        array $columns,
         iterable $rows,
+        array $columns,
         string $expected,
         array $expectedParams = [],
     ): void {
@@ -223,7 +216,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $params = [];
-        $sql = $qb->batchInsert($table, $columns, $rows, $params);
+        $sql = $qb->insertBatch($table, $rows, $columns, $params);
 
         $this->assertSame($expected, $sql);
         $this->assertSame($expectedParams, $params);
@@ -1545,6 +1538,57 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
+    public function testCreateOverlapsConditionFromArray(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $condition = $qb->createConditionFromArray(['array overlaps', 'column', [1, 2, 3]]);
+
+        $this->assertInstanceOf(ArrayOverlapsCondition::class, $condition);
+        $this->assertSame('column', $condition->getColumn());
+        $this->assertSame([1, 2, 3], $condition->getValues());
+
+        $condition = $qb->createConditionFromArray(['json overlaps', 'column', [1, 2, 3]]);
+
+        $this->assertInstanceOf(JsonOverlapsCondition::class, $condition);
+        $this->assertSame('column', $condition->getColumn());
+        $this->assertSame([1, 2, 3], $condition->getValues());
+    }
+
+    public function testCreateOverlapsConditionFromArrayWithInvalidOperandsCount(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires two operands.');
+
+        $qb->createConditionFromArray(['json overlaps', 'column']);
+    }
+
+    public function testCreateOverlapsConditionFromArrayWithInvalidColumn(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires column to be string or ExpressionInterface.');
+
+        $qb->createConditionFromArray(['json overlaps', ['column'], [1, 2, 3]]);
+    }
+
+    public function testCreateOverlapsConditionFromArrayWithInvalidValues(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Operator "JSON OVERLAPS" requires values to be iterable or ExpressionInterface.');
+
+        $qb->createConditionFromArray(['json overlaps', 'column', 1]);
+    }
+
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::createIndex
      */
@@ -1786,36 +1830,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $qb->dropview('animal_view'),
         );
-    }
-
-    public function testGetColumnType(): void
-    {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
-
-        $this->assertSame('pk', $qb->getColumnType(SchemaInterface::TYPE_PK));
-        $this->assertSame('upk', $qb->getColumnType(SchemaInterface::TYPE_UPK));
-        $this->assertSame('bigpk', $qb->getColumnType(SchemaInterface::TYPE_BIGPK));
-        $this->assertSame('ubigpk', $qb->getColumnType(SchemaInterface::TYPE_UBIGPK));
-        $this->assertSame('char', $qb->getColumnType(SchemaInterface::TYPE_CHAR));
-        $this->assertSame('string', $qb->getColumnType(SchemaInterface::TYPE_STRING));
-        $this->assertSame('text', $qb->getColumnType(SchemaInterface::TYPE_TEXT));
-        $this->assertSame('tinyint', $qb->getColumnType(SchemaInterface::TYPE_TINYINT));
-        $this->assertSame('smallint', $qb->getColumnType(SchemaInterface::TYPE_SMALLINT));
-        $this->assertSame('integer', $qb->getColumnType(SchemaInterface::TYPE_INTEGER));
-        $this->assertSame('bigint', $qb->getColumnType(SchemaInterface::TYPE_BIGINT));
-        $this->assertSame('float', $qb->getColumnType(SchemaInterface::TYPE_FLOAT));
-        $this->assertSame('double', $qb->getColumnType(SchemaInterface::TYPE_DOUBLE));
-        $this->assertSame('decimal', $qb->getColumnType(SchemaInterface::TYPE_DECIMAL));
-        $this->assertSame('datetime', $qb->getColumnType(SchemaInterface::TYPE_DATETIME));
-        $this->assertSame('timestamp', $qb->getColumnType(SchemaInterface::TYPE_TIMESTAMP));
-        $this->assertSame('time', $qb->getColumnType(SchemaInterface::TYPE_TIME));
-        $this->assertSame('date', $qb->getColumnType(SchemaInterface::TYPE_DATE));
-        $this->assertSame('binary', $qb->getColumnType(SchemaInterface::TYPE_BINARY));
-        $this->assertSame('boolean', $qb->getColumnType(SchemaInterface::TYPE_BOOLEAN));
-        $this->assertSame('money', $qb->getColumnType(SchemaInterface::TYPE_MONEY));
-        $this->assertSame('json', $qb->getColumnType(SchemaInterface::TYPE_JSON));
     }
 
     /**
@@ -2347,5 +2361,35 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ),
             $command->getRawSql()
         );
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildColumnDefinition')]
+    public function testBuildColumnDefinition(string $expected, ColumnInterface|string $column): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->assertSame($expected, $qb->buildColumnDefinition($column));
+
+        $db->close();
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'prepareParam')]
+    public function testPrepareParam(string $expected, mixed $value, int $type): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $param = new Param($value, $type);
+        $this->assertSame($expected, $qb->prepareParam($param));
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'prepareValue')]
+    public function testPrepareValue(string $expected, mixed $value): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->assertSame($expected, $qb->prepareValue($value));
     }
 }

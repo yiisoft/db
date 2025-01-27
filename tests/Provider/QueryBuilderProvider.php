@@ -4,19 +4,27 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
-use Yiisoft\Db\Command\DataType;
+use ArrayIterator;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\Stub\Column;
+use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
+
+use function fopen;
 
 /**
  * @psalm-suppress MixedAssignment
@@ -135,13 +143,20 @@ class QueryBuilderProvider
         ];
     }
 
+    public static function alterColumn(): array
+    {
+        return [
+            [ColumnType::STRING, 'ALTER TABLE [foo1] CHANGE [bar] [bar] varchar(255)'],
+        ];
+    }
+
     public static function batchInsert(): array
     {
         return [
             'simple' => [
                 'customer',
-                ['email', 'name', 'address'],
                 [['test@example.com', 'silverfire', 'Kyiv {{city}}, Ukraine']],
+                ['email', 'name', 'address'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] ([[email]], [[name]], [[address]]) VALUES (:qp0, :qp1, :qp2)
@@ -152,8 +167,8 @@ class QueryBuilderProvider
             ],
             'escape-danger-chars' => [
                 'customer',
-                ['address'],
                 [["SQL-danger chars are escaped: '); --"]],
+                ['address'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] ([[address]]) VALUES (:qp0)
@@ -164,14 +179,14 @@ class QueryBuilderProvider
             ],
             'customer2' => [
                 'customer',
-                ['address'],
                 [],
-                '',
+                ['address'],
+                'expected' => '',
             ],
             'customer3' => [
                 'customer',
-                [],
                 [['no columns passed']],
+                [],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[customer]] VALUES (:qp0)
@@ -182,8 +197,8 @@ class QueryBuilderProvider
             ],
             'bool-false, bool2-null' => [
                 'type',
-                ['bool_col', 'bool_col2'],
                 [[false, null]],
+                ['bool_col', 'bool_col2'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
@@ -194,8 +209,8 @@ class QueryBuilderProvider
             ],
             'wrong' => [
                 '{{%type}}',
-                ['{{%type}}.[[float_col]]', '[[time]]'],
                 [[null, new Expression('now()')], [null, new Expression('now()')]],
+                ['{{%type}}.[[float_col]]', '[[time]]'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO {{%type}} ([[float_col]], [[time]]) VALUES (:qp0, now()), (:qp1, now())
@@ -206,8 +221,8 @@ class QueryBuilderProvider
             ],
             'bool-false, time-now()' => [
                 '{{%type}}',
-                ['{{%type}}.[[bool_col]]', '[[time]]'],
                 [[false, new Expression('now()')]],
+                ['{{%type}}.[[bool_col]]', '[[time]]'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO {{%type}} ([[bool_col]], [[time]]) VALUES (:qp0, now())
@@ -218,8 +233,8 @@ class QueryBuilderProvider
             ],
             'column table names are not checked' => [
                 '{{%type}}',
-                ['{{%type}}.[[bool_col]]', '{{%another_table}}.[[bool_col2]]'],
                 [[true, false]],
+                ['{{%type}}.[[bool_col]]', '{{%another_table}}.[[bool_col2]]'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO {{%type}} ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
@@ -230,18 +245,18 @@ class QueryBuilderProvider
             ],
             'empty-sql' => [
                 '{{%type}}',
-                [],
                 (static function () {
                     if (false) {
                         yield [];
                     }
                 })(),
-                '',
+                [],
+                'expected' => '',
             ],
             'empty columns and non-exists table' => [
                 'non_exists_table',
+                [['1.0', '2', 10, 1]],
                 [],
-                'values' => [['1.0', '2', 10, 1]],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
                     INSERT INTO [[non_exists_table]] VALUES (:qp0, :qp1, :qp2, :qp3)
@@ -271,9 +286,11 @@ class QueryBuilderProvider
             [['not', ''], '', []],
             [['not', '0'], 'NOT (0)', []],
             [['not', 'name'], 'NOT (name)', []],
-            [[
-                'not',
-                (new query(static::getDb()))->select('exists')->from('some_table'), ],
+            [
+                [
+                    'not',
+                    (new query(static::getDb()))->select('exists')->from('some_table'),
+                ],
                 'NOT ((SELECT [[exists]] FROM [[some_table]]))', [],
             ],
 
@@ -395,17 +412,18 @@ class QueryBuilderProvider
             [['in', 'id', [1]], '[[id]]=:qp0', [':qp0' => 1]],
             [['in', 'id', new TraversableObject([1])], '[[id]]=:qp0', [':qp0' => 1]],
             'composite in' => [
-                ['in', ['id', 'name'], [['id' => 1, 'name' => 'oy']]],
+                ['in', ['id', 'name'], [['id' => 1, 'name' => 'John Doe']]],
                 '([[id]], [[name]]) IN ((:qp0, :qp1))',
-                [':qp0' => 1, ':qp1' => 'oy'],
+                [':qp0' => 1, ':qp1' => 'John Doe'],
             ],
             'composite in with Expression' => [
-                ['in',
+                [
+                    'in',
                     [new Expression('id'), new Expression('name')],
-                    [['id' => 1, 'name' => 'oy']],
+                    [['id' => 1, 'name' => 'John Doe']],
                 ],
                 '(id, name) IN ((:qp0, :qp1))',
-                [':qp0' => 1, ':qp1' => 'oy'],
+                [':qp0' => 1, ':qp1' => 'John Doe'],
             ],
             'composite in (just one column)' => [
                 ['in', ['id'], [['id' => 1, 'name' => 'Name1'], ['id' => 2, 'name' => 'Name2']]],
@@ -456,10 +474,10 @@ class QueryBuilderProvider
                 [
                     'in',
                     new TraversableObject(['id', 'name']),
-                    new TraversableObject([['id' => 1, 'name' => 'oy'], ['id' => 2, 'name' => 'yo']]),
+                    new TraversableObject([['id' => 1, 'name' => 'John Doe'], ['id' => 2, 'name' => 'yo']]),
                 ],
                 '([[id]], [[name]]) IN ((:qp0, :qp1), (:qp2, :qp3))',
-                [':qp0' => 1, ':qp1' => 'oy', ':qp2' => 2, ':qp3' => 'yo'],
+                [':qp0' => 1, ':qp1' => 'John Doe', ':qp2' => 2, ':qp3' => 'yo'],
             ],
 
             /* in object conditions */
@@ -487,14 +505,14 @@ class QueryBuilderProvider
                 [':qp0' => 1],
             ],
             'inCondition-custom-4' => [
-                new InCondition(['id', 'name'], 'in', [['name' => 'oy']]),
+                new InCondition(['id', 'name'], 'in', [['name' => 'John Doe']]),
                 '([[id]], [[name]]) IN ((NULL, :qp0))',
-                [':qp0' => 'oy'],
+                [':qp0' => 'John Doe'],
             ],
             'inCondition-custom-5' => [
-                new InCondition(['id', 'name'], 'in', [['id' => 1, 'name' => 'oy']]),
+                new InCondition(['id', 'name'], 'in', [['id' => 1, 'name' => 'John Doe']]),
                 '([[id]], [[name]]) IN ((:qp0, :qp1))',
-                [':qp0' => 1, ':qp1' => 'oy'],
+                [':qp0' => 1, ':qp1' => 'John Doe'],
             ],
             'inCondition-custom-6' => [
                 new InCondition(
@@ -1524,14 +1542,198 @@ class QueryBuilderProvider
             'with one column' => ['a(b)', '[[a]]([[b]])'],
             'with columns' => ['a(b,c,d)', '[[a]]([[b]], [[c]], [[d]])'],
             'with extra space' => ['a(b,c,d) ', 'a(b,c,d) '],
+            'expression' => [new Expression('a(b,c,d)'), 'a(b,c,d)'],
         ];
     }
 
     public static function columnTypes(): array
     {
         return [
-            [SchemaInterface::TYPE_STRING],
-            [new Column('string(100)')],
+            [ColumnType::STRING],
+            [ColumnBuilder::string(100)],
+        ];
+    }
+
+    public static function overlapsCondition(): array
+    {
+        return [
+            [[], 0],
+            [[0], 0],
+            [[1], 1],
+            [[4], 1],
+            [[3], 2],
+            [[0, 1], 1],
+            [[1, 2], 1],
+            [[1, 4], 2],
+            [[0, 1, 2, 3, 4, 5, 6], 2],
+            [[6, 7, 8, 9], 0],
+            [new ArrayIterator([0, 1, 2, 7]), 1],
+            'null' => [[null], 1],
+            'expression' => [new Expression("'[0,1,2,7]'"), 1],
+            'json expression' => [new JsonExpression([0,1,2,7]), 1],
+            'query expression' => [(new Query(static::getDb()))->select(new JsonExpression([0,1,2,7])), 1],
+        ];
+    }
+
+    public static function buildColumnDefinition(): array
+    {
+        $reference = new ForeignKeyConstraint();
+        $reference->foreignColumnNames(['id']);
+        $reference->foreignTableName('ref_table');
+        $reference->onDelete('CASCADE');
+        $reference->onUpdate('CASCADE');
+
+        $referenceWithSchema = clone $reference;
+        $referenceWithSchema->foreignSchemaName('ref_schema');
+
+        return [
+            PseudoType::PK => ['integer PRIMARY KEY AUTOINCREMENT', PseudoType::PK],
+            PseudoType::UPK => ['integer UNSIGNED PRIMARY KEY AUTOINCREMENT', PseudoType::UPK],
+            PseudoType::BIGPK => ['bigint PRIMARY KEY AUTOINCREMENT', PseudoType::BIGPK],
+            PseudoType::UBIGPK => ['bigint UNSIGNED PRIMARY KEY AUTOINCREMENT', PseudoType::UBIGPK],
+            PseudoType::UUID_PK => ['uuid PRIMARY KEY DEFAULT uuid()', PseudoType::UUID_PK],
+            PseudoType::UUID_PK_SEQ => ['uuid PRIMARY KEY DEFAULT uuid()', PseudoType::UUID_PK_SEQ],
+            'STRING' => ['varchar(255)', ColumnType::STRING],
+            'STRING(100)' => ['varchar(100)', ColumnType::STRING . '(100)'],
+
+            'primaryKey()' => ['integer PRIMARY KEY AUTOINCREMENT', ColumnBuilder::primaryKey()],
+            'primaryKey(false)' => ['integer PRIMARY KEY', ColumnBuilder::primaryKey(false)],
+            'smallPrimaryKey()' => ['smallint PRIMARY KEY AUTOINCREMENT', ColumnBuilder::smallPrimaryKey()],
+            'smallPrimaryKey(false)' => ['smallint PRIMARY KEY', ColumnBuilder::smallPrimaryKey(false)],
+            'bigPrimaryKey()' => ['bigint PRIMARY KEY AUTOINCREMENT', ColumnBuilder::bigPrimaryKey()],
+            'bigPrimaryKey(false)' => ['bigint PRIMARY KEY', ColumnBuilder::bigPrimaryKey(false)],
+            'uuidPrimaryKey()' => ['uuid PRIMARY KEY DEFAULT uuid()', ColumnBuilder::uuidPrimaryKey()],
+            'uuidPrimaryKey(false)' => ['uuid PRIMARY KEY', ColumnBuilder::uuidPrimaryKey(false)],
+
+            'boolean()' => ['boolean', ColumnBuilder::boolean()],
+            'boolean(100)' => ['boolean', ColumnBuilder::boolean()->size(100)],
+            'bit()' => ['bit', ColumnBuilder::bit()],
+            'bit(1)' => ['bit(1)', ColumnBuilder::bit(1)],
+            'bit(8)' => ['bit(8)', ColumnBuilder::bit(8)],
+            'bit(64)' => ['bit(64)', ColumnBuilder::bit(64)],
+            'tinyint()' => ['tinyint', ColumnBuilder::tinyint()],
+            'tinyint(2)' => ['tinyint(2)', ColumnBuilder::tinyint(2)],
+            'smallint()' => ['smallint', ColumnBuilder::smallint()],
+            'smallint(4)' => ['smallint(4)', ColumnBuilder::smallint(4)],
+            'integer()' => ['integer', ColumnBuilder::integer()],
+            'integer(8)' => ['integer(8)', ColumnBuilder::integer(8)],
+            'bigint()' => ['bigint', ColumnBuilder::bigint()],
+            'bigint(15)' => ['bigint(15)', ColumnBuilder::bigint(15)],
+            'float()' => ['float', ColumnBuilder::float()],
+            'float(10)' => ['float(10)', ColumnBuilder::float(10)],
+            'float(10,2)' => ['float(10,2)', ColumnBuilder::float(10, 2)],
+            'double()' => ['double', ColumnBuilder::double()],
+            'double(10)' => ['double(10)', ColumnBuilder::double(10)],
+            'double(10,2)' => ['double(10,2)', ColumnBuilder::double(10, 2)],
+            'decimal()' => ['decimal(10,0)', ColumnBuilder::decimal()],
+            'decimal(5)' => ['decimal(5,0)', ColumnBuilder::decimal(5)],
+            'decimal(5,2)' => ['decimal(5,2)', ColumnBuilder::decimal(5, 2)],
+            'decimal(null)' => ['decimal', ColumnBuilder::decimal(null)],
+            'money()' => ['money', ColumnBuilder::money()],
+            'money(10)' => ['money', ColumnBuilder::money(10)],
+            'money(10,2)' => ['money', ColumnBuilder::money(10, 2)],
+            'money(null)' => ['money', ColumnBuilder::money(null)],
+            'char()' => ['char(1)', ColumnBuilder::char()],
+            'char(10)' => ['char(10)', ColumnBuilder::char(10)],
+            'char(null)' => ['char', ColumnBuilder::char(null)],
+            'string()' => ['varchar(255)', ColumnBuilder::string()],
+            'string(100)' => ['varchar(100)', ColumnBuilder::string(100)],
+            'string(null)' => ['varchar(255)', ColumnBuilder::string(null)],
+            'text()' => ['text', ColumnBuilder::text()],
+            'text(1000)' => ['text(1000)', ColumnBuilder::text(1000)],
+            'binary()' => ['binary', ColumnBuilder::binary()],
+            'binary(1000)' => ['binary(1000)', ColumnBuilder::binary(1000)],
+            'uuid()' => ['uuid', ColumnBuilder::uuid()],
+            'datetime()' => ['datetime(0)', ColumnBuilder::datetime()],
+            'datetime(6)' => ['datetime(6)', ColumnBuilder::datetime(6)],
+            'datetime(null)' => ['datetime', ColumnBuilder::datetime(null)],
+            'timestamp()' => ['timestamp(0)', ColumnBuilder::timestamp()],
+            'timestamp(6)' => ['timestamp(6)', ColumnBuilder::timestamp(6)],
+            'timestamp(null)' => ['timestamp', ColumnBuilder::timestamp(null)],
+            'date()' => ['date', ColumnBuilder::date()],
+            'date(100)' => ['date', ColumnBuilder::date()->size(100)],
+            'time()' => ['time(0)', ColumnBuilder::time()],
+            'time(6)' => ['time(6)', ColumnBuilder::time(6)],
+            'time(null)' => ['time', ColumnBuilder::time(null)],
+            'array()' => ['json', ColumnBuilder::array()],
+            'structured()' => ['json', ColumnBuilder::structured()],
+            "structured('json')" => ['json', ColumnBuilder::structured('json')],
+            'json()' => ['json', ColumnBuilder::json()],
+            'json(100)' => ['json', ColumnBuilder::json()->size(100)],
+
+            "extra('NOT NULL')" => ['varchar(255) NOT NULL', ColumnBuilder::string()->extra('NOT NULL')],
+            "extra('')" => ['varchar(255)', ColumnBuilder::string()->extra('')],
+            "check('value > 5')" => ['integer CHECK ([col_59] > 5)', ColumnBuilder::integer()->check(DbHelper::replaceQuotes('[[col_59]] > 5', static::$driverName))],
+            "check('')" => ['integer', ColumnBuilder::integer()->check('')],
+            'check(null)' => ['integer', ColumnBuilder::integer()->check(null)],
+            "comment('comment')" => ['varchar(255)', ColumnBuilder::string()->comment('comment')],
+            "comment('')" => ['varchar(255)', ColumnBuilder::string()->comment('')],
+            'comment(null)' => ['varchar(255)', ColumnBuilder::string()->comment(null)],
+            "defaultValue('value')" => ["varchar(255) DEFAULT 'value'", ColumnBuilder::string()->defaultValue('value')],
+            "defaultValue('')" => ["varchar(255) DEFAULT ''", ColumnBuilder::string()->defaultValue('')],
+            'defaultValue(null)' => ['varchar(255) DEFAULT NULL', ColumnBuilder::string()->defaultValue(null)],
+            'defaultValue($expression)' => ['integer DEFAULT (1 + 2)', ColumnBuilder::integer()->defaultValue(new Expression('(1 + 2)'))],
+            'defaultValue($emptyExpression)' => ['integer', ColumnBuilder::integer()->defaultValue(new Expression(''))],
+            "integer()->defaultValue('')" => ['integer DEFAULT NULL', ColumnBuilder::integer()->defaultValue('')],
+            'notNull()' => ['varchar(255) NOT NULL', ColumnBuilder::string()->notNull()],
+            'null()' => ['varchar(255) NULL', ColumnBuilder::string()->null()],
+            'integer()->primaryKey()' => ['integer PRIMARY KEY', ColumnBuilder::integer()->primaryKey()],
+            'string()->primaryKey()' => ['varchar(255) PRIMARY KEY', ColumnBuilder::string()->primaryKey()],
+            'size(10)' => ['varchar(10)', ColumnBuilder::string()->size(10)],
+            'unique()' => ['varchar(255) UNIQUE', ColumnBuilder::string()->unique()],
+            'unsigned()' => ['integer UNSIGNED', ColumnBuilder::integer()->unsigned()],
+            'scale(2)' => ['decimal(10,2)', ColumnBuilder::decimal()->scale(2)],
+            'integer(8)->scale(2)' => ['integer(8)', ColumnBuilder::integer(8)->scale(2)],
+            'reference($reference)' => [
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    integer REFERENCES [[ref_table]] ([[id]]) ON DELETE CASCADE ON UPDATE CASCADE
+                    SQL,
+                    static::$driverName,
+                ),
+                ColumnBuilder::integer()->reference($reference),
+            ],
+            'reference($referenceWithSchema)' => [
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    integer REFERENCES [[ref_schema]].[[ref_table]] ([[id]]) ON DELETE CASCADE ON UPDATE CASCADE
+                    SQL,
+                    static::$driverName,
+                ),
+                ColumnBuilder::integer()->reference($referenceWithSchema),
+            ],
+        ];
+    }
+
+    public static function prepareParam(): array
+    {
+        return [
+            'null' => ['NULL', null, DataType::NULL],
+            'true' => ['TRUE', true, DataType::BOOLEAN],
+            'false' => ['FALSE', false, DataType::BOOLEAN],
+            'integer' => ['1', 1, DataType::INTEGER],
+            'integerString' => ['1', '1 or 1=1', DataType::INTEGER],
+            'float' => ['1.1', 1.1, DataType::STRING],
+            'string' => ["'string'", 'string', DataType::STRING],
+            'binary' => ['0x737472696e67', 'string', DataType::LOB],
+        ];
+    }
+
+    public static function prepareValue(): array
+    {
+        return [
+            'null' => ['NULL', null],
+            'true' => ['TRUE', true],
+            'false' => ['FALSE', false],
+            'integer' => ['1', 1],
+            'float' => ['1.1', 1.1],
+            'string' => ["'string'", 'string'],
+            'binary' => ['0x737472696e67', fopen(__DIR__ . '/../Support/string.txt', 'rb')],
+            'paramBinary' => ['0x737472696e67', new Param('string', DataType::LOB)],
+            'paramString' => ["'string'", new Param('string', DataType::STRING)],
+            'paramInteger' => ['1', new Param(1, DataType::INTEGER)],
+            'expression' => ['(1 + 2)', new Expression('(1 + 2)')],
+            'Stringable' => ["'string'", new Stringable('string')],
         ];
     }
 }

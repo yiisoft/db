@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 
 use JsonException;
+use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -12,12 +13,16 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\Stub\QueryBuilder;
 use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\TestTrait;
+
+use function fclose;
+use function fopen;
+use function stream_context_create;
 
 /**
  * @group db
@@ -50,19 +55,19 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
      */
     public function testBatchInsert(
         string $table,
-        array $columns,
         iterable $rows,
+        array $columns,
         string $expected,
         array $expectedParams = [],
     ): void {
         $db = $this->getConnection();
 
         $schemaMock = $this->createMock(Schema::class);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
+        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
         $params = [];
 
         try {
-            $this->assertSame($expected, $qb->batchInsert($table, $columns, $rows, $params));
+            $this->assertSame($expected, $qb->insertBatch($table, $rows, $columns, $params));
             $this->assertSame($expectedParams, $params);
         } catch (InvalidArgumentException|Exception) {
         }
@@ -108,9 +113,9 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
             DbHelper::replaceQuotes(
                 <<<SQL
                 CREATE TABLE [[test]] (
-                \t[[id]] pk,
-                \t[[name]] string(255) NOT NULL,
-                \t[[email]] string(255) NOT NULL,
+                \t[[id]] integer PRIMARY KEY AUTOINCREMENT,
+                \t[[name]] varchar(255) NOT NULL,
+                \t[[email]] varchar(255) NOT NULL,
                 \t[[status]] integer NOT NULL,
                 \t[[created_at]] datetime NOT NULL,
                 \tUNIQUE test_email_unique (email)
@@ -123,7 +128,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 [
                     'id' => 'pk',
                     'name' => 'string(255) NOT NULL',
-                    'email' => (new Column('string(255)'))->notNull(),
+                    'email' => ColumnBuilder::string()->notNull(),
                     'status' => 'integer NOT NULL',
                     'created_at' => 'datetime NOT NULL',
                     'UNIQUE test_email_unique (email)',
@@ -143,7 +148,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $schemaMock = $this->createMock(Schema::class);
         $subQuery = (new Query($db))->select('{{bar}}')->from('{{testCreateViewTable}}')->where(['>', 'bar', '5']);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
+        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
 
         $this->assertSame(
             <<<SQL
@@ -200,7 +205,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $db = $this->getConnection();
 
         $schemaMock = $this->createMock(Schema::class);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
+        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
 
         $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
         $this->assertSame($expectedParams, $params);
@@ -261,7 +266,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $db = $this->getConnection();
 
         $schemaMock = $this->createMock(Schema::class);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock);
+        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
 
         $sql = $qb->update($table, $columns, $condition, $params);
         $sql = $qb->quoter()->quoteSql($sql);
@@ -313,5 +318,36 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $actualParams = [];
         $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
+    }
+
+    public function testPrepareValueClosedResource(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectExceptionObject(new InvalidArgumentException('Resource is closed.'));
+
+        $resource = fopen('php://memory', 'r');
+        fclose($resource);
+
+        $qb->prepareValue($resource);
+    }
+
+    public function testPrepareValueNonStreamResource(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectExceptionObject(new InvalidArgumentException('Supported only stream resource type.'));
+
+        $qb->prepareValue(stream_context_create());
+    }
+
+    public function testGetServerInfo(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->assertInstanceOf(ServerInfoInterface::class, $qb->getServerInfo());
     }
 }
