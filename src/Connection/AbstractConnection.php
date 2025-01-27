@@ -38,9 +38,9 @@ abstract class AbstractConnection implements ConnectionInterface
         return $this->transaction;
     }
 
-    public function createBatchQueryResult(QueryInterface $query, bool $each = false): BatchQueryResultInterface
+    public function createBatchQueryResult(QueryInterface $query): BatchQueryResultInterface
     {
-        return new BatchQueryResult($query, $each);
+        return new BatchQueryResult($query);
     }
 
     public function getTablePrefix(): string
