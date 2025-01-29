@@ -29,7 +29,7 @@ class ColumnDefinitionParser
      *     check?: string,
      *     comment?: string,
      *     defaultValueRaw?: string,
-     *     dimension?: int,
+     *     dimension?: positive-int,
      *     enumValues?: list<string>,
      *     extra?: string,
      *     notNull?: bool,
