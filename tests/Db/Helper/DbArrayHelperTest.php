@@ -67,4 +67,38 @@ final class DbArrayHelperTest extends TestCase
 
         DbArrayHelper::index($rows, 'non-existing-key', ['key']);
     }
+
+    public function testIndexWithArrangeBy(): void
+    {
+        $rows = [
+            ['key' => 'value1'],
+            ['key' => 'value2'],
+        ];
+
+        set_error_handler(static function (int $errno, string $errstr) {
+            restore_error_handler();
+            throw new \Exception('E_WARNING: ' . $errstr, $errno);
+        }, E_WARNING);
+
+        $this->expectExceptionMessage('E_WARNING: Undefined array key "non-existing-key"');
+
+        DbArrayHelper::index($rows, null, ['non-existing-key']);
+    }
+
+    public function testIndexWithClosureIndexByAndArrangeBy(): void
+    {
+        $rows = [
+            ['key' => 'value1'],
+            ['key' => 'value2'],
+        ];
+
+        $this->assertSame([
+            'value1' => [
+                'value1' => ['key' => 'value1'],
+            ],
+            'value2' => [
+                'value2' => ['key' => 'value2'],
+            ],
+        ], DbArrayHelper::index($rows, fn ($row) => $row['key'], ['key']));
+    }
 }
