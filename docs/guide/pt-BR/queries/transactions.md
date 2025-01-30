@@ -5,7 +5,7 @@ Para que os dados sejam consistentes quando vários comandos estiverem envolvido
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 
 /** @var ConnectionInterface $db */
 

@@ -5,19 +5,17 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\PhpType;
-
-use function is_int;
+use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
- * Represents the schema for an integer column.
+ * Represents the metadata for a bit column.
  */
-class IntegerColumnSchema extends AbstractColumnSchema
+class BitColumn extends AbstractColumn
 {
-    protected const DEFAULT_TYPE = ColumnType::INTEGER;
+    protected const DEFAULT_TYPE = ColumnType::BIT;
 
-    public function dbTypecast(mixed $value): int|ExpressionInterface|null
+    public function dbTypecast(mixed $value): int|string|ExpressionInterface|null
     {
         if (is_int($value)) {
             return $value;

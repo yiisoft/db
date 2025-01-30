@@ -9,8 +9,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * Defines methods for building SQL statements for DDL (data definition language).
@@ -37,17 +36,22 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table to add the new column will to.
      * @param string $column The name of the new column.
-     * @param ColumnInterface|ColumnSchemaInterface|string $type The column type.
-     * {@see getColumnType()} Method will be invoked to convert an abstract column type (if any) into the physical one.
-     * Anything that isn't recognized as an abstract type will be kept in the generated SQL.
-     * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become
-     * 'varchar(255) not null'.
+     * @param ColumnInterface|string $type The column type which can contain a native database column type,
+     * {@see ColumnType abstract} or {@see PseudoType pseudo} type, or can be represented as instance of
+     * {@see ColumnInterface}.
+     *
+     * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
+     * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
+     * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
+     *
+     * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * {@see ColumnInterface}.
      *
      * @return string The SQL statement for adding a new column.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function addColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): string;
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): string;
 
     /**
      * Builds an SQL command for adding comment to column.
@@ -160,17 +164,22 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table whose column is to change.
      * @param string $column The name of the column to change.
-     * @param ColumnInterface|ColumnSchemaInterface|string $type The new column type.
-     * {@see getColumnType()} Method will be invoked to convert an abstract column type (if any) into the physical one.
-     * Anything that isn't recognized as an abstract type will be kept in the generated SQL.
-     * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become
-     * 'varchar(255) not null'.
+     * @param ColumnInterface|string $type The column type which can contain a native database column type,
+     * {@see ColumnType abstract} or {@see PseudoType pseudo} type, or can be represented as instance of
+     * {@see ColumnInterface}.
+     *
+     * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
+     * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
+     * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
+     *
+     * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * {@see ColumnInterface}.
      *
      * @return string The SQL statement for changing the definition of a column.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function alterColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): string;
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): string;
 
     /**
      * Builds an SQL statement for enabling or disabling integrity check.
@@ -220,14 +229,14 @@ interface DDLQueryBuilderInterface
      * The columns in the new table should be specified as name-definition pairs (e.g. 'name' => 'string'), where name
      * is the name of the column which will be properly quoted by the method, and definition is the type of the column
      * which can contain a native database column type, {@see ColumnType abstract} or {@see PseudoType pseudo} type,
-     * or can be represented as instance of {@see ColumnSchemaInterface}.
+     * or can be represented as instance of {@see ColumnInterface}.
      *
      * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
      * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
      * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
      *
-     * The preferred method is to use {@see ColumnBuilder} to generate column definitions as instances of
-     * {@see ColumnSchemaInterface}.
+     * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * {@see ColumnInterface}.
      *
      * ```php
      * $this->createTable(
@@ -250,14 +259,14 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The name of the table to create.
      * @param array $columns The columns (name => definition) in the new table.
-     * The definition can be `string` or {@see ColumnInterface} or {@see ColumnSchemaInterface} instance.
+     * The definition can be `string` or {@see ColumnInterface} instance.
      * @param string|null $options More SQL fragments to append to the generated SQL.
      *
      * @return string The SQL statement for creating a new DB table.
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      *
-     * @psalm-param array<string, ColumnInterface|ColumnSchemaInterface>|string[] $columns
+     * @psalm-param array<string, ColumnInterface>|string[] $columns
      */
     public function createTable(string $table, array $columns, string $options = null): string;
 

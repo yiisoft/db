@@ -11,24 +11,24 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\StructuredExpression;
-use Yiisoft\Db\Schema\Column\ArrayColumnSchema;
+use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
-use Yiisoft\Db\Schema\Column\IntegerColumnSchema;
-use Yiisoft\Db\Schema\Column\StringColumnSchema;
-use Yiisoft\Db\Schema\Column\StructuredColumnSchema;
-use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
+use Yiisoft\Db\Schema\Column\StringColumn;
+use Yiisoft\Db\Schema\Column\StructuredColumn;
+use Yiisoft\Db\Tests\Support\Stub\Column;
 
 /**
  * @group db
  *
  * @psalm-suppress PropertyNotSetInConstructor
  */
-final class ColumnSchemaTest extends TestCase
+final class ColumnTest extends TestCase
 {
     public function testAllowNull(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertTrue($column->isAllowNull());
         $this->assertSame($column, $column->allowNull());
@@ -45,7 +45,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testAutoIncrement(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertFalse($column->isAutoIncrement());
         $this->assertSame($column, $column->autoIncrement());
@@ -62,7 +62,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testCheck(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertNull($column->getCheck());
         $this->assertSame($column, $column->check('age > 0'));
@@ -75,7 +75,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testComment(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertNull($column->getComment());
         $this->assertSame($column, $column->comment('test'));
@@ -88,7 +88,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testComputed(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertFalse($column->isComputed());
         $this->assertSame($column, $column->computed());
@@ -105,7 +105,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testDbType(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertNull($column->getDbType());
         $this->assertSame($column, $column->dbType('test'));
@@ -118,7 +118,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testDefaultValue(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertFalse($column->hasDefaultValue());
         $this->assertNull($column->getDefaultValue());
@@ -134,7 +134,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testEnumValues(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertNull($column->getEnumValues());
         $this->assertSame($column, $column->enumValues(['positive', 'negative']));
@@ -147,7 +147,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testExtra(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertNull($column->getExtra());
         $this->assertSame($column, $column->extra('test'));
@@ -158,30 +158,33 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame('', $column->getExtra());
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider::construct */
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::construct */
     public function testConstruct(string $parameter, mixed $value, string $method, mixed $expected): void
     {
-        $column = new ColumnSchema(...[$parameter => $value]);
+        $column = new Column(...[$parameter => $value]);
 
         $this->assertSame($expected, $column->$method());
     }
 
     public function testName(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertNull($column->getName());
-        $this->assertSame($column, $column->name('test'));
-        $this->assertSame('test', $column->getName());
 
-        $column->name('');
+        $newColumn = $column->withName('test');
 
-        $this->assertSame('', $column->getName());
+        $this->assertNotSame($column, $newColumn);
+        $this->assertSame('test', $newColumn->getName());
+
+        $newColumn = $newColumn->withName('');
+
+        $this->assertSame('', $newColumn->getName());
     }
 
     public function testNotNull(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertNull($column->isNotNull());
         $this->assertSame($column, $column->notNull());
@@ -202,7 +205,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testPrecision(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertNull($column->getPrecision());
         $this->assertSame($column, $column->precision(10));
@@ -215,7 +218,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testPrimaryKey(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertFalse($column->isPrimaryKey());
         $this->assertSame($column, $column->primaryKey());
@@ -232,7 +235,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testReference(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
         $fk = new ForeignKeyConstraint();
 
         $this->assertNull($column->getReference());
@@ -246,7 +249,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testScale(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertNull($column->getScale());
         $this->assertSame($column, $column->scale(10));
@@ -259,7 +262,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testSize(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertNull($column->getSize());
         $this->assertSame($column, $column->size(10));
@@ -272,7 +275,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testType(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertSame('', $column->getType());
         $this->assertSame($column, $column->type('test'));
@@ -285,7 +288,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testUnique(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertFalse($column->isUnique());
         $this->assertSame($column, $column->unique());
@@ -302,7 +305,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testUnsigned(): void
     {
-        $column = new ColumnSchema();
+        $column = new Column();
 
         $this->assertFalse($column->isUnsigned());
         $this->assertSame($column, $column->unsigned());
@@ -319,21 +322,21 @@ final class ColumnSchemaTest extends TestCase
 
     public function testArrayColumnGetColumn(): void
     {
-        $arrayCol = new ArrayColumnSchema();
-        $intCol = new IntegerColumnSchema();
+        $arrayCol = new ArrayColumn();
+        $intCol = new IntegerColumn();
 
-        $this->assertInstanceOf(StringColumnSchema::class, $arrayCol->getColumn());
+        $this->assertInstanceOf(StringColumn::class, $arrayCol->getColumn());
         $this->assertSame($arrayCol, $arrayCol->column($intCol));
         $this->assertSame($intCol, $arrayCol->getColumn());
 
         $arrayCol->column(null);
 
-        $this->assertInstanceOf(StringColumnSchema::class, $arrayCol->getColumn());
+        $this->assertInstanceOf(StringColumn::class, $arrayCol->getColumn());
     }
 
     public function testArrayColumnGetDimension(): void
     {
-        $arrayCol = new ArrayColumnSchema();
+        $arrayCol = new ArrayColumn();
 
         $this->assertSame(1, $arrayCol->getDimension());
 
@@ -341,8 +344,8 @@ final class ColumnSchemaTest extends TestCase
         $this->assertSame(2, $arrayCol->getDimension());
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnSchemaProvider::dbTypecastArrayColumns */
-    public function testArrayColumnDbTypecast(ColumnSchemaInterface $column, array $values): void
+    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::dbTypecastArrayColumns */
+    public function testArrayColumnDbTypecast(ColumnInterface $column, array $values): void
     {
         $arrayCol = ColumnBuilder::array($column);
 
@@ -359,7 +362,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testArrayColumnDbTypecastSimple()
     {
-        $arrayCol = new ArrayColumnSchema();
+        $arrayCol = new ArrayColumn();
 
         $this->assertNull($arrayCol->dbTypecast(null));
         $this->assertEquals(new ArrayExpression([]), $arrayCol->dbTypecast(''));
@@ -369,7 +372,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testArrayColumnPhpTypecast()
     {
-        $arrayCol = new ArrayColumnSchema();
+        $arrayCol = new ArrayColumn();
 
         $this->assertNull($arrayCol->phpTypecast(null));
         $this->assertNull($arrayCol->phpTypecast(1));
@@ -378,7 +381,7 @@ final class ColumnSchemaTest extends TestCase
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Schema\Column\ArrayColumnSchema::getParser() is not supported. Use concrete DBMS implementation.'
+            'Yiisoft\Db\Schema\Column\ArrayColumn::getParser() is not supported. Use concrete DBMS implementation.'
         );
 
         $arrayCol->phpTypecast('{1,2,3}');
@@ -386,7 +389,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testStructuredColumnGetColumns(): void
     {
-        $structuredCol = new StructuredColumnSchema();
+        $structuredCol = new StructuredColumn();
         $columns = [
             'value' => ColumnBuilder::money(),
             'currency_code' => ColumnBuilder::char(3),
@@ -399,7 +402,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testStructuredColumnDbTypecast(): void
     {
-        $structuredCol = new StructuredColumnSchema();
+        $structuredCol = new StructuredColumn();
         $expression = new Expression('expression');
         $structuredExpression = new StructuredExpression(['value' => 1, 'currency_code' => 'USD']);
 
@@ -411,7 +414,7 @@ final class ColumnSchemaTest extends TestCase
 
     public function testStructuredColumnPhpTypecast(): void
     {
-        $structuredCol = new StructuredColumnSchema();
+        $structuredCol = new StructuredColumn();
         $columns = [
             'int' => ColumnBuilder::integer(),
             'bool' => ColumnBuilder::boolean(),
@@ -432,7 +435,7 @@ final class ColumnSchemaTest extends TestCase
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\Schema\Column\StructuredColumnSchema::getParser() is not supported. Use concrete DBMS implementation.'
+            'Yiisoft\Db\Schema\Column\StructuredColumn::getParser() is not supported. Use concrete DBMS implementation.'
         );
 
         $structuredCol->phpTypecast('(1,true)');

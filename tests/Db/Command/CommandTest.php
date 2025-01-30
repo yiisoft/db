@@ -7,7 +7,8 @@ namespace Yiisoft\Db\Tests\Db\Command;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -42,7 +43,7 @@ final class CommandTest extends AbstractCommandTest
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::columnTypes */
-    public function testAddColumn(ColumnSchemaInterface|string $type): void
+    public function testAddColumn(ColumnInterface|string $type): void
     {
         $db = $this->getConnection();
 
@@ -239,6 +240,7 @@ final class CommandTest extends AbstractCommandTest
         \t[address] varchar(255) NOT NULL,
         \t[status] integer NOT NULL,
         \t[profile_id] integer NOT NULL,
+        \t[data] json CHECK (json_valid([data])),
         \t[created_at] timestamp NOT NULL,
         \t[updated_at] timestamp NOT NULL
         ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
@@ -250,6 +252,7 @@ final class CommandTest extends AbstractCommandTest
             'address' => ColumnType::STRING . '(255) NOT NULL',
             'status' => ColumnType::INTEGER . ' NOT NULL',
             'profile_id' => ColumnType::INTEGER . ' NOT NULL',
+            'data' => ColumnBuilder::json(),
             'created_at' => ColumnType::TIMESTAMP . ' NOT NULL',
             'updated_at' => ColumnType::TIMESTAMP . ' NOT NULL',
         ];

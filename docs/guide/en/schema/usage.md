@@ -74,7 +74,7 @@ echo $tableSchema->getCreateSql();
 In the full name is a table name prefixed by database schema.
 If the schema name is the same as the default schema, the full name won't include the schema name.
 
-### Retrieving column schemas
+### Retrieving table columns
 
 You can retrieve the column metadata for a given table using either the `getColumns()` method or `getColumn()` method
 of `TableSchema` class:
@@ -95,5 +95,5 @@ $column = $tableSchema->getColumn('id');
 echo 'id (' . $column->getDbType() . ')';
 ```
 
-In either case you get instance or instances
-or `ColumnSchemaInterface` that you can use to get all the information about the column.
+In either case you get instance or instances of `ColumnInterface` that you can use to get available information about 
+the column.

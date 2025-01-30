@@ -6,6 +6,8 @@ namespace Yiisoft\Db\Tests\Common;
 
 use ReflectionException;
 use Throwable;
+use Yiisoft\Db\Constant\DataType;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
@@ -19,6 +21,7 @@ use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Helper\DbUuidHelper;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
@@ -2029,8 +2032,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ['id' => $inserted['id']]
         )->queryOne();
 
-        $columnSchema = $db->getTableSchema('{{%order}}')->getColumn('total');
-        $phpTypecastValue = $columnSchema->phpTypecast($result['total']);
+        $column = $db->getTableSchema('{{%order}}')->getColumn('total');
+        $phpTypecastValue = $column->phpTypecast($result['total']);
 
         $this->assertSame($decimalValue, $phpTypecastValue);
     }
@@ -2056,5 +2059,50 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $pkValues = $db->createCommand()->insertWithReturningPks('negative_default_values', []);
 
         $this->assertSame([], $pkValues);
+    }
+
+    public function testUuid(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        $tableName = '{{%test_uuid}}';
+        if ($db->getTableSchema($tableName, true)) {
+            $db->createCommand()->dropTable($tableName)->execute();
+        }
+
+        $command->createTable($tableName, [
+            'uuid_pk' => ColumnBuilder::uuidPrimaryKey(),
+            'int_col' => ColumnBuilder::integer(),
+        ])->execute();
+        $tableSchema = $db->getTableSchema($tableName, true);
+        $this->assertNotNull($tableSchema);
+
+        $uuidValue = $uuidSource = '738146be-87b1-49f2-9913-36142fb6fcbe';
+
+        $uuidValue = match ($db->getDriverName()) {
+            'oci' => new Expression("HEXTORAW(REPLACE(:uuid, '-', ''))", [':uuid' => $uuidValue]),
+            'mysql' => new Expression("UNHEX(REPLACE(:uuid, '-', ''))", [':uuid' => $uuidValue]),
+            'sqlite' => new Param(DbUuidHelper::uuidToBlob($uuidValue), DataType::LOB),
+            'sqlsrv' => new Expression('CONVERT(uniqueidentifier, :uuid)', [':uuid' => $uuidValue]),
+            default => $uuidValue,
+        };
+
+        $command->insert($tableName, [
+            'int_col' => 1,
+            'uuid_pk' => $uuidValue,
+        ])->execute();
+
+        $uuid = (new Query($db))
+            ->select(['[[uuid_pk]]'])
+            ->from($tableName)
+            ->where(['int_col' => 1])
+            ->scalar();
+
+        $uuidString = strtolower(DbUuidHelper::toUuid($uuid));
+
+        $this->assertSame($uuidSource, $uuidString);
+
+        $db->close();
     }
 }

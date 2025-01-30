@@ -4,24 +4,25 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use PDO;
+use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\GettypeResult;
-use Yiisoft\Db\Constant\PhpType;
 
 use function gettype;
 
 /**
- * Represents the metadata for a string column.
+ * Represents the metadata for a binary column.
  */
-class StringColumnSchema extends AbstractColumnSchema
+class BinaryColumn extends AbstractColumn
 {
-    protected const DEFAULT_TYPE = ColumnType::STRING;
+    protected const DEFAULT_TYPE = ColumnType::BINARY;
 
     public function dbTypecast(mixed $value): mixed
     {
         return match (gettype($value)) {
-            GettypeResult::STRING => $value,
+            GettypeResult::STRING => new Param($value, PDO::PARAM_LOB),
             GettypeResult::RESOURCE => $value,
             GettypeResult::NULL => null,
             GettypeResult::BOOLEAN => $value ? '1' : '0',
@@ -29,15 +30,8 @@ class StringColumnSchema extends AbstractColumnSchema
         };
     }
 
-    /** @psalm-mutation-free */
-    public function getPhpType(): string
+    public function phpTypecast(mixed $value): mixed
     {
-        return PhpType::STRING;
-    }
-
-    public function phpTypecast(mixed $value): string|null
-    {
-        /** @var string|null $value */
         return $value;
     }
 }

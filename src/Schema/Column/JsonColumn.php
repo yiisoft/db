@@ -14,7 +14,7 @@ use function json_decode;
 /**
  * Represents the schema for a json column.
  */
-class JsonColumnSchema extends AbstractColumnSchema
+class JsonColumn extends AbstractColumn
 {
     protected const DEFAULT_TYPE = ColumnType::JSON;
 

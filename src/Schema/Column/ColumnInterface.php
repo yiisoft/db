@@ -9,10 +9,9 @@ use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 
 /**
- * This interface defines a set of methods that must be implemented by a class that represents the column schema of a
- * database table column.
+ * This interface defines a set of methods that must be implemented by a class that represents a database table column.
  */
-interface ColumnSchemaInterface
+interface ColumnInterface
 {
     /**
      * Whether to allow `null` values.
@@ -199,7 +198,6 @@ interface ColumnSchemaInterface
     /**
      * @return string|null The name of the column.
      *
-     * @deprecated Will be removed in version 2.0.
      * @psalm-mutation-free
      */
     public function getName(): string|null;
@@ -319,19 +317,6 @@ interface ColumnSchemaInterface
      * @psalm-mutation-free
      */
     public function isUnsigned(): bool;
-
-    /**
-     * Sets a name of the column.
-     *
-     * ```php
-     * $columns = [
-     *     'id' => ColumnBuilder::primaryKey()->name('id'),
-     * ];
-     * ```
-     *
-     * @deprecated Will be removed in version 2.0.
-     */
-    public function name(string|null $name): static;
 
     /**
      * Whether the column is not nullable.
@@ -454,4 +439,15 @@ interface ColumnSchemaInterface
      * ```
      */
     public function unsigned(bool $unsigned = true): static;
+
+    /**
+     * Returns a new instance with the specified name of the column.
+     *
+     * ```php
+     * $columns = [
+     *     'id' => ColumnBuilder::primaryKey()->withName('id'),
+     * ];
+     * ```
+     */
+    public function withName(string|null $name): static;
 }

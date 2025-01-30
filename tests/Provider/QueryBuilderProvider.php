@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use ArrayIterator;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
@@ -21,7 +21,6 @@ use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
-use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
@@ -1551,7 +1550,7 @@ class QueryBuilderProvider
     {
         return [
             [ColumnType::STRING],
-            [new Column('string(100)')],
+            [ColumnBuilder::string(100)],
         ];
     }
 
@@ -1679,6 +1678,7 @@ class QueryBuilderProvider
             'notNull()' => ['varchar(255) NOT NULL', ColumnBuilder::string()->notNull()],
             'null()' => ['varchar(255) NULL', ColumnBuilder::string()->null()],
             'integer()->primaryKey()' => ['integer PRIMARY KEY', ColumnBuilder::integer()->primaryKey()],
+            'string()->primaryKey()' => ['varchar(255) PRIMARY KEY', ColumnBuilder::string()->primaryKey()],
             'size(10)' => ['varchar(10)', ColumnBuilder::string()->size(10)],
             'unique()' => ['varchar(255) UNIQUE', ColumnBuilder::string()->unique()],
             'unsigned()' => ['integer UNSIGNED', ColumnBuilder::integer()->unsigned()],

@@ -22,14 +22,14 @@ use function iterator_to_array;
 /**
  * Represents the schema for an array column.
  */
-class ArrayColumnSchema extends AbstractColumnSchema
+class ArrayColumn extends AbstractColumn
 {
     protected const DEFAULT_TYPE = ColumnType::ARRAY;
 
     /**
-     * @var ColumnSchemaInterface|null The column of an array item.
+     * @var ColumnInterface|null The column of an array item.
      */
-    protected ColumnSchemaInterface|null $column = null;
+    protected ColumnInterface|null $column = null;
 
     /**
      * @var int The dimension of array, must be greater than 0.
@@ -48,19 +48,19 @@ class ArrayColumnSchema extends AbstractColumnSchema
     /**
      * Set column of an array item.
      */
-    public function column(ColumnSchemaInterface|null $column): static
+    public function column(ColumnInterface|null $column): static
     {
         $this->column = $column;
         return $this;
     }
 
     /**
-     * @return ColumnSchemaInterface the column of an array item.
+     * @return ColumnInterface The column of an array item.
      */
-    public function getColumn(): ColumnSchemaInterface
+    public function getColumn(): ColumnInterface
     {
         if ($this->column === null) {
-            $this->column = new StringColumnSchema();
+            $this->column = new StringColumn();
             $this->column->dbType($this->getDbType());
             $this->column->enumValues($this->getEnumValues());
             $this->column->scale($this->getScale());

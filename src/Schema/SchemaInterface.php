@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Throwable;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 
 /**
@@ -277,13 +276,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @deprecated Use {@see ColumnType::JSON} instead. Will be removed in 2.0.
      */
     public const TYPE_JSON = 'json';
-
-    /**
-     * @psalm-param string[]|int[]|int|string|null $length
-     *
-     * @deprecated Use {@see ColumnBuilder} instead. Will be removed in 2.0.
-     */
-    public function createColumn(string $type, array|int|string $length = null): ColumnInterface;
 
     /**
      * Returns the column factory for creating column instances.
