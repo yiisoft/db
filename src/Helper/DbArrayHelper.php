@@ -5,139 +5,24 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Helper;
 
 use Closure;
-use Exception;
 
-use function array_key_exists;
+use Yiisoft\Db\Query\QueryInterface;
+
+use function array_column;
+use function array_combine;
 use function array_map;
 use function array_multisort;
 use function count;
-use function is_array;
-use function is_object;
-use function property_exists;
+use function is_string;
 use function range;
-use function strrpos;
-use function substr;
 
 /**
  * Array manipulation methods.
+ *
+ * @psalm-import-type IndexBy from QueryInterface
  */
 final class DbArrayHelper
 {
-    /**
-     * Returns the values of a specified column in an array.
-     *
-     * The input array should be multidimensional or an array of objects.
-     *
-     * For example,
-     *
-     * ```php
-     * $array = [
-     *     ['id' => '123', 'data' => 'abc'],
-     *     ['id' => '345', 'data' => 'def'],
-     * ];
-     * $result = DbArrayHelper::getColumn($array, 'id');
-     * // the result is: ['123', '345']
-     *
-     * // using anonymous function
-     * $result = DbArrayHelper::getColumn($array, function ($element) {
-     *     return $element['id'];
-     * });
-     * ```
-     *
-     * @param array $array Array to extract values from.
-     * @param string $name The column name.
-     *
-     * @return array The list of column values.
-     */
-    public static function getColumn(array $array, string $name): array
-    {
-        return array_map(
-            static fn (array|object $element): mixed => self::getValueByPath($element, $name),
-            $array
-        );
-    }
-
-    /**
-     * Retrieves the value of an array element or object property with the given key or property name.
-     *
-     * If the key doesn't exist in the array, the default value will be returned instead.
-     *
-     * Not used when getting value from an object.
-     *
-     * The key may be specified in a dot format to retrieve the value of a sub-array or the property of an embedded
-     * object.
-     *
-     * In particular, if the key is `x.y.z`, then the returned value would be `$array['x']['y']['z']` or
-     * `$array->x->y->z` (if `$array` is an object).
-     *
-     * If `$array['x']` or `$array->x` is neither an array nor an object, the default value will be returned.
-     *
-     * Note that if the array already has an element `x.y.z`, then its value will be returned instead of going through
-     * the sub-arrays.
-     *
-     * So it's better to be done specifying an array of key names like `['x', 'y', 'z']`.
-     *
-     * Below are some usage examples.
-     *
-     * ```php
-     * // working with array
-     * $username = DbArrayHelper::getValueByPath($_POST, 'username');
-     * // working with object
-     * $username = DbArrayHelper::getValueByPath($user, 'username');
-     * // working with anonymous function
-     * $fullName = DbArrayHelper::getValueByPath($user, function ($user, $defaultValue) {
-     *     return $user->firstName . ' ' . $user->lastName;
-     * });
-     * // using dot format to retrieve the property of embedded object
-     * $street = \yii\helpers\DbArrayHelper::getValue($users, 'address.street');
-     * // using an array of keys to retrieve the value
-     * $value = \yii\helpers\DbArrayHelper::getValue($versions, ['1.0', 'date']);
-     * ```
-     *
-     * @param array|object $array Array or object to extract value from.
-     * @param Closure|string $key Key name of the array element, an array of keys or property name of the object, or an
-     * anonymous function returning the value. The anonymous function signature should be:
-     * `function($array, $defaultValue)`.
-     * @param mixed|null $default The default value to be returned if the specified array key doesn't exist. Not used
-     * when getting value from an object.
-     *
-     * @return mixed The value of the element if found, default value otherwise
-     */
-    public static function getValueByPath(object|array $array, Closure|string $key, mixed $default = null): mixed
-    {
-        if ($key instanceof Closure) {
-            return $key($array, $default);
-        }
-
-        if (is_object($array) && property_exists($array, $key)) {
-            return $array->$key;
-        }
-
-        if (is_array($array) && array_key_exists($key, $array)) {
-            return $array[$key];
-        }
-
-        if ($key && ($pos = strrpos($key, '.')) !== false) {
-            /** @psalm-var array<string, mixed>|object $array */
-            $array = self::getValueByPath($array, substr($key, 0, $pos), $default);
-            $key = substr($key, $pos + 1);
-        }
-
-        if (is_object($array)) {
-            /**
-             * This is expected to fail if the property doesn't exist, or __get() isn't implemented it isn't reliably
-             * possible to check whether a property is accessible beforehand
-             */
-            return $array->$key;
-        }
-
-        if (array_key_exists($key, $array)) {
-            return $array[$key];
-        }
-
-        return $default;
-    }
-
     /**
      * Indexes and/or groups the array according to a specified key.
      *
@@ -215,55 +100,62 @@ final class DbArrayHelper
      * ]
      * ```
      *
-     * @param array $array The array that needs to be indexed or grouped.
-     * @param string|null $key The column name or anonymous function which result will be used to index the array.
-     * @param array $groups The array of keys that will be used to group the input array by one or more keys. If the
-     * $key attribute or its value for the particular element is null and $groups aren't defined.
-     * The array element will be discarded.
-     * Otherwise, if $groups are specified, an array element will be added to the result array without any key.
+     * @param array[] $array The array that needs to be indexed or arranged.
+     * @param Closure|string|null $indexBy The column name or anonymous function which result will be used to index the
+     * array. If the array does not have the key, the ordinal indexes will be used if `$arrangeBy` is not specified or
+     * a warning will be triggered if `$arrangeBy` is specified.
+     * @param string[] $arrangeBy The array of keys that will be used to arrange the input array by one or more keys.
      *
-     * @throws Exception
+     * @return array[] The indexed and/or arranged array.
      *
-     * @return array The indexed and/or grouped array.
-     *
-     * @psalm-param array[] $array The array that needs to be indexed or grouped.
-     * @psalm-param string[] $groups The array of keys that will be used to group the input array by one or more keys.
-     *
+     * @psalm-param IndexBy|null $indexBy
      * @psalm-suppress MixedArrayAssignment
      */
-    public static function index(array $array, string|null $key = null, array $groups = []): array
+    public static function index(array $array, Closure|string|null $indexBy = null, array $arrangeBy = []): array
     {
+        if (empty($array) || $indexBy === null && empty($arrangeBy)) {
+            return $array;
+        }
+
+        if (empty($arrangeBy)) {
+            if (is_string($indexBy)) {
+                return array_column($array, null, $indexBy);
+            }
+
+            return array_combine(array_map($indexBy, $array), $array);
+        }
+
         $result = [];
 
         foreach ($array as $element) {
             $lastArray = &$result;
 
-            foreach ($groups as $group) {
-                /** @psalm-var string $value */
-                $value = self::getValueByPath($element, $group);
-                if (!array_key_exists($value, $lastArray)) {
+            foreach ($arrangeBy as $group) {
+                $value = (string) $element[$group];
+
+                if (!isset($lastArray[$value])) {
                     $lastArray[$value] = [];
                 }
+
                 $lastArray = &$lastArray[$value];
             }
 
-            if ($key === null) {
-                if (!empty($groups)) {
-                    $lastArray[] = $element;
-                }
+            if ($indexBy === null) {
+                $lastArray[] = $element;
             } else {
-                /** @psalm-var mixed $value */
-                $value = self::getValueByPath($element, $key);
-
-                if ($value !== null) {
-                    $lastArray[(string) $value] = $element;
+                if (is_string($indexBy)) {
+                    $value = $element[$indexBy];
+                } else {
+                    $value = $indexBy($element);
                 }
+
+                $lastArray[(string) $value] = $element;
             }
 
             unset($lastArray);
         }
 
-        /** @psalm-var array $result */
+        /** @var array[] $result */
         return $result;
     }
 
@@ -298,6 +190,10 @@ final class DbArrayHelper
      *
      * @param array $array The array to be sorted. The array will be modified after calling this method.
      * @param string $key The key(s) to be sorted by.
+     *
+     * @psalm-template T
+     * @psalm-param array<T> $array
+     * @psalm-param-out array<T> $array
      */
     public static function multisort(
         array &$array,
@@ -307,7 +203,7 @@ final class DbArrayHelper
             return;
         }
 
-        $column = self::getColumn($array, $key);
+        $column = array_column($array, $key);
 
         array_multisort(
             $column,
@@ -323,31 +219,5 @@ final class DbArrayHelper
             SORT_NUMERIC,
             $array
         );
-    }
-
-    /**
-     * Returns the value of an array element or object property with the given path.
-     *
-     * This method is internally used to convert the data fetched from a database into the format as required by this
-     * query.
-     *
-     * @param array[] $rows The raw query result from a database.
-     *
-     * @return array[]
-     */
-    public static function populate(array $rows, Closure|string|null $indexBy = null): array
-    {
-        if ($indexBy === null) {
-            return $rows;
-        }
-
-        $result = [];
-
-        foreach ($rows as $row) {
-            /** @psalm-suppress MixedArrayOffset */
-            $result[self::getValueByPath($row, $indexBy)] = $row;
-        }
-
-        return $result;
     }
 }

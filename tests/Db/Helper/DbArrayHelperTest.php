@@ -21,49 +21,84 @@ final class DbArrayHelperTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\PopulateProvider::populate
+     * @dataProvider \Yiisoft\Db\Tests\Provider\DbArrayHelperProvider::index
      */
-    public function testPopulate(array $rows): void
+    public function testIndex(array $rows): void
     {
-        $this->assertSame($rows, DbArrayHelper::populate($rows));
+        $this->assertSame($rows, DbArrayHelper::index($rows));
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\PopulateProvider::populateWithIndexBy
-     * @dataProvider \Yiisoft\Db\Tests\Provider\PopulateProvider::populateWithIncorrectIndexBy
-     * @dataProvider \Yiisoft\Db\Tests\Provider\PopulateProvider::populateWithIndexByClosure
+     * @dataProvider \Yiisoft\Db\Tests\Provider\DbArrayHelperProvider::indexWithIndexBy
+     * @dataProvider \Yiisoft\Db\Tests\Provider\DbArrayHelperProvider::indexWithIncorrectIndexBy
+     * @dataProvider \Yiisoft\Db\Tests\Provider\DbArrayHelperProvider::indexWithIndexByClosure
      */
     public function testPopulateWithIndexBy(Closure|string|null $indexBy, array $rows, array $expected): void
     {
-        $this->assertSame($expected, DbArrayHelper::populate($rows, $indexBy));
+        $this->assertSame($expected, DbArrayHelper::index($rows, $indexBy));
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\PopulateProvider::populateWithIndexBy
+     * @dataProvider \Yiisoft\Db\Tests\Provider\DbArrayHelperProvider::indexWithIndexBy
      */
-    public function testPopulateWithIndexByWithObject(Closure|string|null $indexBy, array $rows, array $expected): void
+    public function testIndexWithIndexByWithObject(Closure|string|null $indexBy, array $rows, array $expected): void
     {
         $rows = json_decode(json_encode($rows));
-        $populated = json_decode(json_encode(DbArrayHelper::populate($rows, $indexBy)), true);
+        $populated = json_decode(json_encode(DbArrayHelper::index($rows, $indexBy)), true);
 
         $this->assertSame($expected, $populated);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\PopulateProvider::populateWithIncorrectIndexBy
-     */
-    public function testPopulateWithIncorrectIndexByWithObject(Closure|string|null $indexBy, array $rows): void
+    public function testIndexWithNonExistingIndexBy(): void
     {
-        $rows = json_decode(json_encode($rows));
+        $rows = [
+            ['key' => 'value1'],
+            ['key' => 'value2'],
+        ];
+
+        $this->assertSame($rows, DbArrayHelper::index($rows, 'non-existing-key'));
 
         set_error_handler(static function (int $errno, string $errstr) {
+            restore_error_handler();
             throw new \Exception('E_WARNING: ' . $errstr, $errno);
         }, E_WARNING);
 
-        $this->expectExceptionMessageMatches('/^E_WARNING: /');
+        $this->expectExceptionMessage('E_WARNING: Undefined array key "non-existing-key"');
 
-        DbArrayHelper::populate($rows, $indexBy);
+        DbArrayHelper::index($rows, 'non-existing-key', ['key']);
+    }
 
-        restore_error_handler();
+    public function testIndexWithArrangeBy(): void
+    {
+        $rows = [
+            ['key' => 'value1'],
+            ['key' => 'value2'],
+        ];
+
+        set_error_handler(static function (int $errno, string $errstr) {
+            restore_error_handler();
+            throw new \Exception('E_WARNING: ' . $errstr, $errno);
+        }, E_WARNING);
+
+        $this->expectExceptionMessage('E_WARNING: Undefined array key "non-existing-key"');
+
+        DbArrayHelper::index($rows, null, ['non-existing-key']);
+    }
+
+    public function testIndexWithClosureIndexByAndArrangeBy(): void
+    {
+        $rows = [
+            ['key' => 'value1'],
+            ['key' => 'value2'],
+        ];
+
+        $this->assertSame([
+            'value1' => [
+                'value1' => ['key' => 'value1'],
+            ],
+            'value2' => [
+                'value2' => ['key' => 'value2'],
+            ],
+        ], DbArrayHelper::index($rows, fn ($row) => $row['key'], ['key']));
     }
 }
