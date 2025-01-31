@@ -36,7 +36,8 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  *
  * @extends Iterator<int|string, mixed>
  *
- * @psalm-type PopulateClosure=Closure(array[],Closure|string|null): mixed
+ * @psalm-import-type IndexBy from QueryInterface
+ * @psalm-type PopulateClosure = Closure(array[],IndexBy|null): array[]
  */
 interface BatchQueryResultInterface extends Iterator
 {

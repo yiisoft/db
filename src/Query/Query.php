@@ -72,6 +72,7 @@ use function trim;
  * Query internally uses the {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} class to generate the SQL statement.
  *
  * @psalm-import-type SelectValue from QueryPartsInterface
+ * @psalm-import-type IndexBy from QueryInterface
  */
 class Query implements QueryInterface
 {
@@ -87,7 +88,7 @@ class Query implements QueryInterface
     protected array $params = [];
     protected array $union = [];
     protected array $withQueries = [];
-    /** @psalm-var Closure(array):array-key|string|null $indexBy */
+    /** @psalm-var IndexBy|null $indexBy */
     protected Closure|string|null $indexBy = null;
     protected ExpressionInterface|int|null $limit = null;
     protected ExpressionInterface|int|null $offset = null;
@@ -230,7 +231,7 @@ class Query implements QueryInterface
             return [];
         }
 
-        return DbArrayHelper::populate($this->createCommand()->queryAll(), $this->indexBy);
+        return DbArrayHelper::index($this->createCommand()->queryAll(), $this->indexBy);
     }
 
     public function average(string $sql): int|float|null|string
@@ -246,7 +247,7 @@ class Query implements QueryInterface
         return $this->db
             ->createBatchQueryResult($this)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::populate($rows, $indexBy))
+            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::index($rows, $indexBy))
         ;
     }
 
@@ -323,7 +324,7 @@ class Query implements QueryInterface
         return $this->db
             ->createBatchQueryResult($this, true)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::populate($rows, $indexBy))
+            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::index($rows, $indexBy))
         ;
     }
 
