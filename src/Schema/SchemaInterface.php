@@ -99,7 +99,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * Supported by `PostgreSQL`.
      *
-     * @deprecated Use {@see IndexType::GIST} instead. Will be removed in 2.0.
+     * @deprecated Use {@see IndexMethod::GIST} instead. Will be removed in 2.0.
      */
     public const INDEX_GIST = 'GIST';
     /**
@@ -107,7 +107,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * Supported by `PostgreSQL`.
      *
-     * @deprecated Use {@see IndexType::GIN} instead. Will be removed in 2.0.
+     * @deprecated Use {@see IndexMethod::GIN} instead. Will be removed in 2.0.
      */
     public const INDEX_GIN = 'GIN';
     /**
@@ -115,7 +115,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * Supported by `PostgreSQL`.
      *
-     * @deprecated Use {@see IndexType::BRIN} instead. Will be removed in 2.0.
+     * @deprecated Use {@see IndexMethod::BRIN} instead. Will be removed in 2.0.
      */
     public const INDEX_BRIN = 'BRIN';
     /**

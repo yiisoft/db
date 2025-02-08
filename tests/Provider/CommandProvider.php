@@ -511,9 +511,9 @@ class CommandProvider
     public static function createIndex(): array
     {
         return [
-            ['{{test_idx_constraint_1}}', '{{test_idx}}', 'int1', null, null],
-            ['{{test_idx_constraint_2}}', '{{test_idx}}', ['int1'], IndexType::UNIQUE, null],
-            ['{{test_idx_constraint_3}}', '{{test_idx}}', ['int1', 'int2'], null, null],
+            [['col1' => ColumnBuilder::integer()], ['col1'], null, null],
+            [['col1' => ColumnBuilder::integer()], ['col1'], IndexType::UNIQUE, null],
+            [['col1' => ColumnBuilder::integer(), 'col2' => ColumnBuilder::integer()], ['col1', 'col2'], null, null],
         ];
     }
 
