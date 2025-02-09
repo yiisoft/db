@@ -33,6 +33,7 @@ use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
+use function array_filter;
 use function is_string;
 use function setlocale;
 use function str_starts_with;
@@ -511,10 +512,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertCount($count + 1, $schema->getTableIndexes($tableName));
 
-        $index = $schema->getTableIndexes($tableName)[$count];
+        $index = array_filter($schema->getTableIndexes($tableName), static fn ($index) => !$index->isPrimary())[0];
 
         $this->assertSame($indexColumns, $index->getColumnNames());
-        $this->assertFalse($index->isPrimary());
 
         if ($indexType !== null && str_starts_with($indexType, 'UNIQUE')) {
             $this->assertTrue($index->isUnique());
