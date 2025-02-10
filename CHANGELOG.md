@@ -56,7 +56,8 @@
 - Enh #919: Replace `name()` with immutable `withName()` method in `ColumnInterface` interface (@Tigrov)
 - Enh #921: Move `DataType` class to `Yiisoft\Db\Constant` namespace (@Tigrov)
 - Enh #926: Refactor `DbArrayHelper` (@Tigrov)
-- Enh #920: Move index constants to the appropriate DBMS driver's `IndexType` and `IndexMethod` classes (@Tigrov) 
+- Enh #920: Move index constants to the appropriate DBMS driver's `IndexType` and `IndexMethod` classes (@Tigrov)
+- New #928: Add `ReferentialAction` class with constants of possible values of referential actions (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
