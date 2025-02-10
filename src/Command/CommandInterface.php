@@ -12,6 +12,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -99,8 +100,7 @@ interface CommandInterface
 
     /**
      * Creates an SQL command for adding a foreign key constraint to an existing table.
-     *
-     * The method will quote the table and column names.
+     * The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated SQL.
      *
      * @param string $table The name of the table to add foreign key constraint to.
      * @param string $name The name of the foreign key constraint.
@@ -109,16 +109,14 @@ interface CommandInterface
      * @param string $referenceTable The name of the table that the foreign key references to.
      * @param array|string $referenceColumns The name of the column that the foreign key references to. If there are
      * many columns, separate them with commas.
-     * @param string|null $delete The `ON DELETE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
-     * `SET DEFAULT`, `SET NULL`.
-     * @param string|null $update The `ON UPDATE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
-     * `SET DEFAULT`, `SET NULL`.
+     * @param string|null $delete The `ON DELETE` option. See {@see ReferentialAction} class for possible values.
+     * @param string|null $update The `ON UPDATE` option. See {@see ReferentialAction} class for possible values.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * Note: The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated
-     * SQL.
+     * @psalm-param ReferentialAction::*|null $delete
+     * @psalm-param ReferentialAction::*|null $update
      */
     public function addForeignKey(
         string $table,
@@ -126,8 +124,8 @@ interface CommandInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string $delete = null,
-        string $update = null
+        string|null $delete = null,
+        string|null $update = null
     ): static;
 
     /**

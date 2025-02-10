@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Constant\IndexType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -103,6 +104,7 @@ interface DDLQueryBuilderInterface
 
     /**
      * Builds an SQL statement for adding a foreign key constraint to an existing table.
+     * The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated SQL.
      *
      * @param string $table The table to add the foreign key constraint will to.
      * @param string $name The name of the foreign key constraint.
@@ -111,17 +113,16 @@ interface DDLQueryBuilderInterface
      * @param string $referenceTable The table that the foreign key references to.
      * @param array|string $referenceColumns The name of the column that the foreign key references to.
      * If there are many columns, separate them with commas or use an array to represent them.
-     * @param string|null $delete The `ON DELETE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
-     * `SET DEFAULT`, `SET NULL`.
-     * @param string|null $update The `ON UPDATE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
-     * `SET DEFAULT`, `SET NULL`.
+     * @param string|null $delete The `ON DELETE` option. See {@see ReferentialAction} class for possible values.
+     * @param string|null $update The `ON UPDATE` option. See {@see ReferentialAction} class for possible values.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
      * @return string The SQL statement for adding a foreign key constraint to an existing table.
      *
-     * Note: The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated SQL.
+     * @psalm-param ReferentialAction::*|null $delete
+     * @psalm-param ReferentialAction::*|null $update
      */
     public function addForeignKey(
         string $table,
