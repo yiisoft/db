@@ -8,6 +8,7 @@ use ArrayIterator;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
@@ -18,7 +19,6 @@ use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -936,7 +936,7 @@ class QueryBuilderProvider
                     $tableName,
                     $name1,
                     'C_index_1',
-                    SchemaInterface::INDEX_UNIQUE,
+                    IndexType::UNIQUE,
                 ),
             ],
             'create unique (2 columns)' => [
@@ -947,7 +947,7 @@ class QueryBuilderProvider
                     $tableName,
                     $name2,
                     'C_index_2_1, C_index_2_2',
-                    SchemaInterface::INDEX_UNIQUE,
+                    IndexType::UNIQUE,
                 ),
             ],
         ];

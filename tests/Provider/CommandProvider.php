@@ -10,10 +10,10 @@ use Traversable;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -511,9 +511,9 @@ class CommandProvider
     public static function createIndex(): array
     {
         return [
-            ['{{test_idx_constraint_1}}', '{{test_idx}}', 'int1', null, null],
-            ['{{test_idx_constraint_2}}', '{{test_idx}}', ['int1'], SchemaInterface::INDEX_UNIQUE, null],
-            ['{{test_idx_constraint_3}}', '{{test_idx}}', ['int1', 'int2'], null, null],
+            [['col1' => ColumnBuilder::integer()], ['col1'], null, null],
+            [['col1' => ColumnBuilder::integer()], ['col1'], IndexType::UNIQUE, null],
+            [['col1' => ColumnBuilder::integer(), 'col2' => ColumnBuilder::integer()], ['col1', 'col2'], null, null],
         ];
     }
 
@@ -550,7 +550,7 @@ class CommandProvider
                 '{{name}}',
                 '{{table}}',
                 ['column1', 'column2'],
-                SchemaInterface::INDEX_UNIQUE,
+                IndexType::UNIQUE,
                 '',
                 DbHelper::replaceQuotes(
                     <<<SQL

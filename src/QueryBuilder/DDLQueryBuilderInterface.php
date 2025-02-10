@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -204,14 +205,17 @@ interface DDLQueryBuilderInterface
      * @param string $name The name of the index.
      * @param array|string $columns The column(s) to include in the index.
      * If there are many columns, separate them with commas or use an array to represent them.
-     * @param string|null $indexType Type of index-supported DBMS - for example, `UNIQUE`, `FULLTEXT`, `SPATIAL`, `BITMAP` or
-     * `null` as default
-     * @param string|null $indexMethod For setting index organization method (with `USING`, not all DBMS)
+     * @param string|null $indexType The index type, `UNIQUE` or a DBMS specific index type or `null` by default.
+     * See {@see IndexType} or driver specific `IndexType` class.
+     * @param string|null $indexMethod The index organization method, if supported by DBMS.
+     * See driver specific `IndexMethod` class.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
      * @return string The SQL statement for creating a new index.
+     *
+     * @psalm-param IndexType::*|null $indexType
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
