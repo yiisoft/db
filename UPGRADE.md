@@ -96,7 +96,8 @@ and the following changes were made:
 - `Yiisoft\Db\Constant\GettypeResult` with `gettype()` function results constants;
 - `Yiisoft\Db\Constant\ColumnType` with abstract column types constants;
 - `Yiisoft\Db\Constant\PseudoType` with column pseudo-types constants;
-- `Yiisoft\Db\Constant\IndexType` with table index types.
+- `Yiisoft\Db\Constant\IndexType` with table index types;
+- `Yiisoft\Db\Constant\ReferentialAction` with possible values of referential actions.
 
 ### New classes for table columns
 

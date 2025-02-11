@@ -10,6 +10,7 @@ use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
@@ -52,8 +53,8 @@ class QueryBuilderProvider
                 'C_fk_id_1',
                 $pkTableName,
                 'C_id_1',
-                'CASCADE',
-                'CASCADE',
+                ReferentialAction::CASCADE,
+                ReferentialAction::CASCADE,
                 Dbhelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]]) REFERENCES [[$pkTableName]] ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE
@@ -67,8 +68,8 @@ class QueryBuilderProvider
                 'C_fk_id_1, C_fk_id_2',
                 $pkTableName,
                 'C_id_1, C_id_2',
-                'CASCADE',
-                'CASCADE',
+                ReferentialAction::CASCADE,
+                ReferentialAction::CASCADE,
                 Dbhelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]]) REFERENCES [[$pkTableName]] ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1580,8 +1581,8 @@ class QueryBuilderProvider
         $reference = new ForeignKeyConstraint();
         $reference->foreignColumnNames(['id']);
         $reference->foreignTableName('ref_table');
-        $reference->onDelete('CASCADE');
-        $reference->onUpdate('CASCADE');
+        $reference->onDelete(ReferentialAction::CASCADE);
+        $reference->onUpdate(ReferentialAction::CASCADE);
 
         $referenceWithSchema = clone $reference;
         $referenceWithSchema->foreignSchemaName('ref_schema');

@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests\Provider;
 
 use PDO;
 use Yiisoft\Db\Constant\IndexType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
@@ -105,8 +106,8 @@ class SchemaProvider
                         ->columnNames(['C_fk_id_1', 'C_fk_id_2'])
                         ->foreignTableName('T_constraints_2')
                         ->foreignColumnNames(['C_id_1', 'C_id_2'])
-                        ->onDelete('CASCADE')
-                        ->onUpdate('CASCADE'),
+                        ->onDelete(ReferentialAction::CASCADE)
+                        ->onUpdate(ReferentialAction::CASCADE),
                 ],
             ],
             '3: unique' => ['T_constraints_3', SchemaInterface::UNIQUES, []],

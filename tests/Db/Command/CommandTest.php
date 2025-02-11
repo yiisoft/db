@@ -117,18 +117,20 @@ final class CommandTest extends AbstractCommandTest
      * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addForeignKeySql
      */
     public function testAddForeignKeySql(
-        string $name,
-        string $tableName,
-        array|string $column1,
-        array|string $column2,
+        array|string $columns,
+        array|string $referenceColumns,
         string|null $delete,
         string|null $update,
         string $expected
     ): void {
         $db = $this->getConnection();
-
         $command = $db->createCommand();
-        $sql = $command->addForeignKey($tableName, $name, $column1, $tableName, $column2, $delete, $update)->getSql();
+
+        $name = '{{fk_constraint}}';
+        $tableName = '{{fk_table}}';
+        $referenceTable = '{{fk_referenced_table}}';
+
+        $sql = $command->addForeignKey($tableName, $name, $columns, $referenceTable, $referenceColumns, $delete, $update)->getSql();
 
         $this->assertSame($expected, $sql);
     }

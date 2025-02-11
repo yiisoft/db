@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function in_array;
@@ -231,6 +232,8 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
 
     /**
      * Builds the ON DELETE clause for the column reference.
+     *
+     * @psalm-param ReferentialAction::* $onDelete
      */
     protected function buildOnDelete(string $onDelete): string
     {
@@ -239,6 +242,8 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
 
     /**
      * Builds the ON UPDATE clause for the column reference.
+     *
+     * @psalm-param ReferentialAction::* $onUpdate
      */
     protected function buildOnUpdate(string $onUpdate): string
     {
