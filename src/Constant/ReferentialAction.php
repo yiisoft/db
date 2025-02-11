@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Constant;
 
 /**
- * `ReferentialAction` represents the possible actions that can be performed on the referenced table.
+ * `ReferentialAction` represents the possible foreign key actions that can be performed on the referenced table.
  *
  * The constants are used to specify `ON DELETE` and `ON UPDATE` actions by {@see ForeignKeyConstraint::onDelete()},
  * {@see ForeignKeyConstraint::onUpdate()}, {@see DDLQueryBuilderInterface::addForeignKey()}
  * and {@see CommandInterface::addForeignKey()}.
  *
- * MSSQL does not support `RESTRICT` key world but uses this behavior by default (if no action is specified).
+ * MSSQL does not support `RESTRICT` keyword but uses this behavior by default (if no action is specified).
  *
  * Oracle supports only `CASCADE` and `SET NULL` key worlds and only `ON DELETE` clause.
  * `NO ACTION` is used by default for `ON DELETE` and `ON UPDATE` (if no action is specified).
