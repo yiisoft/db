@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use ArrayIterator;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
@@ -18,10 +20,8 @@ use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
-use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
@@ -53,8 +53,8 @@ class QueryBuilderProvider
                 'C_fk_id_1',
                 $pkTableName,
                 'C_id_1',
-                'CASCADE',
-                'CASCADE',
+                ReferentialAction::CASCADE,
+                ReferentialAction::CASCADE,
                 Dbhelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]]) REFERENCES [[$pkTableName]] ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE
@@ -68,8 +68,8 @@ class QueryBuilderProvider
                 'C_fk_id_1, C_fk_id_2',
                 $pkTableName,
                 'C_id_1, C_id_2',
-                'CASCADE',
-                'CASCADE',
+                ReferentialAction::CASCADE,
+                ReferentialAction::CASCADE,
                 Dbhelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]]) REFERENCES [[$pkTableName]] ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE
@@ -141,6 +141,13 @@ class QueryBuilderProvider
                     static::$driverName,
                 ),
             ],
+        ];
+    }
+
+    public static function alterColumn(): array
+    {
+        return [
+            [ColumnType::STRING, 'ALTER TABLE [foo1] CHANGE [bar] [bar] varchar(255)'],
         ];
     }
 
@@ -930,7 +937,7 @@ class QueryBuilderProvider
                     $tableName,
                     $name1,
                     'C_index_1',
-                    SchemaInterface::INDEX_UNIQUE,
+                    IndexType::UNIQUE,
                 ),
             ],
             'create unique (2 columns)' => [
@@ -941,7 +948,7 @@ class QueryBuilderProvider
                     $tableName,
                     $name2,
                     'C_index_2_1, C_index_2_2',
-                    SchemaInterface::INDEX_UNIQUE,
+                    IndexType::UNIQUE,
                 ),
             ],
         ];
@@ -1544,7 +1551,7 @@ class QueryBuilderProvider
     {
         return [
             [ColumnType::STRING],
-            [new Column('string(100)')],
+            [ColumnBuilder::string(100)],
         ];
     }
 
@@ -1574,8 +1581,8 @@ class QueryBuilderProvider
         $reference = new ForeignKeyConstraint();
         $reference->foreignColumnNames(['id']);
         $reference->foreignTableName('ref_table');
-        $reference->onDelete('CASCADE');
-        $reference->onUpdate('CASCADE');
+        $reference->onDelete(ReferentialAction::CASCADE);
+        $reference->onUpdate(ReferentialAction::CASCADE);
 
         $referenceWithSchema = clone $reference;
         $referenceWithSchema->foreignSchemaName('ref_schema');
@@ -1672,6 +1679,7 @@ class QueryBuilderProvider
             'notNull()' => ['varchar(255) NOT NULL', ColumnBuilder::string()->notNull()],
             'null()' => ['varchar(255) NULL', ColumnBuilder::string()->null()],
             'integer()->primaryKey()' => ['integer PRIMARY KEY', ColumnBuilder::integer()->primaryKey()],
+            'string()->primaryKey()' => ['varchar(255) PRIMARY KEY', ColumnBuilder::string()->primaryKey()],
             'size(10)' => ['varchar(10)', ColumnBuilder::string()->size(10)],
             'unique()' => ['varchar(255) UNIQUE', ColumnBuilder::string()->unique()],
             'unsigned()' => ['integer UNSIGNED', ColumnBuilder::integer()->unsigned()],

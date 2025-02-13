@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
+use Yiisoft\Db\Constant\DataType;
+
 /**
  * This interface represents a parameter to bind to an SQL statement.
  */

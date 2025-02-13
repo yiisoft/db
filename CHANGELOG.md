@@ -39,10 +39,10 @@
 - Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #877: Separate column type constants (@Tigrov)
 - New #878: Realize `ColumnBuilder` class (@Tigrov)
-- New #878, #900: Realize `ColumnDefinitionParser` class (@Tigrov)
+- New #878, #900, #914, #922: Implement `ColumnDefinitionParser` class (@Tigrov)
 - Enh #881: Refactor `ColumnSchemaInterface` and `AbstractColumnSchema` (@Tigrov)
 - New #882: Move `ArrayColumnSchema` and `StructuredColumnSchema` classes from `db-pgsql` package (@Tigrov)
-- New #883, #901: Add `ColumnDefinitionBuilder` class and `QueryBuilderInterface::buildColumnDefinition()` method (@Tigrov)
+- New #883, #901, #922: Add `ColumnDefinitionBuilder` class and `QueryBuilderInterface::buildColumnDefinition()` method (@Tigrov)
 - Enh #885: Refactor `AbstractDsn` class (@Tigrov)
 - Chg #889: Update `AbstractDMLQueryBuilder::insertBatch()` method (@Tigrov)
 - Enh #890: Add properties of `AbstractColumnSchema` class to constructor (@Tigrov)
@@ -50,6 +50,14 @@
 - New #902: Add `QueryBuilderInterface::prepareParam()` and `QueryBuilderInterface::prepareValue()` methods (@Tigrov)
 - Enh #902: Refactor `Quoter::quoteValue()` method (@Tigrov)
 - New #906: Add `ServerInfoInterface` and its implementation (@Tigrov)
+- Enh #905: Use `AbstractColumnDefinitionBuilder` to generate table column SQL representation (@Tigrov)
+- Enh #915: Remove `ColumnInterface` (@Tigrov)
+- Enh #917: Rename `ColumnSchemaInterface` to `ColumnInterface` (@Tigrov)
+- Enh #919: Replace `name()` with immutable `withName()` method in `ColumnInterface` interface (@Tigrov)
+- Enh #921: Move `DataType` class to `Yiisoft\Db\Constant` namespace (@Tigrov)
+- Enh #926: Refactor `DbArrayHelper` (@Tigrov)
+- Enh #920: Move index constants to the appropriate DBMS driver's `IndexType` and `IndexMethod` classes (@Tigrov)
+- New #928: Add `ReferentialAction` class with constants of possible values of referential actions (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

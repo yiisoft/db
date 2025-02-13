@@ -9,14 +9,14 @@ use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 
 /**
- * The interface must be implemented by a column factory class. It should create a column schema for a database column
- * type and initialize column information.
+ * The interface must be implemented by a column factory class. It should create an instance of {@see ColumnInterface}
+ * for a database column type and initialize column information.
  *
  * @psalm-type ColumnInfo = array{
  *     autoIncrement?: bool,
  *     check?: string|null,
- *     column?: ColumnSchemaInterface|null,
- *     columns?: array<string, ColumnSchemaInterface>,
+ *     column?: ColumnInterface|null,
+ *     columns?: array<string, ColumnInterface>,
  *     comment?: string|null,
  *     computed?: bool,
  *     dbType?: string|null,
@@ -41,43 +41,42 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 interface ColumnFactoryInterface
 {
     /**
-     * Creates a column schema for a database column type and initializes column information.
+     * Creates an instance of {@see ColumnInterface} for a database column type and initializes column information.
      *
      * @param string $dbType The database column type.
      * @param array $info The column information. The set of parameters may be different for a specific DBMS.
      *
      * @psalm-param ColumnInfo $info
      */
-    public function fromDbType(string $dbType, array $info = []): ColumnSchemaInterface;
+    public function fromDbType(string $dbType, array $info = []): ColumnInterface;
 
     /**
-     * Creates a column schema for a database column definition and initializes column information.
-     * The definition string can contain the database type of the column, its size, default value, etc.
+     * Creates an instance of {@see ColumnInterface} for a database column definition and initializes column information.
+     * The definition string can contain a native database column type or {@see ColumnType abstract} type
+     * or {@see PseudoType pseudo} type, its size, default value, etc.
      *
-     * For example, `varchar(255) NOT NULL` is a database type with a size and a NOT NULL constraint.
+     * For example, `varchar(255) NOT NULL` is `varchar` database type with `255` size and a `NOT NULL` constraint.
      *
      * @param string $definition The database column definition.
      * @param array $info The column information. The set of parameters may be different for a specific DBMS.
      *
      * @psalm-param ColumnInfo $info
      */
-    public function fromDefinition(string $definition, array $info = []): ColumnSchemaInterface;
+    public function fromDefinition(string $definition, array $info = []): ColumnInterface;
 
     /**
-     * Creates a column schema for a pseudo-type and initializes column information.
+     * Creates an instance of {@see ColumnInterface} for a pseudo-type and initializes column information.
      *
      * @param string $pseudoType The pseudo-type.
      * @param array $info The column information. The set of parameters may be different for a specific DBMS.
      *
-     * @return ColumnSchemaInterface The column schema.
-     *
      * @psalm-param PseudoType::* $pseudoType
      * @psalm-param ColumnInfo $info
      */
-    public function fromPseudoType(string $pseudoType, array $info = []): ColumnSchemaInterface;
+    public function fromPseudoType(string $pseudoType, array $info = []): ColumnInterface;
 
     /**
-     * Creates a column schema for an abstract database type and initializes column information.
+     * Creates an instance of {@see ColumnInterface} for an abstract database type and initializes column information.
      *
      * @param string $type The abstract database type.
      * @param array $info The column information. The set of parameters may be different for a specific DBMS.
@@ -85,5 +84,5 @@ interface ColumnFactoryInterface
      * @psalm-param ColumnType::* $type
      * @psalm-param ColumnInfo $info
      */
-    public function fromType(string $type, array $info = []): ColumnSchemaInterface;
+    public function fromType(string $type, array $info = []): ColumnInterface;
 }

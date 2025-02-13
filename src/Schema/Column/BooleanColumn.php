@@ -11,7 +11,7 @@ use Yiisoft\Db\Constant\PhpType;
 /**
  * Represents the metadata for a boolean column.
  */
-class BooleanColumnSchema extends AbstractColumnSchema
+class BooleanColumn extends AbstractColumn
 {
     protected const DEFAULT_TYPE = ColumnType::BOOLEAN;
 

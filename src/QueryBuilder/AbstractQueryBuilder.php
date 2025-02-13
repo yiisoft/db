@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
@@ -15,8 +15,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -25,8 +24,6 @@ use function count;
 use function get_resource_type;
 use function gettype;
 use function is_string;
-use function preg_match;
-use function preg_replace;
 use function stream_get_contents;
 
 /**
@@ -175,7 +172,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->build($query, $params);
     }
 
-    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string
+    public function buildColumnDefinition(ColumnInterface|string $column): string
     {
         if (is_string($column)) {
             $column = $this->schema->getColumnFactory()->fromDefinition($column);
@@ -355,32 +352,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->dropView($viewName);
     }
 
-    /** @deprecated Use {@see buildColumnDefinition()}. Will be removed in version 2.0. */
-    public function getColumnType(ColumnInterface|string $type): string
+    public function getColumnDefinitionBuilder(): ColumnDefinitionBuilderInterface
     {
-        if ($type instanceof ColumnInterface) {
-            $type = $type->asString();
-        }
-
-        if (isset($this->typeMap[$type])) {
-            return $this->typeMap[$type];
-        }
-
-        if (preg_match('/^(\w+)\((.+?)\)(.*)$/', $type, $matches)) {
-            if (isset($this->typeMap[$matches[1]])) {
-                return preg_replace(
-                    '/\(.+\)/',
-                    '(' . $matches[2] . ')',
-                    $this->typeMap[$matches[1]]
-                ) . $matches[3];
-            }
-        } elseif (preg_match('/^(\w+)\s+/', $type, $matches)) {
-            if (isset($this->typeMap[$matches[1]])) {
-                return preg_replace('/^\w+/', $this->typeMap[$matches[1]], $type);
-            }
-        }
-
-        return $type;
+        return $this->columnDefinitionBuilder;
     }
 
     public function getExpressionBuilder(ExpressionInterface $expression): object

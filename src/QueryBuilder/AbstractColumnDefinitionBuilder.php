@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Constant\ReferentialAction;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function in_array;
 use function strtolower;
 
 /**
- * Builds column definition from {@see ColumnSchemaInterface} object. Column definition is a string that represents
+ * Builds column definition from {@see ColumnInterface} object. Column definition is a string that represents
  * the column type and all constraints associated with the column. For example: `VARCHAR(128) NOT NULL DEFAULT 'foo'`.
  */
 abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilderInterface
@@ -20,11 +21,6 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      * @var string The keyword used to specify that a column is auto incremented.
      */
     protected const AUTO_INCREMENT_KEYWORD = '';
-
-    /**
-     * @var string The expression used to generate a UUID value.
-     */
-    protected const GENERATE_UUID_EXPRESSION = '';
 
     /**
      * @var string[] The list of database column types (in lower case) that allow size specification.
@@ -39,18 +35,18 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     /**
      * Get the database column type for the given column.
      *
-     * @param ColumnSchemaInterface $column The column object.
+     * @param ColumnInterface $column The column object.
      *
      * @return string The database column type.
      */
-    abstract protected function getDbType(ColumnSchemaInterface $column): string;
+    abstract protected function getDbType(ColumnInterface $column): string;
 
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
     ) {
     }
 
-    public function build(ColumnSchemaInterface $column): string
+    public function build(ColumnInterface $column): string
     {
         return $this->buildType($column)
             . $this->buildUnsigned($column)
@@ -65,12 +61,17 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             . $this->buildExtra($column);
     }
 
+    public function buildAlter(ColumnInterface $column): string
+    {
+        return $this->build($column);
+    }
+
     /**
      * Builds the auto increment clause for the column.
      *
      * @return string A string containing the {@see AUTO_INCREMENT_KEYWORD} keyword.
      */
-    protected function buildAutoIncrement(ColumnSchemaInterface $column): string
+    protected function buildAutoIncrement(ColumnInterface $column): string
     {
         if (empty(static::AUTO_INCREMENT_KEYWORD) || !$column->isAutoIncrement()) {
             return '';
@@ -90,7 +91,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      *
      * @return string A string containing the CHECK constraint.
      */
-    protected function buildCheck(ColumnSchemaInterface $column): string
+    protected function buildCheck(ColumnInterface $column): string
     {
         $check = $column->getCheck();
 
@@ -102,7 +103,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      *
      * @return string A string containing the COMMENT keyword and the comment itself.
      */
-    protected function buildComment(ColumnSchemaInterface $column): string
+    protected function buildComment(ColumnInterface $column): string
     {
         return '';
     }
@@ -112,14 +113,16 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      *
      * @return string A string containing the DEFAULT keyword and the default value.
      */
-    protected function buildDefault(ColumnSchemaInterface $column): string
+    protected function buildDefault(ColumnInterface $column): string
     {
-        if (!empty(static::GENERATE_UUID_EXPRESSION)
+        $uuidExpression = $this->getDefaultUuidExpression();
+
+        if (!empty($uuidExpression)
             && $column->getType() === ColumnType::UUID
             && $column->isAutoIncrement()
             && $column->getDefaultValue() === null
         ) {
-            return ' DEFAULT ' . static::GENERATE_UUID_EXPRESSION;
+            return " DEFAULT $uuidExpression";
         }
 
         if ($column->isAutoIncrement() && $column->getType() !== ColumnType::UUID
@@ -143,7 +146,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      *
      * @return string A string containing the custom SQL fragment appended to column definition.
      */
-    protected function buildExtra(ColumnSchemaInterface $column): string
+    protected function buildExtra(ColumnInterface $column): string
     {
         $extra = $column->getExtra();
 
@@ -153,10 +156,10 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     /**
      * Builds the not null constraint for the column.
      *
-     * @return string A string 'NOT NULL' if {@see ColumnSchemaInterface::isNotNull()} is `true`
+     * @return string A string 'NOT NULL' if {@see ColumnInterface::isNotNull()} is `true`
      * or an empty string otherwise.
      */
-    protected function buildNotNull(ColumnSchemaInterface $column): string
+    protected function buildNotNull(ColumnInterface $column): string
     {
         return match ($column->isNotNull()) {
             true => ' NOT NULL',
@@ -170,7 +173,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      *
      * @return string A string containing the PRIMARY KEY keyword.
      */
-    protected function buildPrimaryKey(ColumnSchemaInterface $column): string
+    protected function buildPrimaryKey(ColumnInterface $column): string
     {
         return $column->isPrimaryKey() ? ' PRIMARY KEY' : '';
     }
@@ -178,7 +181,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     /**
      * Builds the references clause for the column.
      */
-    protected function buildReferences(ColumnSchemaInterface $column): string
+    protected function buildReferences(ColumnInterface $column): string
     {
         $reference = $this->buildReferenceDefinition($column);
 
@@ -192,7 +195,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     /**
      * Builds the reference definition for the column.
      */
-    protected function buildReferenceDefinition(ColumnSchemaInterface $column): string|null
+    protected function buildReferenceDefinition(ColumnInterface $column): string|null
     {
         $reference = $column->getReference();
         $table = $reference?->getForeignTableName();
@@ -229,6 +232,8 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
 
     /**
      * Builds the ON DELETE clause for the column reference.
+     *
+     * @psalm-param ReferentialAction::* $onDelete
      */
     protected function buildOnDelete(string $onDelete): string
     {
@@ -237,6 +242,8 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
 
     /**
      * Builds the ON UPDATE clause for the column reference.
+     *
+     * @psalm-param ReferentialAction::* $onUpdate
      */
     protected function buildOnUpdate(string $onUpdate): string
     {
@@ -248,7 +255,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      *
      * @return string A string containing the column type definition.
      */
-    protected function buildType(ColumnSchemaInterface $column): string
+    protected function buildType(ColumnInterface $column): string
     {
         $dbType = $this->getDbType($column);
 
@@ -277,10 +284,10 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     /**
      * Builds the unique constraint for the column.
      *
-     * @return string A string 'UNIQUE' if {@see ColumnSchemaInterface::isUnique()} is true
+     * @return string A string 'UNIQUE' if {@see ColumnInterface::isUnique()} is true
      * or an empty string otherwise.
      */
-    protected function buildUnique(ColumnSchemaInterface $column): string
+    protected function buildUnique(ColumnInterface $column): string
     {
         if ($column->isPrimaryKey()) {
             return '';
@@ -294,8 +301,16 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
      *
      * @return string A string containing the UNSIGNED keyword.
      */
-    protected function buildUnsigned(ColumnSchemaInterface $column): string
+    protected function buildUnsigned(ColumnInterface $column): string
     {
         return $column->isUnsigned() ? ' UNSIGNED' : '';
+    }
+
+    /**
+     * Get the expression used to generate a UUID as a default value.
+     */
+    protected function getDefaultUuidExpression(): string
+    {
+        return '';
     }
 }

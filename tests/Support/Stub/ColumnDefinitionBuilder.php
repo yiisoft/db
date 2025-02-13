@@ -6,13 +6,11 @@ namespace Yiisoft\Db\Tests\Support\Stub;
 
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\QueryBuilder\AbstractColumnDefinitionBuilder;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
 {
     protected const AUTO_INCREMENT_KEYWORD = 'AUTOINCREMENT';
-
-    protected const GENERATE_UUID_EXPRESSION = 'uuid()';
 
     protected const TYPES_WITH_SIZE = [
         'bit',
@@ -38,7 +36,24 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
         'decimal',
     ];
 
-    protected function getDbType(ColumnSchemaInterface $column): string
+    protected function buildCheck(ColumnInterface $column): string
+    {
+        $check = $column->getCheck();
+
+        if (empty($check)) {
+            $columnName = $column->getName();
+
+            if (!empty($columnName) && $column->getType() === ColumnType::JSON) {
+                return ' CHECK (json_valid(' . $this->queryBuilder->quoter()->quoteColumnName($columnName) . '))';
+            }
+
+            return '';
+        }
+
+        return " CHECK ($check)";
+    }
+
+    protected function getDbType(ColumnInterface $column): string
     {
         return $column->getDbType() ?? match ($column->getType()) {
             ColumnType::BOOLEAN => 'boolean',
@@ -65,5 +80,10 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             ColumnType::JSON => 'json',
             default => 'varchar',
         };
+    }
+
+    protected function getDefaultUuidExpression(): string
+    {
+        return 'uuid()';
     }
 }

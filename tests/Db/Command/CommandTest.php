@@ -7,7 +7,8 @@ namespace Yiisoft\Db\Tests\Db\Command;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
@@ -49,7 +50,7 @@ final class CommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $sql = $command->addColumn('table', 'column', $type)->getSql();
 
-        $columnType = $db->getQueryBuilder()->getColumnType($type);
+        $columnType = $db->getQueryBuilder()->buildColumnDefinition($type);
 
         $this->assertSame(
             DbHelper::replaceQuotes(
@@ -116,18 +117,20 @@ final class CommandTest extends AbstractCommandTest
      * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addForeignKeySql
      */
     public function testAddForeignKeySql(
-        string $name,
-        string $tableName,
-        array|string $column1,
-        array|string $column2,
+        array|string $columns,
+        array|string $referenceColumns,
         string|null $delete,
         string|null $update,
         string $expected
     ): void {
         $db = $this->getConnection();
-
         $command = $db->createCommand();
-        $sql = $command->addForeignKey($tableName, $name, $column1, $tableName, $column2, $delete, $update)->getSql();
+
+        $name = '{{fk_constraint}}';
+        $tableName = '{{fk_table}}';
+        $referenceTable = '{{fk_referenced_table}}';
+
+        $sql = $command->addForeignKey($tableName, $name, $columns, $referenceTable, $referenceColumns, $delete, $update)->getSql();
 
         $this->assertSame($expected, $sql);
     }
@@ -233,12 +236,13 @@ final class CommandTest extends AbstractCommandTest
 
         $expected = <<<SQL
         CREATE TABLE [test_table] (
-        \t[id] pk,
-        \t[name] string(255) NOT NULL,
-        \t[email] string(255) NOT NULL,
-        \t[address] string(255) NOT NULL,
+        \t[id] integer PRIMARY KEY AUTOINCREMENT,
+        \t[name] varchar(255) NOT NULL,
+        \t[email] varchar(255) NOT NULL,
+        \t[address] varchar(255) NOT NULL,
         \t[status] integer NOT NULL,
         \t[profile_id] integer NOT NULL,
+        \t[data] json CHECK (json_valid([data])),
         \t[created_at] timestamp NOT NULL,
         \t[updated_at] timestamp NOT NULL
         ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
@@ -250,6 +254,7 @@ final class CommandTest extends AbstractCommandTest
             'address' => ColumnType::STRING . '(255) NOT NULL',
             'status' => ColumnType::INTEGER . ' NOT NULL',
             'profile_id' => ColumnType::INTEGER . ' NOT NULL',
+            'data' => ColumnBuilder::json(),
             'created_at' => ColumnType::TIMESTAMP . ' NOT NULL',
             'updated_at' => ColumnType::TIMESTAMP . ' NOT NULL',
         ];

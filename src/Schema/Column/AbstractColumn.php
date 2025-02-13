@@ -16,17 +16,17 @@ use function property_exists;
  *
  * It provides information about the column's type, size, scale, and other details.
  *
- * The `ColumnSchema` class is used to store and retrieve metadata about a column in a database table.
+ * The `Column` class is used to store and retrieve metadata about a column in a database table.
  *
  * It's typically used in conjunction with the TableSchema class, which represents the metadata of a database table as a
  * whole.
  *
- * Here is an example of how to use the `ColumnSchema` class:
+ * Here is an example of how to use the `Column` class:
  *
  * ```php
- * use Yiisoft\Db\Schema\ColumnSchema;
+ * use Yiisoft\Db\Schema\IntegerColumn;
  *
- * $column = (new IntegerColumnSchema())
+ * $column = (new IntegerColumn())
  *     ->notNull()
  *     ->dbType('int')
  *     ->size(11)
@@ -35,7 +35,7 @@ use function property_exists;
  *     ->primaryKey();
  * ```
  */
-abstract class AbstractColumnSchema implements ColumnSchemaInterface
+abstract class AbstractColumn implements ColumnInterface
 {
     /**
      * @var string The default column abstract type
@@ -203,10 +203,7 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
         return $this->extra;
     }
 
-    /**
-     * @deprecated Will be removed in version 2.0.
-     * @psalm-mutation-free
-     */
+    /** @psalm-mutation-free */
     public function getName(): string|null
     {
         return $this->name;
@@ -371,5 +368,12 @@ abstract class AbstractColumnSchema implements ColumnSchemaInterface
     {
         $this->unsigned = $unsigned;
         return $this;
+    }
+
+    public function withName(string|null $name): static
+    {
+        $new = clone $this;
+        $new->name = $name;
+        return $new;
     }
 }

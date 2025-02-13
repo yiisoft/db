@@ -16,7 +16,7 @@ use function trim;
 /**
  * Parses column definition string. For example, `string(255)` or `int unsigned`.
  */
-final class ColumnDefinitionParser
+class ColumnDefinitionParser
 {
     /**
      * Parses column definition string.
@@ -27,7 +27,9 @@ final class ColumnDefinitionParser
      *
      * @psalm-return array{
      *     check?: string,
+     *     comment?: string,
      *     defaultValueRaw?: string,
+     *     dimension?: positive-int,
      *     enumValues?: list<string>,
      *     extra?: string,
      *     notNull?: bool,
@@ -61,7 +63,7 @@ final class ColumnDefinitionParser
     /**
      * @psalm-return array{enumValues: list<string>}
      */
-    private function enumInfo(string $values): array
+    protected function enumInfo(string $values): array
     {
         preg_match_all("/'([^']*)'/", $values, $matches);
 
@@ -71,6 +73,7 @@ final class ColumnDefinitionParser
     /**
      * @psalm-return array{
      *     check?: string,
+     *     comment?: string,
      *     defaultValueRaw?: string,
      *     extra?: string,
      *     notNull?: bool,
@@ -78,7 +81,7 @@ final class ColumnDefinitionParser
      *     unsigned?: bool
      * }
      */
-    private function extraInfo(string $extra): array
+    protected function extraInfo(string $extra): array
     {
         if (empty($extra)) {
             return [];
@@ -90,6 +93,11 @@ final class ColumnDefinitionParser
 
         if (preg_match($defaultPattern, $extra, $matches) === 1) {
             $info['defaultValueRaw'] = $matches[1];
+            $extra = str_replace($matches[0], '', $extra);
+        }
+
+        if (preg_match("/\\s*\\bCOMMENT\\s+'((?:[^']|'')*)'/i", $extra, $matches) === 1) {
+            $info['comment'] = str_replace("''", "'", $matches[1]);
             $extra = str_replace($matches[0], '', $extra);
         }
 
@@ -130,7 +138,7 @@ final class ColumnDefinitionParser
     /**
      * @psalm-return array{size: int, scale?: int}
      */
-    private function sizeInfo(string $size): array
+    protected function sizeInfo(string $size): array
     {
         $values = explode(',', $size);
 

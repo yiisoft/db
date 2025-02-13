@@ -33,7 +33,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      */
     protected const TYPE_MAP = [];
 
-    public function fromDbType(string $dbType, array $info = []): ColumnSchemaInterface
+    public function fromDbType(string $dbType, array $info = []): ColumnInterface
     {
         $info['dbType'] = $dbType;
         $type = $info['type'] ?? $this->getType($dbType, $info);
@@ -41,7 +41,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
         return $this->fromType($type, $info);
     }
 
-    public function fromDefinition(string $definition, array $info = []): ColumnSchemaInterface
+    public function fromDefinition(string $definition, array $info = []): ColumnInterface
     {
         $definitionInfo = $this->columnDefinitionParser()->parse($definition);
 
@@ -70,7 +70,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
         return $this->fromDbType($type, $info);
     }
 
-    public function fromPseudoType(string $pseudoType, array $info = []): ColumnSchemaInterface
+    public function fromPseudoType(string $pseudoType, array $info = []): ColumnInterface
     {
         $info['primaryKey'] = true;
         $info['autoIncrement'] = true;
@@ -91,7 +91,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
         return $this->fromType($type, $info);
     }
 
-    public function fromType(string $type, array $info = []): ColumnSchemaInterface
+    public function fromType(string $type, array $info = []): ColumnInterface
     {
         unset($info['type']);
 
@@ -126,29 +126,29 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      * @psalm-param ColumnType::* $type
      * @param ColumnInfo $info
      *
-     * @psalm-return class-string<ColumnSchemaInterface>
+     * @psalm-return class-string<ColumnInterface>
      */
     protected function getColumnClass(string $type, array $info = []): string
     {
         return match ($type) {
-            ColumnType::BOOLEAN => BooleanColumnSchema::class,
-            ColumnType::BIT => BitColumnSchema::class,
-            ColumnType::TINYINT => IntegerColumnSchema::class,
-            ColumnType::SMALLINT => IntegerColumnSchema::class,
+            ColumnType::BOOLEAN => BooleanColumn::class,
+            ColumnType::BIT => BitColumn::class,
+            ColumnType::TINYINT => IntegerColumn::class,
+            ColumnType::SMALLINT => IntegerColumn::class,
             ColumnType::INTEGER => PHP_INT_SIZE !== 8 && !empty($info['unsigned'])
-                ? BigIntColumnSchema::class
-                : IntegerColumnSchema::class,
+                ? BigIntColumn::class
+                : IntegerColumn::class,
             ColumnType::BIGINT => PHP_INT_SIZE !== 8 || !empty($info['unsigned'])
-                ? BigIntColumnSchema::class
-                : IntegerColumnSchema::class,
-            ColumnType::DECIMAL => DoubleColumnSchema::class,
-            ColumnType::FLOAT => DoubleColumnSchema::class,
-            ColumnType::DOUBLE => DoubleColumnSchema::class,
-            ColumnType::BINARY => BinaryColumnSchema::class,
-            ColumnType::ARRAY => ArrayColumnSchema::class,
-            ColumnType::STRUCTURED => StructuredColumnSchema::class,
-            ColumnType::JSON => JsonColumnSchema::class,
-            default => StringColumnSchema::class,
+                ? BigIntColumn::class
+                : IntegerColumn::class,
+            ColumnType::DECIMAL => DoubleColumn::class,
+            ColumnType::FLOAT => DoubleColumn::class,
+            ColumnType::DOUBLE => DoubleColumn::class,
+            ColumnType::BINARY => BinaryColumn::class,
+            ColumnType::ARRAY => ArrayColumn::class,
+            ColumnType::STRUCTURED => StructuredColumn::class,
+            ColumnType::JSON => JsonColumn::class,
+            default => StringColumn::class,
         };
     }
 
@@ -229,15 +229,15 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     }
 
     /**
-     * Converts column's default value according to {@see ColumnSchemaInterface::getPhpType()} after retrieval from the
+     * Converts column's default value according to {@see ColumnInterface::getPhpType()} after retrieval from the
      * database.
      *
      * @param string|null $defaultValue The default value retrieved from the database.
-     * @param ColumnSchemaInterface $column The column schema object.
+     * @param ColumnInterface $column The column object.
      *
      * @return mixed The normalized default value.
      */
-    protected function normalizeDefaultValue(string|null $defaultValue, ColumnSchemaInterface $column): mixed
+    protected function normalizeDefaultValue(string|null $defaultValue, ColumnInterface $column): mixed
     {
         if (
             $defaultValue === null
@@ -253,9 +253,9 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     }
 
     /**
-     * Converts a not null default value according to {@see ColumnSchemaInterface::getPhpType()}.
+     * Converts a not null default value according to {@see ColumnInterface::getPhpType()}.
      */
-    protected function normalizeNotNullDefaultValue(string $defaultValue, ColumnSchemaInterface $column): mixed
+    protected function normalizeNotNullDefaultValue(string $defaultValue, ColumnInterface $column): mixed
     {
         $value = $defaultValue;
 
