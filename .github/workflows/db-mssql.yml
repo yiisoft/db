@@ -25,7 +25,7 @@ jobs:
     env:
       COMPOSER_ROOT_VERSION: dev-master
       CURRENT_PACKAGE: db-mssql
-      EXTENSIONS: pdo, pdo_sqlsrv-5.12
+      EXTENSIONS: pdo, pdo_sqlsrv
 
     runs-on: ${{ matrix.mssql.os || 'ubuntu-latest' }}
 
@@ -35,6 +35,7 @@ jobs:
           - 8.1
           - 8.2
           - 8.3
+          - 8.4
 
         mssql:
           - server: 2022-latest
@@ -42,11 +43,11 @@ jobs:
             flag: "-C"
 
         include:
-          - php: 8.3
+          - php: 8.4
             mssql:
               server: 2017-latest
               os: ubuntu-20.04
-          - php: 8.3
+          - php: 8.4
             mssql:
               server: 2019-latest
               odbc-version: 18
@@ -70,7 +71,7 @@ jobs:
           sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
       - name: Checkout.
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create MS SQL Database.
         run: docker exec -i mssql /opt/mssql-tools${{ matrix.mssql.odbc-version }}/bin/sqlcmd ${{ matrix.mssql.flag }} -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
@@ -82,7 +83,6 @@ jobs:
           extensions: ${{ env.EXTENSIONS }}
           ini-values: date.timezone='UTC'
           coverage: pcov
-          tools: composer:v2, pecl
         env:
           update: true
 
@@ -105,8 +105,8 @@ jobs:
         run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
 
       - name: Upload coverage to Codecov.
-        if: matrix.php == '8.3'
-        uses: codecov/codecov-action@v3
+        if: matrix.php == '8.4'
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
