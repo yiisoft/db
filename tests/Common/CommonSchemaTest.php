@@ -405,6 +405,23 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
+    public function testHasTable(): void
+    {
+        $db = $this->getConnection(true);
+
+        $schema = $db->getSchema();
+
+        $this->assertTrue($schema->hasTable('customer'));
+        $this->assertTrue($schema->hasTable('category'));
+        $this->assertFalse($schema->hasTable('no_such_table'));
+
+        $db->createCommand()->dropTable('customer')->execute();
+
+        $this->assertFalse($schema->hasTable('customer', '', true));
+
+        $db->close();
+    }
+
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::tableSchema
      */
@@ -478,6 +495,23 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $views = $schema->getViewNames();
 
         $this->assertSame(['animal_view'], $views);
+
+        $db->close();
+    }
+
+    public function testHasView(): void
+    {
+        $db = $this->getConnection(true);
+
+        $schema = $db->getSchema();
+
+        $this->assertTrue($schema->hasView('animal_view'));
+        $this->assertFalse($schema->hasView('no_such_view'));
+
+        $db->createCommand()->dropView('animal_view')->execute();
+
+        $this->assertTrue($schema->hasView('animal_view'));
+        $this->assertFalse($schema->hasView('animal_view', '', true));
 
         $db->close();
     }

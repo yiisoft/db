@@ -202,6 +202,20 @@ final class SchemaTest extends AbstractSchemaTest
         $this->assertSame(['dbo', 'public'], $schema->getSchemaNames());
     }
 
+    public function testHasSchema(): void
+    {
+        $db = $this->getConnection();
+
+        $schema = $db->getSchema();
+        Assert::setInaccessibleProperty($schema, 'schemaNames', ['dbo', 'public']);
+
+        $this->assertTrue($schema->hasSchema('dbo'));
+        $this->assertTrue($schema->hasSchema('public'));
+        $this->assertFalse($schema->hasSchema('no_such_schema'));
+
+        $db->close();
+    }
+
     /**
      * @throws NotSupportedException
      */
