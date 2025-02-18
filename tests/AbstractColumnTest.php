@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Tests;
 use PHPUnit\Framework\TestCase;
 
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+
 use function is_object;
 
 abstract class AbstractColumnTest extends TestCase

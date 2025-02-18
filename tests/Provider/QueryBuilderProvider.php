@@ -1164,7 +1164,7 @@ class QueryBuilderProvider
             'json expression' => [
                 'json_type',
                 [
-                    'json_col' => new JsonExpression(['c' => 1, 'd' => 2])
+                    'json_col' => new JsonExpression(['c' => 1, 'd' => 2]),
                 ],
                 [],
                 DbHelper::replaceQuotes(
@@ -1744,7 +1744,7 @@ class QueryBuilderProvider
                 DbHelper::replaceQuotes('integer CHECK ([[check_col]] > 5)', static::$driverName),
                 ColumnBuilder::integer()
                     ->withName('check_col')
-                    ->check(DbHelper::replaceQuotes('[[check_col]] > 5', static::$driverName))
+                    ->check(DbHelper::replaceQuotes('[[check_col]] > 5', static::$driverName)),
             ],
             "check('')" => ['integer', ColumnBuilder::integer()->check('')],
             'check(null)' => ['integer', ColumnBuilder::integer()->check(null)],

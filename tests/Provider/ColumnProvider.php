@@ -32,6 +32,7 @@ use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\LazyArrayJson;
 
 use Yiisoft\Db\Schema\Data\LazyArrayStructured;
+
 use function fopen;
 
 class ColumnProvider

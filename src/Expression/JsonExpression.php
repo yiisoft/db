@@ -27,7 +27,8 @@ final class JsonExpression implements ExpressionInterface
      * For example, PostgresSQL has `json` and `jsonb` types.
      */
     public function __construct(private readonly mixed $value, private readonly string|null $type = null)
-    {}
+    {
+    }
 
     /**
      * The json's content. In can be represented as

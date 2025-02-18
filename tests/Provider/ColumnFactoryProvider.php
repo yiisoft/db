@@ -8,17 +8,14 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
-use Yiisoft\Db\Schema\Column\ArrayLazyColumn;
 use Yiisoft\Db\Schema\Column\BigIntColumn;
 use Yiisoft\Db\Schema\Column\BinaryColumn;
 use Yiisoft\Db\Schema\Column\BooleanColumn;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\JsonColumn;
-use Yiisoft\Db\Schema\Column\JsonLazyColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\Column\StructuredColumn;
-use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
 
 class ColumnFactoryProvider
 {

@@ -22,7 +22,6 @@ use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Helper\DbUuidHelper;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Data\DataReaderInterface;

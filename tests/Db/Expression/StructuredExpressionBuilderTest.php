@@ -14,7 +14,6 @@ use Yiisoft\Db\Expression\StructuredExpressionBuilder;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\AbstractStructuredColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Schema\Data\LazyArrayJson;
 use Yiisoft\Db\Schema\Data\LazyArrayStructured;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
