@@ -40,7 +40,7 @@ final class ArrayExpression implements ExpressionInterface
      *
      * String type will be converted into {@see ColumnInterface} using {@see ColumnFactoryInterface::fromDefinition()}.
      * The column type is used to typecast array values before saving into the database and for adding type hint to
-     * the SQL statement. If the type isn't specified and DBMS can guess it from the context, SQL error will be raised.
+     * the SQL statement. If the type isn't specified and DBMS can't guess it from the context, SQL error will be raised.
      * The {@see ColumnDefinitionBuilderInterface::buildType()} method will be invoked to convert {@see ColumnInterface}
      * into SQL representation. For example, it will convert `string[]` to `varchar(255)[]` (for PostgresSQL).
      * The preferred way is to use {@see ColumnBuilder} to generate the column type as an instance of
@@ -60,7 +60,7 @@ final class ArrayExpression implements ExpressionInterface
      * - `null` if the type isn't explicitly specified.
      *
      * The column type is used to typecast array values before saving into the database and for adding type hint to
-     * the SQL statement. If the type isn't specified and DBMS can guess it from the context, SQL error will be raised.
+     * the SQL statement. If the type isn't specified and DBMS can't guess it from the context, SQL error will be raised.
      */
     public function getType(): ColumnInterface|string|null
     {

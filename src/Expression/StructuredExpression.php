@@ -39,7 +39,7 @@ final class StructuredExpression implements ExpressionInterface
      * - `null` if the type isn't explicitly specified.
      *
      * The column type is used to typecast structured values before saving into the database and for adding type hint to
-     * the SQL statement. If the type isn't specified and DBMS can guess it from the context, SQL error will be raised.
+     * the SQL statement. If the type isn't specified and DBMS can't guess it from the context, SQL error will be raised.
      */
     public function __construct(
         private readonly array|object|string|null $value,
@@ -54,7 +54,7 @@ final class StructuredExpression implements ExpressionInterface
      * - `null` if the type isn't explicitly specified.
      *
      * The column type is used to typecast structured values before saving into the database and for adding type hint to
-     * the SQL statement. If the type isn't specified and DBMS can guess it from the context, SQL error will be raised.
+     * the SQL statement. If the type isn't specified and DBMS can't guess it from the context, SQL error will be raised.
      */
     public function getType(): AbstractStructuredColumn|string|null
     {
