@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Common;
+namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
 
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use function is_object;
 
-abstract class CommonColumnTest extends TestCase
+abstract class AbstractColumnTest extends TestCase
 {
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::predefinedTypes */
     public function testPredefinedType(string $className, string $type, string $phpType)
@@ -20,10 +21,8 @@ abstract class CommonColumnTest extends TestCase
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::dbTypecastColumns */
-    public function testDbTypecastColumns(string $className, array $values)
+    public function testDbTypecastColumns(ColumnInterface $column, array $values)
     {
-        $column = new $className();
-
         foreach ($values as [$expected, $value]) {
             if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {
                 $this->assertEquals($expected, $column->dbTypecast($value));
@@ -34,12 +33,14 @@ abstract class CommonColumnTest extends TestCase
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::phpTypecastColumns */
-    public function testPhpTypecastColumns(string $className, array $values)
+    public function testPhpTypecastColumns(ColumnInterface $column, array $values)
     {
-        $column = new $className();
-
         foreach ($values as [$expected, $value]) {
-            $this->assertSame($expected, $column->phpTypecast($value));
+            if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {
+                $this->assertEquals($expected, $column->phpTypecast($value));
+            } else {
+                $this->assertSame($expected, $column->phpTypecast($value));
+            }
         }
     }
 }

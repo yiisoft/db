@@ -7,14 +7,18 @@ namespace Yiisoft\Db\Tests\Provider;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Schema\Column\ArrayColumn;
+use Yiisoft\Db\Schema\Column\ArrayLazyColumn;
 use Yiisoft\Db\Schema\Column\BigIntColumn;
 use Yiisoft\Db\Schema\Column\BinaryColumn;
 use Yiisoft\Db\Schema\Column\BooleanColumn;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\JsonColumn;
+use Yiisoft\Db\Schema\Column\JsonLazyColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\Column\StructuredColumn;
+use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
 
 class ColumnFactoryProvider
 {
@@ -22,12 +26,14 @@ class ColumnFactoryProvider
     {
         return [
             // definition, expected type, expected instance of, expected column method results
-            '' => ['', ColumnType::STRING, StringColumn::class, ['getDbType' => '']],
-            'text' => ['text', ColumnType::TEXT, StringColumn::class, ['getDbType' => 'text']],
-            'text NOT NULL' => ['text NOT NULL', ColumnType::TEXT, StringColumn::class, ['getDbType' => 'text', 'isNotNull' => true]],
-            'char(1)' => ['char(1)', ColumnType::CHAR, StringColumn::class, ['getDbType' => 'char', 'getSize' => 1]],
-            'decimal(10,2)' => ['decimal(10,2)', ColumnType::DECIMAL, DoubleColumn::class, ['getDbType' => 'decimal', 'getSize' => 10, 'getScale' => 2]],
-            'bigint UNSIGNED' => ['bigint UNSIGNED', ColumnType::BIGINT, BigIntColumn::class, ['getDbType' => 'bigint', 'isUnsigned' => true]],
+            '' => ['', new StringColumn(dbType: '')],
+            'text' => ['text', new StringColumn(ColumnType::TEXT, dbType: 'text')],
+            'text NOT NULL' => ['text NOT NULL', new StringColumn(ColumnType::TEXT, dbType: 'text', notNull: true)],
+            'char(1)' => ['char(1)', new StringColumn(ColumnType::CHAR, dbType: 'char', size: 1)],
+            'decimal(10,2)' => ['decimal(10,2)', new DoubleColumn(ColumnType::DECIMAL, dbType: 'decimal', size: 10, scale: 2)],
+            'bigint UNSIGNED' => ['bigint UNSIGNED', new BigIntColumn(dbType: 'bigint', unsigned: true)],
+            'integer[]' => ['integer[]', new ArrayColumn(dbType: 'integer', column: new IntegerColumn(dbType: 'integer'))],
+            'string(126)[][]' => ['string(126)[][]', new ArrayColumn(size: 126, dimension: 2, column: new StringColumn(size: 126))],
         ];
     }
 
@@ -35,12 +41,12 @@ class ColumnFactoryProvider
     {
         return [
             // pseudo-type, expected type, expected instance of, expected column method results
-            'pk' => [PseudoType::PK, ColumnType::INTEGER, IntegerColumn::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
-            'upk' => [PseudoType::UPK, ColumnType::INTEGER, IntegerColumn::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true, 'isUnsigned' => true]],
-            'bigpk' => [PseudoType::BIGPK, ColumnType::BIGINT, IntegerColumn::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
-            'ubigpk' => [PseudoType::UBIGPK, ColumnType::BIGINT, BigIntColumn::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true, 'isUnsigned' => true]],
-            'uuid_pk' => [PseudoType::UUID_PK, ColumnType::UUID, StringColumn::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
-            'uuid_pk_seq' => [PseudoType::UUID_PK_SEQ, ColumnType::UUID, StringColumn::class, ['isPrimaryKey' => true, 'isAutoIncrement' => true]],
+            'pk' => [PseudoType::PK, new IntegerColumn(primaryKey: true, autoIncrement: true)],
+            'upk' => [PseudoType::UPK, new IntegerColumn(primaryKey: true, autoIncrement: true, unsigned: true)],
+            'bigpk' => [PseudoType::BIGPK, new IntegerColumn(ColumnType::BIGINT, primaryKey: true, autoIncrement: true)],
+            'ubigpk' => [PseudoType::UBIGPK, new BigIntColumn(primaryKey: true, autoIncrement: true, unsigned: true)],
+            'uuid_pk' => [PseudoType::UUID_PK, new StringColumn(ColumnType::UUID, primaryKey: true, autoIncrement: true)],
+            'uuid_pk_seq' => [PseudoType::UUID_PK_SEQ, new StringColumn(ColumnType::UUID, primaryKey: true, autoIncrement: true)],
         ];
     }
 
@@ -66,6 +72,7 @@ class ColumnFactoryProvider
             'timestamp' => [ColumnType::TIMESTAMP, ColumnType::TIMESTAMP, StringColumn::class],
             'time' => [ColumnType::TIME, ColumnType::TIME, StringColumn::class],
             'date' => [ColumnType::DATE, ColumnType::DATE, StringColumn::class],
+            'array' => [ColumnType::ARRAY, ColumnType::ARRAY, ArrayColumn::class],
             'structured' => [ColumnType::STRUCTURED, ColumnType::STRUCTURED, StructuredColumn::class],
             'json' => [ColumnType::JSON, ColumnType::JSON, JsonColumn::class],
         ];

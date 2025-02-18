@@ -208,7 +208,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
 
         $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**
@@ -349,5 +349,36 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb = $db->getQueryBuilder();
 
         $this->assertInstanceOf(ServerInfoInterface::class, $qb->getServerInfo());
+    }
+
+    public function testJsonColumn(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+        $column = ColumnBuilder::json();
+
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                "CREATE TABLE [json_table] (\n\t[json_col] json CHECK (json_valid([json_col]))\n)",
+                $db->getDriverName(),
+            ),
+            $qb->createTable('json_table', ['json_col' => $column]),
+        );
+
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                'ALTER TABLE [json_table] ADD [json_col] json',
+                $db->getDriverName(),
+            ),
+            $qb->addColumn('json_table', 'json_col', $column),
+        );
+
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                'ALTER TABLE [json_table] CHANGE [json_col] [json_col] json',
+                $db->getDriverName(),
+            ),
+            $qb->alterColumn('json_table', 'json_col', $column),
+        );
     }
 }

@@ -22,6 +22,7 @@ use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Helper\DbUuidHelper;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
@@ -31,6 +32,7 @@ use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function array_filter;
@@ -2099,5 +2101,50 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame($uuidSource, $uuidString);
 
         $db->close();
+    }
+
+    public function testJsonTable(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        if ($db->getTableSchema('json_table', true) !== null) {
+            $command->dropTable('json_table')->execute();
+        }
+
+        $command->createTable('json_table', [
+            'id' => PseudoType::PK,
+            'json_col' => ColumnBuilder::json(),
+        ])->execute();
+
+        $command->insert('json_table', ['json_col' => ['a' => 1, 'b' => 2]]);
+
+        $typeHint = $db->getDriverName() === 'pgsql' ? '::jsonb' : '';
+        $expectedValue = $db->getQuoter()->quoteValue('{"a":1,"b":2}') . $typeHint;
+
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                "INSERT INTO [[json_table]] ([[json_col]]) VALUES (:qp0$typeHint)",
+                $db->getDriverName(),
+            ),
+            $command->getSql()
+        );
+        $this->assertEquals([':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)], $command->getParams(false));
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                "INSERT INTO [[json_table]] ([[json_col]]) VALUES ($expectedValue)",
+                $db->getDriverName(),
+            ),
+            $command->getRawSql()
+        );
+        $this->assertSame(1, $command->execute());
+
+        $tableSchema = $db->getTableSchema('json_table', true);
+        $this->assertNotNull($tableSchema);
+        $this->assertSame('json_col', $tableSchema->getColumn('json_col')->getName());
+        $this->assertSame(ColumnType::JSON, $tableSchema->getColumn('json_col')->getType());
+
+        $value = (new Query($db))->select('json_col')->from('json_table')->where(['id' => 1])->scalar();
+        $this->assertSame('{"a":1,"b":2}', str_replace(' ', '', $value));
     }
 }

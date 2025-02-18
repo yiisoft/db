@@ -4,27 +4,34 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use ArrayIterator;
 use PDO;
 use stdClass;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
+use Yiisoft\Db\Schema\Column\ArrayLazyColumn;
 use Yiisoft\Db\Schema\Column\BigIntColumn;
 use Yiisoft\Db\Schema\Column\BinaryColumn;
 use Yiisoft\Db\Schema\Column\BitColumn;
 use Yiisoft\Db\Schema\Column\BooleanColumn;
-use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\JsonColumn;
+use Yiisoft\Db\Schema\Column\JsonLazyColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\Column\StructuredColumn;
+use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
+use Yiisoft\Db\Schema\Data\LazyArray;
+use Yiisoft\Db\Schema\Data\LazyArrayJson;
 
+use Yiisoft\Db\Schema\Data\LazyArrayStructured;
 use function fopen;
 
 class ColumnProvider
@@ -50,7 +57,7 @@ class ColumnProvider
     {
         return [
             'integer' => [
-                IntegerColumn::class,
+                new IntegerColumn(),
                 [
                     // [expected, typecast value]
                     [null, null],
@@ -64,7 +71,7 @@ class ColumnProvider
                 ],
             ],
             'bigint' => [
-                BigIntColumn::class,
+                new BigIntColumn(),
                 [
                     [null, null],
                     [null, ''],
@@ -78,7 +85,7 @@ class ColumnProvider
                 ],
             ],
             'double' => [
-                DoubleColumn::class,
+                new DoubleColumn(),
                 [
                     [null, null],
                     [null, ''],
@@ -91,7 +98,7 @@ class ColumnProvider
                 ],
             ],
             'string' => [
-                StringColumn::class,
+                new StringColumn(),
                 [
                     [null, null],
                     ['', ''],
@@ -104,7 +111,7 @@ class ColumnProvider
                 ],
             ],
             'binary' => [
-                BinaryColumn::class,
+                new BinaryColumn(),
                 [
                     [null, null],
                     ['1', 1],
@@ -116,7 +123,7 @@ class ColumnProvider
                 ],
             ],
             'bit' => [
-                BitColumn::class,
+                new BitColumn(),
                 [
                     [null, null],
                     [null, ''],
@@ -131,7 +138,7 @@ class ColumnProvider
                 ],
             ],
             'boolean' => [
-                BooleanColumn::class,
+                new BooleanColumn(),
                 [
                     [null, null],
                     [null, ''],
@@ -147,7 +154,7 @@ class ColumnProvider
                 ],
             ],
             'json' => [
-                JsonColumn::class,
+                new JsonColumn(),
                 [
                     [null, null],
                     [new JsonExpression(''), ''],
@@ -160,6 +167,27 @@ class ColumnProvider
                     [new JsonExpression(['a' => 1]), ['a' => 1]],
                     [new JsonExpression(new stdClass()), new stdClass()],
                     [$expression = new JsonExpression([1, 2, 3]), $expression],
+                    [$expression = new Expression('expression'), $expression],
+                ],
+            ],
+            'array' => [
+                $arrayCol = new ArrayColumn(),
+                [
+                    [null, null],
+                    [new ArrayExpression([], $arrayCol), []],
+                    [new ArrayExpression([1, 2, 3], $arrayCol), [1, 2, 3]],
+                    [new ArrayExpression($iterator = new ArrayIterator([1, 2, 3]), $arrayCol), $iterator],
+                    [$expression = new Expression('expression'), $expression],
+                ],
+            ],
+            'structured' => [
+                $structuredCol = new StructuredColumn(),
+                [
+                    [null, null],
+                    [new StructuredExpression([], $structuredCol), []],
+                    [new StructuredExpression(['value' => 1, 'currency_code' => 'USD'], $structuredCol), ['value' => 1, 'currency_code' => 'USD']],
+                    [new StructuredExpression($iterator = new ArrayIterator(['value' => 1, 'currency_code' => 'USD']), $structuredCol), $iterator],
+                    [$expression = new Expression('expression'), $expression],
                 ],
             ],
         ];
@@ -169,7 +197,7 @@ class ColumnProvider
     {
         return [
             'integer' => [
-                IntegerColumn::class,
+                new IntegerColumn(),
                 [
                     // [expected, typecast value]
                     [null, null],
@@ -178,7 +206,7 @@ class ColumnProvider
                 ],
             ],
             'bigint' => [
-                BigIntColumn::class,
+                new BigIntColumn(),
                 [
                     [null, null],
                     ['1', 1],
@@ -187,7 +215,7 @@ class ColumnProvider
                 ],
             ],
             'double' => [
-                DoubleColumn::class,
+                new DoubleColumn(),
                 [
                     [null, null],
                     [1.0, 1.0],
@@ -195,7 +223,7 @@ class ColumnProvider
                 ],
             ],
             'string' => [
-                StringColumn::class,
+                new StringColumn(),
                 [
                     [null, null],
                     ['', ''],
@@ -203,7 +231,7 @@ class ColumnProvider
                 ],
             ],
             'binary' => [
-                BinaryColumn::class,
+                new BinaryColumn(),
                 [
                     [null, null],
                     ['', ''],
@@ -212,7 +240,7 @@ class ColumnProvider
                 ],
             ],
             'bit' => [
-                BitColumn::class,
+                new BitColumn(),
                 [
                     [null, null],
                     [1, 1],
@@ -222,7 +250,7 @@ class ColumnProvider
                 ],
             ],
             'boolean' => [
-                BooleanColumn::class,
+                new BooleanColumn(),
                 [
                     [null, null],
                     [true, true],
@@ -233,7 +261,7 @@ class ColumnProvider
                 ],
             ],
             'json' => [
-                JsonColumn::class,
+                new JsonColumn(),
                 [
                     [null, null],
                     [null, 'null'],
@@ -248,6 +276,61 @@ class ColumnProvider
                     [['a' => 1], '{"a":1}'],
                 ],
             ],
+            'jsonLazy' => [
+                new JsonLazyColumn(),
+                [
+                    [null, null],
+                    [null, 'null'],
+                    ['', '""'],
+                    [1.0, '1.0'],
+                    [1, '1'],
+                    [true, 'true'],
+                    [false, 'false'],
+                    ['string', '"string"'],
+                    [new LazyArrayJson('[1,2,3]'), '[1,2,3]'],
+                    [new LazyArrayJson('{"key":"value"}'), '{"key":"value"}'],
+                ],
+            ],
+            'array' => [
+                new ArrayColumn(),
+                [
+                    [null, null],
+                    [[], '[]'],
+                    [[], '{}'],
+                    [[1, 2, 3], '[1,2,3]'],
+                    [['1', '2', '3'], '["1","2","3"]'],
+                    [['key' => 'value'], '{"key":"value"}'],
+                ],
+            ],
+            'arrayLazy' => [
+                new ArrayLazyColumn(),
+                [
+                    [null, null],
+                    [new LazyArray('[]'), '[]'],
+                    [new LazyArray('{}'), '{}'],
+                    [new LazyArray('[1,2,3]'), '[1,2,3]'],
+                ],
+            ],
+            'structured' => [
+                new StructuredColumn(),
+                [
+                    [null, null],
+                    [[], '[]'],
+                    [[], '{}'],
+                    [[1, true], '[1,true]'],
+                    [['key' => 'value'], '{"key":"value"}'],
+                ],
+            ],
+            'structuredLazy' => [
+                new StructuredLazyColumn(),
+                [
+                    [null, null],
+                    [new LazyArrayStructured('[]'), '[]'],
+                    [new LazyArrayStructured('{}'), '{}'],
+                    [new LazyArrayStructured('[1,true]'), '[1,true]'],
+                    [new LazyArrayStructured('{"key":"value"}'), '{"key":"value"}'],
+                ],
+            ],
         ];
     }
 
@@ -256,7 +339,7 @@ class ColumnProvider
         return [
             // [column, values]
             ColumnType::BOOLEAN => [
-                ColumnBuilder::boolean(),
+                new BooleanColumn(),
                 [
                     // [dimension, expected, typecast value]
                     [1, [true, true, true, false, false, false, null], [true, 1, '1', false, 0, '0', null]],
@@ -264,14 +347,14 @@ class ColumnProvider
                 ],
             ],
             ColumnType::BIT => [
-                ColumnBuilder::bit(),
+                new BitColumn(),
                 [
                     [1, [0b1011, 1001, null], [0b1011, '1001', null]],
                     [2, [[0b1011, 1001, null]], [[0b1011, '1001', null]]],
                 ],
             ],
             ColumnType::INTEGER => [
-                ColumnBuilder::integer(),
+                new IntegerColumn(),
                 [
                     [1, [1, 2, 3, null], [1, 2.0, '3', null]],
                     [2, [[1, 2], [3], null], [[1, 2.0], ['3'], null]],
@@ -286,21 +369,21 @@ class ColumnProvider
                 ],
             ],
             ColumnType::DOUBLE => [
-                ColumnBuilder::double(),
+                new DoubleColumn(),
                 [
                     [1, [1.0, 2.2, 3.3, null], [1, 2.2, '3.3', null]],
                     [2, [[1.0, 2.2], [3.3, null]], [[1, 2.2], ['3.3', null]]],
                 ],
             ],
             ColumnType::STRING => [
-                ColumnBuilder::string(),
+                new StringColumn(),
                 [
                     [1, ['1', '2', '1', '0', '', null], [1, '2', true, false, '', null]],
                     [2, [['1', '2', '1', '0'], [''], [null]], [[1, '2', true, false], [''], [null]]],
                 ],
             ],
             ColumnType::BINARY => [
-                ColumnBuilder::binary(),
+                new BinaryColumn(),
                 [
                     [1, [
                         '1',
@@ -317,7 +400,7 @@ class ColumnProvider
                 ],
             ],
             ColumnType::JSON => [
-                ColumnBuilder::json(),
+                new JsonColumn(),
                 [
                     [1, [
                         new JsonExpression([1, 2, 3]),
@@ -337,7 +420,7 @@ class ColumnProvider
                 ],
             ],
             ColumnType::STRUCTURED => [
-                ColumnBuilder::structured('structured_type'),
+                (new StructuredColumn())->dbType('structured_type'),
                 [
                     [
                         1,

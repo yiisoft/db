@@ -617,6 +617,66 @@ class QueryBuilderProvider
             'like-custom-3' => [
                 ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => '%b%'],
             ],
+
+            /* json conditions */
+            [
+                ['=', 'json_col', new JsonExpression(['type' => 'iron', 'weight' => 15])],
+                '[[json_col]] = :qp0', [':qp0' => new Param('{"type":"iron","weight":15}', DataType::STRING)],
+            ],
+            'object with type' => [
+                ['=', 'json_col', new JsonExpression(['type' => 'iron', 'weight' => 15], 'json')],
+                '[[json_col]] = :qp0', [':qp0' => new Param('{"type":"iron","weight":15}', DataType::STRING)],
+            ],
+            'false value' => [
+                ['=', 'json_col', new JsonExpression([false])],
+                '[[json_col]] = :qp0', [':qp0' => new Param('[false]', DataType::STRING)],
+            ],
+            'null value' => [
+                ['=', 'json_col', new JsonExpression(null)],
+                '[[json_col]] = NULL', [],
+            ],
+            'null as array value' => [
+                ['=', 'json_col', new JsonExpression([null])],
+                '[[json_col]] = :qp0', [':qp0' => new Param('[null]', DataType::STRING)],
+            ],
+            'null as object value' => [
+                ['=', 'json_col', new JsonExpression(['nil' => null])],
+                '[[json_col]] = :qp0', [':qp0' => new Param('{"nil":null}', DataType::STRING)],
+            ],
+            'query' => [
+                [
+                    '=',
+                    'json_col',
+                    new JsonExpression((new Query(self::getDb()))->select('params')->from('user')->where(['id' => 1])),
+                ],
+                '[[json_col]] = (SELECT [[params]] FROM [[user]] WHERE [[id]]=:qp0)',
+                [':qp0' => 1],
+            ],
+            'query with type' => [
+                [
+                    '=',
+                    'json_col',
+                    new JsonExpression(
+                        (new Query(self::getDb()))->select('params')->from('user')->where(['id' => 1]),
+                        'json'
+                    ),
+                ],
+                '[[json_col]] = (SELECT [[params]] FROM [[user]] WHERE [[id]]=:qp0)', [':qp0' => 1],
+            ],
+            'nested json expression' => [
+                [
+                    '=',
+                    'json_col',
+                    new JsonExpression(
+                        new JsonExpression(['a' => 1, 'b' => 2, 'd' => ['e' => 3]])
+                    ),
+                ],
+                '[[json_col]] = :qp0', [':qp0' => new Param('{"a":1,"b":2,"d":{"e":3}}', DataType::STRING)],
+            ],
+            'search by property in JSON column' => [
+                ['=', new Expression("(json_col->>'$.someKey')"), 42],
+                "(json_col->>'$.someKey') = :qp0", [':qp0' => 42],
+            ],
         ];
 
         /* adjust dbms specific escaping */
@@ -1099,6 +1159,22 @@ class QueryBuilderProvider
                 ),
                 [
                     ':qp0' => 'test@example.com',
+                ],
+            ],
+            'json expression' => [
+                'json_type',
+                [
+                    'json_col' => new JsonExpression(['c' => 1, 'd' => 2])
+                ],
+                [],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[json_type]] ([[json_col]]) VALUES (:qp0)
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':qp0' => new Param('{"c":1,"d":2}', DataType::STRING),
                 ],
             ],
         ];
@@ -1664,7 +1740,12 @@ class QueryBuilderProvider
 
             "extra('NOT NULL')" => ['varchar(255) NOT NULL', ColumnBuilder::string()->extra('NOT NULL')],
             "extra('')" => ['varchar(255)', ColumnBuilder::string()->extra('')],
-            "check('value > 5')" => ['integer CHECK ([col_59] > 5)', ColumnBuilder::integer()->check(DbHelper::replaceQuotes('[[col_59]] > 5', static::$driverName))],
+            "check('value > 5')" => [
+                DbHelper::replaceQuotes('integer CHECK ([[check_col]] > 5)', static::$driverName),
+                ColumnBuilder::integer()
+                    ->withName('check_col')
+                    ->check(DbHelper::replaceQuotes('[[check_col]] > 5', static::$driverName))
+            ],
             "check('')" => ['integer', ColumnBuilder::integer()->check('')],
             'check(null)' => ['integer', ColumnBuilder::integer()->check(null)],
             "comment('comment')" => ['varchar(255)', ColumnBuilder::string()->comment('comment')],

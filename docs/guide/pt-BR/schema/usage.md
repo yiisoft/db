@@ -96,4 +96,4 @@ echo 'id (' . $column->getDbType() . ')';
 ```
 
 Em ambos os casos, você obtém a instância ou instâncias
-ou a `ColumnSchemaInterface` que você pode usar para obter todas as informações sobre a coluna.
+ou a `ColumnInterface` que você pode usar para obter todas as informações sobre a coluna.

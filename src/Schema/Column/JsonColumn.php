@@ -4,29 +4,16 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
-use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Expression\JsonExpression;
-
 use function is_string;
 use function json_decode;
 
 /**
- * Represents the schema for a json column.
+ * Represents a json column with eager parsing values retrieved from the database.
+ *
+ * @see JsonLazyColumn for a json column with lazy parsing values retrieved from the database.
  */
-class JsonColumn extends AbstractColumn
+final class JsonColumn extends AbstractJsonColumn
 {
-    protected const DEFAULT_TYPE = ColumnType::JSON;
-
-    public function dbTypecast(mixed $value): ExpressionInterface|null
-    {
-        if ($value === null || $value instanceof ExpressionInterface) {
-            return $value;
-        }
-
-        return new JsonExpression($value, $this->getDbType());
-    }
-
     /**
      * @throws \JsonException
      */
