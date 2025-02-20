@@ -12,6 +12,7 @@ use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\ArrayExpressionBuilder;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
 use Yiisoft\Db\Schema\Data\LazyArrayJson;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -28,8 +29,11 @@ final class ArrayExpressionBuilderTest extends TestCase
         return [
             [[1, 2, 3], '[1,2,3]'],
             [new ArrayIterator(['a', 'b', 'c']), '["a","b","c"]'],
+            [new LazyArray('[1,2,3]'), '[1,2,3]'],
             [new LazyArrayJson('[1,2,3]'), '[1,2,3]'],
             [['a' => 1, 'b' => null], '{"a":1,"b":null}'],
+            ['[1,2,3]', '[1,2,3]'],
+            ['{"a":1,"b":null}', '{"a":1,"b":null}'],
         ];
     }
 
@@ -45,6 +49,19 @@ final class ArrayExpressionBuilderTest extends TestCase
 
         $this->assertSame(':qp0', $builder->build($expression, $params));
         $this->assertEquals([':qp0' => new Param($expected, DataType::STRING)], $params);
+    }
+
+    public function testBuildNull(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $params = [];
+        $builder = new ArrayExpressionBuilder($qb);
+        $expression = new ArrayExpression(null);
+
+        $this->assertSame('NULL', $builder->build($expression, $params));
+        $this->assertSame([], $params);
     }
 
     public function testBuildQueryExpression(): void

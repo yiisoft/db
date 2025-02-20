@@ -12,7 +12,9 @@ use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\JsonExpressionBuilder;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\LazyArrayJson;
+use Yiisoft\Db\Schema\Data\LazyArrayStructured;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -30,8 +32,12 @@ final class JsonExpressionBuilderTest extends TestCase
             [true, 'true'],
             [[1, 2, 3], '[1,2,3]'],
             [new ArrayIterator(['a', 'b', 'c']), '["a","b","c"]'],
+            [new LazyArray('[1,2,3]'), '[1,2,3]'],
             [new LazyArrayJson('[1,2,3]'), '[1,2,3]'],
+            [new LazyArrayStructured('["5","USD"]'), '["5","USD"]'],
             [['a' => 1, 'b' => null, 'c' => ['d' => 'e']], '{"a":1,"b":null,"c":{"d":"e"}}'],
+            ['[1,2,3]', '[1,2,3]'],
+            ['{"a":1,"b":null,"c":{"d":"e"}}', '{"a":1,"b":null,"c":{"d":"e"}}'],
         ];
     }
 

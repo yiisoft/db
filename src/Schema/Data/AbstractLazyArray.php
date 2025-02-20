@@ -6,10 +6,10 @@ namespace Yiisoft\Db\Schema\Data;
 
 use ArrayAccess;
 use Countable;
+use InvalidArgumentException;
 use JsonSerializable;
 use IteratorAggregate;
 use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function array_map;
@@ -94,7 +94,7 @@ abstract class AbstractLazyArray implements ArrayAccess, Countable, JsonSerializ
             $value = $this->parse($this->value);
 
             if ($value === null) {
-                throw new InvalidConfigException('Array value must be a valid string representation.');
+                throw new InvalidArgumentException('Array value must be a valid string representation.');
             }
 
             $this->value = $this->phpTypecast($value);

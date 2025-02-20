@@ -6,9 +6,11 @@ namespace Yiisoft\Db\Schema\Data;
 
 use ArrayAccess;
 use Countable;
+use InvalidArgumentException;
 use IteratorAggregate;
 use JsonSerializable;
 
+use function is_array;
 use function is_string;
 use function json_decode;
 
@@ -44,7 +46,13 @@ final class LazyArrayJson implements LazyArrayInterface, ArrayAccess, Countable,
     protected function prepareValue(): void
     {
         if (is_string($this->value)) {
-            $this->value = json_decode($this->value, true, 512, JSON_THROW_ON_ERROR);
+            $value = json_decode($this->value, true, 512, JSON_THROW_ON_ERROR);
+
+            if (!is_array($value)) {
+                throw new InvalidArgumentException('JSON value must be a valid string array representation.');
+            }
+
+            $this->value = $value;
         }
     }
 }

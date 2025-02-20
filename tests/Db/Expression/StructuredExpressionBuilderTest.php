@@ -14,6 +14,7 @@ use Yiisoft\Db\Expression\StructuredExpressionBuilder;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\AbstractStructuredColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Data\LazyArrayJson;
 use Yiisoft\Db\Schema\Data\LazyArrayStructured;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -35,8 +36,10 @@ final class StructuredExpressionBuilderTest extends TestCase
             [[5, 'USD'], null, '[5,"USD"]'],
             [new ArrayIterator(['5', 'USD']), $column, '["5","USD"]'],
             [new LazyArrayStructured('["5","USD"]'), $column, '["5","USD"]'],
+            [new LazyArrayJson('["5","USD"]'), $column, '["5","USD"]'],
             [['value' => '5', 'currency_code' => 'USD'], $column, '["5","USD"]'],
             [(object) ['value' => '5', 'currency_code' => 'USD'], 'currency_money', '["5","USD"]'],
+            ['["5","USD"]', null, '["5","USD"]'],
         ];
     }
 
@@ -52,6 +55,19 @@ final class StructuredExpressionBuilderTest extends TestCase
 
         $this->assertSame(':qp0', $builder->build($expression, $params));
         $this->assertEquals([':qp0' => new Param($expected, DataType::STRING)], $params);
+    }
+
+    public function testBuildNull(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $params = [];
+        $builder = new StructuredExpressionBuilder($qb);
+        $expression = new StructuredExpression(null);
+
+        $this->assertSame('NULL', $builder->build($expression, $params));
+        $this->assertSame([], $params);
     }
 
     public function testBuildQueryExpression(): void

@@ -6,9 +6,9 @@ namespace Yiisoft\Db\Schema\Data;
 
 use ArrayAccess;
 use Countable;
+use InvalidArgumentException;
 use JsonSerializable;
 use IteratorAggregate;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function is_string;
@@ -102,7 +102,7 @@ abstract class AbstractLazyArrayStructured implements ArrayAccess, Countable, Js
             $value = $this->parse($this->value);
 
             if ($value === null) {
-                throw new InvalidConfigException('Structured value must be a valid string representation.');
+                throw new InvalidArgumentException('Structured value must be a valid string representation.');
             }
 
             $this->value = $this->phpTypecast($value);

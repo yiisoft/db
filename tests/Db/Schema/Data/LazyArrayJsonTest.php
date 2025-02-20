@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema\Data;
 
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Schema\Data\LazyArrayJson;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function iterator_to_array;
 
@@ -16,8 +16,6 @@ use function iterator_to_array;
  */
 final class LazyArrayJsonTest extends TestCase
 {
-    use TestTrait;
-
     public static function valueProvider(): array
     {
         return [
@@ -83,5 +81,15 @@ final class LazyArrayJsonTest extends TestCase
         $lazyArray = new LazyArrayJson($value);
 
         $this->assertSame($expected, iterator_to_array($lazyArray));
+    }
+
+    public function testNullValue()
+    {
+        $lazyArray = new LazyArrayJson('null');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('JSON value must be a valid string array representation.');
+
+        $lazyArray->getValue();
     }
 }
