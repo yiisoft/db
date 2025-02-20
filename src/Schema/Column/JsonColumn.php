@@ -7,6 +7,8 @@ namespace Yiisoft\Db\Schema\Column;
 use function is_string;
 use function json_decode;
 
+use const JSON_THROW_ON_ERROR;
+
 /**
  * Represents a json column with eager parsing values retrieved from the database.
  *
