@@ -91,7 +91,7 @@ jobs:
           WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
 
       - name: Run oracle tests with phpunit and code coverage.
-        run: vendor/bin/phpunit --testsuite Oracle --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
+        run: vendor/bin/phpunit --testsuite Oracle --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations --debug
 
       - name: Upload coverage to Codecov.
         if: matrix.php == '8.3'
