@@ -323,13 +323,13 @@ class ColumnProvider
                 ],
             ],
             'structuredLazy' => [
-                new StructuredLazyColumn(),
+                $structuredCol = (new StructuredLazyColumn())->columns(['key' => new StringColumn()]),
                 [
                     [null, null],
-                    [new LazyArrayStructured('[]'), '[]'],
-                    [new LazyArrayStructured('{}'), '{}'],
-                    [new LazyArrayStructured('[1,true]'), '[1,true]'],
-                    [new LazyArrayStructured('{"key":"value"}'), '{"key":"value"}'],
+                    [new LazyArrayStructured('[]', $structuredCol->getColumns()), '[]'],
+                    [new LazyArrayStructured('{}', $structuredCol->getColumns()), '{}'],
+                    [new LazyArrayStructured('[1,true]', $structuredCol->getColumns()), '[1,true]'],
+                    [new LazyArrayStructured('{"key":"value"}', $structuredCol->getColumns()), '{"key":"value"}'],
                 ],
             ],
         ];
