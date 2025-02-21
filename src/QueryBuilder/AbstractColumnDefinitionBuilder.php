@@ -66,6 +66,32 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
         return $this->build($column);
     }
 
+    public function buildType(ColumnInterface $column): string
+    {
+        $dbType = $this->getDbType($column);
+
+        if (empty($dbType)
+            || $dbType[-1] === ')'
+            || !in_array(strtolower($dbType), static::TYPES_WITH_SIZE, true)
+        ) {
+            return $dbType;
+        }
+
+        $size = $column->getSize();
+
+        if ($size === null) {
+            return $dbType;
+        }
+
+        $scale = $column->getScale();
+
+        if ($scale === null || !in_array(strtolower($dbType), static::TYPES_WITH_SCALE, true)) {
+            return "$dbType($size)";
+        }
+
+        return "$dbType($size,$scale)";
+    }
+
     /**
      * Builds the auto increment clause for the column.
      *
@@ -248,37 +274,6 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     protected function buildOnUpdate(string $onUpdate): string
     {
         return " ON UPDATE $onUpdate";
-    }
-
-    /**
-     * Builds the type definition for the column. For example: `varchar(128)` or `decimal(10,2)`.
-     *
-     * @return string A string containing the column type definition.
-     */
-    protected function buildType(ColumnInterface $column): string
-    {
-        $dbType = $this->getDbType($column);
-
-        if (empty($dbType)
-            || $dbType[-1] === ')'
-            || !in_array(strtolower($dbType), static::TYPES_WITH_SIZE, true)
-        ) {
-            return $dbType;
-        }
-
-        $size = $column->getSize();
-
-        if ($size === null) {
-            return $dbType;
-        }
-
-        $scale = $column->getScale();
-
-        if ($scale === null || !in_array(strtolower($dbType), static::TYPES_WITH_SCALE, true)) {
-            return "$dbType($size)";
-        }
-
-        return "$dbType($size,$scale)";
     }
 
     /**

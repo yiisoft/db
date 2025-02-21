@@ -4,37 +4,48 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Expression;
 
+use ArrayIterator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\StructuredExpression;
+use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Schema\Column\AbstractStructuredColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Data\LazyArrayJson;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
- * @group pgsql
+ * @group db
  */
 final class StructuredExpressionTest extends TestCase
 {
     use TestTrait;
 
-    public function testConstruct(): void
+    public static function constructProvider(): array
     {
-        $columns = [
+        $column = ColumnBuilder::structured('currency_money_structured', [
             'value' => ColumnBuilder::money(10, 2),
             'currency' => ColumnBuilder::char(3),
+        ]);
+
+        return [
+            [[5, 'USD'], null],
+            [['value' => 5, 'currency' => 'USD'], null],
+            [new ArrayIterator([5, 'USD']), $column],
+            [new Query(self::getDb()), 'currency_money_structured'],
+            [new LazyArrayJson('[5,"USD"]'), null],
+            [(object) ['value' => 5, 'currency' => 'USD'], null],
         ];
-
-        $expression = new StructuredExpression([5, 'USD'], 'currency_money_structured', $columns);
-
-        $this->assertSame([5, 'USD'], $expression->getValue());
-        $this->assertSame('currency_money_structured', $expression->getType());
-        $this->assertSame($columns, $expression->getColumns());
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\StructuredTypeProvider::normolizedValues */
-    public function testGetNormalizedValue(mixed $value, mixed $expected, array $columns): void
-    {
-        $expression = new StructuredExpression($value, 'currency_money_structured', $columns);
+    #[DataProvider('constructProvider')]
+    public function testConstruct(
+        array|object|string $value,
+        AbstractStructuredColumn|string|null $type = null
+    ): void {
+        $expression = new StructuredExpression($value, $type);
 
-        $this->assertSame($expected, $expression->getNormalizedValue());
+        $this->assertSame($value, $expression->getValue());
+        $this->assertSame($type, $expression->getType());
     }
 }

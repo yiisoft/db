@@ -7,8 +7,8 @@ namespace Yiisoft\Db\Tests;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\StringColumn;
-use Yiisoft\Db\Tests\Provider\ColumnBuilderProvider;
 use Yiisoft\Db\Tests\Provider\ColumnFactoryProvider;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -32,55 +32,27 @@ abstract class AbstractColumnFactoryTest extends TestCase
     }
 
     #[DataProviderExternal(ColumnFactoryProvider::class, 'definitions')]
-    public function testFromDefinition(
-        string $definition,
-        string $expectedType,
-        string $expectedInstanceOf,
-        array $expectedMethodResults = []
-    ): void {
+    public function testFromDefinition(string $definition, ColumnInterface $expected): void
+    {
         $db = $this->getConnection();
         $columnFactory = $db->getSchema()->getColumnFactory();
 
         $column = $columnFactory->fromDefinition($definition);
 
-        $this->assertInstanceOf($expectedInstanceOf, $column);
-        $this->assertSame($expectedType, $column->getType());
-
-        $columnMethodResults = array_merge(
-            ColumnBuilderProvider::DEFAULT_COLUMN_METHOD_RESULTS,
-            $expectedMethodResults,
-        );
-
-        foreach ($columnMethodResults as $method => $result) {
-            $this->assertSame($result, $column->$method());
-        }
+        $this->assertEquals($expected, $column);
 
         $db->close();
     }
 
     #[DataProviderExternal(ColumnFactoryProvider::class, 'pseudoTypes')]
-    public function testFromPseudoType(
-        string $pseudoType,
-        string $expectedType,
-        string $expectedInstanceOf,
-        array $expectedMethodResults = []
-    ): void {
+    public function testFromPseudoType(string $pseudoType, ColumnInterface $expected): void
+    {
         $db = $this->getConnection();
         $columnFactory = $db->getSchema()->getColumnFactory();
 
         $column = $columnFactory->fromPseudoType($pseudoType);
 
-        $this->assertInstanceOf($expectedInstanceOf, $column);
-        $this->assertSame($expectedType, $column->getType());
-
-        $columnMethodResults = array_merge(
-            ColumnBuilderProvider::DEFAULT_COLUMN_METHOD_RESULTS,
-            $expectedMethodResults,
-        );
-
-        foreach ($columnMethodResults as $method => $result) {
-            $this->assertEquals($result, $column->$method());
-        }
+        $this->assertEquals($expected, $column);
 
         $db->close();
     }

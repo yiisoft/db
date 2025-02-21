@@ -9,20 +9,20 @@ use Yiisoft\Db\Schema\Data\LazyArray;
 use function is_string;
 
 /**
- * Represents an array column with eager parsing values retrieved from the database.
+ * Represents an array column with lazy parsing values retrieved from the database.
  *
- * @see ArrayLazyColumn for an array column with lazy parsing values retrieved from the database.
+ * @see ArrayColumn for an array column with eager parsing values retrieved from the database.
  */
-final class ArrayColumn extends AbstractArrayColumn
+final class ArrayLazyColumn extends AbstractArrayColumn
 {
     /**
      * @param string|null $value The string retrieved value from the database that can be parsed into an array.
      * @psalm-suppress MoreSpecificImplementedParamType
      */
-    public function phpTypecast(mixed $value): array|null
+    public function phpTypecast(mixed $value): LazyArray|null
     {
         if (is_string($value)) {
-            return (new LazyArray($value, $this->getColumn(), $this->getDimension()))->getValue();
+            return new LazyArray($value, $this->getColumn(), $this->getDimension());
         }
 
         return $value;

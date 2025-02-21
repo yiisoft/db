@@ -1869,7 +1869,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**

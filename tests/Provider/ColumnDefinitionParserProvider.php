@@ -29,6 +29,8 @@ class ColumnDefinitionParserProvider
             ['int CHECK (value > (1 + 5))', ['type' => 'int', 'check' => 'value > (1 + 5)']],
             ["enum('a','b','c')", ['type' => 'enum', 'enumValues' => ['a', 'b', 'c']]],
             ["enum('a','b','c') NOT NULL", ['type' => 'enum', 'enumValues' => ['a', 'b', 'c'], 'notNull' => true]],
+            ['int[]', ['type' => 'int', 'dimension' => 1]],
+            ['string(126)[][]', ['type' => 'string', 'size' => 126, 'dimension' => 2]],
         ];
     }
 }
