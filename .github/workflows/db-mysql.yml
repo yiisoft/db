@@ -84,6 +84,12 @@ jobs:
 
       - name: Run Mysql tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Mysql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
+        env:
+          YII_MYSQL_DATABASE: yiitest
+          YII_MYSQL_HOST: 127.0.0.1
+          YII_MYSQL_PORT: 3306
+          YII_MYSQL_USER: root
+          YII_MYSQL_PASSWORD: ''
 
       - name: Upload coverage to Codecov.
         if: matrix.php == '8.3'

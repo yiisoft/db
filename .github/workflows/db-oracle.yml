@@ -89,6 +89,13 @@ jobs:
 
       - name: Run oracle tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Oracle --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
+        env:
+          YII_ORACLE_SID: XE
+          YII_ORACLE_DATABASE: YIITEST
+          YII_ORACLE_HOST: localhost
+          YII_ORACLE_PORT: 1521
+          YII_ORACLE_USER: system
+          YII_ORACLE_PASSWORD: root
 
       - name: Upload coverage to Codecov.
         if: matrix.php == '8.3'

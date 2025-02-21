@@ -103,6 +103,12 @@ jobs:
 
       - name: Run mssql tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
+        env:
+          YII_MSSQL_DATABASE: yiitest
+          YII_MSSQL_HOST: 127.0.0.1
+          YII_MSSQL_PORT: 1433
+          YII_MSSQL_USER: SA
+          YII_MSSQL_PASSWORD: YourStrong!Passw0rd
 
       - name: Upload coverage to Codecov.
         if: matrix.php == '8.3'
