@@ -90,6 +90,12 @@ jobs:
 
       - name: Run pgsql tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Pgsql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
+        env:
+          YII_PGSQL_DATABASE: yiitest
+          YII_PGSQL_HOST: 127.0.0.1
+          YII_PGSQL_PORT: 5432
+          YII_PGSQL_USER: root
+          YII_PGSQL_PASSWORD: root
 
       - name: Upload coverage to Codecov.
         if: matrix.php == '8.3'
