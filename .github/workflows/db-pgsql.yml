@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - 8.3
+          - 8.4
 
         pgsql:
           - 9
@@ -49,6 +49,8 @@ jobs:
             pgsql: 16
           - php: 8.2
             pgsql: 16
+          - php: 8.3
+            pgsql: 16
 
     services:
       postgres:
@@ -63,7 +65,7 @@ jobs:
 
     steps:
       - name: Checkout.
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
@@ -92,8 +94,8 @@ jobs:
         run: vendor/bin/phpunit --testsuite Pgsql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
 
       - name: Upload coverage to Codecov.
-        if: matrix.php == '8.3'
-        uses: codecov/codecov-action@v3
+        if: matrix.php == '8.4'
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
