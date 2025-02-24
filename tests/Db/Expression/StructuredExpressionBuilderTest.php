@@ -29,7 +29,7 @@ final class StructuredExpressionBuilderTest extends TestCase
     {
         $column = ColumnBuilder::structured(columns: [
             'value' => ColumnBuilder::integer(),
-            'currency_code' => ColumnBuilder::string(),
+            'currency_code' => ColumnBuilder::string()->defaultValue('USD'),
         ]);
 
         return [
@@ -38,6 +38,10 @@ final class StructuredExpressionBuilderTest extends TestCase
             [new LazyArrayStructured('["5","USD"]'), $column, '["5","USD"]'],
             [new LazyArrayJson('["5","USD"]'), $column, '["5","USD"]'],
             [['value' => '5', 'currency_code' => 'USD'], $column, '["5","USD"]'],
+            [['currency_code' => 'USD', 'value' => '5'], $column, '["5","USD"]'],
+            [['value' => '5'], $column, '["5","USD"]'],
+            [['value' => '5'], null, '["5"]'],
+            [['value' => '5', 'currency_code' => 'USD', 'extra' => 'value'], $column, '["5","USD"]'],
             [(object) ['value' => '5', 'currency_code' => 'USD'], 'currency_money', '["5","USD"]'],
             ['["5","USD"]', null, '["5","USD"]'],
         ];
