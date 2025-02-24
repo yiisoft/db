@@ -97,6 +97,7 @@ class ColumnFactoryProvider
             "('str''ing')" => [ColumnType::STRING, "('str''ing')", "str'ing"],
             'CURRENT_TIMESTAMP' => [ColumnType::TIMESTAMP, 'CURRENT_TIMESTAMP', new Expression('CURRENT_TIMESTAMP')],
             '(now())' => [ColumnType::TIMESTAMP, '(now())', new Expression('(now())')],
+            "timezone('UTC'::text, now())" => [ColumnType::TIMESTAMP, "timezone('UTC'::text, now())", new Expression("timezone('UTC'::text, now())")],
         ];
     }
 }
