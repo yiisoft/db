@@ -81,7 +81,7 @@ final class SchemaCache
      * @throws InvalidArgumentException If the $key string isn't a legal value.
      * @throws RuntimeException If cache value isn't set.
      */
-    public function set(mixed $key, mixed $value, string $tag = null): void
+    public function set(mixed $key, mixed $value, ?string $tag = null): void
     {
         $stringKey = $this->normalize($key);
 
@@ -218,7 +218,7 @@ final class SchemaCache
      *
      * @throws InvalidArgumentException
      */
-    private function addToTag(string $key, string $cacheTag = null): void
+    private function addToTag(string $key, ?string $cacheTag = null): void
     {
         if (empty($cacheTag)) {
             return;

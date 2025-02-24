@@ -24,7 +24,7 @@ abstract class AbstractConnection implements ConnectionInterface
     private bool $enableSavepoint = true;
     private string $tablePrefix = '';
 
-    public function beginTransaction(string $isolationLevel = null): TransactionInterface
+    public function beginTransaction(?string $isolationLevel = null): TransactionInterface
     {
         $this->open();
         $this->transaction = $this->getTransaction();
@@ -73,7 +73,7 @@ abstract class AbstractConnection implements ConnectionInterface
         $this->tablePrefix = $value;
     }
 
-    public function transaction(Closure $closure, string $isolationLevel = null): mixed
+    public function transaction(Closure $closure, ?string $isolationLevel = null): mixed
     {
         $transaction = $this->beginTransaction($isolationLevel);
         $level = $transaction->getLevel();

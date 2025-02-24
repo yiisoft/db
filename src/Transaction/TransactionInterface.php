@@ -72,7 +72,7 @@ interface TransactionInterface
      * @throws InvalidConfigException If {@see \Yiisoft\Db\Connection\ConnectionInterface} is `null` or invalid.
      * @throws NotSupportedException If the DBMS doesn't support nested transactions or the transaction is active.
      */
-    public function begin(string $isolationLevel = null): void;
+    public function begin(?string $isolationLevel = null): void;
 
     /**
      * Commits a transaction.
