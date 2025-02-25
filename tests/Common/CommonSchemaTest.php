@@ -1113,9 +1113,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::withIndexDataProvider
      */
     public function testWorkWithIndex(
-        string $indexType = null,
-        string $indexMethod = null,
-        string $columnType = null,
+        ?string $indexType = null,
+        ?string $indexMethod = null,
+        ?string $columnType = null,
         bool $isPrimary = false,
         bool $isUnique = false
     ): void {
@@ -1173,7 +1173,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         ConnectionInterface $db,
         string $tableName,
         string $columnName,
-        string $columnType = null
+        ?string $columnType = null
     ): void {
         $qb = $db->getQueryBuilder();
 

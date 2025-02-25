@@ -161,8 +161,8 @@ abstract class AbstractCommand implements CommandInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string $delete = null,
-        string $update = null
+        ?string $delete = null,
+        ?string $update = null
     ): static {
         $sql = $this->getQueryBuilder()->addForeignKey(
             $table,
@@ -219,7 +219,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this;
     }
 
-    abstract public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
+    abstract public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static;
 
     abstract public function bindValues(array $values): static;
 
@@ -233,14 +233,14 @@ abstract class AbstractCommand implements CommandInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): static {
         $sql = $this->getQueryBuilder()->createIndex($table, $name, $columns, $indexType, $indexMethod);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function createTable(string $table, array $columns, string $options = null): static
+    public function createTable(string $table, array $columns, ?string $options = null): static
     {
         $sql = $this->getQueryBuilder()->createTable($table, $columns, $options);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -467,7 +467,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function resetSequence(string $table, int|string $value = null): static
+    public function resetSequence(string $table, int|string|null $value = null): static
     {
         $sql = $this->getQueryBuilder()->resetSequence($table, $value);
         return $this->setSql($sql);
@@ -604,7 +604,7 @@ abstract class AbstractCommand implements CommandInterface
      *
      * {@see \Yiisoft\Db\Transaction\TransactionInterface::begin()} for details.
      */
-    protected function requireTransaction(string $isolationLevel = null): static
+    protected function requireTransaction(?string $isolationLevel = null): static
     {
         $this->isolationLevel = $isolationLevel;
         return $this;
