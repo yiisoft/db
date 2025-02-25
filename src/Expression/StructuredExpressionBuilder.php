@@ -44,7 +44,7 @@ class StructuredExpressionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * The Method builds the raw SQL from the $expression that won't be additionally escaped or quoted.
+     * The method builds the raw SQL from the `$expression` that won't be additionally escaped or quoted.
      *
      * @param StructuredExpression $expression The expression to build.
      * @param array $params The binding parameters.

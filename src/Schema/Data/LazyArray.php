@@ -9,7 +9,7 @@ use function json_decode;
 use const JSON_THROW_ON_ERROR;
 
 /**
- * Represents a json array value retrieved from the database.
+ * Represents a JSON array value retrieved from the database.
  * Initially, the value is a string that parsed into an array when it's accessed as an array or iterated over.
  */
 final class LazyArray extends AbstractLazyArray

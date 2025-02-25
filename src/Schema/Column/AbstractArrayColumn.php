@@ -62,7 +62,7 @@ abstract class AbstractArrayColumn extends AbstractColumn
     }
 
     /**
-     * @return int the dimension of the array.
+     * @return int The dimension of the array.
      *
      * @psalm-return positive-int
      * @psalm-mutation-free
