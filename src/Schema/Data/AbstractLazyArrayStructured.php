@@ -53,18 +53,6 @@ abstract class AbstractLazyArrayStructured implements ArrayAccess, Countable, Js
     }
 
     /**
-     * The structured type columns that are used for value normalization and type casting.
-     *
-     * @return ColumnInterface[]
-     *
-     * @psalm-return array<string, ColumnInterface>
-     */
-    public function getColumns(): array
-    {
-        return $this->columns;
-    }
-
-    /**
      * Typecasts the structured values to PHP types according to the column schemas information.
      *
      * @psalm-suppress MixedArrayTypeCoercion
