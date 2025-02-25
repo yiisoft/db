@@ -60,6 +60,7 @@
 - New #928: Add `ReferentialAction` class with constants of possible values of referential actions (@Tigrov)
 - Enh #929: Refactor array, structured and JSON column type expressions and expression builders (@Tigrov)
 - Enh #929: Implement lazy arrays for array, structured and JSON column types (@Tigrov)
+- Bug #933: Explicitly mark nullable parameters (@vjik)
 
 ## 1.3.0 March 21, 2024
 

@@ -60,13 +60,13 @@ In case of ports' collisions, the mapping and environment variables can also be 
 
 - `make test-all` - run all available tests.
 - `make test-base` - run tests for base db package only.
-- `make test-driver-all` - run tests for all drivers.
-- `make test-driver-sqlite` - run tests for SQLite driver only.
-- `make test-driver-mysql` - run tests for MySQL driver only (using MySQL database).
-- `make test-driver-mariadb` - run tests for MySQL driver only (using MariaDB database).
-- `make test-driver-pgsql` - run tests for PostgreSQL driver only.
-- `make test-driver-mssql` - run tests for Microsoft SQL Server driver only.
-- `make test-driver-oracle`- run tests for Oracle driver only.
+- `make test-drivers` - run tests for all drivers.
+- `make test-sqlite` - run tests for SQLite driver only.
+- `make test-mysql` - run tests for MySQL driver only (using MySQL database).
+- `make test-mariadb` - run tests for MySQL driver only (using MariaDB database).
+- `make test-pgsql` - run tests for PostgreSQL driver only.
+- `make test-mssql` - run tests for Microsoft SQL Server driver only.
+- `make test-oracle`- run tests for Oracle driver only.
 
 #### Testing different versions
 

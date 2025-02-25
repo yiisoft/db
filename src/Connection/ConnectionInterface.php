@@ -44,7 +44,7 @@ interface ConnectionInterface
      *
      * @return TransactionInterface The transaction initiated.
      */
-    public function beginTransaction(string $isolationLevel = null): TransactionInterface;
+    public function beginTransaction(?string $isolationLevel = null): TransactionInterface;
 
     /**
      * Create a batch query result instance.
@@ -69,7 +69,7 @@ interface ConnectionInterface
      *
      * @psalm-param ParamsType $params
      */
-    public function createCommand(string $sql = null, array $params = []): CommandInterface;
+    public function createCommand(?string $sql = null, array $params = []): CommandInterface;
 
     /**
      * Create a transaction instance.
@@ -104,7 +104,7 @@ interface ConnectionInterface
      *
      * @return string The row ID of the last row inserted, or the last value retrieved from the sequence object.
      */
-    public function getLastInsertID(string $sequenceName = null): string;
+    public function getLastInsertID(?string $sequenceName = null): string;
 
     /**
      * Returns the query builder for the current DB connection.
@@ -221,5 +221,5 @@ interface ConnectionInterface
      *
      * @psalm-param Closure(ConnectionInterface):mixed|Closure(ConnectionInterface):void $closure
      */
-    public function transaction(Closure $closure, string $isolationLevel = null): mixed;
+    public function transaction(Closure $closure, ?string $isolationLevel = null): mixed;
 }

@@ -17,7 +17,7 @@ final class TransactionInterfaceDecorator implements TransactionInterface
     /**
      * @psalm-suppress PossiblyUndefinedArrayOffset
      */
-    public function begin(string $isolationLevel = null): void
+    public function begin(?string $isolationLevel = null): void
     {
         [$callStack] = debug_backtrace();
 

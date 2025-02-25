@@ -222,8 +222,8 @@ interface CommandInterface
     public function bindParam(
         int|string $name,
         mixed &$value,
-        int $dataType = null,
-        int $length = null,
+        ?int $dataType = null,
+        ?int $length = null,
         mixed $driverOptions = null
     ): static;
 
@@ -251,7 +251,7 @@ interface CommandInterface
      *
      * @psalm-param DataType::*|null $dataType
      */
-    public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
+    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static;
 
     /**
      * Binds a list of values to the corresponding parameters.
@@ -311,8 +311,8 @@ interface CommandInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): static;
 
     /**
@@ -362,7 +362,7 @@ interface CommandInterface
      *
      * @psalm-param array<string, ColumnInterface>|string[] $columns
      */
-    public function createTable(string $table, array $columns, string $options = null): static;
+    public function createTable(string $table, array $columns, ?string $options = null): static;
 
     /**
      * Creates a SQL View.
@@ -630,7 +630,7 @@ interface CommandInterface
      * @throws Exception If there is any DB error.
      * @throws InvalidConfigException
      */
-    public function prepare(bool $forRead = null): void;
+    public function prepare(?bool $forRead = null): void;
 
     /**
      * Executes the SQL statement and returns a query result.
@@ -733,7 +733,7 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
-    public function resetSequence(string $table, int|string $value = null): static;
+    public function resetSequence(string $table, int|string|null $value = null): static;
 
     /**
      * List all database names in the current connection.

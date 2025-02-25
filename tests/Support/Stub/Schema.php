@@ -30,7 +30,7 @@ class Schema extends AbstractSchema
     /**
      * @throws NotSupportedException
      */
-    public function getLastInsertID(string $sequenceName = null): string
+    public function getLastInsertID(?string $sequenceName = null): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
