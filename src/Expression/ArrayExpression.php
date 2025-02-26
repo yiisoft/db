@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
-use ArrayAccess;
-use ArrayIterator;
-use Countable;
-use IteratorAggregate;
 use Traversable;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Query\QueryInterface;
-
-use function count;
+use Yiisoft\Db\QueryBuilder\ColumnDefinitionBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Schema\Data\LazyArrayInterface;
 
 /**
  * Represents an array SQL expression.
@@ -20,170 +17,66 @@ use function count;
  * Expressions of this type can be used in conditions as well:
  *
  * ```php
- * $query->andWhere(['@>', 'items', new ArrayExpression([1, 2, 3], 'integer')]);
+ * $query->andWhere(['@>', 'items', new ArrayExpression([1, 2, 3], 'integer[]')]);
  * ```
  *
  * Which, depending on DBMS, will result in a well-prepared condition. For example, in PostgresSQL it will be compiled
  * to `WHERE "items" @> ARRAY[1, 2, 3]::integer[]`.
- *
- * @template-implements ArrayAccess<int, mixed>
- * @template-implements IteratorAggregate<int>
  */
-final class ArrayExpression implements ExpressionInterface, ArrayAccess, Countable, IteratorAggregate
+final class ArrayExpression implements ExpressionInterface
 {
-    public function __construct(private mixed $value = [], private string|null $type = null, private int $dimension = 1)
-    {
+    /**
+     * @param iterable|LazyArrayInterface|QueryInterface|string|null $value The array value which can be represented as
+     * - an `array` of values;
+     * - an instance of {@see Traversable} or {@see LazyArrayInterface} that represents an array of values;
+     * - an instance of {@see QueryInterface} that represents an SQL sub-query;
+     * - a `string` retrieved value from the database that can be parsed into an array;
+     * - `null`.
+     * @param ColumnInterface|string|null $type The array column type which can be represented as
+     * - a native database column type;
+     * - an {@see ColumnType abstract} type;
+     * - an instance of {@see ColumnInterface};
+     * - `null` if the type isn't explicitly specified.
+     *
+     * String type will be converted into {@see ColumnInterface} using {@see ColumnFactoryInterface::fromDefinition()}.
+     * The column type is used to typecast array values before saving into the database and for adding type hint to
+     * the SQL statement. If the type isn't specified and DBMS can't guess it from the context, SQL error will be raised.
+     * The {@see ColumnDefinitionBuilderInterface::buildType()} method will be invoked to convert {@see ColumnInterface}
+     * into SQL representation. For example, it will convert `string[]` to `varchar(255)[]` (for PostgresSQL).
+     * The preferred way is to use {@see ColumnBuilder} to generate the column type as an instance of
+     * {@see ColumnInterface}.
+     */
+    public function __construct(
+        private readonly iterable|LazyArrayInterface|QueryInterface|string|null $value,
+        private readonly ColumnInterface|string|null $type = null,
+    ) {
     }
 
     /**
-     * The type of the array elements.
+     * The array column type which can be represented as
+     * - a native database column type;
+     * - an {@see ColumnType abstract} type;
+     * - an instance of {@see ColumnInterface};
+     * - `null` if the type isn't explicitly specified.
      *
-     * Defaults to `null` which means the type isn't explicitly specified.
-     *
-     * Note that in the case where a type isn't specified explicitly and DBMS can't guess it from the context, SQL error
-     * will be raised.
+     * The column type is used to typecast array values before saving into the database and for adding type hint to
+     * the SQL statement. If the type isn't specified and DBMS can't guess it from the context, SQL error will be raised.
      */
-    public function getType(): string|null
+    public function getType(): ColumnInterface|string|null
     {
         return $this->type;
     }
 
     /**
-     * The array's content. In can be represented as an array of values or a {@see QueryInterface} that returns these
-     * values.
+     * The array value which can be represented as
+     * - an `array` of values;
+     * - an instance of {@see Traversable} or {@see LazyArrayInterface} that represents an array of values;
+     * - an instance of {@see QueryInterface} that represents an SQL sub-query;
+     * - a `string` retrieved value from the database that can be parsed into an array;
+     * - `null`.
      */
-    public function getValue(): mixed
+    public function getValue(): iterable|LazyArrayInterface|QueryInterface|string|null
     {
         return $this->value;
-    }
-
-    /**
-     * @return int The number of indices needed to select an element.
-     */
-    public function getDimension(): int
-    {
-        return $this->dimension;
-    }
-
-    /**
-     * Whether an offset exists.
-     *
-     * @link https://php.net/manual/en/arrayaccess.offsetexists.php
-     *
-     * @param mixed $offset An offset to check for.
-     *
-     * @throws InvalidConfigException If offset isn't an integer.
-     *
-     * @return bool Its `true` on success or `false` on failure. The return value will be cast to boolean if non-boolean
-     * was returned.
-     */
-    public function offsetExists(mixed $offset): bool
-    {
-        $key = $this->validateKey($offset);
-        return isset($this->value[$key]);
-    }
-
-    /**
-     * Offset to retrieve.
-     *
-     * @link https://php.net/manual/en/arrayaccess.offsetget.php
-     *
-     * @param mixed $offset The offset to retrieve.
-     *
-     * @throws InvalidConfigException If offset isn't an integer.
-     *
-     * @return mixed Can return all value types.
-     */
-    public function offsetGet(mixed $offset): mixed
-    {
-        $key = $this->validateKey($offset);
-        $this->value = $this->validateValue($this->value);
-        return $this->value[$key];
-    }
-
-    /**
-     * Offset to set.
-     *
-     * @link https://php.net/manual/en/arrayaccess.offsetset.php
-     *
-     * @param mixed $offset The offset to assign the value to.
-     * @param mixed $value The value to set.
-     *
-     * @throws InvalidConfigException If offset isn't an integer.
-     */
-    public function offsetSet(mixed $offset, mixed $value): void
-    {
-        $key = $this->validateKey($offset);
-        $this->value = $this->validateValue($this->value);
-        $this->value[$key] = $value;
-    }
-
-    /**
-     * Offset to unset.
-     *
-     * @throws InvalidConfigException If offset isn't an integer.
-     *
-     * @link https://php.net/manual/en/arrayaccess.offsetunset.php
-     */
-    public function offsetUnset(mixed $offset): void
-    {
-        $key = $this->validateKey($offset);
-        $this->value = $this->validateValue($this->value);
-        unset($this->value[$key]);
-    }
-
-    /**
-     * Count elements of an object.
-     *
-     * @link https://php.net/manual/en/countable.count.php
-     *
-     * @return int The custom count as an integer.
-     */
-    public function count(): int
-    {
-        return count((array) $this->value);
-    }
-
-    /**
-     * Retrieve an external iterator.
-     *
-     * @link https://php.net/manual/en/iteratoraggregate.getiterator.php
-     *
-     * @throws InvalidConfigException If value isn't an array.
-     *
-     * @return ArrayIterator An instance of an object implementing `Iterator` or `Traversable`.
-     */
-    public function getIterator(): Traversable
-    {
-        $value = $this->validateValue($this->value);
-        return new ArrayIterator($value);
-    }
-
-    /**
-     * Validates the key of the array expression is an integer.
-     *
-     * @throws InvalidConfigException If offset isn't an integer.
-     */
-    private function validateKey(mixed $key): int
-    {
-        if (!is_int($key)) {
-            throw new InvalidConfigException('The ArrayExpression offset must be an integer.');
-        }
-
-        return $key;
-    }
-
-    /**
-     * Validates the value of the array expression is an array.
-     *
-     * @throws InvalidConfigException If value isn't an array.
-     */
-    private function validateValue(mixed $value): array
-    {
-        if (!is_array($value)) {
-            throw new InvalidConfigException('The ArrayExpression value must be an array.');
-        }
-
-        return $value;
     }
 }

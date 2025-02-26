@@ -42,17 +42,22 @@ class ColumnDefinitionParser
      */
     public function parse(string $definition): array
     {
-        preg_match('/^(\w*)(?:\(([^)]+)\))?\s*/', $definition, $matches);
+        preg_match('/^(\w*)(?:\(([^)]+)\))?(\[[\d\[\]]*\])?\s*/', $definition, $matches);
 
         $type = strtolower($matches[1]);
         $info = ['type' => $type];
 
-        if (isset($matches[2])) {
+        if (isset($matches[2]) && $matches[2] !== '') {
             if ($type === 'enum') {
                 $info += $this->enumInfo($matches[2]);
             } else {
                 $info += $this->sizeInfo($matches[2]);
             }
+        }
+
+        if (isset($matches[3])) {
+            /** @psalm-var positive-int */
+            $info['dimension'] = substr_count($matches[3], '[');
         }
 
         $extra = substr($definition, strlen($matches[0]));

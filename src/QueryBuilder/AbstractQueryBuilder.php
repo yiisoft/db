@@ -362,6 +362,11 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->getExpressionBuilder($expression);
     }
 
+    public function getSchema(): SchemaInterface
+    {
+        return $this->schema;
+    }
+
     public function getServerInfo(): ServerInfoInterface
     {
         return $this->serverInfo;

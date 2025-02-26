@@ -10,9 +10,15 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Expression\ArrayExpressionBuilder;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\JsonExpression;
+use Yiisoft\Db\Expression\JsonExpressionBuilder;
+use Yiisoft\Db\Expression\StructuredExpression;
+use Yiisoft\Db\Expression\StructuredExpressionBuilder;
 use Yiisoft\Db\Helper\DbStringHelper;
 use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
@@ -526,6 +532,9 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Condition\SimpleCondition::class => Condition\Builder\SimpleConditionBuilder::class,
             Condition\HashCondition::class => Condition\Builder\HashConditionBuilder::class,
             Condition\BetweenColumnsCondition::class => Condition\Builder\BetweenColumnsConditionBuilder::class,
+            JsonExpression::class => JsonExpressionBuilder::class,
+            ArrayExpression::class => ArrayExpressionBuilder::class,
+            StructuredExpression::class => StructuredExpressionBuilder::class,
         ];
     }
 
