@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Expression;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
-use Yiisoft\Db\Schema\Data\LazyArray;
 
 use function is_string;
 
@@ -16,15 +15,6 @@ use function is_string;
  */
 abstract class AbstractArrayExpressionBuilder implements ExpressionBuilderInterface
 {
-    /**
-     * @var string The class name of the {@see LazyArrayInterface} object. This constant is used to determine if the
-     * value can be used as a raw string. If the value is an instance of this class, the value will be used as a raw
-     * string. It is used to convert values between different DBMS.
-     *
-     * @psalm-var class-string<LazyArrayInterface>
-     */
-    protected const LAZY_ARRAY_CLASS = LazyArray::class;
-
     /**
      * Builds a SQL expression for a string value.
      *
@@ -62,6 +52,15 @@ abstract class AbstractArrayExpressionBuilder implements ExpressionBuilderInterf
      */
     abstract protected function buildValue(iterable $value, ArrayExpression $expression, array &$params): string;
 
+    /**
+     * Returns the value of the lazy array as an array or a raw string depending on the implementation.
+     *
+     * @param LazyArrayInterface $value The lazy array value.
+     *
+     * @return array|string The value of the lazy array.
+     */
+    abstract protected function getLazyArrayValue(LazyArrayInterface $value): array|string;
+
     public function __construct(protected readonly QueryBuilderInterface $queryBuilder)
     {
     }
@@ -83,11 +82,7 @@ abstract class AbstractArrayExpressionBuilder implements ExpressionBuilderInterf
         }
 
         if ($value instanceof LazyArrayInterface) {
-            if ($value::class === static::LAZY_ARRAY_CLASS) {
-                $value = $value->getRawValue();
-            } else {
-                $value = $value->getValue();
-            }
+            $value = $this->getLazyArrayValue($value);
         }
 
         if (is_string($value)) {

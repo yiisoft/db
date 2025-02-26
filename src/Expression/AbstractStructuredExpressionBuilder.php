@@ -13,7 +13,6 @@ use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\AbstractStructuredColumn;
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
-use Yiisoft\Db\Schema\Data\StructuredLazyArray;
 
 use function array_key_exists;
 use function array_keys;
@@ -24,15 +23,6 @@ use function is_string;
  */
 abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderInterface
 {
-    /**
-     * The class name of the {@see LazyArrayInterface} object. This constant is used to determine if the value can be
-     * used as a raw string. If the value is an instance of this class, the value will be used as a raw string.
-     *
-     * @var string
-     * @psalm-var class-string<LazyArrayInterface>
-     */
-    protected const LAZY_ARRAY_CLASS = StructuredLazyArray::class;
-
     /**
      * Builds a SQL expression for a string value.
      *
@@ -78,6 +68,15 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
         array &$params
     ): string;
 
+    /**
+     * Returns the value of the lazy array as an array or a raw string depending on the implementation.
+     *
+     * @param LazyArrayInterface $value The lazy array value.
+     *
+     * @return array|string The value of the lazy array.
+     */
+    abstract protected function getLazyArrayValue(LazyArrayInterface $value): array|string;
+
     public function __construct(protected readonly QueryBuilderInterface $queryBuilder)
     {
     }
@@ -104,11 +103,7 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
         }
 
         if ($value instanceof LazyArrayInterface) {
-            if ($value::class === static::LAZY_ARRAY_CLASS) {
-                $value = $value->getRawValue();
-            } else {
-                $value = $value->getValue();
-            }
+            $value = $this->getLazyArrayValue($value);
         }
 
         if (is_string($value)) {

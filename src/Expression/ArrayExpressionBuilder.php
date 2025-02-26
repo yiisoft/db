@@ -7,6 +7,10 @@ namespace Yiisoft\Db\Expression;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\Data\JsonLazyArray;
+use Yiisoft\Db\Schema\Data\LazyArray;
+use Yiisoft\Db\Schema\Data\LazyArrayInterface;
+use Yiisoft\Db\Schema\Data\StructuredLazyArray;
 
 use function is_array;
 use function iterator_to_array;
@@ -40,5 +44,13 @@ final class ArrayExpressionBuilder extends AbstractArrayExpressionBuilder
         }
 
         return $this->buildStringValue(json_encode($value, JSON_THROW_ON_ERROR), $expression, $params);
+    }
+
+    protected function getLazyArrayValue(LazyArrayInterface $value): array|string
+    {
+        return match ($value::class) {
+            LazyArray::class, JsonLazyArray::class, StructuredLazyArray::class => $value->getRawValue(),
+            default => $value->getValue(),
+        };
     }
 }

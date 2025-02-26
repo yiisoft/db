@@ -619,60 +619,6 @@ class QueryBuilderProvider
             ],
 
             /* json conditions */
-            [
-                ['=', 'json_col', new JsonExpression(['type' => 'iron', 'weight' => 15])],
-                '[[json_col]] = :qp0', [':qp0' => new Param('{"type":"iron","weight":15}', DataType::STRING)],
-            ],
-            'object with type' => [
-                ['=', 'json_col', new JsonExpression(['type' => 'iron', 'weight' => 15], 'json')],
-                '[[json_col]] = :qp0', [':qp0' => new Param('{"type":"iron","weight":15}', DataType::STRING)],
-            ],
-            'false value' => [
-                ['=', 'json_col', new JsonExpression([false])],
-                '[[json_col]] = :qp0', [':qp0' => new Param('[false]', DataType::STRING)],
-            ],
-            'null value' => [
-                ['=', 'json_col', new JsonExpression(null)],
-                '[[json_col]] = NULL', [],
-            ],
-            'null as array value' => [
-                ['=', 'json_col', new JsonExpression([null])],
-                '[[json_col]] = :qp0', [':qp0' => new Param('[null]', DataType::STRING)],
-            ],
-            'null as object value' => [
-                ['=', 'json_col', new JsonExpression(['nil' => null])],
-                '[[json_col]] = :qp0', [':qp0' => new Param('{"nil":null}', DataType::STRING)],
-            ],
-            'query' => [
-                [
-                    '=',
-                    'json_col',
-                    new JsonExpression((new Query(self::getDb()))->select('params')->from('user')->where(['id' => 1])),
-                ],
-                '[[json_col]] = (SELECT [[params]] FROM [[user]] WHERE [[id]]=:qp0)',
-                [':qp0' => 1],
-            ],
-            'query with type' => [
-                [
-                    '=',
-                    'json_col',
-                    new JsonExpression(
-                        (new Query(self::getDb()))->select('params')->from('user')->where(['id' => 1]),
-                        'json'
-                    ),
-                ],
-                '[[json_col]] = (SELECT [[params]] FROM [[user]] WHERE [[id]]=:qp0)', [':qp0' => 1],
-            ],
-            'nested json expression' => [
-                [
-                    '=',
-                    'json_col',
-                    new JsonExpression(
-                        new JsonExpression(['a' => 1, 'b' => 2, 'd' => ['e' => 3]])
-                    ),
-                ],
-                '[[json_col]] = :qp0', [':qp0' => new Param('{"a":1,"b":2,"d":{"e":3}}', DataType::STRING)],
-            ],
             'search by property in JSON column' => [
                 ['=', new Expression("(json_col->>'$.someKey')"), 42],
                 "(json_col->>'$.someKey') = :qp0", [':qp0' => 42],

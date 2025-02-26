@@ -14,9 +14,15 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Data\JsonLazyArray;
+use Yiisoft\Db\Schema\Data\LazyArray;
+use Yiisoft\Db\Schema\Data\LazyArrayInterface;
+use Yiisoft\Db\Schema\Data\StructuredLazyArray;
 
+use function is_string;
 use function iterator_to_array;
 use function json_encode;
+use function strlen;
 
 use const JSON_THROW_ON_ERROR;
 
@@ -51,23 +57,30 @@ final class JsonExpressionBuilder implements ExpressionBuilderInterface
             return 'NULL';
         }
 
-        if ($value instanceof ExpressionInterface) {
-            return $this->queryBuilder->buildExpression($value, $params);
+        if ($value instanceof LazyArrayInterface) {
+            $value = match ($value::class) {
+                LazyArray::class, JsonLazyArray::class, StructuredLazyArray::class => $value->getRawValue(),
+                default => $value->getValue(),
+            };
         }
 
         if (is_string($value) && strlen($value) > 1
             && ($value[0] === '{' && $value[-1] === '}' || $value[0] === '[' && $value[-1] === ']')
         ) {
-            return $this->buildStringValue($value, $expression, $params);
+            return $this->buildStringValue($value, $params);
         }
 
-        return $this->buildValue($value, $expression, $params);
+        if ($value instanceof ExpressionInterface) {
+            return $this->queryBuilder->buildExpression($value, $params);
+        }
+
+        return $this->buildValue($value, $params);
     }
 
     /**
      * Builds a SQL expression for a string value.
      */
-    protected function buildStringValue(string $value, JsonExpression $expression, array &$params): string
+    protected function buildStringValue(string $value, array &$params): string
     {
         $param = new Param($value, DataType::STRING);
 
@@ -79,12 +92,12 @@ final class JsonExpressionBuilder implements ExpressionBuilderInterface
      *
      * @param array $params The binding parameters.
      */
-    protected function buildValue(mixed $value, JsonExpression $expression, array &$params): string
+    protected function buildValue(mixed $value, array &$params): string
     {
         if ($value instanceof Traversable && !$value instanceof JsonSerializable) {
             $value = iterator_to_array($value, false);
         }
 
-        return $this->buildStringValue(json_encode($value, JSON_THROW_ON_ERROR), $expression, $params);
+        return $this->buildStringValue(json_encode($value, JSON_THROW_ON_ERROR), $params);
     }
 }
