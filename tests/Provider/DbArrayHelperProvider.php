@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use ArrayIterator;
-use Yiisoft\Db\Schema\Data\LazyArrayJson;
+use Yiisoft\Db\Schema\Data\JsonLazyArray;
 
 class DbArrayHelperProvider
 {
@@ -136,9 +136,9 @@ class DbArrayHelperProvider
             [(object) ['key' => 'value'], ['key' => 'value']],
             [new ArrayIterator([]), []],
             [new ArrayIterator(['key' => 'value']), ['key' => 'value']],
-            [new LazyArrayJson('[]'), []],
-            [new LazyArrayJson('[1,2,3]'), [1, 2, 3]],
-            [new LazyArrayJson('{"key":"value"}'), ['key' => 'value']],
+            [new JsonLazyArray('[]'), []],
+            [new JsonLazyArray('[1,2,3]'), [1, 2, 3]],
+            [new JsonLazyArray('{"key":"value"}'), ['key' => 'value']],
         ];
     }
 }

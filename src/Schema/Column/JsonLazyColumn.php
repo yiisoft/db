@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
-use Yiisoft\Db\Schema\Data\LazyArrayJson;
+use Yiisoft\Db\Schema\Data\JsonLazyArray;
 
 use function is_string;
 use function json_decode;
@@ -22,7 +22,7 @@ final class JsonLazyColumn extends AbstractJsonColumn
     {
         if (is_string($value)) {
             return match ($value[0]) {
-                '[', '{' => new LazyArrayJson($value),
+                '[', '{' => new JsonLazyArray($value),
                 default => json_decode($value, true, 512, JSON_THROW_ON_ERROR),
             };
         }

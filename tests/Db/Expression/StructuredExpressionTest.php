@@ -11,7 +11,7 @@ use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\AbstractStructuredColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Schema\Data\LazyArrayJson;
+use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -33,7 +33,7 @@ final class StructuredExpressionTest extends TestCase
             [['value' => 5, 'currency' => 'USD'], null],
             [new ArrayIterator([5, 'USD']), $column],
             [new Query(self::getDb()), 'currency_money_structured'],
-            [new LazyArrayJson('[5,"USD"]'), null],
+            [new JsonLazyArray('[5,"USD"]'), null],
             [(object) ['value' => 5, 'currency' => 'USD'], null],
         ];
     }

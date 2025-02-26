@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Data;
 
+/**
+ * The interface for classes that represent an array with lazy parsing of data retrieved from the database.
+ */
 interface LazyArrayInterface
 {
     /**

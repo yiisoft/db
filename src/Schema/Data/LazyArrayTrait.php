@@ -9,7 +9,8 @@ use ArrayIterator;
 use function count;
 
 /**
- * Provides a common implementation for {@see AbstractLazyArray} and {@see AbstractLazyArrayStructured}.
+ * Provides a common implementation for {@see AbstractLazyArray}, {@see AbstractStructuredLazyArray}
+ * and {@see JsonLazyArray}.
  *
  * @method void prepareValue() Prepares the value to be used as an array or throws an exception if it's impossible.
  */

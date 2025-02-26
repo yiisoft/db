@@ -51,7 +51,7 @@ abstract class AbstractArrayColumn extends AbstractColumn
     }
 
     /**
-     * Set dimension of an array, must be greater than
+     * Set dimension of an array, must be greater than `0`.
      *
      * @psalm-param positive-int $dimension
      */

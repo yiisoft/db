@@ -29,9 +29,9 @@ use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\Column\StructuredColumn;
 use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
 use Yiisoft\Db\Schema\Data\LazyArray;
-use Yiisoft\Db\Schema\Data\LazyArrayJson;
+use Yiisoft\Db\Schema\Data\JsonLazyArray;
 
-use Yiisoft\Db\Schema\Data\LazyArrayStructured;
+use Yiisoft\Db\Schema\Data\StructuredLazyArray;
 
 use function fopen;
 
@@ -290,8 +290,8 @@ class ColumnProvider
                     [true, 'true'],
                     [false, 'false'],
                     ['string', '"string"'],
-                    [new LazyArrayJson('[1,2,3]'), '[1,2,3]'],
-                    [new LazyArrayJson('{"key":"value"}'), '{"key":"value"}'],
+                    [new JsonLazyArray('[1,2,3]'), '[1,2,3]'],
+                    [new JsonLazyArray('{"key":"value"}'), '{"key":"value"}'],
                 ],
             ],
             'array' => [
@@ -328,10 +328,10 @@ class ColumnProvider
                 $structuredCol = (new StructuredLazyColumn())->columns(['key' => new StringColumn()]),
                 [
                     [null, null],
-                    [new LazyArrayStructured('[]', $structuredCol->getColumns()), '[]'],
-                    [new LazyArrayStructured('{}', $structuredCol->getColumns()), '{}'],
-                    [new LazyArrayStructured('[1,true]', $structuredCol->getColumns()), '[1,true]'],
-                    [new LazyArrayStructured('{"key":"value"}', $structuredCol->getColumns()), '{"key":"value"}'],
+                    [new StructuredLazyArray('[]', $structuredCol->getColumns()), '[]'],
+                    [new StructuredLazyArray('{}', $structuredCol->getColumns()), '{}'],
+                    [new StructuredLazyArray('[1,true]', $structuredCol->getColumns()), '[1,true]'],
+                    [new StructuredLazyArray('{"key":"value"}', $structuredCol->getColumns()), '{"key":"value"}'],
                 ],
             ],
         ];

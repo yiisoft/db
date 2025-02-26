@@ -14,7 +14,7 @@ use Yiisoft\Db\Expression\ArrayExpressionBuilder;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
-use Yiisoft\Db\Schema\Data\LazyArrayJson;
+use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -30,7 +30,7 @@ final class ArrayExpressionBuilderTest extends TestCase
             [[1, 2, 3], '[1,2,3]'],
             [new ArrayIterator(['a', 'b', 'c']), '["a","b","c"]'],
             [new LazyArray('[1,2,3]'), '[1,2,3]'],
-            [new LazyArrayJson('[1,2,3]'), '[1,2,3]'],
+            [new JsonLazyArray('[1,2,3]'), '[1,2,3]'],
             [['a' => 1, 'b' => null], '{"a":1,"b":null}'],
             ['[1,2,3]', '[1,2,3]'],
             ['{"a":1,"b":null}', '{"a":1,"b":null}'],

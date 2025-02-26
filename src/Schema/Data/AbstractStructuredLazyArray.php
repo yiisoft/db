@@ -20,7 +20,7 @@ use function is_string;
  * @template-implements ArrayAccess<array-key, mixed>
  * @template-implements IteratorAggregate<array-key, mixed>
  */
-abstract class AbstractLazyArrayStructured implements ArrayAccess, Countable, JsonSerializable, IteratorAggregate, LazyArrayInterface
+abstract class AbstractStructuredLazyArray implements ArrayAccess, Countable, JsonSerializable, IteratorAggregate, LazyArrayInterface
 {
     use LazyArrayTrait;
 

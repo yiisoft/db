@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
-use Yiisoft\Db\Schema\Data\LazyArrayStructured;
+use Yiisoft\Db\Schema\Data\StructuredLazyArray;
 
 use function is_string;
 
@@ -22,7 +22,7 @@ final class StructuredColumn extends AbstractStructuredColumn
     public function phpTypecast(mixed $value): array|null
     {
         if (is_string($value)) {
-            return (new LazyArrayStructured($value, $this->getColumns()))->getValue();
+            return (new StructuredLazyArray($value, $this->getColumns()))->getValue();
         }
 
         return $value;

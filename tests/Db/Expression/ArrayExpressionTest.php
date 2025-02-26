@@ -14,7 +14,7 @@ use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
-use Yiisoft\Db\Schema\Data\LazyArrayJson;
+use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -30,7 +30,7 @@ final class ArrayExpressionTest extends TestCase
             [['a', 'b', 'c'], null],
             [new ArrayIterator(['a', 'b', 'c']), 'integer[]'],
             [new Query(self::getDb()), new ArrayColumn()],
-            [new LazyArrayJson('[1,2,3]'), new IntegerColumn()],
+            [new JsonLazyArray('[1,2,3]'), new IntegerColumn()],
         ];
     }
 

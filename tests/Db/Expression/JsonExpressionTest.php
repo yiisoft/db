@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Schema\Data\LazyArrayJson;
+use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -25,7 +25,7 @@ final class JsonExpressionTest extends TestCase
             [['a', 'b', 'c'], null],
             [new ArrayIterator(['a', 'b', 'c']), 'json'],
             [new Query(self::getDb()), 'jsonb'],
-            [new LazyArrayJson('[1,2,3]'), null],
+            [new JsonLazyArray('[1,2,3]'), null],
             ['[1,2,3]', null],
             ['{"a":1,"b":2}', null],
             [1, null],

@@ -23,7 +23,7 @@ use const JSON_THROW_ON_ERROR;
  * @template-implements ArrayAccess<array-key, mixed>
  * @template-implements IteratorAggregate<array-key, mixed>
  */
-final class LazyArrayJson implements LazyArrayInterface, ArrayAccess, Countable, JsonSerializable, IteratorAggregate
+final class JsonLazyArray implements LazyArrayInterface, ArrayAccess, Countable, JsonSerializable, IteratorAggregate
 {
     use LazyArrayTrait;
 
