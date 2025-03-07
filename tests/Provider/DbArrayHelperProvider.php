@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
+use ArrayIterator;
+use Yiisoft\Db\Schema\Data\JsonLazyArray;
+
 class DbArrayHelperProvider
 {
     public static function index(): array
@@ -121,6 +124,21 @@ class DbArrayHelperProvider
                     'value2' => ['table.key' => 'value2'],
                 ],
             ],
+        ];
+    }
+
+    public static function toArray(): array
+    {
+        return [
+            [[], []],
+            [['key' => 'value'], ['key' => 'value']],
+            [(object) [], []],
+            [(object) ['key' => 'value'], ['key' => 'value']],
+            [new ArrayIterator([]), []],
+            [new ArrayIterator(['key' => 'value']), ['key' => 'value']],
+            [new JsonLazyArray('[]'), []],
+            [new JsonLazyArray('[1,2,3]'), [1, 2, 3]],
+            [new JsonLazyArray('{"key":"value"}'), ['key' => 'value']],
         ];
     }
 }

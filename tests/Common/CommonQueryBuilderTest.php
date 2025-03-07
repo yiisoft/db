@@ -48,7 +48,9 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
                 continue;
             }
 
-            $columns['col_' . $i++] = $column;
+            $name = $column instanceof ColumnInterface ? $column->getName() : null;
+
+            $columns[$name ?? 'col_' . $i++] = $column;
         }
 
         try {

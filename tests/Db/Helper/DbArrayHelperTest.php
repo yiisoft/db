@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Helper;
 
 use Closure;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Helper\DbArrayHelper;
+use Yiisoft\Db\Tests\Provider\DbArrayHelperProvider;
 
 /**
  * @group db
@@ -100,5 +102,11 @@ final class DbArrayHelperTest extends TestCase
                 'value2' => ['key' => 'value2'],
             ],
         ], DbArrayHelper::index($rows, fn ($row) => $row['key'], ['key']));
+    }
+
+    #[DataProviderExternal(DbArrayHelperProvider::class, 'toArray')]
+    public function testToArray(array|object $value, array $expected): void
+    {
+        $this->assertSame($expected, DbArrayHelper::toArray($value));
     }
 }
