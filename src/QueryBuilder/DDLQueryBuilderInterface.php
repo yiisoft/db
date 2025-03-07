@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Yiisoft\Db\Constant\IndexType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * Defines methods for building SQL statements for DDL (data definition language).
@@ -36,11 +38,16 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table to add the new column will to.
      * @param string $column The name of the new column.
-     * @param ColumnInterface|string $type The column type.
-     * {@see getColumnType()} Method will be invoked to convert an abstract column type (if any) into the physical one.
-     * Anything that isn't recognized as an abstract type will be kept in the generated SQL.
-     * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become
-     * 'varchar(255) not null'.
+     * @param ColumnInterface|string $type The column type which can contain a native database column type,
+     * {@see ColumnType abstract} or {@see PseudoType pseudo} type, or can be represented as instance of
+     * {@see ColumnInterface}.
+     *
+     * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
+     * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
+     * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
+     *
+     * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * {@see ColumnInterface}.
      *
      * @return string The SQL statement for adding a new column.
      *
@@ -97,6 +104,7 @@ interface DDLQueryBuilderInterface
 
     /**
      * Builds an SQL statement for adding a foreign key constraint to an existing table.
+     * The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated SQL.
      *
      * @param string $table The table to add the foreign key constraint will to.
      * @param string $name The name of the foreign key constraint.
@@ -105,17 +113,16 @@ interface DDLQueryBuilderInterface
      * @param string $referenceTable The table that the foreign key references to.
      * @param array|string $referenceColumns The name of the column that the foreign key references to.
      * If there are many columns, separate them with commas or use an array to represent them.
-     * @param string|null $delete The `ON DELETE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
-     * `SET DEFAULT`, `SET NULL`.
-     * @param string|null $update The `ON UPDATE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
-     * `SET DEFAULT`, `SET NULL`.
+     * @param string|null $delete The `ON DELETE` option. See {@see ReferentialAction} class for possible values.
+     * @param string|null $update The `ON UPDATE` option. See {@see ReferentialAction} class for possible values.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
      * @return string The SQL statement for adding a foreign key constraint to an existing table.
      *
-     * Note: The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated SQL.
+     * @psalm-param ReferentialAction::*|null $delete
+     * @psalm-param ReferentialAction::*|null $update
      */
     public function addForeignKey(
         string $table,
@@ -159,11 +166,16 @@ interface DDLQueryBuilderInterface
      *
      * @param string $table The table whose column is to change.
      * @param string $column The name of the column to change.
-     * @param ColumnInterface|string $type The new column type.
-     * {@see getColumnType()} Method will be invoked to convert an abstract column type (if any) into the physical one.
-     * Anything that isn't recognized as an abstract type will be kept in the generated SQL.
-     * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become
-     * 'varchar(255) not null'.
+     * @param ColumnInterface|string $type The column type which can contain a native database column type,
+     * {@see ColumnType abstract} or {@see PseudoType pseudo} type, or can be represented as instance of
+     * {@see ColumnInterface}.
+     *
+     * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
+     * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
+     * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
+     *
+     * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * {@see ColumnInterface}.
      *
      * @return string The SQL statement for changing the definition of a column.
      *
@@ -194,14 +206,17 @@ interface DDLQueryBuilderInterface
      * @param string $name The name of the index.
      * @param array|string $columns The column(s) to include in the index.
      * If there are many columns, separate them with commas or use an array to represent them.
-     * @param string|null $indexType Type of index-supported DBMS - for example, `UNIQUE`, `FULLTEXT`, `SPATIAL`, `BITMAP` or
-     * `null` as default
-     * @param string|null $indexMethod For setting index organization method (with `USING`, not all DBMS)
+     * @param string|null $indexType The index type, `UNIQUE` or a DBMS specific index type or `null` by default.
+     * See {@see IndexType} or driver specific `IndexType` class.
+     * @param string|null $indexMethod The index organization method, if supported by DBMS.
+     * See driver specific `IndexMethod` class.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
      * @return string The SQL statement for creating a new index.
+     *
+     * @psalm-param IndexType::*|null $indexType
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
@@ -209,27 +224,43 @@ interface DDLQueryBuilderInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): string;
 
     /**
      * Builds an SQL statement for creating a new DB table.
      *
-     * The columns in the new table should be specified as name-definition pairs ('name' => 'string'), where name
-     * stands for a column name which will be quoted by the method, and definition stands for the column type which can
-     * contain an abstract DB type.
+     * The columns in the new table should be specified as name-definition pairs (e.g. 'name' => 'string'), where name
+     * is the name of the column which will be properly quoted by the method, and definition is the type of the column
+     * which can contain a native database column type, {@see ColumnType abstract} or {@see PseudoType pseudo} type,
+     * or can be represented as instance of {@see ColumnInterface}.
      *
-     * The {@see getColumnType()} method will be invoked to convert any abstract type into a physical one.
+     * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
+     * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
+     * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
      *
-     * If a column is specified with definition only ('PRIMARY KEY (name, type)'), it will be directly inserted
-     * into the generated SQL.
-     *
-     * For example,
+     * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * {@see ColumnInterface}.
      *
      * ```php
-     * $sql = $queryBuilder->createTable('user', ['id' => 'pk', 'name' => 'string', 'age' => 'integer']);
+     * $this->createTable(
+     *     'example_table',
+     *     [
+     *         'id' => ColumnBuilder::primaryKey(),
+     *         'name' => ColumnBuilder::string(64)->notNull(),
+     *         'type' => ColumnBuilder::integer()->notNull()->defaultValue(10),
+     *         'description' => ColumnBuilder::text(),
+     *         'rule_name' => ColumnBuilder::string(64),
+     *         'data' => ColumnBuilder::text(),
+     *         'created_at' => ColumnBuilder::datetime()->notNull(),
+     *         'updated_at' => ColumnBuilder::datetime(),
+     *     ],
+     * );
      * ```
+     *
+     * If a column is specified with definition only (e.g. 'PRIMARY KEY (name, type)'), it will be directly put into the
+     * generated SQL.
      *
      * @param string $table The name of the table to create.
      * @param array $columns The columns (name => definition) in the new table.
@@ -242,7 +273,7 @@ interface DDLQueryBuilderInterface
      *
      * @psalm-param array<string, ColumnInterface>|string[] $columns
      */
-    public function createTable(string $table, array $columns, string $options = null): string;
+    public function createTable(string $table, array $columns, ?string $options = null): string;
 
     /**
      * Creates an SQL View.

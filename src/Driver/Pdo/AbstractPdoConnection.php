@@ -12,6 +12,7 @@ use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
 use Yiisoft\Db\Connection\AbstractConnection;
+use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -43,7 +44,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
     use ProfilerAwareTrait;
 
     protected PDO|null $pdo = null;
-    protected string $serverVersion = '';
+    protected ServerInfoInterface|null $serverInfo = null;
     protected bool|null $emulatePrepare = null;
     protected QueryBuilderInterface|null $queryBuilder = null;
     protected QuoterInterface|null $quoter = null;
@@ -78,7 +79,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         return array_keys($fields);
     }
 
-    public function beginTransaction(string $isolationLevel = null): TransactionInterface
+    public function beginTransaction(?string $isolationLevel = null): TransactionInterface
     {
         $transaction = parent::beginTransaction($isolationLevel);
         if ($this->logger !== null && $transaction instanceof LoggerAwareInterface) {
@@ -155,7 +156,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         return $this->pdo;
     }
 
-    public function getLastInsertID(string $sequenceName = null): string
+    public function getLastInsertID(?string $sequenceName = null): string
     {
         if ($this->pdo !== null) {
             return $this->pdo->lastInsertID($sequenceName ?? null);
@@ -169,15 +170,9 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         return $this->driver->getDriverName();
     }
 
-    public function getServerVersion(): string
+    public function getServerInfo(): ServerInfoInterface
     {
-        if ($this->serverVersion === '') {
-            /** @psalm-var mixed $version */
-            $version = $this->getActivePDO()->getAttribute(PDO::ATTR_SERVER_VERSION);
-            $this->serverVersion = is_string($version) ? $version : 'Version could not be determined.';
-        }
-
-        return $this->serverVersion;
+        return $this->serverInfo ??= new PdoServerInfo($this);
     }
 
     public function isActive(): bool

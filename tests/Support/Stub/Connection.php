@@ -18,7 +18,7 @@ final class Connection extends AbstractPdoConnection
     protected QueryBuilderInterface|null $queryBuilder = null;
     protected SchemaInterface|null $schema = null;
 
-    public function createCommand(string $sql = null, array $params = []): CommandInterface
+    public function createCommand(?string $sql = null, array $params = []): CommandInterface
     {
         $command = new Command($this);
 
@@ -48,6 +48,7 @@ final class Connection extends AbstractPdoConnection
             $this->queryBuilder = new QueryBuilder(
                 $this->getQuoter(),
                 $this->getSchema(),
+                $this->getServerInfo(),
             );
         }
 

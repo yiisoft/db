@@ -7,13 +7,12 @@ namespace Yiisoft\Db\Tests;
 use Closure;
 use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Throwable;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
-use Yiisoft\Db\Constant\ColumnType;
-use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -26,9 +25,9 @@ use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
+use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -70,7 +69,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             DbHelper::replaceQuotes(
                 <<<SQL
                 ALTER TABLE [[table]] ADD [[column]]
-                SQL . ' ' . $qb->getColumnType($type),
+                SQL . ' ' . $qb->buildColumnDefinition($type),
                 $db->getDriverName(),
             ),
             $sql,
@@ -191,22 +190,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($expected, $sql);
     }
 
-    public function testAlterColumn(): void
+    #[DataProviderExternal(QueryBuilderProvider::class, 'alterColumn')]
+    public function testAlterColumn(string|ColumnInterface $type, string $expected): void
     {
-        $db = $this->getConnection();
+        $qb = $this->getConnection()->getQueryBuilder();
 
-        $qb = $db->getQueryBuilder();
-        $sql = $qb->alterColumn('customer', 'email', ColumnType::STRING);
-
-        $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                ALTER TABLE [[customer]] CHANGE [[email]] [[email]]
-                SQL . ' ' . $qb->getColumnType(ColumnType::STRING),
-                $db->getDriverName(),
-            ),
-            $sql,
-        );
+        $this->assertSame($expected, $qb->alterColumn('foo1', 'bar', $type));
     }
 
     /**
@@ -1861,36 +1850,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    public function testGetColumnType(): void
-    {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
-
-        $this->assertSame('pk', $qb->getColumnType(PseudoType::PK));
-        $this->assertSame('upk', $qb->getColumnType(PseudoType::UPK));
-        $this->assertSame('bigpk', $qb->getColumnType(PseudoType::BIGPK));
-        $this->assertSame('ubigpk', $qb->getColumnType(PseudoType::UBIGPK));
-        $this->assertSame('char', $qb->getColumnType(ColumnType::CHAR));
-        $this->assertSame('string', $qb->getColumnType(ColumnType::STRING));
-        $this->assertSame('text', $qb->getColumnType(ColumnType::TEXT));
-        $this->assertSame('tinyint', $qb->getColumnType(ColumnType::TINYINT));
-        $this->assertSame('smallint', $qb->getColumnType(ColumnType::SMALLINT));
-        $this->assertSame('integer', $qb->getColumnType(ColumnType::INTEGER));
-        $this->assertSame('bigint', $qb->getColumnType(ColumnType::BIGINT));
-        $this->assertSame('float', $qb->getColumnType(ColumnType::FLOAT));
-        $this->assertSame('double', $qb->getColumnType(ColumnType::DOUBLE));
-        $this->assertSame('decimal', $qb->getColumnType(ColumnType::DECIMAL));
-        $this->assertSame('datetime', $qb->getColumnType(ColumnType::DATETIME));
-        $this->assertSame('timestamp', $qb->getColumnType(ColumnType::TIMESTAMP));
-        $this->assertSame('time', $qb->getColumnType(ColumnType::TIME));
-        $this->assertSame('date', $qb->getColumnType(ColumnType::DATE));
-        $this->assertSame('binary', $qb->getColumnType(ColumnType::BINARY));
-        $this->assertSame('boolean', $qb->getColumnType(ColumnType::BOOLEAN));
-        $this->assertSame('money', $qb->getColumnType(ColumnType::MONEY));
-        $this->assertSame('json', $qb->getColumnType(ColumnType::JSON));
-    }
-
     /**
      * @throws InvalidArgumentException
      */
@@ -1928,7 +1887,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**
@@ -2422,12 +2381,33 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildColumnDefinition() */
-    public function testBuildColumnDefinition(string $expected, ColumnSchemaInterface|string $column): void
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildColumnDefinition')]
+    public function testBuildColumnDefinition(string $expected, ColumnInterface|string $column): void
     {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expected, $qb->buildColumnDefinition($column));
+
+        $db->close();
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'prepareParam')]
+    public function testPrepareParam(string $expected, mixed $value, int $type): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $param = new Param($value, $type);
+        $this->assertSame($expected, $qb->prepareParam($param));
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'prepareValue')]
+    public function testPrepareValue(string $expected, mixed $value): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->assertSame($expected, $qb->prepareValue($value));
     }
 }

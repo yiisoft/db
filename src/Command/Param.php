@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Command;
 
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
@@ -18,10 +19,16 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  */
 final class Param implements ParamInterface, ExpressionInterface
 {
+    /**
+     * @psalm-param DataType::* $type
+     */
     public function __construct(private mixed $value, private int $type)
     {
     }
 
+    /**
+     * @psalm-return DataType::*
+     */
     public function getType(): int
     {
         return $this->type;

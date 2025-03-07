@@ -41,7 +41,7 @@
     "require-dev": {
         "maglnet/composer-require-checker": "^4.2",
         "phpunit/phpunit": "^10.0",
-        "rector/rector": "^1.1.1",
+        "rector/rector": "^2.0.3",
         "roave/infection-static-analysis-plugin": "^1.16",
         "spatie/phpunit-watcher": "^1.23",
         "vimeo/psalm": "^5.25",
@@ -61,13 +61,28 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "Yiisoft\\ActiveRecord\\": "vendor/yiisoft/active-record/src",
+            "Yiisoft\\Db\\Migration\\": "vendor/yiisoft/db-migration/src",
+            "Yiisoft\\Db\\Mssql\\": "vendor/yiisoft/db-mssql/src",
+            "Yiisoft\\Db\\Mysql\\": "vendor/yiisoft/db-mysql/src",
+            "Yiisoft\\Db\\Oracle\\": "vendor/yiisoft/db-oracle/src",
+            "Yiisoft\\Db\\Pgsql\\": "vendor/yiisoft/db-pgsql/src",
+            "Yiisoft\\Db\\Sqlite\\": "vendor/yiisoft/db-sqlite/src",
             "Yiisoft\\Db\\Tests\\": "tests",
             "Yiisoft\\ActiveRecord\\Tests\\": "vendor/yiisoft/active-record/tests",
             "Yiisoft\\Db\\Mssql\\Tests\\": "vendor/yiisoft/db-mssql/tests",
             "Yiisoft\\Db\\Mysql\\Tests\\": "vendor/yiisoft/db-mysql/tests",
             "Yiisoft\\Db\\Oracle\\Tests\\": "vendor/yiisoft/db-oracle/tests",
             "Yiisoft\\Db\\Pgsql\\Tests\\": "vendor/yiisoft/db-pgsql/tests",
-            "Yiisoft\\Db\\Sqlite\\Tests\\": "vendor/yiisoft/db-sqlite/tests"
+            "Yiisoft\\Db\\Sqlite\\Tests\\": "vendor/yiisoft/db-sqlite/tests",
+            "Yiisoft\\Db\\Migration\\Tests\\": "vendor/yiisoft/db-migration/tests",
+            "Yiisoft\\Db\\Migration\\Tests\\NonExistsDirectory\\": "vendor/yiisoft/db-migration/tests/non-exists-directory",
+            "Yiisoft\\Db\\Migration\\Tests\\ForTest\\": "vendor/yiisoft/db-migration/tests/Support",
+            "Yiisoft\\Db\\Migration\\Tests\\Support\\": "vendor/yiisoft/db-migration/tests/Support",
+            "Yiisoft\\Db\\Migration\\Tests\\Support\\MigrationsExtra\\": [
+                "vendor/yiisoft/db-migration/tests/Support/MigrationsExtra",
+                "vendor/yiisoft/db-migration/tests/Support/MigrationsExtra2"
+            ]
         }
     },
     "extra": {

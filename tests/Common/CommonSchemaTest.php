@@ -9,6 +9,7 @@ use PDO;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constraint\CheckConstraint;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\DefaultValueConstraint;
@@ -18,7 +19,6 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Support\AnyCaseValue;
@@ -69,9 +69,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columns
      */
-    public function testColumnSchema(array $columns, string $tableName): void
+    public function testColumns(array $columns, string $tableName): void
     {
-        $this->columnSchema($columns, $tableName);
+        $this->assertTableColumns($columns, $tableName);
     }
 
     public function testCompositeFk(): void
@@ -147,7 +147,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             'uniqueIndex',
             'somecolUnique',
             'somecol',
-            SchemaInterface::INDEX_UNIQUE,
+            IndexType::UNIQUE,
         )->execute();
         $tableSchema = $schema->getTableSchema('uniqueIndex', true);
 
@@ -166,7 +166,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             'uniqueIndex',
             'someCol2Unique',
             'someCol2',
-            SchemaInterface::INDEX_UNIQUE,
+            IndexType::UNIQUE,
         )->execute();
         $tableSchema = $schema->getTableSchema('uniqueIndex', true);
 
@@ -181,7 +181,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
             'uniqueIndex',
             'another unique index',
             'someCol3',
-            SchemaInterface::INDEX_UNIQUE,
+            IndexType::UNIQUE,
         )->execute();
         $tableSchema = $schema->getTableSchema('uniqueIndex', true);
 
@@ -354,39 +354,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         foreach ($tableUniques as $uniques) {
             $this->assertIsArray($uniques);
             $this->assertContainsOnlyInstancesOf(Constraint::class, $uniques);
-        }
-
-        $db->close();
-    }
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::columnsTypeChar
-     */
-    public function testGetStringFieldsSize(
-        string $columnName,
-        string $columnType,
-        int|null $columnSize,
-        string $columnDbType
-    ): void {
-        $db = $this->getConnection(true);
-
-        $schema = $db->getSchema();
-        $tableSchema = $schema->getTableSchema('type');
-
-        $this->assertInstanceOf(TableSchemaInterface::class, $tableSchema);
-
-        $columns = $tableSchema->getColumns();
-
-        foreach ($columns as $name => $column) {
-            $type = $column->getType();
-            $size = $column->getSize();
-            $dbType = $column->getDbType();
-
-            if ($name === $columnName) {
-                $this->assertSame($columnType, $type);
-                $this->assertSame($columnSize, $size);
-                $this->assertSame($columnDbType, $dbType);
-            }
         }
 
         $db->close();
@@ -823,7 +790,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertEquals($expected, $actual);
     }
 
-    protected function columnSchema(array $columns, string $table): void
+    protected function assertTableColumns(array $columns, string $table): void
     {
         $db = $this->getConnection(true);
 
@@ -1146,9 +1113,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
      * @dataProvider \Yiisoft\Db\Tests\Provider\SchemaProvider::withIndexDataProvider
      */
     public function testWorkWithIndex(
-        string $indexType = null,
-        string $indexMethod = null,
-        string $columnType = null,
+        ?string $indexType = null,
+        ?string $indexMethod = null,
+        ?string $columnType = null,
         bool $isPrimary = false,
         bool $isUnique = false
     ): void {
@@ -1206,7 +1173,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         ConnectionInterface $db,
         string $tableName,
         string $columnName,
-        string $columnType = null
+        ?string $columnType = null
     ): void {
         $qb = $db->getQueryBuilder();
 

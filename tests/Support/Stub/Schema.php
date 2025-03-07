@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Tests\Support\Stub;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\AbstractSchema;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
@@ -18,11 +17,6 @@ use Yiisoft\Db\Schema\TableSchemaInterface;
  */
 class Schema extends AbstractSchema
 {
-    public function createColumn(string $type, array|int|string $length = null): ColumnInterface
-    {
-        return new Column($type, $length);
-    }
-
     public function getColumnFactory(): ColumnFactoryInterface
     {
         return new ColumnFactory();
@@ -36,7 +30,7 @@ class Schema extends AbstractSchema
     /**
      * @throws NotSupportedException
      */
-    public function getLastInsertID(string $sequenceName = null): string
+    public function getLastInsertID(?string $sequenceName = null): string
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }

@@ -8,6 +8,11 @@ use Closure;
 use JsonException;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\DataType;
+use Yiisoft\Db\Constant\IndexType;
+use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -16,7 +21,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * This interface represents a database command, such as a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement.
@@ -44,8 +49,8 @@ interface CommandInterface
      *
      * @param string $table The name of the table to add new column to.
      * @param string $column The name of the new column.
-     * @param ColumnInterface|string $type The column type. {@see QueryBuilder::getColumnType()} will be called
-     * to convert the given column type to the database one.
+     * @param ColumnInterface|string $type The column type.
+     * {@see QueryBuilder::buildColumnDefinition()} will be called to convert the given column type to the database one.
      * For example, `string` will be converted to `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
@@ -95,8 +100,7 @@ interface CommandInterface
 
     /**
      * Creates an SQL command for adding a foreign key constraint to an existing table.
-     *
-     * The method will quote the table and column names.
+     * The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated SQL.
      *
      * @param string $table The name of the table to add foreign key constraint to.
      * @param string $name The name of the foreign key constraint.
@@ -105,16 +109,14 @@ interface CommandInterface
      * @param string $referenceTable The name of the table that the foreign key references to.
      * @param array|string $referenceColumns The name of the column that the foreign key references to. If there are
      * many columns, separate them with commas.
-     * @param string|null $delete The `ON DELETE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
-     * `SET DEFAULT`, `SET NULL`.
-     * @param string|null $update The `ON UPDATE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
-     * `SET DEFAULT`, `SET NULL`.
+     * @param string|null $delete The `ON DELETE` option. See {@see ReferentialAction} class for possible values.
+     * @param string|null $update The `ON UPDATE` option. See {@see ReferentialAction} class for possible values.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * Note: The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated
-     * SQL.
+     * @psalm-param ReferentialAction::*|null $delete
+     * @psalm-param ReferentialAction::*|null $update
      */
     public function addForeignKey(
         string $table,
@@ -122,8 +124,8 @@ interface CommandInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string $delete = null,
-        string $update = null
+        string|null $delete = null,
+        string|null $update = null
     ): static;
 
     /**
@@ -144,9 +146,9 @@ interface CommandInterface
      *
      * @param string $table The table whose column is to change.
      * @param string $column The name of the column to change.
-     * @param ColumnInterface|string $type The column type. {@see QueryBuilder::getColumnType()} will be called to
-     * convert the give column type to the physical one. For example, `string` will be converted as `varchar(255)`, and
-     * `string not null` becomes `varchar(255) not null`.
+     * @param ColumnInterface|string $type The column type.
+     * {@see QueryBuilder::buildColumnDefinition()} will be called to convert the give column type to the physical one.
+     * For example, `string` will be converted as `varchar(255)`, and `string not null` becomes `varchar(255) not null`.
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
@@ -213,13 +215,15 @@ interface CommandInterface
      * @param int|null $length The length of the data type.
      * @param mixed|null $driverOptions The driver-specific options.
      *
+     * @psalm-param DataType::*|null $dataType
+     *
      * @throws Exception
      */
     public function bindParam(
         int|string $name,
         mixed &$value,
-        int $dataType = null,
-        int $length = null,
+        ?int $dataType = null,
+        ?int $length = null,
         mixed $driverOptions = null
     ): static;
 
@@ -244,8 +248,10 @@ interface CommandInterface
      * @param mixed $value The value to bind to the parameter.
      * @param int|null $dataType The {@see DataType SQL data type} of the parameter. If null, the type is determined
      * by the PHP type of the value.
+     *
+     * @psalm-param DataType::*|null $dataType
      */
-    public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
+    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static;
 
     /**
      * Binds a list of values to the corresponding parameters.
@@ -290,12 +296,14 @@ interface CommandInterface
      * @param string $name The name of the index.
      * @param array|string $columns The column(s) to include in the index. If there are many columns,
      * separate them with commas.
-     * @param string|null $indexType The type of index-supported DBMS - for example: `UNIQUE`, `FULLTEXT`, `SPATIAL`,
-     * `BITMAP` or null as default.
-     * @param string|null $indexMethod The setting index organization method (with `USING`, not all DBMS).
+     * @param string|null $indexType The type of the index supported by DBMS {@see IndexType} - for example: `UNIQUE`,
+     * `FULLTEXT`, `SPATIAL`, `BITMAP` or null as default.
+     * @param string|null $indexMethod The index organization method (with `USING`, not all DBMS).
      *
      * @throws Exception
      * @throws InvalidArgumentException
+     *
+     * @psalm-param IndexType::*|null $indexType
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
@@ -303,27 +311,46 @@ interface CommandInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): static;
 
     /**
      * Creates an SQL command for creating a new DB table.
      *
-     * Specify the columns in the new table as name-definition pairs ('name' => 'string'), where name
-     * stands for a column name which will be quoted by the method, and definition stands for the column type
-     * which can contain an abstract DB type.
+     * The columns in the new table should be specified as name-definition pairs (e.g. 'name' => 'string'), where name
+     * is the name of the column which will be properly quoted by the method, and definition is the type of the column
+     * which can contain a native database column type, {@see ColumnType abstract} or {@see PseudoType pseudo} type,
+     * or can be represented as instance of {@see ColumnInterface}.
      *
-     * The method {@see QueryBuilder::getColumnType()} will be called to convert the abstract column types to physical
-     * ones.
-     * For example, it will convert `string` to `varchar(255)`, and `string not null` to
-     * `varchar(255) not null`.
+     * The {@see QueryBuilderInterface::buildColumnDefinition()} method will be invoked to convert column definitions
+     * into SQL representation. For example, it will convert `string not null` to `varchar(255) not null`
+     * and `pk` to `int PRIMARY KEY AUTO_INCREMENT` (for MySQL).
      *
-     * If you specify a column with definition only (`PRIMARY KEY (name, type)`), it will be directly inserted
-     * into the generated SQL.
+     * The preferred way is to use {@see ColumnBuilder} to generate column definitions as instances of
+     * {@see ColumnInterface}.
+     *
+     * ```php
+     * $this->createTable(
+     *     'example_table',
+     *     [
+     *         'id' => ColumnBuilder::primaryKey(),
+     *         'name' => ColumnBuilder::string(64)->notNull(),
+     *         'type' => ColumnBuilder::integer()->notNull()->defaultValue(10),
+     *         'description' => ColumnBuilder::text(),
+     *         'rule_name' => ColumnBuilder::string(64),
+     *         'data' => ColumnBuilder::text(),
+     *         'created_at' => ColumnBuilder::datetime()->notNull(),
+     *         'updated_at' => ColumnBuilder::datetime(),
+     *     ],
+     * );
+     * ```
+     *
+     * If a column is specified with definition only (e.g. 'PRIMARY KEY (name, type)'), it will be directly put into the
+     * generated SQL.
      *
      * @param string $table The name of the table to create.
-     * @param array $columns The columns (name => definition) in the new table.
+     * @param (ColumnInterface|string)[] $columns The columns (name => definition) in the new table.
      * The definition can be `string` or {@see ColumnInterface} instance.
      * @param string|null $options More SQL fragments to append to the generated SQL.
      *
@@ -335,7 +362,7 @@ interface CommandInterface
      *
      * @psalm-param array<string, ColumnInterface>|string[] $columns
      */
-    public function createTable(string $table, array $columns, string $options = null): static;
+    public function createTable(string $table, array $columns, ?string $options = null): static;
 
     /**
      * Creates a SQL View.
@@ -605,7 +632,7 @@ interface CommandInterface
      * @throws Exception If there is any DB error.
      * @throws InvalidConfigException
      */
-    public function prepare(bool $forRead = null): void;
+    public function prepare(?bool $forRead = null): void;
 
     /**
      * Executes the SQL statement and returns a query result.
@@ -657,8 +684,8 @@ interface CommandInterface
 
     /**
      * Execute the SQL statement and returns the value of the first column in the first row of data.
-     *
      * This method is best used when you need only a single value.
+     * Do not use this method for `boolean` values as it returns `false` if there is no value.
      *
      * @throws Exception
      * @throws Throwable If execution failed.
@@ -708,7 +735,7 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
-    public function resetSequence(string $table, int|string $value = null): static;
+    public function resetSequence(string $table, int|string|null $value = null): static;
 
     /**
      * List all database names in the current connection.

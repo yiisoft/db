@@ -5,19 +5,26 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Constant\DataType;
+use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Connection\ServerInfoInterface;
+use Yiisoft\Db\Constant\GettypeResult;
+use Yiisoft\Db\Exception\InvalidArgumentException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
+use function bin2hex;
 use function count;
+use function get_resource_type;
+use function gettype;
 use function is_string;
-use function preg_match;
-use function preg_replace;
+use function stream_get_contents;
 
 /**
  * Builds a SELECT SQL statement based on the specification given as a {@see QueryInterface} object.
@@ -37,6 +44,16 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
      * The prefix for automatically generated query binding parameters.
      */
     public const PARAM_PREFIX = ':qp';
+
+    /**
+     * @var string SQL value of the PHP `false` value.
+     */
+    protected const FALSE_VALUE = 'FALSE';
+    /**
+     * @var string SQL value of the PHP `true` value.
+     */
+    protected const TRUE_VALUE = 'TRUE';
+
     /**
      * @psalm-var string[] The abstract column types mapped to physical column types.
      *
@@ -48,6 +65,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function __construct(
         private QuoterInterface $quoter,
         private SchemaInterface $schema,
+        private ServerInfoInterface $serverInfo,
         private AbstractDDLQueryBuilder $ddlBuilder,
         private AbstractDMLQueryBuilder $dmlBuilder,
         private AbstractDQLQueryBuilder $dqlBuilder,
@@ -86,8 +104,8 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string $delete = null,
-        string $update = null
+        ?string $delete = null,
+        ?string $update = null
     ): string {
         return $this->ddlBuilder->addForeignKey(
             $table,
@@ -154,7 +172,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->build($query, $params);
     }
 
-    public function buildColumnDefinition(ColumnSchemaInterface|string $column): string
+    public function buildColumnDefinition(ColumnInterface|string $column): string
     {
         if (is_string($column)) {
             $column = $this->schema->getColumnFactory()->fromDefinition($column);
@@ -222,7 +240,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         array $columns,
         array &$params,
         bool|null $distinct = false,
-        string $selectOption = null
+        ?string $selectOption = null
     ): string {
         return $this->dqlBuilder->buildSelect($columns, $params, $distinct, $selectOption);
     }
@@ -258,13 +276,13 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): string {
         return $this->ddlBuilder->createIndex($table, $name, $columns, $indexType, $indexMethod);
     }
 
-    public function createTable(string $table, array $columns, string $options = null): string
+    public function createTable(string $table, array $columns, ?string $options = null): string
     {
         return $this->ddlBuilder->createTable($table, $columns, $options);
     }
@@ -334,37 +352,24 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->dropView($viewName);
     }
 
-    /** @deprecated Use {@see buildColumnDefinition()}. Will be removed in version 2.0. */
-    public function getColumnType(ColumnInterface|string $type): string
+    public function getColumnDefinitionBuilder(): ColumnDefinitionBuilderInterface
     {
-        if ($type instanceof ColumnInterface) {
-            $type = $type->asString();
-        }
-
-        if (isset($this->typeMap[$type])) {
-            return $this->typeMap[$type];
-        }
-
-        if (preg_match('/^(\w+)\((.+?)\)(.*)$/', $type, $matches)) {
-            if (isset($this->typeMap[$matches[1]])) {
-                return preg_replace(
-                    '/\(.+\)/',
-                    '(' . $matches[2] . ')',
-                    $this->typeMap[$matches[1]]
-                ) . $matches[3];
-            }
-        } elseif (preg_match('/^(\w+)\s+/', $type, $matches)) {
-            if (isset($this->typeMap[$matches[1]])) {
-                return preg_replace('/^\w+/', $this->typeMap[$matches[1]], $type);
-            }
-        }
-
-        return $type;
+        return $this->columnDefinitionBuilder;
     }
 
     public function getExpressionBuilder(ExpressionInterface $expression): object
     {
         return $this->dqlBuilder->getExpressionBuilder($expression);
+    }
+
+    public function getSchema(): SchemaInterface
+    {
+        return $this->schema;
+    }
+
+    public function getServerInfo(): ServerInfoInterface
+    {
+        return $this->serverInfo;
     }
 
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
@@ -380,6 +385,36 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function quoter(): QuoterInterface
     {
         return $this->quoter;
+    }
+
+    public function prepareParam(ParamInterface $param): string
+    {
+        return match ($param->getType()) {
+            DataType::BOOLEAN => $param->getValue() ? static::TRUE_VALUE : static::FALSE_VALUE,
+            DataType::INTEGER => (string) (int) $param->getValue(),
+            DataType::LOB => $this->prepareBinary((string) $param->getValue()),
+            DataType::NULL => 'NULL',
+            default => $this->prepareValue($param->getValue()),
+        };
+    }
+
+    public function prepareValue(mixed $value): string
+    {
+        /** @psalm-suppress MixedArgument */
+        return match (gettype($value)) {
+            GettypeResult::BOOLEAN => $value ? static::TRUE_VALUE : static::FALSE_VALUE,
+            GettypeResult::DOUBLE => (string) $value,
+            GettypeResult::INTEGER => (string) $value,
+            GettypeResult::NULL => 'NULL',
+            GettypeResult::OBJECT => match (true) {
+                $value instanceof Expression => (string) $value,
+                $value instanceof ParamInterface => $this->prepareParam($value),
+                default => $this->quoter->quoteValue((string) $value),
+            },
+            GettypeResult::RESOURCE => $this->prepareResource($value),
+            GettypeResult::RESOURCE_CLOSED => throw new InvalidArgumentException('Resource is closed.'),
+            default => $this->quoter->quoteValue((string) $value),
+        };
     }
 
     public function renameColumn(string $table, string $oldName, string $newName): string
@@ -434,5 +469,27 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         array &$params = []
     ): string {
         return $this->dmlBuilder->upsert($table, $insertColumns, $updateColumns, $params);
+    }
+
+    /**
+     * Converts a resource value to its SQL representation or throws an exception if conversion is not possible.
+     *
+     * @param resource $value
+     */
+    protected function prepareResource(mixed $value): string
+    {
+        if (get_resource_type($value) !== 'stream') {
+            throw new InvalidArgumentException('Supported only stream resource type.');
+        }
+
+        return $this->prepareBinary(stream_get_contents($value));
+    }
+
+    /**
+     * Converts a binary value to its SQL representation using hexadecimal encoding.
+     */
+    protected function prepareBinary(string $binary): string
+    {
+        return '0x' . bin2hex($binary);
     }
 }

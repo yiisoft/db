@@ -13,16 +13,17 @@ To create a table, you can use the `Yiisoft\Db\Command\CommandInterface::createT
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 
 /** @var ConnectionInterface $db */
 $db->createCommand()->createTable(
     '{{%customer}}',
      [
-        'id' => 'pk',
-        'name' => 'string(255) NOT NULL',
-        'email' => 'string(255) NOT NULL',
-        'status' => 'integer NOT NULL',
-        'created_at' => 'datetime NOT NULL',
+        'id' => ColumnBuilder::primaryKey(),
+        'name' => ColumnBuilder::string()->notNull(),
+        'email' => ColumnBuilder::string()->notNull(),
+        'status' => ColumnBuilder::integer()->notNull(),
+        'created_at' => ColumnBuilder::datetime()->notNull(),
      ],
 )->execute();
 ```
@@ -44,10 +45,10 @@ And the following SQL will be executed in MySQL/MariaDB:
 
 ```sql
 CREATE TABLE `customer` (
-    `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `id` int PRIMARY KEY AUTO_INCREMENT,
     `name` varchar(255) NOT NULL,
     `email` varchar(255) NOT NULL,
-    `status` int(11) NOT NULL,
+    `status` int NOT NULL,
     `created_at` datetime(0) NOT NULL
 )
 ```
@@ -180,6 +181,7 @@ method:
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\ReferentialAction;
 
 /** @var ConnectionInterface $db */
 $db->createCommand()->addForeignKey(
@@ -188,8 +190,8 @@ $db->createCommand()->addForeignKey(
     'profile_id',
     '{{%profile}}',
     'id',
-    'CASCADE',
-    'CASCADE'
+    ReferentialAction::CASCADE,
+    ReferentialAction::CASCADE
 )->execute();
 ```
 

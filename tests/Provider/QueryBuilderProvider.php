@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Provider;
 
 use ArrayIterator;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
@@ -18,11 +20,12 @@ use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Tests\Support\Stub\Column;
+use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
+
+use function fopen;
 
 /**
  * @psalm-suppress MixedAssignment
@@ -50,8 +53,8 @@ class QueryBuilderProvider
                 'C_fk_id_1',
                 $pkTableName,
                 'C_id_1',
-                'CASCADE',
-                'CASCADE',
+                ReferentialAction::CASCADE,
+                ReferentialAction::CASCADE,
                 Dbhelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]]) REFERENCES [[$pkTableName]] ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE
@@ -65,8 +68,8 @@ class QueryBuilderProvider
                 'C_fk_id_1, C_fk_id_2',
                 $pkTableName,
                 'C_id_1, C_id_2',
-                'CASCADE',
-                'CASCADE',
+                ReferentialAction::CASCADE,
+                ReferentialAction::CASCADE,
                 Dbhelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]]) REFERENCES [[$pkTableName]] ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE
@@ -138,6 +141,13 @@ class QueryBuilderProvider
                     static::$driverName,
                 ),
             ],
+        ];
+    }
+
+    public static function alterColumn(): array
+    {
+        return [
+            [ColumnType::STRING, 'ALTER TABLE [foo1] CHANGE [bar] [bar] varchar(255)'],
         ];
     }
 
@@ -607,6 +617,12 @@ class QueryBuilderProvider
             'like-custom-3' => [
                 ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => '%b%'],
             ],
+
+            /* json conditions */
+            'search by property in JSON column' => [
+                ['=', new Expression("(json_col->>'$.someKey')"), 42],
+                "(json_col->>'$.someKey') = :qp0", [':qp0' => 42],
+            ],
         ];
 
         /* adjust dbms specific escaping */
@@ -927,7 +943,7 @@ class QueryBuilderProvider
                     $tableName,
                     $name1,
                     'C_index_1',
-                    SchemaInterface::INDEX_UNIQUE,
+                    IndexType::UNIQUE,
                 ),
             ],
             'create unique (2 columns)' => [
@@ -938,7 +954,7 @@ class QueryBuilderProvider
                     $tableName,
                     $name2,
                     'C_index_2_1, C_index_2_2',
-                    SchemaInterface::INDEX_UNIQUE,
+                    IndexType::UNIQUE,
                 ),
             ],
         ];
@@ -1089,6 +1105,22 @@ class QueryBuilderProvider
                 ),
                 [
                     ':qp0' => 'test@example.com',
+                ],
+            ],
+            'json expression' => [
+                'json_type',
+                [
+                    'json_col' => new JsonExpression(['c' => 1, 'd' => 2]),
+                ],
+                [],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[json_type]] ([[json_col]]) VALUES (:qp0)
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':qp0' => new Param('{"c":1,"d":2}', DataType::STRING),
                 ],
             ],
         ];
@@ -1541,7 +1573,7 @@ class QueryBuilderProvider
     {
         return [
             [ColumnType::STRING],
-            [new Column('string(100)')],
+            [ColumnBuilder::string(100)],
         ];
     }
 
@@ -1571,27 +1603,27 @@ class QueryBuilderProvider
         $reference = new ForeignKeyConstraint();
         $reference->foreignColumnNames(['id']);
         $reference->foreignTableName('ref_table');
-        $reference->onDelete('CASCADE');
-        $reference->onUpdate('CASCADE');
+        $reference->onDelete(ReferentialAction::CASCADE);
+        $reference->onUpdate(ReferentialAction::CASCADE);
 
         $referenceWithSchema = clone $reference;
         $referenceWithSchema->foreignSchemaName('ref_schema');
 
         return [
-            PseudoType::PK => ['integer PRIMARY KEY AUTO_INCREMENT', PseudoType::PK],
-            PseudoType::UPK => ['integer UNSIGNED PRIMARY KEY AUTO_INCREMENT', PseudoType::UPK],
-            PseudoType::BIGPK => ['bigint PRIMARY KEY AUTO_INCREMENT', PseudoType::BIGPK],
-            PseudoType::UBIGPK => ['bigint UNSIGNED PRIMARY KEY AUTO_INCREMENT', PseudoType::UBIGPK],
+            PseudoType::PK => ['integer PRIMARY KEY AUTOINCREMENT', PseudoType::PK],
+            PseudoType::UPK => ['integer UNSIGNED PRIMARY KEY AUTOINCREMENT', PseudoType::UPK],
+            PseudoType::BIGPK => ['bigint PRIMARY KEY AUTOINCREMENT', PseudoType::BIGPK],
+            PseudoType::UBIGPK => ['bigint UNSIGNED PRIMARY KEY AUTOINCREMENT', PseudoType::UBIGPK],
             PseudoType::UUID_PK => ['uuid PRIMARY KEY DEFAULT uuid()', PseudoType::UUID_PK],
             PseudoType::UUID_PK_SEQ => ['uuid PRIMARY KEY DEFAULT uuid()', PseudoType::UUID_PK_SEQ],
-            'STRING' => ['varchar', ColumnType::STRING],
+            'STRING' => ['varchar(255)', ColumnType::STRING],
             'STRING(100)' => ['varchar(100)', ColumnType::STRING . '(100)'],
 
-            'primaryKey()' => ['integer PRIMARY KEY AUTO_INCREMENT', ColumnBuilder::primaryKey()],
+            'primaryKey()' => ['integer PRIMARY KEY AUTOINCREMENT', ColumnBuilder::primaryKey()],
             'primaryKey(false)' => ['integer PRIMARY KEY', ColumnBuilder::primaryKey(false)],
-            'smallPrimaryKey()' => ['smallint PRIMARY KEY AUTO_INCREMENT', ColumnBuilder::smallPrimaryKey()],
+            'smallPrimaryKey()' => ['smallint PRIMARY KEY AUTOINCREMENT', ColumnBuilder::smallPrimaryKey()],
             'smallPrimaryKey(false)' => ['smallint PRIMARY KEY', ColumnBuilder::smallPrimaryKey(false)],
-            'bigPrimaryKey()' => ['bigint PRIMARY KEY AUTO_INCREMENT', ColumnBuilder::bigPrimaryKey()],
+            'bigPrimaryKey()' => ['bigint PRIMARY KEY AUTOINCREMENT', ColumnBuilder::bigPrimaryKey()],
             'bigPrimaryKey(false)' => ['bigint PRIMARY KEY', ColumnBuilder::bigPrimaryKey(false)],
             'uuidPrimaryKey()' => ['uuid PRIMARY KEY DEFAULT uuid()', ColumnBuilder::uuidPrimaryKey()],
             'uuidPrimaryKey(false)' => ['uuid PRIMARY KEY', ColumnBuilder::uuidPrimaryKey(false)],
@@ -1601,7 +1633,7 @@ class QueryBuilderProvider
             'bit()' => ['bit', ColumnBuilder::bit()],
             'bit(1)' => ['bit(1)', ColumnBuilder::bit(1)],
             'bit(8)' => ['bit(8)', ColumnBuilder::bit(8)],
-            'bit(1000)' => ['bit(1000)', ColumnBuilder::bit(1000)],
+            'bit(64)' => ['bit(64)', ColumnBuilder::bit(64)],
             'tinyint()' => ['tinyint', ColumnBuilder::tinyint()],
             'tinyint(2)' => ['tinyint(2)', ColumnBuilder::tinyint(2)],
             'smallint()' => ['smallint', ColumnBuilder::smallint()],
@@ -1629,7 +1661,7 @@ class QueryBuilderProvider
             'char(null)' => ['char', ColumnBuilder::char(null)],
             'string()' => ['varchar(255)', ColumnBuilder::string()],
             'string(100)' => ['varchar(100)', ColumnBuilder::string(100)],
-            'string(null)' => ['varchar', ColumnBuilder::string(null)],
+            'string(null)' => ['varchar(255)', ColumnBuilder::string(null)],
             'text()' => ['text', ColumnBuilder::text()],
             'text(1000)' => ['text(1000)', ColumnBuilder::text(1000)],
             'binary()' => ['binary', ColumnBuilder::binary()],
@@ -1648,26 +1680,33 @@ class QueryBuilderProvider
             'time(null)' => ['time', ColumnBuilder::time(null)],
             'array()' => ['json', ColumnBuilder::array()],
             'structured()' => ['json', ColumnBuilder::structured()],
-            "structured('structured_type')" => ['structured_type', ColumnBuilder::structured('structured_type')],
+            "structured('json')" => ['json', ColumnBuilder::structured('json')],
             'json()' => ['json', ColumnBuilder::json()],
             'json(100)' => ['json', ColumnBuilder::json()->size(100)],
 
-            "enum('a','b','c')" => ["enum('a','b','c')", ColumnBuilder::string()->dbType("enum('a','b','c')")],
-            "extra('bar')" => ['varchar(255) bar', ColumnBuilder::string()->extra('bar')],
+            "extra('NOT NULL')" => ['varchar(255) NOT NULL', ColumnBuilder::string()->extra('NOT NULL')],
             "extra('')" => ['varchar(255)', ColumnBuilder::string()->extra('')],
-            "check('value > 5')" => ['varchar(255) CHECK (value > 5)', ColumnBuilder::string()->check('value > 5')],
-            "check('')" => ['varchar(255)', ColumnBuilder::string()->check('')],
-            'check(null)' => ['varchar(255)', ColumnBuilder::string()->check(null)],
+            "check('value > 5')" => [
+                DbHelper::replaceQuotes('integer CHECK ([[check_col]] > 5)', static::$driverName),
+                ColumnBuilder::integer()
+                    ->withName('check_col')
+                    ->check(DbHelper::replaceQuotes('[[check_col]] > 5', static::$driverName)),
+            ],
+            "check('')" => ['integer', ColumnBuilder::integer()->check('')],
+            'check(null)' => ['integer', ColumnBuilder::integer()->check(null)],
             "comment('comment')" => ['varchar(255)', ColumnBuilder::string()->comment('comment')],
             "comment('')" => ['varchar(255)', ColumnBuilder::string()->comment('')],
             'comment(null)' => ['varchar(255)', ColumnBuilder::string()->comment(null)],
             "defaultValue('value')" => ["varchar(255) DEFAULT 'value'", ColumnBuilder::string()->defaultValue('value')],
             "defaultValue('')" => ["varchar(255) DEFAULT ''", ColumnBuilder::string()->defaultValue('')],
-            'defaultValue(null)' => ['varchar(255)', ColumnBuilder::string()->defaultValue(null)],
-            'defaultValue($expression)' => ['varchar(255) DEFAULT expression', ColumnBuilder::string()->defaultValue(new Expression('expression'))],
-            "integer()->defaultValue('')" => ['integer', ColumnBuilder::integer()->defaultValue('')],
+            'defaultValue(null)' => ['varchar(255) DEFAULT NULL', ColumnBuilder::string()->defaultValue(null)],
+            'defaultValue($expression)' => ['integer DEFAULT (1 + 2)', ColumnBuilder::integer()->defaultValue(new Expression('(1 + 2)'))],
+            'defaultValue($emptyExpression)' => ['integer', ColumnBuilder::integer()->defaultValue(new Expression(''))],
+            "integer()->defaultValue('')" => ['integer DEFAULT NULL', ColumnBuilder::integer()->defaultValue('')],
             'notNull()' => ['varchar(255) NOT NULL', ColumnBuilder::string()->notNull()],
+            'null()' => ['varchar(255) NULL', ColumnBuilder::string()->null()],
             'integer()->primaryKey()' => ['integer PRIMARY KEY', ColumnBuilder::integer()->primaryKey()],
+            'string()->primaryKey()' => ['varchar(255) PRIMARY KEY', ColumnBuilder::string()->primaryKey()],
             'size(10)' => ['varchar(10)', ColumnBuilder::string()->size(10)],
             'unique()' => ['varchar(255) UNIQUE', ColumnBuilder::string()->unique()],
             'unsigned()' => ['integer UNSIGNED', ColumnBuilder::integer()->unsigned()],
@@ -1691,6 +1730,38 @@ class QueryBuilderProvider
                 ),
                 ColumnBuilder::integer()->reference($referenceWithSchema),
             ],
+        ];
+    }
+
+    public static function prepareParam(): array
+    {
+        return [
+            'null' => ['NULL', null, DataType::NULL],
+            'true' => ['TRUE', true, DataType::BOOLEAN],
+            'false' => ['FALSE', false, DataType::BOOLEAN],
+            'integer' => ['1', 1, DataType::INTEGER],
+            'integerString' => ['1', '1 or 1=1', DataType::INTEGER],
+            'float' => ['1.1', 1.1, DataType::STRING],
+            'string' => ["'string'", 'string', DataType::STRING],
+            'binary' => ['0x737472696e67', 'string', DataType::LOB],
+        ];
+    }
+
+    public static function prepareValue(): array
+    {
+        return [
+            'null' => ['NULL', null],
+            'true' => ['TRUE', true],
+            'false' => ['FALSE', false],
+            'integer' => ['1', 1],
+            'float' => ['1.1', 1.1],
+            'string' => ["'string'", 'string'],
+            'binary' => ['0x737472696e67', fopen(__DIR__ . '/../Support/string.txt', 'rb')],
+            'paramBinary' => ['0x737472696e67', new Param('string', DataType::LOB)],
+            'paramString' => ["'string'", new Param('string', DataType::STRING)],
+            'paramInteger' => ['1', new Param(1, DataType::INTEGER)],
+            'expression' => ['(1 + 2)', new Expression('(1 + 2)')],
+            'Stringable' => ["'string'", new Stringable('string')],
         ];
     }
 }
