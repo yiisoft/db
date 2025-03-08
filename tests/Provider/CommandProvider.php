@@ -10,10 +10,12 @@ use Traversable;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\IndexType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -38,113 +40,121 @@ class CommandProvider
     {
         return [
             [
-                '{{test_fk_constraint_1}}',
-                '{{test_fk}}',
                 'int1',
                 'int3',
                 null,
                 null,
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_1]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]])
+                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])
                     SQL,
                     static::$driverName,
                 ),
             ],
             [
-                '{{test_fk_constraint_2}}',
-                '{{test_fk}}',
                 ['int1'],
                 'int3',
                 null,
                 null,
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_2]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]])
+                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])
                     SQL,
                     static::$driverName,
                 ),
             ],
             [
-                '{{test_fk_constraint_3}}',
-                '{{test_fk}}',
                 ['int1'],
                 ['int3'],
                 null,
                 null,
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_3]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]])
+                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]])
                     SQL,
                     static::$driverName,
                 ),
             ],
             [
-                '{{test_fk_constraint_4}}',
-                '{{test_fk}}',
                 ['int1'],
                 ['int3'],
-                'CASCADE',
+                ReferentialAction::CASCADE,
                 null,
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_4]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]]) ON DELETE CASCADE
+                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE CASCADE
                     SQL,
                     static::$driverName,
                 ),
             ],
             [
-                '{{test_fk_constraint_5}}',
-                '{{test_fk}}',
                 ['int1'],
                 ['int3'],
-                'CASCADE',
-                'CASCADE',
+                ReferentialAction::CASCADE,
+                ReferentialAction::CASCADE,
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_5]] FOREIGN KEY ([[int1]]) REFERENCES [[test_fk]] ([[int3]]) ON DELETE CASCADE ON UPDATE CASCADE
+                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
                     static::$driverName,
                 ),
             ],
             [
-                '{{test_fk_constraint_6}}',
-                '{{test_fk}}',
                 ['int1', 'int2'],
                 ['int3', 'int4'],
                 null,
                 null,
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_6]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[test_fk]] ([[int3]], [[int4]])
+                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]])
                     SQL,
                     static::$driverName,
                 ),
             ],
             [
-                '{{test_fk_constraint_7}}',
-                '{{test_fk}}',
                 ['int1', 'int2'],
                 ['int3', 'int4'],
-                'CASCADE',
+                ReferentialAction::CASCADE,
                 null,
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_7]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[test_fk]] ([[int3]], [[int4]]) ON DELETE CASCADE
+                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]]) ON DELETE CASCADE
                     SQL,
                     static::$driverName,
                 ),
             ],
             [
-                '{{test_fk_constraint_8}}',
-                '{{test_fk}}',
                 ['int1', 'int2'],
                 ['int3', 'int4'],
-                'CASCADE',
-                'CASCADE',
+                ReferentialAction::CASCADE,
+                ReferentialAction::CASCADE,
                 DbHelper::replaceQuotes(
                     <<<SQL
-                    ALTER TABLE [[test_fk]] ADD CONSTRAINT [[test_fk_constraint_8]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[test_fk]] ([[int3]], [[int4]]) ON DELETE CASCADE ON UPDATE CASCADE
+                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]], [[int2]]) REFERENCES [[fk_referenced_table]] ([[int3]], [[int4]]) ON DELETE CASCADE ON UPDATE CASCADE
+                    SQL,
+                    static::$driverName,
+                ),
+            ],
+            [
+                ['int1'],
+                ['int3'],
+                ReferentialAction::NO_ACTION,
+                ReferentialAction::RESTRICT,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE NO ACTION ON UPDATE RESTRICT
+                    SQL,
+                    static::$driverName,
+                ),
+            ],
+            [
+                ['int1'],
+                ['int3'],
+                ReferentialAction::SET_DEFAULT,
+                ReferentialAction::SET_NULL,
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    ALTER TABLE [[fk_table]] ADD CONSTRAINT [[fk_constraint]] FOREIGN KEY ([[int1]]) REFERENCES [[fk_referenced_table]] ([[int3]]) ON DELETE SET DEFAULT ON UPDATE SET NULL
                     SQL,
                     static::$driverName,
                 ),
@@ -505,15 +515,42 @@ class CommandProvider
                     ':qp3' => true,
                 ],
             ],
+            'binds json params' => [
+                '{{%type}}',
+                [
+                    [1, 'a', 0.0, true, ['a' => 1, 'b' => true, 'c' => [1, 2, 3]]],
+                    [2, 'b', -1.0, false, new JsonExpression(['d' => 'e', 'f' => false, 'g' => [4, 5, null]])],
+                ],
+                ['int_col', 'char_col', 'float_col', 'bool_col', 'json_col'],
+                'expected' => DbHelper::replaceQuotes(
+                    'INSERT INTO [[type]] ([[int_col]], [[char_col]], [[float_col]], [[bool_col]], [[json_col]])'
+                        . ' VALUES (:qp0, :qp1, :qp2, :qp3, :qp4), (:qp5, :qp6, :qp7, :qp8, :qp9)',
+                    static::$driverName,
+                ),
+                'expectedParams' => [
+                    ':qp0' => 1,
+                    ':qp1' => 'a',
+                    ':qp2' => 0.0,
+                    ':qp3' => true,
+                    ':qp4' => '{"a":1,"b":true,"c":[1,2,3]}',
+
+                    ':qp5' => 2,
+                    ':qp6' => 'b',
+                    ':qp7' => -1.0,
+                    ':qp8' => false,
+                    ':qp9' => '{"d":"e","f":false,"g":[4,5,null]}',
+                ],
+                2,
+            ],
         ];
     }
 
     public static function createIndex(): array
     {
         return [
-            ['{{test_idx_constraint_1}}', '{{test_idx}}', 'int1', null, null],
-            ['{{test_idx_constraint_2}}', '{{test_idx}}', ['int1'], SchemaInterface::INDEX_UNIQUE, null],
-            ['{{test_idx_constraint_3}}', '{{test_idx}}', ['int1', 'int2'], null, null],
+            [['col1' => ColumnBuilder::integer()], ['col1'], null, null],
+            [['col1' => ColumnBuilder::integer()], ['col1'], IndexType::UNIQUE, null],
+            [['col1' => ColumnBuilder::integer(), 'col2' => ColumnBuilder::integer()], ['col1', 'col2'], null, null],
         ];
     }
 
@@ -550,7 +587,7 @@ class CommandProvider
                 '{{name}}',
                 '{{table}}',
                 ['column1', 'column2'],
-                SchemaInterface::INDEX_UNIQUE,
+                IndexType::UNIQUE,
                 '',
                 DbHelper::replaceQuotes(
                     <<<SQL

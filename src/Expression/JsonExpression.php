@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
-use JsonSerializable;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Query\QueryInterface;
-
 /**
  * Represents data to encode to JSON.
  *
@@ -17,17 +13,30 @@ use Yiisoft\Db\Query\QueryInterface;
  * new JsonExpression(['a' => 1, 'b' => 2]); // will be encoded to '{"a": 1, "b": 2}'
  * ```
  */
-final class JsonExpression implements ExpressionInterface, JsonSerializable
+final class JsonExpression implements ExpressionInterface
 {
-    public function __construct(protected mixed $value, private string|null $type = null)
+    /**
+     * @param mixed $value The JSON content. It can be represented as
+     * - an `array` of values;
+     * - an instance which implements {@see Traversable} or {@see JsonSerializable} and represents an array of values;
+     * - an instance of {@see QueryInterface} that represents an SQL sub-query;
+     * - a valid JSON encoded array as a `string`, e.g. `'[1,2,3]'` or `'{"a":1,"b":2}'`;
+     * - any other value compatible with {@see \json_encode()} input requirements.
+     * @param string|null $type Type of database column, value should be cast to. Defaults to `null`, meaning no explicit
+     * casting will be performed. This property is used only for DBMSs that support different types of JSON.
+     * For example, PostgresSQL has `json` and `jsonb` types.
+     */
+    public function __construct(private readonly mixed $value, private readonly string|null $type = null)
     {
-        if ($value instanceof self) {
-            $this->value = $value->getValue();
-        }
     }
 
     /**
-     * The value must be compatible with {@see \json_encode()} input requirements.
+     * The JSON content. It can be represented as
+     * - an `array` of values;
+     * - an instance which implements {@see Traversable} or {@see JsonSerializable} and represents an array of values;
+     * - an instance of {@see QueryInterface} that represents an SQL sub-query;
+     * - a valid JSON encoded array as a `string`, e.g. `[1,2,3]` or `'{"a":1,"b":2}'`;
+     * - any other value compatible with {@see \json_encode()} input requirements.
      */
     public function getValue(): mixed
     {
@@ -36,36 +45,11 @@ final class JsonExpression implements ExpressionInterface, JsonSerializable
 
     /**
      * Type of JSON, expression should be cast to. Defaults to `null`, meaning no explicit casting will be performed.
-     *
      * This property will be encountered only for DBMSs that support different types of JSON.
-     *
      * For example, PostgresSQL has `json` and `jsonb` types.
      */
     public function getType(): string|null
     {
         return $this->type;
-    }
-
-    /**
-     * Specify data which should be serialized to JSON.
-     *
-     * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
-     *
-     * @throws InvalidConfigException When JsonExpression has a {@see QueryInterface} object
-     *
-     * @return mixed Data which can be serialized by `json_encode`, which is a value of any type other than a resource.
-     */
-    public function jsonSerialize(): mixed
-    {
-        /** @psalm-var mixed $value */
-        $value = $this->getValue();
-
-        if ($value instanceof QueryInterface) {
-            throw new InvalidConfigException(
-                'The JsonExpression class can not be serialized to JSON when the value is a QueryInterface object.'
-            );
-        }
-
-        return $value;
     }
 }

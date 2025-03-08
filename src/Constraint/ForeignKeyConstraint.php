@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Constraint;
 
+use Yiisoft\Db\Constant\ReferentialAction;
+
 /**
  * Represents a foreign key constraint in a database.
  *
@@ -17,7 +19,9 @@ final class ForeignKeyConstraint extends Constraint
     private string|null $foreignSchemaName = null;
     private string|null $foreignTableName = null;
     private array $foreignColumnNames = [];
+    /** @psalm-var ReferentialAction::*|null */
     private string|null $onUpdate = null;
+    /** @psalm-var ReferentialAction::*|null */
     private string|null $onDelete = null;
 
     /**
@@ -46,6 +50,8 @@ final class ForeignKeyConstraint extends Constraint
 
     /**
      * @return string|null The referential action if rows in a referenced table are to be updated.
+     *
+     * @psalm-return ReferentialAction::*|null
      */
     public function getOnUpdate(): string|null
     {
@@ -54,6 +60,8 @@ final class ForeignKeyConstraint extends Constraint
 
     /**
      * @return string|null The referential action if rows in a referenced table are to be deleted.
+     *
+     * @psalm-return ReferentialAction::*|null
      */
     public function getOnDelete(): string|null
     {
@@ -97,6 +105,9 @@ final class ForeignKeyConstraint extends Constraint
      * Set the referential action if rows in a referenced table are to be updated.
      *
      * @param string|null $value The referential action if rows in a referenced table are to be updated.
+     * See {@see ReferentialAction} class for possible values.
+     *
+     * @psalm-param ReferentialAction::*|null $value
      */
     public function onUpdate(string|null $value): self
     {
@@ -108,6 +119,9 @@ final class ForeignKeyConstraint extends Constraint
      * Set the referential action if rows in a referenced table are to be deleted.
      *
      * @param string|null $value The referential action if rows in a referenced table are to be deleted.
+     * See {@see ReferentialAction} class for possible values.
+     *
+     * @psalm-param ReferentialAction::*|null $value
      */
     public function onDelete(string|null $value): self
     {

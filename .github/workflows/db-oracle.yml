@@ -62,6 +62,9 @@ jobs:
           --health-retries 10
 
     steps:
+      - name: Configure Database.
+        run: docker exec -i oci bash -c "sqlplus -s system/root@XE <<< 'ALTER USER system DEFAULT TABLESPACE USERS;'"
+
       - name: Checkout.
         uses: actions/checkout@v4
 

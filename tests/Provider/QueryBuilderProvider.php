@@ -8,7 +8,9 @@ use ArrayIterator;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
@@ -18,7 +20,6 @@ use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -52,8 +53,8 @@ class QueryBuilderProvider
                 'C_fk_id_1',
                 $pkTableName,
                 'C_id_1',
-                'CASCADE',
-                'CASCADE',
+                ReferentialAction::CASCADE,
+                ReferentialAction::CASCADE,
                 Dbhelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]]) REFERENCES [[$pkTableName]] ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE
@@ -67,8 +68,8 @@ class QueryBuilderProvider
                 'C_fk_id_1, C_fk_id_2',
                 $pkTableName,
                 'C_id_1, C_id_2',
-                'CASCADE',
-                'CASCADE',
+                ReferentialAction::CASCADE,
+                ReferentialAction::CASCADE,
                 Dbhelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]]) REFERENCES [[$pkTableName]] ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE
@@ -616,6 +617,12 @@ class QueryBuilderProvider
             'like-custom-3' => [
                 ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => '%b%'],
             ],
+
+            /* json conditions */
+            'search by property in JSON column' => [
+                ['=', new Expression("(json_col->>'$.someKey')"), 42],
+                "(json_col->>'$.someKey') = :qp0", [':qp0' => 42],
+            ],
         ];
 
         /* adjust dbms specific escaping */
@@ -936,7 +943,7 @@ class QueryBuilderProvider
                     $tableName,
                     $name1,
                     'C_index_1',
-                    SchemaInterface::INDEX_UNIQUE,
+                    IndexType::UNIQUE,
                 ),
             ],
             'create unique (2 columns)' => [
@@ -947,7 +954,7 @@ class QueryBuilderProvider
                     $tableName,
                     $name2,
                     'C_index_2_1, C_index_2_2',
-                    SchemaInterface::INDEX_UNIQUE,
+                    IndexType::UNIQUE,
                 ),
             ],
         ];
@@ -1098,6 +1105,22 @@ class QueryBuilderProvider
                 ),
                 [
                     ':qp0' => 'test@example.com',
+                ],
+            ],
+            'json expression' => [
+                'json_type',
+                [
+                    'json_col' => new JsonExpression(['c' => 1, 'd' => 2]),
+                ],
+                [],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[json_type]] ([[json_col]]) VALUES (:qp0)
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':qp0' => new Param('{"c":1,"d":2}', DataType::STRING),
                 ],
             ],
         ];
@@ -1580,8 +1603,8 @@ class QueryBuilderProvider
         $reference = new ForeignKeyConstraint();
         $reference->foreignColumnNames(['id']);
         $reference->foreignTableName('ref_table');
-        $reference->onDelete('CASCADE');
-        $reference->onUpdate('CASCADE');
+        $reference->onDelete(ReferentialAction::CASCADE);
+        $reference->onUpdate(ReferentialAction::CASCADE);
 
         $referenceWithSchema = clone $reference;
         $referenceWithSchema->foreignSchemaName('ref_schema');
@@ -1663,7 +1686,12 @@ class QueryBuilderProvider
 
             "extra('NOT NULL')" => ['varchar(255) NOT NULL', ColumnBuilder::string()->extra('NOT NULL')],
             "extra('')" => ['varchar(255)', ColumnBuilder::string()->extra('')],
-            "check('value > 5')" => ['integer CHECK ([col_59] > 5)', ColumnBuilder::integer()->check(DbHelper::replaceQuotes('[[col_59]] > 5', static::$driverName))],
+            "check('value > 5')" => [
+                DbHelper::replaceQuotes('integer CHECK ([[check_col]] > 5)', static::$driverName),
+                ColumnBuilder::integer()
+                    ->withName('check_col')
+                    ->check(DbHelper::replaceQuotes('[[check_col]] > 5', static::$driverName)),
+            ],
             "check('')" => ['integer', ColumnBuilder::integer()->check('')],
             'check(null)' => ['integer', ColumnBuilder::integer()->check(null)],
             "comment('comment')" => ['varchar(255)', ColumnBuilder::string()->comment('comment')],

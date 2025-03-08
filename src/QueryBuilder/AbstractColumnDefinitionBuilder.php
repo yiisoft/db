@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function in_array;
@@ -63,6 +64,32 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     public function buildAlter(ColumnInterface $column): string
     {
         return $this->build($column);
+    }
+
+    public function buildType(ColumnInterface $column): string
+    {
+        $dbType = $this->getDbType($column);
+
+        if (empty($dbType)
+            || $dbType[-1] === ')'
+            || !in_array(strtolower($dbType), static::TYPES_WITH_SIZE, true)
+        ) {
+            return $dbType;
+        }
+
+        $size = $column->getSize();
+
+        if ($size === null) {
+            return $dbType;
+        }
+
+        $scale = $column->getScale();
+
+        if ($scale === null || !in_array(strtolower($dbType), static::TYPES_WITH_SCALE, true)) {
+            return "$dbType($size)";
+        }
+
+        return "$dbType($size,$scale)";
     }
 
     /**
@@ -231,6 +258,8 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
 
     /**
      * Builds the ON DELETE clause for the column reference.
+     *
+     * @psalm-param ReferentialAction::* $onDelete
      */
     protected function buildOnDelete(string $onDelete): string
     {
@@ -239,41 +268,12 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
 
     /**
      * Builds the ON UPDATE clause for the column reference.
+     *
+     * @psalm-param ReferentialAction::* $onUpdate
      */
     protected function buildOnUpdate(string $onUpdate): string
     {
         return " ON UPDATE $onUpdate";
-    }
-
-    /**
-     * Builds the type definition for the column. For example: `varchar(128)` or `decimal(10,2)`.
-     *
-     * @return string A string containing the column type definition.
-     */
-    protected function buildType(ColumnInterface $column): string
-    {
-        $dbType = $this->getDbType($column);
-
-        if (empty($dbType)
-            || $dbType[-1] === ')'
-            || !in_array(strtolower($dbType), static::TYPES_WITH_SIZE, true)
-        ) {
-            return $dbType;
-        }
-
-        $size = $column->getSize();
-
-        if ($size === null) {
-            return $dbType;
-        }
-
-        $scale = $column->getScale();
-
-        if ($scale === null || !in_array(strtolower($dbType), static::TYPES_WITH_SCALE, true)) {
-            return "$dbType($size)";
-        }
-
-        return "$dbType($size,$scale)";
     }
 
     /**

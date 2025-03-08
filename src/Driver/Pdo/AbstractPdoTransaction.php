@@ -48,7 +48,7 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
     {
     }
 
-    public function begin(string $isolationLevel = null): void
+    public function begin(?string $isolationLevel = null): void
     {
         $this->db->open();
 

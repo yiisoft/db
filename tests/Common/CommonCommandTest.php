@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use ReflectionException;
 use Throwable;
 use Yiisoft\Db\Constant\DataType;
@@ -28,11 +29,15 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractCommandTest;
+use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Transaction\TransactionInterface;
 
+use function array_filter;
 use function is_string;
 use function setlocale;
+use function str_starts_with;
 
 abstract class CommonCommandTest extends AbstractCommandTest
 {
@@ -486,45 +491,36 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::createIndex
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
-    public function testCreateIndex(
-        string $name,
-        string $tableName,
-        array|string $column,
-        string|null $indexType,
-        string|null $indexMethod,
-    ): void {
+    #[DataProviderExternal(CommandProvider::class, 'createIndex')]
+    public function testCreateIndex(array $columns, array $indexColumns, string|null $indexType, string|null $indexMethod): void
+    {
         $db = $this->getConnection();
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
 
+        $tableName = 'test_create_index';
+        $indexName = 'test_index_name';
+
         if ($schema->getTableSchema($tableName) !== null) {
             $command->dropTable($tableName)->execute();
         }
 
-        $command->createTable($tableName, ['int1' => 'integer not null', 'int2' => 'integer not null'])->execute();
+        $command->createTable($tableName, $columns)->execute();
 
-        $this->assertEmpty($schema->getTableIndexes($tableName, true));
+        $count = count($schema->getTableIndexes($tableName));
+        $command->createIndex($tableName, $indexName, $indexColumns, $indexType, $indexMethod)->execute();
 
-        $command->createIndex($tableName, $name, $column, $indexType, $indexMethod)->execute();
+        $this->assertCount($count + 1, $schema->getTableIndexes($tableName));
 
-        if (is_string($column)) {
-            $column = [$column];
-        }
+        $index = array_filter($schema->getTableIndexes($tableName), static fn ($index) => !$index->isPrimary())[0];
 
-        $this->assertSame($column, $schema->getTableIndexes($tableName, true)[0]->getColumnNames());
+        $this->assertSame($indexColumns, $index->getColumnNames());
 
-        if ($indexType === 'UNIQUE') {
-            $this->assertTrue($schema->getTableIndexes($tableName, true)[0]->isUnique());
+        if ($indexType !== null && str_starts_with($indexType, 'UNIQUE')) {
+            $this->assertTrue($index->isUnique());
         } else {
-            $this->assertFalse($schema->getTableIndexes($tableName, true)[0]->isUnique());
+            $this->assertFalse($index->isUnique());
         }
 
         $db->close();
@@ -2104,5 +2100,50 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame($uuidSource, $uuidString);
 
         $db->close();
+    }
+
+    public function testJsonTable(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        if ($db->getTableSchema('json_table', true) !== null) {
+            $command->dropTable('json_table')->execute();
+        }
+
+        $command->createTable('json_table', [
+            'id' => PseudoType::PK,
+            'json_col' => ColumnBuilder::json(),
+        ])->execute();
+
+        $command->insert('json_table', ['json_col' => ['a' => 1, 'b' => 2]]);
+
+        $typeHint = $db->getDriverName() === 'pgsql' ? '::jsonb' : '';
+        $expectedValue = $db->getQuoter()->quoteValue('{"a":1,"b":2}') . $typeHint;
+
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                "INSERT INTO [[json_table]] ([[json_col]]) VALUES (:qp0$typeHint)",
+                $db->getDriverName(),
+            ),
+            $command->getSql()
+        );
+        $this->assertEquals([':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)], $command->getParams(false));
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                "INSERT INTO [[json_table]] ([[json_col]]) VALUES ($expectedValue)",
+                $db->getDriverName(),
+            ),
+            $command->getRawSql()
+        );
+        $this->assertSame(1, $command->execute());
+
+        $tableSchema = $db->getTableSchema('json_table', true);
+        $this->assertNotNull($tableSchema);
+        $this->assertSame('json_col', $tableSchema->getColumn('json_col')->getName());
+        $this->assertSame(ColumnType::JSON, $tableSchema->getColumn('json_col')->getType());
+
+        $value = (new Query($db))->select('json_col')->from('json_table')->where(['id' => 1])->scalar();
+        $this->assertSame('{"a":1,"b":2}', str_replace(' ', '', $value));
     }
 }

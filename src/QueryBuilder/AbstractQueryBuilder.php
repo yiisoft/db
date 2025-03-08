@@ -104,8 +104,8 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string $delete = null,
-        string $update = null
+        ?string $delete = null,
+        ?string $update = null
     ): string {
         return $this->ddlBuilder->addForeignKey(
             $table,
@@ -240,7 +240,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         array $columns,
         array &$params,
         bool|null $distinct = false,
-        string $selectOption = null
+        ?string $selectOption = null
     ): string {
         return $this->dqlBuilder->buildSelect($columns, $params, $distinct, $selectOption);
     }
@@ -276,13 +276,13 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): string {
         return $this->ddlBuilder->createIndex($table, $name, $columns, $indexType, $indexMethod);
     }
 
-    public function createTable(string $table, array $columns, string $options = null): string
+    public function createTable(string $table, array $columns, ?string $options = null): string
     {
         return $this->ddlBuilder->createTable($table, $columns, $options);
     }
@@ -360,6 +360,11 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function getExpressionBuilder(ExpressionInterface $expression): object
     {
         return $this->dqlBuilder->getExpressionBuilder($expression);
+    }
+
+    public function getSchema(): SchemaInterface
+    {
+        return $this->schema;
     }
 
     public function getServerInfo(): ServerInfoInterface

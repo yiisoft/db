@@ -4,19 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema;
 
-use ArrayIterator;
-use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
-use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ArrayExpression;
-use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
-use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\Column\StructuredColumn;
+use Yiisoft\Db\Tests\AbstractColumnTest;
 use Yiisoft\Db\Tests\Support\Stub\Column;
 
 /**
@@ -24,7 +19,7 @@ use Yiisoft\Db\Tests\Support\Stub\Column;
  *
  * @psalm-suppress PropertyNotSetInConstructor
  */
-final class ColumnTest extends TestCase
+final class ColumnTest extends AbstractColumnTest
 {
     public function testAllowNull(): void
     {
@@ -325,13 +320,13 @@ final class ColumnTest extends TestCase
         $arrayCol = new ArrayColumn();
         $intCol = new IntegerColumn();
 
-        $this->assertInstanceOf(StringColumn::class, $arrayCol->getColumn());
+        $this->assertNull($arrayCol->getColumn());
         $this->assertSame($arrayCol, $arrayCol->column($intCol));
         $this->assertSame($intCol, $arrayCol->getColumn());
 
         $arrayCol->column(null);
 
-        $this->assertInstanceOf(StringColumn::class, $arrayCol->getColumn());
+        $this->assertNull($arrayCol->getColumn());
     }
 
     public function testArrayColumnGetDimension(): void
@@ -347,44 +342,16 @@ final class ColumnTest extends TestCase
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::dbTypecastArrayColumns */
     public function testArrayColumnDbTypecast(ColumnInterface $column, array $values): void
     {
-        $arrayCol = ColumnBuilder::array($column);
+        $arrayCol = (new ArrayColumn())->column($column);
 
         foreach ($values as [$dimension, $expected, $value]) {
             $arrayCol->dimension($dimension);
             $dbValue = $arrayCol->dbTypecast($value);
 
             $this->assertInstanceOf(ArrayExpression::class, $dbValue);
-            $this->assertSame($dimension, $dbValue->getDimension());
-
-            $this->assertEquals($expected, $dbValue->getValue());
+            $this->assertSame($arrayCol, $dbValue->getType());
+            $this->assertEquals($value, $dbValue->getValue());
         }
-    }
-
-    public function testArrayColumnDbTypecastSimple()
-    {
-        $arrayCol = new ArrayColumn();
-
-        $this->assertNull($arrayCol->dbTypecast(null));
-        $this->assertEquals(new ArrayExpression([]), $arrayCol->dbTypecast(''));
-        $this->assertEquals(new ArrayExpression([1, 2, 3]), $arrayCol->dbTypecast(new ArrayIterator([1, 2, 3])));
-        $this->assertSame($expression = new Expression('expression'), $arrayCol->dbTypecast($expression));
-    }
-
-    public function testArrayColumnPhpTypecast()
-    {
-        $arrayCol = new ArrayColumn();
-
-        $this->assertNull($arrayCol->phpTypecast(null));
-        $this->assertNull($arrayCol->phpTypecast(1));
-        $this->assertSame([], $arrayCol->phpTypecast([]));
-        $this->assertSame(['1', '2', '3'], $arrayCol->phpTypecast(['1', '2', '3']));
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Schema\Column\ArrayColumn::getParser() is not supported. Use concrete DBMS implementation.'
-        );
-
-        $arrayCol->phpTypecast('{1,2,3}');
     }
 
     public function testStructuredColumnGetColumns(): void
@@ -398,46 +365,5 @@ final class ColumnTest extends TestCase
         $this->assertSame([], $structuredCol->getColumns());
         $this->assertSame($structuredCol, $structuredCol->columns($columns));
         $this->assertSame($columns, $structuredCol->getColumns());
-    }
-
-    public function testStructuredColumnDbTypecast(): void
-    {
-        $structuredCol = new StructuredColumn();
-        $expression = new Expression('expression');
-        $structuredExpression = new StructuredExpression(['value' => 1, 'currency_code' => 'USD']);
-
-        $this->assertNull($structuredCol->dbTypecast(null));
-        $this->assertSame($expression, $structuredCol->dbTypecast($expression));
-        $this->assertSame($structuredExpression, $structuredCol->dbTypecast($structuredExpression));
-        $this->assertEquals($structuredExpression, $structuredCol->dbTypecast(['value' => 1, 'currency_code' => 'USD']));
-    }
-
-    public function testStructuredColumnPhpTypecast(): void
-    {
-        $structuredCol = new StructuredColumn();
-        $columns = [
-            'int' => ColumnBuilder::integer(),
-            'bool' => ColumnBuilder::boolean(),
-        ];
-
-        $this->assertNull($structuredCol->phpTypecast(null));
-        $this->assertNull($structuredCol->phpTypecast(1));
-        $this->assertSame(
-            ['int' => '1', 'bool' => '1'],
-            $structuredCol->phpTypecast(['int' => '1', 'bool' => '1'])
-        );
-
-        $structuredCol->columns($columns);
-        $this->assertSame(
-            ['int' => 1, 'bool' => true],
-            $structuredCol->phpTypecast(['int' => '1', 'bool' => '1'])
-        );
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Schema\Column\StructuredColumn::getParser() is not supported. Use concrete DBMS implementation.'
-        );
-
-        $structuredCol->phpTypecast('(1,true)');
     }
 }

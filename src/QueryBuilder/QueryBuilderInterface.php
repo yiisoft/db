@@ -12,6 +12,7 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
+use Yiisoft\Db\Schema\SchemaInterface;
 
 /**
  * Defines the common interface to be implemented by query builder classes.
@@ -63,6 +64,11 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * @throws InvalidArgumentException When expression building isn't supported by this QueryBuilder.
      */
     public function getExpressionBuilder(ExpressionInterface $expression): object;
+
+    /**
+     * Returns {@see SchemaInterface} instance that provides information about the database schema.
+     */
+    public function getSchema(): SchemaInterface;
 
     /**
      * Returns {@see ServerInfoInterface} instance that provides information about the database server.
