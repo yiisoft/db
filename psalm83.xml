@@ -2,6 +2,7 @@
 <psalm
   errorLevel="1"
   ensureOverrideAttribute="false"
+  findUnusedCode="false"
   findUnusedBaselineEntry="true"
   findUnusedVariablesAndParams="true"
   findUnusedPsalmSuppress="true"
@@ -18,5 +19,6 @@
     <MixedAssignment errorLevel="suppress" />
     <RiskyTruthyFalsyComparison errorLevel="suppress" />
     <MissingClassConstType errorLevel="suppress" />
+    <ClassMustBeFinal errorLevel="suppress" />
   </issueHandlers>
 </psalm>

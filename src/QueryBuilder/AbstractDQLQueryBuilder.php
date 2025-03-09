@@ -6,6 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamBuilder;
+use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -341,13 +342,15 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                         . $this->quoter->quoteColumnName($i);
                 }
             } elseif (!is_string($column)) {
+                /** @psalm-suppress PossiblyInvalidArgument */
                 $columns[$i] = match (gettype($column)) {
-                    'double' => DbStringHelper::normalizeFloat($column),
-                    'boolean' => $column ? 'TRUE' : 'FALSE',
+                    GettypeResult::DOUBLE => DbStringHelper::normalizeFloat($column),
+                    GettypeResult::BOOLEAN => $column ? 'TRUE' : 'FALSE',
                     default => (string) $column,
                 };
 
                 if (is_string($i)) {
+                    /** @psalm-var string $columns[$i] */
                     $columns[$i] .= ' AS ' . $this->quoter->quoteColumnName($i);
                 }
             } elseif (is_string($i) && $i !== $column) {

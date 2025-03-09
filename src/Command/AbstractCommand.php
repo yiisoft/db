@@ -389,7 +389,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function insertWithReturningPks(string $table, array $columns): bool|array
+    public function insertWithReturningPks(string $table, array $columns): array|false
     {
         $params = [];
 
