@@ -33,9 +33,9 @@ use function array_filter;
 use function array_merge;
 use function array_shift;
 use function ctype_digit;
-use function gettype;
 use function implode;
 use function is_array;
+use function is_bool;
 use function is_int;
 use function is_string;
 use function ltrim;
@@ -342,12 +342,11 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                         . $this->quoter->quoteColumnName($i);
                 }
             } elseif (!is_string($column)) {
-                /** @psalm-suppress PossiblyInvalidArgument */
-                $columns[$i] = match (gettype($column)) {
-                    GettypeResult::DOUBLE => DbStringHelper::normalizeFloat($column),
-                    GettypeResult::BOOLEAN => $column ? 'TRUE' : 'FALSE',
-                    default => (string) $column,
-                };
+                if (is_bool($column)) {
+                    $columns[$i] = $column ? 'TRUE' : 'FALSE';
+                } else {
+                    $columns[$i] = (string) $column;
+                }
 
                 if (is_string($i)) {
                     /** @psalm-var string $columns[$i] */
