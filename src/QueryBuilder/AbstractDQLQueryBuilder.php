@@ -6,7 +6,6 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamBuilder;
-use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -20,7 +19,6 @@ use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\JsonExpressionBuilder;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\StructuredExpressionBuilder;
-use Yiisoft\Db\Helper\DbStringHelper;
 use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
