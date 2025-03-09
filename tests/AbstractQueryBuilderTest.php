@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use Closure;
 use JsonException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -1781,21 +1782,38 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    public function testDropTable(): void
+    public static function dataDropTable(): iterable
+    {
+        yield ['DROP TABLE [[customer]]', null, null];
+        yield ['DROP TABLE IF EXISTS [[customer]]', true, null];
+        yield ['DROP TABLE [[customer]]', false, null];
+        yield ['DROP TABLE [[customer]] CASCADE', null, true];
+        yield ['DROP TABLE [[customer]]', null, false];
+        yield ['DROP TABLE [[customer]]', false, false];
+        yield ['DROP TABLE IF EXISTS [[customer]] CASCADE', true, true];
+        yield ['DROP TABLE IF EXISTS [[customer]]', true, false];
+        yield ['DROP TABLE [[customer]] CASCADE', false, true];
+    }
+
+    #[DataProvider('dataDropTable')]
+    public function testDropTable(string $expected, ?bool $ifExists, ?bool $cascade): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
 
-        $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                DROP TABLE [[customer]]
-                SQL,
-                $db->getDriverName(),
-            ),
-            $qb->dropTable('customer'),
-        );
+        if ($ifExists === null && $cascade === null) {
+            $sql = $qb->dropTable('customer');
+        } elseif ($ifExists === null) {
+            $sql = $qb->dropTable('customer', cascade: $cascade);
+        } elseif ($cascade === null) {
+            $sql = $qb->dropTable('customer', ifExists: $ifExists);
+        } else {
+            $sql = $qb->dropTable('customer', ifExists: $ifExists, cascade: $cascade);
+        }
+
+        $expectedSql = DbHelper::replaceQuotes($expected, $db->getDriverName());
+
+        $this->assertSame($expectedSql, $sql);
     }
 
     public function testDropUnique(): void

@@ -963,4 +963,17 @@ class CommandProvider
             [ColumnBuilder::string(100)],
         ];
     }
+
+    public static function dropTable(): iterable
+    {
+        yield ['DROP TABLE [[table]]', null, null];
+        yield ['DROP TABLE IF EXISTS [[table]]', true, null];
+        yield ['DROP TABLE [[table]]', false, null];
+        yield ['DROP TABLE [[table]] CASCADE', null, true];
+        yield ['DROP TABLE [[table]]', null, false];
+        yield ['DROP TABLE [[table]]', false, false];
+        yield ['DROP TABLE IF EXISTS [[table]] CASCADE', true, true];
+        yield ['DROP TABLE IF EXISTS [[table]]', true, false];
+        yield ['DROP TABLE [[table]] CASCADE', false, true];
+    }
 }
