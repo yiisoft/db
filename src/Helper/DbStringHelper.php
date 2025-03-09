@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Helper;
 
-use function addslashes;
 use function is_float;
 use function mb_strrpos;
 use function mb_strtolower;
