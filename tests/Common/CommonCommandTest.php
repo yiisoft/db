@@ -936,6 +936,78 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
+    public function testDropTableIfExistsWithExistTable(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{testDropTable}}') !== null) {
+            $command->dropTable('{{testDropTable}}')->execute();
+        }
+
+        $command->createTable('{{testDropTable}}', ['id' => PseudoType::PK, 'foo' => 'integer'])->execute();
+        $this->assertNotNull($schema->getTableSchema('{{testDropTable}}', true));
+
+        $command->dropTable('{{testDropTable}}', ifExists: true)->execute();
+        $this->assertNull($schema->getTableSchema('{{testDropTable}}', true));
+
+        $db->close();
+    }
+
+    public function testDropTableIfExistsWithNonExistTable(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{testDropTable}}') !== null) {
+            $command->dropTable('{{testDropTable}}')->execute();
+        }
+
+        $command->dropTable('{{testDropTable}}', ifExists: true)->execute();
+        $this->assertNull($schema->getTableSchema('{{testDropTable}}', true));
+
+        $db->close();
+    }
+
+    public function testDropTableCascade(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+        $schema = $db->getSchema();
+
+        if ($schema->getTableSchema('{{testCascadeDropTable}}') !== null) {
+            $command->dropTable('{{testCascadeDropTable}}')->execute();
+        }
+        if ($schema->getTableSchema('{{testCascadeDropTable2}}') !== null) {
+            $command->dropTable('{{testCascadeDropTable2}}')->execute();
+        }
+
+        $command->createTable(
+            '{{testCascadeDropTable}}',
+            ['id' => 'integer not null unique', 'foo' => 'integer'],
+        )->execute();
+        $this->assertNotNull($schema->getTableSchema('{{testCascadeDropTable}}', true));
+
+        $command->createTable(
+            '{{testCascadeDropTable2}}',
+            ['id' => 'integer not null unique', 'foreign_id' => 'integer'],
+        )->execute();
+        $this->assertNotNull($schema->getTableSchema('{{testCascadeDropTable2}}', true));
+
+        $command
+            ->addForeignKey('{{testCascadeDropTable2}}', 'fgk', 'foreign_id', '{{testCascadeDropTable}}', 'id')
+            ->execute();
+        $this->assertNotEmpty($schema->getTableForeignKeys('{{testCascadeDropTable2}}', true));
+
+        $command->dropTable('{{testCascadeDropTable}}', cascade: true)->execute();
+        $this->assertNull($schema->getTableSchema('{{testCascadeDropTable}}', true));
+        $this->assertEmpty($schema->getTableForeignKeys('{{testCascadeDropTable2}}', true));
+
+        $db->close();
+    }
+
     /**
      * @throws Exception
      * @throws InvalidConfigException
