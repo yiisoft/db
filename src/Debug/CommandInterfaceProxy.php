@@ -316,7 +316,7 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress MixedInferredReturnType, MixedReturnStatement
+     * @psalm-suppress MixedReturnStatement
      */
     public function insertWithReturningPks(string $table, array $columns): bool|array
     {

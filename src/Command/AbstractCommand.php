@@ -359,6 +359,7 @@ abstract class AbstractCommand implements CommandInterface
 
         /** @var string[] $params */
         if (!isset($params[0])) {
+            /** @var string */
             return preg_replace_callback(
                 '#(:\w+)#',
                 static fn (array $matches): string => $params[$matches[1]] ?? $matches[1],
