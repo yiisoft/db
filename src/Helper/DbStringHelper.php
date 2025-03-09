@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Helper;
 
-use function addslashes;
 use function is_float;
 use function mb_strrpos;
 use function mb_strtolower;
@@ -75,6 +74,8 @@ final class DbStringHelper
         }
 
         $value = str_replace([' ', ','], ['', '.'], $value);
+
+        /** @var string */
         return preg_replace('/\.(?=.*\.)/', '', $value);
     }
 
@@ -89,8 +90,8 @@ final class DbStringHelper
      */
     public static function pascalCaseToId(string $input): string
     {
-        $separator = '_';
-        $result = preg_replace('/(?<=\p{L})(?<!\p{Lu})(\p{Lu})/u', addslashes($separator) . '\1', $input);
-        return mb_strtolower(trim($result, $separator));
+        /** @var string $result */
+        $result = preg_replace('/(?<=\p{L})(?<!\p{Lu})(\p{Lu})/u', '_\1', $input);
+        return mb_strtolower(trim($result, '_'));
     }
 }

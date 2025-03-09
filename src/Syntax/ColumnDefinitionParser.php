@@ -111,20 +111,24 @@ class ColumnDefinitionParser
             $extra = str_replace($matches[0], '', $extra);
         }
 
+        /** @var string $extra */
         $extra = preg_replace('/\s*\bUNSIGNED\b/i', '', $extra, 1, $count);
         if ($count > 0) {
             $info['unsigned'] = true;
         }
 
+        /** @var string $extra */
         $extra = preg_replace('/\s*\bUNIQUE\b/i', '', $extra, 1, $count);
         if ($count > 0) {
             $info['unique'] = true;
         }
 
+        /** @var string $extra */
         $extra = preg_replace('/\s*\bNOT\s+NULL\b/i', '', $extra, 1, $count);
         if ($count > 0) {
             $info['notNull'] = true;
         } else {
+            /** @var string $extra */
             $extra = preg_replace('/\s*\bNULL\b/i', '', $extra, 1, $count);
             if ($count > 0) {
                 $info['notNull'] = false;
