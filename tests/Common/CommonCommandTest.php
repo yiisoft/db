@@ -977,11 +977,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $schema = $db->getSchema();
 
-        if ($schema->getTableSchema('{{testCascadeDropTable}}') !== null) {
-            $command->dropTable('{{testCascadeDropTable}}')->execute();
-        }
         if ($schema->getTableSchema('{{testCascadeDropTable2}}') !== null) {
             $command->dropTable('{{testCascadeDropTable2}}')->execute();
+        }
+        if ($schema->getTableSchema('{{testCascadeDropTable}}') !== null) {
+            $command->dropTable('{{testCascadeDropTable}}')->execute();
         }
 
         $command->createTable(
