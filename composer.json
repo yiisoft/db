@@ -95,7 +95,6 @@
     },
     "config": {
         "sort-packages": true,
-        "bump-after-update": "dev",
         "allow-plugins": {
             "infection/extension-installer": true,
             "composer/package-versions-deprecated": true,
