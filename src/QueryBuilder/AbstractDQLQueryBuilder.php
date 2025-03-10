@@ -19,7 +19,6 @@ use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\JsonExpressionBuilder;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\StructuredExpressionBuilder;
-use Yiisoft\Db\Helper\DbStringHelper;
 use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
@@ -32,9 +31,9 @@ use function array_filter;
 use function array_merge;
 use function array_shift;
 use function ctype_digit;
-use function gettype;
 use function implode;
 use function is_array;
+use function is_bool;
 use function is_int;
 use function is_string;
 use function ltrim;
@@ -341,13 +340,14 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                         . $this->quoter->quoteColumnName($i);
                 }
             } elseif (!is_string($column)) {
-                $columns[$i] = match (gettype($column)) {
-                    'double' => DbStringHelper::normalizeFloat($column),
-                    'boolean' => $column ? 'TRUE' : 'FALSE',
-                    default => (string) $column,
-                };
+                if (is_bool($column)) {
+                    $columns[$i] = $column ? 'TRUE' : 'FALSE';
+                } else {
+                    $columns[$i] = (string) $column;
+                }
 
                 if (is_string($i)) {
+                    /** @psalm-var string $columns[$i] */
                     $columns[$i] .= ' AS ' . $this->quoter->quoteColumnName($i);
                 }
             } elseif (is_string($i) && $i !== $column) {

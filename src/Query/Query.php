@@ -8,6 +8,7 @@ use Closure;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -106,6 +107,7 @@ class Query implements QueryInterface
         if ($columns instanceof ExpressionInterface) {
             $columns = [$columns];
         } elseif (!is_array($columns)) {
+            /** @var string[] */
             $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
         }
 
@@ -372,15 +374,15 @@ class Query implements QueryInterface
 
     public function from(array|ExpressionInterface|string $tables): static
     {
-        if ($tables instanceof ExpressionInterface) {
-            $tables = [$tables];
-        }
-
-        if (is_string($tables)) {
-            $tables = preg_split('/\s*,\s*/', trim($tables), -1, PREG_SPLIT_NO_EMPTY);
-        }
-
-        $this->from = $tables;
+        /**
+         * @var array
+         * @psalm-suppress PossiblyInvalidArgument
+         */
+        $this->from = match (gettype($tables)) {
+            GettypeResult::ARRAY => $tables,
+            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($tables), -1, PREG_SPLIT_NO_EMPTY),
+            default => [$tables],
+        };
 
         return $this;
     }
@@ -467,12 +469,15 @@ class Query implements QueryInterface
 
     public function groupBy(array|string|ExpressionInterface $columns): static
     {
-        if ($columns instanceof ExpressionInterface) {
-            $columns = [$columns];
-        } elseif (!is_array($columns)) {
-            $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
-        }
-        $this->groupBy = $columns;
+        /**
+         * @var array
+         * @psalm-suppress PossiblyInvalidArgument
+         */
+        $this->groupBy = match (gettype($columns)) {
+            GettypeResult::ARRAY => $columns,
+            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
+            default => [$columns],
+        };
 
         return $this;
     }
@@ -848,6 +853,7 @@ class Query implements QueryInterface
             return $columns;
         }
 
+        /** @var string[] */
         $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
         $result = [];
 
@@ -870,9 +876,13 @@ class Query implements QueryInterface
      */
     private function normalizeSelect(array|bool|float|int|string|ExpressionInterface $columns): array
     {
+        /**
+         * @var SelectValue
+         * @psalm-suppress InvalidArgument
+         */
         $columns = match (gettype($columns)) {
-            'array' => $columns,
-            'string' => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
+            GettypeResult::ARRAY => $columns,
+            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
             default => [$columns],
         };
 

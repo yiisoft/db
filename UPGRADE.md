@@ -170,3 +170,5 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change `Quoter::quoteValue()` parameter type and return type from `mixed` to `string`;
 - Move `DataType` class to `Yiisoft\Db\Constant` namespace;
 - Change `DbArrayHelper::index()` parameter names and allow to accept `Closure` for `$indexBy` parameter; 
+- Change return type of `CommandInterface::insertWithReturningPks()` method to `array|false`;
+- Change return type of `AbstractCommand::insertWithReturningPks()` method to `array|false`;

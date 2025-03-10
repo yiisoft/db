@@ -22,7 +22,7 @@ interface QuoterInterface
      *
      * @throws InvalidArgumentException
      *
-     * @psalm-return array<array-key, ExpressionInterface|string>
+     * @psalm-return array<string, ExpressionInterface|string>
      */
     public function cleanUpTableNames(array $tableNames): array;
 
