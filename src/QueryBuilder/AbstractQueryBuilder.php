@@ -337,9 +337,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->dropPrimaryKey($table, $name);
     }
 
-    public function dropTable(string $table): string
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): string
     {
-        return $this->ddlBuilder->dropTable($table);
+        return $this->ddlBuilder->dropTable($table, $ifExists, $cascade);
     }
 
     public function dropUnique(string $table, string $name): string

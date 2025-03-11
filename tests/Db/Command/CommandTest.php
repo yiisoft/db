@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Command;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
+use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -464,22 +466,25 @@ final class CommandTest extends AbstractCommandTest
         );
     }
 
-    public function testDropTable(): void
+    #[DataProviderExternal(CommandProvider::class, 'dropTable')]
+    public function testDropTable(string $expected, ?bool $ifExists, ?bool $cascade): void
     {
         $db = $this->getConnection();
-
         $command = $db->createCommand();
-        $sql = $command->dropTable('table')->getSql();
 
-        $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                DROP TABLE [[table]]
-                SQL,
-                $db->getDriverName(),
-            ),
-            $sql,
-        );
+        if ($ifExists === null && $cascade === null) {
+            $command = $command->dropTable('table');
+        } elseif ($ifExists === null) {
+            $command = $command->dropTable('table', cascade: $cascade);
+        } elseif ($cascade === null) {
+            $command = $command->dropTable('table', ifExists: $ifExists);
+        } else {
+            $command = $command->dropTable('table', ifExists: $ifExists, cascade: $cascade);
+        }
+
+        $expectedSql = DbHelper::replaceQuotes($expected, $db->getDriverName());
+
+        $this->assertSame($expectedSql, $command->getSql());
     }
 
     public function testDropUnique(): void

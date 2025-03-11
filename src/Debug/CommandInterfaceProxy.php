@@ -252,7 +252,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
-    public function dropTable(string $table): static
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
