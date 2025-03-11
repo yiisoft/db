@@ -63,6 +63,8 @@
 - Enh #929: Refactor array, structured and JSON column type expressions and expression builders (@Tigrov)
 - Enh #929: Implement lazy arrays for array, structured and JSON column types (@Tigrov)
 - Bug #933: Explicitly mark nullable parameters (@vjik)
+- Chg #911: Change supported PHP versions to `8.1 - 8.4` (@Tigrov)
+- Enh #911: Minor refactoring (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
