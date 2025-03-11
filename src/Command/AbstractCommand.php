@@ -306,9 +306,9 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropTable(string $table): static
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): static
     {
-        $sql = $this->getQueryBuilder()->dropTable($table);
+        $sql = $this->getQueryBuilder()->dropTable($table, $ifExists, $cascade);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 

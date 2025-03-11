@@ -39,6 +39,8 @@
 - Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #877: Separate column type constants (@Tigrov)
 - New #878: Realize `ColumnBuilder` class (@Tigrov)
+- New #773: Add parameters `$ifExists` and `$cascade` to `CommandInterface::dropTable()` and
+ `DDLQueryBuilderInterface::dropTable()` methods (@vjik)
 - New #878, #900, #914, #922: Implement `ColumnDefinitionParser` class (@Tigrov)
 - Enh #881: Refactor `ColumnSchemaInterface` and `AbstractColumnSchema` (@Tigrov)
 - New #882: Move `ArrayColumnSchema` and `StructuredColumnSchema` classes from `db-pgsql` package (@Tigrov)
