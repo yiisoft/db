@@ -25,6 +25,7 @@ final class LikeCondition implements LikeConditionInterface
         private readonly string|ExpressionInterface $column,
         private readonly string $operator,
         private readonly array|int|string|Iterator|ExpressionInterface|null $value,
+        public readonly ?bool $caseSensitive = null,
     ) {
     }
 
@@ -68,6 +69,7 @@ final class LikeCondition implements LikeConditionInterface
             self::validateColumn($operator, $operands[0]),
             $operator,
             self::validateValue($operator, $operands[1]),
+            isset($operands[2]) ? (bool) $operands[2] : null,
         );
 
         if (array_key_exists(2, $operands) && (is_array($operands[2]) || $operands[2] === null)) {

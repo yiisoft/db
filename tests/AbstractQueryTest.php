@@ -274,22 +274,6 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame($condition, $query->getHaving());
 
-        $query->andFilterHaving(['ilike', 'id', '']);
-
-        $this->assertSame($condition, $query->getHaving());
-
-        $query->andFilterHaving(['or ilike', 'id', '']);
-
-        $this->assertSame($condition, $query->getHaving());
-
-        $query->andFilterHaving(['not ilike', 'id', '   ']);
-
-        $this->assertSame($condition, $query->getHaving());
-
-        $query->andFilterHaving(['or not ilike', 'id', null]);
-
-        $this->assertSame($condition, $query->getHaving());
-
         $query->andFilterHaving(['or', ['eq', 'id', null], ['eq', 'id', []]]);
 
         $this->assertSame($condition, $query->getHaving());
@@ -373,22 +357,6 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame($condition, $query->getWhere());
 
         $query->andFilterWhere(['or not like', 'id', null]);
-
-        $this->assertSame($condition, $query->getWhere());
-
-        $query->andFilterWhere(['ilike', 'id', '']);
-
-        $this->assertSame($condition, $query->getWhere());
-
-        $query->andFilterWhere(['or ilike', 'id', '']);
-
-        $this->assertSame($condition, $query->getWhere());
-
-        $query->andFilterWhere(['not ilike', 'id', '   ']);
-
-        $this->assertSame($condition, $query->getWhere());
-
-        $query->andFilterWhere(['or not ilike', 'id', null]);
 
         $this->assertSame($condition, $query->getWhere());
 

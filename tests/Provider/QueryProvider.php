@@ -17,12 +17,6 @@ class QueryProvider
             [['or like', 'name', []],  null],
             [['or not like', 'name', []], null],
 
-            /* ilike */
-            [['ilike', 'name', []], null],
-            [['not ilike', 'name', []], null],
-            [['or ilike', 'name', []],  null],
-            [['or not ilike', 'name', []], null],
-
             /* not */
             [['not', ''], null],
 
