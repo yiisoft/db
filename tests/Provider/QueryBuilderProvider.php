@@ -862,9 +862,50 @@ class QueryBuilderProvider
                 new LikeCondition('name', 'or not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
                 '[[name]] NOT LIKE CONCAT("test", name, "%") OR [[name]] NOT LIKE :qp0', [':qp0' => '%\\\ab\_c%'],
             ],
+            [
+                new LikeCondition('name', 'ilike', new Expression('CONCAT("test", name, "%")')),
+                '[[name]] ILIKE CONCAT("test", name, "%")',
+                [],
+            ],
+            [
+                new LikeCondition('name', 'not ilike', new Expression('CONCAT("test", name, "%")')),
+                '[[name]] NOT ILIKE CONCAT("test", name, "%")',
+                [],
+            ],
+            [
+                new LikeCondition('name', 'or ilike', new Expression('CONCAT("test", name, "%")')),
+                '[[name]] ILIKE CONCAT("test", name, "%")',
+                [],
+            ],
+            [
+                new LikeCondition('name', 'or not ilike', new Expression('CONCAT("test", name, "%")')),
+                '[[name]] NOT ILIKE CONCAT("test", name, "%")',
+                [],
+            ],
+            [
+                new LikeCondition('name', 'ilike', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                '[[name]] ILIKE CONCAT("test", name, "%") AND [[name]] ILIKE :qp0',
+                [':qp0' => '%\\\ab\_c%'],
+            ],
+            [
+                new LikeCondition('name', 'not ilike', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                '[[name]] NOT ILIKE CONCAT("test", name, "%") AND [[name]] NOT ILIKE :qp0',
+                [':qp0' => '%\\\ab\_c%'],
+            ],
+            [
+                new LikeCondition('name', 'or ilike', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                '[[name]] ILIKE CONCAT("test", name, "%") OR [[name]] ILIKE :qp0', [':qp0' => '%\\\ab\_c%'],
+            ],
+            [
+                new LikeCondition('name', 'or not ilike', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
+                '[[name]] NOT ILIKE CONCAT("test", name, "%") OR [[name]] NOT ILIKE :qp0', [':qp0' => '%\\\ab\_c%'],
+            ],
 
             /* like with expression as columnName */
             [['like', new Expression('name'), 'teststring'], 'name LIKE :qp0', [':qp0' => '%teststring%']],
+
+            /* ilike with expression as columnName */
+            [['ilike', new Expression('name'), 'teststring'], 'name ILIKE :qp0', [':qp0' => '%teststring%']],
         ];
 
         /* adjust dbms specific escaping */

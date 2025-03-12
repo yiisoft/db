@@ -8,7 +8,7 @@ use Iterator;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
 /**
- * Represents a condition that's based on `LIKE` operator.
+ * Represents a condition that's based on `LIKE` or `ILIKE` operator.
  */
 interface LikeConditionInterface extends ConditionInterface
 {
