@@ -22,9 +22,9 @@ final class LikeCondition implements LikeConditionInterface
     protected array|null $escapingReplacements = [];
 
     public function __construct(
-        private string|ExpressionInterface $column,
-        private string $operator,
-        private array|int|string|Iterator|ExpressionInterface|null $value
+        private readonly string|ExpressionInterface $column,
+        private readonly string $operator,
+        private readonly array|int|string|Iterator|ExpressionInterface|null $value,
     ) {
     }
 
