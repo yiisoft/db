@@ -9,6 +9,10 @@ on:
 
 name: rector
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   rector:
     uses: yiisoft/actions/.github/workflows/rector.yml@master

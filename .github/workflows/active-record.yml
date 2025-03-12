@@ -14,6 +14,10 @@ on:
 
 name: active-record
 
+concurrency:
+  group: phpunit-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: ActiveRecord

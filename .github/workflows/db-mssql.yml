@@ -18,6 +18,10 @@ on:
 
 name: db-mssql
 
+concurrency:
+  group: phpunit-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql.server }}

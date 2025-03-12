@@ -18,6 +18,10 @@ on:
 
 name: db-pgsql
 
+concurrency:
+  group: phpunit-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: PHP ${{ matrix.php }}-pgsql-${{ matrix.pgsql }}
