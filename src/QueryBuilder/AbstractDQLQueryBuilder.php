@@ -6,6 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamBuilder;
+use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -30,7 +31,7 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use function array_filter;
 use function array_merge;
 use function array_shift;
-use function ctype_digit;
+use function gettype;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -263,15 +264,17 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function buildLimit(ExpressionInterface|int|null $limit, ExpressionInterface|int|null $offset): string
     {
-        $sql = '';
+        $sql = match (gettype($limit)) {
+            GettypeResult::NULL => '',
+            GettypeResult::INTEGER => 'LIMIT ' . $limit,
+            default => 'LIMIT ' . $this->buildExpression($limit),
+        };
 
-        if ($this->hasLimit($limit)) {
-            $sql = 'LIMIT ' . ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string) $limit);
-        }
-
-        if ($this->hasOffset($offset)) {
-            $sql .= ' OFFSET ' . ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string) $offset);
-        }
+        $sql .= match (gettype($offset)) {
+            GettypeResult::NULL => '',
+            GettypeResult::INTEGER => ' OFFSET ' . $offset,
+            default => ' OFFSET ' . $this->buildExpression($offset),
+        };
 
         return ltrim($sql);
     }
@@ -550,30 +553,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         }
 
         return false;
-    }
-
-    /**
-     * Checks to see if the given limit is effective.
-     *
-     * @param mixed $limit The given limit.
-     *
-     * @return bool Whether the limit is effective.
-     */
-    protected function hasLimit(mixed $limit): bool
-    {
-        return ($limit instanceof ExpressionInterface) || ctype_digit((string) $limit);
-    }
-
-    /**
-     * Checks to see if the given offset is effective.
-     *
-     * @param mixed $offset The given offset.
-     *
-     * @return bool Whether the offset is effective.
-     */
-    protected function hasOffset(mixed $offset): bool
-    {
-        return ($offset instanceof ExpressionInterface) || (ctype_digit((string)$offset) && (string)$offset !== '0');
     }
 
     /**
