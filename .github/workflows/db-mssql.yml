@@ -18,6 +18,10 @@ on:
 
 name: db-mssql
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql.server }}

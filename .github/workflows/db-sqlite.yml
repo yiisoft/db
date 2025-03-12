@@ -18,6 +18,10 @@ on:
 
 name: db-sqlite
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: PHP ${{ matrix.php }}-sqlite-${{ matrix.os }}
