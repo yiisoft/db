@@ -272,7 +272,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
         $sql .= match (gettype($offset)) {
             GettypeResult::NULL => '',
-            GettypeResult::INTEGER => ' OFFSET ' . $offset,
+            GettypeResult::INTEGER => $offset > 0 ? ' OFFSET ' . $offset : '',
             default => ' OFFSET ' . $this->buildExpression($offset),
         };
 
