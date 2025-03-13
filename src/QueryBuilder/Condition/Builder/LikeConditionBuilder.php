@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
+use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -106,7 +108,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
             return $this->queryBuilder->buildExpression($value, $params);
         }
         return $this->queryBuilder->bindParam(
-            $escape === null ? $value : ('%' . strtr($value, $escape) . '%'),
+            new Param($escape === null ? $value : ('%' . strtr($value, $escape) . '%'), DataType::STRING),
             $params
         );
     }
