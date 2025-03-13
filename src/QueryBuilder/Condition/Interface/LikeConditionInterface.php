@@ -44,5 +44,5 @@ interface LikeConditionInterface extends ConditionInterface
      */
     public function getValue(): array|int|string|Iterator|ExpressionInterface|null;
 
-    public function isCaseSensitive(): ?bool;
+    public function getCaseSensitive(): ?bool;
 }

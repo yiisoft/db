@@ -49,7 +49,7 @@ final class LikeCondition implements LikeConditionInterface
         return $this->value;
     }
 
-    public function isCaseSensitive(): ?bool
+    public function getCaseSensitive(): ?bool
     {
         return $this->caseSensitive;
     }

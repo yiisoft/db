@@ -84,29 +84,57 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $db->close();
     }
 
-    public static function dataLike(): iterable
-    {
-        yield 'sameCase-defaultCaseSensitive' => ['user1', ['like', 'name', 'user1']];
-        yield 'sameCase-caseSensitive' => ['user1', ['like', 'name', 'user1', true]];
-        yield 'sameCase-caseInsensitive' => ['user1', ['like', 'name', 'user1', false]];
-        yield 'otherCase-caseSensitive' => [false, ['like', 'name', 'USER1', true]];
-        yield 'otherCase-caseInsensitive' => ['user1', ['like', 'name', 'USER1', false]];
-    }
-
-    #[DataProvider('dataLike')]
-    public function testLike(mixed $expected, array $where): void
+    public function testLikeDefaultCaseSensitive(): void
     {
         $db = $this->getConnection(true);
 
-        $query = (new Query($db))->select('name')->from('customer')->where($where);
+        $result = (new Query($db))
+            ->select('name')
+            ->from('customer')
+            ->where(['like', 'name', 'user1'])
+            ->scalar();
 
-        if ($expected instanceof Exception) {
-            $this->expectException($expected::class);
-            $this->expectExceptionMessage($expected->getMessage());
-            $query->scalar();
-            return;
-        }
 
-        $this->assertSame($expected, $query->scalar());
+        $this->assertSame('user1', $result);
+    }
+
+    public static function dataLikeCaseSensitive(): iterable
+    {
+        yield 'sameCase' => ['user1', 'user1'];
+        yield 'otherCase' => [false, 'USER1'];
+    }
+
+    #[DataProvider('dataLikeCaseSensitive')]
+    public function testLikeCaseSensitive(mixed $expected, string $value): void
+    {
+        $db = $this->getConnection(true);
+
+        $result = (new Query($db))
+            ->select('name')
+            ->from('customer')
+            ->where(['like', 'name', $value, true])
+            ->scalar();
+
+        $this->assertSame($expected, $result);
+    }
+
+    public static function dataLikeCaseInsensitive(): iterable
+    {
+        yield 'sameCase' => ['user1', 'user1'];
+        yield 'otherCase' => ['user1', 'USER1'];
+    }
+
+    #[DataProvider('dataLikeCaseInsensitive')]
+    public function testLikeCaseInsensitive(mixed $expected, string $value): void
+    {
+        $db = $this->getConnection(true);
+
+        $result = (new Query($db))
+            ->select('name')
+            ->from('customer')
+            ->where(['like', 'name', $value, false])
+            ->scalar();
+
+        $this->assertSame($expected, $result);
     }
 }
