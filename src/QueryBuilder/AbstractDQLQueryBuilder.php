@@ -6,7 +6,6 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamBuilder;
-use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -31,7 +30,6 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use function array_filter;
 use function array_merge;
 use function array_shift;
-use function gettype;
 use function implode;
 use function is_array;
 use function is_bool;
