@@ -25,7 +25,7 @@ final class LikeCondition implements LikeConditionInterface
         private readonly string|ExpressionInterface $column,
         private readonly string $operator,
         private readonly array|int|string|Iterator|ExpressionInterface|null $value,
-        public readonly ?bool $caseSensitive = null,
+        private readonly ?bool $caseSensitive = null,
     ) {
     }
 
@@ -47,6 +47,11 @@ final class LikeCondition implements LikeConditionInterface
     public function getValue(): array|int|string|Iterator|ExpressionInterface|null
     {
         return $this->value;
+    }
+
+    public function isCaseSensitive(): ?bool
+    {
+        return $this->caseSensitive;
     }
 
     public function setEscapingReplacements(array|null $escapingReplacements): void

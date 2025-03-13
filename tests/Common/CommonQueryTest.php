@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\AbstractQueryTest;
@@ -80,5 +82,31 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $this->assertEquals(1, $query->scalar());
 
         $db->close();
+    }
+
+    public static function dataLike(): iterable
+    {
+        yield 'sameCase-defaultCaseSensitive' => ['user1', ['like', 'name', 'user1']];
+        yield 'sameCase-caseSensitive' => ['user1', ['like', 'name', 'user1', true]];
+        yield 'sameCase-caseInsensitive' => ['user1', ['like', 'name', 'user1', false]];
+        yield 'otherCase-caseSensitive' => [false, ['like', 'name', 'USER1', true]];
+        yield 'otherCase-caseInsensitive' => ['user1', ['like', 'name', 'USER1', false]];
+    }
+
+    #[DataProvider('dataLike')]
+    public function testLike(mixed $expected, array $where): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))->select('name')->from('customer')->where($where);
+
+        if ($expected instanceof Exception) {
+            $this->expectException($expected::class);
+            $this->expectExceptionMessage($expected->getMessage());
+            $query->scalar();
+            return;
+        }
+
+        $this->assertSame($expected, $query->scalar());
     }
 }
