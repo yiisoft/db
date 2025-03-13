@@ -49,7 +49,6 @@
         "yiisoft/cache-file": "^3.2",
         "yiisoft/di": "^1.3",
         "yiisoft/event-dispatcher": "^1.1",
-        "yiisoft/json": "^1.0",
         "yiisoft/log": "^2.1",
         "yiisoft/var-dumper": "^1.7",
         "yiisoft/yii-debug": "dev-master"
