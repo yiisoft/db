@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
-use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
