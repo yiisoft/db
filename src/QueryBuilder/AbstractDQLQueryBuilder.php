@@ -264,17 +264,17 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function buildLimit(ExpressionInterface|int|null $limit, ExpressionInterface|int|null $offset): string
     {
-        $sql = match (gettype($limit)) {
-            GettypeResult::NULL => '',
-            GettypeResult::INTEGER => 'LIMIT ' . $limit,
-            default => 'LIMIT ' . $this->buildExpression($limit),
-        };
+        $sql = '';
 
-        $sql .= match (gettype($offset)) {
-            GettypeResult::NULL => '',
-            GettypeResult::INTEGER => $offset > 0 ? ' OFFSET ' . $offset : '',
-            default => ' OFFSET ' . $this->buildExpression($offset),
-        };
+        if ($limit !== null) {
+            $sql = 'LIMIT '
+                . ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string) $limit);
+        }
+
+        if (!empty($offset)) {
+            $sql .= ' OFFSET '
+                . ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string) $offset);
+        }
 
         return ltrim($sql);
     }
