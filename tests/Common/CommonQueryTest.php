@@ -111,7 +111,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $result = (new Query($db))
             ->select('name')
             ->from('customer')
-            ->where(['like', 'name', $value, true])
+            ->where(['like', 'name', $value, 'caseSensitive' => true])
             ->scalar();
 
         $this->assertSame($expected, $result);
@@ -131,7 +131,7 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $result = (new Query($db))
             ->select('name')
             ->from('customer')
-            ->where(['like', 'name', $value, false])
+            ->where(['like', 'name', $value, 'caseSensitive' => false])
             ->scalar();
 
         $this->assertSame($expected, $result);
