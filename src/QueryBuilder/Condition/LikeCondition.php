@@ -74,7 +74,7 @@ final class LikeCondition implements LikeConditionInterface
             self::validateColumn($operator, $operands[0]),
             $operator,
             self::validateValue($operator, $operands[1]),
-            isset($operands[2]) ? (bool) $operands[2] : null,
+            isset($operands['caseSensitive']) ? (bool) $operands['caseSensitive'] : null,
         );
 
         if (array_key_exists(2, $operands) && (is_array($operands[2]) || $operands[2] === null)) {
