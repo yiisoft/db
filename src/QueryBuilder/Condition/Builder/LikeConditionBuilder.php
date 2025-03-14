@@ -109,11 +109,11 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     /**
      * Prepare value to use in SQL.
      *
-     * @return string
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
+     * @return string
      */
     protected function preparePlaceholderName(
         string|ExpressionInterface $value,
