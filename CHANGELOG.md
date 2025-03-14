@@ -65,8 +65,9 @@
 - Bug #933: Explicitly mark nullable parameters (@vjik)
 - Chg #911: Change supported PHP versions to `8.1 - 8.4` (@Tigrov)
 - Enh #911: Minor refactoring (@Tigrov)
-- Chg #938, #936: Remove `ext-json`, `ext-ctype` from `require` section of `composer.json` (@Tigrov) 
+- Chg #938, #936, #937: Remove `ext-json`, `ext-ctype`, `ext-mbstring` from `require` section of `composer.json` (@Tigrov) 
 - Chg #936: Remove `hasLimit()` and `hasOffset()` methods from `AbstractDQLQueryBuilder` class (@Tigrov)
+- Chg #937: Remove `baseName()` and `pascalCaseToId()` methods from `DbStringHelper` (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

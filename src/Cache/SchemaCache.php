@@ -15,8 +15,8 @@ use function is_int;
 use function is_string;
 use function json_encode;
 use function json_last_error_msg;
-use function mb_strlen;
 use function md5;
+use function strlen;
 use function strpbrk;
 
 /**
@@ -200,7 +200,7 @@ final class SchemaCache
     {
         if (is_string($key) || is_int($key)) {
             $key = (string)$key;
-            $length = mb_strlen($key, '8bit');
+            $length = strlen($key);
             return (strpbrk($key, '{}()/\@:') !== false || $length < 1 || $length > 64) ? md5($key) : $key;
         }
 
