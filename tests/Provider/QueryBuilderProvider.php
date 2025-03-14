@@ -865,6 +865,9 @@ class QueryBuilderProvider
 
             /* like with expression as columnName */
             [['like', new Expression('name'), 'teststring'], 'name LIKE :qp0', [':qp0' => new Param('%teststring%', DataType::STRING)]],
+
+            /* like with brackets as columnName */
+            [['like', '(SELECT column_name FROM columns WHERE id=1)', 'teststring'], '(SELECT column_name FROM columns WHERE id=1) LIKE :qp0', [':qp0' => new Param('%teststring%', DataType::STRING)]],
         ];
 
         /* adjust dbms specific escaping */
