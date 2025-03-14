@@ -83,6 +83,14 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         return implode($andor, $parts);
     }
 
+    /**
+     * Prepare column to use in SQL.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     */
     protected function prepareColumn(LikeConditionInterface $expression, array &$params): string
     {
         $column = $expression->getColumn();
@@ -98,6 +106,15 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         return $column;
     }
 
+    /**
+     * Prepare value to use in SQL.
+     *
+     * @return string
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     */
     protected function preparePlaceholderName(
         string|ExpressionInterface $value,
         LikeConditionInterface $expression,
