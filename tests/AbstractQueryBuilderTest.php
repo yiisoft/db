@@ -223,14 +223,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($expectedParams, $params);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildCondition
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildCondition')]
     public function testBuildCondition(
         array|ExpressionInterface|string $condition,
         string|null $expected,
@@ -451,14 +444,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildLikeCondition
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildLikeCondition')]
     public function testBuildLikeCondition(
         array|ExpressionInterface $condition,
         string $expected,
@@ -476,7 +462,16 @@ abstract class AbstractQueryBuilderTest extends TestCase
             . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
             $sql
         );
-        $this->assertSame($expectedParams, $params);
+        $this->assertSame(array_keys($expectedParams), array_keys($params));
+        foreach ($params as $name => $value) {
+            if ($value instanceof Param) {
+                $this->assertInstanceOf(Param::class, $expectedParams[$name]);
+                $this->assertSame($expectedParams[$name]->getValue(), $value->getValue());
+                $this->assertSame($expectedParams[$name]->getType(), $value->getType());
+            } else {
+                $this->assertSame($expectedParams[$name], $value);
+            }
+        }
     }
 
     public function testBuildLimit(): void

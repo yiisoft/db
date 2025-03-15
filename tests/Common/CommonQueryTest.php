@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\AbstractQueryTest;
@@ -80,5 +81,59 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $this->assertEquals(1, $query->scalar());
 
         $db->close();
+    }
+
+    public function testLikeDefaultCaseSensitive(): void
+    {
+        $db = $this->getConnection(true);
+
+        $result = (new Query($db))
+            ->select('name')
+            ->from('customer')
+            ->where(['like', 'name', 'user1'])
+            ->scalar();
+
+
+        $this->assertSame('user1', $result);
+    }
+
+    public static function dataLikeCaseSensitive(): iterable
+    {
+        yield 'sameCase' => ['user1', 'user1'];
+        yield 'otherCase' => [false, 'USER1'];
+    }
+
+    #[DataProvider('dataLikeCaseSensitive')]
+    public function testLikeCaseSensitive(mixed $expected, string $value): void
+    {
+        $db = $this->getConnection(true);
+
+        $result = (new Query($db))
+            ->select('name')
+            ->from('customer')
+            ->where(['like', 'name', $value, 'caseSensitive' => true])
+            ->scalar();
+
+        $this->assertSame($expected, $result);
+    }
+
+    public static function dataLikeCaseInsensitive(): iterable
+    {
+        yield 'sameCase' => ['user1', 'user1'];
+        yield 'otherCase' => ['user1', 'USER1'];
+    }
+
+    #[DataProvider('dataLikeCaseInsensitive')]
+    public function testLikeCaseInsensitive(mixed $expected, string $value): void
+    {
+        $db = $this->getConnection(true);
+
+        $result = (new Query($db))
+            ->select('name')
+            ->from('customer')
+            ->where(['like', 'name', $value, 'caseSensitive' => false])
+            ->scalar();
+
+        $this->assertSame($expected, $result);
     }
 }

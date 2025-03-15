@@ -68,6 +68,7 @@
 - Chg #938, #936, #937: Remove `ext-json`, `ext-ctype`, `ext-mbstring` from `require` section of `composer.json` (@Tigrov) 
 - Chg #936: Remove `hasLimit()` and `hasOffset()` methods from `AbstractDQLQueryBuilder` class (@Tigrov)
 - Chg #937: Remove `baseName()` and `pascalCaseToId()` methods from `DbStringHelper` (@Tigrov)
+- New #939: Add `caseSensitive` option to like condition (@vjik)
 
 ## 1.3.0 March 21, 2024
 

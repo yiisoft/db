@@ -191,6 +191,9 @@ You may use false or an empty array to indicate the values are already escaped a
 > Note: That when using an escape mapping (or the third operand isn't provided),
 > the values will be automatically inside within a pair of percentage characters.
 
+Optionally, you can specify the case sensitivity of the `LIKE` condition by passing boolean value with `caseSensitive` 
+key, e.g. `['like', 'name', 'Ivan', 'caseSensitive' => true]`.
+
 > Note: When using PostgreSQL, you may also use `ilike` instead of `like` for case-insensitive matching.
 
 ### or like
