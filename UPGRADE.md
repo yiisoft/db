@@ -142,6 +142,10 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `DbArrayHelper::getColumn()` - use `array_column()` instead;
 - `DbArrayHelper::getValueByPath()`;
 - `DbArrayHelper::populate()` - use `DbArrayHelper::index()` instead;
+- `DbStringHelper::baseName()`;
+- `DbStringHelper::pascalCaseToId()`;
+- `AbstractDQLQueryBuilder::hasLimit()` - use `$limit !== null` instead;
+- `AbstractDQLQueryBuilder::hasOffset()` - use `!empty($offset)` instead;
 
 ### Remove deprecated parameters
 

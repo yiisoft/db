@@ -30,7 +30,6 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use function array_filter;
 use function array_merge;
 use function array_shift;
-use function ctype_digit;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -265,12 +264,14 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     {
         $sql = '';
 
-        if ($this->hasLimit($limit)) {
-            $sql = 'LIMIT ' . ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string) $limit);
+        if ($limit !== null) {
+            $sql = 'LIMIT '
+                . ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string) $limit);
         }
 
-        if ($this->hasOffset($offset)) {
-            $sql .= ' OFFSET ' . ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string) $offset);
+        if (!empty($offset)) {
+            $sql .= ' OFFSET '
+                . ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string) $offset);
         }
 
         return ltrim($sql);
@@ -550,30 +551,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         }
 
         return false;
-    }
-
-    /**
-     * Checks to see if the given limit is effective.
-     *
-     * @param mixed $limit The given limit.
-     *
-     * @return bool Whether the limit is effective.
-     */
-    protected function hasLimit(mixed $limit): bool
-    {
-        return ($limit instanceof ExpressionInterface) || ctype_digit((string) $limit);
-    }
-
-    /**
-     * Checks to see if the given offset is effective.
-     *
-     * @param mixed $offset The given offset.
-     *
-     * @return bool Whether the offset is effective.
-     */
-    protected function hasOffset(mixed $offset): bool
-    {
-        return ($offset instanceof ExpressionInterface) || (ctype_digit((string)$offset) && (string)$offset !== '0');
     }
 
     /**
