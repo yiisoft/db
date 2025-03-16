@@ -608,14 +608,14 @@ class QueryBuilderProvider
             [new Expression('NOT (any_expression(:a))', [':a' => 1]), 'NOT (any_expression(:a))', [':a' => 1]],
 
             /* like */
-            'like-custom-1' => [['like', 'a', 'b'], '[[a]] LIKE :qp0', [':qp0' => '%b%']],
+            'like-custom-1' => [['like', 'a', 'b'], '[[a]] LIKE :qp0', [':qp0' => new Param('%b%', DataType::STRING)]],
             'like-custom-2' => [
                 ['like', 'a', new Expression(':qp0', [':qp0' => '%b%'])],
                 '[[a]] LIKE :qp0',
                 [':qp0' => '%b%'],
             ],
             'like-custom-3' => [
-                ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => '%b%'],
+                ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => new Param('%b%', DataType::STRING)],
             ],
 
             /* json conditions */
@@ -749,31 +749,31 @@ class QueryBuilderProvider
     {
         $conditions = [
             /* simple like */
-            [['like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => '%foo\%%']],
-            [['not like', 'name', 'foo%'], '[[name]] NOT LIKE :qp0', [':qp0' => '%foo\%%']],
-            [['or like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => '%foo\%%']],
-            [['or not like', 'name', 'foo%'], '[[name]] NOT LIKE :qp0', [':qp0' => '%foo\%%']],
+            [['like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
+            [['not like', 'name', 'foo%'], '[[name]] NOT LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
+            [['or like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
+            [['or not like', 'name', 'foo%'], '[[name]] NOT LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
 
             /* like for many values */
             [
                 ['like', 'name', ['foo%', '[abc]']],
                 '[[name]] LIKE :qp0 AND [[name]] LIKE :qp1',
-                [':qp0' => '%foo\%%', ':qp1' => '%[abc]%'],
+                [':qp0' => new Param('%foo\%%', DataType::STRING), ':qp1' => new Param('%[abc]%', DataType::STRING)],
             ],
             [
                 ['not like', 'name', ['foo%', '[abc]']],
                 '[[name]] NOT LIKE :qp0 AND [[name]] NOT LIKE :qp1',
-                [':qp0' => '%foo\%%', ':qp1' => '%[abc]%'],
+                [':qp0' => new Param('%foo\%%', DataType::STRING), ':qp1' => new Param('%[abc]%', DataType::STRING)],
             ],
             [
                 ['or like', 'name', ['foo%', '[abc]']],
                 '[[name]] LIKE :qp0 OR [[name]] LIKE :qp1',
-                [':qp0' => '%foo\%%', ':qp1' => '%[abc]%'],
+                [':qp0' => new Param('%foo\%%', DataType::STRING), ':qp1' => new Param('%[abc]%', DataType::STRING)],
             ],
             [
                 ['or not like', 'name', ['foo%', '[abc]']],
                 '[[name]] NOT LIKE :qp0 OR [[name]] NOT LIKE :qp1',
-                [':qp0' => '%foo\%%', ':qp1' => '%[abc]%'],
+                [':qp0' => new Param('%foo\%%', DataType::STRING), ':qp1' => new Param('%[abc]%', DataType::STRING)],
             ],
 
             /* like with Expression */
@@ -800,28 +800,28 @@ class QueryBuilderProvider
             [
                 ['like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
                 '[[name]] LIKE CONCAT("test", name, "%") AND [[name]] LIKE :qp0',
-                [':qp0' => '%\\\ab\_c%'],
+                [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
                 ['not like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
                 '[[name]] NOT LIKE CONCAT("test", name, "%") AND [[name]] NOT LIKE :qp0',
-                [':qp0' => '%\\\ab\_c%'],
+                [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
                 ['or like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
                 '[[name]] LIKE CONCAT("test", name, "%") OR [[name]] LIKE :qp0',
-                [':qp0' => '%\\\ab\_c%'],
+                [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
                 ['or not like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
                 '[[name]] NOT LIKE CONCAT("test", name, "%") OR [[name]] NOT LIKE :qp0',
-                [':qp0' => '%\\\ab\_c%'],
+                [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
 
             /**
              * {@see https://github.com/yiisoft/yii2/issues/15630}
              */
-            [['like', 'location.title_ru', 'vi%', null], '[[location]].[[title_ru]] LIKE :qp0', [':qp0' => 'vi%']],
+            [['like', 'location.title_ru', 'vi%', null], '[[location]].[[title_ru]] LIKE :qp0', [':qp0' => new Param('vi%', DataType::STRING)]],
 
             /* like object conditions */
             [
@@ -847,24 +847,27 @@ class QueryBuilderProvider
             [
                 new LikeCondition('name', 'like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
                 '[[name]] LIKE CONCAT("test", name, "%") AND [[name]] LIKE :qp0',
-                [':qp0' => '%\\\ab\_c%'],
+                [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
                 new LikeCondition('name', 'not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
                 '[[name]] NOT LIKE CONCAT("test", name, "%") AND [[name]] NOT LIKE :qp0',
-                [':qp0' => '%\\\ab\_c%'],
+                [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
                 new LikeCondition('name', 'or like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
-                '[[name]] LIKE CONCAT("test", name, "%") OR [[name]] LIKE :qp0', [':qp0' => '%\\\ab\_c%'],
+                '[[name]] LIKE CONCAT("test", name, "%") OR [[name]] LIKE :qp0', [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
                 new LikeCondition('name', 'or not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
-                '[[name]] NOT LIKE CONCAT("test", name, "%") OR [[name]] NOT LIKE :qp0', [':qp0' => '%\\\ab\_c%'],
+                '[[name]] NOT LIKE CONCAT("test", name, "%") OR [[name]] NOT LIKE :qp0', [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
 
             /* like with expression as columnName */
-            [['like', new Expression('name'), 'teststring'], 'name LIKE :qp0', [':qp0' => '%teststring%']],
+            [['like', new Expression('name'), 'teststring'], 'name LIKE :qp0', [':qp0' => new Param('%teststring%', DataType::STRING)]],
+
+            /* like with brackets as columnName */
+            [['like', '(SELECT column_name FROM columns WHERE id=1)', 'teststring'], '(SELECT column_name FROM columns WHERE id=1) LIKE :qp0', [':qp0' => new Param('%teststring%', DataType::STRING)]],
         ];
 
         /* adjust dbms specific escaping */
@@ -884,7 +887,12 @@ class QueryBuilderProvider
             }
 
             foreach ($conditions[$i][2] as $name => $value) {
-                $conditions[$i][2][$name] = strtr($conditions[$i][2][$name], static::$likeParameterReplacements);
+                $conditions[$i][2][$name] = $conditions[$i][2][$name] instanceof Param
+                    ? new Param(
+                        strtr($conditions[$i][2][$name]->getValue(), static::$likeParameterReplacements),
+                        DataType::STRING
+                    )
+                    : strtr($conditions[$i][2][$name], static::$likeParameterReplacements);
             }
         }
 
