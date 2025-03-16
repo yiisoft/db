@@ -12,7 +12,6 @@ use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 
 /**
  * Represents the schema for a database table.
