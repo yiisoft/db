@@ -23,6 +23,6 @@ abstract class AbstractOverlapsConditionBuilder implements ExpressionBuilderInte
             return $this->queryBuilder->buildExpression($column);
         }
 
-        return $this->queryBuilder->quoter()->quoteColumnName($column);
+        return $this->queryBuilder->getQuoter()->quoteColumnName($column);
     }
 }

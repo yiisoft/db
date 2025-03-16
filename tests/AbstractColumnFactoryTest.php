@@ -20,7 +20,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromDbType(string $dbType, string $expectedType, string $expectedInstanceOf): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromDbType($dbType);
 
@@ -35,7 +35,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromDefinition(string $definition, ColumnInterface $expected): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromDefinition($definition);
 
@@ -48,7 +48,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromPseudoType(string $pseudoType, ColumnInterface $expected): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromPseudoType($pseudoType);
 
@@ -61,7 +61,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromType(string $type, string $expectedType, string $expectedInstanceOf): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromType($type);
 
@@ -74,7 +74,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromDefinitionWithExtra(): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromDefinition('char(1) INVISIBLE', ['extra' => 'COLLATE utf8mb4']);
 
@@ -90,7 +90,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromTypeDefaultValueRaw(string $type, string|null $defaultValueRaw, mixed $expected): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromType($type, ['defaultValueRaw' => $defaultValueRaw]);
 
@@ -106,7 +106,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testNullDefaultValueRaw(): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromType(ColumnType::INTEGER, ['defaultValueRaw' => '1', 'primaryKey' => true]);
 

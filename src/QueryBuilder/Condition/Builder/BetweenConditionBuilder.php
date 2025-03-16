@@ -39,7 +39,7 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
         $column = $column instanceof ExpressionInterface ? $this->queryBuilder->buildExpression($column) : $column;
 
         if (!str_contains($column, '(')) {
-            $column = $this->queryBuilder->quoter()->quoteColumnName($column);
+            $column = $this->queryBuilder->getQuoter()->quoteColumnName($column);
         }
 
         $phName1 = $this->createPlaceholder($expression->getIntervalStart(), $params);

@@ -208,7 +208,7 @@ abstract class AbstractCommand implements CommandInterface
 
     public function insertBatch(string $table, iterable $rows, array $columns = []): static
     {
-        $table = $this->getQueryBuilder()->quoter()->getRawTableName($table);
+        $table = $this->getQueryBuilder()->getQuoter()->getRawTableName($table);
 
         $params = [];
         $sql = $this->getQueryBuilder()->insertBatch($table, $rows, $columns, $params);
@@ -489,7 +489,7 @@ abstract class AbstractCommand implements CommandInterface
     {
         $this->cancel();
         $this->reset();
-        $this->sql = $this->getQueryBuilder()->quoter()->quoteSql($sql);
+        $this->sql = $this->getQueryBuilder()->getQuoter()->quoteSql($sql);
         return $this;
     }
 

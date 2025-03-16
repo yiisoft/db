@@ -17,11 +17,6 @@ use Yiisoft\Db\Schema\TableSchemaInterface;
  */
 class Schema extends AbstractSchema
 {
-    public function getColumnFactory(): ColumnFactoryInterface
-    {
-        return new ColumnFactory();
-    }
-
     public function findUniqueIndexes(TableSchemaInterface $table): array
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
@@ -93,11 +88,8 @@ class Schema extends AbstractSchema
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     protected function loadTableSchema(string $name): TableSchemaInterface|null
     {
-        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
+        return null;
     }
 }

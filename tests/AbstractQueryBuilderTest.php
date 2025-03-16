@@ -1914,7 +1914,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
 
-        $this->assertInstanceOf(QuoterInterface::class, $qb->quoter());
+        $this->assertInstanceOf(QuoterInterface::class, $qb->getQuoter());
     }
 
     public function testRenameColumn(): void
@@ -2254,7 +2254,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $sql = $qb->update($table, $columns, $condition, $params);
-        $sql = $qb->quoter()->quoteSql($sql);
+        $sql = $db->getQuoter()->quoteSql($sql);
 
         $this->assertSame($expectedSql, $sql);
         $this->assertEquals($expectedParams, $params);

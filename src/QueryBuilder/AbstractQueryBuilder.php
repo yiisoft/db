@@ -15,9 +15,9 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function bin2hex;
 use function count;
@@ -63,9 +63,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected array $typeMap = [];
 
     public function __construct(
-        private QuoterInterface $quoter,
-        private SchemaInterface $schema,
-        private ServerInfoInterface $serverInfo,
+        private ConnectionInterface $db,
         private AbstractDDLQueryBuilder $ddlBuilder,
         private AbstractDMLQueryBuilder $dmlBuilder,
         private AbstractDQLQueryBuilder $dqlBuilder,
@@ -175,7 +173,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function buildColumnDefinition(ColumnInterface|string $column): string
     {
         if (is_string($column)) {
-            $column = $this->schema->getColumnFactory()->fromDefinition($column);
+            $column = $this->db->getColumnFactory()->fromDefinition($column);
         }
 
         return $this->columnDefinitionBuilder->build($column);
@@ -357,19 +355,19 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->columnDefinitionBuilder;
     }
 
+    public function getColumnFactory(): ColumnFactoryInterface
+    {
+        return $this->db->getColumnFactory();
+    }
+
     public function getExpressionBuilder(ExpressionInterface $expression): object
     {
         return $this->dqlBuilder->getExpressionBuilder($expression);
     }
 
-    public function getSchema(): SchemaInterface
-    {
-        return $this->schema;
-    }
-
     public function getServerInfo(): ServerInfoInterface
     {
-        return $this->serverInfo;
+        return $this->db->getServerInfo();
     }
 
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
@@ -382,9 +380,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->insertWithReturningPks($table, $columns, $params);
     }
 
-    public function quoter(): QuoterInterface
+    public function getQuoter(): QuoterInterface
     {
-        return $this->quoter;
+        return $this->db->getQuoter();
     }
 
     public function prepareParam(ParamInterface $param): string
@@ -400,6 +398,8 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
 
     public function prepareValue(mixed $value): string
     {
+        $quoter = $this->db->getQuoter();
+
         /** @psalm-suppress MixedArgument */
         return match (gettype($value)) {
             GettypeResult::BOOLEAN => $value ? static::TRUE_VALUE : static::FALSE_VALUE,
@@ -409,11 +409,11 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             GettypeResult::OBJECT => match (true) {
                 $value instanceof Expression => (string) $value,
                 $value instanceof ParamInterface => $this->prepareParam($value),
-                default => $this->quoter->quoteValue((string) $value),
+                default => $quoter->quoteValue((string) $value),
             },
             GettypeResult::RESOURCE => $this->prepareResource($value),
             GettypeResult::RESOURCE_CLOSED => throw new InvalidArgumentException('Resource is closed.'),
-            default => $this->quoter->quoteValue((string) $value),
+            default => $quoter->quoteValue((string) $value),
         };
     }
 

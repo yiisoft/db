@@ -10,9 +10,9 @@ use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 /**
  * Defines the common interface to be implemented by query builder classes.
@@ -55,6 +55,11 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
     public function getColumnDefinitionBuilder(): ColumnDefinitionBuilderInterface;
 
     /**
+     * Returns the column factory for creating column instances.
+     */
+    public function getColumnFactory(): ColumnFactoryInterface;
+
+    /**
      * Gets an object of {@see ExpressionBuilderInterface} that's suitable for $expression.
      *
      * Uses {@see AbstractDQLQueryBuilder::expressionBuilders} an array to find a suitable builder class.
@@ -66,11 +71,6 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
     public function getExpressionBuilder(ExpressionInterface $expression): object;
 
     /**
-     * Returns {@see SchemaInterface} instance that provides information about the database schema.
-     */
-    public function getSchema(): SchemaInterface;
-
-    /**
      * Returns {@see ServerInfoInterface} instance that provides information about the database server.
      */
     public function getServerInfo(): ServerInfoInterface;
@@ -78,7 +78,7 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
     /**
      * @return QuoterInterface The quoter instance.
      */
-    public function quoter(): QuoterInterface;
+    public function getQuoter(): QuoterInterface;
 
     /**
      * Converts a {@see ParamInterface} object to its SQL representation and quotes it if necessary.

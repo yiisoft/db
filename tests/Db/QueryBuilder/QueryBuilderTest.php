@@ -61,9 +61,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array $expectedParams = [],
     ): void {
         $db = $this->getConnection();
-
-        $schemaMock = $this->createMock(Schema::class);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
+        $qb = new QueryBuilder($db);
         $params = [];
 
         try {
@@ -145,10 +143,8 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     public function testCreateView(): void
     {
         $db = $this->getConnection();
-
-        $schemaMock = $this->createMock(Schema::class);
         $subQuery = (new Query($db))->select('{{bar}}')->from('{{testCreateViewTable}}')->where(['>', 'bar', '5']);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
+        $qb = new QueryBuilder($db);
 
         $this->assertSame(
             <<<SQL
@@ -203,9 +199,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array $expectedParams
     ): void {
         $db = $this->getConnection();
-
-        $schemaMock = $this->createMock(Schema::class);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
+        $qb = new QueryBuilder($db);
 
         $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
         $this->assertEquals($expectedParams, $params);
@@ -264,12 +258,10 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array $expectedParams
     ): void {
         $db = $this->getConnection();
-
-        $schemaMock = $this->createMock(Schema::class);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
+        $qb = $db->getQueryBuilder();
 
         $sql = $qb->update($table, $columns, $condition, $params);
-        $sql = $qb->quoter()->quoteSql($sql);
+        $sql = $db->getQuoter()->quoteSql($sql);
 
         $this->assertSame($expectedSql, $sql);
         $this->assertEquals($expectedParams, $params);

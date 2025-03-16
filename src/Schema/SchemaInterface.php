@@ -300,11 +300,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const TYPE_JSON = 'json';
 
     /**
-     * Returns the column factory for creating column instances.
-     */
-    public function getColumnFactory(): ColumnFactoryInterface;
-
-    /**
      * @return string|null The default schema name.
      */
     public function getDefaultSchema(): string|null;
