@@ -124,6 +124,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryBuilderInterface::prepareValue()` - converts a value to its SQL representation;
 - `QueryBuilderInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `QueryBuilderInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
+- `LikeConditionInterface::getCaseSensitive()` - returns whether the comparison is case-sensitive.
 
 ### Remove methods
 
