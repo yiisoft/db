@@ -11,6 +11,7 @@ use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
@@ -61,6 +62,11 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
     public function close(): void
     {
         $this->connection->close();
+    }
+
+    public function getColumnFactory(): ColumnFactoryInterface
+    {
+        return $this->connection->getColumnFactory();
     }
 
     public function getLastInsertID(?string $sequenceName = null): string

@@ -187,13 +187,18 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
-        );
-
         $command->insertBatch('table', [['value1', 'value2'], ['value3', 'value4']], ['column1', 'column2']);
+
+        $this->assertSame('INSERT INTO [table] ([column1], [column2]) VALUES (:qp0, :qp1), (:qp2, :qp3)', $command->getSql());
+        $this->assertSame(
+            [
+                ':qp0' => 'value1',
+                ':qp1' => 'value2',
+                ':qp2' => 'value3',
+                ':qp3' => 'value4',
+            ],
+            $command->getParams()
+        );
     }
 
     /**
@@ -524,13 +529,20 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
-        );
-
         $command->insert('customer', ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address']);
+
+        $this->assertSame(
+            'INSERT INTO [customer] ([email], [name], [address]) VALUES (:qp0, :qp1, :qp2)',
+            $command->getSql(),
+        );
+        $this->assertSame(
+            [
+                ':qp0' => 't1@example.com',
+                ':qp1' => 'test',
+                ':qp2' => 'test address',
+            ],
+            $command->getParams(),
+        );
     }
 
     public function testQuery(): void
@@ -704,13 +716,10 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
+        $command->update('{{table}}', ['name' => 'John'], ['id' => 1]);
 
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
-        );
-
-        $command->update('{{table}}', [], [], []);
+        $this->assertSame('UPDATE [table] SET [name]=:qp0 WHERE [id]=:qp1', $command->getSql());
+        $this->assertSame([':qp0' => 'John', ':qp1' => 1], $command->getParams());
     }
 
     public function testUpsert(): void

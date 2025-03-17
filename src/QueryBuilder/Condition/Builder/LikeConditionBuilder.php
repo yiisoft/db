@@ -100,7 +100,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         }
 
         if (!str_contains($column, '(')) {
-            return $this->queryBuilder->quoter()->quoteColumnName($column);
+            return $this->queryBuilder->getQuoter()->quoteColumnName($column);
         }
 
         return $column;

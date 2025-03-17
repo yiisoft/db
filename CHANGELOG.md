@@ -64,10 +64,12 @@
 - Enh #929: Implement lazy arrays for array, structured and JSON column types (@Tigrov)
 - Bug #933: Explicitly mark nullable parameters (@vjik)
 - Chg #911: Change supported PHP versions to `8.1 - 8.4` (@Tigrov)
-- Enh #911: Minor refactoring (@Tigrov)
+- Enh #911, #940: Minor refactoring (@Tigrov)
 - Chg #938, #936, #937: Remove `ext-json`, `ext-ctype`, `ext-mbstring` from `require` section of `composer.json` (@Tigrov) 
 - Chg #936: Remove `hasLimit()` and `hasOffset()` methods from `AbstractDQLQueryBuilder` class (@Tigrov)
 - Chg #937: Remove `baseName()` and `pascalCaseToId()` methods from `DbStringHelper` (@Tigrov)
+- Enh #940: Rename `quoter()` method to `getQuoter()` in `QueryBuilderInterface` and `AbstractQueryBuilder` class (@Tigrov)
+- Enh #940: Change constructor parameters in `AbstractQueryBuilder` class (@Tigrov)
 - New #939: Add `caseSensitive` option to like condition (@vjik)
 
 ## 1.3.0 March 21, 2024

@@ -12,7 +12,6 @@ use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 
 /**
  * Represents the schema for a database table.
@@ -298,11 +297,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @deprecated Use {@see ColumnType::JSON} instead. Will be removed in 2.0.
      */
     public const TYPE_JSON = 'json';
-
-    /**
-     * Returns the column factory for creating column instances.
-     */
-    public function getColumnFactory(): ColumnFactoryInterface;
 
     /**
      * @return string|null The default schema name.

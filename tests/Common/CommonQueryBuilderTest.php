@@ -22,8 +22,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
     public function testCreateTableWithBuildColumnDefinition(): void
     {
         $db = $this->getConnection();
-        $schema = $db->getSchema();
-        $columnFactory = $schema->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
         $command = $db->createCommand();
 
         $provider = $this->getBuildColumnDefinitionProvider();

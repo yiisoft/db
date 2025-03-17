@@ -117,12 +117,13 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 ### New methods
 
 - `QuoterInterface::getRawTableName()` - returns the raw table name without quotes;
-- `SchemaInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
+- `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
+- `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
 - `QueryBuilderInterface::prepareParam()` - converts a `ParamInterface` object to its SQL representation;
 - `QueryBuilderInterface::prepareValue()` - converts a value to its SQL representation;
+- `QueryBuilderInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `QueryBuilderInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
-- `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `LikeConditionInterface::getCaseSensitive()` - returns whether the comparison is case-sensitive.
 
 ### Remove methods
@@ -179,3 +180,5 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change `DbArrayHelper::index()` parameter names and allow to accept `Closure` for `$indexBy` parameter; 
 - Change return type of `CommandInterface::insertWithReturningPks()` method to `array|false`;
 - Change return type of `AbstractCommand::insertWithReturningPks()` method to `array|false`;
+- Rename `QueryBuilderInterface::quoter()` method to `QueryBuilderInterface::getQuoter()`;
+- Change constructor parameters in `AbstractQueryBuilder` class;

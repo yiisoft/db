@@ -230,7 +230,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             return null;
         }
 
-        $quoter = $this->queryBuilder->quoter();
+        $quoter = $this->queryBuilder->getQuoter();
         $schema = $reference?->getForeignSchemaName();
 
         $sql = $quoter->quoteTableName($table);
