@@ -7,14 +7,60 @@ namespace Yiisoft\Db\Tests;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
+use Yiisoft\Db\Schema\Column\AbstractArrayColumn;
+use Yiisoft\Db\Schema\Column\ArrayLazyColumn;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
+use Yiisoft\Db\Schema\Column\JsonLazyColumn;
 use Yiisoft\Db\Schema\Column\StringColumn;
+use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
 use Yiisoft\Db\Tests\Provider\ColumnFactoryProvider;
-use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class AbstractColumnFactoryTest extends TestCase
 {
-    use TestTrait;
+    abstract protected function getColumnFactoryClass(): string;
+
+    abstract protected function getConnection(bool $fixture = false): PdoConnectionInterface;
+
+    public function testConstructColumnClassMap(): void
+    {
+        $classMap = [
+            ColumnType::ARRAY => ArrayLazyColumn::class,
+            ColumnType::JSON => JsonLazyColumn::class,
+            ColumnType::STRUCTURED => StructuredLazyColumn::class,
+        ];
+
+        $columnFactoryClass = $this->getColumnFactoryClass();
+        $columnFactory = new $columnFactoryClass($classMap);
+
+        $this->assertInstanceOf(ArrayLazyColumn::class, $columnFactory->fromType(ColumnType::ARRAY));
+        $this->assertInstanceOf(JsonLazyColumn::class, $columnFactory->fromType(ColumnType::JSON));
+        $this->assertInstanceOf(StructuredLazyColumn::class, $columnFactory->fromType(ColumnType::STRUCTURED));
+    }
+
+    public function testConstructTypeMap(): void
+    {
+        $typeMap = [
+            'json' => function (string $dbType, array &$info): string|null {
+                if (str_ends_with($info['name'], '_ids')) {
+                    $info['column'] = new IntegerColumn();
+                    return ColumnType::ARRAY;
+                }
+
+                return null;
+            },
+        ];
+
+        $columnFactoryClass = $this->getColumnFactoryClass();
+        $columnFactory = new $columnFactoryClass(typeMap:  $typeMap);
+
+        $column = $columnFactory->fromDbType('json', ['name' => 'user_ids']);
+
+        $this->assertSame(ColumnType::ARRAY, $column->getType());
+        $this->assertInstanceOf(AbstractArrayColumn::class, $column);
+        $this->assertInstanceOf(IntegerColumn::class, $column->getColumn());
+    }
 
     #[DataProviderExternal(ColumnFactoryProvider::class, 'types')]
     public function testFromDbType(string $dbType, string $expectedType, string $expectedInstanceOf): void
