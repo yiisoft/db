@@ -3,13 +3,22 @@
 Type casting is the process of converting a value from one data type to another. In the context of the database,
 type casting is used to ensure that values are saved and retrieved in the correct type.
 
+```mermaid
+flowchart LR
+    phpType[PHP Type]
+    dbType[Database Type]
+    
+    phpType --> dbType
+    dbType --> phpType
+```
+
 ## Casting values to be saved in the database
 
 When saving a value to the database, the value must be in the correct type. For example, if saving a value to a column
 that is of type `integer`, the value must be an integer.
 
 To ensure that the value is saved in the correct type, `ColumnInterface::dbTypecast()` method can be used to cast 
-the value to the correct type. Some methods in the DB library, such as `CommandInterface::insert()`, automatically
+the value to the correct type. Majority of the DB library methods, such as `CommandInterface::insert()`, automatically
 cast values to the correct type.
 
 ```php
@@ -30,8 +39,8 @@ The `CommandInterface::insert()` method will automatically cast the value to the
 ## Casting values retrieved from the database
 
 When you retrieve a value from the database, the value can be returned in a different type than you expect.
-For example, a value that is stored as an `float` in the database can be returned as a `string`. This is because 
-the database driver do not convert some data types when retrieves values.
+For example, a value that is stored as a `float` in the database can be returned as a `string`. This is because 
+the database driver does not convert some data types when retrieves values.
 
 To ensure that the value is returned in the correct type, you can use `ColumnInterface::phpTypecast()` method to cast 
 the value to the correct type.
@@ -54,7 +63,7 @@ is `boolean`. The `ColumnInterface::phpTypecast()` method is used to cast the va
 
 ## Custom type casting
 
-To implement custom type casting it needs to extend the `AbstractColumnSchema` class and overriding the `dbTypecast()` 
+To implement custom type casting you need to extend the `AbstractColumnSchema` class and override the `dbTypecast()` 
 and `phpTypecast()` methods.
 
 For example, in Postgres database, the `point` type is represented as a string in the format `(x,y)`. To cast the value
@@ -119,7 +128,7 @@ class Point
 }
 ```
 
-Then it needs to use the custom column class in the database connection configuration.
+Then use the custom column class in the database connection configuration.
 
 ```php
 use Yiisoft\Db\Pgsql\Column\ColumnFactory;
@@ -182,7 +191,7 @@ foreach ($tags as $tag) {
 ## Structured data types
 
 Some databases support structured data types, such as `composite` types in Postgres. To cast a structured data type to
-a custom class, it needs to create a column class which extends `AbstractStructuredColumn` and override 
+a custom class, you need to create a column class which extends `AbstractStructuredColumn` and override 
 the `phpTypecast()` method.
 
 For example if `currency_money` is a defined composite type in Postgres as follows:
@@ -263,7 +272,7 @@ class CurrencyMoney implements \JsonSerializable, \IteratorAggregate
 }
 ```
 
-Then it needs to use the column class in the database connection configuration.
+Then use the column class in the database connection configuration.
 
 ```php
 use Yiisoft\Db\Constant\ColumnType;
