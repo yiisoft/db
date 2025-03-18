@@ -15,7 +15,7 @@ flowchart LR
 ## Casting values to be saved in the database
 
 When saving a value to the database, the value must be in the correct type. For example, if saving a value to a column
-that is of type `integer`, the value must be an integer.
+that is of type `bit`, the value must be an `integer` or `string` depends on DBMS.
 
 To ensure that the value is saved in the correct type, `ColumnInterface::dbTypecast()` method can be used to cast 
 the value to the correct type. Majority of the DB library methods, such as `CommandInterface::insert()`, automatically
@@ -63,7 +63,7 @@ is `boolean`. The `ColumnInterface::phpTypecast()` method is used to cast the va
 
 ## Custom type casting
 
-To implement custom type casting you need to extend the `AbstractColumnSchema` class and override the `dbTypecast()` 
+To implement custom type casting you need to extend the `AbstractColumn` class and override the `dbTypecast()` 
 and `phpTypecast()` methods.
 
 For example, in Postgres database, the `point` type is represented as a string in the format `(x,y)`. To cast the value
