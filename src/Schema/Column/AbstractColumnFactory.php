@@ -25,8 +25,8 @@ use const PHP_INT_SIZE;
  *
  * @psalm-import-type ColumnInfo from ColumnFactoryInterface
  *
- * @psalm-type ColumnClassMap = array<ColumnType::*, class-string<ColumnInterface>|Closure(ColumnType::*, ColumnInfo&): (class-string<ColumnInterface>|null)>
- * @psalm-type TypeMap = array<string, ColumnType::*|Closure(string, ColumnInfo&): (ColumnType::*|null)>
+ * @psalm-type ColumnClassMap = array<ColumnType::*, class-string<ColumnInterface>|Closure(ColumnType::*, ColumnInfo): (class-string<ColumnInterface>|null)>
+ * @psalm-type TypeMap = array<string, ColumnType::*|Closure(string, ColumnInfo): (ColumnType::*|null)>
  */
 abstract class AbstractColumnFactory implements ColumnFactoryInterface
 {
