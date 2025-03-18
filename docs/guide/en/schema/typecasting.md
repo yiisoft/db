@@ -18,8 +18,7 @@ When saving a value to the database, the value must be in the correct type. For 
 that is of type `bit`, the value must be an `integer` or `string` depends on DBMS.
 
 To ensure that the value is saved in the correct type, `ColumnInterface::dbTypecast()` method can be used to cast 
-the value to the correct type. Majority of the DB library methods, such as `CommandInterface::insert()`, automatically
-cast values to the correct type.
+the value. Majority of the DB library methods, such as `CommandInterface::insert()`, automatically convert the type.
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -43,7 +42,7 @@ For example, a value that is stored as a `numeric(5,2)` in the database will be 
 the database driver does not convert some data types when retrieves values.
 
 To ensure that the value is returned in the correct type, you can use `ColumnInterface::phpTypecast()` method to cast 
-the value to the correct type, in the example above, to a `float`.
+the value, in the example above, to a `float`.
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
