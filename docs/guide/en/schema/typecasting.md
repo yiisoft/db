@@ -39,11 +39,11 @@ The `CommandInterface::insert()` method will automatically cast the value to the
 ## Casting values retrieved from the database
 
 When you retrieve a value from the database, the value can be returned in a different type than you expect.
-For example, a value that is stored as a `float` in the database can be returned as a `string`. This is because 
+For example, a value that is stored as a `numeric(5,2)` in the database will be returned as a `string`. This is because 
 the database driver does not convert some data types when retrieves values.
 
 To ensure that the value is returned in the correct type, you can use `ColumnInterface::phpTypecast()` method to cast 
-the value to the correct type.
+the value to the correct type, in the example above, to a `float`.
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
