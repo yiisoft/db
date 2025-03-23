@@ -153,6 +153,10 @@ $db = new Connection($pdoDriver, $schemaCache, $columnFactory);
 In the example above, the `PointColumn` class is used to cast the `point` database type to the `Point` class.
 The `Point` class is used to represent the `point` type as an object with `x` and `y` properties.
 
+> [!WARNING]
+> If you use different custom type casting for different database connections, you need also use different schema 
+> cache for such connections.
+
 ## Lazy type casting
 
 Lazy type casting is a way to defer the type casting of a value until it is accessed. This can be useful when you want
