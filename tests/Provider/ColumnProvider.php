@@ -30,7 +30,6 @@ use Yiisoft\Db\Schema\Column\StructuredColumn;
 use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
 use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
-
 use Yiisoft\Db\Schema\Data\StructuredLazyArray;
 use Yiisoft\Db\Tests\Support\IntEnum;
 use Yiisoft\Db\Tests\Support\StringEnum;
