@@ -11,8 +11,7 @@ use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function explode;
 use function get_resource_type;
@@ -132,7 +131,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function addColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): static
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): static
     {
         $sql = $this->getQueryBuilder()->addColumn($table, $column, $type);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -162,8 +161,8 @@ abstract class AbstractCommand implements CommandInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string $delete = null,
-        string $update = null
+        ?string $delete = null,
+        ?string $update = null
     ): static {
         $sql = $this->getQueryBuilder()->addForeignKey(
             $table,
@@ -189,7 +188,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function alterColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): static
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): static
     {
         $sql = $this->getQueryBuilder()->alterColumn($table, $column, $type);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -209,7 +208,7 @@ abstract class AbstractCommand implements CommandInterface
 
     public function insertBatch(string $table, iterable $rows, array $columns = []): static
     {
-        $table = $this->getQueryBuilder()->quoter()->getRawTableName($table);
+        $table = $this->getQueryBuilder()->getQuoter()->getRawTableName($table);
 
         $params = [];
         $sql = $this->getQueryBuilder()->insertBatch($table, $rows, $columns, $params);
@@ -220,7 +219,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this;
     }
 
-    abstract public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
+    abstract public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static;
 
     abstract public function bindValues(array $values): static;
 
@@ -234,14 +233,14 @@ abstract class AbstractCommand implements CommandInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): static {
         $sql = $this->getQueryBuilder()->createIndex($table, $name, $columns, $indexType, $indexMethod);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function createTable(string $table, array $columns, string $options = null): static
+    public function createTable(string $table, array $columns, ?string $options = null): static
     {
         $sql = $this->getQueryBuilder()->createTable($table, $columns, $options);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
@@ -307,9 +306,9 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function dropTable(string $table): static
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): static
     {
-        $sql = $this->getQueryBuilder()->dropTable($table);
+        $sql = $this->getQueryBuilder()->dropTable($table, $ifExists, $cascade);
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
@@ -360,6 +359,7 @@ abstract class AbstractCommand implements CommandInterface
 
         /** @var string[] $params */
         if (!isset($params[0])) {
+            /** @var string */
             return preg_replace_callback(
                 '#(:\w+)#',
                 static fn (array $matches): string => $params[$matches[1]] ?? $matches[1],
@@ -389,7 +389,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function insertWithReturningPks(string $table, array $columns): bool|array
+    public function insertWithReturningPks(string $table, array $columns): array|false
     {
         $params = [];
 
@@ -468,7 +468,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($table);
     }
 
-    public function resetSequence(string $table, int|string $value = null): static
+    public function resetSequence(string $table, int|string|null $value = null): static
     {
         $sql = $this->getQueryBuilder()->resetSequence($table, $value);
         return $this->setSql($sql);
@@ -489,7 +489,7 @@ abstract class AbstractCommand implements CommandInterface
     {
         $this->cancel();
         $this->reset();
-        $this->sql = $this->getQueryBuilder()->quoter()->quoteSql($sql);
+        $this->sql = $this->getQueryBuilder()->getQuoter()->quoteSql($sql);
         return $this;
     }
 
@@ -605,7 +605,7 @@ abstract class AbstractCommand implements CommandInterface
      *
      * {@see \Yiisoft\Db\Transaction\TransactionInterface::begin()} for details.
      */
-    protected function requireTransaction(string $isolationLevel = null): static
+    protected function requireTransaction(?string $isolationLevel = null): static
     {
         $this->isolationLevel = $isolationLevel;
         return $this;

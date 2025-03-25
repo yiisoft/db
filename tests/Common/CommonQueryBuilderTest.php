@@ -7,9 +7,8 @@ namespace Yiisoft\Db\Tests\Common;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
-use Yiisoft\Db\Tests\Provider\ColumnTypes;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 
 abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
@@ -19,25 +18,11 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         return QueryBuilderProvider::buildColumnDefinition();
     }
 
-    public function testGetColumnType(): void
-    {
-        $db = $this->getConnection();
-        $qb = $db->getQueryBuilder();
-        $columnTypes = (new ColumnTypes($db))->getColumnTypes();
-
-        foreach ($columnTypes as [$column, $expected]) {
-            $this->assertEquals($expected, $qb->getColumnType($column));
-        }
-
-        $db->close();
-    }
-
     #[DoesNotPerformAssertions]
     public function testCreateTableWithBuildColumnDefinition(): void
     {
         $db = $this->getConnection();
-        $schema = $db->getSchema();
-        $columnFactory = $schema->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
         $command = $db->createCommand();
 
         $provider = $this->getBuildColumnDefinitionProvider();
@@ -48,7 +33,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         foreach ($provider as $data) {
             $column = $data[1];
 
-            if ($column instanceof ColumnSchemaInterface) {
+            if ($column instanceof ColumnInterface) {
                 if ($column->isPrimaryKey()) {
                     $this->createTebleWithColumn($command, $column);
                     continue;
@@ -62,7 +47,9 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
                 continue;
             }
 
-            $columns['col_' . $i++] = $column;
+            $name = $column instanceof ColumnInterface ? $column->getName() : null;
+
+            $columns[$name ?? 'col_' . $i++] = $column;
         }
 
         try {
@@ -73,7 +60,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $command->createTable('build_column_definition', $columns)->execute();
     }
 
-    private function createTebleWithColumn(CommandInterface $command, string|ColumnSchemaInterface $column)
+    private function createTebleWithColumn(CommandInterface $command, string|ColumnInterface $column)
     {
         try {
             $command->dropTable('build_column_definition_primary_key')->execute();

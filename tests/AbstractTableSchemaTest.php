@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Tests\Support\Stub\ColumnSchema;
+use Yiisoft\Db\Tests\Support\Stub\Column;
 use Yiisoft\Db\Tests\Support\Stub\TableSchema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -37,45 +37,36 @@ abstract class AbstractTableSchemaTest extends TestCase
 
     public function testGetColumn(): void
     {
-        // Defined column schema.
-        $columnSchema = new ColumnSchema('id');
-
-        // Create table schema.
+        $column = new Column('id');
         $tableSchema = new TableSchema();
 
         $this->assertNull($tableSchema->getColumn('id'));
 
-        $tableSchema->column('id', $columnSchema);
+        $tableSchema->column('id', $column);
 
-        $this->assertSame($columnSchema, $tableSchema->getColumn('id'));
+        $this->assertSame($column, $tableSchema->getColumn('id'));
     }
 
     public function testGetColumns(): void
     {
-        // Defined column schema.
-        $columnSchema = new ColumnSchema('id');
-
-        // Create table schema.
+        $column = new Column('id');
         $tableSchema = new TableSchema();
 
         $this->assertSame([], $tableSchema->getColumns());
 
-        $tableSchema->column('id', $columnSchema);
+        $tableSchema->column('id', $column);
 
-        $this->assertSame(['id' => $columnSchema], $tableSchema->getColumns());
+        $this->assertSame(['id' => $column], $tableSchema->getColumns());
     }
 
     public function testGetColumnName(): void
     {
-        // Defined column schema.
-        $columnSchema = new ColumnSchema('id');
-
-        // Create table schema.
+        $column = new Column('id');
         $tableSchema = new TableSchema();
 
         $this->assertNull($tableSchema->getColumn('id'));
 
-        $tableSchema->column('id', $columnSchema);
+        $tableSchema->column('id', $column);
 
         $this->assertSame(['id'], $tableSchema->getColumnNames());
     }

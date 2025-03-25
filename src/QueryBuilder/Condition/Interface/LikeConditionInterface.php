@@ -43,4 +43,9 @@ interface LikeConditionInterface extends ConditionInterface
      * @return array|ExpressionInterface|int|Iterator|string|null The value to the right of {@see operator}.
      */
     public function getValue(): array|int|string|Iterator|ExpressionInterface|null;
+
+    /**
+     * @return bool|null Whether the comparison is case-sensitive. `null` means using the default behavior.
+     */
+    public function getCaseSensitive(): ?bool;
 }

@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Schema;
 use Psr\SimpleCache\InvalidArgumentException;
 use Throwable;
 use Yiisoft\Db\Cache\SchemaCache;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;

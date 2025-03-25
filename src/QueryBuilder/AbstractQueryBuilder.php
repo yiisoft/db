@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
@@ -15,18 +15,15 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
-use Yiisoft\Db\Schema\SchemaInterface;
 
 use function bin2hex;
 use function count;
 use function get_resource_type;
 use function gettype;
 use function is_string;
-use function preg_match;
-use function preg_replace;
 use function stream_get_contents;
 
 /**
@@ -66,9 +63,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected array $typeMap = [];
 
     public function __construct(
-        private QuoterInterface $quoter,
-        private SchemaInterface $schema,
-        private ServerInfoInterface $serverInfo,
+        private ConnectionInterface $db,
         private AbstractDDLQueryBuilder $ddlBuilder,
         private AbstractDMLQueryBuilder $dmlBuilder,
         private AbstractDQLQueryBuilder $dqlBuilder,
@@ -81,7 +76,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addCheck($table, $name, $expression);
     }
 
-    public function addColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): string
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return $this->ddlBuilder->addColumn($table, $column, $type);
     }
@@ -107,8 +102,8 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string $delete = null,
-        string $update = null
+        ?string $delete = null,
+        ?string $update = null
     ): string {
         return $this->ddlBuilder->addForeignKey(
             $table,
@@ -131,7 +126,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->addUnique($table, $name, $columns);
     }
 
-    public function alterColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): string
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return $this->ddlBuilder->alterColumn($table, $column, $type);
     }
@@ -175,14 +170,10 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->build($query, $params);
     }
 
-    public function buildColumnDefinition(ColumnInterface|ColumnSchemaInterface|string $column): string
+    public function buildColumnDefinition(ColumnInterface|string $column): string
     {
-        if ($column instanceof ColumnInterface) {
-            $column = $column->asString();
-        }
-
         if (is_string($column)) {
-            $column = $this->schema->getColumnFactory()->fromDefinition($column);
+            $column = $this->db->getColumnFactory()->fromDefinition($column);
         }
 
         return $this->columnDefinitionBuilder->build($column);
@@ -247,7 +238,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         array $columns,
         array &$params,
         bool|null $distinct = false,
-        string $selectOption = null
+        ?string $selectOption = null
     ): string {
         return $this->dqlBuilder->buildSelect($columns, $params, $distinct, $selectOption);
     }
@@ -283,13 +274,13 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): string {
         return $this->ddlBuilder->createIndex($table, $name, $columns, $indexType, $indexMethod);
     }
 
-    public function createTable(string $table, array $columns, string $options = null): string
+    public function createTable(string $table, array $columns, ?string $options = null): string
     {
         return $this->ddlBuilder->createTable($table, $columns, $options);
     }
@@ -344,9 +335,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->ddlBuilder->dropPrimaryKey($table, $name);
     }
 
-    public function dropTable(string $table): string
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): string
     {
-        return $this->ddlBuilder->dropTable($table);
+        return $this->ddlBuilder->dropTable($table, $ifExists, $cascade);
     }
 
     public function dropUnique(string $table, string $name): string
@@ -364,32 +355,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->columnDefinitionBuilder;
     }
 
-    /** @deprecated Use {@see buildColumnDefinition()}. Will be removed in version 2.0. */
-    public function getColumnType(ColumnInterface|string $type): string
+    public function getColumnFactory(): ColumnFactoryInterface
     {
-        if ($type instanceof ColumnInterface) {
-            $type = $type->asString();
-        }
-
-        if (isset($this->typeMap[$type])) {
-            return $this->typeMap[$type];
-        }
-
-        if (preg_match('/^(\w+)\((.+?)\)(.*)$/', $type, $matches)) {
-            if (isset($this->typeMap[$matches[1]])) {
-                return preg_replace(
-                    '/\(.+\)/',
-                    '(' . $matches[2] . ')',
-                    $this->typeMap[$matches[1]]
-                ) . $matches[3];
-            }
-        } elseif (preg_match('/^(\w+)\s+/', $type, $matches)) {
-            if (isset($this->typeMap[$matches[1]])) {
-                return preg_replace('/^\w+/', $this->typeMap[$matches[1]], $type);
-            }
-        }
-
-        return $type;
+        return $this->db->getColumnFactory();
     }
 
     public function getExpressionBuilder(ExpressionInterface $expression): object
@@ -399,7 +367,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
 
     public function getServerInfo(): ServerInfoInterface
     {
-        return $this->serverInfo;
+        return $this->db->getServerInfo();
     }
 
     public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
@@ -412,9 +380,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->insertWithReturningPks($table, $columns, $params);
     }
 
-    public function quoter(): QuoterInterface
+    public function getQuoter(): QuoterInterface
     {
-        return $this->quoter;
+        return $this->db->getQuoter();
     }
 
     public function prepareParam(ParamInterface $param): string
@@ -430,6 +398,8 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
 
     public function prepareValue(mixed $value): string
     {
+        $quoter = $this->db->getQuoter();
+
         /** @psalm-suppress MixedArgument */
         return match (gettype($value)) {
             GettypeResult::BOOLEAN => $value ? static::TRUE_VALUE : static::FALSE_VALUE,
@@ -439,11 +409,11 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             GettypeResult::OBJECT => match (true) {
                 $value instanceof Expression => (string) $value,
                 $value instanceof ParamInterface => $this->prepareParam($value),
-                default => $this->quoter->quoteValue((string) $value),
+                default => $quoter->quoteValue((string) $value),
             },
             GettypeResult::RESOURCE => $this->prepareResource($value),
             GettypeResult::RESOURCE_CLOSED => throw new InvalidArgumentException('Resource is closed.'),
-            default => $this->quoter->quoteValue((string) $value),
+            default => $quoter->quoteValue((string) $value),
         };
     }
 
@@ -512,7 +482,10 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             throw new InvalidArgumentException('Supported only stream resource type.');
         }
 
-        return $this->prepareBinary(stream_get_contents($value));
+        /** @var string $binary */
+        $binary = stream_get_contents($value);
+
+        return $this->prepareBinary($binary);
     }
 
     /**

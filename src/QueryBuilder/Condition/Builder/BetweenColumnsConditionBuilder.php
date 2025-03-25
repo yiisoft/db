@@ -81,7 +81,7 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
         }
 
         if (!str_contains($columnName, '(')) {
-            return $this->queryBuilder->quoter()->quoteColumnName($columnName);
+            return $this->queryBuilder->getQuoter()->quoteColumnName($columnName);
         }
 
         return $columnName;

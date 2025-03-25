@@ -44,3 +44,6 @@ phpunit.phar
 #codeception
 /tests/_output
 c3.php
+
+# Docker
+docker/docker-compose.override.yml

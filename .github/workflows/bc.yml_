@@ -13,6 +13,10 @@ on:
 
 name: backwards compatibility
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   roave_bc_check:
     uses: yiisoft/actions/.github/workflows/bc.yml@master

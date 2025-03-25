@@ -16,7 +16,7 @@ use function trim;
 /**
  * Parses column definition string. For example, `string(255)` or `int unsigned`.
  */
-final class ColumnDefinitionParser
+class ColumnDefinitionParser
 {
     /**
      * Parses column definition string.
@@ -27,7 +27,9 @@ final class ColumnDefinitionParser
      *
      * @psalm-return array{
      *     check?: string,
+     *     comment?: string,
      *     defaultValueRaw?: string,
+     *     dimension?: positive-int,
      *     enumValues?: list<string>,
      *     extra?: string,
      *     notNull?: bool,
@@ -40,17 +42,22 @@ final class ColumnDefinitionParser
      */
     public function parse(string $definition): array
     {
-        preg_match('/^(\w*)(?:\(([^)]+)\))?\s*/', $definition, $matches);
+        preg_match('/^(\w*)(?:\(([^)]+)\))?(\[[\d\[\]]*\])?\s*/', $definition, $matches);
 
         $type = strtolower($matches[1]);
         $info = ['type' => $type];
 
-        if (isset($matches[2])) {
+        if (isset($matches[2]) && $matches[2] !== '') {
             if ($type === 'enum') {
                 $info += $this->enumInfo($matches[2]);
             } else {
                 $info += $this->sizeInfo($matches[2]);
             }
+        }
+
+        if (isset($matches[3])) {
+            /** @psalm-var positive-int */
+            $info['dimension'] = substr_count($matches[3], '[');
         }
 
         $extra = substr($definition, strlen($matches[0]));
@@ -61,7 +68,7 @@ final class ColumnDefinitionParser
     /**
      * @psalm-return array{enumValues: list<string>}
      */
-    private function enumInfo(string $values): array
+    protected function enumInfo(string $values): array
     {
         preg_match_all("/'([^']*)'/", $values, $matches);
 
@@ -71,6 +78,7 @@ final class ColumnDefinitionParser
     /**
      * @psalm-return array{
      *     check?: string,
+     *     comment?: string,
      *     defaultValueRaw?: string,
      *     extra?: string,
      *     notNull?: bool,
@@ -78,7 +86,7 @@ final class ColumnDefinitionParser
      *     unsigned?: bool
      * }
      */
-    private function extraInfo(string $extra): array
+    protected function extraInfo(string $extra): array
     {
         if (empty($extra)) {
             return [];
@@ -93,25 +101,34 @@ final class ColumnDefinitionParser
             $extra = str_replace($matches[0], '', $extra);
         }
 
+        if (preg_match("/\\s*\\bCOMMENT\\s+'((?:[^']|'')*)'/i", $extra, $matches) === 1) {
+            $info['comment'] = str_replace("''", "'", $matches[1]);
+            $extra = str_replace($matches[0], '', $extra);
+        }
+
         if (preg_match("/\\s*\\bCHECK\\s+$bracketsPattern/i", $extra, $matches) === 1) {
             $info['check'] = substr($matches[1], 1, -1);
             $extra = str_replace($matches[0], '', $extra);
         }
 
+        /** @var string $extra */
         $extra = preg_replace('/\s*\bUNSIGNED\b/i', '', $extra, 1, $count);
         if ($count > 0) {
             $info['unsigned'] = true;
         }
 
+        /** @var string $extra */
         $extra = preg_replace('/\s*\bUNIQUE\b/i', '', $extra, 1, $count);
         if ($count > 0) {
             $info['unique'] = true;
         }
 
+        /** @var string $extra */
         $extra = preg_replace('/\s*\bNOT\s+NULL\b/i', '', $extra, 1, $count);
         if ($count > 0) {
             $info['notNull'] = true;
         } else {
+            /** @var string $extra */
             $extra = preg_replace('/\s*\bNULL\b/i', '', $extra, 1, $count);
             if ($count > 0) {
                 $info['notNull'] = false;
@@ -130,7 +147,7 @@ final class ColumnDefinitionParser
     /**
      * @psalm-return array{size: int, scale?: int}
      */
-    private function sizeInfo(string $size): array
+    protected function sizeInfo(string $size): array
     {
         $values = explode(',', $size);
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * Represents the metadata of a database table.
@@ -22,9 +22,9 @@ interface TableSchemaInterface
      *
      * @param string $name The column name.
      *
-     * @return ColumnSchemaInterface|null The named column metadata. Null if the named column doesn't exist.
+     * @return ColumnInterface|null The named column metadata. Null if the named column doesn't exist.
      */
-    public function getColumn(string $name): ColumnSchemaInterface|null;
+    public function getColumn(string $name): ColumnInterface|null;
 
     /**
      * @return array The names of all columns in this table.
@@ -66,10 +66,10 @@ interface TableSchemaInterface
     public function getPrimaryKey(): array;
 
     /**
-     * @return ColumnSchemaInterface[] The column metadata of this table.
-     * Array of {@see ColumnSchemaInterface} objects indexed by column names.
+     * @return ColumnInterface[] The column metadata of this table.
+     * Array of {@see ColumnInterface} objects indexed by column names.
      *
-     * @psalm-return array<string, ColumnSchemaInterface>
+     * @psalm-return array<string, ColumnInterface>
      */
     public function getColumns(): array;
 
@@ -125,7 +125,7 @@ interface TableSchemaInterface
      *
      * @param string $name The column name.
      */
-    public function column(string $name, ColumnSchemaInterface $value): void;
+    public function column(string $name, ColumnInterface $value): void;
 
     /**
      * @return string|null The name of the catalog (database) that this table belongs to. Defaults to null, meaning no

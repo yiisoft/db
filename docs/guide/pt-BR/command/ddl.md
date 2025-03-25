@@ -177,6 +177,7 @@ Para adicionar uma chave estrangeira a uma tabela existente, você pode usar o m
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\ReferentialAction;
 
 /** @var ConnectionInterface $db */
 $db->createCommand()->addForeignKey(
@@ -185,8 +186,8 @@ $db->createCommand()->addForeignKey(
     'profile_id',
     '{{%profile}}',
     'id',
-    'CASCADE',
-    'CASCADE'
+    ReferentialAction::CASCADE,
+    ReferentialAction::CASCADE
 )->execute();
 ```
 

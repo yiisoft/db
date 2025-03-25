@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Constant;
 
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * Defines the available PHP types.
  * Used to generate properties of a related model class.
  *
- * @see ColumnSchemaInterface::getPhpType()
+ * @see ColumnInterface::getPhpType()
  * @see https://www.php.net/manual/en/language.types.type-system.php
  */
 final class PhpType

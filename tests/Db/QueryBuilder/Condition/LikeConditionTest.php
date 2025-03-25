@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition;
 
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class LikeConditionTest extends TestCase
 {
@@ -22,6 +21,7 @@ final class LikeConditionTest extends TestCase
         $this->assertSame('id', $likeCondition->getColumn());
         $this->assertSame('LIKE', $likeCondition->getOperator());
         $this->assertSame('test', $likeCondition->getValue());
+        $this->assertNull($likeCondition->getCaseSensitive());
     }
 
     public function testFromArrayDefinition(): void
@@ -75,5 +75,18 @@ final class LikeConditionTest extends TestCase
         $likeCondition->setEscapingReplacements(['%' => '\%', '_' => '\_']);
 
         $this->assertSame(['%' => '\%', '_' => '\_'], $likeCondition->getEscapingReplacements());
+    }
+
+    #[TestWith([null])]
+    #[TestWith([true])]
+    #[TestWith([false])]
+    public function testFromArrayDefinitionCaseSensitive(?bool $caseSensitive): void
+    {
+        $likeCondition = LikeCondition::fromArrayDefinition('LIKE', ['id', 'test', 'caseSensitive' => $caseSensitive]);
+
+        $this->assertSame('id', $likeCondition->getColumn());
+        $this->assertSame('LIKE', $likeCondition->getOperator());
+        $this->assertSame('test', $likeCondition->getValue());
+        $this->assertSame($caseSensitive, $likeCondition->getCaseSensitive());
     }
 }
