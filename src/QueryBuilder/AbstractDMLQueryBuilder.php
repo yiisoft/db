@@ -55,6 +55,8 @@ use function sort;
  */
 abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 {
+    protected bool $typecasting = true;
+
     public function __construct(
         protected QueryBuilderInterface $queryBuilder,
         protected QuoterInterface $quoter,
@@ -143,6 +145,13 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         array &$params
     ): string {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
+    }
+
+    public function withTypecasting(bool $typecasting = true): static
+    {
+        $new = clone $this;
+        $new->typecasting = $typecasting;
+        return $new;
     }
 
     /**
