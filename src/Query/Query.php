@@ -668,9 +668,16 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function where(array|string|ExpressionInterface|null $condition, array $params = []): static
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function where(array|string|ExpressionInterface|null $condition, array $params = [], bool $force = false): static
     {
-        $this->where = $condition;
+        if ($this->where === null || $force === true) {
+            $this->where = $condition;
+        } else {
+            throw new InvalidArgumentException('The `where` condition was set earlier. If you want to overwrite it, then use the `force` parameter.');
+        }
         $this->addParams($params);
         return $this;
     }

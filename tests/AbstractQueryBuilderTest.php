@@ -474,6 +474,25 @@ abstract class AbstractQueryBuilderTest extends TestCase
         }
     }
 
+    public function testOverwriteWhereCondition(): void
+    {
+        $db = $this->getConnection();
+
+        try {
+            (new Query($db))
+                ->where(['like', 'name', 'foo%'])
+                ->where(['not like', 'name', 'foo%']);
+        } catch (InvalidArgumentException $e) {
+            $this->assertEquals('The `where` condition was set earlier. If you want to overwrite it, then use the `force` parameter.', $e->getMessage());
+        }
+
+        $query = (new Query($db))
+            ->where(['like', 'name', 'foo%'])
+            ->where(['not like', 'name', 'foo%'], force: true);
+
+        $this->assertEquals(['not like', 'name', 'foo%'], $query->getWhere());
+    }
+
     public function testBuildLimit(): void
     {
         $db = $this->getConnection();
