@@ -306,7 +306,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
         $query = (new Query($db))->from('admin_user')->where(['is_deleted' => false]);
-        $query->where([])->andWhere(['in', 'id', ['1', '0']]);
+        $query->where([], force: true)->andWhere(['in', 'id', ['1', '0']]);
 
         [$sql, $params] = $qb->build($query);
 
