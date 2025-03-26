@@ -411,13 +411,13 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
 
         $schema = $db->getSchema();
 
-        $this->assertTrue($schema->hasTable('customer'));
+        $this->assertTrue($schema->hasTable('order'));
         $this->assertTrue($schema->hasTable('category'));
         $this->assertFalse($schema->hasTable('no_such_table'));
 
-        $db->createCommand()->dropTable('category')->execute();
+        $db->createCommand()->dropTable('order')->execute();
 
-        $this->assertFalse($schema->hasTable('category', '', true));
+        $this->assertFalse($schema->hasTable('order', '', true));
 
         $db->close();
     }
