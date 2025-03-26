@@ -25,7 +25,7 @@ interface PdoConnectionInterface extends ConnectionInterface
      *
      * @return PDO|null The {@see PDO} instance for the current connection.
      */
-    public function getActivePDO(string $sql = '', bool $forRead = null): PDO|null;
+    public function getActivePDO(string $sql = '', ?bool $forRead = null): PDO|null;
 
     /**
      * The PHP {@see PDO} instance associated with this DB connection.

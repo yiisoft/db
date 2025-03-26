@@ -13,7 +13,7 @@ use Stringable;
  */
 class Exception extends \Exception implements Stringable
 {
-    public function __construct(string $message, public array|null $errorInfo = [], \Exception $previous = null)
+    public function __construct(string $message, public array|null $errorInfo = [], ?\Exception $previous = null)
     {
         parent::__construct($message, 0, $previous);
     }

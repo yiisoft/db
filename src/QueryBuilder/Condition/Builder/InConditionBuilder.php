@@ -110,7 +110,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
         }
 
         if (is_string($column) && !str_contains($column, '(')) {
-            $column = $this->queryBuilder->quoter()->quoteColumnName($column);
+            $column = $this->queryBuilder->getQuoter()->quoteColumnName($column);
         }
 
         if (count($sqlValues) > 1) {
@@ -205,7 +205,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
                 }
 
                 if (!str_contains($col, '(')) {
-                    $columns[$i] = $this->queryBuilder->quoter()->quoteColumnName($col);
+                    $columns[$i] = $this->queryBuilder->getQuoter()->quoteColumnName($col);
                 }
             }
 
@@ -213,7 +213,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
         }
 
         if (is_string($columns) && !str_contains($columns, '(')) {
-            $columns = $this->queryBuilder->quoter()->quoteColumnName($columns);
+            $columns = $this->queryBuilder->getQuoter()->quoteColumnName($columns);
             $query = "$columns $operator $sql";
         }
 
@@ -268,7 +268,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
             }
 
             $sqlColumns[] = !str_contains($column, '(')
-                ? $this->queryBuilder->quoter()->quoteColumnName($column) : $column;
+                ? $this->queryBuilder->getQuoter()->quoteColumnName($column) : $column;
         }
 
         return '(' . implode(', ', $sqlColumns) . ") $operator (" . implode(', ', $vss) . ')';
@@ -279,7 +279,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      */
     protected function getNullCondition(string $operator, string $column): string
     {
-        $column = $this->queryBuilder->quoter()->quoteColumnName($column);
+        $column = $this->queryBuilder->getQuoter()->quoteColumnName($column);
 
         if ($operator === 'IN') {
             return sprintf('%s IS NULL', $column);

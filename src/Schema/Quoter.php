@@ -87,6 +87,7 @@ class Quoter implements QuoterInterface
     public function getRawTableName(string $name): string
     {
         if (str_contains($name, '{{')) {
+            /** @var string $name */
             $name = preg_replace('/{{(.*?)}}/', '\1', $name);
 
             return str_replace('%', $this->tablePrefix, $name);
@@ -120,6 +121,7 @@ class Quoter implements QuoterInterface
             $name = $parts[count($parts) - 1];
         }
 
+        /** @var string */
         return preg_replace('|^\[\[([\w\-. ]+)]]$|', '\1', $name);
     }
 
@@ -171,6 +173,7 @@ class Quoter implements QuoterInterface
 
     public function quoteSql(string $sql): string
     {
+        /** @var string */
         return preg_replace_callback(
             '/({{(%?[\w\-. ]+)%?}}|\\[\\[([\w\-. ]+)]])/',
             function ($matches) {

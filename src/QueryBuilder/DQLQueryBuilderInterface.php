@@ -233,7 +233,7 @@ interface DQLQueryBuilderInterface
         array $columns,
         array &$params,
         bool|null $distinct = false,
-        string $selectOption = null
+        ?string $selectOption = null
     ): string;
 
     /**

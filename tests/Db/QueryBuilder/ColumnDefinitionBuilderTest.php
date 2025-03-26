@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\QueryBuilder\AbstractColumnDefinitionBuilder;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\Support\Stub\ColumnDefinitionBuilder;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -40,7 +40,7 @@ final class ColumnDefinitionBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $cdb = new class ($qb) extends AbstractColumnDefinitionBuilder {
-            protected function getDbType(ColumnSchemaInterface $column): string
+            protected function getDbType(ColumnInterface $column): string
             {
                 return 'uuid';
             }

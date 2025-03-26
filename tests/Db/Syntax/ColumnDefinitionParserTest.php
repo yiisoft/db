@@ -4,24 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Syntax;
 
-use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Syntax\ColumnDefinitionParser;
-use Yiisoft\Db\Tests\Support\TestTrait;
+use Yiisoft\Db\Tests\AbstractColumnDefinitionParserTest;
 
 /**
  * @group db
  */
-final class ColumnDefinitionParserTest extends TestCase
+final class ColumnDefinitionParserTest extends AbstractColumnDefinitionParserTest
 {
-    use TestTrait;
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\ColumnDefinitionParserProvider::parse
-     */
-    public function testParse(string $definition, array $expected): void
-    {
-        $parser = new ColumnDefinitionParser();
-
-        $this->assertSame($expected, $parser->parse($definition));
-    }
 }

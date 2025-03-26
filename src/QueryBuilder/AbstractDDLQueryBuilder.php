@@ -6,8 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
@@ -40,7 +39,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' CHECK (' . $this->quoter->quoteSql($expression) . ')';
     }
 
-    public function addColumn(string $table, string $column, ColumnInterface|ColumnSchemaInterface|string $type): string
+    public function addColumn(string $table, string $column, ColumnInterface|string $type): string
     {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
@@ -134,11 +133,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' UNIQUE (' . implode(', ', $columns) . ')';
     }
 
-    public function alterColumn(
-        string $table,
-        string $column,
-        ColumnInterface|ColumnSchemaInterface|string $type
-    ): string {
+    public function alterColumn(string $table, string $column, ColumnInterface|string $type): string
+    {
         return 'ALTER TABLE '
             . $this->quoter->quoteTableName($table)
             . ' CHANGE '
@@ -157,8 +153,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): string {
         return 'CREATE ' . (!empty($indexType) ? $indexType . ' ' : '') . 'INDEX '
             . $this->quoter->quoteTableName($name)
@@ -166,7 +162,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' (' . $this->queryBuilder->buildColumns($columns) . ')';
     }
 
-    public function createTable(string $table, array $columns, string $options = null): string
+    public function createTable(string $table, array $columns, ?string $options = null): string
     {
         $cols = [];
 
@@ -175,9 +171,13 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
                 $cols[] = "\t"
                     . $this->quoter->quoteColumnName($name)
                     . ' '
-                    . $this->queryBuilder->buildColumnDefinition($type);
+                    . $this->queryBuilder->buildColumnDefinition(
+                        $type instanceof ColumnInterface
+                        ? $type->withName($name)
+                        : $type
+                    );
             } else {
-                /** @psalm-var string $type */
+                /** @var string $type */
                 $cols[] = "\t" . $type;
             }
         }
@@ -264,9 +264,12 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . $this->quoter->quoteColumnName($name);
     }
 
-    public function dropTable(string $table): string
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): string
     {
-        return 'DROP TABLE ' . $this->quoter->quoteTableName($table);
+        return 'DROP TABLE '
+            . ($ifExists ? 'IF EXISTS ' : '')
+            . $this->quoter->quoteTableName($table)
+            . ($cascade ? ' CASCADE' : '');
     }
 
     public function dropUnique(string $table, string $name): string

@@ -17,7 +17,6 @@ use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\QueryBuilder;
-use Yiisoft\Db\Tests\Support\Stub\Schema;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function fclose;
@@ -61,9 +60,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array $expectedParams = [],
     ): void {
         $db = $this->getConnection();
-
-        $schemaMock = $this->createMock(Schema::class);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
+        $qb = new QueryBuilder($db);
         $params = [];
 
         try {
@@ -145,10 +142,8 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     public function testCreateView(): void
     {
         $db = $this->getConnection();
-
-        $schemaMock = $this->createMock(Schema::class);
         $subQuery = (new Query($db))->select('{{bar}}')->from('{{testCreateViewTable}}')->where(['>', 'bar', '5']);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
+        $qb = new QueryBuilder($db);
 
         $this->assertSame(
             <<<SQL
@@ -203,12 +198,10 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array $expectedParams
     ): void {
         $db = $this->getConnection();
-
-        $schemaMock = $this->createMock(Schema::class);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
+        $qb = new QueryBuilder($db);
 
         $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**
@@ -264,12 +257,10 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         array $expectedParams
     ): void {
         $db = $this->getConnection();
-
-        $schemaMock = $this->createMock(Schema::class);
-        $qb = new QueryBuilder($db->getQuoter(), $schemaMock, $db->getServerInfo());
+        $qb = $db->getQueryBuilder();
 
         $sql = $qb->update($table, $columns, $condition, $params);
-        $sql = $qb->quoter()->quoteSql($sql);
+        $sql = $db->getQuoter()->quoteSql($sql);
 
         $this->assertSame($expectedSql, $sql);
         $this->assertEquals($expectedParams, $params);
@@ -349,5 +340,36 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb = $db->getQueryBuilder();
 
         $this->assertInstanceOf(ServerInfoInterface::class, $qb->getServerInfo());
+    }
+
+    public function testJsonColumn(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+        $column = ColumnBuilder::json();
+
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                "CREATE TABLE [json_table] (\n\t[json_col] json CHECK (json_valid([json_col]))\n)",
+                $db->getDriverName(),
+            ),
+            $qb->createTable('json_table', ['json_col' => $column]),
+        );
+
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                'ALTER TABLE [json_table] ADD [json_col] json',
+                $db->getDriverName(),
+            ),
+            $qb->addColumn('json_table', 'json_col', $column),
+        );
+
+        $this->assertSame(
+            DbHelper::replaceQuotes(
+                'ALTER TABLE [json_table] CHANGE [json_col] [json_col] json',
+                $db->getDriverName(),
+            ),
+            $qb->alterColumn('json_table', 'json_col', $column),
+        );
     }
 }
