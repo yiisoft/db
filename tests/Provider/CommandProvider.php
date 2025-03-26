@@ -881,7 +881,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        (new query(static::getDb()))
+                        (new Query(static::getDb()))
                             ->select(['email', 'address', 'status' => new Expression('1')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -892,7 +892,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        (new query(static::getDb()))
+                        (new Query(static::getDb()))
                             ->select(['email', 'address', 'status' => new Expression('2')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -905,7 +905,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        (new query(static::getDb()))
+                        (new Query(static::getDb()))
                             ->select(['email', 'address', 'status' => new Expression('1')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -917,7 +917,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        (new query(static::getDb()))
+                        (new Query(static::getDb()))
                             ->select(['email', 'address', 'status' => new Expression('3')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -931,7 +931,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        (new query(static::getDb()))
+                        (new Query(static::getDb()))
                             ->select(['email', 'address', 'status' => new Expression('1')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
@@ -943,7 +943,7 @@ class CommandProvider
                 [
                     'params' => [
                         'T_upsert',
-                        (new query(static::getDb()))
+                        (new Query(static::getDb()))
                             ->select(['email', 'address', 'status' => new Expression('2')])
                             ->from('{{customer}}')
                             ->where(['name' => 'user1'])
