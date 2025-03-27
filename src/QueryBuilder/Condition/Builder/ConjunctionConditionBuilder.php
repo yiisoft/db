@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
@@ -40,7 +40,7 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         if (!$expression instanceof ConjunctionConditionInterface) {
-            throw new InvalidConfigException('ConjunctionConditionBuilder can only be used with ConjunctionConditionInterface instance.');
+            throw new InvalidArgumentException('ConjunctionConditionBuilder can only be used with ConjunctionConditionInterface instance.');
         }
 
         /** @psalm-var string[] $parts */

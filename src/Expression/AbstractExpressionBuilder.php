@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Expression;
 
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Syntax\AbstractSqlParser;
 

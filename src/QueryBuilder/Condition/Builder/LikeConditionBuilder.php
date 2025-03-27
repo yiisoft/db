@@ -7,7 +7,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
@@ -54,7 +54,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         if (!$expression instanceof LikeConditionInterface) {
-            throw new InvalidConfigException('LikeConditionBuilder can only be used with LikeConditionInterface instance.');
+            throw new InvalidArgumentException('LikeConditionBuilder can only be used with LikeConditionInterface instance.');
         }
 
         $values = $expression->getValue();

@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Exception;
 
-use Stringable;
-
 /**
- * Represents an exception that's caused by some DB-related operations.
+ * Represents an exception caused by some DB-related operations.
  *
  * It provides more information about the error that's caused by the exception.
  */
-class Exception extends \Exception implements Stringable
+class Exception extends \Exception
 {
     public function __construct(string $message, public array|null $errorInfo = [], ?\Exception $previous = null)
     {

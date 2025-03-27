@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
@@ -33,7 +33,7 @@ class NotConditionBuilder implements ExpressionBuilderInterface
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         if (!$expression instanceof NotConditionInterface) {
-            throw new InvalidConfigException('NotConditionBuilder can only be used with NotConditionInterface instance.');
+            throw new InvalidArgumentException('NotConditionBuilder can only be used with NotConditionInterface instance.');
         }
 
         $operand = $expression->getCondition();
