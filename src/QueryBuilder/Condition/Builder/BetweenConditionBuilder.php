@@ -32,8 +32,12 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(BetweenConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
+        if (!$expression instanceof BetweenConditionInterface) {
+            throw new InvalidConfigException('BetweenConditionBuilder can only be used with BetweenConditionInterface instance.');
+        }
+
         $operator = $expression->getOperator();
         $column = $expression->getColumn();
         $column = $column instanceof ExpressionInterface ? $this->queryBuilder->buildExpression($column) : $column;

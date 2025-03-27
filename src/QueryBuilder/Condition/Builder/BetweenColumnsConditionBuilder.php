@@ -33,8 +33,12 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(BetweenColumnsConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
+        if (!$expression instanceof BetweenColumnsConditionInterface) {
+            throw new InvalidConfigException('BetweenColumnsConditionBuilder can only be used with BetweenColumnsConditionInterface instance.');
+        }
+
         $operator = $expression->getOperator();
         $startColumn = $this->escapeColumnName($expression->getIntervalStartColumn(), $params);
         $endColumn = $this->escapeColumnName($expression->getIntervalEndColumn(), $params);
