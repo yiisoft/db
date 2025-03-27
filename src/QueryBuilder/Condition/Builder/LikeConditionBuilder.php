@@ -28,8 +28,8 @@ use function strtr;
 class LikeConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(
-        private QueryBuilderInterface $queryBuilder,
-        private string|null $escapeSql = null
+        private readonly QueryBuilderInterface $queryBuilder,
+        private readonly string|null $escapeSql = null
     ) {
     }
 

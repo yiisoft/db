@@ -18,7 +18,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  */
 class ExistsConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
