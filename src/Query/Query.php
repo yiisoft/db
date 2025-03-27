@@ -97,6 +97,7 @@ class Query implements QueryInterface
     protected array $with = [];
 
     private bool $emulateExecution = false;
+    private bool $typecasting = false;
 
     public function __construct(protected ConnectionInterface $db)
     {
@@ -312,7 +313,7 @@ class Query implements QueryInterface
     public function createCommand(): CommandInterface
     {
         [$sql, $params] = $this->db->getQueryBuilder()->build($this);
-        return $this->db->createCommand($sql, $params);
+        return $this->db->createCommand($sql, $params)->phpTypecasting($this->typecasting);
     }
 
     public function distinct(bool|null $value = true): static
@@ -660,6 +661,12 @@ class Query implements QueryInterface
             true => null,
             false => is_numeric($sum = $this->queryScalar("SUM($sql)")) ? $sum : null,
         };
+    }
+
+    public function typecasting(bool $typecasting = true): static
+    {
+        $this->typecasting = $typecasting;
+        return $this;
     }
 
     public function union(QueryInterface|string $sql, bool $all = false): static

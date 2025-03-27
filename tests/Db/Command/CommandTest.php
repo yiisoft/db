@@ -751,4 +751,20 @@ final class CommandTest extends AbstractCommandTest
         );
         parent::testProfilerData();
     }
+
+    public function testPhpTypecasting(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+
+        $command->phpTypecasting();
+
+        $this->assertTrue(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+
+        $command->phpTypecasting(false);
+
+        $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+    }
 }

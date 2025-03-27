@@ -120,6 +120,7 @@ abstract class AbstractCommand implements CommandInterface
      */
     protected string|null $refreshTableName = null;
     protected Closure|null $retryHandler = null;
+    protected bool $phpTypecasting = false;
     /**
      * @var string The SQL statement to execute.
      */
@@ -250,6 +251,12 @@ abstract class AbstractCommand implements CommandInterface
     {
         $sql = $this->getQueryBuilder()->createView($viewName, $subQuery);
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
+    }
+
+    public function phpTypecasting(bool $phpTypecasting = true): static
+    {
+        $this->phpTypecasting = $phpTypecasting;
+        return $this;
     }
 
     public function delete(string $table, array|string $condition = '', array $params = []): static

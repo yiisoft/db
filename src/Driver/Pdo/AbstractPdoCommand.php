@@ -22,7 +22,10 @@ use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\Query\Data\DataReader;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
+use function array_keys;
+use function array_map;
 use function restore_error_handler;
 use function set_error_handler;
 use function str_starts_with;
@@ -248,15 +251,37 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         if ($this->is($queryMode, self::QUERY_MODE_ROW)) {
             /** @psalm-var array|false $result */
             $result = $this->pdoStatement?->fetch(PDO::FETCH_ASSOC);
+
+            if ($this->phpTypecasting && $result !== false) {
+                $result = $this->phpTypecastRows([$result])[0];
+            }
         } elseif ($this->is($queryMode, self::QUERY_MODE_SCALAR)) {
             /** @psalm-var mixed $result */
             $result = $this->pdoStatement?->fetchColumn();
+
+            if (
+                $this->phpTypecasting
+                && $result !== false
+                && ($column = $this->getResultColumn(0)) !== null
+            ) {
+                $result = $column->phpTypecast($result);
+            }
         } elseif ($this->is($queryMode, self::QUERY_MODE_COLUMN)) {
-            /** @psalm-var mixed $result */
             $result = $this->pdoStatement?->fetchAll(PDO::FETCH_COLUMN);
+
+            if (
+                $this->phpTypecasting
+                && !empty($result)
+                && ($column = $this->getResultColumn(0)) !== null
+            ) {
+                $result = array_map($column->phpTypecast(...), $result);
+            }
         } elseif ($this->is($queryMode, self::QUERY_MODE_ALL)) {
-            /** @psalm-var mixed $result */
             $result = $this->pdoStatement?->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($this->phpTypecasting && !empty($result)) {
+                $result = $this->phpTypecastRows($result);
+            }
         } else {
             throw new InvalidParamException("Unknown query mode '$queryMode'");
         }
@@ -297,5 +322,64 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         if ($this->refreshTableName !== null) {
             $this->db->getSchema()->refreshTableSchema($this->refreshTableName);
         }
+    }
+
+    /**
+     * Returns the column instance from the query result by the index, or `null` if the column type cannot be determined.
+     */
+    private function getResultColumn(int $index): ColumnInterface|null
+    {
+        $info = $this->pdoStatement?->getColumnMeta($index);
+
+        if (empty($info)) {
+            return null;
+        }
+
+        return $this->db->getSchema()->getResultColumn($info);
+    }
+
+    /**
+     * Returns column instances with keys from the query result.
+     *
+     * @return ColumnInterface[]
+     *
+     * @psalm-param array<int, string|int> $keys
+     */
+    private function getResultColumns(array $keys): array
+    {
+        $columns = [];
+
+        foreach ($keys as $i => $key) {
+            $column = $this->getResultColumn($i);
+
+            if ($column !== null) {
+                $columns[$key] = $column;
+            }
+        }
+
+        return $columns;
+    }
+
+    /**
+     * Typecasts rows from the query result to PHP types according to the column types.
+     *
+     * @param array[] $rows
+     */
+    private function phpTypecastRows(array $rows): array
+    {
+        $keys = array_keys($rows[0]);
+        $columns = $this->getResultColumns($keys);
+
+        if (empty($columns)) {
+            return $rows;
+        }
+
+        foreach ($rows as &$row) {
+            foreach ($columns as $key => $column) {
+                $row[$key] = $column->phpTypecast($row[$key]);
+            }
+        }
+
+        return $rows;
     }
 }

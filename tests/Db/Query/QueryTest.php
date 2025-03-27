@@ -11,6 +11,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\AbstractQueryTest;
+use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -113,5 +114,36 @@ final class QueryTest extends AbstractQueryTest
         );
 
         parent::testColumnWithIndexBy();
+    }
+
+    public function testTypecasting(): void
+    {
+        $db = $this->getConnection();
+
+        $query = (new Query($db));
+
+        $this->assertFalse(Assert::getInaccessibleProperty($query, 'typecasting'));
+
+        $query->typecasting();
+
+        $this->assertTrue(Assert::getInaccessibleProperty($query, 'typecasting'));
+
+        $query->typecasting(false);
+
+        $this->assertFalse(Assert::getInaccessibleProperty($query, 'typecasting'));
+    }
+
+    public function testCreateCommandWithTypecasting(): void
+    {
+        $db = $this->getConnection();
+
+        $query = (new Query($db));
+        $command = $query->createCommand();
+
+        $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+
+        $command = $query->typecasting()->createCommand();
+
+        $this->assertTrue(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
     }
 }

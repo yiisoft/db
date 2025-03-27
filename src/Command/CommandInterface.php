@@ -379,6 +379,11 @@ interface CommandInterface
     public function createView(string $viewName, QueryInterface|string $subQuery): static;
 
     /**
+     * Enables or disables typecasting of values when retrieving records.
+     */
+    public function phpTypecasting(bool $phpTypecasting = true): static;
+
+    /**
      * Creates a DELETE command.
      *
      * For example,

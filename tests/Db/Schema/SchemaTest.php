@@ -376,6 +376,19 @@ final class SchemaTest extends AbstractSchemaTest
         $this->assertSame($checkConstraint, $schema->getTableChecks('T_constraints_1'));
     }
 
+    public function testGetResultColumn(): void
+    {
+        $db = $this->getConnection();
+        $schema = $db->getSchema();
+
+        $this->assertNull($schema->getResultColumn([]));
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Tests\Support\Stub\Schema::loadResultColumn is not supported by this DBMS.');
+
+        $schema->getResultColumn(['native_type' => 'integer']);
+    }
+
     private function createTableSchemaStub(): TableSchemaInterface
     {
         // defined table T_constraints_1
