@@ -40,7 +40,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
         if (!$expression instanceof HashCondition) {
-            throw new \InvalidArgumentException('HashConditionBuilder can only be used with HashCondition instance.');
+            throw new InvalidArgumentException('HashConditionBuilder can only be used with HashCondition instance.');
         }
 
         $hash = $expression->getHash() ?? [];
