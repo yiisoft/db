@@ -18,4 +18,13 @@ namespace Yiisoft\Db\Expression;
  */
 interface ExpressionBuilderInterface
 {
+    /**
+     * Method builds the raw SQL from the expression that will not be additionally
+     * escaped or quoted.
+     *
+     * @param ExpressionInterface $expression The expression to be built.
+     * @param array $params The binding parameters.
+     * @return string The raw SQL that will not be additionally escaped or quoted.
+     */
+    public function build(ExpressionInterface $expression, array &$params = []): string;
 }

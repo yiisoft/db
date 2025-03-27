@@ -73,6 +73,7 @@
 - New #939: Add `caseSensitive` option to like condition (@vjik)
 - New #942: Allow PHP backed enums as values (@Tigrov)
 - Enh #943: Add `getCacheKey()` and `getCacheTag()` methods to `AbstractPdoSchema` class (@Tigrov)
+- Enh #730: Add ExpressionBuilderInterface::build() (@samdark)
 
 ## 1.3.0 March 21, 2024
 
