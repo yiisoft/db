@@ -10,6 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\HashConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -37,8 +38,12 @@ class HashConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(HashConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
+        if (!$expression instanceof HashCondition) {
+            throw new InvalidConfigException('HashConditionBuilder can only be used with HashCondition instance.');
+        }
+
         $hash = $expression->getHash() ?? [];
         $parts = [];
 
