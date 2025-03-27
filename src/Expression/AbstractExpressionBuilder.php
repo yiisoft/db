@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Expression;
 
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Syntax\AbstractSqlParser;
 
@@ -28,7 +29,7 @@ use function substr_replace;
  */
 abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
@@ -37,7 +38,7 @@ abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
      *
      * This method is called by the query builder to build SQL expressions from {@see ExpressionInterface} objects.
      *
-     * @param Expression $expression The expression to build.
+     * @param ExpressionInterface $expression The expression to build.
      * @param array $params The parameters to be bound to the query.
      *
      * @psalm-param ParamsType $params
@@ -46,6 +47,10 @@ abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
+        if (!$expression instanceof Expression) {
+            throw new InvalidArgumentException(static::class . ' could only be used with Expression.');
+        }
+
         $sql = $expression->__toString();
         $expressionParams = $expression->getParams();
 

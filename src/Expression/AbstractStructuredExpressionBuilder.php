@@ -24,7 +24,7 @@ use function is_string;
 abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderInterface
 {
     /**
-     * Builds a SQL expression for a string value.
+     * Builds an SQL expression for a string value.
      *
      * @param string $value The valid SQL string representation of the structured value.
      * @param StructuredExpression $expression The structured expression.
@@ -54,7 +54,7 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
     ): string;
 
     /**
-     * Builds a SQL expression for a structured value.
+     * Builds an SQL expression for a structured value.
      *
      * @param array|object $value The structured value.
      * @param StructuredExpression $expression The structured expression.
@@ -84,7 +84,7 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
     /**
      * The method builds the raw SQL from the `$expression` that won't be additionally escaped or quoted.
      *
-     * @param StructuredExpression $expression The expression to build.
+     * @param ExpressionInterface $expression The expression to build.
      * @param array $params The binding parameters.
      *
      * @throws Exception
@@ -96,6 +96,10 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
+        if (!$expression instanceof StructuredExpression) {
+            throw new InvalidArgumentException(static::class . ' could only be used with StructuredExpression.');
+        }
+
         $value = $expression->getValue();
 
         if ($value === null) {
