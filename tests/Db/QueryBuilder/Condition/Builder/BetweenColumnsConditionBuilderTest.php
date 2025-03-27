@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition\Builder;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Exception\InvalidConfigException;
+use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Builder\BetweenColumnsConditionBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
@@ -46,7 +46,7 @@ final class BetweenColumnsConditionBuilderTest extends TestCase
             }
         };
 
-        $this->expectException(InvalidConfigException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('BetweenColumnsConditionBuilder can only be used with BetweenColumnsConditionInterface instance.');
 
         (new BetweenColumnsConditionBuilder($db->getQueryBuilder()))->build($wrongCondition);
