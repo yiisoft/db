@@ -39,7 +39,7 @@ final class BetweenColumnsConditionBuilderTest extends TestCase
     {
         $db = $this->getConnection();
 
-        $wrongCondition = new class implements ConditionInterface {
+        $wrongCondition = new class () implements ConditionInterface {
             public static function fromArrayDefinition(string $operator, array $operands): ConditionInterface
             {
                 return new self();
