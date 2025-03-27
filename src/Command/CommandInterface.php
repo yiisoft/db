@@ -379,11 +379,6 @@ interface CommandInterface
     public function createView(string $viewName, QueryInterface|string $subQuery): static;
 
     /**
-     * Enables or disables typecasting of values when retrieving records.
-     */
-    public function phpTypecasting(bool $phpTypecasting = true): static;
-
-    /**
      * Creates a DELETE command.
      *
      * For example,
@@ -623,6 +618,11 @@ interface CommandInterface
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
     public function insertWithReturningPks(string $table, array $columns): array|false;
+
+    /**
+     * Enables or disables typecasting of values when retrieving records.
+     */
+    public function phpTypecasting(bool $phpTypecasting = true): static;
 
     /**
      * Prepares the SQL statement to be executed.

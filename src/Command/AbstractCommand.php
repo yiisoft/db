@@ -253,12 +253,6 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
     }
 
-    public function phpTypecasting(bool $phpTypecasting = true): static
-    {
-        $this->phpTypecasting = $phpTypecasting;
-        return $this;
-    }
-
     public function delete(string $table, array|string $condition = '', array $params = []): static
     {
         $sql = $this->getQueryBuilder()->delete($table, $condition, $params);
@@ -461,6 +455,12 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         return is_scalar($result) ? $result : null;
+    }
+
+    public function phpTypecasting(bool $phpTypecasting = true): static
+    {
+        $this->phpTypecasting = $phpTypecasting;
+        return $this;
     }
 
     public function renameColumn(string $table, string $oldName, string $newName): static

@@ -1179,6 +1179,8 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $schema = $db->getSchema();
 
         $this->assertEquals($expected, $schema->getResultColumn($info));
+
+        $db->close();
     }
 
     protected function createTableForIndexAndConstraintTests(
