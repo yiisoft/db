@@ -620,6 +620,11 @@ interface CommandInterface
     public function insertWithReturningPks(string $table, array $columns): array|false;
 
     /**
+     * Enables or disables typecasting of values when retrieving records.
+     */
+    public function phpTypecasting(bool $phpTypecasting = true): static;
+
+    /**
      * Prepares the SQL statement to be executed.
      *
      * For complex SQL statement that's to be executed many times, this may improve performance.

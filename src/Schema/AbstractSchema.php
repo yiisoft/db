@@ -13,7 +13,9 @@ use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Constant\GettypeResult;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
+use function array_key_exists;
 use function gettype;
 use function is_array;
 
@@ -35,6 +37,8 @@ abstract class AbstractSchema implements SchemaInterface
      * @var string|null $defaultSchema The default schema name used for the current session.
      */
     protected string|null $defaultSchema = null;
+    /** @var (ColumnInterface|null)[] Saved columns from query results. */
+    protected array $resultColumns = [];
     protected array $viewNames = [];
     private array $schemaNames = [];
     /** @psalm-var string[]|array */
@@ -58,6 +62,20 @@ abstract class AbstractSchema implements SchemaInterface
      * This allows {@see refresh()} to invalidate all cached table schemas.
      */
     abstract protected function getCacheTag(): string;
+
+    /**
+     * Returns the cache key for the column metadata received from the query result.
+     *
+     * @param array $info The column metadata from the query result.
+     */
+    abstract protected function getResultColumnCacheKey(array $info): string;
+
+    /**
+     * Creates a new column instance according to the column metadata received from the query result.
+     *
+     * @param array $info The column metadata from the query result.
+     */
+    abstract protected function loadResultColumn(array $info): ColumnInterface|null;
 
     /**
      * Loads all check constraints for the given table.
@@ -137,6 +155,39 @@ abstract class AbstractSchema implements SchemaInterface
             GettypeResult::NULL => DataType::NULL,
             default => DataType::STRING,
         };
+    }
+
+    public function getResultColumn(array $info): ColumnInterface|null
+    {
+        if (empty($info)) {
+            return null;
+        }
+
+        $cacheKey = $this->getResultColumnCacheKey($info);
+
+        if (array_key_exists($cacheKey, $this->resultColumns)) {
+            return $this->resultColumns[$cacheKey];
+        }
+
+        $isCacheEnabled = $this->schemaCache->isEnabled();
+
+        if ($isCacheEnabled) {
+            /** @var ColumnInterface */
+            $this->resultColumns[$cacheKey] = $this->schemaCache->get($cacheKey);
+
+            if (isset($this->resultColumns[$cacheKey])) {
+                return $this->resultColumns[$cacheKey];
+            }
+        }
+
+        $column = $this->loadResultColumn($info);
+        $this->resultColumns[$cacheKey] = $column;
+
+        if ($column !== null && $isCacheEnabled) {
+            $this->schemaCache->set($cacheKey, $column, $this->getCacheTag());
+        }
+
+        return $column;
     }
 
     /**

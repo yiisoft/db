@@ -21,6 +21,11 @@ class SchemaProvider
         return [];
     }
 
+    public static function resultColumns(): array
+    {
+        return [];
+    }
+
     public static function constraints(): array
     {
         return [

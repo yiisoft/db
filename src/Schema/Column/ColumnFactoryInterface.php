@@ -25,6 +25,7 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
  *     dimension?: positive-int,
  *     enumValues?: array|null,
  *     extra?: string|null,
+ *     fromResult?: bool,
  *     primaryKey?: bool,
  *     name?: string|null,
  *     notNull?: bool,
