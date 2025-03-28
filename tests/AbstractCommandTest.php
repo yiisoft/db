@@ -279,51 +279,47 @@ abstract class AbstractCommandTest extends TestCase
         $db->createCommand($sql)->execute();
     }
 
-//    public function testBindParamsOverflowIssue(): void
-//    {
-//        $db = $this->getConnection();
-//        $db->open();
-//
-//        $tempTableName = 'testTempTable';
-//        $db->createCommand()->createTable($tempTableName, [
-//            'id' => ColumnBuilder::primaryKey(),
-//            'first_name' => ColumnBuilder::string()->notNull(),
-//            'last_name' => ColumnBuilder::string()->notNull(),
-//            'birth_date' => ColumnBuilder::date(),
-//            'country' => ColumnBuilder::string(),
-//            'city' => ColumnBuilder::string(),
-//            'address' => ColumnBuilder::string(),
-//        ])->execute();
-//
-//        $personData = [
-//            'first_name' => 'IVAN',
-//            'last_name' => 'PUPKIN',
-//            'birth_date' => '1983-08-08',
-//            'country' => 'Kazakhstan',
-//            'city' => 'Almaty',
-//            'address' => '7, Gagarin street, apartment 10',
-//        ];
-//
-//        $insertData = [];
-//        for ($i = 0; $i < 10000; $i++) {
-//            $insertData[] = $personData;
-//        }
-//
-//        $db->createCommand()->insertBatch($tempTableName, $insertData)->execute();
-//
-////        if ($db->getDriverName() === 'pgsql' || $db->getDriverName() === 'sqlite') {
-////            $this->expectException(\PDOException::class);
-////            if ($db->getDriverName() === 'pgsql') {
-////                $this->expectExceptionMessageMatches('/General error:\w+number of parameters must be between \d+ and \d+/ui');
-////            } elseif ($db->getDriverName() === 'sqlite') {
-////                $this->expectExceptionMessageMatches('/General error:\w+too many SQL variables/ui');
-////            }
-////        }
-//
+    public function testBindParamsOverflowIssue(): void
+    {
+        $db = $this->getConnection();
+
+        if ($db->getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('Test is intended for use with pgsql database.');
+        }
+
+        $tempTableName = 'testTempTable';
+        $db->createCommand()->createTable($tempTableName, [
+            'id' => ColumnBuilder::primaryKey(),
+            'first_name' => ColumnBuilder::string()->notNull(),
+            'last_name' => ColumnBuilder::string()->notNull(),
+            'birth_date' => ColumnBuilder::date(),
+            'country' => ColumnBuilder::string(),
+            'city' => ColumnBuilder::string(),
+            'address' => ColumnBuilder::string(),
+        ])->execute();
+
+        $personData = [
+            'first_name' => 'IVAN',
+            'last_name' => 'PUPKIN',
+            'birth_date' => '1983-08-08',
+            'country' => 'Kazakhstan',
+            'city' => 'Almaty',
+            'address' => '7, Gagarin street, apartment 10',
+        ];
+
+        $insertData = [];
+        for ($i = 0; $i < 10000; $i++) {
+            $insertData[] = $personData;
+        }
+
+        $db->createCommand()->insertBatch($tempTableName, $insertData)->execute();
+
+        $this->expectException(\PDOException::class);
+        $this->expectExceptionMessageMatches('/General error:\w+number of parameters must be between \d+ and \d+/ui');
+
 //        $countSql = 'SELECT COUNT(*) FROM ' . $db->getQuoter()->quoteTableName($tempTableName);
 //        $this->assertEquals(10000, $db->createCommand($countSql)->queryScalar());
-//
-//        $db->createCommand()->dropTable($tempTableName)->execute();
-//        $db->close();
-//    }
+
+        $db->createCommand()->dropTable($tempTableName)->execute();
+    }
 }
