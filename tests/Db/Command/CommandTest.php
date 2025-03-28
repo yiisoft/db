@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Command;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Column\ColumnSchemaInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractCommandTest;
+use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -42,7 +45,7 @@ final class CommandTest extends AbstractCommandTest
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::columnTypes */
-    public function testAddColumn(ColumnSchemaInterface|string $type): void
+    public function testAddColumn(ColumnInterface|string $type): void
     {
         $db = $this->getConnection();
 
@@ -116,18 +119,20 @@ final class CommandTest extends AbstractCommandTest
      * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::addForeignKeySql
      */
     public function testAddForeignKeySql(
-        string $name,
-        string $tableName,
-        array|string $column1,
-        array|string $column2,
+        array|string $columns,
+        array|string $referenceColumns,
         string|null $delete,
         string|null $update,
         string $expected
     ): void {
         $db = $this->getConnection();
-
         $command = $db->createCommand();
-        $sql = $command->addForeignKey($tableName, $name, $column1, $tableName, $column2, $delete, $update)->getSql();
+
+        $name = '{{fk_constraint}}';
+        $tableName = '{{fk_table}}';
+        $referenceTable = '{{fk_referenced_table}}';
+
+        $sql = $command->addForeignKey($tableName, $name, $columns, $referenceTable, $referenceColumns, $delete, $update)->getSql();
 
         $this->assertSame($expected, $sql);
     }
@@ -182,13 +187,18 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
-        );
-
         $command->insertBatch('table', [['value1', 'value2'], ['value3', 'value4']], ['column1', 'column2']);
+
+        $this->assertSame('INSERT INTO [table] ([column1], [column2]) VALUES (:qp0, :qp1), (:qp2, :qp3)', $command->getSql());
+        $this->assertSame(
+            [
+                ':qp0' => 'value1',
+                ':qp1' => 'value2',
+                ':qp2' => 'value3',
+                ':qp3' => 'value4',
+            ],
+            $command->getParams()
+        );
     }
 
     /**
@@ -239,6 +249,7 @@ final class CommandTest extends AbstractCommandTest
         \t[address] varchar(255) NOT NULL,
         \t[status] integer NOT NULL,
         \t[profile_id] integer NOT NULL,
+        \t[data] json CHECK (json_valid([data])),
         \t[created_at] timestamp NOT NULL,
         \t[updated_at] timestamp NOT NULL
         ) CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB
@@ -250,6 +261,7 @@ final class CommandTest extends AbstractCommandTest
             'address' => ColumnType::STRING . '(255) NOT NULL',
             'status' => ColumnType::INTEGER . ' NOT NULL',
             'profile_id' => ColumnType::INTEGER . ' NOT NULL',
+            'data' => ColumnBuilder::json(),
             'created_at' => ColumnType::TIMESTAMP . ' NOT NULL',
             'updated_at' => ColumnType::TIMESTAMP . ' NOT NULL',
         ];
@@ -459,22 +471,25 @@ final class CommandTest extends AbstractCommandTest
         );
     }
 
-    public function testDropTable(): void
+    #[DataProviderExternal(CommandProvider::class, 'dropTable')]
+    public function testDropTable(string $expected, ?bool $ifExists, ?bool $cascade): void
     {
         $db = $this->getConnection();
-
         $command = $db->createCommand();
-        $sql = $command->dropTable('table')->getSql();
 
-        $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                DROP TABLE [[table]]
-                SQL,
-                $db->getDriverName(),
-            ),
-            $sql,
-        );
+        if ($ifExists === null && $cascade === null) {
+            $command = $command->dropTable('table');
+        } elseif ($ifExists === null) {
+            $command = $command->dropTable('table', cascade: $cascade);
+        } elseif ($cascade === null) {
+            $command = $command->dropTable('table', ifExists: $ifExists);
+        } else {
+            $command = $command->dropTable('table', ifExists: $ifExists, cascade: $cascade);
+        }
+
+        $expectedSql = DbHelper::replaceQuotes($expected, $db->getDriverName());
+
+        $this->assertSame($expectedSql, $command->getSql());
     }
 
     public function testDropUnique(): void
@@ -514,13 +529,20 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
-        );
-
         $command->insert('customer', ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address']);
+
+        $this->assertSame(
+            'INSERT INTO [customer] ([email], [name], [address]) VALUES (:qp0, :qp1, :qp2)',
+            $command->getSql(),
+        );
+        $this->assertSame(
+            [
+                ':qp0' => 't1@example.com',
+                ':qp1' => 'test',
+                ':qp2' => 'test address',
+            ],
+            $command->getParams(),
+        );
     }
 
     public function testQuery(): void
@@ -694,13 +716,10 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
+        $command->update('{{table}}', ['name' => 'John'], ['id' => 1]);
 
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
-        );
-
-        $command->update('{{table}}', [], [], []);
+        $this->assertSame('UPDATE [table] SET [name]=:qp0 WHERE [id]=:qp1', $command->getSql());
+        $this->assertSame([':qp0' => 'John', ':qp1' => 1], $command->getParams());
     }
 
     public function testUpsert(): void
@@ -717,7 +736,7 @@ final class CommandTest extends AbstractCommandTest
         $command->upsert('{{table}}', []);
     }
 
-    public function testProfiler(string $sql = null): void
+    public function testProfiler(?string $sql = null): void
     {
         $this->expectExceptionMessage(
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
@@ -725,7 +744,7 @@ final class CommandTest extends AbstractCommandTest
         parent::testProfiler();
     }
 
-    public function testProfilerData(string $sql = null): void
+    public function testProfilerData(?string $sql = null): void
     {
         $this->expectExceptionMessage(
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'

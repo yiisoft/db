@@ -220,7 +220,7 @@ abstract class AbstractCommandTest extends TestCase
      * @throws Throwable
      * @throws \PHPUnit\Framework\MockObject\Exception
      */
-    public function testProfiler(string $sql = null): void
+    public function testProfiler(?string $sql = null): void
     {
         $sql ??= 'SELECT 123';
 
@@ -245,7 +245,7 @@ abstract class AbstractCommandTest extends TestCase
      * @throws Throwable
      * @throws \PHPUnit\Framework\MockObject\Exception
      */
-    public function testProfilerData(string $sql = null): void
+    public function testProfilerData(?string $sql = null): void
     {
         $sql ??= 'SELECT 123';
 

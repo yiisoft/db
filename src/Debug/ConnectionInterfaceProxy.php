@@ -11,6 +11,7 @@ use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
@@ -27,7 +28,7 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
     /**
      * @psalm-suppress PossiblyUndefinedArrayOffset
      */
-    public function beginTransaction(string $isolationLevel = null): TransactionInterface
+    public function beginTransaction(?string $isolationLevel = null): TransactionInterface
     {
         [$callStack] = debug_backtrace();
 
@@ -42,7 +43,7 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
         return $this->connection->createBatchQueryResult($query, $each);
     }
 
-    public function createCommand(string $sql = null, array $params = []): CommandInterface
+    public function createCommand(?string $sql = null, array $params = []): CommandInterface
     {
         return new CommandInterfaceProxy(
             $this->connection->createCommand($sql, $params),
@@ -63,7 +64,12 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
         $this->connection->close();
     }
 
-    public function getLastInsertID(string $sequenceName = null): string
+    public function getColumnFactory(): ColumnFactoryInterface
+    {
+        return $this->connection->getColumnFactory();
+    }
+
+    public function getLastInsertID(?string $sequenceName = null): string
     {
         return $this->connection->getLastInsertID($sequenceName);
     }
@@ -144,7 +150,7 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
      * @psalm-param Closure(self): mixed $closure
      * @psalm-suppress PossiblyUndefinedArrayOffset
      */
-    public function transaction(Closure $closure, string $isolationLevel = null): mixed
+    public function transaction(Closure $closure, ?string $isolationLevel = null): mixed
     {
         [$callStack] = debug_backtrace();
 

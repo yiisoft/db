@@ -18,6 +18,10 @@ on:
 
 name: build
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: PHP ${{ matrix.php }}-${{ matrix.os }}-db
@@ -37,10 +41,11 @@ jobs:
           - 8.1
           - 8.2
           - 8.3
+          - 8.4
 
     steps:
       - name: Checkout.
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
@@ -49,7 +54,6 @@ jobs:
           extensions: ${{ env.extensions }}
           ini-values: date.timezone='UTC', zend.exception_ignore_args=0
           coverage: pcov
-          tools: composer:v2, pecl
 
       - name: Update composer.
         run: composer self-update
@@ -61,8 +65,8 @@ jobs:
         run: vendor/bin/phpunit --testsuite Db --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
 
       - name: Upload coverage to Codecov.
-        if: matrix.os == 'ubuntu-latest' && matrix.php == '8.3'
-        uses: codecov/codecov-action@v3
+        if: matrix.os == 'ubuntu-latest' && matrix.php == '8.4'
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml

@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <psalm
   errorLevel="1"
+  ensureOverrideAttribute="false"
   findUnusedBaselineEntry="true"
   findUnusedCode="false"
   findUnusedVariablesAndParams="true"
@@ -17,5 +18,7 @@
   <issueHandlers>
     <MixedAssignment errorLevel="suppress" />
     <RiskyTruthyFalsyComparison errorLevel="suppress" />
+    <MissingClassConstType errorLevel="suppress" />
+    <ClassMustBeFinal errorLevel="suppress" />
   </issueHandlers>
 </psalm>

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
+use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -51,8 +53,6 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(LikeConditionInterface $expression, array &$params = []): string
     {
-        $operator = strtoupper($expression->getOperator());
-        $column = $expression->getColumn();
         $values = $expression->getValue();
         $escape = $expression->getEscapingReplacements();
 
@@ -60,7 +60,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
             $escape = $this->escapingReplacements;
         }
 
-        [$andor, $not, $operator] = $this->parseOperator($operator);
+        [$andor, $not, $operator] = $this->parseOperator($expression);
 
         if (!is_array($values)) {
             $values = [$values];
@@ -70,28 +70,64 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
             return $not ? '' : '0=1';
         }
 
-        if ($column instanceof ExpressionInterface) {
-            $column = $this->queryBuilder->buildExpression($column, $params);
-        } elseif (!str_contains($column, '(')) {
-            $column = $this->queryBuilder->quoter()->quoteColumnName($column);
-        }
+        $column = $this->prepareColumn($expression, $params);
 
         $parts = [];
 
-        /** @psalm-var string[] $values */
+        /** @psalm-var list<string|ExpressionInterface> $values */
         foreach ($values as $value) {
-            if ($value instanceof ExpressionInterface) {
-                $phName = $this->queryBuilder->buildExpression($value, $params);
-            } else {
-                $phName = $this->queryBuilder->bindParam(
-                    $escape === null ? $value : ('%' . strtr($value, $escape) . '%'),
-                    $params
-                );
-            }
-            $parts[] = "$column $operator $phName$this->escapeSql";
+            $placeholderName = $this->preparePlaceholderName($value, $expression, $escape, $params);
+            $parts[] = "$column $operator $placeholderName$this->escapeSql";
         }
 
         return implode($andor, $parts);
+    }
+
+    /**
+     * Prepare column to use in SQL.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     */
+    protected function prepareColumn(LikeConditionInterface $expression, array &$params): string
+    {
+        $column = $expression->getColumn();
+
+        if ($column instanceof ExpressionInterface) {
+            return $this->queryBuilder->buildExpression($column, $params);
+        }
+
+        if (!str_contains($column, '(')) {
+            return $this->queryBuilder->getQuoter()->quoteColumnName($column);
+        }
+
+        return $column;
+    }
+
+    /**
+     * Prepare value to use in SQL.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws NotSupportedException
+     * @return string
+     */
+    protected function preparePlaceholderName(
+        string|ExpressionInterface $value,
+        LikeConditionInterface $expression,
+        array|null $escape,
+        array &$params,
+    ): string {
+        if ($value instanceof ExpressionInterface) {
+            return $this->queryBuilder->buildExpression($value, $params);
+        }
+        return $this->queryBuilder->bindParam(
+            new Param($escape === null ? $value : ('%' . strtr($value, $escape) . '%'), DataType::STRING),
+            $params
+        );
     }
 
     /**
@@ -101,8 +137,9 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      *
      * @psalm-return array{0: string, 1: bool, 2: string}
      */
-    protected function parseOperator(string $operator): array
+    protected function parseOperator(LikeConditionInterface $expression): array
     {
+        $operator = strtoupper($expression->getOperator());
         if (!preg_match('/^(AND |OR |)((NOT |)I?LIKE)/', $operator, $matches)) {
             throw new InvalidArgumentException("Invalid operator in like condition: \"$operator\"");
         }

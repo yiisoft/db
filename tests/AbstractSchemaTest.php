@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Command\DataType;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -17,14 +16,6 @@ use function print_r;
 abstract class AbstractSchemaTest extends TestCase
 {
     use TestTrait;
-
-    public function testCreateColumnSchemaBuilder(): void
-    {
-        $columnSchemaBuilder = $this->getConnection()->getSchema()->createColumn('string');
-
-        $this->assertInstanceOf(ColumnInterface::class, $columnSchemaBuilder);
-        $this->assertSame('string', $columnSchemaBuilder->getType());
-    }
 
     public function testGetDefaultSchema(): void
     {

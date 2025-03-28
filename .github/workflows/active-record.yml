@@ -14,13 +14,17 @@ on:
 
 name: active-record
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: ActiveRecord
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      PHP_VERSION: 8.3
+      PHP_VERSION: 8.4
       EXTENSIONS: pdo, pdo_mysql, pdo_oci, pdo_pgsql, pdo_sqlite, pdo_sqlsrv
 
     runs-on: ubuntu-latest

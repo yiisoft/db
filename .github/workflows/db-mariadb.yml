@@ -18,6 +18,10 @@ on:
 
 name: db-mariadb
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: PHP ${{ matrix.php }}-mariadb-${{ matrix.mariadb }}
@@ -32,7 +36,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - 8.3
+          - 8.4
 
         mariadb:
           - mariadb:10.4
@@ -48,6 +52,8 @@ jobs:
             mariadb: mariadb:latest
           - php: 8.2
             mariadb: mariadb:latest
+          - php: 8.3
+            mariadb: mariadb:latest
 
     services:
       mysql:
@@ -62,7 +68,7 @@ jobs:
 
     steps:
       - name: Checkout.
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
@@ -91,8 +97,8 @@ jobs:
         run: vendor/bin/phpunit --testsuite Mysql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
 
       - name: Upload coverage to Codecov.
-        if: matrix.php == '8.3'
-        uses: codecov/codecov-action@v3
+        if: matrix.php == '8.4'
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml

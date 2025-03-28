@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema;
 
 use Throwable;
-use Yiisoft\Db\Command\DataType;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
-use Yiisoft\Db\Schema\Builder\ColumnInterface;
-use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 
 /**
  * Represents the schema for a database table.
@@ -59,66 +57,88 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * Define the type of the index as `UNIQUE`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`, `MariaDB`, `MSSQL`, `Oracle`, `PostgreSQL`, `SQLite`.
+     *
+     * @deprecated Use {@see IndexType::UNIQUE} instead. Will be removed in 2.0.
      */
     public const INDEX_UNIQUE = 'UNIQUE';
     /**
      * Define the type of the index as `BTREE`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`, `PostgreSQL`.
+     *
+     * @deprecated Use {@see IndexType::BTREE} instead. Will be removed in 2.0.
      */
     public const INDEX_BTREE = 'BTREE';
     /**
      * Define the type of the index as `HASH`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`, `PostgreSQL`.
+     *
+     * @deprecated Use {@see IndexType::HASH} instead. Will be removed in 2.0.
      */
     public const INDEX_HASH = 'HASH';
     /**
      * Define the type of the index as `FULLTEXT`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`.
+     *
+     * @deprecated Use {@see IndexType::FULLTEXT} instead. Will be removed in 2.0.
      */
     public const INDEX_FULLTEXT = 'FULLTEXT';
     /**
      * Define the type of the index as `SPATIAL`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MySQL`.
+     *
+     * @deprecated Use {@see IndexType::SPATIAL} instead. Will be removed in 2.0.
      */
     public const INDEX_SPATIAL = 'SPATIAL';
     /**
      * Define the type of the index as `GIST`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `PostgreSQL`.
+     *
+     * @deprecated Use {@see IndexMethod::GIST} instead. Will be removed in 2.0.
      */
     public const INDEX_GIST = 'GIST';
     /**
      * Define the type of the index as `GIN`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `PostgreSQL`.
+     *
+     * @deprecated Use {@see IndexMethod::GIN} instead. Will be removed in 2.0.
      */
     public const INDEX_GIN = 'GIN';
     /**
      * Define the type of the index as `BRIN`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `PostgreSQL`.
+     *
+     * @deprecated Use {@see IndexMethod::BRIN} instead. Will be removed in 2.0.
      */
     public const INDEX_BRIN = 'BRIN';
     /**
      * Define the type of the index as `CLUSTERED`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MSSQL`.
+     *
+     * @deprecated Use {@see IndexType::CLUSTERED} instead. Will be removed in 2.0.
      */
     public const INDEX_CLUSTERED = 'CLUSTERED';
     /**
      * Define the type of the index as `NONCLUSTERED`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `MSSQL`.
+     *
+     * @deprecated Use {@see IndexType::NONCLUSTERED} instead. Will be removed in 2.0.
      */
     public const INDEX_NONCLUSTERED = 'NONCLUSTERED';
     /**
      * Define the type of the index as `BITMAP`, it's used in {@see DDLQueryBuilderInterface::createIndex()}.
      *
      * Supported by `Oracle`.
+     *
+     * @deprecated Use {@see IndexType::BITMAP} instead. Will be removed in 2.0.
      */
     public const INDEX_BITMAP = 'BITMAP';
     /**
@@ -279,18 +299,6 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public const TYPE_JSON = 'json';
 
     /**
-     * @psalm-param string[]|int[]|int|string|null $length
-     *
-     * @deprecated Use {@see ColumnBuilder} instead. Will be removed in 2.0.
-     */
-    public function createColumn(string $type, array|int|string $length = null): ColumnInterface;
-
-    /**
-     * Returns the column factory for creating column instances.
-     */
-    public function getColumnFactory(): ColumnFactoryInterface;
-
-    /**
      * @return string|null The default schema name.
      */
     public function getDefaultSchema(): string|null;
@@ -422,9 +430,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @param string $tableName The table name to search for
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
-     *  name. If not empty, the table will be searched in the specified schema.
+     * name. If not empty, the table will be searched in the specified schema.
      * @param bool $refresh Whether to fetch the latest available table names. If this is false, view names fetched
-     *    before (if available) will be returned.
+     * before (if available) will be returned.
      *
      * @return bool Whether table exists.
      */
@@ -435,7 +443,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @param string $schema The schema name to search for
      * @param bool $refresh Whether to fetch the latest available schema names. If this is false, view names fetched
-     *   before (if available) will be returned.
+     * before (if available) will be returned.
      *
      * @return bool Whether schema exists.
      */
@@ -446,9 +454,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @param string $viewName The view name to search for
      * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
-     *   name. If not empty, the table will be searched in the specified schema.
+     * name. If not empty, the table will be searched in the specified schema.
      * @param bool $refresh Whether to fetch the latest available view names. If this is false, view names fetched
-     *  before (if available) will be returned.
+     * before (if available) will be returned.
      *
      * @return bool Whether view exists.
      */
