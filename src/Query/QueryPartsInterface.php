@@ -668,13 +668,14 @@ interface QueryPartsInterface
      *
      * @param array|ExpressionInterface|string|null $condition The conditions to put in the `WHERE` part.
      * @param array $params The parameters (name => value) to bind to the query.
+     * @param bool $force Overwrite `where` conditions if it was set earlier
      *
      * @psalm-param ParamsType $params
      *
      * @see andWhere()
      * @see orWhere()
      */
-    public function where(array|string|ExpressionInterface|null $condition, array $params = []): static;
+    public function where(array|string|ExpressionInterface|null $condition, array $params = [], bool $force = false): static;
 
     /**
      * Prepends an SQL statement using `WITH` syntax.
