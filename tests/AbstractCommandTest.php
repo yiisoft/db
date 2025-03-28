@@ -326,16 +326,17 @@ abstract class AbstractCommandTest extends TestCase
             'address' => '7, Gagarin street, apartment 10',
         ];
 
+        //generate 66 000 params (6 fields x 11000 lines)
         $insertData = [];
         for ($i = 0; $i < 11000; $i++) {
             $insertData[] = $personData;
         }
 
+        $this->expectException(\PDOException::class);
+        $this->expectExceptionMessageMatches('/General error:\w+number of parameters must be between \d+ and \d+/ui');
+
         $db->createCommand()->insertBatch($tempTableName, $insertData)->execute();
-//        try {
-//        } catch (\PDOException $ex) {
-//            //            $this->expectExceptionMessageMatches('/General error:\w+number of parameters must be between \d+ and \d+/ui');
-//        }
+
         $countSql = 'SELECT COUNT(*) FROM ' . $db->getQuoter()->quoteTableName($tempTableName);
         $this->assertEquals(10000, $db->createCommand($countSql)->queryScalar());
         $db->createCommand()->dropTable($tempTableName)->execute();
