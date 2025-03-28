@@ -204,7 +204,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $this->getConnection()->getQueryBuilder();
 
         $this->assertSame($expected, $qb->alterColumn('foo1', 'bar', $type));
-        $db->close();
     }
 
     /**
