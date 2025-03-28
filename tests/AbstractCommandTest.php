@@ -9,6 +9,7 @@ use Throwable;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
@@ -332,7 +333,7 @@ abstract class AbstractCommandTest extends TestCase
             $insertData[] = $personData;
         }
 
-        $this->expectException(\PDOException::class);
+        $this->expectException(IntegrityException::class);
         $this->expectExceptionMessageMatches('/General error:\w+number of parameters must be between \d+ and \d+/ui');
 
         $db->createCommand()->insertBatch($tempTableName, $insertData)->execute();
