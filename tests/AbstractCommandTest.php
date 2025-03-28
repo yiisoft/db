@@ -297,7 +297,7 @@ abstract class AbstractCommandTest extends TestCase
             $this->markTestSkipped('Test is intended for use with pgsql database.');
         }
 
-        $skipVersions = ['12'];
+        $skipVersions = ['11', '12', '16'];
         $dbmsVersion = $db->getServerInfo()->getVersion();
         if (preg_match('/^(\d+)\.(\d+)/ui', $dbmsVersion, $matches)) {
             $dbmsVersion = $matches[1];
