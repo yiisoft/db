@@ -334,7 +334,7 @@ abstract class AbstractCommandTest extends TestCase
         }
 
         $this->expectException(IntegrityException::class);
-        $this->expectExceptionMessageMatches('/General error:\w+number of parameters must be between \d+ and \d+/ui');
+        $this->expectExceptionMessageMatches('/General error: \d+ number of parameters must be between \d+ and \d+/ui');
 
         $db->createCommand()->insertBatch($tempTableName, $insertData)->execute();
 
