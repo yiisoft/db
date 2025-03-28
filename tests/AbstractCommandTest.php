@@ -14,6 +14,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ContextInterface;
 use Yiisoft\Db\Profiler\ProfilerInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -276,5 +277,45 @@ abstract class AbstractCommandTest extends TestCase
         $db->setProfiler($profiler);
 
         $db->createCommand($sql)->execute();
+    }
+
+    public function testBindParamsOverflowIssue(): void
+    {
+        $db = $this->getConnection();
+        $db->open();
+
+        $tempTableName = 'testTempTable';
+        $db->createCommand()->createTable($tempTableName, [
+            'id' => ColumnBuilder::primaryKey(),
+            'first_name' => ColumnBuilder::string()->notNull(),
+            'last_name' => ColumnBuilder::string()->notNull(),
+            'birth_date' => ColumnBuilder::date(),
+            'country' => ColumnBuilder::string(),
+            'city' => ColumnBuilder::string(),
+            'address' => ColumnBuilder::string(),
+        ])->execute();
+
+        $personData = [
+            'first_name' => 'IVAN',
+            'last_name' => 'PUPKIN',
+            'birth_date' => '1983-08-08',
+            'country' => 'Kazakhstan',
+            'city' => 'Almaty',
+            'address' => '7, Gagarin street, apartment 10',
+        ];
+
+        $insertData = [];
+        for ($i = 0; $i < 10000; $i++) {
+            $insertData[] = $personData;
+        }
+
+        $command = $db->createCommand();
+        $command->insertBatch($tempTableName, $insertData)->execute();
+
+        $this->expectException(\PDOException::class);
+        $this->expectExceptionMessageMatches('/General error\w+number of parameters must be between \d+ and \d+/ui');
+
+        $db->createCommand()->dropTable($tempTableName)->execute();
+        $db->close();
     }
 }
