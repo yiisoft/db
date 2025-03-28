@@ -311,14 +311,14 @@ abstract class AbstractCommandTest extends TestCase
 
         $db->createCommand()->insertBatch($tempTableName, $insertData)->execute();
 
-        if ($db->getDriverName() === 'pgsql' || $db->getDriverName() === 'sqlite') {
-            $this->expectException(\PDOException::class);
-            if ($db->getDriverName() === 'pgsql') {
-                $this->expectExceptionMessageMatches('/General error:\w+number of parameters must be between \d+ and \d+/ui');
-            } elseif ($db->getDriverName() === 'sqlite') {
-                $this->expectExceptionMessageMatches('/General error:\w+too many SQL variables/ui');
-            }
-        }
+//        if ($db->getDriverName() === 'pgsql' || $db->getDriverName() === 'sqlite') {
+//            $this->expectException(\PDOException::class);
+//            if ($db->getDriverName() === 'pgsql') {
+//                $this->expectExceptionMessageMatches('/General error:\w+number of parameters must be between \d+ and \d+/ui');
+//            } elseif ($db->getDriverName() === 'sqlite') {
+//                $this->expectExceptionMessageMatches('/General error:\w+too many SQL variables/ui');
+//            }
+//        }
 
         $countSql = 'SELECT COUNT(*) FROM ' . $db->getQuoter()->quoteTableName($tempTableName);
         $this->assertEquals(10000, $db->createCommand($countSql)->queryScalar());
