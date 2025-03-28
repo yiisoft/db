@@ -7,6 +7,9 @@ namespace Yiisoft\Db\Driver\Pdo;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\AbstractSchema;
 
+use function md5;
+use function serialize;
+
 /**
  * Represents a schema for a PDO (PHP Data Object) connection.
  */
@@ -28,5 +31,15 @@ abstract class AbstractPdoSchema extends AbstractSchema
         }
 
         return $cacheKey;
+    }
+
+    protected function getCacheKey(string $name): array
+    {
+        return [static::class, ...$this->generateCacheKey(), $this->db->getQuoter()->getRawTableName($name)];
+    }
+
+    protected function getCacheTag(): string
+    {
+        return md5(serialize([static::class, ...$this->generateCacheKey()]));
     }
 }

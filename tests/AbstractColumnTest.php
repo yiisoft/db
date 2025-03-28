@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use PHPUnit\Framework\TestCase;
-
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function is_object;
