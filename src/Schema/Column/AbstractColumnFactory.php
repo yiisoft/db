@@ -81,7 +81,10 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     public function fromDbType(string $dbType, array $info = []): ColumnInterface
     {
         $info['dbType'] = $dbType;
-        $type = $info['type'] ?? $this->getType($dbType, $info);
+        /** @psalm-var ColumnType::* $type */
+        $type = $info['type']
+            ?? $this->mapType($this->typeMap, $dbType, $info)
+            ?? $this->getType($dbType, $info);
 
         return $this->fromType($type, $info);
     }
@@ -161,7 +164,9 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             $type = ColumnType::ARRAY;
         }
 
-        $columnClass = $this->getColumnClass($type, $info);
+        /** @psalm-var class-string<ColumnInterface> $columnClass */
+        $columnClass = $this->mapType($this->columnClassMap, $type, $info)
+            ?? $this->getColumnClass($type, $info);
 
         $column = new $columnClass($type, ...$info);
 
@@ -183,13 +188,11 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     /**
      * @psalm-param ColumnType::* $type
      * @psalm-param ColumnInfo $info
-     * @psalm-assert ColumnInfo $info
      * @psalm-return class-string<ColumnInterface>
      */
-    protected function getColumnClass(string $type, array &$info = []): string
+    protected function getColumnClass(string $type, array $info = []): string
     {
-        /** @psalm-var class-string<ColumnInterface> */
-        return $this->mapType($this->columnClassMap, $type, $info) ?? match ($type) {
+        return match ($type) {
             ColumnType::BOOLEAN => BooleanColumn::class,
             ColumnType::BIT => BitColumn::class,
             ColumnType::TINYINT => IntegerColumn::class,
@@ -220,16 +223,15 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      * @return string The abstract database type.
      *
      * @psalm-param ColumnInfo $info
-     * @psalm-assert ColumnInfo $info
      * @psalm-return ColumnType::*
      */
-    protected function getType(string $dbType, array &$info = []): string
+    protected function getType(string $dbType, array $info = []): string
     {
-        /** @psalm-var ColumnType::* */
-        return $this->mapType($this->typeMap, $dbType, $info)
-            ?? (!empty($info['dimension'])
-                ? ColumnType::ARRAY
-                : static::TYPE_MAP[$dbType] ?? ColumnType::STRING);
+        if (!empty($info['dimension'])) {
+            return ColumnType::ARRAY;
+        }
+
+        return static::TYPE_MAP[$dbType] ?? ColumnType::STRING;
     }
 
     /**
