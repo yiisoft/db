@@ -309,8 +309,7 @@ abstract class AbstractCommandTest extends TestCase
             $insertData[] = $personData;
         }
 
-        $command = $db->createCommand();
-        $command->insertBatch($tempTableName, $insertData)->execute();
+        $db->createCommand()->insertBatch($tempTableName, $insertData)->execute();
 
         if ($db->getDriverName() === 'pgsql') {
             $this->expectException(\PDOException::class);
