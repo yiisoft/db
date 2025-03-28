@@ -327,7 +327,7 @@ abstract class AbstractCommandTest extends TestCase
         ];
 
         $insertData = [];
-        for ($i = 0; $i < 10000; $i++) {
+        for ($i = 0; $i < 11000; $i++) {
             $insertData[] = $personData;
         }
 
