@@ -27,13 +27,17 @@ abstract class AbstractPdoConnectionTest extends TestCase
         $this->assertNotSame($db, $db2);
         $this->assertNull($db2->getTransaction());
         $this->assertNull($db2->getPDO());
+        $db->close();
+        $db2->close();
     }
 
     public function testGetDriver(): void
     {
-        $driver = $this->getConnection()->getDriver();
+        $db = $this->getConnection();
+        $driver = $db->getDriver();
 
         $this->assertInstanceOf(PdoDriverInterface::class, $driver);
+        $db->close();
     }
 
     public function testGetServerInfo(): void
@@ -41,6 +45,7 @@ abstract class AbstractPdoConnectionTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertInstanceOf(PdoServerInfo::class, $db->getServerInfo());
+        $db->close();
     }
 
     /**
@@ -72,6 +77,7 @@ abstract class AbstractPdoConnectionTest extends TestCase
         $this->expectExceptionMessage('could not find driver');
 
         $db->open();
+        $db->close();
     }
 
     /**
@@ -107,6 +113,7 @@ abstract class AbstractPdoConnectionTest extends TestCase
         $this->expectExceptionMessage('could not find driver');
 
         $db->open();
+        $db->close();
     }
 
     public function testQuoteValueNotString(): void
@@ -116,6 +123,7 @@ abstract class AbstractPdoConnectionTest extends TestCase
         $value = $db->quoteValue(1);
 
         $this->assertSame(1, $value);
+        $db->close();
     }
 
     public function testSetEmulatePrepare(): void
@@ -127,6 +135,7 @@ abstract class AbstractPdoConnectionTest extends TestCase
         $db->setEmulatePrepare(true);
 
         $this->assertTrue($db->getEmulatePrepare());
+        $db->close();
     }
 
     protected function getLogger(): LoggerInterface|MockObject
