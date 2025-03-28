@@ -297,14 +297,14 @@ abstract class AbstractCommandTest extends TestCase
             $this->markTestSkipped('Test is intended for use with pgsql database.');
         }
 
-        $skipVersions = ['11', '12', '16'];
-        $dbmsVersion = $db->getServerInfo()->getVersion();
-        if (preg_match('/^(\d+)\.(\d+)/ui', $dbmsVersion, $matches)) {
-            $dbmsVersion = $matches[1];
-        }
-        if (in_array($dbmsVersion, $skipVersions)) {
-            $this->markTestSkipped('Test is not applicable to pgsql v' . $dbmsVersion);
-        }
+//        $skipVersions = ['11', '12', '16'];
+//        $dbmsVersion = $db->getServerInfo()->getVersion();
+//        if (preg_match('/^(\d+)\.(\d+)/ui', $dbmsVersion, $matches)) {
+//            $dbmsVersion = $matches[1];
+//        }
+//        if (in_array($dbmsVersion, $skipVersions)) {
+//            $this->markTestSkipped('Test is not applicable to pgsql v' . $dbmsVersion);
+//        }
 
         $tempTableName = 'testTempTable';
         $db->createCommand()->createTable($tempTableName, [
@@ -331,10 +331,10 @@ abstract class AbstractCommandTest extends TestCase
             $insertData[] = $personData;
         }
 
-        $db->createCommand()->insertBatch($tempTableName, $insertData)->execute();
-
         $this->expectException(\PDOException::class);
         $this->expectExceptionMessageMatches('/General error:\w+number of parameters must be between \d+ and \d+/ui');
+
+        $db->createCommand()->insertBatch($tempTableName, $insertData)->execute();
 
 //        $countSql = 'SELECT COUNT(*) FROM ' . $db->getQuoter()->quoteTableName($tempTableName);
 //        $this->assertEquals(10000, $db->createCommand($countSql)->queryScalar());

@@ -22,6 +22,7 @@ final class ConnectionTest extends AbstractConnectionTest
         $db = $this->getConnection();
 
         $this->assertNull($db->getTableSchema('non_existing_table'));
+        $db->close();
     }
 
     public function testSerialized(): void
