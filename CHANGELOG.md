@@ -2,6 +2,7 @@
 
 ## 2.0.0 under development
 
+- New #913: Add methods `SchemaInterface::hasSchema()`, `SchemaInterface::hasTable()`, `SchemaInterface::hasView()` (@evil1)
 - Enh #820: Support `Traversable` values for `AbstractDMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #815: Refactor `Query::column()` method (@Tigrov) 
 - Enh #816: Allow scalar values for `$columns` parameter of `Query::select()` and `Query::addSelect()` methods (@Tigrov)
@@ -71,6 +72,8 @@
 - Enh #940: Rename `quoter()` method to `getQuoter()` in `QueryBuilderInterface` and `AbstractQueryBuilder` class (@Tigrov)
 - Enh #940: Change constructor parameters in `AbstractQueryBuilder` class (@Tigrov)
 - New #939: Add `caseSensitive` option to like condition (@vjik)
+- New #942: Allow PHP backed enums as values (@Tigrov)
+- Enh #943: Add `getCacheKey()` and `getCacheTag()` methods to `AbstractPdoSchema` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

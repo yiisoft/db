@@ -31,6 +31,8 @@ use Yiisoft\Db\Schema\Column\StructuredLazyColumn;
 use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Schema\Data\StructuredLazyArray;
+use Yiisoft\Db\Tests\Support\IntEnum;
+use Yiisoft\Db\Tests\Support\StringEnum;
 
 use function fopen;
 
@@ -67,6 +69,7 @@ class ColumnProvider
                     [1, '1'],
                     [1, true],
                     [0, false],
+                    [1, IntEnum::ONE],
                     [$expression = new Expression('1'), $expression],
                 ],
             ],
@@ -106,6 +109,7 @@ class ColumnProvider
                     ['1', true],
                     ['0', false],
                     ['string', 'string'],
+                    ['one', StringEnum::ONE],
                     [$resource = fopen('php://memory', 'rb'), $resource],
                     [$expression = new Expression('expression'), $expression],
                 ],
