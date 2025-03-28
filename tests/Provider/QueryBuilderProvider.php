@@ -55,7 +55,7 @@ class QueryBuilderProvider
                 'C_id_1',
                 ReferentialAction::CASCADE,
                 ReferentialAction::CASCADE,
-                Dbhelper::replaceQuotes(
+                DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]]) REFERENCES [[$pkTableName]] ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
@@ -70,7 +70,7 @@ class QueryBuilderProvider
                 'C_id_1, C_id_2',
                 ReferentialAction::CASCADE,
                 ReferentialAction::CASCADE,
-                Dbhelper::replaceQuotes(
+                DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]]) REFERENCES [[$pkTableName]] ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
@@ -290,7 +290,7 @@ class QueryBuilderProvider
             [
                 [
                     'not',
-                    (new query(static::getDb()))->select('exists')->from('some_table'),
+                    (new Query(static::getDb()))->select('exists')->from('some_table'),
                 ],
                 'NOT ((SELECT [[exists]] FROM [[some_table]]))', [],
             ],
@@ -305,7 +305,7 @@ class QueryBuilderProvider
                 [
                     'and',
                     ['expired' => false],
-                    (new query(static::getDb()))->select('count(*) > 1')->from('queue'),
+                    (new Query(static::getDb()))->select('count(*) > 1')->from('queue'),
                 ],
                 '([[expired]]=:qp0) AND ((SELECT count(*) > 1 FROM [[queue]]))',
                 [':qp0' => false],
@@ -363,7 +363,7 @@ class QueryBuilderProvider
                 new BetweenColumnsCondition(
                     new Expression('NOW()'),
                     'NOT BETWEEN',
-                    (new query(static::getDb()))->select('min_date')->from('some_table'),
+                    (new Query(static::getDb()))->select('min_date')->from('some_table'),
                     'max_date'
                 ),
                 'NOW() NOT BETWEEN (SELECT [[min_date]] FROM [[some_table]]) AND [[max_date]]',
@@ -374,7 +374,7 @@ class QueryBuilderProvider
                     new Expression('NOW()'),
                     'NOT BETWEEN',
                     new Expression('min_date'),
-                    (new query(static::getDb()))->select('max_date')->from('some_table'),
+                    (new Query(static::getDb()))->select('max_date')->from('some_table'),
                 ),
                 'NOW() NOT BETWEEN min_date AND (SELECT [[max_date]] FROM [[some_table]])',
                 [],
@@ -382,7 +382,7 @@ class QueryBuilderProvider
 
             /* in */
             [
-                ['in', 'id', [1, 2, (new query(static::getDb()))->select('three')->from('digits')]],
+                ['in', 'id', [1, 2, (new Query(static::getDb()))->select('three')->from('digits')]],
                 '[[id]] IN (:qp0, :qp1, (SELECT [[three]] FROM [[digits]]))',
                 [':qp0' => 1, ':qp1' => 2],
             ],
@@ -395,7 +395,7 @@ class QueryBuilderProvider
                 [
                     'in',
                     'id',
-                    (new query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 '[[id]] IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -404,7 +404,7 @@ class QueryBuilderProvider
                 [
                     'not in',
                     'id',
-                    (new query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -495,7 +495,7 @@ class QueryBuilderProvider
                 new InCondition(
                     ['id'],
                     'in',
-                    (new query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '([[id]]) IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -519,7 +519,7 @@ class QueryBuilderProvider
                 new InCondition(
                     [new Expression('id')],
                     'in',
-                    (new query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '(id) IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -529,7 +529,7 @@ class QueryBuilderProvider
             [
                 [
                     'exists',
-                    (new query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -537,7 +537,7 @@ class QueryBuilderProvider
             [
                 [
                     'not exists',
-                    (new query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'NOT EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1],
             ],
@@ -564,7 +564,7 @@ class QueryBuilderProvider
                 [
                     '=',
                     'date',
-                    (new query(static::getDb()))->select('max(date)')->from('test')->where(['id' => 5]),
+                    (new Query(static::getDb()))->select('max(date)')->from('test')->where(['id' => 5]),
                 ],
                 '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]]=:qp0)',
                 [':qp0' => 5],
@@ -578,7 +578,7 @@ class QueryBuilderProvider
                 [':qp0' => '2019-08-01'],
             ],
             [
-                ['=', (new query(static::getDb()))->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
+                ['=', (new Query(static::getDb()))->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
                 '(SELECT COUNT(*) FROM [[test]] WHERE [[id]]=:qp0) = :qp1',
                 [':qp0' => 6, ':qp1' => 0],
             ],
@@ -1053,7 +1053,7 @@ class QueryBuilderProvider
             ],
             'carry passed params (query)' => [
                 'customer',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select(['email', 'name', 'address', 'is_active', 'related_id'])
                     ->from('customer')
                     ->where(
@@ -1096,7 +1096,7 @@ class QueryBuilderProvider
             ],
             'query' => [
                 'customer',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select([new Expression('email as email'), new Expression('name')])
                     ->from('customer')
                     ->where(
@@ -1464,7 +1464,7 @@ class QueryBuilderProvider
             ],
             'query' => [
                 'T_upsert',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1475,7 +1475,7 @@ class QueryBuilderProvider
             ],
             'query with update part' => [
                 'T_upsert',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1486,7 +1486,7 @@ class QueryBuilderProvider
             ],
             'query without update part' => [
                 'T_upsert',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1518,7 +1518,7 @@ class QueryBuilderProvider
             ],
             'query, values and expressions with update part' => [
                 '{{%T_upsert}}',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
@@ -1531,7 +1531,7 @@ class QueryBuilderProvider
             ],
             'query, values and expressions without update part' => [
                 '{{%T_upsert}}',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),

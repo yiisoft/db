@@ -1119,10 +1119,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $with1Query = (new query($db))->select('id')->from('t1')->where('expr = 1');
-        $with2Query = (new query($db))->select('id')->from('t2')->innerJoin('a1', 't2.id = a1.id')->where('expr = 2');
-        $with3Query = (new query($db))->select('id')->from('t3')->where('expr = 3');
-        $query = (new query($db))
+        $with1Query = (new Query($db))->select('id')->from('t1')->where('expr = 1');
+        $with2Query = (new Query($db))->select('id')->from('t2')->innerJoin('a1', 't2.id = a1.id')->where('expr = 2');
+        $with3Query = (new Query($db))->select('id')->from('t3')->where('expr = 3');
+        $query = (new Query($db))
             ->withQuery($with1Query, 'a1')
             ->withQuery($with2Query->union($with3Query), 'a2')
             ->from('a2');
@@ -1424,12 +1424,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $subQuery = (new query($db))
+        $subQuery = (new Query($db))
             ->select('1')
             ->from('Website w')
             ->where('w.id = t.website_id')
             ->andWhere(['w.merchant_id' => 6, 'w.user_id' => 210]);
-        $query = (new query($db))
+        $query = (new Query($db))
             ->select('id')
             ->from('TotalExample t')
             ->where(['exists', $subQuery])
@@ -1460,12 +1460,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $subQuery = (new query($db))
+        $subQuery = (new Query($db))
             ->select('1')
             ->from('Website w')
             ->where('w.id = t.website_id')
             ->andWhere('w.merchant_id = :merchant_id', [':merchant_id' => 6]);
-        $query = (new query($db))
+        $query = (new Query($db))
             ->select('id')
             ->from('TotalExample t')
             ->where(['exists', $subQuery])
@@ -1615,7 +1615,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame(
             DbHelper::replaceQuotes($expected, $db->getDriverName()),
-            $qb->createView('animal_view', (new query($db))->select('1')),
+            $qb->createView('animal_view', (new Query($db))->select('1')),
         );
     }
 
