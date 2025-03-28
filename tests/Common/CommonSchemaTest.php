@@ -423,8 +423,9 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertTrue($schema->hasTable($tempTableName));
         $this->assertFalse($schema->hasTable('no_such_table'));
 
-        $db->createCommand()->dropTable($tempTableName)->execute();
+        $db->createCommand('DROP TABLE ' . $db->getQuoter()->quoteTableName($tempTableName))->execute();
 
+        $this->assertTrue($schema->hasTable($tempTableName));
         $this->assertFalse($schema->hasTable($tempTableName, '', true));
 
         $db->close();
