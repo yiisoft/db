@@ -316,7 +316,7 @@ abstract class AbstractCommandTest extends TestCase
             if ($db->getDriverName() === 'pgsql') {
                 $this->expectExceptionMessageMatches('/General error:\w+number of parameters must be between \d+ and \d+/ui');
             } elseif ($db->getDriverName() === 'sqlite') {
-                $this->expectExceptionMessageMatches('/General error:\w+too many SQL variables');
+                $this->expectExceptionMessageMatches('/General error:\w+too many SQL variables/ui');
             }
         }
 
