@@ -49,6 +49,7 @@ abstract class AbstractCommandTest extends TestCase
             ),
             $command->getSql(),
         );
+        $db->close();
     }
 
     /**
@@ -70,6 +71,7 @@ abstract class AbstractCommandTest extends TestCase
 
         $this->assertSame($sql, $command->getSql());
         $this->assertSame([':name' => 'John Doe'], $command->getParams());
+        $db->close();
     }
 
     /**
@@ -107,6 +109,7 @@ abstract class AbstractCommandTest extends TestCase
         $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
         $this->assertCount(3, $bindedValues);
         $this->assertEquals($param, $bindedValues['int']);
+        $db->close();
     }
 
     /**
@@ -128,6 +131,7 @@ abstract class AbstractCommandTest extends TestCase
         $command = $db->createCommand($sql, $params);
 
         $this->assertSame($expectedRawSql, $command->getRawSql());
+        $db->close();
     }
 
     /**
@@ -149,6 +153,7 @@ abstract class AbstractCommandTest extends TestCase
         SQL;
         $command->setSql($sql2);
         $this->assertSame($sql2, $command->getSql());
+        $db->close();
     }
 
     /**
@@ -175,6 +180,7 @@ abstract class AbstractCommandTest extends TestCase
         $command->cancel();
 
         $this->assertNull($command->getPdoStatement());
+        $db->close();
     }
 
     /**
@@ -194,6 +200,7 @@ abstract class AbstractCommandTest extends TestCase
         );
 
         $this->assertSame('SELECT 123', $command->getRawSql());
+        $db->close();
     }
 
     /**
@@ -212,6 +219,7 @@ abstract class AbstractCommandTest extends TestCase
         );
 
         $this->assertSame('SELECT 123', $command->getSql());
+        $db->close();
     }
 
     /**
@@ -237,6 +245,7 @@ abstract class AbstractCommandTest extends TestCase
         $db->setProfiler($profiler);
 
         $db->createCommand($sql)->execute();
+        $db->close();
     }
 
     /**
@@ -277,6 +286,7 @@ abstract class AbstractCommandTest extends TestCase
         $db->setProfiler($profiler);
 
         $db->createCommand($sql)->execute();
+        $db->close();
     }
 
     public function testBindParamsOverflowIssue(): void
@@ -321,5 +331,6 @@ abstract class AbstractCommandTest extends TestCase
 //        $this->assertEquals(10000, $db->createCommand($countSql)->queryScalar());
 
         $db->createCommand()->dropTable($tempTableName)->execute();
+        $db->close();
     }
 }
