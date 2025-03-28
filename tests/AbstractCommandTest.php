@@ -297,6 +297,15 @@ abstract class AbstractCommandTest extends TestCase
             $this->markTestSkipped('Test is intended for use with pgsql database.');
         }
 
+        $skipVersions = ['12'];
+        $dbmsVersion = $db->getServerInfo()->getVersion();
+        if (preg_match('/^(\d+)\.(\d+)/ui', $dbmsVersion, $matches)) {
+            $dbmsVersion = $matches[1];
+        }
+        if (in_array($dbmsVersion, $skipVersions)) {
+            $this->markTestSkipped('Test is not applicable to pgsql v' . $dbmsVersion);
+        }
+
         $tempTableName = 'testTempTable';
         $db->createCommand()->createTable($tempTableName, [
             'id' => ColumnBuilder::primaryKey(),
