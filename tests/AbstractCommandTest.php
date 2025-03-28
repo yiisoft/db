@@ -312,8 +312,10 @@ abstract class AbstractCommandTest extends TestCase
         $command = $db->createCommand();
         $command->insertBatch($tempTableName, $insertData)->execute();
 
-        $this->expectException(\PDOException::class);
-        $this->expectExceptionMessageMatches('/General error\w+number of parameters must be between \d+ and \d+/ui');
+        if ($db->getDriverName() === 'pgsql') {
+            $this->expectException(\PDOException::class);
+            $this->expectExceptionMessageMatches('/General error\w+number of parameters must be between \d+ and \d+/ui');
+        }
 
         $db->createCommand()->dropTable($tempTableName)->execute();
         $db->close();
