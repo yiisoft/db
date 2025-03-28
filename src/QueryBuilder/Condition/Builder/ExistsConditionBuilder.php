@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ExistConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
@@ -17,7 +18,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  */
 class ExistsConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
@@ -29,8 +30,12 @@ class ExistsConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(ExistConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
+        if (!$expression instanceof ExistConditionInterface) {
+            throw new InvalidArgumentException('ExistsConditionBuilder can only be used with ExistConditionInterface instance.');
+        }
+
         $operator = $expression->getOperator();
         $query = $expression->getQuery();
         $sql = $this->queryBuilder->buildExpression($query, $params);

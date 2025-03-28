@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
@@ -20,7 +20,7 @@ use function str_contains;
  */
 class BetweenConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
@@ -32,8 +32,12 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(BetweenConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
+        if (!$expression instanceof BetweenConditionInterface) {
+            throw new InvalidArgumentException('BetweenConditionBuilder can only be used with BetweenConditionInterface instance.');
+        }
+
         $operator = $expression->getOperator();
         $column = $expression->getColumn();
         $column = $column instanceof ExpressionInterface ? $this->queryBuilder->buildExpression($column) : $column;

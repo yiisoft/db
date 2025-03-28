@@ -31,7 +31,7 @@ final class Expression implements ExpressionInterface, Stringable
     /**
      * @psalm-param ParamsType $params
      */
-    public function __construct(private string $expression, private array $params = [])
+    public function __construct(private readonly string $expression, private readonly array $params = [])
     {
     }
 
