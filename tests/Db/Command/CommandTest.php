@@ -751,4 +751,20 @@ final class CommandTest extends AbstractCommandTest
         );
         parent::testProfilerData();
     }
+
+    public function testDbTypecasting(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        $this->assertTrue(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
+
+        $command->dbTypecasting(false);
+
+        $this->assertFalse(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
+
+        $command->dbTypecasting();
+
+        $this->assertTrue(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
+    }
 }
