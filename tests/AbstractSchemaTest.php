@@ -24,6 +24,7 @@ abstract class AbstractSchemaTest extends TestCase
         $schema = $db->getSchema();
 
         $this->assertNull($schema->getDefaultSchema());
+        $db->close();
     }
 
     public function testGetDataType(): void
@@ -53,6 +54,7 @@ abstract class AbstractSchemaTest extends TestCase
         }
 
         fclose($fp);
+        $db->close();
     }
 
     public function testRefresh(): void
@@ -64,5 +66,6 @@ abstract class AbstractSchemaTest extends TestCase
 
         $this->assertSame([], Assert::getInaccessibleProperty($schema, 'tableMetadata'));
         $this->assertSame([], Assert::getInaccessibleProperty($schema, 'tableNames'));
+        $db->close();
     }
 }

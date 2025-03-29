@@ -37,6 +37,7 @@ abstract class AbstractConnectionTest extends TestCase
         $query = (new Query($db))->from('customer');
 
         $this->assertInstanceOf(BatchQueryResult::class, $db->createBatchQueryResult($query));
+        $db->close();
     }
 
     /**
@@ -56,6 +57,7 @@ abstract class AbstractConnectionTest extends TestCase
 
         $this->assertSame($sql, $command->getSql());
         $this->assertSame($params, $command->getParams());
+        $db->close();
     }
 
     public function testGetDriverName(): void
@@ -63,6 +65,7 @@ abstract class AbstractConnectionTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertSame($this->getDriverName(), $db->getDriverName());
+        $db->close();
     }
 
     /**
@@ -84,6 +87,7 @@ abstract class AbstractConnectionTest extends TestCase
                 $db->beginTransaction();
             }
         );
+        $db->close();
     }
 
     public function testNotProfiler(): void
@@ -101,6 +105,7 @@ abstract class AbstractConnectionTest extends TestCase
         $db->setProfiler(null);
 
         $this->assertNull(Assert::getInaccessibleProperty($db, 'profiler'));
+        $db->close();
     }
 
     public function testProfiler(): void
@@ -128,6 +133,7 @@ abstract class AbstractConnectionTest extends TestCase
         };
         $db->setProfiler($profiler);
         $db->open();
+        $db->close();
     }
 
     public function testSetTablePrefix(): void
@@ -137,6 +143,7 @@ abstract class AbstractConnectionTest extends TestCase
         $db->setTablePrefix('pre_');
 
         $this->assertSame('pre_', $db->getTablePrefix());
+        $db->close();
     }
 
     public function testSerialized(): void
@@ -151,6 +158,7 @@ abstract class AbstractConnectionTest extends TestCase
         $this->assertNull($unserialized->getPDO());
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
         $this->assertNotNull($connection->getPDO());
+        $connection->close();
     }
 
     private function getProfiler(): ProfilerInterface

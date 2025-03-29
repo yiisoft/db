@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Connection;
 use Closure;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Command\CommandsCollection;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -228,4 +229,16 @@ interface ConnectionInterface
      * @psalm-param Closure(ConnectionInterface):mixed|Closure(ConnectionInterface):void $closure
      */
     public function transaction(Closure $closure, ?string $isolationLevel = null): mixed;
+
+    /**
+     * Returns maximum number of bound params for a DBMS. Default 0 - means unlimited.
+     * @return int
+     */
+    public function getParamsLimit(): int;
+
+    /**
+     * Creates commands collection used for `insertBatch()`
+     * @return CommandsCollection
+     */
+    public function createCommandsCollection(): CommandsCollection;
 }

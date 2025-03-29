@@ -208,6 +208,7 @@ abstract class AbstractCommand implements CommandInterface
 
     public function insertBatch(string $table, iterable $rows, array $columns = []): static
     {
+        //mark this as deprecated and remove in future versions
         $table = $this->getQueryBuilder()->getQuoter()->getRawTableName($table);
 
         $params = [];

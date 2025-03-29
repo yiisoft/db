@@ -1099,6 +1099,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->expectExceptionMessage($message);
 
         $command->execute();
+        $db->close();
     }
 
     /**
@@ -1470,6 +1471,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->expectExceptionMessage('Expected select query object with enumerated (named) parameters');
 
         $command->insert('{{customer}}', $query)->execute();
+        $db->close();
     }
 
     /**
@@ -1524,6 +1526,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         );
         $command->execute();
         $command->execute();
+        $db->close();
     }
 
     /**
@@ -1616,6 +1619,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->expectException(Exception::class);
 
         $command->query();
+        $db->close();
     }
 
     /**
@@ -2045,6 +2049,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         };
 
         $command->prepare();
+        $db->close();
     }
 
     /**
@@ -2099,6 +2104,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $phpTypecastValue = $column->phpTypecast($result['total']);
 
         $this->assertSame($decimalValue, $phpTypecastValue);
+        $db->close();
     }
 
     public function testInsertWithReturningPksEmptyValues()
@@ -2113,6 +2119,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         };
 
         $this->assertSame($expected, $pkValues);
+        $db->close();
     }
 
     public function testInsertWithReturningPksEmptyValuesAndNoPk()
@@ -2122,6 +2129,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $pkValues = $db->createCommand()->insertWithReturningPks('negative_default_values', []);
 
         $this->assertSame([], $pkValues);
+        $db->close();
     }
 
     public function testUuid(): void
@@ -2212,5 +2220,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $value = (new Query($db))->select('json_col')->from('json_table')->where(['id' => 1])->scalar();
         $this->assertSame('{"a":1,"b":2}', str_replace(' ', '', $value));
+        $db->close();
     }
 }
