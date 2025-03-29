@@ -195,7 +195,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         /** @var string[] $names */
         $names = array_values($columnNames);
         $keys = array_fill_keys($names, false);
-        $columns = $this->schema->getTableSchema($table)?->getColumns() ?? [];
+        $columns = $this->typecasting ? $this->schema->getTableSchema($table)?->getColumns() ?? [] : [];
 
         foreach ($rows as $row) {
             $i = 0;
@@ -348,7 +348,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $names = [];
         $placeholders = [];
         $columns = $this->normalizeColumnNames($columns);
-        $tableColumns = $this->schema->getTableSchema($table)?->getColumns() ?? [];
+        $tableColumns = $this->typecasting ? $this->schema->getTableSchema($table)?->getColumns() ?? [] : [];
 
         foreach ($columns as $name => $value) {
             $names[] = $this->quoter->quoteColumnName($name);
@@ -382,7 +382,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     {
         $sets = [];
         $columns = $this->normalizeColumnNames($columns);
-        $tableColumns = $this->schema->getTableSchema($table)?->getColumns() ?? [];
+        $tableColumns = $this->typecasting ? $this->schema->getTableSchema($table)?->getColumns() ?? [] : [];
 
         foreach ($columns as $name => $value) {
             if (isset($tableColumns[$name])) {
