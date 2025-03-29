@@ -333,13 +333,10 @@ abstract class AbstractCommandTest extends TestCase
             $insertData[] = $personData;
         }
 
-        $this->expectException(IntegrityException::class);
-        $this->expectExceptionMessageMatches('/General error: \d+ number of parameters must be between \d+ and \d+/ui');
-
         $db->createCommandsCollection()->insertBatch($tempTableName, $insertData)->execute();
 
         $countSql = 'SELECT COUNT(*) FROM ' . $db->getQuoter()->quoteTableName($tempTableName);
-        $this->assertEquals(10000, $db->createCommand($countSql)->queryScalar());
+        $this->assertEquals(11000, $db->createCommand($countSql)->queryScalar());
         $db->createCommand()->dropTable($tempTableName)->execute();
         $db->close();
     }
