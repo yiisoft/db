@@ -306,7 +306,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
         $query = (new Query($db))->from('admin_user')->where(['is_deleted' => false]);
-        $query->where([], force: true)->andWhere(['in', 'id', ['1', '0']]);
+        $query->setWhere([])->andWhere(['in', 'id', ['1', '0']]);
 
         [$sql, $params] = $qb->build($query);
 
@@ -474,6 +474,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
         }
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function testOverwriteWhereCondition(): void
     {
         $db = $this->getConnection();
@@ -483,12 +486,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 ->where(['like', 'name', 'foo%'])
                 ->where(['not like', 'name', 'foo%']);
         } catch (InvalidArgumentException $e) {
-            $this->assertEquals('The `where` condition was set earlier. If you want to overwrite it, then use the `force` parameter.', $e->getMessage());
+            $this->assertEquals('The `where` condition was set earlier. If you want to overwrite it, use the `setWhere()` method.', $e->getMessage());
         }
 
         $query = (new Query($db))
             ->where(['like', 'name', 'foo%'])
-            ->where(['not like', 'name', 'foo%'], force: true);
+            ->setWhere(['not like', 'name', 'foo%']);
 
         $this->assertEquals(['not like', 'name', 'foo%'], $query->getWhere());
     }

@@ -580,7 +580,7 @@ interface QueryPartsInterface
     public function union(QueryInterface|string $sql, bool $all = false): static;
 
     /**
-     * Sets the `WHERE` part of the query.
+     * First sets the `WHERE` part of the query.
      *
      * The `$condition` specified as an array can be in one of the following two formats:
      *
@@ -668,14 +668,25 @@ interface QueryPartsInterface
      *
      * @param array|ExpressionInterface|string|null $condition The conditions to put in the `WHERE` part.
      * @param array $params The parameters (name => value) to bind to the query.
-     * @param bool $force Overwrite `where` conditions if it was set earlier
      *
      * @psalm-param ParamsType $params
      *
      * @see andWhere()
      * @see orWhere()
      */
-    public function where(array|string|ExpressionInterface|null $condition, array $params = [], bool $force = false): static;
+    public function where(array|string|ExpressionInterface|null $condition, array $params = []): static;
+
+    /**
+     * Force sets the `WHERE` part of the query.
+     *
+     * @param array|ExpressionInterface|string|null $condition The conditions to put in the `WHERE` part.
+     * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
+     *
+     * @see where()
+     */
+    public function setWhere(array|string|ExpressionInterface|null $condition, array $params = []): static;
 
     /**
      * Prepends an SQL statement using `WITH` syntax.

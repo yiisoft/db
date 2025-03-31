@@ -671,13 +671,20 @@ class Query implements QueryInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function where(array|string|ExpressionInterface|null $condition, array $params = [], bool $force = false): static
+    public function where(array|string|ExpressionInterface|null $condition, array $params = []): static
     {
-        if ($this->where === null || $force === true) {
+        if ($this->where === null) {
             $this->where = $condition;
         } else {
-            throw new InvalidArgumentException('The `where` condition was set earlier. If you want to overwrite it, then use the `force` parameter.');
+            throw new InvalidArgumentException('The `where` condition was set earlier. If you want to overwrite it, use the `setWhere()` method.');
         }
+        $this->addParams($params);
+        return $this;
+    }
+
+    public function setWhere(array|string|ExpressionInterface|null $condition, array $params = []): static
+    {
+        $this->where = $condition;
         $this->addParams($params);
         return $this;
     }
