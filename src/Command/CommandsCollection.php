@@ -19,7 +19,7 @@ class CommandsCollection implements Iterator, Countable
     private array $commands = [];
 
     /**
-     * @param ConnectionInterface $connection Connection to a database
+     * @param ConnectionInterface $connection Connection to a database.
      */
     public function __construct(private readonly ConnectionInterface $connection)
     {
