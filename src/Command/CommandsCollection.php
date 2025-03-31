@@ -10,7 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 class CommandsCollection implements Iterator, Countable
 {
     /**
-     * @var int Current iterator position
+     * @var int Current iterator position.
      */
     private int $position = 0;
     /**
