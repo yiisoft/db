@@ -14,7 +14,7 @@ class CommandsCollection implements Iterator, Countable
      */
     private int $position = 0;
     /**
-     * @var CommandInterface[] Command of the collection
+     * @var CommandInterface[] Commands of the collection.
      */
     private array $commands = [];
 
