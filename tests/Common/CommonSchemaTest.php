@@ -32,11 +32,9 @@ use function array_keys;
 use function count;
 use function gettype;
 use function is_array;
-use function is_object;
 use function json_encode;
 use function ksort;
 use function mb_chr;
-use function sort;
 use function str_replace;
 use function strtolower;
 
