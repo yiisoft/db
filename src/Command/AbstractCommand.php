@@ -210,6 +210,7 @@ abstract class AbstractCommand implements CommandInterface
     public function insertBatch(string $table, iterable $rows, array $columns = [], int $rowsAtOnceLimit = 0): BatchCommand
     {
         $table = $this->getQueryBuilder()->getQuoter()->getRawTableName($table);
+        $batchCommand = new BatchCommand($this->getConnection());
 
         if (is_array($rows)) {
             $data = $rows;
@@ -217,6 +218,9 @@ abstract class AbstractCommand implements CommandInterface
             $data = iterator_to_array($rows);
         }
 
+        if (empty($data)) {
+            return $batchCommand;
+        }
         $columns = $this->getQueryBuilder()->extractColumnNames($data, $columns);
         $columnsCount = count($columns);
 
@@ -226,7 +230,6 @@ abstract class AbstractCommand implements CommandInterface
         }
         $totalInsertedParams = $columnsCount * count($data);
 
-        $batchCommand = new BatchCommand($this->getConnection());
         if (!empty($maxParamsLimit) && $totalInsertedParams > $maxParamsLimit) {
             $chunkSize = (int)floor($maxParamsLimit / $columnsCount);
             $rowChunks = array_chunk($data, $chunkSize);
