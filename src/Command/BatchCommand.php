@@ -54,7 +54,7 @@ final class BatchCommand implements Iterator, Countable
      * @throws InvalidConfigException
      * @throws Exception
      */
-    public function addInsertBatchCommand(string $table, array $rows, array $columns = []): CommandInterface
+    public function addInsertBatchCommand(string $table, array $rows, array $columns = []): void
     {
         $command = $this->connection->createCommand();
         $params = [];
@@ -63,7 +63,7 @@ final class BatchCommand implements Iterator, Countable
         $command->setRawSql($sql);
         $command->bindValues($params);
 
-        return $command;
+        $this->commands[] = $command;
     }
 
     /**
