@@ -5,8 +5,15 @@ use Iterator;
 use Countable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 
+/**
+ * Object used as batch commands container
+ *
+ * @psalm-import-type BatchValues from DMLQueryBuilderInterface
+ */
 final class BatchCommand implements Iterator, Countable
 {
     /**
@@ -51,10 +58,21 @@ final class BatchCommand implements Iterator, Countable
     }
 
     /**
+     * Adds batch insert commands into execution queue
+     *
+     * @param string $table The name of the table to insert new rows into.
+     * @param iterable $rows The rows to be batch inserted into the table.
+     * @param string[] $columns The column names.
+     *
+     * @throws Exception
+     * @throws InvalidArgumentException
+     *
+     * @psalm-param BatchValues $rows
+     *
      * @throws InvalidConfigException
      * @throws Exception
      */
-    public function addInsertBatchCommand(string $table, array $rows, array $columns = []): void
+    public function addInsertBatchCommand(string $table, iterable $rows, array $columns = []): void
     {
         $command = $this->db->createCommand();
         $params = [];
