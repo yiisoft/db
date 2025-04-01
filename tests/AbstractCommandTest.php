@@ -290,6 +290,18 @@ abstract class AbstractCommandTest extends TestCase
         $db->close();
     }
 
+    public function testBatchInsertEmptyRows(): void
+    {
+        $db = $this->getConnection();
+
+        $command = $db->createCommand();
+        $batchCommands = $command->insertBatch('table', [], ['column1', 'column2']);
+
+        $this->assertSame(0, $batchCommands->count());
+
+        $db->close();
+    }
+
     /**
      * @throws InvalidArgumentException
      * @throws NotSupportedException
@@ -333,6 +345,61 @@ abstract class AbstractCommandTest extends TestCase
         }
 
         $batchCommand = $db->createCommand()->insertBatch($tempTableName, $insertData);
+        $insertedRowsCount = $batchCommand->execute();
+
+        $countSql = 'SELECT COUNT(*) FROM ' . $db->getQuoter()->quoteTableName($tempTableName);
+        $this->assertEquals($insertedRowsCount, $insertedRowsCount);
+        $this->assertEquals($generateRowsCount, $db->createCommand($countSql)->queryScalar());
+        $db->createCommand()->dropTable($tempTableName)->execute();
+        $db->close();
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
+     * @throws Exception
+     * @throws Throwable
+     * @throws InvalidConfigException
+     */
+    public function testBindParamsCustomRowsAtOnce(): void
+    {
+        $db = $this->getConnection();
+
+        if ($db->getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('Test is intended for use with pgsql database.');
+        }
+
+        $tempTableName = 'testTempTable';
+        $db->createCommand()->createTable($tempTableName, [
+            'id' => ColumnBuilder::primaryKey(),
+            'first_name' => ColumnBuilder::string()->notNull(),
+            'last_name' => ColumnBuilder::string()->notNull(),
+            'birth_date' => ColumnBuilder::date(),
+            'country' => ColumnBuilder::string(),
+            'city' => ColumnBuilder::string(),
+            'address' => ColumnBuilder::string(),
+        ])->execute();
+
+        $personData = [
+            'first_name' => 'IVAN',
+            'last_name' => 'PUPKIN',
+            'birth_date' => '1983-08-08',
+            'country' => 'Kazakhstan',
+            'city' => 'Almaty',
+            'address' => '7, Gagarin street, apartment 10',
+        ];
+
+        //generate 66 000 params (6 fields x 11000 lines)
+        $generateRowsCount = 11000;
+        $insertData = [];
+        for ($i = 0; $i < $generateRowsCount; $i++) {
+            $insertData[] = $personData;
+        }
+
+        $rowsAtOnceLimit = 1000;
+        $batchCommand = $db->createCommand()->insertBatch($tempTableName, $insertData, [], $rowsAtOnceLimit);
+        $this->assertEquals($generateRowsCount / $rowsAtOnceLimit, $batchCommand->count());
+
         $insertedRowsCount = $batchCommand->execute();
 
         $countSql = 'SELECT COUNT(*) FROM ' . $db->getQuoter()->quoteTableName($tempTableName);
