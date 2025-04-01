@@ -200,7 +200,6 @@ final class CommandTest extends AbstractCommandTest
 
         $this->assertSame(1, count($batchCommands));
 
-        $batchCommands->next();
         $firstCommand = $batchCommands->current();
         $this->assertSame('INSERT INTO [table] ([column1], [column2]) VALUES (:qp0, :qp1), (:qp2, :qp3)', $firstCommand->getSql());
         $this->assertSame(
@@ -210,7 +209,7 @@ final class CommandTest extends AbstractCommandTest
                 ':qp2' => 'value3',
                 ':qp3' => 'value4',
             ],
-            $firstCommand->getParams()
+            $command->getParams()
         );
         $db->close();
     }
