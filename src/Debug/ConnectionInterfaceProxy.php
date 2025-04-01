@@ -163,4 +163,9 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
     {
         return $this->connection->getDriverName();
     }
+
+    public function getParamsLimit(): int
+    {
+        return $this->connection->getParamsLimit();
+    }
 }
