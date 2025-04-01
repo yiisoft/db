@@ -12,10 +12,9 @@ abstract class CommonBatchCommandTest extends TestCase
 {
     use TestTrait;
 
-    public function testBatchQueryResult(): void
+    public function testBatchQuery(): void
     {
-        // initialize property test
-        $db = $this->getConnection(true);
+        $db = $this->getConnection();
         $command = $db->createCommand();
 
         $batchCommand = $command->insertBatch(
