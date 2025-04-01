@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Connection;
 use Closure;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Command\CommandsCollection;
+use Yiisoft\Db\Command\BatchCommand;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -235,10 +235,4 @@ interface ConnectionInterface
      * @return int
      */
     public function getParamsLimit(): int;
-
-    /**
-     * Creates commands collection used for `insertBatch()`
-     * @return CommandsCollection
-     */
-    public function createCommandsCollection(): CommandsCollection;
 }

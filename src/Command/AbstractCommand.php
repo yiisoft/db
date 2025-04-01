@@ -206,18 +206,54 @@ abstract class AbstractCommand implements CommandInterface
         return $this->insertBatch($table, $rows, $columns);
     }
 
-    public function insertBatch(string $table, iterable $rows, array $columns = []): static
+    private function iterableToArray(iterable $iterable): array
     {
-        //mark this as deprecated and remove in future versions
+        $data = [];
+        foreach ($iterable as $row) {
+            $rowData = [];
+            foreach ($row as $column => $value) {
+                if (!is_array($value) && is_iterable($value)) {
+                    $rowData[$column] = $this->iterableToArray($value);
+                } else {
+                    $rowData[$column] = $value;
+                }
+            }
+            $data[] = $rowData;
+        }
+
+        return $data;
+    }
+
+    public function insertBatch(string $table, iterable $rows, array $columns = []): BatchCommand
+    {
         $table = $this->getQueryBuilder()->getQuoter()->getRawTableName($table);
 
-        $params = [];
-        $sql = $this->getQueryBuilder()->insertBatch($table, $rows, $columns, $params);
+        if (is_array($rows)) {
+            $data = $rows;
+        } else {
+            $data = $this->iterableToArray($rows);
+        }
 
-        $this->setRawSql($sql);
-        $this->bindValues($params);
+        $columnsCount = count($columns);
+        if ($columnsCount === 0 && count($data)) {
+            $columnsCount = count(array_keys($data[array_key_first($data)]));
+        }
 
-        return $this;
+        $maxParamsQty = $this->db->getParamsLimit();
+        $totalInsertedParams = $columnsCount * count($data);
+
+        $batchCommand = new BatchCommand($this->db);
+        if (!empty($maxParamsQty) && $totalInsertedParams > $maxParamsQty) {
+            $chunkSize = (int)floor($maxParamsQty / $columnsCount);
+            $rowChunks = array_chunk($data, $chunkSize);
+            foreach ($rowChunks as $rowChunk) {
+                $batchCommand->addInsertBatchCommand($table, $rowChunk, $columns);
+            }
+        } else {
+            $batchCommand->addInsertBatchCommand($table, $data, $columns);
+        }
+
+        return $batchCommand;
     }
 
     abstract public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static;

@@ -201,7 +201,7 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function insertBatch(string $table, iterable $rows, array $columns = []): static;
+    public function insertBatch(string $table, iterable $rows, array $columns = []): BatchCommand;
 
     /**
      * Binds a parameter to the SQL statement to be executed.

@@ -7,7 +7,7 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 
-class CommandsCollection implements Iterator, Countable
+final class BatchCommand implements Iterator, Countable
 {
     /**
      * @var int Current iterator position
@@ -54,36 +54,7 @@ class CommandsCollection implements Iterator, Countable
      * @throws InvalidConfigException
      * @throws Exception
      */
-    public function insertBatch(string $table, array $rows, array $columns = []): static
-    {
-        $table = $this->connection->getQuoter()->getRawTableName($table);
-
-        $columnsCount = count($columns);
-        if ($columnsCount === 0 && count($rows) > 0) {
-            $columnsCount = count(array_keys($rows[array_key_first($rows)]));
-        }
-
-        $maxParamsQty = $this->connection->getParamsLimit();
-        $totalInsertedParams = $columnsCount * count($rows);
-
-        if (!empty($maxParamsQty) && $totalInsertedParams > $maxParamsQty) {
-            $chunkSize = (int)floor($maxParamsQty / $columnsCount);
-            $rowChunks = array_chunk($rows, $chunkSize);
-            foreach ($rowChunks as $rowChunk) {
-                $this->commands[] = $this->createInsertBatchCommand($table, $rowChunk, $columns);
-            }
-        } else {
-            $this->commands[] = $this->createInsertBatchCommand($table, $rows, $columns);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @throws InvalidConfigException
-     * @throws Exception
-     */
-    private function createInsertBatchCommand(string $table, array $rows, array $columns = []): CommandInterface
+    public function addInsertBatchCommand(string $table, array $rows, array $columns = []): CommandInterface
     {
         $command = $this->connection->createCommand();
         $params = [];

@@ -6,7 +6,7 @@ namespace Yiisoft\Db\Connection;
 
 use Closure;
 use Throwable;
-use Yiisoft\Db\Command\CommandsCollection;
+use Yiisoft\Db\Command\BatchCommand;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -128,8 +128,8 @@ abstract class AbstractConnection implements ConnectionInterface
         return 0;
     }
 
-    public function createCommandsCollection(): CommandsCollection
+    public function createCommandsCollection(): BatchCommand
     {
-        return new CommandsCollection($this);
+        return new BatchCommand($this);
     }
 }

@@ -10,6 +10,7 @@ use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
+use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
@@ -290,6 +291,13 @@ abstract class AbstractCommandTest extends TestCase
         $db->close();
     }
 
+    /**
+     * @throws InvalidArgumentException
+     * @throws NotSupportedException
+     * @throws Exception
+     * @throws Throwable
+     * @throws InvalidConfigException
+     */
     public function testBindParamsOverflowIssue(): void
     {
         $db = $this->getConnection();
@@ -297,15 +305,6 @@ abstract class AbstractCommandTest extends TestCase
         if ($db->getDriverName() !== 'pgsql') {
             $this->markTestSkipped('Test is intended for use with pgsql database.');
         }
-
-//        $skipVersions = ['11', '12', '16'];
-//        $dbmsVersion = $db->getServerInfo()->getVersion();
-//        if (preg_match('/^(\d+)\.(\d+)/ui', $dbmsVersion, $matches)) {
-//            $dbmsVersion = $matches[1];
-//        }
-//        if (in_array($dbmsVersion, $skipVersions)) {
-//            $this->markTestSkipped('Test is not applicable to pgsql v' . $dbmsVersion);
-//        }
 
         $tempTableName = 'testTempTable';
         $db->createCommand()->createTable($tempTableName, [
@@ -328,15 +327,18 @@ abstract class AbstractCommandTest extends TestCase
         ];
 
         //generate 66 000 params (6 fields x 11000 lines)
+        $generateRowsCount = 11000;
         $insertData = [];
-        for ($i = 0; $i < 11000; $i++) {
+        for ($i = 0; $i < $generateRowsCount; $i++) {
             $insertData[] = $personData;
         }
 
-        $db->createCommandsCollection()->insertBatch($tempTableName, $insertData)->execute();
+        $batchCommand = $db->createCommand()->insertBatch($tempTableName, $insertData);
+        $insertedRowsCount = $batchCommand->execute();
 
         $countSql = 'SELECT COUNT(*) FROM ' . $db->getQuoter()->quoteTableName($tempTableName);
-        $this->assertEquals(11000, $db->createCommand($countSql)->queryScalar());
+        $this->assertEquals($insertedRowsCount, $insertedRowsCount);
+        $this->assertEquals($generateRowsCount, $db->createCommand($countSql)->queryScalar());
         $db->createCommand()->dropTable($tempTableName)->execute();
         $db->close();
     }
