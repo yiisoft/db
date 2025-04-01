@@ -10,16 +10,16 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 final class BatchCommand implements Iterator, Countable
 {
     /**
-     * @var int Current iterator position
+     * @var int Current iterator position.
      */
     private int $position = 0;
     /**
-     * @var CommandInterface[] Command of the collection
+     * @var CommandInterface[] Commands of the collection.
      */
     private array $commands = [];
 
     /**
-     * @param ConnectionInterface $connection Connection to a database
+     * @param ConnectionInterface $connection Connection to a database.
      */
     public function __construct(private readonly ConnectionInterface $connection)
     {

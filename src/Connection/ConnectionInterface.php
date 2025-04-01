@@ -231,7 +231,7 @@ interface ConnectionInterface
     public function transaction(Closure $closure, ?string $isolationLevel = null): mixed;
 
     /**
-     * Returns maximum number of bound params for a DBMS. Default 0 - means unlimited.
+     * Returns maximum number of bound parameters for a DBMS. Default is 0 which means unlimited.
      * @return int
      */
     public function getParamsLimit(): int;
