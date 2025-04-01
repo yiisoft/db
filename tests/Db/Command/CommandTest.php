@@ -198,7 +198,7 @@ final class CommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $batchCommands = $command->insertBatch('table', [['value1', 'value2'], ['value3', 'value4']], ['column1', 'column2']);
 
-        $this->assertSame(1, $batchCommands);
+        $this->assertSame(1, $batchCommands->count());
 
         $firstCommand = $batchCommands->current();
         $this->assertSame('INSERT INTO [table] ([column1], [column2]) VALUES (:qp0, :qp1), (:qp2, :qp3)', $firstCommand->getSql());
