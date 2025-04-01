@@ -216,15 +216,8 @@ abstract class AbstractCommand implements CommandInterface
             $data = iterator_to_array($rows);
         }
 
+        $columns = $this->getQueryBuilder()->extractColumnNames($data, $columns);
         $columnsCount = count($columns);
-        if ($columnsCount === 0 && count($data)) {
-            $firstRow = $data[array_key_first($data)];
-            if (is_object($firstRow)) {
-                $columnsCount = count(array_keys(get_object_vars($firstRow)));
-            } else {
-                $columnsCount = count(array_keys($firstRow));
-            }
-        }
 
         $maxParamsLimit = $this->db->getParamsLimit();
         if (!empty($maxParamsLimit) && !empty($rowsAtOnceLimit) && $rowsAtOnceLimit > $maxParamsLimit) {
