@@ -215,7 +215,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         return $values;
     }
 
-    final public function extractColumnNames(array|Iterator $rows, array $columns): array
+    public function extractColumnNames(array|Iterator $rows, array $columns): array
     {
         $columns = $this->getNormalizeColumnNames($columns);
 

@@ -497,7 +497,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return '0x' . bin2hex($binary);
     }
 
-    public function extractColumnNames(array|Iterator $rows, array $columns): array
+    public function extractColumnNames(iterable $rows, array $columns): array
     {
         return $this->dmlBuilder->extractColumnNames($rows, $columns);
     }
