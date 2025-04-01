@@ -199,7 +199,7 @@ final class CommandTest extends AbstractCommandTest
         $batchCommand = $command->insertBatch('table', [['value1', 'value2'], ['value3', 'value4']], ['column1', 'column2']);
 
         $this->assertSame(1, $batchCommand->count());
-        $this->assertSame(0,  $batchCommand->key());
+        $this->assertSame(0, $batchCommand->key());
         $this->assertTrue($batchCommand->valid());
 
         $firstCommand = $batchCommand->current();
@@ -215,11 +215,11 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $batchCommand->next();
-        $this->assertSame(1,  $batchCommand->key());
+        $this->assertSame(1, $batchCommand->key());
         $this->assertFalse($batchCommand->valid());
 
         $batchCommand->rewind();
-        $this->assertSame(0,  $batchCommand->key());
+        $this->assertSame(0, $batchCommand->key());
 
         $db->close();
     }
