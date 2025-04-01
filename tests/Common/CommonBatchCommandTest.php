@@ -30,8 +30,12 @@ abstract class CommonBatchCommandTest extends TestCase
 
         $this->assertSame(2, $batchCommand->count());
         $this->assertSame(0, $batchCommand->key());
+        $this->assertTrue($batchCommand->valid());
         $batchCommand->next();
         $this->assertSame(1, $batchCommand->key());
+        $batchCommand->next();
+        $this->assertSame(2, $batchCommand->key());
+        $this->assertFalse($batchCommand->valid());
         $batchCommand->rewind();
         $this->assertSame(0, $batchCommand->key());
 
