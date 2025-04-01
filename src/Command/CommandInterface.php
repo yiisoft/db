@@ -193,7 +193,8 @@ interface CommandInterface
      * @param string $table The name of the table to insert new rows into.
      * @param iterable $rows The rows to be batch inserted into the table.
      * @param string[] $columns The column names.
-     * @param int $rowsAtOnceLimit Limit number of rows inserted at once. Default 0 - means maximum allowed by DBMS.
+     * @param int $rowsAtOnceLimit Limit number of rows inserted at once. Default 0 - means maximum allowed by DBMS. If
+     * provided value is greater, than supported by DBMS, then DBMS maximum value will be used.
      *
      * @throws Exception
      * @throws InvalidArgumentException

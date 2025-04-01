@@ -225,13 +225,13 @@ abstract class AbstractCommand implements CommandInterface
         $columnsCount = count($columns);
 
         $maxParamsLimit = $this->getConnection()->getParametersLimit();
-        if (!empty($maxParamsLimit) && !empty($rowsAtOnceLimit) && $rowsAtOnceLimit > $maxParamsLimit) {
-            $maxParamsLimit = $rowsAtOnceLimit;
-        }
         $totalInsertedParams = $columnsCount * count($data);
 
-        if (!empty($maxParamsLimit) && $totalInsertedParams > $maxParamsLimit) {
+        if ((!empty($maxParamsLimit) && $totalInsertedParams > $maxParamsLimit) || !empty($rowsAtOnceLimit)) {
             $chunkSize = (int)floor($maxParamsLimit / $columnsCount);
+            if (!empty($rowsAtOnceLimit) && $chunkSize > $rowsAtOnceLimit) {
+                $chunkSize = $rowsAtOnceLimit;
+            }
             $rowChunks = array_chunk($data, $chunkSize);
             foreach ($rowChunks as $rowChunk) {
                 $batchCommand->addInsertBatchCommand($table, $rowChunk, $columns);
