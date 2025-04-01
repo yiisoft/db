@@ -225,7 +225,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @psalm-param Iterator|non-empty-array<iterable<array-key, mixed>> $rows
      */
-    public function extractColumnNames(array|Iterator $rows, array $columns): array
+    final public function extractColumnNames(array|Iterator $rows, array $columns): array
     {
         $columns = $this->getNormalizeColumnNames($columns);
 
