@@ -421,13 +421,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->insertBatch(
+        $batchCommand = $command->insertBatch(
             '{{customer}}',
             [['t1@example.com', 'test_name', 'test_address']],
             ['email', 'name', 'address'],
         );
 
-        $this->assertSame(1, $command->execute());
+        $this->assertSame(1, $batchCommand->execute());
 
         $result = (new Query($db))
             ->select(['email', 'name', 'address'])
@@ -458,9 +458,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $values[$i] = ['t' . $i . '@any.com', 't' . $i, 't' . $i . ' address'];
         }
 
-        $command->insertBatch('{{customer}}', $values, ['email', 'name', 'address']);
+        $batchCommand = $command->insertBatch('{{customer}}', $values, ['email', 'name', 'address']);
 
-        $this->assertSame($attemptsInsertRows, $command->execute());
+        $this->assertSame($attemptsInsertRows, $batchCommand->execute());
 
         $insertedRowsCount = (new Query($db))->from('{{customer}}')->count();
 
