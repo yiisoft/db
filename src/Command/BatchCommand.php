@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Yiisoft\Db\Command;
 
 use Iterator;
@@ -34,11 +35,11 @@ final class BatchCommand implements Iterator, Countable
     {
     }
 
-    function rewind(): void {
+    public function rewind(): void {
         $this->position = 0;
     }
 
-    function current(): CommandInterface {
+    public function current(): CommandInterface {
         return $this->commands[$this->position];
     }
 
@@ -46,15 +47,15 @@ final class BatchCommand implements Iterator, Countable
         return $this->position;
     }
 
-    function next(): void {
+    public function next(): void {
         ++$this->position;
     }
 
-    function valid(): bool {
+    public function valid(): bool {
         return isset($this->commands[$this->position]);
     }
 
-    function count(): int
+    public function count(): int
     {
         return count($this->commands);
     }
