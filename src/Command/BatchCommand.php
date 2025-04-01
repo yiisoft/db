@@ -35,23 +35,28 @@ final class BatchCommand implements Iterator, Countable
     {
     }
 
-    public function rewind(): void {
+    public function rewind(): void
+    {
         $this->position = 0;
     }
 
-    public function current(): CommandInterface {
+    public function current(): CommandInterface
+    {
         return $this->commands[$this->position];
     }
 
-    function key(): int {
+    function key(): int
+    {
         return $this->position;
     }
 
-    public function next(): void {
+    public function next(): void
+    {
         ++$this->position;
     }
 
-    public function valid(): bool {
+    public function valid(): bool
+    {
         return isset($this->commands[$this->position]);
     }
 
