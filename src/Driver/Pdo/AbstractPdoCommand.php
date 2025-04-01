@@ -14,6 +14,7 @@ use Throwable;
 use Yiisoft\Db\Command\AbstractCommand;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidParamException;
@@ -164,6 +165,11 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         foreach ($this->params as $name => $value) {
             $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
         }
+    }
+
+    protected function getConnection(): ConnectionInterface
+    {
+        return $this->db;
     }
 
     protected function getQueryBuilder(): QueryBuilderInterface

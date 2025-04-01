@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Command;
 
 use Closure;
 use Throwable;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Query\Data\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -219,13 +220,13 @@ abstract class AbstractCommand implements CommandInterface
         $columns = $this->getQueryBuilder()->extractColumnNames($data, $columns);
         $columnsCount = count($columns);
 
-        $maxParamsLimit = $this->db->getParamsLimit();
+        $maxParamsLimit = $this->getConnection()->getParamsLimit();
         if (!empty($maxParamsLimit) && !empty($rowsAtOnceLimit) && $rowsAtOnceLimit > $maxParamsLimit) {
             $maxParamsLimit = $rowsAtOnceLimit;
         }
         $totalInsertedParams = $columnsCount * count($data);
 
-        $batchCommand = new BatchCommand($this->db);
+        $batchCommand = new BatchCommand($this->getConnection());
         if (!empty($maxParamsLimit) && $totalInsertedParams > $maxParamsLimit) {
             $chunkSize = (int)floor($maxParamsLimit / $columnsCount);
             $rowChunks = array_chunk($data, $chunkSize);
@@ -540,6 +541,11 @@ abstract class AbstractCommand implements CommandInterface
         $sql = $this->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
         return $this->setSql($sql)->bindValues($params);
     }
+
+    /**
+     * @return ConnectionInterface The query builder instance.
+     */
+    abstract protected function getConnection(): ConnectionInterface;
 
     /**
      * @return QueryBuilderInterface The query builder instance.
