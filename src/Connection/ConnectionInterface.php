@@ -233,5 +233,5 @@ interface ConnectionInterface
      * Returns maximum number of bound parameters for a DBMS. Default is 0 which means unlimited.
      * @return int
      */
-    public function getParamsLimit(): int;
+    public function getParametersLimit(): int;
 }

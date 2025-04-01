@@ -224,7 +224,7 @@ abstract class AbstractCommand implements CommandInterface
         $columns = $this->getQueryBuilder()->extractColumnNames($data, $columns);
         $columnsCount = count($columns);
 
-        $maxParamsLimit = $this->getConnection()->getParamsLimit();
+        $maxParamsLimit = $this->getConnection()->getParametersLimit();
         if (!empty($maxParamsLimit) && !empty($rowsAtOnceLimit) && $rowsAtOnceLimit > $maxParamsLimit) {
             $maxParamsLimit = $rowsAtOnceLimit;
         }

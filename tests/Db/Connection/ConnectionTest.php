@@ -34,4 +34,9 @@ final class ConnectionTest extends AbstractConnectionTest
 
         parent::testSerialized();
     }
+
+    public function testGetParametersLimit(): void
+    {
+        $this->assertSame(0, $this->getConnection()->getParametersLimit());
+    }
 }

@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Connection;
 
 use Closure;
 use Throwable;
-use Yiisoft\Db\Command\BatchCommand;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -119,17 +118,12 @@ abstract class AbstractConnection implements ConnectionInterface
         }
     }
 
-    public function getParamsLimit(): int
+    public function getParametersLimit(): int
     {
-        //must be overriden in a DBMS package which has a limit
+        // Must be overridden in a DBMS package which has a limit
         if ($this->getDriverName() === 'pgsql') {
             return 65535;
         }
         return 0;
-    }
-
-    public function createCommandsCollection(): BatchCommand
-    {
-        return new BatchCommand($this);
     }
 }
