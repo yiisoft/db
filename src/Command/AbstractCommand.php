@@ -201,7 +201,7 @@ abstract class AbstractCommand implements CommandInterface
      *
      * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
      */
-    public function batchInsert(string $table, array $columns, iterable $rows): static
+    public function batchInsert(string $table, array $columns, iterable $rows): BatchCommand
     {
         return $this->insertBatch($table, $rows, $columns);
     }
