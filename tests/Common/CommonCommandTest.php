@@ -486,9 +486,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
             }
         )();
         $command = $db->createCommand();
-        $command->insertBatch('{{customer}}', $rows, ['email', 'name', 'address']);
+        $batchCommand = $command->insertBatch('{{customer}}', $rows, ['email', 'name', 'address']);
 
-        $this->assertSame(1, $command->execute());
+        $this->assertSame(1, $batchCommand->execute());
 
         $db->close();
     }
