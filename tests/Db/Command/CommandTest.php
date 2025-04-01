@@ -209,7 +209,7 @@ final class CommandTest extends AbstractCommandTest
                 ':qp2' => 'value3',
                 ':qp3' => 'value4',
             ],
-            $command->getParams()
+            $firstCommand->getParams()
         );
         $db->close();
     }

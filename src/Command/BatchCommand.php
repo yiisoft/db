@@ -19,9 +19,9 @@ final class BatchCommand implements Iterator, Countable
     private array $commands = [];
 
     /**
-     * @param ConnectionInterface $connection Connection to a database.
+     * @param ConnectionInterface $db Connection to a database.
      */
-    public function __construct(private readonly ConnectionInterface $connection)
+    public function __construct(private readonly ConnectionInterface $db)
     {
     }
 
@@ -56,9 +56,9 @@ final class BatchCommand implements Iterator, Countable
      */
     public function addInsertBatchCommand(string $table, array $rows, array $columns = []): void
     {
-        $command = $this->connection->createCommand();
+        $command = $this->db->createCommand();
         $params = [];
-        $sql = $this->connection->getQueryBuilder()->insertBatch($table, $rows, $columns, $params);
+        $sql = $this->db->getQueryBuilder()->insertBatch($table, $rows, $columns, $params);
 
         $command->setRawSql($sql);
         $command->bindValues($params);
