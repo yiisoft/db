@@ -12,6 +12,8 @@ use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 /**
  * Object used as batch commands container
  *
+ * @implements Iterator<int, mixed>
+ *
  * @psalm-import-type BatchValues from DMLQueryBuilderInterface
  */
 final class BatchCommand implements Iterator, Countable
