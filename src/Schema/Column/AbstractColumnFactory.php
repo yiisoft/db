@@ -10,6 +10,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Syntax\ColumnDefinitionParser;
 
 use function array_diff_key;
+use function array_key_exists;
 use function array_merge;
 use function is_numeric;
 use function preg_match;
@@ -121,7 +122,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
 
         $column = new $columnClass($type, ...$info);
 
-        if (isset($info['defaultValueRaw'])) {
+        if (array_key_exists('defaultValueRaw', $info)) {
             $column->defaultValue($this->normalizeDefaultValue($info['defaultValueRaw'], $column));
         }
 

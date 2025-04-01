@@ -8,6 +8,11 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionObject;
+use ReflectionProperty;
+
+use function is_array;
+use function is_object;
+use function ltrim;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -96,5 +101,76 @@ final class Assert extends TestCase
         $method->setAccessible(true);
 
         return $method->invokeArgs($object, $args);
+    }
+
+    public static function arraysEquals(array $expected, mixed $actual, string $message = ''): void
+    {
+        self::assertIsArray($actual, $message);
+        self::assertCount(count($expected), $actual, $message);
+
+        foreach ($expected as $key => $value) {
+            self::assertArrayHasKey($key, $actual, $message);
+
+            $assertionMessage = ltrim($message . " Item by key '$key'.");
+
+            if (is_object($value)) {
+                self::objectsEquals($value, $actual[$key], $assertionMessage);
+            } elseif (is_array($value)) {
+                self::arraysEquals($value, $actual[$key], $assertionMessage);
+            } else {
+                self::assertSame($value, $actual[$key], $assertionMessage);
+            }
+        }
+    }
+
+    public static function objectsEquals(object $expected, mixed $actual, string $message = ''): void
+    {
+        self::assertIsObject($actual, $message);
+
+        self::assertSame(
+            $expected::class,
+            $actual::class,
+            'Expected ' . $expected::class . ' class name but ' . $actual::class . " provided. $message",
+        );
+
+        $properties = self::getProperties($expected);
+
+        foreach ($properties as $property) {
+            $assertionMessage = ltrim("$message " . $expected::class . "::{$property->getName()} property.");
+
+            if (!$property->isInitialized($expected)) {
+                self::assertFalse($property->isInitialized($actual), "$assertionMessage Property should not be initialized.");
+
+                continue;
+            }
+
+            self::assertTrue($property->isInitialized($actual), "$assertionMessage Property is not initialized.");
+
+            $expectedValue = $property->getValue($expected);
+            $actualValue = $property->getValue($actual);
+
+            if (is_object($expectedValue)) {
+                self::objectsEquals($expectedValue, $actualValue, $assertionMessage);
+            } elseif (is_array($expectedValue)) {
+                self::arraysEquals($expectedValue, $actualValue, $assertionMessage);
+            } else {
+                self::assertSame($expectedValue, $actualValue, $assertionMessage);
+            }
+        }
+    }
+
+    /**
+     * @return ReflectionProperty[]
+     */
+    private static function getProperties(object $object): array
+    {
+        $reflectionClass = new ReflectionClass($object);
+        $properties = $reflectionClass->getProperties();
+
+        while ($reflectionClass = $reflectionClass->getParentClass()) {
+            $properties += $reflectionClass->getProperties();
+        }
+
+        return $properties;
     }
 }
