@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Iterator;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\ParamInterface;
@@ -494,5 +495,10 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected function prepareBinary(string $binary): string
     {
         return '0x' . bin2hex($binary);
+    }
+
+    public function extractColumnNames(array|Iterator $rows, array $columns): array
+    {
+        return $this->dmlBuilder->extractColumnNames($rows, $columns);
     }
 }

@@ -215,16 +215,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         return $values;
     }
 
-    /**
-     * Extract column names from columns and rows.
-     *
-     * @param array[]|Iterator $rows The rows to be batch inserted into the table.
-     * @param string[] $columns The column names.
-     *
-     * @return string[] The column names.
-     *
-     * @psalm-param Iterator|non-empty-array<iterable<array-key, mixed>> $rows
-     */
     final public function extractColumnNames(array|Iterator $rows, array $columns): array
     {
         $columns = $this->getNormalizeColumnNames($columns);
