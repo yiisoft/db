@@ -9,7 +9,6 @@ use Throwable;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;

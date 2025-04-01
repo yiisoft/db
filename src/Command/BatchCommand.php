@@ -45,7 +45,7 @@ final class BatchCommand implements Iterator, Countable
         return $this->commands[$this->position];
     }
 
-    function key(): int
+    public function key(): int
     {
         return $this->position;
     }

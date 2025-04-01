@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
-use Iterator;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\ParamInterface;
