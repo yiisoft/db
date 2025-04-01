@@ -206,24 +206,6 @@ abstract class AbstractCommand implements CommandInterface
         return $this->insertBatch($table, $rows, $columns);
     }
 
-    private function iterableToArray(iterable $iterable): array
-    {
-        $data = [];
-        foreach ($iterable as $row) {
-            $rowData = [];
-            foreach ($row as $column => $value) {
-                if (!is_array($value) && is_iterable($value)) {
-                    $rowData[$column] = $this->iterableToArray($value);
-                } else {
-                    $rowData[$column] = $value;
-                }
-            }
-            $data[] = $rowData;
-        }
-
-        return $data;
-    }
-
     public function insertBatch(string $table, iterable $rows, array $columns = []): BatchCommand
     {
         $table = $this->getQueryBuilder()->getQuoter()->getRawTableName($table);
@@ -231,7 +213,7 @@ abstract class AbstractCommand implements CommandInterface
         if (is_array($rows)) {
             $data = $rows;
         } else {
-            $data = $this->iterableToArray($rows);
+            $data = iterator_to_array($rows);
         }
 
         $columnsCount = count($columns);
