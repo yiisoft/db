@@ -15,18 +15,20 @@ abstract class CommonBatchCommandTest extends TestCase
     public function testBatchQuery(): void
     {
         $db = $this->getConnection();
-        $command = $db->createCommand();
 
-        $batchCommand = $command->insertBatch(
+        $batchCommand = new BatchCommand($db);
+        $batchCommand->addInsertBatchCommand(
             'customer',
-            [['value1', 'value2'], ['value3', 'value4']],
+            [['value1', 'value2']],
             ['column1', 'column2'],
-            1
+        );
+        $batchCommand->addInsertBatchCommand(
+            'customer',
+            [['value3', 'value4']],
+            ['column1', 'column2'],
         );
 
-        $this->assertInstanceOf(BatchCommand::class, $batchCommand);
         $this->assertSame(2, $batchCommand->count());
-
         $this->assertSame(0, $batchCommand->key());
         $batchCommand->next();
         $this->assertSame(1, $batchCommand->key());
