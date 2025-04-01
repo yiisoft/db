@@ -6,9 +6,6 @@ namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Command\BatchCommand;
-use Yiisoft\Db\Query\BatchQueryResult;
-use Yiisoft\Db\Query\BatchQueryResultInterface;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class CommonBatchCommandTest extends TestCase
@@ -39,5 +36,4 @@ abstract class CommonBatchCommandTest extends TestCase
 
         $db->close();
     }
-
 }
