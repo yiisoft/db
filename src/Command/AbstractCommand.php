@@ -206,7 +206,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->insertBatch($table, $rows, $columns);
     }
 
-    public function insertBatch(string $table, iterable $rows, array $columns = []): BatchCommand
+    public function insertBatch(string $table, iterable $rows, array $columns = [], int $rowsAtOnceLimit = 0): BatchCommand
     {
         $table = $this->getQueryBuilder()->getQuoter()->getRawTableName($table);
 
@@ -221,12 +221,15 @@ abstract class AbstractCommand implements CommandInterface
             $columnsCount = count(array_keys($data[array_key_first($data)]));
         }
 
-        $maxParamsQty = $this->db->getParamsLimit();
+        $maxParamsLimit = $this->db->getParamsLimit();
+        if (!empty($maxParamsLimit) && !empty($rowsAtOnceLimit) && $rowsAtOnceLimit > $maxParamsLimit) {
+            $maxParamsLimit = $rowsAtOnceLimit;
+        }
         $totalInsertedParams = $columnsCount * count($data);
 
         $batchCommand = new BatchCommand($this->db);
-        if (!empty($maxParamsQty) && $totalInsertedParams > $maxParamsQty) {
-            $chunkSize = (int)floor($maxParamsQty / $columnsCount);
+        if (!empty($maxParamsLimit) && $totalInsertedParams > $maxParamsLimit) {
+            $chunkSize = (int)floor($maxParamsLimit / $columnsCount);
             $rowChunks = array_chunk($data, $chunkSize);
             foreach ($rowChunks as $rowChunk) {
                 $batchCommand->addInsertBatchCommand($table, $rowChunk, $columns);
