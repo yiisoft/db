@@ -580,7 +580,7 @@ interface QueryPartsInterface
     public function union(QueryInterface|string $sql, bool $all = false): static;
 
     /**
-     * First sets the `WHERE` part of the query.
+     * Initially sets the `WHERE` part of the query.
      *
      * The `$condition` specified as an array can be in one of the following two formats:
      *
