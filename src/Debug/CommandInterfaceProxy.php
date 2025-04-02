@@ -68,8 +68,8 @@ final class CommandInterfaceProxy implements CommandInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string $delete = null,
-        string $update = null
+        ?string $delete = null,
+        ?string $update = null
     ): static {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
@@ -112,8 +112,8 @@ final class CommandInterfaceProxy implements CommandInterface
     public function bindParam(
         int|string $name,
         mixed &$value,
-        int $dataType = null,
-        int $length = null,
+        ?int $dataType = null,
+        ?int $length = null,
         mixed $driverOptions = null
     ): static {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
@@ -122,7 +122,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
-    public function bindValue(int|string $name, mixed $value, int $dataType = null): static
+    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
@@ -155,8 +155,8 @@ final class CommandInterfaceProxy implements CommandInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): static {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
@@ -164,7 +164,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
-    public function createTable(string $table, array $columns, string $options = null): static
+    public function createTable(string $table, array $columns, ?string $options = null): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
@@ -252,7 +252,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
-    public function dropTable(string $table): static
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
@@ -315,15 +315,13 @@ final class CommandInterfaceProxy implements CommandInterface
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    /**
-     * @psalm-suppress MixedInferredReturnType, MixedReturnStatement
-     */
-    public function insertWithReturningPks(string $table, array $columns): bool|array
+    public function insertWithReturningPks(string $table, array $columns): array|false
     {
+        /** @var array|false */
         return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
-    public function prepare(bool $forRead = null): void
+    public function prepare(?bool $forRead = null): void
     {
         $this->decorated->{__FUNCTION__}(...func_get_args());
     }
@@ -443,7 +441,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
-    public function resetSequence(string $table, int|string $value = null): static
+    public function resetSequence(string $table, int|string|null $value = null): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }

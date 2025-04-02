@@ -2,6 +2,7 @@
 
 ## 2.0.0 under development
 
+- New #913: Add methods `SchemaInterface::hasSchema()`, `SchemaInterface::hasTable()`, `SchemaInterface::hasView()` (@evil1)
 - Enh #820: Support `Traversable` values for `AbstractDMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #815: Refactor `Query::column()` method (@Tigrov) 
 - Enh #816: Allow scalar values for `$columns` parameter of `Query::select()` and `Query::addSelect()` methods (@Tigrov)
@@ -39,6 +40,8 @@
 - Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #877: Separate column type constants (@Tigrov)
 - New #878: Realize `ColumnBuilder` class (@Tigrov)
+- New #773: Add parameters `$ifExists` and `$cascade` to `CommandInterface::dropTable()` and
+ `DDLQueryBuilderInterface::dropTable()` methods (@vjik)
 - New #878, #900, #914, #922: Implement `ColumnDefinitionParser` class (@Tigrov)
 - Enh #881: Refactor `ColumnSchemaInterface` and `AbstractColumnSchema` (@Tigrov)
 - New #882: Move `ArrayColumnSchema` and `StructuredColumnSchema` classes from `db-pgsql` package (@Tigrov)
@@ -55,6 +58,22 @@
 - Enh #917: Rename `ColumnSchemaInterface` to `ColumnInterface` (@Tigrov)
 - Enh #919: Replace `name()` with immutable `withName()` method in `ColumnInterface` interface (@Tigrov)
 - Enh #921: Move `DataType` class to `Yiisoft\Db\Constant` namespace (@Tigrov)
+- Enh #926: Refactor `DbArrayHelper` (@Tigrov)
+- Enh #920: Move index constants to the appropriate DBMS driver's `IndexType` and `IndexMethod` classes (@Tigrov)
+- New #928: Add `ReferentialAction` class with constants of possible values of referential actions (@Tigrov)
+- Enh #929: Refactor array, structured and JSON column type expressions and expression builders (@Tigrov)
+- Enh #929: Implement lazy arrays for array, structured and JSON column types (@Tigrov)
+- Bug #933: Explicitly mark nullable parameters (@vjik)
+- Chg #911: Change supported PHP versions to `8.1 - 8.4` (@Tigrov)
+- Enh #911, #940: Minor refactoring (@Tigrov)
+- Chg #938, #936, #937: Remove `ext-json`, `ext-ctype`, `ext-mbstring` from `require` section of `composer.json` (@Tigrov) 
+- Chg #936: Remove `hasLimit()` and `hasOffset()` methods from `AbstractDQLQueryBuilder` class (@Tigrov)
+- Chg #937: Remove `baseName()` and `pascalCaseToId()` methods from `DbStringHelper` (@Tigrov)
+- Enh #940: Rename `quoter()` method to `getQuoter()` in `QueryBuilderInterface` and `AbstractQueryBuilder` class (@Tigrov)
+- Enh #940: Change constructor parameters in `AbstractQueryBuilder` class (@Tigrov)
+- New #939: Add `caseSensitive` option to like condition (@vjik)
+- New #942: Allow PHP backed enums as values (@Tigrov)
+- Enh #943: Add `getCacheKey()` and `getCacheTag()` methods to `AbstractPdoSchema` class (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

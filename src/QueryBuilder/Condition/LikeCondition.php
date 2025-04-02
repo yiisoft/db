@@ -22,9 +22,10 @@ final class LikeCondition implements LikeConditionInterface
     protected array|null $escapingReplacements = [];
 
     public function __construct(
-        private string|ExpressionInterface $column,
-        private string $operator,
-        private array|int|string|Iterator|ExpressionInterface|null $value
+        private readonly string|ExpressionInterface $column,
+        private readonly string $operator,
+        private readonly array|int|string|Iterator|ExpressionInterface|null $value,
+        private readonly ?bool $caseSensitive = null,
     ) {
     }
 
@@ -48,6 +49,11 @@ final class LikeCondition implements LikeConditionInterface
         return $this->value;
     }
 
+    public function getCaseSensitive(): ?bool
+    {
+        return $this->caseSensitive;
+    }
+
     public function setEscapingReplacements(array|null $escapingReplacements): void
     {
         $this->escapingReplacements = $escapingReplacements;
@@ -68,6 +74,7 @@ final class LikeCondition implements LikeConditionInterface
             self::validateColumn($operator, $operands[0]),
             $operator,
             self::validateValue($operator, $operands[1]),
+            isset($operands['caseSensitive']) ? (bool) $operands['caseSensitive'] : null,
         );
 
         if (array_key_exists(2, $operands) && (is_array($operands[2]) || $operands[2] === null)) {

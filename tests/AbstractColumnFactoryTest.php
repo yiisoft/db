@@ -7,8 +7,8 @@ namespace Yiisoft\Db\Tests;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\StringColumn;
-use Yiisoft\Db\Tests\Provider\ColumnBuilderProvider;
 use Yiisoft\Db\Tests\Provider\ColumnFactoryProvider;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -20,7 +20,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromDbType(string $dbType, string $expectedType, string $expectedInstanceOf): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromDbType($dbType);
 
@@ -32,55 +32,27 @@ abstract class AbstractColumnFactoryTest extends TestCase
     }
 
     #[DataProviderExternal(ColumnFactoryProvider::class, 'definitions')]
-    public function testFromDefinition(
-        string $definition,
-        string $expectedType,
-        string $expectedInstanceOf,
-        array $expectedMethodResults = []
-    ): void {
+    public function testFromDefinition(string $definition, ColumnInterface $expected): void
+    {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromDefinition($definition);
 
-        $this->assertInstanceOf($expectedInstanceOf, $column);
-        $this->assertSame($expectedType, $column->getType());
-
-        $columnMethodResults = array_merge(
-            ColumnBuilderProvider::DEFAULT_COLUMN_METHOD_RESULTS,
-            $expectedMethodResults,
-        );
-
-        foreach ($columnMethodResults as $method => $result) {
-            $this->assertSame($result, $column->$method());
-        }
+        $this->assertEquals($expected, $column);
 
         $db->close();
     }
 
     #[DataProviderExternal(ColumnFactoryProvider::class, 'pseudoTypes')]
-    public function testFromPseudoType(
-        string $pseudoType,
-        string $expectedType,
-        string $expectedInstanceOf,
-        array $expectedMethodResults = []
-    ): void {
+    public function testFromPseudoType(string $pseudoType, ColumnInterface $expected): void
+    {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromPseudoType($pseudoType);
 
-        $this->assertInstanceOf($expectedInstanceOf, $column);
-        $this->assertSame($expectedType, $column->getType());
-
-        $columnMethodResults = array_merge(
-            ColumnBuilderProvider::DEFAULT_COLUMN_METHOD_RESULTS,
-            $expectedMethodResults,
-        );
-
-        foreach ($columnMethodResults as $method => $result) {
-            $this->assertEquals($result, $column->$method());
-        }
+        $this->assertEquals($expected, $column);
 
         $db->close();
     }
@@ -89,7 +61,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromType(string $type, string $expectedType, string $expectedInstanceOf): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromType($type);
 
@@ -102,7 +74,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromDefinitionWithExtra(): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromDefinition('char(1) INVISIBLE', ['extra' => 'COLLATE utf8mb4']);
 
@@ -118,7 +90,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testFromTypeDefaultValueRaw(string $type, string|null $defaultValueRaw, mixed $expected): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromType($type, ['defaultValueRaw' => $defaultValueRaw]);
 
@@ -134,7 +106,7 @@ abstract class AbstractColumnFactoryTest extends TestCase
     public function testNullDefaultValueRaw(): void
     {
         $db = $this->getConnection();
-        $columnFactory = $db->getSchema()->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
 
         $column = $columnFactory->fromType(ColumnType::INTEGER, ['defaultValueRaw' => '1', 'primaryKey' => true]);
 

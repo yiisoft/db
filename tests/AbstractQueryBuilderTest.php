@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use Closure;
 use JsonException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -222,14 +223,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($expectedParams, $params);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildCondition
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildCondition')]
     public function testBuildCondition(
         array|ExpressionInterface|string $condition,
         string|null $expected,
@@ -450,14 +444,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::buildLikeCondition
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildLikeCondition')]
     public function testBuildLikeCondition(
         array|ExpressionInterface $condition,
         string $expected,
@@ -475,7 +462,16 @@ abstract class AbstractQueryBuilderTest extends TestCase
             . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
             $sql
         );
-        $this->assertSame($expectedParams, $params);
+        $this->assertSame(array_keys($expectedParams), array_keys($params));
+        foreach ($params as $name => $value) {
+            if ($value instanceof Param) {
+                $this->assertInstanceOf(Param::class, $expectedParams[$name]);
+                $this->assertSame($expectedParams[$name]->getValue(), $value->getValue());
+                $this->assertSame($expectedParams[$name]->getType(), $value->getType());
+            } else {
+                $this->assertSame($expectedParams[$name], $value);
+            }
+        }
     }
 
     public function testBuildLimit(): void
@@ -1123,10 +1119,10 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $with1Query = (new query($db))->select('id')->from('t1')->where('expr = 1');
-        $with2Query = (new query($db))->select('id')->from('t2')->innerJoin('a1', 't2.id = a1.id')->where('expr = 2');
-        $with3Query = (new query($db))->select('id')->from('t3')->where('expr = 3');
-        $query = (new query($db))
+        $with1Query = (new Query($db))->select('id')->from('t1')->where('expr = 1');
+        $with2Query = (new Query($db))->select('id')->from('t2')->innerJoin('a1', 't2.id = a1.id')->where('expr = 2');
+        $with3Query = (new Query($db))->select('id')->from('t3')->where('expr = 3');
+        $query = (new Query($db))
             ->withQuery($with1Query, 'a1')
             ->withQuery($with2Query->union($with3Query), 'a2')
             ->from('a2');
@@ -1428,12 +1424,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $subQuery = (new query($db))
+        $subQuery = (new Query($db))
             ->select('1')
             ->from('Website w')
             ->where('w.id = t.website_id')
             ->andWhere(['w.merchant_id' => 6, 'w.user_id' => 210]);
-        $query = (new query($db))
+        $query = (new Query($db))
             ->select('id')
             ->from('TotalExample t')
             ->where(['exists', $subQuery])
@@ -1464,12 +1460,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
 
         $qb = $db->getQueryBuilder();
-        $subQuery = (new query($db))
+        $subQuery = (new Query($db))
             ->select('1')
             ->from('Website w')
             ->where('w.id = t.website_id')
             ->andWhere('w.merchant_id = :merchant_id', [':merchant_id' => 6]);
-        $query = (new query($db))
+        $query = (new Query($db))
             ->select('id')
             ->from('TotalExample t')
             ->where(['exists', $subQuery])
@@ -1619,7 +1615,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $this->assertSame(
             DbHelper::replaceQuotes($expected, $db->getDriverName()),
-            $qb->createView('animal_view', (new query($db))->select('1')),
+            $qb->createView('animal_view', (new Query($db))->select('1')),
         );
     }
 
@@ -1781,21 +1777,38 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    public function testDropTable(): void
+    public static function dataDropTable(): iterable
+    {
+        yield ['DROP TABLE [[customer]]', null, null];
+        yield ['DROP TABLE IF EXISTS [[customer]]', true, null];
+        yield ['DROP TABLE [[customer]]', false, null];
+        yield ['DROP TABLE [[customer]] CASCADE', null, true];
+        yield ['DROP TABLE [[customer]]', null, false];
+        yield ['DROP TABLE [[customer]]', false, false];
+        yield ['DROP TABLE IF EXISTS [[customer]] CASCADE', true, true];
+        yield ['DROP TABLE IF EXISTS [[customer]]', true, false];
+        yield ['DROP TABLE [[customer]] CASCADE', false, true];
+    }
+
+    #[DataProvider('dataDropTable')]
+    public function testDropTable(string $expected, ?bool $ifExists, ?bool $cascade): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
 
-        $this->assertSame(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                DROP TABLE [[customer]]
-                SQL,
-                $db->getDriverName(),
-            ),
-            $qb->dropTable('customer'),
-        );
+        if ($ifExists === null && $cascade === null) {
+            $sql = $qb->dropTable('customer');
+        } elseif ($ifExists === null) {
+            $sql = $qb->dropTable('customer', cascade: $cascade);
+        } elseif ($cascade === null) {
+            $sql = $qb->dropTable('customer', ifExists: $ifExists);
+        } else {
+            $sql = $qb->dropTable('customer', ifExists: $ifExists, cascade: $cascade);
+        }
+
+        $expectedSql = DbHelper::replaceQuotes($expected, $db->getDriverName());
+
+        $this->assertSame($expectedSql, $sql);
     }
 
     public function testDropUnique(): void
@@ -1869,7 +1882,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
     }
 
     /**
@@ -1896,7 +1909,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
 
-        $this->assertInstanceOf(QuoterInterface::class, $qb->quoter());
+        $this->assertInstanceOf(QuoterInterface::class, $qb->getQuoter());
     }
 
     public function testRenameColumn(): void
@@ -2236,7 +2249,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $sql = $qb->update($table, $columns, $condition, $params);
-        $sql = $qb->quoter()->quoteSql($sql);
+        $sql = $db->getQuoter()->quoteSql($sql);
 
         $this->assertSame($expectedSql, $sql);
         $this->assertEquals($expectedParams, $params);

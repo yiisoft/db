@@ -18,6 +18,10 @@ on:
 
 name: db-oracle
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     name: PHP ${{ matrix.php }}-${{ matrix.oracle }}
@@ -32,7 +36,7 @@ jobs:
     strategy:
       matrix:
         php:
-          - 8.3
+          - 8.4
 
         oracle:
           - 18
@@ -42,6 +46,8 @@ jobs:
           - php: 8.1
             oracle: 21
           - php: 8.2
+            oracle: 21
+          - php: 8.3
             oracle: 21
 
     services:
@@ -60,8 +66,11 @@ jobs:
           --health-retries 10
 
     steps:
+      - name: Configure Database.
+        run: docker exec -i oci bash -c "sqlplus -s system/root@XE <<< 'ALTER USER system DEFAULT TABLESPACE USERS;'"
+
       - name: Checkout.
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
@@ -70,7 +79,6 @@ jobs:
           extensions: ${{ env.EXTENSIONS }}
           ini-values: date.timezone='UTC'
           coverage: pcov
-          tools: composer:v2, pecl
 
       - name: Update composer.
         run: composer self-update
@@ -91,8 +99,8 @@ jobs:
         run: vendor/bin/phpunit --testsuite Oracle --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
 
       - name: Upload coverage to Codecov.
-        if: matrix.php == '8.3'
-        uses: codecov/codecov-action@v3
+        if: matrix.php == '8.4'
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml

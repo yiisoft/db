@@ -10,7 +10,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 final class Command extends AbstractPdoCommand
 {
-    public function insertWithReturningPks(string $table, array $columns): bool|array
+    public function insertWithReturningPks(string $table, array $columns): array|false
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }

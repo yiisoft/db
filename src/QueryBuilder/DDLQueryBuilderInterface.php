@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use Yiisoft\Db\Constant\IndexType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -102,6 +104,7 @@ interface DDLQueryBuilderInterface
 
     /**
      * Builds an SQL statement for adding a foreign key constraint to an existing table.
+     * The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated SQL.
      *
      * @param string $table The table to add the foreign key constraint will to.
      * @param string $name The name of the foreign key constraint.
@@ -110,17 +113,16 @@ interface DDLQueryBuilderInterface
      * @param string $referenceTable The table that the foreign key references to.
      * @param array|string $referenceColumns The name of the column that the foreign key references to.
      * If there are many columns, separate them with commas or use an array to represent them.
-     * @param string|null $delete The `ON DELETE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
-     * `SET DEFAULT`, `SET NULL`.
-     * @param string|null $update The `ON UPDATE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
-     * `SET DEFAULT`, `SET NULL`.
+     * @param string|null $delete The `ON DELETE` option. See {@see ReferentialAction} class for possible values.
+     * @param string|null $update The `ON UPDATE` option. See {@see ReferentialAction} class for possible values.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
      * @return string The SQL statement for adding a foreign key constraint to an existing table.
      *
-     * Note: The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated SQL.
+     * @psalm-param ReferentialAction::*|null $delete
+     * @psalm-param ReferentialAction::*|null $update
      */
     public function addForeignKey(
         string $table,
@@ -204,14 +206,17 @@ interface DDLQueryBuilderInterface
      * @param string $name The name of the index.
      * @param array|string $columns The column(s) to include in the index.
      * If there are many columns, separate them with commas or use an array to represent them.
-     * @param string|null $indexType Type of index-supported DBMS - for example, `UNIQUE`, `FULLTEXT`, `SPATIAL`, `BITMAP` or
-     * `null` as default
-     * @param string|null $indexMethod For setting index organization method (with `USING`, not all DBMS)
+     * @param string|null $indexType The index type, `UNIQUE` or a DBMS specific index type or `null` by default.
+     * See {@see IndexType} or driver specific `IndexType` class.
+     * @param string|null $indexMethod The index organization method, if supported by DBMS.
+     * See driver specific `IndexMethod` class.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
      * @return string The SQL statement for creating a new index.
+     *
+     * @psalm-param IndexType::*|null $indexType
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
@@ -219,8 +224,8 @@ interface DDLQueryBuilderInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): string;
 
     /**
@@ -268,7 +273,7 @@ interface DDLQueryBuilderInterface
      *
      * @psalm-param array<string, ColumnInterface>|string[] $columns
      */
-    public function createTable(string $table, array $columns, string $options = null): string;
+    public function createTable(string $table, array $columns, ?string $options = null): string;
 
     /**
      * Creates an SQL View.
@@ -387,12 +392,14 @@ interface DDLQueryBuilderInterface
      * Builds an SQL statement for dropping a DB table.
      *
      * @param string $table The table to drop.
+     * @param bool $ifExists Do not throw an error if the table does not exist.
+     * @param bool $cascade Automatically drop objects that depend on the table.
      *
      * @return string The SQL statement for dropping a DB table.
      *
      * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
-    public function dropTable(string $table): string;
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): string;
 
     /**
      * Creates an SQL command for dropping a unique constraint.
