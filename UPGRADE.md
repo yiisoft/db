@@ -117,8 +117,9 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 ### New methods
 
 - `QuoterInterface::getRawTableName()` - returns the raw table name without quotes;
-- `QueryInterface::callback()` - allows to use a callback, which should be called on each row of the query result;
-- `QueryInterface::getCallback()` - returns the callback to be called on each row of the query result or `null` if not set;
+- `QueryInterface::resultCallback()` - allows to use a callback, to be called on all rows of the query result;
+- `QueryInterface::getResultCallback()` - returns the callback to be called on all rows of the query result or 
+  `null` if the callback is not set;
 - `SchemaInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
