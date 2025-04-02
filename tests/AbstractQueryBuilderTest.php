@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use Closure;
 use JsonException;
+use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
@@ -475,7 +476,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws LogicException
      */
     public function testOverwriteWhereCondition(): void
     {
@@ -485,7 +486,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             (new Query($db))
                 ->where(['like', 'name', 'foo%'])
                 ->where(['not like', 'name', 'foo%']);
-        } catch (InvalidArgumentException $e) {
+        } catch (LogicException $e) {
             $this->assertEquals('The `where` condition was set earlier. If you want to overwrite it, use the `setWhere()` method.', $e->getMessage());
         }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
+use LogicException;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -669,14 +670,14 @@ class Query implements QueryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws LogicException
      */
     public function where(array|string|ExpressionInterface|null $condition, array $params = []): static
     {
         if ($this->where === null) {
             $this->where = $condition;
         } else {
-            throw new InvalidArgumentException('The `where` condition was set earlier. If you want to overwrite it, use the `setWhere()` method.');
+            throw new LogicException('The `where` condition was set earlier. If you want to overwrite it, use the `setWhere()` method.');
         }
         $this->addParams($params);
         return $this;
