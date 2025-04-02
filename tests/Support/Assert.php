@@ -160,16 +160,20 @@ final class Assert extends TestCase
     }
 
     /**
+     * Returns all properties of the object, including inherited ones.
+     *
      * @return ReflectionProperty[]
      */
     private static function getProperties(object $object): array
     {
+        $properties = [];
         $reflectionClass = new ReflectionClass($object);
-        $properties = $reflectionClass->getProperties();
 
-        while ($reflectionClass = $reflectionClass->getParentClass()) {
-            $properties += $reflectionClass->getProperties();
-        }
+        do {
+            foreach ($reflectionClass->getProperties() as $property) {
+                $properties[$property->getName()] ??= $property;
+            }
+        } while ($reflectionClass = $reflectionClass->getParentClass());
 
         return $properties;
     }
