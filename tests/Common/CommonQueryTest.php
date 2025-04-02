@@ -13,6 +13,15 @@ use function array_keys;
 
 abstract class CommonQueryTest extends AbstractQueryTest
 {
+    public function testAllEmpty(): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))->from('customer')->where(['id' => 0]);
+
+        $this->assertSame([], $query->all());
+    }
+
     public function testAllWithIndexBy(): void
     {
         $db = $this->getConnection(true);
