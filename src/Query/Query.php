@@ -72,15 +72,15 @@ use function trim;
  * Query internally uses the {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} class to generate the SQL statement.
  *
  * @psalm-import-type SelectValue from QueryPartsInterface
- * @psalm-import-type CallbackType from QueryInterface
+ * @psalm-import-type ResultCallback from QueryInterface
  */
 class Query implements QueryInterface
 {
     /** @psalm-var SelectValue $select */
     protected array $select = [];
     protected string|null $selectOption = null;
-    /** @psalm-var CallbackType|null $callback */
-    protected Closure|null $callback = null;
+    /** @psalm-var ResultCallback|null $resultCallback */
+    protected Closure|null $resultCallback = null;
     protected bool|null $distinct = null;
     protected array $from = [];
     protected array $groupBy = [];
@@ -247,8 +247,8 @@ class Query implements QueryInterface
             }
         }
 
-        if ($this->callback !== null) {
-            $rows = array_map($this->callback, $rows);
+        if ($this->resultCallback !== null) {
+            $rows = ($this->resultCallback)($rows);
         }
 
         /** @psalm-suppress MixedArgument */
@@ -272,9 +272,9 @@ class Query implements QueryInterface
         ;
     }
 
-    public function callback(Closure|null $callback): static
+    public function resultCallback(Closure|null $resultCallback): static
     {
-        $this->callback = $callback;
+        $this->resultCallback = $resultCallback;
         return $this;
     }
 
@@ -412,9 +412,9 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function getCallback(): Closure|null
+    public function getResultCallback(): Closure|null
     {
-        return $this->callback;
+        return $this->resultCallback;
     }
 
     public function getDistinct(): bool|null
@@ -572,11 +572,11 @@ class Query implements QueryInterface
 
         $row = $this->createCommand()->queryOne();
 
-        if ($this->callback === null || $row === null) {
+        if ($this->resultCallback === null || $row === null) {
             return $row;
         }
 
-        return ($this->callback)($row);
+        return ($this->resultCallback)([$row])[0];
     }
 
     public function orderBy(array|string|ExpressionInterface $columns): static

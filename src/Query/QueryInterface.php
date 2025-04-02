@@ -29,7 +29,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  *
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface
- * @psalm-type CallbackType = Closure(array):(array|object)
+ * @psalm-type ResultCallback = Closure(list<array>):list<array|object>
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
@@ -83,11 +83,25 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function batch(int $batchSize = 100): BatchQueryResultInterface;
 
     /**
-     * Sets callback, which should be called on each row of the query result.
+     * Sets the callback, to be called on all rows of the query result before returning them.
      *
-     * @psalm-param CallbackType|null $callback
+     * For example:
+     *
+     * ```php
+     * $users = (new Query($db))
+     *     ->from('user')
+     *     ->resultCallback(function (array $rows): array {
+     *         foreach ($rows as &$row) {
+     *             $row['name'] = strtoupper($row['name']);
+     *         }
+     *         return $rows;
+     *     })
+     *     ->all();
+     * ```
+     *
+     * @psalm-param ResultCallback|null $resultCallback
      */
-    public function callback(Closure|null $callback): static;
+    public function resultCallback(Closure|null $resultCallback): static;
 
     /**
      * Executes the query and returns the first column of the result.
@@ -157,11 +171,12 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function exists(): bool;
 
     /**
-     * Returns the callback to be called on each row of the query result. `null` will be returned if no callback is set.
+     * Returns the callback to be called on all rows of the query result.
+     * `null` will be returned if the callback is not set.
      *
-     * @psalm-return CallbackType|null
+     * @psalm-return ResultCallback|null
      */
-    public function getCallback(): Closure|null;
+    public function getResultCallback(): Closure|null;
 
     /**
      * @return bool|null The "distinct" value.

@@ -826,20 +826,20 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame('12345678901234567890', $query->count());
     }
 
-    public function testCallback(): void
+    public function testResultCallback(): void
     {
         $db = $this->getConnection();
 
         $query = (new Query($db));
 
-        $this->assertNull($query->getCallback());
+        $this->assertNull($query->getResultCallback());
 
-        $query->callback(fn (array $row) => (object) $row);
+        $query->resultCallback(fn (array $rows) => array_map(fn (array $row) => (object) $row, $rows));
 
-        $this->assertInstanceOf(Closure::class, $query->getCallback());
+        $this->assertInstanceOf(Closure::class, $query->getResultCallback());
 
-        $query->callback(null);
+        $query->resultCallback(null);
 
-        $this->assertNull($query->getCallback());
+        $this->assertNull($query->getResultCallback());
     }
 }
