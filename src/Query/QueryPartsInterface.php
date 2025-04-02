@@ -677,7 +677,7 @@ interface QueryPartsInterface
     public function where(array|string|ExpressionInterface|null $condition, array $params = []): static;
 
     /**
-     * Force sets the `WHERE` part of the query.
+     * Overwrites the `WHERE` part of the query.
      *
      * @param array|ExpressionInterface|string|null $condition The conditions to put in the `WHERE` part.
      * @param array $params The parameters (name => value) to bind to the query.
