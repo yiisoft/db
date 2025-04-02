@@ -84,27 +84,6 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function batch(int $batchSize = 100): BatchQueryResultInterface;
 
     /**
-     * Sets the callback, to be called on all rows of the query result before returning them.
-     *
-     * For example:
-     *
-     * ```php
-     * $users = (new Query($db))
-     *     ->from('user')
-     *     ->resultCallback(function (array $rows): array {
-     *         foreach ($rows as &$row) {
-     *             $row['name'] = strtoupper($row['name']);
-     *         }
-     *         return $rows;
-     *     })
-     *     ->all();
-     * ```
-     *
-     * @psalm-param ResultCallback|null $resultCallback
-     */
-    public function resultCallback(Closure|null $resultCallback): static;
-
-    /**
      * Executes the query and returns the first column of the result.
      *
      * @throws Exception
@@ -172,14 +151,6 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function exists(): bool;
 
     /**
-     * Returns the callback to be called on all rows of the query result.
-     * `null` will be returned if the callback is not set.
-     *
-     * @psalm-return ResultCallback|null
-     */
-    public function getResultCallback(): Closure|null;
-
-    /**
      * @return bool|null The "distinct" value.
      */
     public function getDistinct(): bool|null;
@@ -239,6 +210,14 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @return array The "params" value.
      */
     public function getParams(): array;
+
+    /**
+     * Returns the callback to be called on all rows of the query result.
+     * `null` will be returned if the callback is not set.
+     *
+     * @psalm-return ResultCallback|null
+     */
+    public function getResultCallback(): Closure|null;
 
     /**
      * @return array The "select" value.
@@ -317,6 +296,27 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @param QueryBuilderInterface $builder The query builder.
      */
     public function prepare(QueryBuilderInterface $builder): self;
+
+    /**
+     * Sets the callback, to be called on all rows of the query result before returning them.
+     *
+     * For example:
+     *
+     * ```php
+     * $users = (new Query($db))
+     *     ->from('user')
+     *     ->resultCallback(function (array $rows): array {
+     *         foreach ($rows as &$row) {
+     *             $row['name'] = strtoupper($row['name']);
+     *         }
+     *         return $rows;
+     *     })
+     *     ->all();
+     * ```
+     *
+     * @psalm-param ResultCallback|null $resultCallback
+     */
+    public function resultCallback(Closure|null $resultCallback): static;
 
     /**
      * Returns the query results as a scalar value.

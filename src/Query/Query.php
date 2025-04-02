@@ -81,8 +81,6 @@ class Query implements QueryInterface
     /** @psalm-var SelectValue $select */
     protected array $select = [];
     protected string|null $selectOption = null;
-    /** @psalm-var ResultCallback|null $resultCallback */
-    protected Closure|null $resultCallback = null;
     protected bool|null $distinct = null;
     protected array $from = [];
     protected array $groupBy = [];
@@ -90,6 +88,8 @@ class Query implements QueryInterface
     protected array $join = [];
     protected array $orderBy = [];
     protected array $params = [];
+    /** @psalm-var ResultCallback|null $resultCallback */
+    protected Closure|null $resultCallback = null;
     protected array $union = [];
     protected array $withQueries = [];
     /** @psalm-var IndexBy|null $indexBy */
@@ -275,12 +275,6 @@ class Query implements QueryInterface
         ;
     }
 
-    public function resultCallback(Closure|null $resultCallback): static
-    {
-        $this->resultCallback = $resultCallback;
-        return $this;
-    }
-
     public function column(): array
     {
         if ($this->emulateExecution) {
@@ -415,11 +409,6 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function getResultCallback(): Closure|null
-    {
-        return $this->resultCallback;
-    }
-
     public function getDistinct(): bool|null
     {
         return $this->distinct;
@@ -468,6 +457,11 @@ class Query implements QueryInterface
     public function getParams(): array
     {
         return $this->params;
+    }
+
+    public function getResultCallback(): Closure|null
+    {
+        return $this->resultCallback;
     }
 
     public function getSelect(): array
@@ -647,6 +641,12 @@ class Query implements QueryInterface
 
     public function prepare(QueryBuilderInterface $builder): QueryInterface
     {
+        return $this;
+    }
+
+    public function resultCallback(Closure|null $resultCallback): static
+    {
+        $this->resultCallback = $resultCallback;
         return $this;
     }
 
