@@ -9,8 +9,29 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\AbstractQueryTest;
 
+use function array_keys;
+
 abstract class CommonQueryTest extends AbstractQueryTest
 {
+    public function testAllWithIndexBy(): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))
+            ->from('customer')
+            ->indexBy('name');
+
+        $this->assertSame(['user1', 'user2', 'user3'], array_keys($query->all()));
+
+        $query = (new Query($db))
+            ->from('customer')
+            ->indexBy(fn (array $row) => $row['id'] * 2);
+
+        $this->assertSame([2, 4, 6], array_keys($query->all()));
+
+        $db->close();
+    }
+
     public function testColumnIndexByWithClosure()
     {
         $db = $this->getConnection(true);
