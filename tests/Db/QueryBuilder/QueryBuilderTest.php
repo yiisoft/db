@@ -65,8 +65,10 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $params = [];
 
         try {
-            $this->assertSame($expected, $qb->insertBatch($table, $rows, $columns, $params));
-            $this->assertSame($expectedParams, $params);
+            $statements = $qb->insertBatch($table, $rows, $columns);
+            $this->assertCount(1, $statements);
+            $this->assertSame($expected, $statements[0]->sql);
+            $this->assertSame($expectedParams, $statements[0]->params);
         } catch (InvalidArgumentException|Exception) {
         } finally {
             $db->close();
