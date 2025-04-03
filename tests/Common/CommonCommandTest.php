@@ -324,7 +324,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $batchCommand = $command->insertBatch($table, $values, $columns);
 
-        $firstCommand = $batchCommand->current();
+        $this->assertSame(1, $batchCommand->count());
+        $commands = $batchCommand->getCommands();
+        $firstCommand = $commands[0];
 
         $this->assertSame($expected, $firstCommand->getSql());
         $this->assertSame($expectedParams, $firstCommand->getParams());
