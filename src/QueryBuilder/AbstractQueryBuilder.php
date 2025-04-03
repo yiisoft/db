@@ -139,12 +139,12 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
      *
      * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
      */
-    public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
+    public function batchInsert(string $table, array $columns, iterable $rows, array $params = []): array
     {
         return $this->dmlBuilder->insertBatch($table, $rows, $columns, $params);
     }
 
-    public function insertBatch(string $table, iterable $rows, array $columns = [], array &$params = []): string
+    public function insertBatch(string $table, iterable $rows, array $columns = [], array $params = []): array
     {
         return $this->dmlBuilder->insertBatch($table, $rows, $columns, $params);
     }
@@ -499,5 +499,10 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function extractColumnNames(iterable $rows, array $columns): array
     {
         return $this->dmlBuilder->extractColumnNames($rows, $columns);
+    }
+
+    public function getParametersLimit(): int
+    {
+        return $this->db->getParametersLimit();
     }
 }

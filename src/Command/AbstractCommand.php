@@ -210,37 +210,17 @@ abstract class AbstractCommand implements CommandInterface
     public function insertBatch(string $table, iterable $rows, array $columns = [], int $rowsAtOnceLimit = 0): BatchCommand
     {
         $table = $this->getQueryBuilder()->getQuoter()->getRawTableName($table);
-        $batchCommand = new BatchCommand($this->getConnection());
 
-        if (is_array($rows)) {
-            $data = $rows;
-        } else {
-            $data = iterator_to_array($rows);
+        $statements = $this->getQueryBuilder()->insertBatch($table, $rows, $columns);
+        $commands = [];
+        foreach ($statements as $statement) {
+            $command = $this->db->createCommand();
+            $command->setRawSql($statement->sql);
+            $command->bindValues($statement->params);
+
+            $commands[] = $command;
         }
-
-        if (empty($data)) {
-            return $batchCommand;
-        }
-        $columns = $this->getQueryBuilder()->extractColumnNames($data, $columns);
-        $columnsCount = count($columns);
-
-        $maxParamsLimit = $this->getConnection()->getParametersLimit();
-        $totalInsertedParams = $columnsCount * count($data);
-
-        if ((!empty($maxParamsLimit) && $totalInsertedParams > $maxParamsLimit) || !empty($rowsAtOnceLimit)) {
-            $chunkSize = (int)floor($maxParamsLimit / $columnsCount);
-            if (!empty($rowsAtOnceLimit) && $chunkSize > $rowsAtOnceLimit) {
-                $chunkSize = $rowsAtOnceLimit;
-            }
-            $rowChunks = array_chunk($data, $chunkSize);
-            foreach ($rowChunks as $rowChunk) {
-                $batchCommand->addInsertBatchCommand($table, $rowChunk, $columns);
-            }
-        } else {
-            $batchCommand->addInsertBatchCommand($table, $data, $columns);
-        }
-
-        return $batchCommand;
+        return new BatchCommand($commands);
     }
 
     abstract public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static;

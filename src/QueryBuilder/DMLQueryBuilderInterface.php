@@ -6,6 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Iterator;
 use JsonException;
+use Yiisoft\Db\Command\QueryStatement;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -54,7 +55,7 @@ interface DMLQueryBuilderInterface
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * @return string The batch INSERT SQL statement.
+     * @return QueryStatement[] Array of batch INSERT SQL statements.
      *
      * @psalm-param BatchValues $rows
      * @psalm-param ParamsType $params
@@ -63,7 +64,7 @@ interface DMLQueryBuilderInterface
      * - That the values in each row must match the corresponding column names.
      * - The method will escape the column names, and quote the values to insert.
      */
-    public function insertBatch(string $table, iterable $rows, array $columns = [], array &$params = []): string;
+    public function insertBatch(string $table, iterable $rows, array $columns = [], array $params = []): array;
 
     /**
      * Creates a `DELETE` SQL statement.
