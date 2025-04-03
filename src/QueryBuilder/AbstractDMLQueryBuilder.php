@@ -72,9 +72,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
      */
-    public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): array
+    public function batchInsert(string $table, array $columns, iterable $rows): array
     {
-        return $this->insertBatch($table, $rows, $columns, $params);
+        return $this->insertBatch($table, $rows, $columns);
     }
 
     public function insertBatch(string $table, iterable $rows, array $columns = [], int $rowsAtOnceLimit = 0): array
