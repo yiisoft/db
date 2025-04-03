@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
-use Iterator;
 use JsonException;
 use Yiisoft\Db\Command\QueryStatement;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -229,5 +228,4 @@ interface DMLQueryBuilderInterface
         bool|array $updateColumns,
         array &$params
     ): string;
-
 }

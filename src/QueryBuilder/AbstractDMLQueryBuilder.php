@@ -203,12 +203,12 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $statementParameters = new QueryStatementParameters();
         $maxParametersLimit = $this->queryBuilder->getParametersLimit();
 
+        $currentStatementParams = [];
         $insertedParametersCount = 0;
         $insertedRowsCount = 0;
         foreach ($rows as $row) {
             $i = 0;
             $placeholders = $keys;
-            $currentRowParams = [];
 
             /** @var int|string $key */
             foreach ($row as $key => $value) {
@@ -219,9 +219,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 }
 
                 if ($value instanceof ExpressionInterface) {
-                    $placeholders[$columnName] = $this->queryBuilder->buildExpression($value, $currentRowParams);
+                    $placeholders[$columnName] = $this->queryBuilder->buildExpression($value, $currentStatementParams);
                 } else {
-                    $placeholders[$columnName] = $this->queryBuilder->bindParam($value, $currentRowParams);
+                    $placeholders[$columnName] = $this->queryBuilder->bindParam($value, $currentStatementParams);
                 }
 
                 ++$i;
@@ -230,15 +230,16 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
             $insertedRowsCount++;
             if (!empty($rowsAtOnceLimit) && $insertedRowsCount > $rowsAtOnceLimit) {
+                $statementParameters->params = $currentStatementParams;
                 $parameters[] = $statementParameters;
                 $statementParameters = new QueryStatementParameters();
                 $insertedRowsCount = 1;
             }
 
-            $statementParameters->params = array_merge($statementParameters->params, $currentRowParams);
             $statementParameters->values[] = implode(', ', $placeholders);
         }
 
+        $statementParameters->params = $currentStatementParams;
         $parameters[] = $statementParameters;
 
         return $parameters;
