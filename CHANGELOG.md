@@ -36,7 +36,7 @@
 - Enh #865: Raise minimum PHP version to `^8.1` with minor refactoring (@Tigrov, @vjik)
 - Enh #798: Allow `QueryInterface::one()` and `QueryInterface::all()` to return objects (@darkdef, @Tigrov)
 - Enh #872: Use `#[\SensitiveParameter]` attribute to mark sensitive parameters (@heap-s)
-- New #864, #897, #898: Realize column factory (@Tigrov)
+- New #864, #897, #898, #950: Realize column factory (@Tigrov)
 - Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #877: Separate column type constants (@Tigrov)
 - New #878: Realize `ColumnBuilder` class (@Tigrov)
