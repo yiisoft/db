@@ -22,8 +22,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
     public function testCreateTableWithBuildColumnDefinition(): void
     {
         $db = $this->getConnection();
-        $schema = $db->getSchema();
-        $columnFactory = $schema->getColumnFactory();
+        $columnFactory = $db->getColumnFactory();
         $command = $db->createCommand();
 
         $provider = $this->getBuildColumnDefinitionProvider();
@@ -48,7 +47,9 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
                 continue;
             }
 
-            $columns['col_' . $i++] = $column;
+            $name = $column instanceof ColumnInterface ? $column->getName() : null;
+
+            $columns[$name ?? 'col_' . $i++] = $column;
         }
 
         try {

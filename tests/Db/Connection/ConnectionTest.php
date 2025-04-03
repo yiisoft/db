@@ -21,12 +21,7 @@ final class ConnectionTest extends AbstractConnectionTest
     {
         $db = $this->getConnection();
 
-        $this->expectException(NotSupportedException::class);
-        $this->expectExceptionMessage(
-            'Yiisoft\Db\Tests\Support\Stub\Schema::loadTableSchema is not supported by this DBMS.'
-        );
-
-        $db->getTableSchema('non_existing_table');
+        $this->assertNull($db->getTableSchema('non_existing_table'));
     }
 
     public function testSerialized(): void

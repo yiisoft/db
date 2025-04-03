@@ -224,6 +224,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @throws InvalidArgumentException
      *
      * @return array The table names indexed by aliases.
+     * @psalm-return array<string, ExpressionInterface|string>
      */
     public function getTablesUsedInFrom(): array;
 

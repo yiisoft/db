@@ -14,6 +14,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
@@ -44,7 +45,7 @@ interface ConnectionInterface
      *
      * @return TransactionInterface The transaction initiated.
      */
-    public function beginTransaction(string $isolationLevel = null): TransactionInterface;
+    public function beginTransaction(?string $isolationLevel = null): TransactionInterface;
 
     /**
      * Create a batch query result instance.
@@ -68,7 +69,7 @@ interface ConnectionInterface
      *
      * @psalm-param ParamsType $params
      */
-    public function createCommand(string $sql = null, array $params = []): CommandInterface;
+    public function createCommand(?string $sql = null, array $params = []): CommandInterface;
 
     /**
      * Create a transaction instance.
@@ -83,6 +84,11 @@ interface ConnectionInterface
      * It does nothing if the connection is already closed.
      */
     public function close(): void;
+
+    /**
+     * Returns the column factory for creating column instances.
+     */
+    public function getColumnFactory(): ColumnFactoryInterface;
 
     /**
      * Returns the name of the DB driver for the current `dsn`.
@@ -103,7 +109,7 @@ interface ConnectionInterface
      *
      * @return string The row ID of the last row inserted, or the last value retrieved from the sequence object.
      */
-    public function getLastInsertID(string $sequenceName = null): string;
+    public function getLastInsertID(?string $sequenceName = null): string;
 
     /**
      * Returns the query builder for the current DB connection.
@@ -220,5 +226,5 @@ interface ConnectionInterface
      *
      * @psalm-param Closure(ConnectionInterface):mixed|Closure(ConnectionInterface):void $closure
      */
-    public function transaction(Closure $closure, string $isolationLevel = null): mixed;
+    public function transaction(Closure $closure, ?string $isolationLevel = null): mixed;
 }

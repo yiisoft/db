@@ -8,7 +8,9 @@ use ArrayIterator;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
@@ -18,7 +20,6 @@ use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
-use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -52,9 +53,9 @@ class QueryBuilderProvider
                 'C_fk_id_1',
                 $pkTableName,
                 'C_id_1',
-                'CASCADE',
-                'CASCADE',
-                Dbhelper::replaceQuotes(
+                ReferentialAction::CASCADE,
+                ReferentialAction::CASCADE,
+                DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]]) REFERENCES [[$pkTableName]] ([[C_id_1]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
@@ -67,9 +68,9 @@ class QueryBuilderProvider
                 'C_fk_id_1, C_fk_id_2',
                 $pkTableName,
                 'C_id_1, C_id_2',
-                'CASCADE',
-                'CASCADE',
-                Dbhelper::replaceQuotes(
+                ReferentialAction::CASCADE,
+                ReferentialAction::CASCADE,
+                DbHelper::replaceQuotes(
                     <<<SQL
                     ALTER TABLE [[$tableName]] ADD CONSTRAINT [[$name]] FOREIGN KEY ([[C_fk_id_1]], [[C_fk_id_2]]) REFERENCES [[$pkTableName]] ([[C_id_1]], [[C_id_2]]) ON DELETE CASCADE ON UPDATE CASCADE
                     SQL,
@@ -289,7 +290,7 @@ class QueryBuilderProvider
             [
                 [
                     'not',
-                    (new query(static::getDb()))->select('exists')->from('some_table'),
+                    (new Query(static::getDb()))->select('exists')->from('some_table'),
                 ],
                 'NOT ((SELECT [[exists]] FROM [[some_table]]))', [],
             ],
@@ -304,7 +305,7 @@ class QueryBuilderProvider
                 [
                     'and',
                     ['expired' => false],
-                    (new query(static::getDb()))->select('count(*) > 1')->from('queue'),
+                    (new Query(static::getDb()))->select('count(*) > 1')->from('queue'),
                 ],
                 '([[expired]]=:qp0) AND ((SELECT count(*) > 1 FROM [[queue]]))',
                 [':qp0' => false],
@@ -362,7 +363,7 @@ class QueryBuilderProvider
                 new BetweenColumnsCondition(
                     new Expression('NOW()'),
                     'NOT BETWEEN',
-                    (new query(static::getDb()))->select('min_date')->from('some_table'),
+                    (new Query(static::getDb()))->select('min_date')->from('some_table'),
                     'max_date'
                 ),
                 'NOW() NOT BETWEEN (SELECT [[min_date]] FROM [[some_table]]) AND [[max_date]]',
@@ -373,7 +374,7 @@ class QueryBuilderProvider
                     new Expression('NOW()'),
                     'NOT BETWEEN',
                     new Expression('min_date'),
-                    (new query(static::getDb()))->select('max_date')->from('some_table'),
+                    (new Query(static::getDb()))->select('max_date')->from('some_table'),
                 ),
                 'NOW() NOT BETWEEN min_date AND (SELECT [[max_date]] FROM [[some_table]])',
                 [],
@@ -381,7 +382,7 @@ class QueryBuilderProvider
 
             /* in */
             [
-                ['in', 'id', [1, 2, (new query(static::getDb()))->select('three')->from('digits')]],
+                ['in', 'id', [1, 2, (new Query(static::getDb()))->select('three')->from('digits')]],
                 '[[id]] IN (:qp0, :qp1, (SELECT [[three]] FROM [[digits]]))',
                 [':qp0' => 1, ':qp1' => 2],
             ],
@@ -394,7 +395,7 @@ class QueryBuilderProvider
                 [
                     'in',
                     'id',
-                    (new query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 '[[id]] IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -403,7 +404,7 @@ class QueryBuilderProvider
                 [
                     'not in',
                     'id',
-                    (new query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 '[[id]] NOT IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -494,7 +495,7 @@ class QueryBuilderProvider
                 new InCondition(
                     ['id'],
                     'in',
-                    (new query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '([[id]]) IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -518,7 +519,7 @@ class QueryBuilderProvider
                 new InCondition(
                     [new Expression('id')],
                     'in',
-                    (new query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ),
                 '(id) IN (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -528,7 +529,7 @@ class QueryBuilderProvider
             [
                 [
                     'exists',
-                    (new query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)',
                 [':qp0' => 1],
@@ -536,7 +537,7 @@ class QueryBuilderProvider
             [
                 [
                     'not exists',
-                    (new query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
+                    (new Query(static::getDb()))->select('id')->from('users')->where(['active' => 1]),
                 ],
                 'NOT EXISTS (SELECT [[id]] FROM [[users]] WHERE [[active]]=:qp0)', [':qp0' => 1],
             ],
@@ -563,7 +564,7 @@ class QueryBuilderProvider
                 [
                     '=',
                     'date',
-                    (new query(static::getDb()))->select('max(date)')->from('test')->where(['id' => 5]),
+                    (new Query(static::getDb()))->select('max(date)')->from('test')->where(['id' => 5]),
                 ],
                 '[[date]] = (SELECT max(date) FROM [[test]] WHERE [[id]]=:qp0)',
                 [':qp0' => 5],
@@ -577,7 +578,7 @@ class QueryBuilderProvider
                 [':qp0' => '2019-08-01'],
             ],
             [
-                ['=', (new query(static::getDb()))->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
+                ['=', (new Query(static::getDb()))->select('COUNT(*)')->from('test')->where(['id' => 6]), 0],
                 '(SELECT COUNT(*) FROM [[test]] WHERE [[id]]=:qp0) = :qp1',
                 [':qp0' => 6, ':qp1' => 0],
             ],
@@ -607,14 +608,20 @@ class QueryBuilderProvider
             [new Expression('NOT (any_expression(:a))', [':a' => 1]), 'NOT (any_expression(:a))', [':a' => 1]],
 
             /* like */
-            'like-custom-1' => [['like', 'a', 'b'], '[[a]] LIKE :qp0', [':qp0' => '%b%']],
+            'like-custom-1' => [['like', 'a', 'b'], '[[a]] LIKE :qp0', [':qp0' => new Param('%b%', DataType::STRING)]],
             'like-custom-2' => [
                 ['like', 'a', new Expression(':qp0', [':qp0' => '%b%'])],
                 '[[a]] LIKE :qp0',
                 [':qp0' => '%b%'],
             ],
             'like-custom-3' => [
-                ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => '%b%'],
+                ['like', new Expression('CONCAT(col1, col2)'), 'b'], 'CONCAT(col1, col2) LIKE :qp0', [':qp0' => new Param('%b%', DataType::STRING)],
+            ],
+
+            /* json conditions */
+            'search by property in JSON column' => [
+                ['=', new Expression("(json_col->>'$.someKey')"), 42],
+                "(json_col->>'$.someKey') = :qp0", [':qp0' => 42],
             ],
         ];
 
@@ -742,31 +749,31 @@ class QueryBuilderProvider
     {
         $conditions = [
             /* simple like */
-            [['like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => '%foo\%%']],
-            [['not like', 'name', 'foo%'], '[[name]] NOT LIKE :qp0', [':qp0' => '%foo\%%']],
-            [['or like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => '%foo\%%']],
-            [['or not like', 'name', 'foo%'], '[[name]] NOT LIKE :qp0', [':qp0' => '%foo\%%']],
+            [['like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
+            [['not like', 'name', 'foo%'], '[[name]] NOT LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
+            [['or like', 'name', 'foo%'], '[[name]] LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
+            [['or not like', 'name', 'foo%'], '[[name]] NOT LIKE :qp0', [':qp0' => new Param('%foo\%%', DataType::STRING)]],
 
             /* like for many values */
             [
                 ['like', 'name', ['foo%', '[abc]']],
                 '[[name]] LIKE :qp0 AND [[name]] LIKE :qp1',
-                [':qp0' => '%foo\%%', ':qp1' => '%[abc]%'],
+                [':qp0' => new Param('%foo\%%', DataType::STRING), ':qp1' => new Param('%[abc]%', DataType::STRING)],
             ],
             [
                 ['not like', 'name', ['foo%', '[abc]']],
                 '[[name]] NOT LIKE :qp0 AND [[name]] NOT LIKE :qp1',
-                [':qp0' => '%foo\%%', ':qp1' => '%[abc]%'],
+                [':qp0' => new Param('%foo\%%', DataType::STRING), ':qp1' => new Param('%[abc]%', DataType::STRING)],
             ],
             [
                 ['or like', 'name', ['foo%', '[abc]']],
                 '[[name]] LIKE :qp0 OR [[name]] LIKE :qp1',
-                [':qp0' => '%foo\%%', ':qp1' => '%[abc]%'],
+                [':qp0' => new Param('%foo\%%', DataType::STRING), ':qp1' => new Param('%[abc]%', DataType::STRING)],
             ],
             [
                 ['or not like', 'name', ['foo%', '[abc]']],
                 '[[name]] NOT LIKE :qp0 OR [[name]] NOT LIKE :qp1',
-                [':qp0' => '%foo\%%', ':qp1' => '%[abc]%'],
+                [':qp0' => new Param('%foo\%%', DataType::STRING), ':qp1' => new Param('%[abc]%', DataType::STRING)],
             ],
 
             /* like with Expression */
@@ -793,28 +800,28 @@ class QueryBuilderProvider
             [
                 ['like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
                 '[[name]] LIKE CONCAT("test", name, "%") AND [[name]] LIKE :qp0',
-                [':qp0' => '%\\\ab\_c%'],
+                [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
                 ['not like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
                 '[[name]] NOT LIKE CONCAT("test", name, "%") AND [[name]] NOT LIKE :qp0',
-                [':qp0' => '%\\\ab\_c%'],
+                [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
                 ['or like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
                 '[[name]] LIKE CONCAT("test", name, "%") OR [[name]] LIKE :qp0',
-                [':qp0' => '%\\\ab\_c%'],
+                [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
                 ['or not like', 'name', [new Expression('CONCAT("test", name, "%")'), '\ab_c']],
                 '[[name]] NOT LIKE CONCAT("test", name, "%") OR [[name]] NOT LIKE :qp0',
-                [':qp0' => '%\\\ab\_c%'],
+                [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
 
             /**
              * {@see https://github.com/yiisoft/yii2/issues/15630}
              */
-            [['like', 'location.title_ru', 'vi%', null], '[[location]].[[title_ru]] LIKE :qp0', [':qp0' => 'vi%']],
+            [['like', 'location.title_ru', 'vi%', null], '[[location]].[[title_ru]] LIKE :qp0', [':qp0' => new Param('vi%', DataType::STRING)]],
 
             /* like object conditions */
             [
@@ -840,24 +847,27 @@ class QueryBuilderProvider
             [
                 new LikeCondition('name', 'like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
                 '[[name]] LIKE CONCAT("test", name, "%") AND [[name]] LIKE :qp0',
-                [':qp0' => '%\\\ab\_c%'],
+                [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
                 new LikeCondition('name', 'not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
                 '[[name]] NOT LIKE CONCAT("test", name, "%") AND [[name]] NOT LIKE :qp0',
-                [':qp0' => '%\\\ab\_c%'],
+                [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
                 new LikeCondition('name', 'or like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
-                '[[name]] LIKE CONCAT("test", name, "%") OR [[name]] LIKE :qp0', [':qp0' => '%\\\ab\_c%'],
+                '[[name]] LIKE CONCAT("test", name, "%") OR [[name]] LIKE :qp0', [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
             [
                 new LikeCondition('name', 'or not like', [new Expression('CONCAT("test", name, "%")'), '\ab_c']),
-                '[[name]] NOT LIKE CONCAT("test", name, "%") OR [[name]] NOT LIKE :qp0', [':qp0' => '%\\\ab\_c%'],
+                '[[name]] NOT LIKE CONCAT("test", name, "%") OR [[name]] NOT LIKE :qp0', [':qp0' => new Param('%\\\ab\_c%', DataType::STRING)],
             ],
 
             /* like with expression as columnName */
-            [['like', new Expression('name'), 'teststring'], 'name LIKE :qp0', [':qp0' => '%teststring%']],
+            [['like', new Expression('name'), 'teststring'], 'name LIKE :qp0', [':qp0' => new Param('%teststring%', DataType::STRING)]],
+
+            /* like with brackets as columnName */
+            [['like', '(SELECT column_name FROM columns WHERE id=1)', 'teststring'], '(SELECT column_name FROM columns WHERE id=1) LIKE :qp0', [':qp0' => new Param('%teststring%', DataType::STRING)]],
         ];
 
         /* adjust dbms specific escaping */
@@ -877,7 +887,12 @@ class QueryBuilderProvider
             }
 
             foreach ($conditions[$i][2] as $name => $value) {
-                $conditions[$i][2][$name] = strtr($conditions[$i][2][$name], static::$likeParameterReplacements);
+                $conditions[$i][2][$name] = $conditions[$i][2][$name] instanceof Param
+                    ? new Param(
+                        strtr($conditions[$i][2][$name]->getValue(), static::$likeParameterReplacements),
+                        DataType::STRING
+                    )
+                    : strtr($conditions[$i][2][$name], static::$likeParameterReplacements);
             }
         }
 
@@ -936,7 +951,7 @@ class QueryBuilderProvider
                     $tableName,
                     $name1,
                     'C_index_1',
-                    SchemaInterface::INDEX_UNIQUE,
+                    IndexType::UNIQUE,
                 ),
             ],
             'create unique (2 columns)' => [
@@ -947,7 +962,7 @@ class QueryBuilderProvider
                     $tableName,
                     $name2,
                     'C_index_2_1, C_index_2_2',
-                    SchemaInterface::INDEX_UNIQUE,
+                    IndexType::UNIQUE,
                 ),
             ],
         ];
@@ -1038,7 +1053,7 @@ class QueryBuilderProvider
             ],
             'carry passed params (query)' => [
                 'customer',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select(['email', 'name', 'address', 'is_active', 'related_id'])
                     ->from('customer')
                     ->where(
@@ -1081,7 +1096,7 @@ class QueryBuilderProvider
             ],
             'query' => [
                 'customer',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select([new Expression('email as email'), new Expression('name')])
                     ->from('customer')
                     ->where(
@@ -1098,6 +1113,22 @@ class QueryBuilderProvider
                 ),
                 [
                     ':qp0' => 'test@example.com',
+                ],
+            ],
+            'json expression' => [
+                'json_type',
+                [
+                    'json_col' => new JsonExpression(['c' => 1, 'd' => 2]),
+                ],
+                [],
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    INSERT INTO [[json_type]] ([[json_col]]) VALUES (:qp0)
+                    SQL,
+                    static::$driverName,
+                ),
+                [
+                    ':qp0' => new Param('{"c":1,"d":2}', DataType::STRING),
                 ],
             ],
         ];
@@ -1433,7 +1464,7 @@ class QueryBuilderProvider
             ],
             'query' => [
                 'T_upsert',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1444,7 +1475,7 @@ class QueryBuilderProvider
             ],
             'query with update part' => [
                 'T_upsert',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1455,7 +1486,7 @@ class QueryBuilderProvider
             ],
             'query without update part' => [
                 'T_upsert',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select(['email', 'status' => new Expression('2')])
                     ->from('customer')
                     ->where(['name' => 'user1'])
@@ -1487,7 +1518,7 @@ class QueryBuilderProvider
             ],
             'query, values and expressions with update part' => [
                 '{{%T_upsert}}',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
@@ -1500,7 +1531,7 @@ class QueryBuilderProvider
             ],
             'query, values and expressions without update part' => [
                 '{{%T_upsert}}',
-                (new query(static::getDb()))
+                (new Query(static::getDb()))
                     ->select(
                         [
                             'email' => new Expression(':phEmail', [':phEmail' => 'dynamic@example.com']),
@@ -1580,8 +1611,8 @@ class QueryBuilderProvider
         $reference = new ForeignKeyConstraint();
         $reference->foreignColumnNames(['id']);
         $reference->foreignTableName('ref_table');
-        $reference->onDelete('CASCADE');
-        $reference->onUpdate('CASCADE');
+        $reference->onDelete(ReferentialAction::CASCADE);
+        $reference->onUpdate(ReferentialAction::CASCADE);
 
         $referenceWithSchema = clone $reference;
         $referenceWithSchema->foreignSchemaName('ref_schema');
@@ -1663,7 +1694,12 @@ class QueryBuilderProvider
 
             "extra('NOT NULL')" => ['varchar(255) NOT NULL', ColumnBuilder::string()->extra('NOT NULL')],
             "extra('')" => ['varchar(255)', ColumnBuilder::string()->extra('')],
-            "check('value > 5')" => ['integer CHECK ([col_59] > 5)', ColumnBuilder::integer()->check(DbHelper::replaceQuotes('[[col_59]] > 5', static::$driverName))],
+            "check('value > 5')" => [
+                DbHelper::replaceQuotes('integer CHECK ([[check_col]] > 5)', static::$driverName),
+                ColumnBuilder::integer()
+                    ->withName('check_col')
+                    ->check(DbHelper::replaceQuotes('[[check_col]] > 5', static::$driverName)),
+            ],
             "check('')" => ['integer', ColumnBuilder::integer()->check('')],
             'check(null)' => ['integer', ColumnBuilder::integer()->check(null)],
             "comment('comment')" => ['varchar(255)', ColumnBuilder::string()->comment('comment')],

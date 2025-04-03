@@ -10,7 +10,9 @@ use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\DataType;
+use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
+use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
@@ -98,8 +100,7 @@ interface CommandInterface
 
     /**
      * Creates an SQL command for adding a foreign key constraint to an existing table.
-     *
-     * The method will quote the table and column names.
+     * The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated SQL.
      *
      * @param string $table The name of the table to add foreign key constraint to.
      * @param string $name The name of the foreign key constraint.
@@ -108,16 +109,14 @@ interface CommandInterface
      * @param string $referenceTable The name of the table that the foreign key references to.
      * @param array|string $referenceColumns The name of the column that the foreign key references to. If there are
      * many columns, separate them with commas.
-     * @param string|null $delete The `ON DELETE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
-     * `SET DEFAULT`, `SET NULL`.
-     * @param string|null $update The `ON UPDATE` option. Most DBMS support these options: `RESTRICT`, `CASCADE`, `NO ACTION`,
-     * `SET DEFAULT`, `SET NULL`.
+     * @param string|null $delete The `ON DELETE` option. See {@see ReferentialAction} class for possible values.
+     * @param string|null $update The `ON UPDATE` option. See {@see ReferentialAction} class for possible values.
      *
      * @throws Exception
      * @throws InvalidArgumentException
      *
-     * Note: The method will quote the `name`, `table`, `referenceTable` parameters before using them in the generated
-     * SQL.
+     * @psalm-param ReferentialAction::*|null $delete
+     * @psalm-param ReferentialAction::*|null $update
      */
     public function addForeignKey(
         string $table,
@@ -125,8 +124,8 @@ interface CommandInterface
         array|string $columns,
         string $referenceTable,
         array|string $referenceColumns,
-        string $delete = null,
-        string $update = null
+        string|null $delete = null,
+        string|null $update = null
     ): static;
 
     /**
@@ -223,8 +222,8 @@ interface CommandInterface
     public function bindParam(
         int|string $name,
         mixed &$value,
-        int $dataType = null,
-        int $length = null,
+        ?int $dataType = null,
+        ?int $length = null,
         mixed $driverOptions = null
     ): static;
 
@@ -252,7 +251,7 @@ interface CommandInterface
      *
      * @psalm-param DataType::*|null $dataType
      */
-    public function bindValue(int|string $name, mixed $value, int $dataType = null): static;
+    public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static;
 
     /**
      * Binds a list of values to the corresponding parameters.
@@ -297,12 +296,14 @@ interface CommandInterface
      * @param string $name The name of the index.
      * @param array|string $columns The column(s) to include in the index. If there are many columns,
      * separate them with commas.
-     * @param string|null $indexType The type of index-supported DBMS - for example: `UNIQUE`, `FULLTEXT`, `SPATIAL`,
-     * `BITMAP` or null as default.
-     * @param string|null $indexMethod The setting index organization method (with `USING`, not all DBMS).
+     * @param string|null $indexType The type of the index supported by DBMS {@see IndexType} - for example: `UNIQUE`,
+     * `FULLTEXT`, `SPATIAL`, `BITMAP` or null as default.
+     * @param string|null $indexMethod The index organization method (with `USING`, not all DBMS).
      *
      * @throws Exception
      * @throws InvalidArgumentException
+     *
+     * @psalm-param IndexType::*|null $indexType
      *
      * Note: The method will quote the `name`, `table`, and `column` parameters before using them in the generated SQL.
      */
@@ -310,8 +311,8 @@ interface CommandInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): static;
 
     /**
@@ -361,7 +362,7 @@ interface CommandInterface
      *
      * @psalm-param array<string, ColumnInterface>|string[] $columns
      */
-    public function createTable(string $table, array $columns, string $options = null): static;
+    public function createTable(string $table, array $columns, ?string $options = null): static;
 
     /**
      * Creates a SQL View.
@@ -497,10 +498,12 @@ interface CommandInterface
      * Creates an SQL command for dropping a DB table.
      *
      * @param string $table The name of the table to drop.
+     * @param bool $ifExists Do not throw an error if the table does not exist.
+     * @param bool $cascade Automatically drop objects that depend on the table.
      *
      * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
-    public function dropTable(string $table): static;
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): static;
 
     /**
      * Creates an SQL command for dropping a unique constraint.
@@ -614,7 +617,7 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
-    public function insertWithReturningPks(string $table, array $columns): bool|array;
+    public function insertWithReturningPks(string $table, array $columns): array|false;
 
     /**
      * Prepares the SQL statement to be executed.
@@ -629,7 +632,7 @@ interface CommandInterface
      * @throws Exception If there is any DB error.
      * @throws InvalidConfigException
      */
-    public function prepare(bool $forRead = null): void;
+    public function prepare(?bool $forRead = null): void;
 
     /**
      * Executes the SQL statement and returns a query result.
@@ -732,7 +735,7 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` parameter before using it in the generated SQL.
      */
-    public function resetSequence(string $table, int|string $value = null): static;
+    public function resetSequence(string $table, int|string|null $value = null): static;
 
     /**
      * List all database names in the current connection.

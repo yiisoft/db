@@ -93,9 +93,11 @@ and the following changes were made:
 ### New classes with constants
 
 - `Yiisoft\Db\Constant\PhpType` with PHP types constants;
-- `Yiisoft\Db\Constant\GettypeResult` with `gettype()` function results constants.
-- `Yiisoft\Db\Constant\ColumnType` with abstract column types constants.
-- `Yiisoft\Db\Constant\PseudoType` with column pseudo-types constants.
+- `Yiisoft\Db\Constant\GettypeResult` with `gettype()` function results constants;
+- `Yiisoft\Db\Constant\ColumnType` with abstract column types constants;
+- `Yiisoft\Db\Constant\PseudoType` with column pseudo-types constants;
+- `Yiisoft\Db\Constant\IndexType` with table index types;
+- `Yiisoft\Db\Constant\ReferentialAction` with possible values of referential actions.
 
 ### New classes for table columns
 
@@ -115,28 +117,40 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 ### New methods
 
 - `QuoterInterface::getRawTableName()` - returns the raw table name without quotes;
-- `SchemaInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
+- `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
+- `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
 - `QueryBuilderInterface::prepareParam()` - converts a `ParamInterface` object to its SQL representation;
 - `QueryBuilderInterface::prepareValue()` - converts a value to its SQL representation;
+- `QueryBuilderInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `QueryBuilderInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
-- `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
+- `LikeConditionInterface::getCaseSensitive()` - returns whether the comparison is case-sensitive;
+- `SchemaInterface::hasTable()` - returns whether the specified table exists in database;
+- `SchemaInterface::hasSchema()` - returns whether the specified schema exists in database;
+- `SchemaInterface::hasView()` - returns whether the specified view exists in database;
 
 ### Remove methods
 
-- `AbstractQueryBuilder::getColumnType()`
-- `AbstractDMLQueryBuilder::getTypecastValue()`
-- `TableSchemaInterface::compositeForeignKey()`
-- `SchemaInterface::createColumn()`
-- `SchemaInterface::isReadQuery()`
-- `SchemaInterface::getRawTableName()`
-- `AbstractSchema::isReadQuery()`
-- `AbstractSchema::getRawTableName()`
-- `AbstractSchema::normalizeRowKeyCase()`
-- `Quoter::unquoteParts()`
-- `AbstractPdoCommand::logQuery()`
-- `ColumnSchemaInterface::phpType()`
-- `ConnectionInterface::getServerVersion()`
+- `AbstractQueryBuilder::getColumnType()` - use `AbstractQueryBuilder::buildColumnDefinition()` instead;
+- `AbstractDMLQueryBuilder::getTypecastValue()`;
+- `TableSchemaInterface::compositeForeignKey()`;
+- `SchemaInterface::createColumn()` - use `ColumnBuilder` instead;
+- `SchemaInterface::isReadQuery()` - use `DbStringHelper::isReadQuery()` instead;
+- `SchemaInterface::getRawTableName()` - use `QuoterInterface::getRawTableName()` instead;
+- `AbstractSchema::isReadQuery()` - use `DbStringHelper::isReadQuery()` instead;
+- `AbstractSchema::getRawTableName()` - use `QuoterInterface::getRawTableName()` instead;
+- `AbstractSchema::normalizeRowKeyCase()` - use `array_change_key_case()` instead;
+- `Quoter::unquoteParts()`;
+- `AbstractPdoCommand::logQuery()`;
+- `ColumnSchemaInterface::phpType()`;
+- `ConnectionInterface::getServerVersion()` - use `ConnectionInterface::getServerInfo()` instead;
+- `DbArrayHelper::getColumn()` - use `array_column()` instead;
+- `DbArrayHelper::getValueByPath()`;
+- `DbArrayHelper::populate()` - use `DbArrayHelper::index()` instead;
+- `DbStringHelper::baseName()`;
+- `DbStringHelper::pascalCaseToId()`;
+- `AbstractDQLQueryBuilder::hasLimit()` - use `$limit !== null` instead;
+- `AbstractDQLQueryBuilder::hasOffset()` - use `!empty($offset)` instead;
 
 ### Remove deprecated parameters
 
@@ -162,5 +176,12 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Allow `ExpressionInterface` for `$alias` parameter of `QueryPartsInterface::withQuery()` method;
 - Allow `QueryInterface::one()` to return an object;
 - Allow `QueryInterface::all()` to return array of objects;
+- Add parameters `$ifExists` and `$cascade` to `CommandInterface::dropTable()` and 
+  `DDLQueryBuilderInterface::dropTable()` methods.
 - Change `Quoter::quoteValue()` parameter type and return type from `mixed` to `string`;
 - Move `DataType` class to `Yiisoft\Db\Constant` namespace;
+- Change `DbArrayHelper::index()` parameter names and allow to accept `Closure` for `$indexBy` parameter; 
+- Change return type of `CommandInterface::insertWithReturningPks()` method to `array|false`;
+- Change return type of `AbstractCommand::insertWithReturningPks()` method to `array|false`;
+- Rename `QueryBuilderInterface::quoter()` method to `QueryBuilderInterface::getQuoter()`;
+- Change constructor parameters in `AbstractQueryBuilder` class;

@@ -18,6 +18,10 @@ on:
 
 name: static analysis
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   psalm:
     uses: yiisoft/actions/.github/workflows/psalm.yml@master
@@ -25,12 +29,4 @@ jobs:
       os: >-
         ['ubuntu-latest']
       php: >-
-        ['8.1', '8.2']
-  psalm83:
-    uses: yiisoft/actions/.github/workflows/psalm.yml@master
-    with:
-      psalm-config: psalm83.xml
-      os: >-
-        ['ubuntu-latest']
-      php: >-
-        ['8.3']
+        ['8.2', '8.3', '8.4']

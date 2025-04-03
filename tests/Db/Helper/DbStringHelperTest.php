@@ -12,12 +12,6 @@ use Yiisoft\Db\Helper\DbStringHelper;
  */
 final class DbStringHelperTest extends TestCase
 {
-    public function testBaseName(): void
-    {
-        $this->assertSame('TestCase', DbStringHelper::baseName(TestCase::class));
-        $this->assertSame('TestCase', DbStringHelper::baseName('TestCase'));
-    }
-
     public function testIsReadQuery(): void
     {
         $this->assertTrue(DbStringHelper::isReadQuery('SELECT * FROM tbl'));
@@ -35,14 +29,6 @@ final class DbStringHelperTest extends TestCase
             ['post_tag', 'postTag'],
             ['foo_ybar', 'fooYBar',],
         ];
-    }
-
-    /**
-     * @dataProvider pascalCaseToIdProvider
-     */
-    public function testPascalCaseToId(string $expectedResult, string $input): void
-    {
-        $this->assertEquals($expectedResult, DbStringHelper::pascalCaseToId($input));
     }
 
     public function testNormalizeFloat()

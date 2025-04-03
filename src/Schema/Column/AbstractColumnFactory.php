@@ -10,6 +10,8 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Syntax\ColumnDefinitionParser;
 
 use function array_diff_key;
+use function array_key_exists;
+use function array_merge;
 use function is_numeric;
 use function preg_match;
 use function str_replace;
@@ -47,13 +49,14 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
 
         if (isset($info['extra'], $definitionInfo['extra'])) {
             $info['extra'] = $definitionInfo['extra'] . ' ' . $info['extra'];
+            unset($definitionInfo['extra']);
         }
 
         /** @var string $type */
         $type = $definitionInfo['type'] ?? '';
         unset($definitionInfo['type']);
 
-        $info += $definitionInfo;
+        $info = array_merge($info, $definitionInfo);
 
         if ($this->isDbType($type)) {
             return $this->fromDbType($type, $info);
@@ -95,19 +98,31 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
     {
         unset($info['type']);
 
-        if ($type === ColumnType::ARRAY && empty($info['column']) && !empty($info['dbType'])) {
-            /** @psalm-suppress ArgumentTypeCoercion */
-            $info['column'] = $this->fromDbType(
-                $info['dbType'],
-                array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1])
-            );
+        if ($type === ColumnType::ARRAY || !empty($info['dimension'])) {
+            if (empty($info['column'])) {
+                if (!empty($info['dbType']) && $info['dbType'] !== ColumnType::ARRAY) {
+                    /** @psalm-suppress ArgumentTypeCoercion */
+                    $info['column'] = $this->fromDbType(
+                        $info['dbType'],
+                        array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1])
+                    );
+                } elseif ($type !== ColumnType::ARRAY) {
+                    /** @psalm-suppress ArgumentTypeCoercion */
+                    $info['column'] = $this->fromType(
+                        $type,
+                        array_diff_key($info, ['dimension' => 1, 'defaultValueRaw' => 1])
+                    );
+                }
+            }
+
+            $type = ColumnType::ARRAY;
         }
 
         $columnClass = $this->getColumnClass($type, $info);
 
         $column = new $columnClass($type, ...$info);
 
-        if (isset($info['defaultValueRaw'])) {
+        if (array_key_exists('defaultValueRaw', $info)) {
             $column->defaultValue($this->normalizeDefaultValue($info['defaultValueRaw'], $column));
         }
 
@@ -165,6 +180,10 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      */
     protected function getType(string $dbType, array $info = []): string
     {
+        if (!empty($info['dimension'])) {
+            return ColumnType::ARRAY;
+        }
+
         return static::TYPE_MAP[$dbType] ?? ColumnType::STRING;
     }
 

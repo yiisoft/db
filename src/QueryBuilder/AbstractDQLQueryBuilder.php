@@ -10,10 +10,15 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ArrayExpression;
+use Yiisoft\Db\Expression\ArrayExpressionBuilder;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Helper\DbStringHelper;
+use Yiisoft\Db\Expression\JsonExpression;
+use Yiisoft\Db\Expression\JsonExpressionBuilder;
+use Yiisoft\Db\Expression\StructuredExpression;
+use Yiisoft\Db\Expression\StructuredExpressionBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
@@ -25,10 +30,9 @@ use Yiisoft\Db\Schema\QuoterInterface;
 use function array_filter;
 use function array_merge;
 use function array_shift;
-use function ctype_digit;
-use function gettype;
 use function implode;
 use function is_array;
+use function is_bool;
 use function is_int;
 use function is_string;
 use function ltrim;
@@ -260,12 +264,14 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     {
         $sql = '';
 
-        if ($this->hasLimit($limit)) {
-            $sql = 'LIMIT ' . ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string) $limit);
+        if ($limit !== null) {
+            $sql = 'LIMIT '
+                . ($limit instanceof ExpressionInterface ? $this->buildExpression($limit) : (string) $limit);
         }
 
-        if ($this->hasOffset($offset)) {
-            $sql .= ' OFFSET ' . ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string) $offset);
+        if (!empty($offset)) {
+            $sql .= ' OFFSET '
+                . ($offset instanceof ExpressionInterface ? $this->buildExpression($offset) : (string) $offset);
         }
 
         return ltrim($sql);
@@ -314,7 +320,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         array $columns,
         array &$params,
         bool|null $distinct = false,
-        string $selectOption = null
+        ?string $selectOption = null
     ): string {
         $select = $distinct ? 'SELECT DISTINCT' : 'SELECT';
 
@@ -335,13 +341,14 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
                         . $this->quoter->quoteColumnName($i);
                 }
             } elseif (!is_string($column)) {
-                $columns[$i] = match (gettype($column)) {
-                    'double' => DbStringHelper::normalizeFloat($column),
-                    'boolean' => $column ? 'TRUE' : 'FALSE',
-                    default => (string) $column,
-                };
+                if (is_bool($column)) {
+                    $columns[$i] = $column ? 'TRUE' : 'FALSE';
+                } else {
+                    $columns[$i] = (string) $column;
+                }
 
                 if (is_string($i)) {
+                    /** @psalm-var string $columns[$i] */
                     $columns[$i] .= ' AS ' . $this->quoter->quoteColumnName($i);
                 }
             } elseif (is_string($i) && $i !== $column) {
@@ -523,9 +530,12 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Condition\InCondition::class => Condition\Builder\InConditionBuilder::class,
             Condition\LikeCondition::class => Condition\Builder\LikeConditionBuilder::class,
             Condition\ExistsCondition::class => Condition\Builder\ExistsConditionBuilder::class,
-            Condition\SimpleCondition::class => Condition\Builder\SimpleConditionBuilder::class,
-            Condition\HashCondition::class => Condition\Builder\HashConditionBuilder::class,
+            SimpleCondition::class => Condition\Builder\SimpleConditionBuilder::class,
+            HashCondition::class => Condition\Builder\HashConditionBuilder::class,
             Condition\BetweenColumnsCondition::class => Condition\Builder\BetweenColumnsConditionBuilder::class,
+            JsonExpression::class => JsonExpressionBuilder::class,
+            ArrayExpression::class => ArrayExpressionBuilder::class,
+            StructuredExpression::class => StructuredExpressionBuilder::class,
         ];
     }
 
@@ -541,30 +551,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         }
 
         return false;
-    }
-
-    /**
-     * Checks to see if the given limit is effective.
-     *
-     * @param mixed $limit The given limit.
-     *
-     * @return bool Whether the limit is effective.
-     */
-    protected function hasLimit(mixed $limit): bool
-    {
-        return ($limit instanceof ExpressionInterface) || ctype_digit((string) $limit);
-    }
-
-    /**
-     * Checks to see if the given offset is effective.
-     *
-     * @param mixed $offset The given offset.
-     *
-     * @return bool Whether the offset is effective.
-     */
-    protected function hasOffset(mixed $offset): bool
-    {
-        return ($offset instanceof ExpressionInterface) || (ctype_digit((string)$offset) && (string)$offset !== '0');
     }
 
     /**
