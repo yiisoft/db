@@ -89,7 +89,7 @@ class Query implements QueryInterface
     protected array $params = [];
     protected array $union = [];
     protected array $withQueries = [];
-    /** @psalm-var IndexBy $indexBy */
+    /** @psalm-var IndexBy|null $indexBy */
     protected Closure|string|null $indexBy = null;
     protected ExpressionInterface|int|null $limit = null;
     protected ExpressionInterface|int|null $offset = null;
