@@ -9,13 +9,7 @@ namespace Yiisoft\Db\Command;
  */
 class QueryStatement
 {
-    public string $sql;
-
-    public array $params = [];
-
-    public function __construct($sql, array $params = [])
+    public function __construct(public string $sql, public array $params = [])
     {
-        $this->sql = $sql;
-        $this->params = $params;
     }
 }
