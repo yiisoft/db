@@ -230,15 +230,4 @@ interface DMLQueryBuilderInterface
         array &$params
     ): string;
 
-    /**
-     * Extract column names from columns and rows.
-     *
-     * @param array[]|Iterator $rows The rows to be batch inserted into the table.
-     * @param string[] $columns The column names.
-     *
-     * @return string[] The column names.
-     *
-     * @psalm-param Iterator|non-empty-array<iterable<array-key, mixed>> $rows
-     */
-    public function extractColumnNames(array|Iterator $rows, array $columns): array;
 }

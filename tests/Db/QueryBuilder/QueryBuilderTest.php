@@ -62,7 +62,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     ): void {
         $db = $this->getConnection();
         $qb = new QueryBuilder($db);
-        $params = [];
 
         try {
             $statements = $qb->insertBatch($table, $rows, $columns);

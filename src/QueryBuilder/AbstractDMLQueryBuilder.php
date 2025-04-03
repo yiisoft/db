@@ -229,20 +229,32 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             }
 
             $insertedRowsCount++;
-            if (!empty($maxParametersLimit) && $insertedRowsCount > $maxParametersLimit) {
+            if (!empty($rowsAtOnceLimit) && $insertedRowsCount > $rowsAtOnceLimit) {
                 $parameters[] = $statementParameters;
                 $statementParameters = new QueryStatementParameters();
+                $insertedRowsCount = 1;
             }
 
             $statementParameters->params = array_merge($statementParameters->params, $currentRowParams);
             $statementParameters->values[] = implode(', ', $placeholders);
-            $parameters[] = $statementParameters;
         }
+
+        $parameters[] = $statementParameters;
 
         return $parameters;
     }
 
-    public function extractColumnNames(array|Iterator $rows, array $columns): array
+    /**
+     * Extract column names from columns and rows.
+     *
+     * @param array[]|Iterator $rows The rows to be batch inserted into the table.
+     * @param string[] $columns The column names.
+     *
+     * @return string[] The column names.
+     *
+     * @psalm-param Iterator|non-empty-array<iterable<array-key, mixed>> $rows
+     */
+    final protected function extractColumnNames(array|Iterator $rows, array $columns): array
     {
         $columns = $this->getNormalizeColumnNames($columns);
 
