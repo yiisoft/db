@@ -225,7 +225,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 }
 
                 ++$i;
-                ++$insertedParametersCount;
             }
 
             $insertedRowsCount++;
@@ -234,8 +233,15 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 $parameters[] = $statementParameters;
                 $statementParameters = new QueryStatementParameters();
                 $insertedRowsCount = 1;
+            } elseif (!empty($maxParametersLimit) && $insertedParametersCount + count($currentStatementParams) > $maxParametersLimit) {
+                $statementParameters->params = $currentStatementParams;
+                $parameters[] = $statementParameters;
+                $statementParameters = new QueryStatementParameters();
+                $insertedRowsCount = 1;
+                $insertedParametersCount = count($currentStatementParams);
             }
 
+            $insertedParametersCount += count($currentStatementParams);
             $statementParameters->values[] = implode(', ', $placeholders);
         }
 
