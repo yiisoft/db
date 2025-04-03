@@ -224,11 +224,11 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection(true);
         $qb = $db->getQueryBuilder();
 
-        $params = [];
-        $sql = $qb->insertBatch($table, $rows, $columns, $params);
+        $statements = $qb->insertBatch($table, $rows, $columns);
 
-        $this->assertSame($expected, $sql);
-        $this->assertSame($expectedParams, $params);
+        $this->assertSame(1, count($statements));
+        $this->assertSame($expected, $statements[0]->sql);
+        $this->assertSame($expectedParams, $statements[0]->params);
         $db->close();
     }
 
