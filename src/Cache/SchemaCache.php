@@ -15,8 +15,8 @@ use function is_int;
 use function is_string;
 use function json_encode;
 use function json_last_error_msg;
-use function mb_strlen;
 use function md5;
+use function strlen;
 use function strpbrk;
 
 /**
@@ -81,7 +81,7 @@ final class SchemaCache
      * @throws InvalidArgumentException If the $key string isn't a legal value.
      * @throws RuntimeException If cache value isn't set.
      */
-    public function set(mixed $key, mixed $value, string $tag = null): void
+    public function set(mixed $key, mixed $value, ?string $tag = null): void
     {
         $stringKey = $this->normalize($key);
 
@@ -200,7 +200,7 @@ final class SchemaCache
     {
         if (is_string($key) || is_int($key)) {
             $key = (string)$key;
-            $length = mb_strlen($key, '8bit');
+            $length = strlen($key);
             return (strpbrk($key, '{}()/\@:') !== false || $length < 1 || $length > 64) ? md5($key) : $key;
         }
 
@@ -218,7 +218,7 @@ final class SchemaCache
      *
      * @throws InvalidArgumentException
      */
-    private function addToTag(string $key, string $cacheTag = null): void
+    private function addToTag(string $key, ?string $cacheTag = null): void
     {
         if (empty($cacheTag)) {
             return;

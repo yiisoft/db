@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Provider;
 
-class PopulateProvider
+use ArrayIterator;
+use Yiisoft\Db\Schema\Data\JsonLazyArray;
+
+class DbArrayHelperProvider
 {
-    public static function populate(): array
+    public static function index(): array
     {
         return [
             [
@@ -24,7 +27,7 @@ class PopulateProvider
         ];
     }
 
-    public static function populateWithIndexByClosure(): array
+    public static function indexWithIndexByClosure(): array
     {
         return [
             [
@@ -41,7 +44,7 @@ class PopulateProvider
         ];
     }
 
-    public static function populateWithIncorrectIndexBy(): array
+    public static function indexWithIncorrectIndexBy(): array
     {
         return [
             'not existed key' => [
@@ -51,33 +54,14 @@ class PopulateProvider
                     ['table.key' => 'value2'],
                 ],
                 [
-                    '' => ['table.key' => 'value2'],
-                ],
-            ],
-            'empty key (not found key behavior)' => [
-                '',
-                [
                     ['table.key' => 'value1'],
                     ['table.key' => 'value2'],
-                ],
-                [
-                    '' => ['table.key' => 'value2'],
-                ],
-            ],
-            'key and composite key (not found key behavior)' => [
-                'key',
-                [
-                    ['table.key' => 'value1'],
-                    ['table.key' => 'value2'],
-                ],
-                [
-                    '' => ['table.key' => 'value2'],
                 ],
             ],
         ];
     }
 
-    public static function populateWithIndexBy(): array
+    public static function indexWithIndexBy(): array
     {
         return [
             'null key with empty rows' => [
@@ -129,50 +113,6 @@ class PopulateProvider
                     'value2' => ['table key' => 'value2'],
                 ],
             ],
-            'composite-key and simple key' => [
-                't.key',
-                [
-                    [
-                        'key' => 'value1',
-                        't' => [
-                            'key' => 'value2',
-                        ],
-                    ],
-                ],
-                [
-                    'value2' => [
-                        'key' => 'value1',
-                        't' => [
-                            'key' => 'value2',
-                        ],
-                    ],
-                ],
-            ],
-            'composite-3-key and simple key' => [
-                't1.t2.key',
-                [
-                    [
-                        'key' => 'value1',
-                        't1' => [
-                            'key' => 'value2',
-                            't2' => [
-                                'key' => 'value3',
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'value3' => [
-                        'key' => 'value1',
-                        't1' => [
-                            'key' => 'value2',
-                            't2' => [
-                                'key' => 'value3',
-                            ],
-                        ],
-                    ],
-                ],
-            ],
             'composite-key and composite key' => [
                 'table.key',
                 [
@@ -184,6 +124,21 @@ class PopulateProvider
                     'value2' => ['table.key' => 'value2'],
                 ],
             ],
+        ];
+    }
+
+    public static function toArray(): array
+    {
+        return [
+            [[], []],
+            [['key' => 'value'], ['key' => 'value']],
+            [(object) [], []],
+            [(object) ['key' => 'value'], ['key' => 'value']],
+            [new ArrayIterator([]), []],
+            [new ArrayIterator(['key' => 'value']), ['key' => 'value']],
+            [new JsonLazyArray('[]'), []],
+            [new JsonLazyArray('[1,2,3]'), [1, 2, 3]],
+            [new JsonLazyArray('{"key":"value"}'), ['key' => 'value']],
         ];
     }
 }

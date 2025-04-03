@@ -8,6 +8,7 @@ use Closure;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -72,7 +73,7 @@ use function trim;
  * Query internally uses the {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder} class to generate the SQL statement.
  *
  * @psalm-import-type SelectValue from QueryPartsInterface
- * @psalm-import-type IndexBy from QueryPartsInterface
+ * @psalm-import-type IndexBy from QueryInterface
  */
 class Query implements QueryInterface
 {
@@ -106,6 +107,7 @@ class Query implements QueryInterface
         if ($columns instanceof ExpressionInterface) {
             $columns = [$columns];
         } elseif (!is_array($columns)) {
+            /** @var string[] */
             $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
         }
 
@@ -231,7 +233,7 @@ class Query implements QueryInterface
             return [];
         }
 
-        return DbArrayHelper::populate($this->createCommand()->queryAll(), $this->indexBy);
+        return DbArrayHelper::index($this->createCommand()->queryAll(), $this->indexBy);
     }
 
     public function average(string $sql): int|float|null|string
@@ -247,7 +249,7 @@ class Query implements QueryInterface
         return $this->db
             ->createBatchQueryResult($this)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::populate($rows, $indexBy))
+            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::index($rows, $indexBy))
         ;
     }
 
@@ -368,15 +370,15 @@ class Query implements QueryInterface
 
     public function from(array|ExpressionInterface|string $tables): static
     {
-        if ($tables instanceof ExpressionInterface) {
-            $tables = [$tables];
-        }
-
-        if (is_string($tables)) {
-            $tables = preg_split('/\s*,\s*/', trim($tables), -1, PREG_SPLIT_NO_EMPTY);
-        }
-
-        $this->from = $tables;
+        /**
+         * @var array
+         * @psalm-suppress PossiblyInvalidArgument
+         */
+        $this->from = match (gettype($tables)) {
+            GettypeResult::ARRAY => $tables,
+            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($tables), -1, PREG_SPLIT_NO_EMPTY),
+            default => [$tables],
+        };
 
         return $this;
     }
@@ -463,12 +465,15 @@ class Query implements QueryInterface
 
     public function groupBy(array|string|ExpressionInterface $columns): static
     {
-        if ($columns instanceof ExpressionInterface) {
-            $columns = [$columns];
-        } elseif (!is_array($columns)) {
-            $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
-        }
-        $this->groupBy = $columns;
+        /**
+         * @var array
+         * @psalm-suppress PossiblyInvalidArgument
+         */
+        $this->groupBy = match (gettype($columns)) {
+            GettypeResult::ARRAY => $columns,
+            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
+            default => [$columns],
+        };
 
         return $this;
     }
@@ -615,7 +620,7 @@ class Query implements QueryInterface
         };
     }
 
-    public function select(array|bool|float|int|string|ExpressionInterface $columns, string $option = null): static
+    public function select(array|bool|float|int|string|ExpressionInterface $columns, ?string $option = null): static
     {
         $this->select = $this->normalizeSelect($columns);
         $this->selectOption = $option;
@@ -844,6 +849,7 @@ class Query implements QueryInterface
             return $columns;
         }
 
+        /** @var string[] */
         $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
         $result = [];
 
@@ -866,9 +872,13 @@ class Query implements QueryInterface
      */
     private function normalizeSelect(array|bool|float|int|string|ExpressionInterface $columns): array
     {
+        /**
+         * @var SelectValue
+         * @psalm-suppress InvalidArgument
+         */
         $columns = match (gettype($columns)) {
-            'array' => $columns,
-            'string' => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
+            GettypeResult::ARRAY => $columns,
+            GettypeResult::STRING => preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY),
             default => [$columns],
         };
 

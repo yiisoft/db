@@ -29,6 +29,7 @@ class ColumnDefinitionParser
      *     check?: string,
      *     comment?: string,
      *     defaultValueRaw?: string,
+     *     dimension?: positive-int,
      *     enumValues?: list<string>,
      *     extra?: string,
      *     notNull?: bool,
@@ -41,17 +42,22 @@ class ColumnDefinitionParser
      */
     public function parse(string $definition): array
     {
-        preg_match('/^(\w*)(?:\(([^)]+)\))?\s*/', $definition, $matches);
+        preg_match('/^(\w*)(?:\(([^)]+)\))?(\[[\d\[\]]*\])?\s*/', $definition, $matches);
 
         $type = strtolower($matches[1]);
         $info = ['type' => $type];
 
-        if (isset($matches[2])) {
+        if (isset($matches[2]) && $matches[2] !== '') {
             if ($type === 'enum') {
                 $info += $this->enumInfo($matches[2]);
             } else {
                 $info += $this->sizeInfo($matches[2]);
             }
+        }
+
+        if (isset($matches[3])) {
+            /** @psalm-var positive-int */
+            $info['dimension'] = substr_count($matches[3], '[');
         }
 
         $extra = substr($definition, strlen($matches[0]));
@@ -105,20 +111,24 @@ class ColumnDefinitionParser
             $extra = str_replace($matches[0], '', $extra);
         }
 
+        /** @var string $extra */
         $extra = preg_replace('/\s*\bUNSIGNED\b/i', '', $extra, 1, $count);
         if ($count > 0) {
             $info['unsigned'] = true;
         }
 
+        /** @var string $extra */
         $extra = preg_replace('/\s*\bUNIQUE\b/i', '', $extra, 1, $count);
         if ($count > 0) {
             $info['unique'] = true;
         }
 
+        /** @var string $extra */
         $extra = preg_replace('/\s*\bNOT\s+NULL\b/i', '', $extra, 1, $count);
         if ($count > 0) {
             $info['notNull'] = true;
         } else {
+            /** @var string $extra */
             $extra = preg_replace('/\s*\bNULL\b/i', '', $extra, 1, $count);
             if ($count > 0) {
                 $info['notNull'] = false;

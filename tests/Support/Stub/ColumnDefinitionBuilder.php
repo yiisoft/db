@@ -44,7 +44,7 @@ final class ColumnDefinitionBuilder extends AbstractColumnDefinitionBuilder
             $columnName = $column->getName();
 
             if (!empty($columnName) && $column->getType() === ColumnType::JSON) {
-                return ' CHECK (json_valid(' . $this->queryBuilder->quoter()->quoteColumnName($columnName) . '))';
+                return ' CHECK (json_valid(' . $this->queryBuilder->getQuoter()->quoteColumnName($columnName) . '))';
             }
 
             return '';

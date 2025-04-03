@@ -153,8 +153,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         string $table,
         string $name,
         array|string $columns,
-        string $indexType = null,
-        string $indexMethod = null
+        ?string $indexType = null,
+        ?string $indexMethod = null
     ): string {
         return 'CREATE ' . (!empty($indexType) ? $indexType . ' ' : '') . 'INDEX '
             . $this->quoter->quoteTableName($name)
@@ -162,7 +162,7 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . ' (' . $this->queryBuilder->buildColumns($columns) . ')';
     }
 
-    public function createTable(string $table, array $columns, string $options = null): string
+    public function createTable(string $table, array $columns, ?string $options = null): string
     {
         $cols = [];
 
@@ -264,9 +264,12 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
             . $this->quoter->quoteColumnName($name);
     }
 
-    public function dropTable(string $table): string
+    public function dropTable(string $table, bool $ifExists = false, bool $cascade = false): string
     {
-        return 'DROP TABLE ' . $this->quoter->quoteTableName($table);
+        return 'DROP TABLE '
+            . ($ifExists ? 'IF EXISTS ' : '')
+            . $this->quoter->quoteTableName($table)
+            . ($cascade ? ' CASCADE' : '');
     }
 
     public function dropUnique(string $table, string $name): string

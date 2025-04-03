@@ -4,59 +4,44 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Expression;
 
+use ArrayIterator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Tests\Support\TestTrait;
-
-use function json_encode;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class JsonExpressionTest extends TestCase
 {
     use TestTrait;
 
-    public function testConstruct(): void
+    public static function constructProvider(): array
     {
-        $expression = new JsonExpression(['a', 'b', 'c'], 'string');
-
-        $this->assertSame(['a', 'b', 'c'], $expression->getValue());
-        $this->assertSame('string', $expression->getType());
+        return [
+            [['a', 'b', 'c'], null],
+            [new ArrayIterator(['a', 'b', 'c']), 'json'],
+            [new Query(self::getDb()), 'jsonb'],
+            [new JsonLazyArray('[1,2,3]'), null],
+            ['[1,2,3]', null],
+            ['{"a":1,"b":2}', null],
+            [1, null],
+            ['', null],
+            [null, null],
+        ];
     }
 
-    public function testConstructValueIsJsonExpression(): void
-    {
-        $expression = new JsonExpression(['a', 'b', 'c'], 'string');
-        $expression2 = new JsonExpression($expression, 'string');
+    #[DataProvider('constructProvider')]
+    public function testConstruct(
+        mixed $value,
+        string|null $type = null
+    ): void {
+        $expression = new JsonExpression($value, $type);
 
-        $this->assertSame(['a', 'b', 'c'], $expression2->getValue());
-        $this->assertSame('string', $expression2->getType());
-    }
-
-    public function testJsonSerialize(): void
-    {
-        $expression = new JsonExpression(['a', 'b', 'c'], 'string');
-
-        $this->assertSame('["a","b","c"]', json_encode($expression->jsonSerialize(), JSON_THROW_ON_ERROR));
-    }
-
-    public function testJsonSerializeQueryInterfaceException(): void
-    {
-        $db = $this->getConnection();
-
-        $query = (new Query($db))->select(['a', 'b', 'c']);
-        $expression = new JsonExpression($query, 'string');
-
-        $this->expectException(InvalidConfigException::class);
-        $this->expectExceptionMessage(
-            'The JsonExpression class can not be serialized to JSON when the value is a QueryInterface object.'
-        );
-
-        $expression->jsonSerialize();
+        $this->assertSame($value, $expression->getValue());
+        $this->assertSame($type, $expression->getType());
     }
 }

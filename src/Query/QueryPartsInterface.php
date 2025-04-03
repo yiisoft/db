@@ -541,7 +541,7 @@ interface QueryPartsInterface
      *
      * @psalm-param SelectValue|scalar|ExpressionInterface $columns
      */
-    public function select(array|bool|float|int|string|ExpressionInterface $columns, string $option = null): static;
+    public function select(array|bool|float|int|string|ExpressionInterface $columns, ?string $option = null): static;
 
     /**
      * It allows you to specify more options for the `SELECT` clause of an SQL statement.

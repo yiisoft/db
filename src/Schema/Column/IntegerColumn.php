@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use BackedEnum;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\PhpType;
@@ -25,7 +26,11 @@ class IntegerColumn extends AbstractColumn
 
         return match ($value) {
             null, '' => null,
-            default => $value instanceof ExpressionInterface ? $value : (int) $value,
+            default => match (true) {
+                $value instanceof ExpressionInterface => $value,
+                $value instanceof BackedEnum => (int) $value->value,
+                default => (int) $value,
+            },
         };
     }
 

@@ -32,7 +32,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  *
  * @extends Iterator<int, array>
  *
- * @psalm-import-type IndexBy from QueryPartsInterface
+ * @psalm-import-type IndexBy from QueryInterface
  */
 interface BatchQueryResultInterface extends Iterator
 {
