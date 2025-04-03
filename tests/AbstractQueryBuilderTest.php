@@ -231,7 +231,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         } else {
             $this->assertSame($expected, $statements[0]->sql);
         }
-        if ($this->count($statements)) {
+        if ($this->count()) {
             $this->assertSame($expectedParams, $statements[0]->params);
         }
         $db->close();
