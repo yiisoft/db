@@ -226,7 +226,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $statements = $qb->insertBatch($table, $rows, $columns);
 
-        $this->assertSame(1, count($statements));
+        $this->assertCount(1, $statements);
         $this->assertSame($expected, $statements[0]->sql);
         $this->assertSame($expectedParams, $statements[0]->params);
         $db->close();

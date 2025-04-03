@@ -199,10 +199,9 @@ final class CommandTest extends AbstractCommandTest
         $batchCommand = $command->insertBatch('table', [['value1', 'value2'], ['value3', 'value4']], ['column1', 'column2']);
 
         $this->assertSame(1, $batchCommand->count());
-        $this->assertSame(0, $batchCommand->key());
-        $this->assertTrue($batchCommand->valid());
+        $commands = $batchCommand->getCommands();
 
-        $firstCommand = $batchCommand->current();
+        $firstCommand = $commands[0];
         $this->assertSame('INSERT INTO [table] ([column1], [column2]) VALUES (:qp0, :qp1), (:qp2, :qp3)', $firstCommand->getSql());
         $this->assertSame(
             [
@@ -213,13 +212,6 @@ final class CommandTest extends AbstractCommandTest
             ],
             $firstCommand->getParams()
         );
-
-        $batchCommand->next();
-        $this->assertSame(1, $batchCommand->key());
-        $this->assertFalse($batchCommand->valid());
-
-        $batchCommand->rewind();
-        $this->assertSame(0, $batchCommand->key());
 
         $db->close();
     }

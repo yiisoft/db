@@ -23,6 +23,11 @@ final class BatchCommand
         return count($this->commands);
     }
 
+    public function getCommands(): array
+    {
+        return $this->commands;
+    }
+
     /**
      * @throws \Throwable
      * @throws Exception
