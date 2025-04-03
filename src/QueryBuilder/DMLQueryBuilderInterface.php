@@ -50,7 +50,7 @@ interface DMLQueryBuilderInterface
      * @param string $table The table to insert new rows into.
      * @param iterable $rows The rows to batch-insert into the table.
      * @param string[] $columns The column names of the table.
-     * @param array $params The binding parameters. This parameter exists.
+     * @param int $rowsAtOnceLimit The limit of rows inserted at once.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -64,7 +64,7 @@ interface DMLQueryBuilderInterface
      * - That the values in each row must match the corresponding column names.
      * - The method will escape the column names, and quote the values to insert.
      */
-    public function insertBatch(string $table, iterable $rows, array $columns = [], array $params = []): array;
+    public function insertBatch(string $table, iterable $rows, array $columns = [], int $rowsAtOnceLimit = 0): array;
 
     /**
      * Creates a `DELETE` SQL statement.

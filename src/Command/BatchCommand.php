@@ -16,7 +16,6 @@ final class BatchCommand
      */
     public function __construct(private readonly array $commands)
     {
-
     }
 
     public function count(): int

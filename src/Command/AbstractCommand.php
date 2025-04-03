@@ -211,7 +211,7 @@ abstract class AbstractCommand implements CommandInterface
     {
         $table = $this->getQueryBuilder()->getQuoter()->getRawTableName($table);
 
-        $statements = $this->getQueryBuilder()->insertBatch($table, $rows, $columns);
+        $statements = $this->getQueryBuilder()->insertBatch($table, $rows, $columns, $rowsAtOnceLimit);
         $commands = [];
         foreach ($statements as $statement) {
             $command = $this->db->createCommand();
