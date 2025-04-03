@@ -210,11 +210,12 @@ abstract class AbstractCommand implements CommandInterface
     public function insertBatch(string $table, iterable $rows, array $columns = [], int $rowsAtOnceLimit = 0): BatchCommand
     {
         $table = $this->getQueryBuilder()->getQuoter()->getRawTableName($table);
+        $db = $this->getConnection();
 
         $statements = $this->getQueryBuilder()->insertBatch($table, $rows, $columns, $rowsAtOnceLimit);
         $commands = [];
         foreach ($statements as $statement) {
-            $command = $this->db->createCommand();
+            $command = $db->createCommand();
             $command->setRawSql($statement->sql);
             $command->bindValues($statement->params);
 
