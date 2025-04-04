@@ -205,27 +205,17 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $currentStatementParams = [];
         $insertedRowsCount = 0;
         foreach ($rows as $row) {
-            $i = 0;
-            $placeholders = $keys;
 
             $statementParameters['params'] = $currentStatementParams;
 
-            /** @var int|string $key */
-            foreach ($row as $key => $value) {
-                $columnName = $columnNames[$key] ?? (isset($keys[$key]) ? $key : $names[$i] ?? $i);
-
-                if (isset($columns[$columnName])) {
-                    $value = $columns[$columnName]->dbTypecast($value);
-                }
-
-                if ($value instanceof ExpressionInterface) {
-                    $placeholders[$columnName] = $this->queryBuilder->buildExpression($value, $currentStatementParams);
-                } else {
-                    $placeholders[$columnName] = $this->queryBuilder->bindParam($value, $currentStatementParams);
-                }
-
-                ++$i;
-            }
+            $placeholders = $this->prepareRowBatchInsertValues(
+                $row,
+                $columnNames,
+                $keys,
+                $names,
+                $columns,
+                $currentStatementParams
+            );
 
 //            $insertedRowsCount++;
 //            if ((!empty($rowsAtOnceLimit) && $insertedRowsCount > $rowsAtOnceLimit) ||
