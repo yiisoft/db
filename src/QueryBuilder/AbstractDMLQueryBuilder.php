@@ -205,9 +205,27 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $currentStatementParams = [];
         $insertedRowsCount = 0;
         foreach ($rows as $row) {
+            $i = 0;
+            $placeholders = $keys;
+
             $statementParameters['params'] = $currentStatementParams;
 
-            $placeholders = $this->prepareRowBatchInsertValues($row, $columnNames, $keys, $names, $columns, $currentStatementParams);
+            /** @var int|string $key */
+            foreach ($row as $key => $value) {
+                $columnName = $columnNames[$key] ?? (isset($keys[$key]) ? $key : $names[$i] ?? $i);
+
+                if (isset($columns[$columnName])) {
+                    $value = $columns[$columnName]->dbTypecast($value);
+                }
+
+                if ($value instanceof ExpressionInterface) {
+                    $placeholders[$columnName] = $this->queryBuilder->buildExpression($value, $currentStatementParams);
+                } else {
+                    $placeholders[$columnName] = $this->queryBuilder->bindParam($value, $currentStatementParams);
+                }
+
+                ++$i;
+            }
 
             $insertedRowsCount++;
             if ((!empty($rowsAtOnceLimit) && $insertedRowsCount > $rowsAtOnceLimit) ||
@@ -215,8 +233,25 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 $queryStatementParameters[] = $statementParameters;
                 $statementParameters = ['values' => [], 'params' => []];
                 $insertedRowsCount = 1;
+
                 $currentStatementParams = [];
-                $placeholders = $this->prepareRowBatchInsertValues($row, $columnNames, $keys, $names, $columns, $currentStatementParams);
+                $placeholders = $keys;
+                /** @var int|string $key */
+                foreach ($row as $key => $value) {
+                    $columnName = $columnNames[$key] ?? (isset($keys[$key]) ? $key : $names[$i] ?? $i);
+
+                    if (isset($columns[$columnName])) {
+                        $value = $columns[$columnName]->dbTypecast($value);
+                    }
+
+                    if ($value instanceof ExpressionInterface) {
+                        $placeholders[$columnName] = $this->queryBuilder->buildExpression($value, $currentStatementParams);
+                    } else {
+                        $placeholders[$columnName] = $this->queryBuilder->bindParam($value, $currentStatementParams);
+                    }
+
+                    ++$i;
+                }
             }
 
             $statementParameters['values'][] = implode(', ', $placeholders);
