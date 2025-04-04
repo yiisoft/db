@@ -9,7 +9,6 @@ use IteratorAggregate;
 use JsonException;
 use Traversable;
 use Yiisoft\Db\Command\QueryStatement;
-use Yiisoft\Db\Command\QueryStatementParameters;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\Exception;
@@ -206,26 +205,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $currentStatementParams = [];
         $insertedRowsCount = 0;
         foreach ($rows as $row) {
-            $i = 0;
-            $placeholders = $keys;
             $statementParameters['params'] = $currentStatementParams;
 
-            /** @var int|string $key */
-            foreach ($row as $key => $value) {
-                $columnName = $columnNames[$key] ?? (isset($keys[$key]) ? $key : $names[$i] ?? $i);
-
-                if (isset($columns[$columnName])) {
-                    $value = $columns[$columnName]->dbTypecast($value);
-                }
-
-                if ($value instanceof ExpressionInterface) {
-                    $placeholders[$columnName] = $this->queryBuilder->buildExpression($value, $currentStatementParams);
-                } else {
-                    $placeholders[$columnName] = $this->queryBuilder->bindParam($value, $currentStatementParams);
-                }
-
-                ++$i;
-            }
+            $placeholders = $this->prepareRowBatchInsertValues($row, $keys, $names, $columns, $currentStatementParams);
 
             $insertedRowsCount++;
             if ((!empty($rowsAtOnceLimit) && $insertedRowsCount > $rowsAtOnceLimit) ||
@@ -234,6 +216,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 $statementParameters = ['values' => [], 'params' => []];
                 $insertedRowsCount = 1;
                 $currentStatementParams = [];
+                $placeholders = $this->prepareRowBatchInsertValues($row, $keys, $names, $columns, $currentStatementParams);
             }
 
             $statementParameters['values'][] = implode(', ', $placeholders);
@@ -243,6 +226,32 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $queryStatementParameters[] = $statementParameters;
 
         return $queryStatementParameters;
+    }
+
+    protected function prepareRowBatchInsertValues(iterable $row, array $keys, array $names, array $columns,
+                                                   array &$currentStatementParams): array
+    {
+        $i = 0;
+        $placeholders = $keys;
+
+        /** @var int|string $key */
+        foreach ($row as $key => $value) {
+            $columnName = $columnNames[$key] ?? (isset($keys[$key]) ? $key : $names[$i] ?? $i);
+
+            if (isset($columns[$columnName])) {
+                $value = $columns[$columnName]->dbTypecast($value);
+            }
+
+            if ($value instanceof ExpressionInterface) {
+                $placeholders[$columnName] = $this->queryBuilder->buildExpression($value, $currentStatementParams);
+            } else {
+                $placeholders[$columnName] = $this->queryBuilder->bindParam($value, $currentStatementParams);
+            }
+
+            ++$i;
+        }
+
+        return $placeholders;
     }
 
     /**

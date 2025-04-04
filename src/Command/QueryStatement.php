@@ -9,6 +9,10 @@ namespace Yiisoft\Db\Command;
  */
 class QueryStatement
 {
+    /**
+     * @param string $sql SQL query.
+     * @param array $params Parameters for query execution.
+     */
     public function __construct(public string $sql, public array $params = [])
     {
     }
