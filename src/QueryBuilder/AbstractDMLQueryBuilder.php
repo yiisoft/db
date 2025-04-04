@@ -199,13 +199,12 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $keys = array_fill_keys($names, false);
         $columns = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
-        $statementParameters = ['values' => [], 'params' => []];
+        $statementParameters = ['values' => []];
         $maxParametersLimit = $this->queryBuilder->getParametersLimit();
 
         $currentStatementParams = [];
         $insertedRowsCount = 0;
         foreach ($rows as $row) {
-
             $statementParameters['params'] = $currentStatementParams;
 
             $placeholders = $this->prepareRowBatchInsertValues(
@@ -217,15 +216,23 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 $currentStatementParams
             );
 
-//            $insertedRowsCount++;
-//            if ((!empty($rowsAtOnceLimit) && $insertedRowsCount > $rowsAtOnceLimit) ||
-//                (!empty($maxParametersLimit) && count($currentStatementParams) > $maxParametersLimit)) {
-//                $queryStatementParameters[] = $statementParameters;
-//                $statementParameters = ['values' => [], 'params' => []];
-//                $insertedRowsCount = 1;
-//                $currentStatementParams = [];
-//
-//            }
+            $insertedRowsCount++;
+            if ((!empty($rowsAtOnceLimit) && $insertedRowsCount > $rowsAtOnceLimit) ||
+                (!empty($maxParametersLimit) && count($currentStatementParams) > $maxParametersLimit)) {
+                $queryStatementParameters[] = $statementParameters;
+                $statementParameters = ['values' => []];
+                $insertedRowsCount = 1;
+                $currentStatementParams = [];
+
+                $placeholders = $this->prepareRowBatchInsertValues(
+                    $row,
+                    $columnNames,
+                    $keys,
+                    $names,
+                    $columns,
+                    $currentStatementParams
+                );
+            }
 
             $statementParameters['values'][] = implode(', ', $placeholders);
         }
