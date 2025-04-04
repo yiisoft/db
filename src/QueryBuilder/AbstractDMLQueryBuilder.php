@@ -187,7 +187,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @param string[] $columnNames The column names.
      * @param int $rowsAtOnceLimit The limit of rows inserted at once.
      *
-     * @return array[] The values.
+     * @return array The values.
      *
      * @psalm-param ParamsType $params
      */
@@ -228,8 +228,13 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         return $queryStatementParameters;
     }
 
-    protected function prepareRowBatchInsertValues(iterable $row, array $keys, array $names, array $columns,
-                                                   array &$currentStatementParams): array
+    protected function prepareRowBatchInsertValues(
+        mixed $row,
+        array $keys,
+        array $names,
+        array $columns,
+        array &$currentStatementParams
+    ): array
     {
         $i = 0;
         $placeholders = $keys;
