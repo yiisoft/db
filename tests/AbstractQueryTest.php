@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
+use Closure;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
@@ -823,5 +824,22 @@ abstract class AbstractQueryTest extends TestCase
             ->willReturn('12345678901234567890');
 
         $this->assertSame('12345678901234567890', $query->count());
+    }
+
+    public function testResultCallback(): void
+    {
+        $db = $this->getConnection();
+
+        $query = (new Query($db));
+
+        $this->assertNull($query->getResultCallback());
+
+        $query->resultCallback(fn (array $rows) => array_map(fn (array $row) => (object) $row, $rows));
+
+        $this->assertInstanceOf(Closure::class, $query->getResultCallback());
+
+        $query->resultCallback(null);
+
+        $this->assertNull($query->getResultCallback());
     }
 }

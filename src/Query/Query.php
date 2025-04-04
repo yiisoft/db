@@ -74,6 +74,7 @@ use function trim;
  *
  * @psalm-import-type SelectValue from QueryPartsInterface
  * @psalm-import-type IndexBy from QueryInterface
+ * @psalm-import-type ResultCallback from QueryInterface
  */
 class Query implements QueryInterface
 {
@@ -87,6 +88,8 @@ class Query implements QueryInterface
     protected array $join = [];
     protected array $orderBy = [];
     protected array $params = [];
+    /** @psalm-var ResultCallback|null $resultCallback */
+    protected Closure|null $resultCallback = null;
     protected array $union = [];
     protected array $withQueries = [];
     /** @psalm-var IndexBy|null $indexBy */
@@ -233,7 +236,26 @@ class Query implements QueryInterface
             return [];
         }
 
-        return DbArrayHelper::index($this->createCommand()->queryAll(), $this->indexBy);
+        $rows = $this->createCommand()->queryAll();
+
+        if (empty($rows)) {
+            return [];
+        }
+
+        if ($this->indexBy !== null) {
+            if (is_string($this->indexBy)) {
+                $indexes = array_column($rows, $this->indexBy);
+            } else {
+                $indexes = array_map($this->indexBy, $rows);
+            }
+        }
+
+        if ($this->resultCallback !== null) {
+            $rows = ($this->resultCallback)($rows);
+        }
+
+        /** @psalm-suppress MixedArgument */
+        return isset($indexes) ? array_combine($indexes, $rows) : $rows;
     }
 
     public function average(string $sql): int|float|null|string
@@ -437,6 +459,11 @@ class Query implements QueryInterface
         return $this->params;
     }
 
+    public function getResultCallback(): Closure|null
+    {
+        return $this->resultCallback;
+    }
+
     public function getSelect(): array
     {
         return $this->select;
@@ -539,10 +566,17 @@ class Query implements QueryInterface
 
     public function one(): array|object|null
     {
-        return match ($this->emulateExecution) {
-            true => null,
-            false => $this->createCommand()->queryOne(),
-        };
+        if ($this->emulateExecution) {
+            return null;
+        }
+
+        $row = $this->createCommand()->queryOne();
+
+        if ($this->resultCallback === null || $row === null) {
+            return $row;
+        }
+
+        return ($this->resultCallback)([$row])[0];
     }
 
     public function orderBy(array|string|ExpressionInterface $columns): static
@@ -607,6 +641,12 @@ class Query implements QueryInterface
 
     public function prepare(QueryBuilderInterface $builder): QueryInterface
     {
+        return $this;
+    }
+
+    public function resultCallback(Closure|null $resultCallback): static
+    {
+        $this->resultCallback = $resultCallback;
         return $this;
     }
 
