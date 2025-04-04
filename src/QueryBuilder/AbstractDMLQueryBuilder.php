@@ -103,8 +103,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
         foreach ($parameters as $parameter) {
             $statements[] = new QueryStatement(
-                $query . ' VALUES (' . implode('), (', $parameter->values) . ')',
-                $parameter->params
+                $query . ' VALUES (' . implode('), (', $parameter['values']) . ')',
+                $parameter['params']
             );
         }
 
@@ -188,7 +188,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @param string[] $columnNames The column names.
      * @param int $rowsAtOnceLimit The limit of rows inserted at once.
      *
-     * @return QueryStatementParameters[] The values.
+     * @return array[] The values.
      *
      * @psalm-param ParamsType $params
      */
@@ -200,7 +200,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $keys = array_fill_keys($names, false);
         $columns = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
-        $statementParameters = new QueryStatementParameters();
+        $statementParameters = ['values' => [], 'params' => []];
         $maxParametersLimit = $this->queryBuilder->getParametersLimit();
 
         $currentStatementParams = [];
@@ -208,7 +208,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         foreach ($rows as $row) {
             $i = 0;
             $placeholders = $keys;
-            $statementParameters->params = $currentStatementParams;
+            $statementParameters['params'] = $currentStatementParams;
 
             /** @var int|string $key */
             foreach ($row as $key => $value) {
@@ -230,18 +230,16 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $insertedRowsCount++;
             if ((!empty($rowsAtOnceLimit) && $insertedRowsCount > $rowsAtOnceLimit) ||
                 (!empty($maxParametersLimit) && count($currentStatementParams) > $maxParametersLimit)) {
-
                 $queryStatementParameters[] = $statementParameters;
-                $statementParameters = new QueryStatementParameters();
+                $statementParameters = ['values' => [], 'params' => []];
                 $insertedRowsCount = 1;
                 $currentStatementParams = [];
-
             }
 
-            $statementParameters->values[] = implode(', ', $placeholders);
+            $statementParameters['values'][] = implode(', ', $placeholders);
         }
 
-        $statementParameters->params = $currentStatementParams;
+        $statementParameters['params'] = $currentStatementParams;
         $queryStatementParameters[] = $statementParameters;
 
         return $queryStatementParameters;
