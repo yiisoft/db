@@ -227,32 +227,15 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 ++$i;
             }
 
-            $insertedRowsCount++;
-            if ((!empty($rowsAtOnceLimit) && $insertedRowsCount > $rowsAtOnceLimit) ||
-                (!empty($maxParametersLimit) && count($currentStatementParams) > $maxParametersLimit)) {
-                $queryStatementParameters[] = $statementParameters;
-                $statementParameters = ['values' => [], 'params' => []];
-                $insertedRowsCount = 1;
-
-                $currentStatementParams = [];
-                $placeholders = $keys;
-                /** @var int|string $key */
-                foreach ($row as $key => $value) {
-                    $columnName = $columnNames[$key] ?? (isset($keys[$key]) ? $key : $names[$i] ?? $i);
-
-                    if (isset($columns[$columnName])) {
-                        $value = $columns[$columnName]->dbTypecast($value);
-                    }
-
-                    if ($value instanceof ExpressionInterface) {
-                        $placeholders[$columnName] = $this->queryBuilder->buildExpression($value, $currentStatementParams);
-                    } else {
-                        $placeholders[$columnName] = $this->queryBuilder->bindParam($value, $currentStatementParams);
-                    }
-
-                    ++$i;
-                }
-            }
+//            $insertedRowsCount++;
+//            if ((!empty($rowsAtOnceLimit) && $insertedRowsCount > $rowsAtOnceLimit) ||
+//                (!empty($maxParametersLimit) && count($currentStatementParams) > $maxParametersLimit)) {
+//                $queryStatementParameters[] = $statementParameters;
+//                $statementParameters = ['values' => [], 'params' => []];
+//                $insertedRowsCount = 1;
+//                $currentStatementParams = [];
+//
+//            }
 
             $statementParameters['values'][] = implode(', ', $placeholders);
         }
