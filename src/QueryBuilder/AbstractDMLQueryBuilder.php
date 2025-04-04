@@ -194,10 +194,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     protected function prepareBatchInsertValues(string $table, iterable $rows, array $columnNames, int $rowsAtOnceLimit = 0): array
     {
         $queryStatementParameters = [];
-        /** @var string[] $names */
-        $names = array_values($columnNames);
-        $keys = array_fill_keys($names, false);
-        $columns = $this->schema->getTableSchema($table)?->getColumns() ?? [];
 
         $statementParameters = ['values' => [], 'params' => []];
         $maxParametersLimit = $this->queryBuilder->getParametersLimit();
@@ -207,7 +203,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         foreach ($rows as $row) {
             $statementParameters['params'] = $currentStatementParams;
 
-            $placeholders = $this->prepareRowBatchInsertValues($row, $keys, $names, $columns, $currentStatementParams);
+            $placeholders = $this->prepareRowBatchInsertValues($table, $row, $columnNames, $currentStatementParams);
 
             $insertedRowsCount++;
             if ((!empty($rowsAtOnceLimit) && $insertedRowsCount > $rowsAtOnceLimit) ||
@@ -216,7 +212,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 $statementParameters = ['values' => [], 'params' => []];
                 $insertedRowsCount = 1;
                 $currentStatementParams = [];
-                $placeholders = $this->prepareRowBatchInsertValues($row, $keys, $names, $columns, $currentStatementParams);
+                $placeholders = $this->prepareRowBatchInsertValues($table, $row, $columnNames, $currentStatementParams);
             }
 
             $statementParameters['values'][] = implode(', ', $placeholders);
@@ -229,14 +225,21 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     protected function prepareRowBatchInsertValues(
+        string $table,
         mixed $row,
-        array $keys,
-        array $names,
-        array $columns,
+        array $columnNames,
         array &$currentStatementParams
     ): array {
         $i = 0;
+
+        /** @var string[] $names */
+        $names = array_values($columnNames);
+        $keys = array_fill_keys($names, false);
+        $columns = $this->schema->getTableSchema($table)?->getColumns() ?? [];
+
         $placeholders = $keys;
+
+
 
         /** @var int|string $key */
         foreach ($row as $key => $value) {
