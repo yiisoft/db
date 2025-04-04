@@ -7,7 +7,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
@@ -28,8 +28,8 @@ use function strtr;
 class LikeConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(
-        private QueryBuilderInterface $queryBuilder,
-        private string|null $escapeSql = null
+        private readonly QueryBuilderInterface $queryBuilder,
+        private readonly string|null $escapeSql = null
     ) {
     }
 
@@ -51,8 +51,12 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(LikeConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
+        if (!$expression instanceof LikeConditionInterface) {
+            throw new InvalidArgumentException('LikeConditionBuilder can only be used with LikeConditionInterface instance.');
+        }
+
         $values = $expression->getValue();
         $escape = $expression->getEscapingReplacements();
 

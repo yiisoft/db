@@ -10,7 +10,7 @@ use Traversable;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -38,7 +38,7 @@ final class JsonExpressionBuilder implements ExpressionBuilderInterface
     /**
      * The method builds the raw SQL from the `$expression` that won't be additionally escaped or quoted.
      *
-     * @param JsonExpression $expression The expression to build.
+     * @param ExpressionInterface $expression The expression to build.
      * @param array $params The binding parameters.
      *
      * @throws Exception
@@ -51,6 +51,10 @@ final class JsonExpressionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
+        if (!$expression instanceof JsonExpression) {
+            throw new InvalidArgumentException('JsonExpressionBuilder could only be used with JsonExpression.');
+        }
+
         $value = $expression->getValue();
 
         if ($value === null) {
