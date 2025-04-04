@@ -30,7 +30,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * @psalm-type IndexBy = Closure(array):array-key|string
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface
- * @psalm-type ResultCallback = Closure(non-empty-array<array>):non-empty-array<array|object>
+ * @psalm-type ResultCallback = Closure(non-empty-list<array>):non-empty-list
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
@@ -53,8 +53,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array[]|object[] All rows of the query result. Each array element is an `array` or `object` representing
-     * a row of data. Empty array if the query results in nothing.
+     * @return array All rows of the query result. Each array element is representing a row of data. Empty array if
+     * the query results in nothing.
      */
     public function all(): array;
 
@@ -270,10 +270,9 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return array|object|null The first row as an `array` or as an `object` of the query result. `null` if the query
-     * results in nothing.
+     * @return mixed The first row of the query result. `null` if the query results in nothing.
      */
-    public function one(): array|object|null;
+    public function one(): mixed;
 
     /**
      * Sets the parameters to bind to the query.

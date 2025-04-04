@@ -564,7 +564,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function one(): array|object|null
+    public function one(): mixed
     {
         if ($this->emulateExecution) {
             return null;
