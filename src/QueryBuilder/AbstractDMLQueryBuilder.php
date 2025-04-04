@@ -234,8 +234,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         array $names,
         array $columns,
         array &$currentStatementParams
-    ): array
-    {
+    ): array {
         $i = 0;
         $placeholders = $keys;
 
