@@ -13,6 +13,7 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
+use Yiisoft\Db\Driver\Pdo\PdoDataReader;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -23,8 +24,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbUuidHelper;
-use Yiisoft\Db\Query\Data\DataReader;
-use Yiisoft\Db\Query\Data\DataReaderInterface;
+use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
@@ -616,13 +616,20 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $reader = $command->setSql(
-            <<<SQL
-            SELECT * FROM {{customer}}
-            SQL
-        )->query();
+        $reader = $command->setSql('SELECT * FROM {{customer}}')->query();
+
+        $this->assertTrue($reader->valid());
+
+        $firstRow = $reader->current();
+
+        $this->assertIsArray($firstRow);
+
+        $reader->rewind();
+
+        $this->assertTrue($reader->valid());
+        $this->assertSame($firstRow, $reader->current());
+
         $reader->next();
-        $this->assertIsInt($reader->key());
 
         $this->expectException(InvalidCallException::class);
         $this->expectExceptionMessage('DataReader cannot rewind. It is a forward-only reader.');
@@ -638,7 +645,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->expectException(InvalidParamException::class);
         $this->expectExceptionMessage('The PDOStatement cannot be null.');
-        new DataReader($db->createCommand());
+        new PdoDataReader($db->createCommand());
     }
 
     /**

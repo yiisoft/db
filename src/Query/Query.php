@@ -343,13 +343,9 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function each(int $batchSize = 100): BatchQueryResultInterface
+    public function each(): DataReaderInterface
     {
-        return $this->db
-            ->createBatchQueryResult($this, true)
-            ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::index($rows, $indexBy))
-        ;
+        return $this->createCommand()->query()->indexBy($this->indexBy);
     }
 
     public function exists(): bool
