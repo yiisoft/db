@@ -192,7 +192,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @return array The values.
      *
      * @psalm-param ParamsType $params
-     * @psalm-return array<array{'values': array, 'params': array}>
+     * @psalm-return array<array<array>>
      */
     protected function prepareBatchInsertValues(string $table, iterable $rows, array $columnNames, int $rowsAtOnceLimit = 0): array
     {
