@@ -654,6 +654,8 @@ interface CommandInterface
      *
      * @return array[] All rows of the query result. Each array element is an `array` representing a row of data.
      * Empty array if the query results in nothing.
+     *
+     * @psalm-return list<array>
      */
     public function queryAll(): array;
 

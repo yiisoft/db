@@ -30,7 +30,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * @psalm-type IndexBy = Closure(array):array-key|string
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface
- * @psalm-type ResultCallback = Closure(non-empty-array<array>):non-empty-array<array|object>
+ * @psalm-type ResultCallback = Closure(non-empty-list<array>):non-empty-list<array|object>
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
