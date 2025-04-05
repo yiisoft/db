@@ -12,7 +12,7 @@ use PDOStatement;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Query\DataReaderInterface;
-use Yiisoft\Db\Query\QueryPartsInterface;
+use Yiisoft\Db\Query\QueryInterface;
 
 use function is_string;
 
@@ -26,11 +26,11 @@ use function is_string;
  *
  * The class provides methods for accessing the data returned by the query.
  *
- * @psalm-import-type IndexBy from QueryPartsInterface
+ * @psalm-import-type IndexBy from QueryInterface
  */
 final class PdoDataReader implements DataReaderInterface
 {
-    /** @psalm-var IndexBy $indexBy */
+    /** @psalm-var IndexBy|null $indexBy */
     private Closure|string|null $indexBy = null;
     private int $index = 0;
     private array|false $row;

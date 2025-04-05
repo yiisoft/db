@@ -16,8 +16,8 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * {@see Query} uses these methods to build and manipulate SQL statements.
  *
  * @psalm-type SelectValue = array<array-key, ExpressionInterface|scalar>
- * @psalm-type IndexBy = string|null|Closure(array):array-key
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type IndexBy from QueryInterface
  */
 interface QueryPartsInterface
 {
@@ -328,7 +328,7 @@ interface QueryPartsInterface
      * }
      * ```
      *
-     * @psalm-param IndexBy $column
+     * @psalm-param IndexBy|null $column
      */
     public function indexBy(string|Closure|null $column): static;
 

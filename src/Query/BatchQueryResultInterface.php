@@ -96,9 +96,4 @@ interface BatchQueryResultInterface extends Iterator
      * @param int $value The number of rows to return in each batch.
      */
     public function batchSize(int $value): static;
-
-    /**
-     * @psalm-param null|Closure(array[], IndexBy):array<array-key, array|object> $populateMethod
-     */
-    public function setPopulatedMethod(Closure|null $populateMethod = null): static;
 }

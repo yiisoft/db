@@ -8,6 +8,7 @@ use Closure;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
+use Yiisoft\Db\Helper\DbArrayHelper;
 
 /**
  * Represents the result of a batch query execution.
@@ -26,8 +27,6 @@ final class BatchQueryResult implements BatchQueryResultInterface
      * @var DataReaderInterface|null The data reader associated with this batch query.
      */
     private DataReaderInterface|null $dataReader = null;
-
-    private Closure|null $populateMethod = null;
 
     public function __construct(private QueryInterface $query)
     {
@@ -61,13 +60,7 @@ final class BatchQueryResult implements BatchQueryResultInterface
      */
     private function fetchData(): array
     {
-        $rows = $this->getRows();
-
-        if ($this->populateMethod !== null) {
-            return (array) ($this->populateMethod)($rows, $this->query->getIndexBy());
-        }
-
-        return $rows;
+        return DbArrayHelper::index($this->getRows(), $this->query->getIndexBy(), $this->query->getResultCallback());
     }
 
     /**
@@ -118,13 +111,6 @@ final class BatchQueryResult implements BatchQueryResultInterface
     public function batchSize(int $value): static
     {
         $this->batchSize = $value;
-
-        return $this;
-    }
-
-    public function setPopulatedMethod(Closure|null $populateMethod = null): static
-    {
-        $this->populateMethod = $populateMethod;
 
         return $this;
     }

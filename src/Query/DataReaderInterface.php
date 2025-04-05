@@ -28,7 +28,7 @@ use Iterator;
  *
  * @extends Iterator<int|string|null, array|false>
  *
- * @psalm-import-type IndexBy from QueryPartsInterface
+ * @psalm-import-type IndexBy from QueryInterface
  */
 interface DataReaderInterface extends Iterator, Countable
 {
@@ -63,7 +63,7 @@ interface DataReaderInterface extends Iterator, Countable
      * }
      * ```
      *
-     * @psalm-param IndexBy $indexBy
+     * @psalm-param IndexBy|null $indexBy
      */
     public function indexBy(Closure|string|null $indexBy): static;
 }
