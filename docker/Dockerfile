@@ -35,16 +35,24 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
     && rm -rf /var/lib/apt/lists/*
 
 # Oracle dependencies
-
-RUN cd /tmp && curl -L https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip -O
-RUN cd /tmp && curl -L https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sdk-linux.x64-23.5.0.24.07.zip -O
-RUN cd /tmp && curl -L https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip -O
-
-RUN unzip /tmp/instantclient-basic-linux.x64-23.5.0.24.07.zip -d /usr/local/
-RUN unzip -o /tmp/instantclient-sdk-linux.x64-23.5.0.24.07.zip -d /usr/local/
-RUN unzip -o /tmp/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip -d /usr/local/
-
-RUN ln -s /usr/local/instantclient_23_5 /usr/local/instantclient
+ARG TARGETARCH
+RUN if [ "$TARGETARCH" = "arm64" ] ; then \
+    cd /tmp && curl -L https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-basic-linux.arm64-23.7.0.25.01.zip -O \
+    && curl -L https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sdk-linux.arm64-23.7.0.25.01.zip -O \
+    && curl -L https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sqlplus-linux.arm64-23.7.0.25.01.zip -O \
+    && unzip -o /tmp/instantclient-basic-linux.arm64-23.7.0.25.01.zip -d /usr/local/ \
+    && unzip -o /tmp/instantclient-sdk-linux.arm64-23.7.0.25.01.zip -d /usr/local/ \
+    && unzip -o /tmp/instantclient-sqlplus-linux.arm64-23.7.0.25.01.zip -d /usr/local/ \
+    && ln -s /usr/local/instantclient_23_7 /usr/local/instantclient; \
+  elif [ "$TARGETARCH" = "amd64" ]; then \
+    cd /tmp && curl -L https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip -O \
+    && curl -L https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sdk-linux.x64-23.5.0.24.07.zip -O \
+    && curl -L https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip -O \
+    && unzip /tmp/instantclient-basic-linux.x64-23.5.0.24.07.zip -d /usr/local/ \
+    && unzip -o /tmp/instantclient-sdk-linux.x64-23.5.0.24.07.zip -d /usr/local/ \
+    && unzip -o /tmp/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip -d /usr/local/ \
+    && ln -s /usr/local/instantclient_23_5 /usr/local/instantclient; \
+  fi
 RUN ln -s /usr/local/instantclient/lib* /usr/lib
 RUN ln -s /usr/local/instantclient/sqlplus /usr/bin/sqlplus
 
