@@ -30,6 +30,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * @psalm-type IndexBy = Closure(array):array-key|string
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface
+ * @psalm-type ResultCallback = Closure(non-empty-array<array>):non-empty-array<array|object>
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
@@ -211,6 +212,14 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function getParams(): array;
 
     /**
+     * Returns the callback to be called on all rows of the query result.
+     * `null` will be returned if the callback is not set.
+     *
+     * @psalm-return ResultCallback|null
+     */
+    public function getResultCallback(): Closure|null;
+
+    /**
      * @return array The "select" value.
      * @psalm-return SelectValue
      */
@@ -287,6 +296,27 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @param QueryBuilderInterface $builder The query builder.
      */
     public function prepare(QueryBuilderInterface $builder): self;
+
+    /**
+     * Sets the callback, to be called on all rows of the query result before returning them.
+     *
+     * For example:
+     *
+     * ```php
+     * $users = (new Query($db))
+     *     ->from('user')
+     *     ->resultCallback(function (array $rows): array {
+     *         foreach ($rows as &$row) {
+     *             $row['name'] = strtoupper($row['name']);
+     *         }
+     *         return $rows;
+     *     })
+     *     ->all();
+     * ```
+     *
+     * @psalm-param ResultCallback|null $resultCallback
+     */
+    public function resultCallback(Closure|null $resultCallback): static;
 
     /**
      * Returns the query results as a scalar value.
