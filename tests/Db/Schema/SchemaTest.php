@@ -42,6 +42,7 @@ final class SchemaTest extends AbstractSchemaTest
         $this->expectExceptionMessage('Yiisoft\Db\Tests\Support\Stub\Schema does not support fetching all table names.');
 
         Assert::invokeMethod($schema, 'findTableNames', ['dbo']);
+        $db->close();
     }
 
     /**
@@ -54,6 +55,7 @@ final class SchemaTest extends AbstractSchemaTest
         $schema = $db->getSchema();
 
         $this->assertSame([], Assert::invokeMethod($schema, 'findViewNames', ['dbo']));
+        $db->close();
     }
 
     /**
@@ -83,6 +85,7 @@ final class SchemaTest extends AbstractSchemaTest
             $this->assertIsArray($checks);
             $this->assertContainsOnlyInstancesOf(CheckConstraint::class, $checks);
         }
+        $db->close();
     }
 
     /**
@@ -112,6 +115,7 @@ final class SchemaTest extends AbstractSchemaTest
             $this->assertIsArray($defaultValues);
             $this->assertContainsOnlyInstancesOf(DefaultValueConstraint::class, $defaultValues);
         }
+        $db->close();
     }
 
     /**
@@ -142,6 +146,7 @@ final class SchemaTest extends AbstractSchemaTest
             $this->assertIsArray($foreignKeys);
             $this->assertContainsOnlyInstancesOf(ForeignKeyConstraint::class, $foreignKeys);
         }
+        $db->close();
     }
 
     /**
@@ -172,6 +177,7 @@ final class SchemaTest extends AbstractSchemaTest
             $this->assertIsArray($indexes);
             $this->assertContainsOnlyInstancesOf(IndexConstraint::class, $indexes);
         }
+        $db->close();
     }
 
     public function testGetSchemaNames(): void
@@ -186,6 +192,7 @@ final class SchemaTest extends AbstractSchemaTest
         );
 
         $schema->getSchemaNames();
+        $db->close();
     }
 
     /**
@@ -200,6 +207,7 @@ final class SchemaTest extends AbstractSchemaTest
         Assert::setInaccessibleProperty($schema, 'schemaNames', ['dbo', 'public']);
 
         $this->assertSame(['dbo', 'public'], $schema->getSchemaNames());
+        $db->close();
     }
 
     public function testHasSchema(): void
@@ -234,6 +242,7 @@ final class SchemaTest extends AbstractSchemaTest
 
         $this->assertIsArray($tablePks);
         $this->assertContainsOnlyInstancesOf(Constraint::class, $tablePks);
+        $db->close();
     }
 
     /**
@@ -258,6 +267,7 @@ final class SchemaTest extends AbstractSchemaTest
             $this->assertIsArray($uniques);
             $this->assertContainsOnlyInstancesOf(Constraint::class, $uniques);
         }
+        $db->close();
     }
 
     public function getTableSchema(): void
@@ -278,6 +288,7 @@ final class SchemaTest extends AbstractSchemaTest
         $this->assertSame('T_constraints_1', $table->getFullName());
         $this->assertSame(['C_id'], $table->getPrimaryKey());
         $this->assertSame(['C_id', 'C_not_null', 'C_check', 'C_default', 'C_unique'], $table->getColumnNames());
+        $db->close();
     }
 
     /**
@@ -300,6 +311,7 @@ final class SchemaTest extends AbstractSchemaTest
         foreach ($tables as $table) {
             $this->assertInstanceOf(TableSchemaInterface::class, $table);
         }
+        $db->close();
     }
 
     public function testGetViewNames(): void
@@ -309,6 +321,7 @@ final class SchemaTest extends AbstractSchemaTest
         $schema = $db->getSchema();
 
         $this->assertSame([], $schema->getViewNames());
+        $db->close();
     }
 
     public function testRefreshTableSchema(): void
@@ -331,6 +344,7 @@ final class SchemaTest extends AbstractSchemaTest
         $refreshedTable = $schemaMock->getTableSchema('T_constraints_1');
 
         $this->assertNotSame($noCacheTable, $refreshedTable);
+        $db->close();
     }
 
     public function testRefreshTableSchemaWithSchemaCaseDisabled(): void
@@ -353,6 +367,7 @@ final class SchemaTest extends AbstractSchemaTest
         $refreshedTable = $schemaMock->getTableSchema('T_constraints_1');
 
         $this->assertNotSame($noCacheTable, $refreshedTable);
+        $db->close();
     }
 
     /**
@@ -368,6 +383,7 @@ final class SchemaTest extends AbstractSchemaTest
         $this->expectExceptionMessage('Yiisoft\Db\Tests\Support\Stub\Schema does not support resolving table names.');
 
         Assert::invokeMethod($schema, 'resolveTableName', ['customer']);
+        $db->close();
     }
 
     /**
@@ -388,6 +404,7 @@ final class SchemaTest extends AbstractSchemaTest
         Assert::invokeMethod($schema, 'setTableMetadata', ['T_constraints_1', 'checks', $checkConstraint]);
 
         $this->assertSame($checkConstraint, $schema->getTableChecks('T_constraints_1'));
+        $db->close();
     }
 
     private function createTableSchemaStub(): TableSchemaInterface

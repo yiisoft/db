@@ -37,6 +37,7 @@ final class QueryTest extends AbstractQueryTest
         );
 
         (new Query($db))->select('name')->from('customer')->orderBy(['id' => SORT_DESC])->column();
+        $db->close();
     }
 
     /**
@@ -54,6 +55,7 @@ final class QueryTest extends AbstractQueryTest
         );
 
         (new Query($db))->from('customer')->count();
+        $db->close();
     }
 
     public function testExists(): void
@@ -66,6 +68,7 @@ final class QueryTest extends AbstractQueryTest
         );
 
         (new Query($db))->from('customer')->where(['status' => 2])->exists();
+        $db->close();
     }
 
     /**
@@ -86,6 +89,7 @@ final class QueryTest extends AbstractQueryTest
         );
 
         $query->column();
+        $db->close();
     }
 
     /**
@@ -103,6 +107,7 @@ final class QueryTest extends AbstractQueryTest
         );
 
         (new Query($db))->from('customer')->where(['status' => 2])->one();
+        $db->close();
     }
 
     public function testColumnWithIndexBy(): void

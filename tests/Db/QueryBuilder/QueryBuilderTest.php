@@ -47,6 +47,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         );
 
         $qb->addDefaultValue('table', 'name', 'column', 'value');
+        $db->close();
     }
 
     /**
@@ -61,12 +62,21 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     ): void {
         $db = $this->getConnection();
         $qb = new QueryBuilder($db);
-        $params = [];
 
         try {
-            $this->assertSame($expected, $qb->insertBatch($table, $rows, $columns, $params));
-            $this->assertSame($expectedParams, $params);
+            $statements = $qb->insertBatch($table, $rows, $columns);
+
+            if (empty($expected)) {
+                $this->assertCount(0, $statements);
+            } else {
+                $this->assertSame($expected, $statements[0]->sql);
+            }
+            if (!empty($statements)) {
+                $this->assertSame($expectedParams, $statements[0]->params);
+            }
         } catch (InvalidArgumentException|Exception) {
+        } finally {
+            $db->close();
         }
     }
 
@@ -82,6 +92,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb = $db->getQueryBuilder();
         $params = [];
         $qb->buildJoin(['admin_profile', 'admin_user.id = admin_profile.user_id'], $params);
+        $db->close();
     }
 
     /**
@@ -98,6 +109,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $qb = $db->getQueryBuilder();
         $qb->checkIntegrity('schema', 'table');
+        $db->close();
     }
 
     public function testCreateTable(): void
@@ -132,6 +144,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 ],
             ),
         );
+        $db->close();
     }
 
     /**
@@ -151,6 +164,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
             SQL,
             $qb->createView('testCreateView', $subQuery)
         );
+        $db->close();
     }
 
     /**
@@ -168,6 +182,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         );
 
         $qb->dropDefaultValue('T_constraints_1', 'CN_pk');
+        $db->close();
     }
 
     /**
@@ -183,6 +198,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         };
         $qb = $db->getQueryBuilder();
         $qb->getExpressionBuilder($expression);
+        $db->close();
     }
 
     /**
@@ -202,6 +218,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->assertSame($expectedSQL, $qb->insert($table, $columns, $params));
         $this->assertEquals($expectedParams, $params);
+        $db->close();
     }
 
     /**
@@ -224,6 +241,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         );
 
         $qb->insertWithReturningPks($table, $columns, $params);
+        $db->close();
     }
 
     /**
@@ -241,6 +259,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         );
 
         $qb->resetSequence('T_constraints_1', 'id');
+        $db->close();
     }
 
     /**
@@ -264,6 +283,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->assertSame($expectedSql, $sql);
         $this->assertEquals($expectedParams, $params);
+        $db->close();
     }
 
     /**
@@ -290,6 +310,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         );
 
         $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
+        $db->close();
     }
 
     /**
@@ -309,6 +330,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $actualParams = [];
         $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
+        $db->close();
     }
 
     public function testPrepareValueClosedResource(): void
@@ -322,6 +344,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         fclose($resource);
 
         $qb->prepareValue($resource);
+        $db->close();
     }
 
     public function testPrepareValueNonStreamResource(): void
@@ -332,6 +355,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $this->expectExceptionObject(new InvalidArgumentException('Supported only stream resource type.'));
 
         $qb->prepareValue(stream_context_create());
+        $db->close();
     }
 
     public function testGetServerInfo(): void
@@ -340,6 +364,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb = $db->getQueryBuilder();
 
         $this->assertInstanceOf(ServerInfoInterface::class, $qb->getServerInfo());
+        $db->close();
     }
 
     public function testJsonColumn(): void
@@ -371,5 +396,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
             ),
             $qb->alterColumn('json_table', 'json_col', $column),
         );
+        $db->close();
     }
 }
