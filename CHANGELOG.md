@@ -2,6 +2,7 @@
 
 ## 2.0.0 under development
 
+- New #913: Add methods `SchemaInterface::hasSchema()`, `SchemaInterface::hasTable()`, `SchemaInterface::hasView()` (@evil1)
 - Enh #820: Support `Traversable` values for `AbstractDMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #815: Refactor `Query::column()` method (@Tigrov) 
 - Enh #816: Allow scalar values for `$columns` parameter of `Query::select()` and `Query::addSelect()` methods (@Tigrov)
@@ -35,7 +36,7 @@
 - Enh #865: Raise minimum PHP version to `^8.1` with minor refactoring (@Tigrov, @vjik)
 - Enh #798: Allow `QueryInterface::one()` and `QueryInterface::all()` to return objects (@darkdef, @Tigrov)
 - Enh #872: Use `#[\SensitiveParameter]` attribute to mark sensitive parameters (@heap-s)
-- New #864, #897, #898: Realize column factory (@Tigrov)
+- New #864, #897, #898, #950: Realize column factory (@Tigrov)
 - Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #877: Separate column type constants (@Tigrov)
 - New #878: Realize `ColumnBuilder` class (@Tigrov)
@@ -74,6 +75,7 @@
 - New #942: Allow PHP backed enums as values (@Tigrov)
 - Enh #943: Add `getCacheKey()` and `getCacheTag()` methods to `AbstractPdoSchema` class (@Tigrov)
 - Enh #944: Added `setWhere()` as method a forced for overwriting `where()` (@lav45)
+- Enh #925: Add callback to `Query::all()` and `Query::one()` methods (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
