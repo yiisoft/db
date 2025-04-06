@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests\Provider;
 
 use ArrayIterator;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
+
 use function is_object;
 
 class DbArrayHelperProvider
