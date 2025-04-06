@@ -22,55 +22,36 @@ final class DbArrayHelperTest extends TestCase
         $this->assertFalse(DbArrayHelper::isAssociative([1]));
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\DbArrayHelperProvider::index
-     */
+    #[DataProviderExternal(DbArrayHelperProvider::class, 'index')]
     public function testIndex(array $rows): void
     {
         $this->assertSame($rows, DbArrayHelper::index($rows));
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\DbArrayHelperProvider::indexWithIndexBy
-     * @dataProvider \Yiisoft\Db\Tests\Provider\DbArrayHelperProvider::indexWithIncorrectIndexBy
-     * @dataProvider \Yiisoft\Db\Tests\Provider\DbArrayHelperProvider::indexWithIndexByClosure
-     */
-    public function testPopulateWithIndexBy(Closure|string|null $indexBy, array $rows, array $expected): void
-    {
-        $this->assertSame($expected, DbArrayHelper::index($rows, $indexBy));
+    #[DataProviderExternal(DbArrayHelperProvider::class, 'indexWithIndexBy')]
+    public function testPopulateWithIndexBy(
+        array $expected,
+        array $rows,
+        Closure|string|null $indexBy = null,
+        Closure|null $resultCallback = null,
+    ): void {
+        $this->assertSame($expected, DbArrayHelper::index($rows, $indexBy, $resultCallback));
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\DbArrayHelperProvider::indexWithIndexBy
-     */
-    public function testIndexWithIndexByWithObject(Closure|string|null $indexBy, array $rows, array $expected): void
-    {
+    #[DataProviderExternal(DbArrayHelperProvider::class, 'indexWithIndexBy')]
+    public function testIndexWithIndexByWithObject(
+        array $expected,
+        array $rows,
+        Closure|string|null $indexBy = null,
+        Closure|null $resultCallback = null,
+    ): void {
         $rows = json_decode(json_encode($rows));
-        $populated = json_decode(json_encode(DbArrayHelper::index($rows, $indexBy)), true);
+        $populated = json_decode(json_encode(DbArrayHelper::index($rows, $indexBy, $resultCallback)), true);
 
         $this->assertSame($expected, $populated);
     }
 
-    public function testIndexWithNonExistingIndexBy(): void
-    {
-        $rows = [
-            ['key' => 'value1'],
-            ['key' => 'value2'],
-        ];
-
-        $this->assertSame($rows, DbArrayHelper::index($rows, 'non-existing-key'));
-
-        set_error_handler(static function (int $errno, string $errstr) {
-            restore_error_handler();
-            throw new \Exception('E_WARNING: ' . $errstr, $errno);
-        }, E_WARNING);
-
-        $this->expectExceptionMessage('E_WARNING: Undefined array key "non-existing-key"');
-
-        DbArrayHelper::index($rows, 'non-existing-key', ['key']);
-    }
-
-    public function testIndexWithArrangeBy(): void
+    public function testArrangeWithNonExistingKey(): void
     {
         $rows = [
             ['key' => 'value1'],
@@ -84,24 +65,18 @@ final class DbArrayHelperTest extends TestCase
 
         $this->expectExceptionMessage('E_WARNING: Undefined array key "non-existing-key"');
 
-        DbArrayHelper::index($rows, null, ['non-existing-key']);
+        DbArrayHelper::arrange($rows, ['non-existing-key']);
     }
 
-    public function testIndexWithClosureIndexByAndArrangeBy(): void
-    {
-        $rows = [
-            ['key' => 'value1'],
-            ['key' => 'value2'],
-        ];
-
-        $this->assertSame([
-            'value1' => [
-                'value1' => ['key' => 'value1'],
-            ],
-            'value2' => [
-                'value2' => ['key' => 'value2'],
-            ],
-        ], DbArrayHelper::index($rows, fn ($row) => $row['key'], ['key']));
+    #[DataProviderExternal(DbArrayHelperProvider::class, 'arrange')]
+    public function testArrange(
+        array $expected,
+        array $rows,
+        array $arrangeBy = [],
+        Closure|string|null $indexBy = null,
+        Closure|null $resultCallback = null
+    ): void {
+        $this->assertSame($expected, DbArrayHelper::arrange($rows, $arrangeBy, $indexBy, $resultCallback));
     }
 
     #[DataProviderExternal(DbArrayHelperProvider::class, 'toArray')]

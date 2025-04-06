@@ -239,24 +239,7 @@ class Query implements QueryInterface
 
         $rows = $this->createCommand()->queryAll();
 
-        if (empty($rows)) {
-            return [];
-        }
-
-        if ($this->indexBy !== null) {
-            if (is_string($this->indexBy)) {
-                $indexes = array_column($rows, $this->indexBy);
-            } else {
-                $indexes = array_map($this->indexBy, $rows);
-            }
-        }
-
-        if ($this->resultCallback !== null) {
-            $rows = ($this->resultCallback)($rows);
-        }
-
-        /** @psalm-suppress MixedArgument */
-        return isset($indexes) ? array_combine($indexes, $rows) : $rows;
+        return DbArrayHelper::index($rows, $this->indexBy, $this->resultCallback);
     }
 
     public function average(string $sql): int|float|null|string
@@ -269,6 +252,7 @@ class Query implements QueryInterface
 
     public function batch(int $batchSize = 100): BatchQueryResultInterface
     {
+        /** @psalm-suppress InvalidArgument, ArgumentTypeCoercion */
         return $this->db
             ->createBatchQueryResult($this)
             ->batchSize($batchSize)
@@ -346,6 +330,7 @@ class Query implements QueryInterface
 
     public function each(int $batchSize = 100): BatchQueryResultInterface
     {
+        /** @psalm-suppress InvalidArgument, ArgumentTypeCoercion */
         return $this->db
             ->createBatchQueryResult($this, true)
             ->batchSize($batchSize)
