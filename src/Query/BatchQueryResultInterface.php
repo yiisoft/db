@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
-use Closure;
 use Iterator;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
