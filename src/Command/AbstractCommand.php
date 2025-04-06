@@ -425,7 +425,7 @@ abstract class AbstractCommand implements CommandInterface
 
     public function queryAll(): array
     {
-        /** @psalm-var array<array-key, array>|null $results */
+        /** @psalm-var list<array>|null $results */
         $results = $this->queryInternal(self::QUERY_MODE_ALL);
         return $results ?? [];
     }
