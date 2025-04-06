@@ -71,9 +71,9 @@ to a `Point` class, you can create a custom column class and override the `dbTyp
 ```php
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\Schema\AbstractColumnSchema;
+use Yiisoft\Db\Schema\Column\AbstractColumn;
 
-class PointColumn extends AbstractColumnSchema
+final class PointColumn extends AbstractColumn
 {
     /**
      * @var string The default column abstract type
