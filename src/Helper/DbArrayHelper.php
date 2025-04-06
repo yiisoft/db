@@ -92,6 +92,7 @@ final class DbArrayHelper
      *
      * @return (array|object)[] The arranged array.
      *
+     * @psalm-param list<array> $rows
      * @psalm-param IndexBy|null $indexBy
      * @psalm-param ResultCallback|null $resultCallback
      */
@@ -170,6 +171,7 @@ final class DbArrayHelper
      *
      * @return (array|object)[] The indexed array.
      *
+     * @psalm-param list<array> $rows
      * @psalm-param IndexBy|null $indexBy
      * @psalm-param ResultCallback|null $resultCallback
      */
@@ -298,7 +300,7 @@ final class DbArrayHelper
         Closure|null $resultCallback,
         int $depth,
     ): void {
-        /** @var array[] $rows */
+        /** @var list<array> $rows */
         foreach ($arranged as &$rows) {
             if ($depth > 1) {
                 self::indexArranged($rows, $indexBy, $resultCallback, $depth - 1);
