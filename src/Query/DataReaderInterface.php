@@ -29,6 +29,7 @@ use Iterator;
  * @extends Iterator<int|string|null, array|false>
  *
  * @psalm-import-type IndexBy from QueryInterface
+ * @psalm-import-type ResultCallback from QueryInterface
  */
 interface DataReaderInterface extends Iterator, Countable
 {
@@ -45,7 +46,7 @@ interface DataReaderInterface extends Iterator, Countable
      *
      * This method is required by the interface {@see Iterator}.
      */
-    public function current(): array|false;
+    public function current(): array|object|false;
 
     /**
      * Sets `indexBy` property.
@@ -66,4 +67,22 @@ interface DataReaderInterface extends Iterator, Countable
      * @psalm-param IndexBy|null $indexBy
      */
     public function indexBy(Closure|string|null $indexBy): static;
+
+    /**
+     * Sets the callback, to be called on all rows of the query result before returning them.
+     *
+     * For example:
+     *
+     * ```php
+     * function (array $rows): array {
+     *     foreach ($rows as &$row) {
+     *         $row['name'] = strtoupper($row['name']);
+     *     }
+     *     return $rows;
+     * }
+     * ```
+     *
+     * @psalm-param ResultCallback|null $resultCallback
+     */
+    public function resultCallback(Closure|null $resultCallback): static;
 }

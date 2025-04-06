@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
-use Closure;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -65,6 +64,8 @@ final class BatchQueryResult implements BatchQueryResultInterface
 
     /**
      * Reads and collects rows for batch.
+     *
+     * @psalm-return list<array>
      */
     private function getRows(): array
     {
@@ -77,6 +78,7 @@ final class BatchQueryResult implements BatchQueryResultInterface
             $leftCount > 0 && $this->dataReader->valid();
             --$leftCount, $this->dataReader->next()
         ) {
+            /** @var array */
             $rows[] = $this->dataReader->current();
         }
 

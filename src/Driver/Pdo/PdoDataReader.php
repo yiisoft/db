@@ -27,12 +27,15 @@ use function is_string;
  * The class provides methods for accessing the data returned by the query.
  *
  * @psalm-import-type IndexBy from QueryInterface
+ * @psalm-import-type ResultCallback from QueryInterface
  */
 final class PdoDataReader implements DataReaderInterface
 {
     /** @psalm-var IndexBy|null $indexBy */
     private Closure|string|null $indexBy = null;
     private int $index = 0;
+    /** @psalm-var ResultCallback|null $resultCallback */
+    private Closure|null $resultCallback = null;
     private array|false $row;
     private PDOStatement $statement;
 
@@ -103,8 +106,12 @@ final class PdoDataReader implements DataReaderInterface
         return ($this->indexBy)($this->row);
     }
 
-    public function current(): array|false
+    public function current(): array|object|false
     {
+        if ($this->resultCallback !== null && $this->row !== false) {
+            return ($this->resultCallback)([$this->row])[0];
+        }
+
         return $this->row;
     }
 
@@ -133,6 +140,12 @@ final class PdoDataReader implements DataReaderInterface
     public function indexBy(Closure|string|null $indexBy): static
     {
         $this->indexBy = $indexBy;
+        return $this;
+    }
+
+    public function resultCallback(Closure|null $resultCallback): static
+    {
+        $this->resultCallback = $resultCallback;
         return $this;
     }
 }
