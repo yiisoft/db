@@ -24,22 +24,115 @@ use function range;
  * Array manipulation methods.
  *
  * @psalm-import-type IndexBy from QueryInterface
+ * @psalm-import-type ResultCallback from QueryInterface
  */
 final class DbArrayHelper
 {
     /**
-     * Indexes and/or groups the array according to a specified key.
+     * Arranges the array of rows according to specified keys.
      *
-     * The input should be either a multidimensional array or an array of objects.
+     * For example:
      *
-     * The $key can be either a key name of the sub-array, a property name of an object, or an anonymous function that
-     * must return the value that will be used as a key.
+     * ```php
+     * $result = DbArrayHelper::arrange($rows, ['id']);
+     * ```
      *
-     * $groups is an array of keys, that will be used to group the input array into one or more sub-arrays based on keys
-     * specified.
+     * The result will be a multidimensional array arranged by `id`:
      *
-     * If the `$key` is specified as `null` or a value of an element corresponding to the key is `null` in addition
-     * to `$groups` not specified then the element is discarded.
+     * ```php
+     * [
+     *     '123' => [
+     *         ['id' => '123', 'data' => 'abc', 'device' => 'laptop']
+     *     ],
+     *     '345' => [ // all elements with this index are present in the result array
+     *         ['id' => '345', 'data' => 'def', 'device' => 'tablet'],
+     *         ['id' => '345', 'data' => 'hgi', 'device' => 'smartphone'],
+     *     ]
+     * ]
+     * ```
+     *
+     * Another example:
+     *
+     * ```php
+     *  $result = DbArrayHelper::arrange($rows, ['id', 'device'], 'data');
+     *  ```
+     *
+     * The result will be a multidimensional array arranged by `id` on the first level, by `device` on the second level
+     * and indexed by `data` on the third level:
+     *
+     * ```php
+     * [
+     *     '123' => [
+     *         'laptop' => [
+     *             'abc' => ['id' => '123', 'data' => 'abc', 'device' => 'laptop']
+     *         ]
+     *     ],
+     *     '345' => [
+     *         'tablet' => [
+     *             'def' => ['id' => '345', 'data' => 'def', 'device' => 'tablet']
+     *         ],
+     *         'smartphone' => [
+     *             'hgi' => ['id' => '345', 'data' => 'hgi', 'device' => 'smartphone']
+     *         ]
+     *     ]
+     * ]
+     * ```
+     *
+     * @param array[] $rows The array of rows that needs to be arranged.
+     * @param string[] $arrangeBy The array of keys that will be used to arrange the input array by one or more keys.
+     * @param Closure|string|null $indexBy The column name or anonymous function which result will be used to index the
+     * array.
+     * @param Closure|null $resultCallback The callback function that will be called with the result array. This can be
+     * used to modify the result before returning it.
+     *
+     * @return array[] The arranged array.
+     *
+     * @psalm-param IndexBy|null $indexBy
+     * @psalm-suppress MixedArrayAssignment
+     */
+    public static function arrange(
+        array $rows,
+        array $arrangeBy = [],
+        Closure|string|null $indexBy = null,
+        Closure|null $resultCallback = null,
+    ): array {
+        if (empty($rows)) {
+            return [];
+        }
+
+        if (empty($arrangeBy)) {
+            return self::index($rows, $indexBy, $resultCallback);
+        }
+
+        $arranged = [];
+
+        foreach ($rows as $element) {
+            $lastArray = &$arranged;
+
+            foreach ($arrangeBy as $group) {
+                $value = (string) $element[$group];
+
+                if (!isset($lastArray[$value])) {
+                    $lastArray[$value] = [];
+                }
+
+                $lastArray = &$lastArray[$value];
+            }
+
+            $lastArray[] = $element;
+
+            unset($lastArray);
+        }
+
+        if ($indexBy !== null || $resultCallback !== null) {
+            self::indexArranged($arranged, $indexBy, $resultCallback, count($arrangeBy));
+        }
+
+        return $arranged;
+    }
+
+    /**
+     * Indexes the array of rows according to a specified key.
      *
      * For example:
      *
@@ -62,105 +155,40 @@ final class DbArrayHelper
      * ]
      * ```
      *
-     * Passing `id` as a third argument will group `$array` by `id`:
-     *
-     * ```php
-     * $result = DbArrayHelper::index($array, null, 'id');
-     * ```
-     *
-     * The result will be a multidimensional array grouped by `id` on the first level, by `device` on the second level
-     * and indexed by `data` on the third level:
-     *
-     * ```php
-     * [
-     *     '123' => [
-     *         ['id' => '123', 'data' => 'abc', 'device' => 'laptop']
-     *     ],
-     *     '345' => [ // all elements with this index are present in the result array
-     *         ['id' => '345', 'data' => 'def', 'device' => 'tablet'],
-     *         ['id' => '345', 'data' => 'hgi', 'device' => 'smartphone'],
-     *     ]
-     * ]
-     * ```
-     *
-     * The result will be a multidimensional array grouped by `id` on the first level, by the `device` on the second one
-     * and indexed by the `data` on the third level:
-     *
-     * ```php
-     * [
-     *     '123' => [
-     *         'laptop' => [
-     *             'abc' => ['id' => '123', 'data' => 'abc', 'device' => 'laptop']
-     *         ]
-     *     ],
-     *     '345' => [
-     *         'tablet' => [
-     *             'def' => ['id' => '345', 'data' => 'def', 'device' => 'tablet']
-     *         ],
-     *         'smartphone' => [
-     *             'hgi' => ['id' => '345', 'data' => 'hgi', 'device' => 'smartphone']
-     *         ]
-     *     ]
-     * ]
-     * ```
-     *
-     * @param array[] $array The array that needs to be indexed or arranged.
+     * @param array[] $rows The array of rows that needs to be indexed.
      * @param Closure|string|null $indexBy The column name or anonymous function which result will be used to index the
-     * array. If the array does not have the key, the ordinal indexes will be used if `$arrangeBy` is not specified or
-     * a warning will be triggered if `$arrangeBy` is specified.
-     * @param string[] $arrangeBy The array of keys that will be used to arrange the input array by one or more keys.
+     * array.
+     * @param Closure|null $resultCallback The callback function that will be called with the result array. This can be
+     * used to modify the result before returning it.
      *
-     * @return array[] The indexed and/or arranged array.
+     * @return array[] The indexed array.
      *
      * @psalm-param IndexBy|null $indexBy
-     * @psalm-suppress MixedArrayAssignment
+     * @psalm-param ResultCallback|null $resultCallback
      */
-    public static function index(array $array, Closure|string|null $indexBy = null, array $arrangeBy = []): array
-    {
-        if (empty($array) || $indexBy === null && empty($arrangeBy)) {
-            return $array;
+    public static function index(
+        array $rows,
+        Closure|string|null $indexBy = null,
+        Closure|null $resultCallback = null,
+    ): array {
+        if (empty($rows)) {
+            return [];
         }
 
-        if (empty($arrangeBy)) {
+        if ($indexBy !== null) {
             if (is_string($indexBy)) {
-                return array_column($array, null, $indexBy);
-            }
-
-            return array_combine(array_map($indexBy, $array), $array);
-        }
-
-        $result = [];
-
-        foreach ($array as $element) {
-            $lastArray = &$result;
-
-            foreach ($arrangeBy as $group) {
-                $value = (string) $element[$group];
-
-                if (!isset($lastArray[$value])) {
-                    $lastArray[$value] = [];
-                }
-
-                $lastArray = &$lastArray[$value];
-            }
-
-            if ($indexBy === null) {
-                $lastArray[] = $element;
+                $indexes = array_column($rows, $indexBy);
             } else {
-                if (is_string($indexBy)) {
-                    $value = $element[$indexBy];
-                } else {
-                    $value = $indexBy($element);
-                }
-
-                $lastArray[(string) $value] = $element;
+                $indexes = array_map($indexBy, $rows);
             }
-
-            unset($lastArray);
         }
 
-        /** @var array[] $result */
-        return $result;
+        if ($resultCallback !== null) {
+            $rows = ($resultCallback)($rows);
+        }
+
+        /** @psalm-suppress MixedArgument */
+        return !empty($indexes) ? array_combine($indexes, $rows) : $rows;
     }
 
     /**
@@ -248,5 +276,23 @@ final class DbArrayHelper
         }
 
         return get_object_vars($object);
+    }
+
+    /**
+     * Recursively indexes the arranged array.
+     */
+    private static function indexArranged(
+        array &$arranged,
+        Closure|string|null $indexBy,
+        Closure|null $resultCallback,
+        int $depth,
+    ): void {
+        foreach ($arranged as &$rows) {
+            if ($depth > 1) {
+                self::indexArranged($rows, $indexBy, $resultCallback, $depth - 1);
+            } else {
+                $rows = self::index($rows, $indexBy, $resultCallback);
+            }
+        }
     }
 }
