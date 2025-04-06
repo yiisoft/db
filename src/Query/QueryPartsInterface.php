@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
+use LogicException;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -670,6 +671,8 @@ interface QueryPartsInterface
      * @param array $params The parameters (name => value) to bind to the query.
      *
      * @psalm-param ParamsType $params
+     *
+     * @throws LogicException - if `where` was set previously
      *
      * @see andWhere()
      * @see orWhere()
