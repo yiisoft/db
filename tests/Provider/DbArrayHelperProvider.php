@@ -244,6 +244,30 @@ class DbArrayHelperProvider
                 static fn ($row) => $row['key'],
                 $resultCallback,
             ],
+            [
+                [
+                    '123' => [
+                        'laptop' => [
+                            'abc' => ['id' => '123', 'data' => 'abc', 'device' => 'laptop'],
+                        ],
+                    ],
+                    '345' => [
+                        'tablet' => [
+                            'def' => ['id' => '345', 'data' => 'def', 'device' => 'tablet'],
+                        ],
+                        'smartphone' => [
+                            'hgi' => ['id' => '345', 'data' => 'hgi', 'device' => 'smartphone'],
+                        ],
+                    ],
+                ],
+                [
+                    ['id' => '123', 'data' => 'abc', 'device' => 'laptop'],
+                    ['id' => '345', 'data' => 'def', 'device' => 'tablet'],
+                    ['id' => '345', 'data' => 'hgi', 'device' => 'smartphone'],
+                ],
+                ['id', 'device'],
+                'data',
+            ],
         ];
     }
 

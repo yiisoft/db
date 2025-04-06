@@ -34,6 +34,11 @@ final class DbArrayHelper
      * For example:
      *
      * ```php
+     * $array = [
+     *     ['id' => '123', 'data' => 'abc', 'device' => 'laptop'],
+     *     ['id' => '345', 'data' => 'def', 'device' => 'tablet'],
+     *     ['id' => '345', 'data' => 'hgi', 'device' => 'smartphone'],
+     * ];
      * $result = DbArrayHelper::arrange($rows, ['id']);
      * ```
      *
