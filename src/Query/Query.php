@@ -251,6 +251,7 @@ class Query implements QueryInterface
 
     public function batch(int $batchSize = 100): BatchQueryResultInterface
     {
+        /** @psalm-suppress InvalidArgument */
         return $this->db
             ->createBatchQueryResult($this)
             ->batchSize($batchSize)
@@ -328,6 +329,7 @@ class Query implements QueryInterface
 
     public function each(int $batchSize = 100): BatchQueryResultInterface
     {
+        /** @psalm-suppress InvalidArgument */
         return $this->db
             ->createBatchQueryResult($this, true)
             ->batchSize($batchSize)

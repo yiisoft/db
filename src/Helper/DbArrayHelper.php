@@ -85,10 +85,10 @@ final class DbArrayHelper
      * @param Closure|null $resultCallback The callback function that will be called with the result array. This can be
      * used to modify the result before returning it.
      *
-     * @return array[] The arranged array.
+     * @return (array|object)[] The arranged array.
      *
      * @psalm-param IndexBy|null $indexBy
-     * @psalm-suppress MixedArrayAssignment
+     * @psalm-param ResultCallback|null $resultCallback
      */
     public static function arrange(
         array $rows,
@@ -119,11 +119,13 @@ final class DbArrayHelper
                 $lastArray = &$lastArray[$value];
             }
 
+            /** @psalm-suppress MixedArrayAssignment */
             $lastArray[] = $element;
 
             unset($lastArray);
         }
 
+        /** @var array[] $arranged */
         if ($indexBy !== null || $resultCallback !== null) {
             self::indexArranged($arranged, $indexBy, $resultCallback, count($arrangeBy));
         }
@@ -161,7 +163,7 @@ final class DbArrayHelper
      * @param Closure|null $resultCallback The callback function that will be called with the result array. This can be
      * used to modify the result before returning it.
      *
-     * @return array[] The indexed array.
+     * @return (array|object)[] The indexed array.
      *
      * @psalm-param IndexBy|null $indexBy
      * @psalm-param ResultCallback|null $resultCallback
@@ -280,6 +282,10 @@ final class DbArrayHelper
 
     /**
      * Recursively indexes the arranged array.
+     *
+     * @psalm-assert (array|object)[] $arranged
+     * @psalm-param IndexBy|null $indexBy
+     * @psalm-param ResultCallback|null $resultCallback
      */
     private static function indexArranged(
         array &$arranged,
@@ -287,6 +293,7 @@ final class DbArrayHelper
         Closure|null $resultCallback,
         int $depth,
     ): void {
+        /** @var array[] $rows */
         foreach ($arranged as &$rows) {
             if ($depth > 1) {
                 self::indexArranged($rows, $indexBy, $resultCallback, $depth - 1);
