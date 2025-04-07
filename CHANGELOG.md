@@ -75,7 +75,6 @@
 - New #942: Allow PHP backed enums as values (@Tigrov)
 - Enh #943: Add `getCacheKey()` and `getCacheTag()` methods to `AbstractPdoSchema` class (@Tigrov)
 - Enh #944: Added `setWhere()` as method a forced for overwriting `where()` (@lav45)
-- Enh #925: Add callback to `Query::all()` and `Query::one()` methods (@Tigrov)
 - Enh #925, #951: Add callback to `Query::all()` and `Query::one()` methods (@Tigrov, @vjik)
 - New #954: Add `DbArrayHelper::arrange()` method (@Tigrov)
 
