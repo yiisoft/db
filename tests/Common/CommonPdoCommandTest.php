@@ -164,7 +164,7 @@ abstract class CommonPdoCommandTest extends TestCase
     {
         $db = $this->getConnection(true);
 
-        $this->assertSame(PDO::CASE_NATURAL, $db->getActivePDO()?->getAttribute(PDO::ATTR_CASE));
+        $this->assertSame(PDO::CASE_NATURAL, $db->getActivePdo()?->getAttribute(PDO::ATTR_CASE));
 
         $command = $db->createCommand();
         $sql = <<<SQL
@@ -176,9 +176,9 @@ abstract class CommonPdoCommandTest extends TestCase
         $this->assertTrue(isset($rows[0]['customer_id']));
         $this->assertTrue(isset($rows[0]['total']));
 
-        $db->getActivePDO()?->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $db->getActivePdo()?->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 
-        $this->assertSame(PDO::CASE_LOWER, $db->getActivePDO()?->getAttribute(PDO::ATTR_CASE));
+        $this->assertSame(PDO::CASE_LOWER, $db->getActivePdo()?->getAttribute(PDO::ATTR_CASE));
 
         $rows = $command->setSql($sql)->queryAll();
 
@@ -186,9 +186,9 @@ abstract class CommonPdoCommandTest extends TestCase
         $this->assertTrue(isset($rows[0]['customer_id']));
         $this->assertTrue(isset($rows[0]['total']));
 
-        $db->getActivePDO()?->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+        $db->getActivePdo()?->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 
-        $this->assertSame(PDO::CASE_UPPER, $db->getActivePDO()?->getAttribute(PDO::ATTR_CASE));
+        $this->assertSame(PDO::CASE_UPPER, $db->getActivePdo()?->getAttribute(PDO::ATTR_CASE));
 
         $rows = $command->setSql($sql)->queryAll();
 

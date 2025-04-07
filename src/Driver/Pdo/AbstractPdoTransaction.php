@@ -64,7 +64,7 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
                 ['type' => LogType::TRANSACTION]
             );
 
-            $this->db->getPDO()?->beginTransaction();
+            $this->db->getPdo()?->beginTransaction();
             $this->level = 1;
 
             return;
@@ -105,7 +105,7 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
                 'Commit transaction ' . __METHOD__,
                 ['type' => LogType::TRANSACTION]
             );
-            $this->db->getPDO()?->commit();
+            $this->db->getPdo()?->commit();
 
             return;
         }
@@ -134,7 +134,7 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
     public function isActive(): bool
     {
         /** Extra check pdo->inTransaction {@link https://github.com/yiisoft/yii2/pull/18407/} */
-        return $this->level > 0 && $this->db->isActive() && $this->db->getPDO()?->inTransaction();
+        return $this->level > 0 && $this->db->isActive() && $this->db->getPdo()?->inTransaction();
     }
 
     public function rollBack(): void
@@ -155,7 +155,7 @@ abstract class AbstractPdoTransaction implements TransactionInterface, LoggerAwa
                 'Roll back transaction ' . __METHOD__,
                 ['type' => LogType::TRANSACTION]
             );
-            $this->db->getPDO()?->rollBack();
+            $this->db->getPdo()?->rollBack();
 
             return;
         }
