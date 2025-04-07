@@ -189,3 +189,4 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change return type of `AbstractCommand::insertWithReturningPks()` method to `array|false`;
 - Rename `QueryBuilderInterface::quoter()` method to `QueryBuilderInterface::getQuoter()`;
 - Change constructor parameters in `AbstractQueryBuilder` class;
+- Remove nullable from `PdoConnectionInterface::getActivePdo()` result;
