@@ -672,7 +672,7 @@ interface QueryPartsInterface
      *
      * @psalm-param ParamsType $params
      *
-     * @throws LogicException - if `where` was set previously
+     * @throws LogicException If `where` was set previously.
      *
      * @see andWhere()
      * @see orWhere()
