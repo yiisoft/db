@@ -694,9 +694,6 @@ class Query implements QueryInterface
         return $this;
     }
 
-    /**
-     * @throws LogicException
-     */
     public function where(array|string|ExpressionInterface|null $condition, array $params = []): static
     {
         if ($this->where === null) {
