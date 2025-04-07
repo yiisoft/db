@@ -487,7 +487,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 ->where(['like', 'name', 'foo%'])
                 ->where(['not like', 'name', 'foo%']);
         } catch (LogicException $e) {
-            $this->assertEquals('The `where` condition was set earlier. If you want to overwrite it, use the `setWhere()` method.', $e->getMessage());
+            $this->assertEquals('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.', $e->getMessage());
         }
 
         $query = (new Query($db))

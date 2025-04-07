@@ -699,7 +699,7 @@ class Query implements QueryInterface
         if ($this->where === null) {
             $this->where = $condition;
         } else {
-            throw new LogicException('The `where` condition was set earlier. If you want to overwrite it, use the `setWhere()`, `andWhere()` or `orWhere()` method.');
+            throw new LogicException('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.');
         }
         $this->addParams($params);
         return $this;
