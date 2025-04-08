@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
+use LogicException;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -694,6 +695,17 @@ class Query implements QueryInterface
     }
 
     public function where(array|string|ExpressionInterface|null $condition, array $params = []): static
+    {
+        if ($this->where === null) {
+            $this->where = $condition;
+        } else {
+            throw new LogicException('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.');
+        }
+        $this->addParams($params);
+        return $this;
+    }
+
+    public function setWhere(array|string|ExpressionInterface|null $condition, array $params = []): static
     {
         $this->where = $condition;
         $this->addParams($params);
