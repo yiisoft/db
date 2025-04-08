@@ -137,6 +137,7 @@ via schema:
 
 - [Reading database schema](schema/usage.md)
 - [Configuring schema cache](schema/cache.md)
+- [Casting values](schema/typecasting.md)
 
 ## Extensions
 

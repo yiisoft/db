@@ -6,6 +6,9 @@ namespace Yiisoft\Db\Tests\Db\Connection;
 
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Tests\AbstractConnectionTest;
+use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stub\ColumnFactory;
+use Yiisoft\Db\Tests\Support\Stub\Connection;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -32,5 +35,14 @@ final class ConnectionTest extends AbstractConnectionTest
         );
 
         parent::testSerialized();
+    }
+
+    public function testConstructColumnFactory(): void
+    {
+        $columnFactory = new ColumnFactory();
+
+        $db = new Connection($this->getDriver(), DbHelper::getSchemaCache(), $columnFactory);
+
+        $this->assertSame($columnFactory, $db->getColumnFactory());
     }
 }
