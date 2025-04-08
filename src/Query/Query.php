@@ -251,12 +251,9 @@ class Query implements QueryInterface
 
     public function batch(int $batchSize = 100): BatchQueryResultInterface
     {
-        /** @psalm-suppress InvalidArgument, ArgumentTypeCoercion */
         return $this->db
             ->createBatchQueryResult($this)
-            ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::index($rows, $indexBy))
-        ;
+            ->batchSize($batchSize);
     }
 
     public function column(): array
@@ -327,14 +324,12 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function each(int $batchSize = 100): BatchQueryResultInterface
+    public function each(): DataReaderInterface
     {
-        /** @psalm-suppress InvalidArgument, ArgumentTypeCoercion */
-        return $this->db
-            ->createBatchQueryResult($this, true)
-            ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::index($rows, $indexBy))
-        ;
+        return $this->createCommand()
+            ->query()
+            ->indexBy($this->indexBy)
+            ->resultCallback($this->resultCallback);
     }
 
     public function exists(): bool

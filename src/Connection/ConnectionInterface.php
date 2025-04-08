@@ -51,11 +51,10 @@ interface ConnectionInterface
      * Create a batch query result instance.
      *
      * @param QueryInterface $query The query to execute.
-     * @param bool $each Whether to return each row of the result set one at a time.
      *
      * @return BatchQueryResultInterface The batch query result instance.
      */
-    public function createBatchQueryResult(QueryInterface $query, bool $each = false): BatchQueryResultInterface;
+    public function createBatchQueryResult(QueryInterface $query): BatchQueryResultInterface;
 
     /**
      * Creates a command for execution.
