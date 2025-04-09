@@ -15,6 +15,7 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
+use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\QueryBuilder;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -371,5 +372,40 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
             ),
             $qb->alterColumn('json_table', 'json_col', $column),
         );
+    }
+
+    public function testWithTypecasting(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $dmlBuilder = Assert::getInaccessibleProperty($qb, 'dmlBuilder');
+        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+
+        $this->assertTrue($typecasting);
+
+        $dmlBuilder = $dmlBuilder->withTypecasting(false);
+        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+
+        $this->assertFalse($typecasting);
+
+        $dmlBuilder = $dmlBuilder->withTypecasting();
+        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+
+        $this->assertTrue($typecasting);
+
+        $qb = $qb->withTypecasting(false);
+        $dmlBuilder = Assert::getInaccessibleProperty($qb, 'dmlBuilder');
+        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+
+        $this->assertFalse($typecasting);
+
+        $qb = $qb->withTypecasting();
+        $dmlBuilder = Assert::getInaccessibleProperty($qb, 'dmlBuilder');
+        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+
+        $this->assertTrue($typecasting);
+
+        $db->close();
     }
 }

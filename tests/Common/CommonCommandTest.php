@@ -1506,6 +1506,72 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
+    public function testInsertWithoutTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+        $command = $db->createCommand();
+
+        $values = [
+            'int_col' => '1',
+            'char_col' => 'test',
+            'float_col' => '3.14',
+            'bool_col' => '1',
+        ];
+
+        $command->insert('{{type}}', $values);
+
+        $this->assertSame([
+            ':qp0' => 1,
+            ':qp1' => 'test',
+            ':qp2' => 3.14,
+            ':qp3' => true,
+        ], $command->getParams());
+
+        $command->dbTypecasting(false)->insert('{{type}}', $values);
+
+        $this->assertSame([
+            ':qp0' => '1',
+            ':qp1' => 'test',
+            ':qp2' => '3.14',
+            ':qp3' => '1',
+        ], $command->getParams());
+
+        $db->close();
+    }
+
+    public function testInsertBatchWithoutTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+        $command = $db->createCommand();
+
+        $values = [
+            'int_col' => '1',
+            'char_col' => 'test',
+            'float_col' => '3.14',
+            'bool_col' => '1',
+        ];
+
+        $command->insertBatch('{{type}}', [$values]);
+
+        $this->assertSame([
+            ':qp0' => 1,
+            ':qp1' => 'test',
+            ':qp2' => 3.14,
+            ':qp3' => true,
+        ], $command->getParams());
+
+        $command->dbTypecasting(false)->insertBatch('{{type}}', [$values]);
+
+        $this->assertSame([
+            ':qp0' => '1',
+            ':qp1' => 'test',
+            ':qp2' => '3.14',
+            ':qp3' => '1',
+        ], $command->getParams());
+
+        $db->close();
+    }
+
     /**
      * @throws Exception
      * @throws InvalidConfigException
@@ -1983,6 +2049,37 @@ abstract class CommonCommandTest extends AbstractCommandTest
         }
 
         $db->close();
+    }
+
+    public function testUpdateWithoutTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+        $command = $db->createCommand();
+
+        $values = [
+            'int_col' => '1',
+            'char_col' => 'test',
+            'float_col' => '3.14',
+            'bool_col' => '1',
+        ];
+
+        $command->update('{{type}}', $values);
+
+        $this->assertSame([
+            ':qp0' => 1,
+            ':qp1' => 'test',
+            ':qp2' => 3.14,
+            ':qp3' => true,
+        ], $command->getParams());
+
+        $command->dbTypecasting(false)->update('{{type}}', $values);
+
+        $this->assertSame([
+            ':qp0' => '1',
+            ':qp1' => 'test',
+            ':qp2' => '3.14',
+            ':qp3' => '1',
+        ], $command->getParams());
     }
 
     /**
