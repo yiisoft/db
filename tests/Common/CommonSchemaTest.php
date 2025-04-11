@@ -388,7 +388,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 continue;
             }
 
-            $db->getPDO()?->setAttribute($name, $value);
+            $db->getPdo()?->setAttribute($name, $value);
         }
 
         $schema = $db->getSchema();
@@ -460,7 +460,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 continue;
             }
 
-            $db->getPDO()?->setAttribute($name, $value);
+            $db->getPdo()?->setAttribute($name, $value);
         }
 
         $schema = $db->getSchema();
@@ -485,11 +485,11 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
-        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 
         $this->assertCount(count($schema->getTableNames()), $schema->getTableSchemas());
 
-        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+        $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 
         $this->assertCount(count($schema->getTableNames()), $schema->getTableSchemas());
 
@@ -744,7 +744,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
-        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
         $constraints = $schema->{'getTable' . ucfirst($type)}($tableName, true);
 
         $this->assertMetadataEquals($expected, $constraints);
@@ -768,7 +768,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
-        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+        $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
         $constraints = $schema->{'getTable' . ucfirst($type)}($tableName, true);
 
         $this->assertMetadataEquals($expected, $constraints);

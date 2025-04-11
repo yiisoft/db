@@ -151,11 +151,11 @@ abstract class AbstractConnectionTest extends TestCase
         $connection = $this->getConnection();
         $connection->open();
         $serialized = serialize($connection);
-        $this->assertNotNull($connection->getPDO());
+        $this->assertNotNull($connection->getPdo());
 
         $unserialized = unserialize($serialized);
         $this->assertInstanceOf(PdoConnectionInterface::class, $unserialized);
-        $this->assertNull($unserialized->getPDO());
+        $this->assertNull($unserialized->getPdo());
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
         $this->assertNotNull($connection->getPDO());
         $connection->close();

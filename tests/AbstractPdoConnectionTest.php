@@ -57,17 +57,17 @@ abstract class AbstractPdoConnectionTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertFalse($db->isActive());
-        $this->assertNull($db->getPDO());
+        $this->assertNull($db->getPdo());
 
         $db->open();
 
         $this->assertTrue($db->isActive());
-        $this->assertInstanceOf(PDO::class, $db->getPDO());
+        $this->assertInstanceOf(PDO::class, $db->getPdo());
 
         $db->close();
 
         $this->assertFalse($db->isActive());
-        $this->assertNull($db->getPDO());
+        $this->assertNull($db->getPdo());
 
         $this->setDsn('unknown::memory:');
 
@@ -89,12 +89,12 @@ abstract class AbstractPdoConnectionTest extends TestCase
         $db = $this->getConnection();
 
         $this->assertFalse($db->isActive());
-        $this->assertNull($db->getPDO());
+        $this->assertNull($db->getPdo());
 
         $db->open();
 
         $this->assertTrue($db->isActive());
-        $this->assertInstanceOf(PDO::class, $db->getPDO());
+        $this->assertInstanceOf(PDO::class, $db->getPdo());
 
         $logger = $this->getLogger();
         $logger->expects(self::once())->method('log');
@@ -103,7 +103,7 @@ abstract class AbstractPdoConnectionTest extends TestCase
         $db->close();
 
         $this->assertFalse($db->isActive());
-        $this->assertNull($db->getPDO());
+        $this->assertNull($db->getPdo());
 
         $this->setDsn('unknown::memory:');
 

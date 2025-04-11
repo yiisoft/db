@@ -2035,7 +2035,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     public function testPrepareWithEmptySql()
     {
         $db = $this->createMock(PdoConnectionInterface::class);
-        $db->expects(self::never())->method('getActivePDO');
+        $db->expects(self::never())->method('getActivePdo');
 
         $command = new class ($db) extends AbstractPdoCommand {
             public function showDatabases(): array
