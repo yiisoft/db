@@ -101,11 +101,14 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $query .= ' (' . implode(', ', $quotedColumnNames) . ')';
         }
 
-        /** @var array $parameter */
         foreach ($parameters as $parameter) {
+            /** @var array $values */
+            /** @var array $params */
+            $values = $parameter['values'];
+            $params = $parameter['params'];
             $statements[] = new QueryStatement(
-                $query . ' VALUES (' . implode('), (', $parameter['values']) . ')',
-                $parameter['params']
+                $query . ' VALUES (' . implode('), (', $values) . ')',
+                $params
             );
         }
 
