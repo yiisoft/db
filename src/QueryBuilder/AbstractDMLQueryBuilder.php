@@ -104,7 +104,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         /** @var array $parameter */
         foreach ($parameters as $parameter) {
             $statements[] = new QueryStatement(
-                $query . ' VALUES (' . implode('), (', (array)$parameter['values']) . ')',
+                $query . ' VALUES (' . implode('), (', $parameter['values']) . ')',
                 $parameter['params']
             );
         }
@@ -192,6 +192,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @return array The values.
      *
      * @psalm-param ParamsType $params
+     * @psalm-return array<array-key, array>
      */
     protected function prepareBatchInsertValues(string $table, iterable $rows, array $columnNames, int $rowsAtOnceLimit = 0): array
     {
