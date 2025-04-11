@@ -91,4 +91,10 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * Used when the bind parameter cannot be used in the SQL query.
      */
     public function prepareValue(mixed $value): string;
+
+    /**
+     * Returns maximum number of parameters for a DBMS.
+     * @return int
+     */
+    public function getParametersLimit(): int;
 }

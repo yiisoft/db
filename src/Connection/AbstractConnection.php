@@ -117,4 +117,13 @@ abstract class AbstractConnection implements ConnectionInterface
             }
         }
     }
+
+    public function getParametersLimit(): int
+    {
+        // Must be overridden in a DBMS package which has a limit
+        if ($this->getDriverName() === 'pgsql') {
+            return 65535;
+        }
+        return 0;
+    }
 }

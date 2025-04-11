@@ -29,6 +29,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->addGroupBy($expression);
 
         $this->assertSame([$expression], $query->getGroupBy());
+        $db->close();
     }
 
     public function testAddOrderByEmpty(): void
@@ -39,6 +40,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->addOrderBy([]);
 
         $this->assertSame([], $query->getOrderBy());
+        $db->close();
     }
 
     public function testAddParamsWithNameInt(): void
@@ -50,6 +52,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->addParams([2 => 'test']);
 
         $this->assertSame([1 => 'value', 2 => 'test'], $query->getParams());
+        $db->close();
     }
 
     /**
@@ -91,6 +94,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->andFilterCompare('value', '<=100');
 
         $this->assertSame($condition, $query->getWhere());
+        $db->close();
     }
 
     /**
@@ -109,6 +113,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->andFilterHaving(['>', 'id', 2]);
 
         $this->assertSame(['and', ['>', 'id', 1], ['>', 'id', 2]], $query->getHaving());
+        $db->close();
     }
 
     /**
@@ -123,6 +128,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertInstanceOf(QueryInterface::class, $result);
         $this->assertSame(['status' => 1], $query->getHaving());
+        $db->close();
     }
 
     /**
@@ -158,6 +164,7 @@ abstract class AbstractQueryTest extends TestCase
         $count = (new Query($db))->from('customer')->orderBy('id')->limit(1)->count();
 
         $this->assertEquals(3, $count);
+        $db->close();
     }
 
     /**
@@ -207,6 +214,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $column = (new Query($db))->select(['id'])->from('customer')->emulateExecution()->column();
         $this->assertSame([], $column);
+        $db->close();
     }
 
     /**
@@ -228,6 +236,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->orFilterHaving(['name' => '']);
 
         $this->assertSame(['id' => 0], $query->getHaving());
+        $db->close();
     }
 
     /**
@@ -278,6 +287,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->andFilterHaving(['or', ['eq', 'id', null], ['eq', 'id', []]]);
 
         $this->assertSame($condition, $query->getHaving());
+        $db->close();
     }
 
     /**
@@ -293,6 +303,7 @@ abstract class AbstractQueryTest extends TestCase
         );
 
         $this->assertSame(['and', ['id' => 1]], $query->getWhere());
+        $db->close();
     }
 
     /**
@@ -314,6 +325,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->orFilterWhere(['name' => '']);
 
         $this->assertSame(['id' => 0], $query->getWhere());
+        $db->close();
     }
 
     /**
@@ -364,6 +376,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->andFilterWhere(['or', ['eq', 'id', null], ['eq', 'id', []]]);
 
         $this->assertSame($condition, $query->getWhere());
+        $db->close();
     }
 
     public function testFrom(): void
@@ -374,6 +387,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->from('user');
 
         $this->assertSame(['user'], $query->getFrom());
+        $db->close();
     }
 
     public function testFromTableIsArrayWithExpression(): void
@@ -387,6 +401,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertIsArray($from);
         $this->assertInstanceOf(ExpressionInterface::class, $from[0]);
+        $db->close();
     }
 
     public function testGroup(): void
@@ -405,6 +420,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->addGroupBy('age');
 
         $this->assertSame(['team', 'company', 'age'], $query->getGroupBy());
+        $db->close();
     }
 
     public function testHaving(): void
@@ -424,6 +440,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->orHaving('age = :age', [':age' => '30']);
         $this->assertSame(['or', ['and', 'id = :id', 'name = :name'], 'age = :age'], $query->getHaving());
         $this->assertSame([':id' => 1, ':name' => 'something', ':age' => '30'], $query->getParams());
+        $db->close();
     }
 
     public function testJoin(): void
@@ -441,6 +458,7 @@ abstract class AbstractQueryTest extends TestCase
             [['INNER JOIN', 'profile', 'user.id = profile.user_id'], ['LEFT JOIN', 'order', 'user.id = order.user_id']],
             $query->getJoins()
         );
+        $db->close();
     }
 
     public function testLimitOffset(): void
@@ -452,6 +470,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame(10, $query->getLimit());
         $this->assertSame(5, $query->getOffset());
+        $db->close();
     }
 
     /**
@@ -465,6 +484,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->orFilterHaving(['status' => 1]);
 
         $this->assertSame(['status' => 1], $query->getHaving());
+        $db->close();
     }
 
     /**
@@ -478,6 +498,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->orFilterWhere(['status' => 1]);
 
         $this->assertSame(['status' => 1], $query->getWhere());
+        $db->close();
     }
 
     public function testOrder(): void
@@ -516,6 +537,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->addOrderBy($expression2);
 
         $this->assertSame([$expression1, $expression2], $query->getOrderBy());
+        $db->close();
     }
 
     public function testRightJoin(): void
@@ -526,6 +548,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->rightJoin('profile', 'user.id = profile.user_id');
 
         $this->assertSame([['RIGHT JOIN', 'profile', 'user.id = profile.user_id']], $query->getJoins());
+        $db->close();
     }
 
     public function testSelect(): void
@@ -669,6 +692,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->addSelect(['float' => 12.34]);
 
         $this->assertSame([1, true, 'float' => 12.34], $query->getSelect());
+        $db->close();
     }
 
     public function testSetJoin(): void
@@ -688,6 +712,7 @@ abstract class AbstractQueryTest extends TestCase
             ],
             $query->getJoins()
         );
+        $db->close();
     }
 
     public function testSetUnion(): void
@@ -698,6 +723,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->setUnions(['SELECT * FROM table1', 'SELECT * FROM table2']);
 
         $this->assertSame(['SELECT * FROM table1', 'SELECT * FROM table2'], $query->getUnions());
+        $db->close();
     }
 
     public function testShouldEmulateExecution(): void
@@ -711,6 +737,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->emulateExecution();
 
         $this->assertTrue($query->shouldEmulateExecution());
+        $db->close();
     }
 
     public function testWhere(): void
@@ -732,6 +759,7 @@ abstract class AbstractQueryTest extends TestCase
 
         $this->assertSame(['or', ['and', 'id = :id', 'name = :name'], 'age = :age'], $query->getWhere());
         $this->assertSame([':id' => 1, ':name' => 'something', ':age' => '30'], $query->getParams());
+        $db->close();
     }
 
     public function testWithQueries(): void
@@ -742,6 +770,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->withQueries(['query1', 'query2']);
 
         $this->assertSame(['query1', 'query2'], $query->getWithQueries());
+        $db->close();
     }
 
     public function testColumnWithIndexBy(): void
@@ -774,6 +803,7 @@ abstract class AbstractQueryTest extends TestCase
             ->where(['id' => null]);
 
         $this->assertSame([], $query->column());
+        $db->close();
     }
 
     /**
@@ -781,11 +811,13 @@ abstract class AbstractQueryTest extends TestCase
      */
     public function testFilterCondition(array|string $condition, array|string|null $expected): void
     {
-        $query = (new Query($this->getConnection()));
+        $db = $this->getConnection();
+        $query = (new Query($db));
         $this->assertNull($query->getWhere());
 
         $query->filterWhere($condition);
         $this->assertEquals($expected, $query->getWhere());
+        $db->close();
     }
 
     /**
@@ -793,11 +825,13 @@ abstract class AbstractQueryTest extends TestCase
      */
     public function testNormalizeOrderBy(array|string|Expression $columns, array|string $expected): void
     {
-        $query = (new Query($this->getConnection()));
+        $db = $this->getConnection();
+        $query = (new Query($db));
         $this->assertEquals([], $query->getOrderBy());
 
         $query->orderBy($columns);
         $this->assertEquals($expected, $query->getOrderBy());
+        $db->close();
     }
 
     /**
@@ -805,17 +839,20 @@ abstract class AbstractQueryTest extends TestCase
      */
     public function testNormalizeSelect(array|bool|float|int|string|ExpressionInterface $columns, array|string $expected): void
     {
-        $query = (new Query($this->getConnection()));
+        $db = $this->getConnection();
+        $query = (new Query($db));
         $this->assertEquals([], $query->getSelect());
 
         $query->select($columns);
         $this->assertEquals($expected, $query->getSelect());
+        $db->close();
     }
 
     public function testCountGreaterThanPhpIntMax(): void
     {
+        $db = $this->getConnection();
         $query = $this->getMockBuilder(Query::class)
-            ->setConstructorArgs([$this->getConnection()])
+            ->setConstructorArgs([$db])
             ->onlyMethods(['queryScalar'])
             ->getMock();
 
@@ -824,6 +861,7 @@ abstract class AbstractQueryTest extends TestCase
             ->willReturn('12345678901234567890');
 
         $this->assertSame('12345678901234567890', $query->count());
+        $db->close();
     }
 
     public function testResultCallback(): void

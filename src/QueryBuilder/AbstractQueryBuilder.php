@@ -139,14 +139,14 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
      *
      * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
      */
-    public function batchInsert(string $table, array $columns, iterable $rows, array &$params = []): string
+    public function batchInsert(string $table, array $columns, iterable $rows): array
     {
-        return $this->dmlBuilder->insertBatch($table, $rows, $columns, $params);
+        return $this->dmlBuilder->insertBatch($table, $rows, $columns);
     }
 
-    public function insertBatch(string $table, iterable $rows, array $columns = [], array &$params = []): string
+    public function insertBatch(string $table, iterable $rows, array $columns = [], int $rowsAtOnceLimit = 0): array
     {
-        return $this->dmlBuilder->insertBatch($table, $rows, $columns, $params);
+        return $this->dmlBuilder->insertBatch($table, $rows, $columns, $rowsAtOnceLimit);
     }
 
     public function bindParam(mixed $value, array &$params = []): string
@@ -494,5 +494,10 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     protected function prepareBinary(string $binary): string
     {
         return '0x' . bin2hex($binary);
+    }
+
+    public function getParametersLimit(): int
+    {
+        return $this->db->getParametersLimit();
     }
 }

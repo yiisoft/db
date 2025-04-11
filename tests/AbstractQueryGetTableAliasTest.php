@@ -36,6 +36,7 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
             ],
             $tables,
         );
+        $db->close();
     }
 
     /**
@@ -53,6 +54,7 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         $tables = $query->getTablesUsedInFrom();
 
         $this->assertSame($expected, $tables);
+        $db->close();
     }
 
     /**
@@ -68,6 +70,7 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         $tables = $query->getTablesUsedInFrom();
 
         $this->assertSame(['{{x}}' => $expression], $tables);
+        $db->close();
     }
 
     public function testNamesIsFromAliasedExpression(): void
@@ -84,6 +87,7 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         $tables = $query->getTablesUsedInFrom();
 
         $this->assertSame(['{{x}}' => $expression], $tables);
+        $db->close();
     }
 
     /**
@@ -102,6 +106,7 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
             ['{{prf}}' => '{{profile}}', '{{usr}}' => '{{user}}', '{{a b}}' => '{{c d}}', '{{p}}' => '{{post}}'],
             $tables,
         );
+        $db->close();
     }
 
     /**
@@ -116,6 +121,7 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         $tables = $query->getTablesUsedInFrom();
 
         $this->assertSame(['{{profile}}' => '{{profile}}', '{{user}}' => '{{user}}'], $tables);
+        $db->close();
     }
 
     /**
@@ -132,6 +138,7 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         $tables = $query->getTablesUsedInFrom();
 
         $this->assertSame(['{{%order_item}}' => '{{%order_item}}'], $tables);
+        $db->close();
     }
 
     /**
@@ -155,6 +162,7 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
             ],
             $tables,
         );
+        $db->close();
     }
 
     /**
@@ -171,5 +179,6 @@ abstract class AbstractQueryGetTableAliasTest extends TestCase
         $tables = $query->getTablesUsedInFrom();
 
         $this->assertSame(['{{tickets.workflows}}' => '{{tickets.workflows}}'], $tables);
+        $db->close();
     }
 }
