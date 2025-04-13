@@ -767,7 +767,7 @@ class Query implements QueryInterface
      *
      * @psalm-return (
      *     $rows is non-empty-list<array>
-     *         ? non-empty-array<array>|non-empty-array<object>
+     *         ? non-empty-array<array|object>
      *         : array[]|object[]
      * )
      */
