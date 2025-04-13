@@ -53,7 +53,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @throws InvalidConfigException
      * @throws Throwable
      *
-     * @return (array|object)[] All rows of the query result. Each array element is an `array` or `object` representing
+     * @return array[]|object[] All rows of the query result. Each array element is an `array` or `object` representing
      * a row of data. Empty array if the query results in nothing.
      */
     public function all(): array;
