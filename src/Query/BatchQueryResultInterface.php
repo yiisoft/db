@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Closure;
 use Iterator;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
@@ -32,6 +33,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  * @extends Iterator<int, array>
  *
  * @psalm-import-type IndexBy from QueryInterface
+ * @psalm-type ResultCallback = Closure(non-empty-list<array>):non-empty-array<array|object>
  */
 interface BatchQueryResultInterface extends Iterator
 {
@@ -95,4 +97,11 @@ interface BatchQueryResultInterface extends Iterator
      * @param int $value The number of rows to return in each batch.
      */
     public function batchSize(int $value): static;
+
+    /**
+     * Sets a callback function to be called for the result of the query.
+     *
+     * @psalm-param ResultCallback|null $callback
+     */
+    public function resultCallback(Closure|null $callback): static;
 }

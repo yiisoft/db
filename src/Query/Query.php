@@ -236,9 +236,7 @@ class Query implements QueryInterface
             return [];
         }
 
-        $rows = $this->createCommand()->queryAll();
-
-        return DbArrayHelper::index($rows, $this->indexBy, $this->resultCallback);
+        return $this->index($this->createCommand()->queryAll());
     }
 
     public function average(string $sql): int|float|null|string
@@ -253,7 +251,8 @@ class Query implements QueryInterface
     {
         return $this->db
             ->createBatchQueryResult($this)
-            ->batchSize($batchSize);
+            ->batchSize($batchSize)
+            ->resultCallback($this->index(...));
     }
 
     public function column(): array
@@ -759,6 +758,22 @@ class Query implements QueryInterface
         $command = $this->db->createCommand($sql, $params);
 
         return $command->queryScalar();
+    }
+
+    /**
+     * @psalm-param list<array> $rows
+     *
+     * @return (array|object)[]
+     *
+     * @psalm-return (
+     *     $rows is non-empty-list<array>
+     *         ? non-empty-array<array|object>
+     *         : array<array|object>
+     * )
+     */
+    protected function index(array $rows): array
+    {
+        return DbArrayHelper::index($rows, $this->indexBy, $this->resultCallback);
     }
 
     /**

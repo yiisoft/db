@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Query;
 
+use Closure;
 use Throwable;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Helper\DbArrayHelper;
 
 /**
  * Represents the result of a batch query execution.
  *
  * A batch query is a group of many SQL statements that are executed together as a single unit.
+ *
+ * @psalm-import-type ResultCallback from BatchQueryResultInterface
  */
 final class BatchQueryResult implements BatchQueryResultInterface
 {
@@ -26,6 +26,11 @@ final class BatchQueryResult implements BatchQueryResultInterface
      * @var DataReaderInterface|null The data reader associated with this batch query.
      */
     private DataReaderInterface|null $dataReader = null;
+    /**
+     * @var Closure|null A callback function to process the result rows.
+     * @psalm-var ResultCallback|null
+     */
+    private Closure|null $resultCallback = null;
 
     public function __construct(private QueryInterface $query)
     {
@@ -51,15 +56,19 @@ final class BatchQueryResult implements BatchQueryResultInterface
     /**
      * Fetches the next batch of data.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
      * @throws Throwable
      *
      * @return array The data fetched.
      */
     private function fetchData(): array
     {
-        return DbArrayHelper::index($this->getRows(), $this->query->getIndexBy(), $this->query->getResultCallback());
+        $rows = $this->getRows();
+
+        if ($this->resultCallback === null || empty($rows)) {
+            return $rows;
+        }
+
+        return ($this->resultCallback)($rows);
     }
 
     /**
@@ -113,6 +122,13 @@ final class BatchQueryResult implements BatchQueryResultInterface
     public function batchSize(int $value): static
     {
         $this->batchSize = $value;
+
+        return $this;
+    }
+
+    public function resultCallback(Closure|null $callback): static
+    {
+        $this->resultCallback = $callback;
 
         return $this;
     }
