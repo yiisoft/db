@@ -637,18 +637,19 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    public function testDataReaderKey(): void
+    public function testDataReaderIndexByAndResultCallback(): void
     {
         $db = $this->getConnection(true);
 
         $reader = $db->createCommand()
             ->setSql('SELECT * FROM {{customer}} WHERE [[id]]=1')
             ->query()
-            ->indexBy(static fn (array $row) => (int) $row['id']);
+            ->indexBy(static fn (array $row): int => (int) $row['id'])
+            ->resultCallback(static fn (array $row): object => (object) $row);
 
         $this->assertTrue($reader->valid());
         $this->assertSame(1, $reader->key());
-        $this->assertIsArray($reader->current());
+        $this->assertIsObject($reader->current());
 
         $reader->next();
 

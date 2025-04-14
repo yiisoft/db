@@ -328,7 +328,7 @@ class Query implements QueryInterface
         return $this->createCommand()
             ->query()
             ->indexBy($this->indexBy)
-            ->resultCallback($this->resultCallback);
+            ->resultCallback($this->resultCallback !== null ? $this->callResultCallbackOnOne(...) : null);
     }
 
     public function exists(): bool
@@ -555,7 +555,7 @@ class Query implements QueryInterface
             return $row;
         }
 
-        return ($this->resultCallback)([$row])[0];
+        return $this->callResultCallbackOnOne($row);
     }
 
     public function orderBy(array|string|ExpressionInterface $columns): static
@@ -774,6 +774,12 @@ class Query implements QueryInterface
     protected function index(array $rows): array
     {
         return DbArrayHelper::index($rows, $this->indexBy, $this->resultCallback);
+    }
+
+    private function callResultCallbackOnOne(array $row): array|object
+    {
+        /** @psalm-var ResultCallback $this->resultCallback */
+        return ($this->resultCallback)([$row])[0];
     }
 
     /**

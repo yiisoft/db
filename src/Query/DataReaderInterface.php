@@ -29,7 +29,7 @@ use Iterator;
  * @extends Iterator<int|string|null, array|false>
  *
  * @psalm-import-type IndexBy from QueryInterface
- * @psalm-import-type ResultCallback from QueryInterface
+ * @psalm-import-type ResultCallbackOne from QueryInterface
  */
 interface DataReaderInterface extends Iterator, Countable
 {
@@ -82,7 +82,7 @@ interface DataReaderInterface extends Iterator, Countable
      * }
      * ```
      *
-     * @psalm-param ResultCallback|null $resultCallback
+     * @psalm-param ResultCallbackOne|null $resultCallback
      */
     public function resultCallback(Closure|null $resultCallback): static;
 }
