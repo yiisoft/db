@@ -96,16 +96,28 @@ final class BatchQueryResult implements BatchQueryResultInterface
 
     public function key(): int
     {
+        if ($this->index === -1) {
+            $this->next();
+        }
+
         return $this->index;
     }
 
     public function current(): array
     {
+        if ($this->index === -1) {
+            $this->next();
+        }
+
         return $this->batch;
     }
 
     public function valid(): bool
     {
+        if ($this->index === -1) {
+            $this->next();
+        }
+
         return !empty($this->batch);
     }
 

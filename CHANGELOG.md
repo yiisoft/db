@@ -77,6 +77,7 @@
 - Enh #925, #951: Add callback to `Query::all()` and `Query::one()` methods (@Tigrov, @vjik)
 - New #954: Add `DbArrayHelper::arrange()` method (@Tigrov)
 - Chg #956: Remove nullable from `PdoConnectionInterface::getActivePdo()` result (@vjik)
+- Enh #822: Refactor data readers (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
