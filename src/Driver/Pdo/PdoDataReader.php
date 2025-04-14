@@ -10,7 +10,6 @@ use Iterator;
 use PDO;
 use PDOStatement;
 use Yiisoft\Db\Exception\InvalidCallException;
-use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
