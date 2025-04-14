@@ -28,6 +28,18 @@ abstract class CommonBatchQueryResultTest extends TestCase
         $this->assertInstanceOf(BatchQueryResultInterface::class, $result);
         $this->assertSame(2, $result->getBatchSize());
         $this->assertSame($result->getQuery(), $query);
+        $this->assertSame(-1, $result->key());
+
+        $result->rewind();
+        $rows = $result->current();
+
+        $this->assertSame(0, $result->key());
+        $this->assertCount(2, $rows);
+
+        $result->rewind();
+
+        $this->assertSame(0, $result->key());
+        $this->assertSame($rows, $result->current());
 
         // normal query
         $query = new Query($db);

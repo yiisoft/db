@@ -13,13 +13,11 @@ use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
-use Yiisoft\Db\Driver\Pdo\PdoDataReader;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -639,13 +637,26 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    public function testDataReaderInvalidParamException(): void
+    public function testDataReaderKey(): void
     {
         $db = $this->getConnection(true);
 
-        $this->expectException(InvalidParamException::class);
-        $this->expectExceptionMessage('The PDOStatement cannot be null.');
-        new PdoDataReader($db->createCommand());
+        $reader = $db->createCommand()
+            ->setSql('SELECT * FROM {{customer}} WHERE id=1')
+            ->query()
+            ->indexBy(static fn (array $row) => (int) $row['id']);
+
+        $this->assertTrue($reader->valid());
+        $this->assertSame(1, $reader->key());
+        $this->assertIsArray($reader->current());
+
+        $reader->next();
+
+        $this->assertFalse($reader->valid());
+        $this->assertNull($reader->key());
+        $this->assertFalse($reader->current());
+
+        $db->close();
     }
 
     /**

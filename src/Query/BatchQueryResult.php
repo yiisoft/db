@@ -32,7 +32,7 @@ final class BatchQueryResult implements BatchQueryResultInterface
      */
     private Closure|null $resultCallback = null;
 
-    public function __construct(private QueryInterface $query)
+    public function __construct(private readonly QueryInterface $query)
     {
     }
 

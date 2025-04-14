@@ -37,20 +37,12 @@ final class PdoDataReader implements DataReaderInterface
     /** @psalm-var ResultCallback|null $resultCallback */
     private Closure|null $resultCallback = null;
     private array|false $row;
-    private PDOStatement $statement;
 
     /**
-     * @throws InvalidParamException If the PDOStatement is null.
+     * @param PDOStatement $statement The PDO statement object that contains the result of the query.
      */
-    public function __construct(PdoCommandInterface $command)
+    public function __construct(private readonly PDOStatement $statement)
     {
-        $statement = $command->getPDOStatement();
-
-        if ($statement === null) {
-            throw new InvalidParamException('The PDOStatement cannot be null.');
-        }
-
-        $this->statement = $statement;
         /** @var array|false */
         $this->row = $statement->fetch(PDO::FETCH_ASSOC);
     }
@@ -108,11 +100,11 @@ final class PdoDataReader implements DataReaderInterface
 
     public function current(): array|object|false
     {
-        if ($this->resultCallback !== null && $this->row !== false) {
-            return ($this->resultCallback)([$this->row])[0];
+        if ($this->resultCallback === null || $this->row === false) {
+            return $this->row;
         }
 
-        return $this->row;
+        return ($this->resultCallback)([$this->row])[0];
     }
 
     /**
