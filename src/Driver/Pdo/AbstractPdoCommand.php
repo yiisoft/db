@@ -237,6 +237,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     protected function internalGetQueryResult(int $queryMode): mixed
     {
         if ($queryMode === self::QUERY_MODE_CURSOR) {
+            /** @psalm-suppress PossiblyNullArgument */
             return new PdoDataReader($this->pdoStatement);
         }
 
