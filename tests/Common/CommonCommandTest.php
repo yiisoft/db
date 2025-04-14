@@ -642,7 +642,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $reader = $db->createCommand()
-            ->setSql('SELECT * FROM {{customer}} WHERE id=1')
+            ->setSql('SELECT * FROM {{customer}} WHERE [[id]]=1')
             ->query()
             ->indexBy(static fn (array $row) => (int) $row['id']);
 
