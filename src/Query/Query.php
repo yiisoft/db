@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
+use LogicException;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -74,6 +75,7 @@ use function trim;
  *
  * @psalm-import-type SelectValue from QueryPartsInterface
  * @psalm-import-type IndexBy from QueryInterface
+ * @psalm-import-type ResultCallback from QueryInterface
  */
 class Query implements QueryInterface
 {
@@ -87,6 +89,8 @@ class Query implements QueryInterface
     protected array $join = [];
     protected array $orderBy = [];
     protected array $params = [];
+    /** @psalm-var ResultCallback|null $resultCallback */
+    protected Closure|null $resultCallback = null;
     protected array $union = [];
     protected array $withQueries = [];
     /** @psalm-var IndexBy|null $indexBy */
@@ -234,7 +238,9 @@ class Query implements QueryInterface
             return [];
         }
 
-        return DbArrayHelper::index($this->createCommand()->queryAll(), $this->indexBy);
+        $rows = $this->createCommand()->queryAll();
+
+        return DbArrayHelper::index($rows, $this->indexBy, $this->resultCallback);
     }
 
     public function average(string $sql): int|float|null|string
@@ -247,6 +253,7 @@ class Query implements QueryInterface
 
     public function batch(int $batchSize = 100): BatchQueryResultInterface
     {
+        /** @psalm-suppress InvalidArgument, ArgumentTypeCoercion */
         return $this->db
             ->createBatchQueryResult($this)
             ->batchSize($batchSize)
@@ -324,6 +331,7 @@ class Query implements QueryInterface
 
     public function each(int $batchSize = 100): BatchQueryResultInterface
     {
+        /** @psalm-suppress InvalidArgument, ArgumentTypeCoercion */
         return $this->db
             ->createBatchQueryResult($this, true)
             ->batchSize($batchSize)
@@ -438,6 +446,11 @@ class Query implements QueryInterface
         return $this->params;
     }
 
+    public function getResultCallback(): Closure|null
+    {
+        return $this->resultCallback;
+    }
+
     public function getSelect(): array
     {
         return $this->select;
@@ -540,10 +553,17 @@ class Query implements QueryInterface
 
     public function one(): array|object|null
     {
-        return match ($this->emulateExecution) {
-            true => null,
-            false => $this->createCommand()->queryOne(),
-        };
+        if ($this->emulateExecution) {
+            return null;
+        }
+
+        $row = $this->createCommand()->queryOne();
+
+        if ($this->resultCallback === null || $row === null) {
+            return $row;
+        }
+
+        return ($this->resultCallback)([$row])[0];
     }
 
     public function orderBy(array|string|ExpressionInterface $columns): static
@@ -608,6 +628,12 @@ class Query implements QueryInterface
 
     public function prepare(QueryBuilderInterface $builder): QueryInterface
     {
+        return $this;
+    }
+
+    public function resultCallback(Closure|null $resultCallback): static
+    {
+        $this->resultCallback = $resultCallback;
         return $this;
     }
 
@@ -676,6 +702,17 @@ class Query implements QueryInterface
     }
 
     public function where(array|string|ExpressionInterface|null $condition, array $params = []): static
+    {
+        if ($this->where === null) {
+            $this->where = $condition;
+        } else {
+            throw new LogicException('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.');
+        }
+        $this->addParams($params);
+        return $this;
+    }
+
+    public function setWhere(array|string|ExpressionInterface|null $condition, array $params = []): static
     {
         $this->where = $condition;
         $this->addParams($params);

@@ -20,23 +20,23 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Provider\SchemaProvider;
 use Yiisoft\Db\Tests\Support\AnyCaseValue;
 use Yiisoft\Db\Tests\Support\AnyValue;
+use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 
 use function array_keys;
 use function count;
 use function gettype;
 use function is_array;
-use function is_object;
 use function json_encode;
 use function ksort;
 use function mb_chr;
-use function sort;
 use function str_replace;
 use function strtolower;
 
@@ -390,7 +390,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 continue;
             }
 
-            $db->getPDO()?->setAttribute($name, $value);
+            $db->getPdo()?->setAttribute($name, $value);
         }
 
         $schema = $db->getSchema();
@@ -404,6 +404,31 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertContains('type', $tablesNames);
         $this->assertContains('animal', $tablesNames);
         $this->assertContains('animal_view', $tablesNames);
+
+        $db->close();
+    }
+
+    public function testHasTable(): void
+    {
+        $db = $this->getConnection(true);
+
+        $schema = $db->getSchema();
+
+        $tempTableName = 'testTemporaryTable';
+        $db->createCommand()->createTable($tempTableName, [
+            'id' => ColumnBuilder::primaryKey(),
+            'name' => ColumnBuilder::string()->notNull(),
+        ])->execute();
+
+        $this->assertTrue($schema->hasTable('order'));
+        $this->assertTrue($schema->hasTable('category'));
+        $this->assertTrue($schema->hasTable($tempTableName));
+        $this->assertFalse($schema->hasTable('no_such_table'));
+
+        $db->createCommand('DROP TABLE ' . $db->getQuoter()->quoteTableName($tempTableName))->execute();
+
+        $this->assertTrue($schema->hasTable($tempTableName));
+        $this->assertFalse($schema->hasTable($tempTableName, '', true));
 
         $db->close();
     }
@@ -437,7 +462,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
                 continue;
             }
 
-            $db->getPDO()?->setAttribute($name, $value);
+            $db->getPdo()?->setAttribute($name, $value);
         }
 
         $schema = $db->getSchema();
@@ -462,11 +487,11 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
-        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 
         $this->assertCount(count($schema->getTableNames()), $schema->getTableSchemas());
 
-        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+        $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 
         $this->assertCount(count($schema->getTableNames()), $schema->getTableSchemas());
 
@@ -481,6 +506,23 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $views = $schema->getViewNames();
 
         $this->assertSame(['animal_view'], $views);
+
+        $db->close();
+    }
+
+    public function testHasView(): void
+    {
+        $db = $this->getConnection(true);
+
+        $schema = $db->getSchema();
+
+        $this->assertTrue($schema->hasView('animal_view'));
+        $this->assertFalse($schema->hasView('no_such_view'));
+
+        $db->createCommand()->dropView('animal_view')->execute();
+
+        $this->assertTrue($schema->hasView('animal_view'));
+        $this->assertFalse($schema->hasView('animal_view', '', true));
 
         $db->close();
     }
@@ -704,7 +746,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
-        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
         $constraints = $schema->{'getTable' . ucfirst($type)}($tableName, true);
 
         $this->assertMetadataEquals($expected, $constraints);
@@ -728,7 +770,7 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db = $this->getConnection(true);
 
         $schema = $db->getSchema();
-        $db->getActivePDO()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+        $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
         $constraints = $schema->{'getTable' . ucfirst($type)}($tableName, true);
 
         $this->assertMetadataEquals($expected, $constraints);
@@ -793,121 +835,30 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $this->assertEquals($expected, $actual);
     }
 
-    protected function assertTableColumns(array $columns, string $table): void
+    /**
+     * @param ColumnInterface[] $columns
+     */
+    protected function assertTableColumns(array $columns, string $tableName): void
     {
         $db = $this->getConnection(true);
 
-        $table = $db->getTableSchema($table, true);
+        $table = $db->getTableSchema($tableName, true);
 
         $this->assertNotNull($table);
 
-        $expectedColNames = array_keys($columns);
-        sort($expectedColNames);
-        $colNames = $table->getColumnNames();
-        sort($colNames);
+        foreach ($columns as $name => &$column) {
+            $column = $column->withName($name);
 
-        $this->assertSame($expectedColNames, $colNames);
-
-        foreach ($table->getColumns() as $name => $column) {
-            $expected = $columns[$name];
-
-            $this->assertSame(
-                $expected['dbType'],
-                $column->getDbType(),
-                "dbType of column $name does not match. type is {$column->getType()}, dbType is {$column->getDbType()}."
-            );
-            $this->assertSame(
-                $expected['phpType'],
-                $column->getPhpType(),
-                "phpType of column $name does not match. type is {$column->getType()}, dbType is {$column->getDbType()}."
-            );
-            $this->assertSame(
-                $expected['primaryKey'],
-                $column->isPrimaryKey(),
-                "primaryKey of column $name does not match."
-            );
-            $this->assertSame($expected['type'], $column->getType(), "type of column $name does not match.");
-            $this->assertSame(
-                $expected['notNull'],
-                $column->isNotNull(),
-                "notNull of column $name does not match."
-            );
-            $this->assertSame(
-                $expected['autoIncrement'],
-                $column->isAutoIncrement(),
-                "autoIncrement of column $name does not match."
-            );
-            $this->assertSame(
-                $expected['enumValues'],
-                $column->getEnumValues(),
-                "enumValues of column $name does not match."
-            );
-            $this->assertSame($expected['size'], $column->getSize(), "size of column $name does not match.");
-
-            $this->assertSame($expected['scale'], $column->getScale(), "scale of column $name does not match.");
-
-            if (is_object($expected['defaultValue'])) {
-                $this->assertIsObject(
-                    $column->getDefaultValue(),
-                    "defaultValue of column $name is expected to be an object but it is not."
-                );
-                $this->assertSame(
-                    (string) $expected['defaultValue'],
-                    (string) $column->getDefaultValue(),
-                    "defaultValue of column $name does not match."
-                );
-            } else {
-                $this->assertSame(
-                    $expected['defaultValue'],
-                    $column->getDefaultValue(),
-                    "defaultValue of column $name does not match."
-                );
+            if ($column->isNotNull() === null) {
+                $column->notNull(false);
             }
 
-            if (isset($expected['unique'])) {
-                $this->assertSame(
-                    $expected['unique'],
-                    $column->isUnique(),
-                    "unique of column $name does not match"
-                );
-            }
-
-            if (isset($expected['unsigned'])) {
-                $this->assertSame(
-                    $expected['unsigned'],
-                    $column->isUnsigned(),
-                    "unsigned of column $name does not match"
-                );
-            }
-
-            /* For array types */
-            if (isset($expected['dimension'])) {
-                /** @psalm-suppress UndefinedMethod */
-                $this->assertSame(
-                    $expected['dimension'],
-                    $column->getDimension(),
-                    "dimension of column $name does not match"
-                );
-            }
-
-            if (isset($expected['column'])) {
-                /** @psalm-suppress UndefinedMethod */
-                $arrayColumn = $column->getColumn();
-
-                $this->assertSame(
-                    $expected['column'],
-                    [
-                        'type' => $arrayColumn->getType(),
-                        'dbType' => $arrayColumn->getDbType(),
-                        'phpType' => $arrayColumn->getPhpType(),
-                        'enumValues' => $arrayColumn->getEnumValues(),
-                        'size' => $arrayColumn->getSize(),
-                        'scale' => $arrayColumn->getScale(),
-                    ],
-                    "array column of column $name does not match"
-                );
+            if ($column->getDefaultValue() === null) {
+                $column->defaultValue(null);
             }
         }
+
+        Assert::arraysEquals($columns, $table->getColumns(), "Columns of table '$tableName'.");
 
         $db->close();
     }

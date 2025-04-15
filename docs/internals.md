@@ -75,7 +75,7 @@ Docker Compose services use the following stack:
 - PHP 8.3.
 - MySQL 9.
 - MariaDB 11.
-- PostgreSQL 19.
+- PostgreSQL 17.
 - Microsoft SQL Server 2022.
 - Oracle Free 23.
 

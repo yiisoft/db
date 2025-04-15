@@ -144,10 +144,10 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
             return;
         }
 
-        $pdo = $this->db->getActivePDO($sql, $forRead);
+        $pdo = $this->db->getActivePdo($sql, $forRead);
 
         try {
-            $this->pdoStatement = $pdo?->prepare($sql);
+            $this->pdoStatement = $pdo->prepare($sql);
             $this->bindPendingParams();
         } catch (PDOException $e) {
             $message = $e->getMessage() . "\nFailed to prepare SQL: $sql";

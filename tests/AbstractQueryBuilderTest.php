@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests;
 
 use Closure;
 use JsonException;
+use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
@@ -306,7 +307,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
         $query = (new Query($db))->from('admin_user')->where(['is_deleted' => false]);
-        $query->where([])->andWhere(['in', 'id', ['1', '0']]);
+        $query->setWhere([])->andWhere(['in', 'id', ['1', '0']]);
 
         [$sql, $params] = $qb->build($query);
 
@@ -472,6 +473,28 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 $this->assertSame($expectedParams[$name], $value);
             }
         }
+    }
+
+    /**
+     * @throws LogicException
+     */
+    public function testOverwriteWhereCondition(): void
+    {
+        $db = $this->getConnection();
+
+        try {
+            (new Query($db))
+                ->where(['like', 'name', 'foo%'])
+                ->where(['not like', 'name', 'foo%']);
+        } catch (LogicException $e) {
+            $this->assertEquals('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.', $e->getMessage());
+        }
+
+        $query = (new Query($db))
+            ->where(['like', 'name', 'foo%'])
+            ->setWhere(['not like', 'name', 'foo%']);
+
+        $this->assertEquals(['not like', 'name', 'foo%'], $query->getWhere());
     }
 
     public function testBuildLimit(): void

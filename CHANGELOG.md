@@ -2,6 +2,7 @@
 
 ## 2.0.0 under development
 
+- New #913: Add methods `SchemaInterface::hasSchema()`, `SchemaInterface::hasTable()`, `SchemaInterface::hasView()` (@evil1)
 - Enh #820: Support `Traversable` values for `AbstractDMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #815: Refactor `Query::column()` method (@Tigrov) 
 - Enh #816: Allow scalar values for `$columns` parameter of `Query::select()` and `Query::addSelect()` methods (@Tigrov)
@@ -35,7 +36,7 @@
 - Enh #865: Raise minimum PHP version to `^8.1` with minor refactoring (@Tigrov, @vjik)
 - Enh #798: Allow `QueryInterface::one()` and `QueryInterface::all()` to return objects (@darkdef, @Tigrov)
 - Enh #872: Use `#[\SensitiveParameter]` attribute to mark sensitive parameters (@heap-s)
-- New #864, #897, #898: Realize column factory (@Tigrov)
+- New #864, #897, #898, #950: Realize column factory (@Tigrov)
 - Enh #875: Ignore "Packets out of order..." warnings in `AbstractPdoCommand::internalExecute()` method (@Tigrov)
 - Enh #877: Separate column type constants (@Tigrov)
 - New #878: Realize `ColumnBuilder` class (@Tigrov)
@@ -57,7 +58,7 @@
 - Enh #917: Rename `ColumnSchemaInterface` to `ColumnInterface` (@Tigrov)
 - Enh #919: Replace `name()` with immutable `withName()` method in `ColumnInterface` interface (@Tigrov)
 - Enh #921: Move `DataType` class to `Yiisoft\Db\Constant` namespace (@Tigrov)
-- Enh #926: Refactor `DbArrayHelper` (@Tigrov)
+- Enh #926, #954: Refactor `DbArrayHelper` (@Tigrov)
 - Enh #920: Move index constants to the appropriate DBMS driver's `IndexType` and `IndexMethod` classes (@Tigrov)
 - New #928: Add `ReferentialAction` class with constants of possible values of referential actions (@Tigrov)
 - Enh #929: Refactor array, structured and JSON column type expressions and expression builders (@Tigrov)
@@ -73,6 +74,10 @@
 - New #939: Add `caseSensitive` option to like condition (@vjik)
 - New #942: Allow PHP backed enums as values (@Tigrov)
 - Enh #943: Add `getCacheKey()` and `getCacheTag()` methods to `AbstractPdoSchema` class (@Tigrov)
+- Enh #944: Added `setWhere()` as method a forced for overwriting `where()` (@lav45)
+- Enh #925, #951: Add callback to `Query::all()` and `Query::one()` methods (@Tigrov, @vjik)
+- New #954: Add `DbArrayHelper::arrange()` method (@Tigrov)
+- Chg #956: Remove nullable from `PdoConnectionInterface::getActivePdo()` result (@vjik)
 
 ## 1.3.0 March 21, 2024
 
