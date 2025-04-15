@@ -120,6 +120,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryInterface::resultCallback()` - allows to use a callback, to be called on all rows of the query result;
 - `QueryInterface::getResultCallback()` - returns the callback to be called on all rows of the query result or 
   `null` if the callback is not set;
+- `QueryPartsInterface::setWhere()` - overwrites the `WHERE` part of the query;
 - `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
@@ -131,6 +132,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `SchemaInterface::hasTable()` - returns whether the specified table exists in database;
 - `SchemaInterface::hasSchema()` - returns whether the specified schema exists in database;
 - `SchemaInterface::hasView()` - returns whether the specified view exists in database;
+- `DbArrayHelper::arrange()` - arranges an array by specified keys;
 
 ### Remove methods
 
@@ -188,3 +190,4 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change return type of `AbstractCommand::insertWithReturningPks()` method to `array|false`;
 - Rename `QueryBuilderInterface::quoter()` method to `QueryBuilderInterface::getQuoter()`;
 - Change constructor parameters in `AbstractQueryBuilder` class;
+- Remove nullable from `PdoConnectionInterface::getActivePdo()` result;

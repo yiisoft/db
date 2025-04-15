@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
+use LogicException;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -238,24 +239,7 @@ class Query implements QueryInterface
 
         $rows = $this->createCommand()->queryAll();
 
-        if (empty($rows)) {
-            return [];
-        }
-
-        if ($this->indexBy !== null) {
-            if (is_string($this->indexBy)) {
-                $indexes = array_column($rows, $this->indexBy);
-            } else {
-                $indexes = array_map($this->indexBy, $rows);
-            }
-        }
-
-        if ($this->resultCallback !== null) {
-            $rows = ($this->resultCallback)($rows);
-        }
-
-        /** @psalm-suppress MixedArgument */
-        return isset($indexes) ? array_combine($indexes, $rows) : $rows;
+        return DbArrayHelper::index($rows, $this->indexBy, $this->resultCallback);
     }
 
     public function average(string $sql): int|float|null|string
@@ -268,6 +252,7 @@ class Query implements QueryInterface
 
     public function batch(int $batchSize = 100): BatchQueryResultInterface
     {
+        /** @psalm-suppress InvalidArgument, ArgumentTypeCoercion */
         return $this->db
             ->createBatchQueryResult($this)
             ->batchSize($batchSize)
@@ -345,6 +330,7 @@ class Query implements QueryInterface
 
     public function each(int $batchSize = 100): BatchQueryResultInterface
     {
+        /** @psalm-suppress InvalidArgument, ArgumentTypeCoercion */
         return $this->db
             ->createBatchQueryResult($this, true)
             ->batchSize($batchSize)
@@ -709,6 +695,17 @@ class Query implements QueryInterface
     }
 
     public function where(array|string|ExpressionInterface|null $condition, array $params = []): static
+    {
+        if ($this->where === null) {
+            $this->where = $condition;
+        } else {
+            throw new LogicException('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.');
+        }
+        $this->addParams($params);
+        return $this;
+    }
+
+    public function setWhere(array|string|ExpressionInterface|null $condition, array $params = []): static
     {
         $this->where = $condition;
         $this->addParams($params);

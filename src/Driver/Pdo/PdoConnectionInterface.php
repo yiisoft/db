@@ -23,9 +23,9 @@ interface PdoConnectionInterface extends ConnectionInterface
      * @throws Exception
      * @throws InvalidConfigException
      *
-     * @return PDO|null The {@see PDO} instance for the current connection.
+     * @return PDO The {@see PDO} instance for the current connection.
      */
-    public function getActivePDO(string $sql = '', ?bool $forRead = null): PDO|null;
+    public function getActivePdo(string $sql = '', ?bool $forRead = null): PDO;
 
     /**
      * The PHP {@see PDO} instance associated with this DB connection.
@@ -39,7 +39,7 @@ interface PdoConnectionInterface extends ConnectionInterface
      *
      * @see PDO
      */
-    public function getPDO(): PDO|null;
+    public function getPdo(): PDO|null;
 
     /**
      * Returns current DB driver.
