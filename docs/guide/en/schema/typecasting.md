@@ -197,24 +197,47 @@ Some databases support structured data types, such as `composite` types in Postg
 a custom class, you need to create a column class which extends `AbstractStructuredColumn` and override 
 the `phpTypecast()` method.
 
-For example if `currency_money` is a defined composite type in Postgres as follows:
+For example if `currency_money` and `file_with_name` are defined composite types in Postgres as follows:
 
 ```sql
 CREATE TYPE currency_money AS (
-    value DECIMAL(10,2),
-    currency_code CHAR(3)
+    value decimal(10,2),
+    currency_code char(3)
 );
 ```
 
-you can create `MyStructuredColumn` column class to cast the value to `CurrencyMoney` class.
+```sql
+CREATE TYPE file_with_name AS (
+    path text,
+    name text
+);
+```
+
+you can create `MyStructuredColumn` column class to cast a value to `CurrencyMoney` or `FileWithName` classes.
 
 ```php
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Pgsql\Data\StructuredParser;
 
-class MyStructuredColumn extends AbstractStructuredColumn
+final class MyStructuredColumn extends AbstractStructuredColumn
 {
+    /**
+     * @param array|object|string|null $value
+     */
+    public function dbTypecast(mixed $value): ExpressionInterface|null
+    {
+        if ($value === null || $value instanceof ExpressionInterface) {
+            return $value;
+        }
+        
+        if ($this->getDbType() === 'file_with_name' && $value instanceof FileWithName) {
+            return new StructuredExpression([$value->getPath(), $value->getName()], $this);
+        }
+
+        return new StructuredExpression($value, $this);
+    }
+
     /**
     * @param string|null $value
     */
@@ -225,6 +248,7 @@ class MyStructuredColumn extends AbstractStructuredColumn
         
             return match ($this->getDbType()) {
                 'currency_money' => new CurrencyMoney(...$value->getValue()),
+                'file_with_name' => new FileWithName(...$value->getValue()),
                 default => $value,
             };
         }
@@ -233,7 +257,7 @@ class MyStructuredColumn extends AbstractStructuredColumn
     }
 }
 
-class CurrencyMoney implements \JsonSerializable, \IteratorAggregate
+final class CurrencyMoney implements \JsonSerializable, \IteratorAggregate
 {
     public function __construct(
         private float $value,
@@ -272,6 +296,25 @@ class CurrencyMoney implements \JsonSerializable, \IteratorAggregate
             'currency_code' => $this->currencyCode,
         ]);
     } 
+}
+
+final class FileWithName
+{
+    public function __construct(
+        private string $path,
+        private string $name,
+    ) {
+    }
+    
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+    
+    public function getName(): string
+    {
+        return $this->name;
+    }
 }
 ```
 
