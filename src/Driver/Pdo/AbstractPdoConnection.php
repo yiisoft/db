@@ -139,10 +139,10 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         return $this->emulatePrepare;
     }
 
-    public function getActivePDO(string|null $sql = '', bool|null $forRead = null): PDO
+    public function getActivePdo(string|null $sql = '', bool|null $forRead = null): PDO
     {
         $this->open();
-        $pdo = $this->getPDO();
+        $pdo = $this->getPdo();
 
         if ($pdo === null) {
             throw new Exception('PDO cannot be initialized.');
@@ -151,7 +151,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         return $pdo;
     }
 
-    public function getPDO(): PDO|null
+    public function getPdo(): PDO|null
     {
         return $this->pdo;
     }
@@ -186,7 +186,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
             return $value;
         }
 
-        return $this->getActivePDO()->quote($value);
+        return $this->getActivePdo()->quote($value);
     }
 
     public function setEmulatePrepare(bool $value): void
