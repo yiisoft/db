@@ -1524,7 +1524,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ':qp0' => 1,
             ':qp1' => 'test',
             ':qp2' => 3.14,
-            ':qp3' => true,
+            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
         ], $command->getParams());
 
         $command->dbTypecasting(false)->insert('{{type}}', $values);
@@ -1557,7 +1557,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ':qp0' => 1,
             ':qp1' => 'test',
             ':qp2' => 3.14,
-            ':qp3' => true,
+            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
         ], $command->getParams());
 
         $command->dbTypecasting(false)->insertBatch('{{type}}', [$values]);
@@ -2069,7 +2069,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ':qp0' => 1,
             ':qp1' => 'test',
             ':qp2' => 3.14,
-            ':qp3' => true,
+            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
         ], $command->getParams());
 
         $command->dbTypecasting(false)->update('{{type}}', $values);

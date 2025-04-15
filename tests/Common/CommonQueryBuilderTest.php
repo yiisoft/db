@@ -89,7 +89,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
             ':qp0' => 1,
             ':qp1' => 'test',
             ':qp2' => 3.14,
-            ':qp3' => true,
+            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
         ], $params);
 
         $params = [];
@@ -124,7 +124,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
             ':qp0' => 1,
             ':qp1' => 'test',
             ':qp2' => 3.14,
-            ':qp3' => true,
+            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
         ], $params);
 
         $params = [];
@@ -159,7 +159,7 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
             ':qp0' => 1,
             ':qp1' => 'test',
             ':qp2' => 3.14,
-            ':qp3' => true,
+            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
         ], $params);
 
         $params = [];

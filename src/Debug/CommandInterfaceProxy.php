@@ -180,6 +180,14 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
+    public function dbTypecasting(bool $dbTypecasting = true): static
+    {
+        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
+    }
+
+    /**
+     * @psalm-suppress MixedArgument
+     */
     public function delete(string $table, array|string $condition = '', array $params = []): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
