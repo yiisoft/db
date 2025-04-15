@@ -66,16 +66,16 @@ abstract class AbstractSchema implements SchemaInterface
     /**
      * Returns the cache key for the column metadata received from the query result.
      *
-     * @param array $info The column metadata from the query result.
+     * @param array $metadata The column metadata from the query result.
      */
-    abstract protected function getResultColumnCacheKey(array $info): string;
+    abstract protected function getResultColumnCacheKey(array $metadata): string;
 
     /**
      * Creates a new column instance according to the column metadata received from the query result.
      *
-     * @param array $info The column metadata from the query result.
+     * @param array $metadata The column metadata from the query result.
      */
-    abstract protected function loadResultColumn(array $info): ColumnInterface|null;
+    abstract protected function loadResultColumn(array $metadata): ColumnInterface|null;
 
     /**
      * Loads all check constraints for the given table.
@@ -157,13 +157,13 @@ abstract class AbstractSchema implements SchemaInterface
         };
     }
 
-    public function getResultColumn(array $info): ColumnInterface|null
+    public function getResultColumn(array $metadata): ColumnInterface|null
     {
-        if (empty($info)) {
+        if (empty($metadata)) {
             return null;
         }
 
-        $cacheKey = $this->getResultColumnCacheKey($info);
+        $cacheKey = $this->getResultColumnCacheKey($metadata);
 
         if (array_key_exists($cacheKey, $this->resultColumns)) {
             return $this->resultColumns[$cacheKey];
@@ -180,7 +180,7 @@ abstract class AbstractSchema implements SchemaInterface
             }
         }
 
-        $column = $this->loadResultColumn($info);
+        $column = $this->loadResultColumn($metadata);
         $this->resultColumns[$cacheKey] = $column;
 
         if ($column !== null && $isCacheEnabled) {

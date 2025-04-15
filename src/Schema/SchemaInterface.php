@@ -318,9 +318,9 @@ interface SchemaInterface extends ConstraintSchemaInterface
     /**
      * Returns the column instance for the column metadata received from the query result.
      *
-     * @param array $info The column metadata from the query result.
+     * @param array $metadata The column metadata from the query result.
      */
-    public function getResultColumn(array $info): ColumnInterface|null;
+    public function getResultColumn(array $metadata): ColumnInterface|null;
 
     /**
      * Returns all schema names in the database, except system schemas.

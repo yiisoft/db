@@ -329,13 +329,13 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      */
     private function getResultColumn(int $index): ColumnInterface|null
     {
-        $info = $this->pdoStatement?->getColumnMeta($index);
+        $metadata = $this->pdoStatement?->getColumnMeta($index);
 
-        if (empty($info)) {
+        if (empty($metadata)) {
             return null;
         }
 
-        return $this->db->getSchema()->getResultColumn($info);
+        return $this->db->getSchema()->getResultColumn($metadata);
     }
 
     /**

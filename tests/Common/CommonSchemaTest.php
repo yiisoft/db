@@ -1124,12 +1124,12 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
     }
 
     #[DataProviderExternal(SchemaProvider::class, 'resultColumns')]
-    public function testGetResultColumn(ColumnInterface|null $expected, array $info): void
+    public function testGetResultColumn(ColumnInterface|null $expected, array $metadata): void
     {
         $db = $this->getConnection();
         $schema = $db->getSchema();
 
-        $this->assertEquals($expected, $schema->getResultColumn($info));
+        $this->assertEquals($expected, $schema->getResultColumn($metadata));
 
         $db->close();
     }

@@ -40,12 +40,12 @@ class Schema extends AbstractSchema
         return '';
     }
 
-    protected function getResultColumnCacheKey(array $info): string
+    protected function getResultColumnCacheKey(array $metadata): string
     {
-        return md5(serialize([self::class, ...$info]));
+        return md5(serialize([self::class, ...$metadata]));
     }
 
-    protected function loadResultColumn(array $info): ColumnInterface|null
+    protected function loadResultColumn(array $metadata): ColumnInterface|null
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
