@@ -338,7 +338,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function shouldEmulateExecution(): bool;
 
     /**
-     * Enables or disables typecasting of values when retrieving records.
+     * Enables or disables typecasting of values when retrieving records from DB.
      */
     public function typecasting(bool $typecasting = true): static;
 }

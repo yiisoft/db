@@ -43,8 +43,8 @@ abstract class AbstractPdoSchema extends AbstractSchema
         return md5(serialize([static::class, ...$this->generateCacheKey()]));
     }
 
-    protected function getResultColumnCacheKey(array $info): string
+    protected function getResultColumnCacheKey(array $metadata): string
     {
-        return md5(serialize([static::class . '::getResultColumn', ...$this->generateCacheKey(), ...$info]));
+        return md5(serialize([static::class . '::getResultColumn', ...$this->generateCacheKey(), ...$metadata]));
     }
 }
