@@ -237,9 +237,7 @@ class Query implements QueryInterface
             return [];
         }
 
-        $rows = $this->createCommand()->queryAll();
-
-        return DbArrayHelper::index($rows, $this->indexBy, $this->resultCallback);
+        return $this->index($this->createCommand()->queryAll());
     }
 
     public function average(string $sql): int|float|null|string
@@ -252,12 +250,10 @@ class Query implements QueryInterface
 
     public function batch(int $batchSize = 100): BatchQueryResultInterface
     {
-        /** @psalm-suppress InvalidArgument, ArgumentTypeCoercion */
         return $this->db
             ->createBatchQueryResult($this)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::index($rows, $indexBy))
-        ;
+            ->resultCallback($this->index(...));
     }
 
     public function column(): array
@@ -328,14 +324,12 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function each(int $batchSize = 100): BatchQueryResultInterface
+    public function each(): DataReaderInterface
     {
-        /** @psalm-suppress InvalidArgument, ArgumentTypeCoercion */
-        return $this->db
-            ->createBatchQueryResult($this, true)
-            ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::index($rows, $indexBy))
-        ;
+        return $this->createCommand()
+            ->query()
+            ->indexBy($this->indexBy)
+            ->resultCallback($this->resultCallback !== null ? $this->callResultCallbackOnOne(...) : null);
     }
 
     public function exists(): bool
@@ -562,7 +556,7 @@ class Query implements QueryInterface
             return $row;
         }
 
-        return ($this->resultCallback)([$row])[0];
+        return $this->callResultCallbackOnOne($row);
     }
 
     public function orderBy(array|string|ExpressionInterface $columns): static
@@ -776,6 +770,28 @@ class Query implements QueryInterface
         $command = $this->db->createCommand($sql, $params);
 
         return $command->queryScalar();
+    }
+
+    /**
+     * @psalm-param list<array> $rows
+     *
+     * @return array[]|object[]
+     *
+     * @psalm-return (
+     *     $rows is non-empty-list<array>
+     *         ? non-empty-array<array|object>
+     *         : array[]|object[]
+     * )
+     */
+    protected function index(array $rows): array
+    {
+        return DbArrayHelper::index($rows, $this->indexBy, $this->resultCallback);
+    }
+
+    private function callResultCallbackOnOne(array $row): array|object
+    {
+        /** @psalm-var ResultCallback $this->resultCallback */
+        return ($this->resultCallback)([$row])[0];
     }
 
     /**
