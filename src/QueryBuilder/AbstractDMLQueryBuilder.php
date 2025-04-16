@@ -166,7 +166,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @return array|Iterator The prepared rows.
      *
-     * @psalm-param Traversable<iterable<array-key, mixed>> $rows
      * @psalm-return Iterator<int|string, iterable<array-key, mixed>>|array{}
      */
     final protected function prepareTraversable(Traversable $rows): Iterator|array
@@ -175,7 +174,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             $rows = $rows->getIterator();
         }
 
-        /** @var Iterator $rows */
+        /** @var Iterator<int|string, iterable<array-key, mixed>> $rows */
         if (!$rows->valid()) {
             return [];
         }
