@@ -38,9 +38,9 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
         return new TransactionInterfaceDecorator($result, $this->collector);
     }
 
-    public function createBatchQueryResult(QueryInterface $query, bool $each = false): BatchQueryResultInterface
+    public function createBatchQueryResult(QueryInterface $query): BatchQueryResultInterface
     {
-        return $this->connection->createBatchQueryResult($query, $each);
+        return $this->connection->createBatchQueryResult($query);
     }
 
     public function createCommand(?string $sql = null, array $params = []): CommandInterface

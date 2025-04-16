@@ -18,6 +18,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  *
  * @psalm-type SelectValue = array<array-key, ExpressionInterface|scalar>
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type IndexBy from QueryInterface
  */
 interface QueryPartsInterface
 {
@@ -322,13 +323,13 @@ interface QueryPartsInterface
      * The signature of the callable should be:
      *
      * ```php
-     * function ($row)
+     * function (array $row): array-key
      * {
      *     // return the index value corresponding to $row
      * }
      * ```
      *
-     * @psalm-param Closure(array):array-key|string|null $column
+     * @psalm-param IndexBy|null $column
      */
     public function indexBy(string|Closure|null $column): static;
 

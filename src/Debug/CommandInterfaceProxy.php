@@ -8,7 +8,7 @@ use Closure;
 use Throwable;
 use Yiisoft\Db\Command\BatchCommand;
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Query\Data\DataReaderInterface;
+use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
