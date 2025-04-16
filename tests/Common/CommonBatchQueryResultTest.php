@@ -10,6 +10,8 @@ use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
+use function iterator_to_array;
+
 abstract class CommonBatchQueryResultTest extends TestCase
 {
     use TestTrait;
@@ -25,7 +27,19 @@ abstract class CommonBatchQueryResultTest extends TestCase
 
         $this->assertInstanceOf(BatchQueryResultInterface::class, $result);
         $this->assertSame(2, $result->getBatchSize());
-        $this->assertSame($result->getQuery(), $query);
+        $this->assertSame($query, $result->getQuery());
+        $this->assertSame(0, $result->key());
+
+        $rows = $result->current();
+
+        $this->assertCount(2, $rows);
+        $this->assertSame($rows, $query->batch(2)->current());
+        $this->assertTrue($query->batch(2)->valid());
+
+        $result->rewind();
+
+        $this->assertSame(0, $result->key());
+        $this->assertSame($rows, $result->current());
 
         // normal query
         $query = new Query($db);
@@ -57,8 +71,6 @@ abstract class CommonBatchQueryResultTest extends TestCase
         $this->assertCount(3, $allRows);
         $this->assertSame(2, $step);
 
-        $batch->reset();
-
         // empty query
         $query = new Query($db);
         $query->from('customer')->where(['id' => 100]);
@@ -88,7 +100,7 @@ abstract class CommonBatchQueryResultTest extends TestCase
         // each
         $query = new Query($db);
         $query->from('customer')->orderBy('id');
-        $allRows = $this->getAllRowsFromEach($query->each(2));
+        $allRows = iterator_to_array($query->each());
 
         $this->assertCount(3, $allRows);
         $this->assertSame('user1', $allRows[0]['name']);
@@ -98,7 +110,7 @@ abstract class CommonBatchQueryResultTest extends TestCase
         // each with key
         $query = new Query($db);
         $query->from('customer')->orderBy('id')->indexBy('name');
-        $allRows = $this->getAllRowsFromEach($query->each(100));
+        $allRows = iterator_to_array($query->each());
 
         $this->assertCount(3, $allRows);
         $this->assertSame('address1', $allRows['user1']['address']);
@@ -161,17 +173,6 @@ abstract class CommonBatchQueryResultTest extends TestCase
 
         foreach ($batch as $rows) {
             $allRows = array_merge($allRows, $rows);
-        }
-
-        return $allRows;
-    }
-
-    protected function getAllRowsFromEach(BatchQueryResultInterface $each): array
-    {
-        $allRows = [];
-
-        foreach ($each as $index => $row) {
-            $allRows[$index] = $row;
         }
 
         return $allRows;
