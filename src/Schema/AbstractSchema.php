@@ -37,7 +37,10 @@ abstract class AbstractSchema implements SchemaInterface
      * @var string|null $defaultSchema The default schema name used for the current session.
      */
     protected string|null $defaultSchema = null;
-    /** @var (ColumnInterface|null)[] Saved columns from query results. */
+    /**
+     * @var (ColumnInterface|null)[] Saved columns from query results.
+     * @psalm-var array<string, ColumnInterface|null>
+     */
     protected array $resultColumns = [];
     protected array $viewNames = [];
     private array $schemaNames = [];
@@ -157,7 +160,7 @@ abstract class AbstractSchema implements SchemaInterface
         };
     }
 
-    public function getResultColumn(array $metadata): ColumnInterface|null
+    final public function getResultColumn(array $metadata): ColumnInterface|null
     {
         if (empty($metadata)) {
             return null;
