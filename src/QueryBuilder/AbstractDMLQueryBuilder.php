@@ -272,7 +272,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @psalm-return array<int|string, string|false>
      */
     protected function prepareRowBatchInsertValues(
-        iterable $row,
+        mixed $row,
         array $columnNames,
         array $keys,
         array $names,
