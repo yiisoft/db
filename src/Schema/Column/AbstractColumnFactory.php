@@ -52,8 +52,8 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      *
      * ```php
      * $classMap = [
-     *     ColumnType::ARRAY => LazyArrayColumn::class,
-     *     ColumnType::JSON => LazyJsonColumn::class,
+     *     ColumnType::ARRAY => ArrayLazyColumn::class,
+     *     ColumnType::JSON => JsonLazyColumn::class,
      * ];
      *
      * $typeMap = [
