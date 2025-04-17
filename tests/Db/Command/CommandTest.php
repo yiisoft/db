@@ -42,6 +42,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::columnTypes */
@@ -63,6 +64,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testAddCommentOnColumn(): void
@@ -81,6 +83,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testAddCommentOnTable(): void
@@ -99,6 +102,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testAddDefaultValue(): void
@@ -113,6 +117,7 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $command->addDefaultValue('table', 'name', 'column', 'value');
+        $db->close();
     }
 
     /**
@@ -135,6 +140,7 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->addForeignKey($tableName, $name, $columns, $referenceTable, $referenceColumns, $delete, $update)->getSql();
 
         $this->assertSame($expected, $sql);
+        $db->close();
     }
 
     /**
@@ -149,6 +155,7 @@ final class CommandTest extends AbstractCommandTest
 
 
         $this->assertSame($expected, $sql);
+        $db->close();
     }
 
     /**
@@ -162,6 +169,7 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->addUnique($tableName, $name, $column)->getSql();
 
         $this->assertSame($expected, $sql);
+        $db->close();
     }
 
     public function testAlterColumn(): void
@@ -180,6 +188,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testBatchInsert(): void
@@ -187,9 +196,13 @@ final class CommandTest extends AbstractCommandTest
         $db = $this->getConnection();
 
         $command = $db->createCommand();
-        $command->insertBatch('table', [['value1', 'value2'], ['value3', 'value4']], ['column1', 'column2']);
+        $batchCommand = $command->insertBatch('table', [['value1', 'value2'], ['value3', 'value4']], ['column1', 'column2']);
 
-        $this->assertSame('INSERT INTO [table] ([column1], [column2]) VALUES (:qp0, :qp1), (:qp2, :qp3)', $command->getSql());
+        $this->assertSame(1, $batchCommand->count());
+        $commands = $batchCommand->getCommands();
+
+        $firstCommand = $commands[0];
+        $this->assertSame('INSERT INTO [table] ([column1], [column2]) VALUES (:qp0, :qp1), (:qp2, :qp3)', $firstCommand->getSql());
         $this->assertSame(
             [
                 ':qp0' => 'value1',
@@ -197,8 +210,10 @@ final class CommandTest extends AbstractCommandTest
                 ':qp2' => 'value3',
                 ':qp3' => 'value4',
             ],
-            $command->getParams()
+            $firstCommand->getParams()
         );
+
+        $db->close();
     }
 
     /**
@@ -219,6 +234,7 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->createIndex($table, $name, $column, $indexType, $indexMethod)->getSql();
 
         $this->assertSame($expected, $sql);
+        $db->close();
     }
 
     public function testCheckIntegrity(): void
@@ -233,6 +249,7 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $command->checkIntegrity('schema', 'table')->execute();
+        $db->close();
     }
 
     public function testCreateTable(): void
@@ -269,6 +286,7 @@ final class CommandTest extends AbstractCommandTest
         $sql = $command->createTable('test_table', $columns, $options)->getSql();
 
         Assert::equalsWithoutLE($expected, $sql);
+        $db->close();
     }
 
     public function testCreateView(): void
@@ -293,6 +311,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testDelete(): void
@@ -311,6 +330,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testDropCheck(): void
@@ -329,6 +349,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testDropColumn(): void
@@ -347,6 +368,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testDropCommentFromColumn(): void
@@ -365,6 +387,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testDropCommentFromTable(): void
@@ -383,6 +406,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testDropDefaultValue(): void
@@ -397,6 +421,7 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $command->dropDefaultValue('table', 'column');
+        $db->close();
     }
 
     public function testDropForeingKey(): void
@@ -415,6 +440,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testDropIndex(): void
@@ -433,6 +459,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testDropPrimaryKey(): void
@@ -451,6 +478,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testDropView(): void
@@ -469,6 +497,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     #[DataProviderExternal(CommandProvider::class, 'dropTable')]
@@ -490,6 +519,7 @@ final class CommandTest extends AbstractCommandTest
         $expectedSql = DbHelper::replaceQuotes($expected, $db->getDriverName());
 
         $this->assertSame($expectedSql, $command->getSql());
+        $db->close();
     }
 
     public function testDropUnique(): void
@@ -508,6 +538,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testExecute(): void
@@ -522,6 +553,7 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $command->createTable('customer', ['id' => 'pk'])->execute();
+        $db->close();
     }
 
     public function testInsert(): void
@@ -543,6 +575,7 @@ final class CommandTest extends AbstractCommandTest
             ],
             $command->getParams(),
         );
+        $db->close();
     }
 
     public function testQuery(): void
@@ -562,6 +595,7 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $command->query();
+        $db->close();
     }
 
     public function testQueryAll(): void
@@ -581,6 +615,7 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $command->queryAll();
+        $db->close();
     }
 
     public function testQueryColumn(): void
@@ -600,6 +635,7 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $command->queryColumn();
+        $db->close();
     }
 
     public function testQueryOne(): void
@@ -617,6 +653,7 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $command->setSql($sql)->queryOne();
+        $db->close();
     }
 
     public function testQueryScalar(): void
@@ -634,6 +671,7 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $this->assertEquals(1, $command->setSql($sql)->queryScalar());
+        $db->close();
     }
 
     public function testRenameColumn(): void
@@ -651,6 +689,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testRenameTable(): void
@@ -668,6 +707,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testResetSequence(): void
@@ -680,6 +720,7 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $db->createCommand()->resetSequence('table', 5);
+        $db->close();
     }
 
     public function testSetRetryHandler(): void
@@ -691,6 +732,7 @@ final class CommandTest extends AbstractCommandTest
         $command->setRetryHandler($handler);
 
         $this->assertSame($handler, Assert::getInaccessibleProperty($command, 'retryHandler'));
+        $db->close();
     }
 
     public function testTruncateTable(): void
@@ -709,6 +751,7 @@ final class CommandTest extends AbstractCommandTest
             ),
             $sql,
         );
+        $db->close();
     }
 
     public function testUpdate(): void
@@ -720,6 +763,7 @@ final class CommandTest extends AbstractCommandTest
 
         $this->assertSame('UPDATE [table] SET [name]=:qp0 WHERE [id]=:qp1', $command->getSql());
         $this->assertSame([':qp0' => 'John', ':qp1' => 1], $command->getParams());
+        $db->close();
     }
 
     public function testUpsert(): void
@@ -734,6 +778,7 @@ final class CommandTest extends AbstractCommandTest
         );
 
         $command->upsert('{{table}}', []);
+        $db->close();
     }
 
     public function testProfiler(?string $sql = null): void

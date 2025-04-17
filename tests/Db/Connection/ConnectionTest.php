@@ -22,6 +22,7 @@ final class ConnectionTest extends AbstractConnectionTest
         $db = $this->getConnection();
 
         $this->assertNull($db->getTableSchema('non_existing_table'));
+        $db->close();
     }
 
     public function testSerialized(): void
@@ -32,5 +33,10 @@ final class ConnectionTest extends AbstractConnectionTest
         );
 
         parent::testSerialized();
+    }
+
+    public function testGetParametersLimit(): void
+    {
+        $this->assertSame(0, $this->getConnection()->getParametersLimit());
     }
 }

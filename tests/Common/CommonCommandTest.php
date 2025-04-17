@@ -320,13 +320,17 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->insertBatch($table, $values, $columns);
+        $batchCommand = $command->insertBatch($table, $values, $columns);
 
-        $this->assertSame($expected, $command->getSql());
-        $this->assertSame($expectedParams, $command->getParams());
+        $this->assertSame(1, $batchCommand->count());
+        $commands = $batchCommand->getCommands();
+        $firstCommand = $commands[0];
 
-        $command->prepare(false);
-        $command->execute();
+        $this->assertSame($expected, $firstCommand->getSql());
+        $this->assertSame($expectedParams, $firstCommand->getParams());
+
+        $firstCommand->prepare(false);
+        $batchCommand->execute();
 
         $this->assertEquals($insertedRow, (new Query($db))->from($table)->count());
 
@@ -419,13 +423,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $command->insertBatch(
+        $batchCommand = $command->insertBatch(
             '{{customer}}',
             [['t1@example.com', 'test_name', 'test_address']],
             ['email', 'name', 'address'],
         );
 
-        $this->assertSame(1, $command->execute());
+        $this->assertSame(1, $batchCommand->execute());
 
         $result = (new Query($db))
             ->select(['email', 'name', 'address'])
@@ -456,9 +460,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $values[$i] = ['t' . $i . '@any.com', 't' . $i, 't' . $i . ' address'];
         }
 
-        $command->insertBatch('{{customer}}', $values, ['email', 'name', 'address']);
+        $batchCommand = $command->insertBatch('{{customer}}', $values, ['email', 'name', 'address']);
 
-        $this->assertSame($attemptsInsertRows, $command->execute());
+        $this->assertSame($attemptsInsertRows, $batchCommand->execute());
 
         $insertedRowsCount = (new Query($db))->from('{{customer}}')->count();
 
@@ -482,9 +486,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
             }
         )();
         $command = $db->createCommand();
-        $command->insertBatch('{{customer}}', $rows, ['email', 'name', 'address']);
+        $batchCommand = $command->insertBatch('{{customer}}', $rows, ['email', 'name', 'address']);
 
-        $this->assertSame(1, $command->execute());
+        $this->assertSame(1, $batchCommand->execute());
 
         $db->close();
     }
@@ -1118,6 +1122,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->expectExceptionMessage($message);
 
         $command->execute();
+        $db->close();
     }
 
     /**
@@ -1489,6 +1494,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->expectExceptionMessage('Expected select query object with enumerated (named) parameters');
 
         $command->insert('{{customer}}', $query)->execute();
+        $db->close();
     }
 
     /**
@@ -1543,6 +1549,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         );
         $command->execute();
         $command->execute();
+        $db->close();
     }
 
     /**
@@ -1635,6 +1642,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->expectException(Exception::class);
 
         $command->query();
+        $db->close();
     }
 
     /**
@@ -2064,6 +2072,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         };
 
         $command->prepare();
+        $db->close();
     }
 
     /**
@@ -2118,6 +2127,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $phpTypecastValue = $column->phpTypecast($result['total']);
 
         $this->assertSame($decimalValue, $phpTypecastValue);
+        $db->close();
     }
 
     public function testInsertWithReturningPksEmptyValues()
@@ -2132,6 +2142,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         };
 
         $this->assertSame($expected, $pkValues);
+        $db->close();
     }
 
     public function testInsertWithReturningPksEmptyValuesAndNoPk()
@@ -2141,6 +2152,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $pkValues = $db->createCommand()->insertWithReturningPks('negative_default_values', []);
 
         $this->assertSame([], $pkValues);
+        $db->close();
     }
 
     public function testUuid(): void
@@ -2231,5 +2243,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $value = (new Query($db))->select('json_col')->from('json_table')->where(['id' => 1])->scalar();
         $this->assertSame('{"a":1,"b":2}', str_replace(' ', '', $value));
+        $db->close();
     }
 }

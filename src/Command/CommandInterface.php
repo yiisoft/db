@@ -193,6 +193,8 @@ interface CommandInterface
      * @param string $table The name of the table to insert new rows into.
      * @param iterable $rows The rows to be batch inserted into the table.
      * @param string[] $columns The column names.
+     * @param int $rowsAtOnceLimit Limit number of rows inserted at once. Default 0 - means maximum allowed by DBMS. If
+     * provided value is greater, than supported by DBMS, then DBMS maximum value will be used.
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -201,7 +203,7 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` and `column` parameters before using them in the generated SQL.
      */
-    public function insertBatch(string $table, iterable $rows, array $columns = []): static;
+    public function insertBatch(string $table, iterable $rows, array $columns = [], int $rowsAtOnceLimit = 0): BatchCommand;
 
     /**
      * Binds a parameter to the SQL statement to be executed.

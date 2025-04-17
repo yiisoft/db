@@ -227,4 +227,10 @@ interface ConnectionInterface
      * @psalm-param Closure(ConnectionInterface):mixed|Closure(ConnectionInterface):void $closure
      */
     public function transaction(Closure $closure, ?string $isolationLevel = null): mixed;
+
+    /**
+     * Returns maximum number of bound parameters for a DBMS. Default is 0 which means unlimited.
+     * @return int
+     */
+    public function getParametersLimit(): int;
 }

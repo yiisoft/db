@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Command;
 
 use Closure;
 use Throwable;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -201,22 +202,26 @@ abstract class AbstractCommand implements CommandInterface
      *
      * @deprecated Use {@see insertBatch()} instead. It will be removed in version 3.0.0.
      */
-    public function batchInsert(string $table, array $columns, iterable $rows): static
+    public function batchInsert(string $table, array $columns, iterable $rows): BatchCommand
     {
         return $this->insertBatch($table, $rows, $columns);
     }
 
-    public function insertBatch(string $table, iterable $rows, array $columns = []): static
+    public function insertBatch(string $table, iterable $rows, array $columns = [], int $rowsAtOnceLimit = 0): BatchCommand
     {
         $table = $this->getQueryBuilder()->getQuoter()->getRawTableName($table);
+        $db = $this->getConnection();
 
-        $params = [];
-        $sql = $this->getQueryBuilder()->insertBatch($table, $rows, $columns, $params);
+        $statements = $this->getQueryBuilder()->insertBatch($table, $rows, $columns, $rowsAtOnceLimit);
+        $commands = [];
+        foreach ($statements as $statement) {
+            $command = $db->createCommand();
+            $command->setRawSql($statement->sql);
+            $command->bindValues($statement->params);
 
-        $this->setRawSql($sql);
-        $this->bindValues($params);
-
-        return $this;
+            $commands[] = $command;
+        }
+        return new BatchCommand($commands);
     }
 
     abstract public function bindValue(int|string $name, mixed $value, ?int $dataType = null): static;
@@ -520,6 +525,11 @@ abstract class AbstractCommand implements CommandInterface
         $sql = $this->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
         return $this->setSql($sql)->bindValues($params);
     }
+
+    /**
+     * @return ConnectionInterface The query builder instance.
+     */
+    abstract protected function getConnection(): ConnectionInterface;
 
     /**
      * @return QueryBuilderInterface The query builder instance.

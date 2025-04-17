@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Debug;
 
 use Closure;
 use Throwable;
+use Yiisoft\Db\Command\BatchCommand;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -99,11 +100,11 @@ final class CommandInterfaceProxy implements CommandInterface
     }
 
     /**
-     * @psalm-suppress MixedArgument
+     * @psalm-suppress MixedReturnStatement
      */
-    public function insertBatch(string $table, iterable $rows, array $columns = []): static
+    public function insertBatch(string $table, iterable $rows, array $columns = [], int $rowsAtOnceLimit = 0): BatchCommand
     {
-        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
+        return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
     /**
