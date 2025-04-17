@@ -257,7 +257,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Prepare values for batch insert for a single row.
      *
-     * @param iterable $row The rows to be batch inserted into the table.
+     * @param iterable|object $row The rows to be batch inserted into the table.
      * @param string[] $columnNames The column names.
      * @param array $keys The column names.
      * @param string[] $names The column names.
@@ -266,7 +266,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      *
      * @return array The placeholder for a row.
      *
-     * @psalm-param iterable<int|string, mixed> $row
+     * @psalm-param iterable<int|string, mixed>|object $row
      * @psalm-param array<string, string|false> $keys
      * @psalm-param ParamsType $params
      * @psalm-return array<int|string, string|false>
