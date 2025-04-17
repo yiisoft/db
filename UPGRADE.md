@@ -121,6 +121,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryInterface::getResultCallback()` - returns the callback to be called on all rows of the query result or 
   `null` if the callback is not set;
 - `QueryPartsInterface::setWhere()` - overwrites the `WHERE` part of the query;
+- `QueryPartsInterface::setHaving()` - overwrites the `HAVING` part of the query;
 - `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;

@@ -6,14 +6,14 @@ namespace Yiisoft\Db\Tests;
 
 use Closure;
 use JsonException;
-use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use stdClass;
 use Throwable;
-use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -421,6 +421,32 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
+    public function testOverwriteHavingCondition(): void
+    {
+        $db = $this->getConnection();
+
+        try {
+            (new Query($db))
+                ->from('admin_user')
+                ->having(['id' => 1])
+                ->having(['id' => 2]);
+        } catch (RuntimeException $e) {
+            $this->assertEquals('The `having` condition was set earlier. Use the `setHaving()`, `andHaving()` or `orHaving()` method.', $e->getMessage());
+        }
+
+        $query = (new Query($db))
+            ->from('admin_user')
+            ->having(['id' => 1])
+            ->setHaving(['id' => 2]);
+
+        $this->assertEquals(['id' => 2], $query->getHaving());
+
+        $query->setHaving('id = :id', [':id' => 200]);
+
+        $this->assertEquals('id = :id', $query->getHaving());
+        $this->assertEquals([':id' => 200], $query->getParams());
+    }
+
     /**
      * @throws Exception
      */
@@ -476,7 +502,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @throws LogicException
+     * @throws RuntimeException
      */
     public function testOverwriteWhereCondition(): void
     {
@@ -486,7 +512,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             (new Query($db))
                 ->where(['like', 'name', 'foo%'])
                 ->where(['not like', 'name', 'foo%']);
-        } catch (LogicException $e) {
+        } catch (RuntimeException $e) {
             $this->assertEquals('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.', $e->getMessage());
         }
 
@@ -495,6 +521,11 @@ abstract class AbstractQueryBuilderTest extends TestCase
             ->setWhere(['not like', 'name', 'foo%']);
 
         $this->assertEquals(['not like', 'name', 'foo%'], $query->getWhere());
+
+        $query->setWhere('id = :id', [':id' => 200]);
+
+        $this->assertEquals('id = :id', $query->getWhere());
+        $this->assertEquals([':id' => 200], $query->getParams());
     }
 
     public function testBuildLimit(): void
