@@ -267,7 +267,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @return array The placeholder for a row.
      *
      * @psalm-param iterable<int|string, mixed>|object $row
-     * @psalm-param array<string, string> $keys
+     * @psalm-param array<string, string|false> $keys
      * @psalm-param ParamsType $params
      * @psalm-return array<int|string, string|false>
      */
@@ -282,6 +282,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $i = 0;
         $placeholders = $keys;
 
+        /**
+         * @var string $key
+         */
         foreach ($row as $key => $value) {
             $columnName = $columnNames[$key] ?? (isset($keys[$key]) ? $key : $names[$i] ?? $i);
 
