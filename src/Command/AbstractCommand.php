@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Command;
 use Closure;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Query\Data\DataReaderInterface;
+use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;

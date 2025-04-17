@@ -79,6 +79,7 @@
 - New #954: Add `DbArrayHelper::arrange()` method (@Tigrov)
 - Chg #956: Remove nullable from `PdoConnectionInterface::getActivePdo()` result (@vjik)
 - New #945: Add option for typecasting values retrieved from DB (@Tigrov)
+- Enh #822: Refactor data readers (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

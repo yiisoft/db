@@ -90,7 +90,7 @@ final class DbArrayHelper
      * @param Closure|null $resultCallback The callback function that will be called with the result array. This can be
      * used to modify the result before returning it.
      *
-     * @return (array|object)[] The arranged array.
+     * @return array[]|object[] The arranged array.
      *
      * @psalm-param list<array> $rows
      * @psalm-param IndexBy|null $indexBy
@@ -169,7 +169,7 @@ final class DbArrayHelper
      * @param Closure|null $resultCallback The callback function that will be called with the result array. This can be
      * used to modify the result before returning it.
      *
-     * @return (array|object)[] The indexed array.
+     * @return array[]|object[] The indexed array.
      *
      * @psalm-param list<array> $rows
      * @psalm-param IndexBy|null $indexBy
@@ -290,7 +290,7 @@ final class DbArrayHelper
     /**
      * Recursively indexes the arranged array.
      *
-     * @psalm-assert (array|object)[] $arranged
+     * @psalm-assert array[]|object[] $arranged
      * @psalm-param IndexBy|null $indexBy
      * @psalm-param ResultCallback|null $resultCallback
      */
