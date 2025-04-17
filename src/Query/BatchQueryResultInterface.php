@@ -15,7 +15,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  *
  * You usually don't instantiate BatchQueryResult directly.
  *
- * Instead, you obtain it by calling {@see Query::batch()} or {@see Query::each()}.
+ * Instead, you obtain it by calling {@see Query::batch()}.
  *
  * Because BatchQueryResult implements the {@see Iterator} interface, you can iterate it to obtain a batch of data in
  * each iteration.
@@ -28,26 +28,15 @@ use Yiisoft\Db\Exception\InvalidConfigException;
  * foreach ($query->batch() as $i => $users) {
  *     // $users represents the rows in the $i-th batch
  * }
- *
- * foreach ($query->each() as $user) {
- *     // $user represents the next row in the query result
- * }
  * ```
  *
- * @extends Iterator<int|string, mixed>
+ * @extends Iterator<int, array>
  *
  * @psalm-import-type IndexBy from QueryInterface
- * @psalm-type PopulateClosure = Closure(array[],IndexBy|null): array[]
+ * @psalm-type ResultCallback = Closure(non-empty-list<array>):non-empty-array<array|object>
  */
 interface BatchQueryResultInterface extends Iterator
 {
-    /**
-     * Resets the batch query.
-     *
-     * This method will clean up the existing batch query so that a new batch query can be performed.
-     */
-    public function reset(): void;
-
     /**
      * Resets the iterator to the initial state.
      *
@@ -75,18 +64,18 @@ interface BatchQueryResultInterface extends Iterator
      *
      * This method is required by the interface {@see Iterator}.
      *
-     * @return int|string|null The index of the current row.
+     * @return int The index of the current row.
      */
-    public function key(): int|string|null;
+    public function key(): int;
 
     /**
      * Returns the current dataset.
      *
      * This method is required by the interface {@see Iterator}.
      *
-     * @return mixed The current dataset.
+     * @return array The current dataset.
      */
-    public function current(): mixed;
+    public function current(): array;
 
     /**
      * Returns whether there is a valid dataset at the current position.
@@ -97,7 +86,7 @@ interface BatchQueryResultInterface extends Iterator
      */
     public function valid(): bool;
 
-    public function getQuery(): QueryInterface|null;
+    public function getQuery(): QueryInterface;
 
     /**
      * @see batchSize()
@@ -107,10 +96,12 @@ interface BatchQueryResultInterface extends Iterator
     /**
      * @param int $value The number of rows to return in each batch.
      */
-    public function batchSize(int $value): self;
+    public function batchSize(int $value): static;
 
     /**
-     * @psalm-param PopulateClosure|null $populateMethod
+     * Sets a callback function to be called for the result of the query.
+     *
+     * @psalm-param ResultCallback|null $callback
      */
-    public function setPopulatedMethod(Closure|null $populateMethod = null): self;
+    public function resultCallback(Closure|null $callback): static;
 }
