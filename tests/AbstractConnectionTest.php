@@ -16,6 +16,9 @@ use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stub\ColumnFactory;
+use Yiisoft\Db\Tests\Support\Stub\Connection;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 abstract class AbstractConnectionTest extends TestCase
@@ -156,5 +159,25 @@ abstract class AbstractConnectionTest extends TestCase
     private function getProfiler(): ProfilerInterface
     {
         return $this->createMock(ProfilerInterface::class);
+    }
+
+    public function testGetColumnFactory(): void
+    {
+        $db = $this->getConnection();
+
+        $this->assertInstanceOf(ColumnFactory::class, $db->getColumnFactory());
+
+        $db->close();
+    }
+
+    public function testUserDefinedColumnFactory(): void
+    {
+        $columnFactory = new ColumnFactory();
+
+        $db = new Connection($this->getDriver(), DbHelper::getSchemaCache(), $columnFactory);
+
+        $this->assertSame($columnFactory, $db->getColumnFactory());
+
+        $db->close();
     }
 }

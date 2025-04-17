@@ -207,3 +207,4 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Remove `null` from return type of `getQuery()` method in `BatchQueryResultInterface` and `BatchQueryResult` class;
 - Remove parameters from `each()` method in `QueryInterface` and `Query` class;
 - Change return type of `each()` method to `DataReaderInterface` in `QueryInterface` and `Query` class;
+- Add `$columnFactory` parameter to `AbstractPdoConnection::__construct()` constructor;

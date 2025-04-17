@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use Closure;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Expression\Expression;
@@ -12,6 +13,7 @@ use Yiisoft\Db\Syntax\ColumnDefinitionParser;
 use function array_diff_key;
 use function array_key_exists;
 use function array_merge;
+use function is_callable;
 use function is_numeric;
 use function preg_match;
 use function str_replace;
@@ -23,22 +25,67 @@ use const PHP_INT_SIZE;
  * The default implementation of the {@see ColumnFactoryInterface}.
  *
  * @psalm-import-type ColumnInfo from ColumnFactoryInterface
+ *
+ * @psalm-type ColumnClassMap = array<ColumnType::*, class-string<ColumnInterface>|Closure(ColumnType::*, ColumnInfo): (class-string<ColumnInterface>|null)>
+ * @psalm-type TypeMap = array<string, ColumnType::*|Closure(string, ColumnInfo): (ColumnType::*|null)>
  */
 abstract class AbstractColumnFactory implements ColumnFactoryInterface
 {
     /**
-     * The mapping from physical column types (keys) to abstract column types (values).
-     *
-     * @var string[]
+     * @var string[] The mapping from physical column types (keys) to abstract column types (values).
      *
      * @psalm-var array<string, ColumnType::*>
      */
     protected const TYPE_MAP = [];
 
+    /**
+     * @param array $columnClassMap The mapping from abstract column types to the classes implementing them. Where
+     * array keys are abstract column types and values are corresponding class names or PHP callable with the following
+     * signature: `function (string $type, array &$info): string|null`. The callable should return the class name based
+     * on the abstract type and the column information or `null` if the class name cannot be determined.
+     * @param array $typeMap The mapping from physical column types to abstract column types. Where array keys
+     * are physical column types and values are corresponding abstract column types or PHP callable with the following
+     * signature: `function (string $dbType, array &$info): string|null`. The callable should return the abstract type
+     * based on the physical type and the column information or `null` if the abstract type cannot be determined.
+     *
+     * For example:
+     *
+     * ```php
+     * $classMap = [
+     *     ColumnType::ARRAY => ArrayLazyColumn::class,
+     *     ColumnType::JSON => JsonLazyColumn::class,
+     * ];
+     *
+     * $typeMap = [
+     *     'json' => function (string $dbType, array &$info): string|null {
+     *         if (str_ends_with($info['name'], '_ids')) {
+     *             $info['column'] = new IntegerColumn();
+     *             return ColumnType::ARRAY;
+     *         }
+     *
+     *         return null;
+     *     },
+     * ];
+     *
+     * $columnFactory = new ColumnFactory($classMap, $typeMap);
+     * ```
+     *
+     * @psalm-param ColumnClassMap $columnClassMap
+     * @psalm-param TypeMap $typeMap
+     */
+    public function __construct(
+        protected array $columnClassMap = [],
+        protected array $typeMap = [],
+    ) {
+    }
+
     public function fromDbType(string $dbType, array $info = []): ColumnInterface
     {
         $info['dbType'] = $dbType;
-        $type = $info['type'] ?? $this->getType($dbType, $info);
+        /** @psalm-var ColumnType::* $type */
+        $type = $info['type']
+            ?? $this->mapType($this->typeMap, $dbType, $info)
+            ?? $this->getType($dbType, $info);
 
         return $this->fromType($type, $info);
     }
@@ -118,7 +165,9 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             $type = ColumnType::ARRAY;
         }
 
-        $columnClass = $this->getColumnClass($type, $info);
+        /** @psalm-var class-string<ColumnInterface> $columnClass */
+        $columnClass = $this->mapType($this->columnClassMap, $type, $info)
+            ?? $this->getColumnClass($type, $info);
 
         $column = new $columnClass($type, ...$info);
 
@@ -139,8 +188,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
 
     /**
      * @psalm-param ColumnType::* $type
-     * @param ColumnInfo $info
-     *
+     * @psalm-param ColumnInfo $info
      * @psalm-return class-string<ColumnInterface>
      */
     protected function getColumnClass(string $type, array $info = []): string
@@ -192,7 +240,7 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
      */
     protected function isDbType(string $dbType): bool
     {
-        return isset(static::TYPE_MAP[$dbType]);
+        return isset(static::TYPE_MAP[$dbType]) || !($this->isType($dbType) || $this->isPseudoType($dbType));
     }
 
     /**
@@ -243,8 +291,35 @@ abstract class AbstractColumnFactory implements ColumnFactoryInterface
             ColumnType::ARRAY,
             ColumnType::STRUCTURED,
             ColumnType::JSON => true,
-            default => false,
+            default => isset($this->columnClassMap[$type]),
         };
+    }
+
+    /**
+     * Maps a type to a value using a mapping array.
+     *
+     * @param array $map The mapping array.
+     * @param string $type The type to map.
+     * @param array $info The column information.
+     *
+     * @return string|null The mapped value or `null` if the type is not corresponding to any value.
+     *
+     * @psalm-param ColumnInfo $info
+     * @psalm-assert ColumnInfo $info
+     */
+    protected function mapType(array $map, string $type, array &$info = []): string|null
+    {
+        if (!isset($map[$type])) {
+            return null;
+        }
+
+        if (is_callable($map[$type])) {
+            /** @var string|null */
+            return $map[$type]($type, $info);
+        }
+
+        /** @var string */
+        return $map[$type];
     }
 
     /**
