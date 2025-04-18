@@ -41,8 +41,9 @@ To ensure that the value is saved in the correct type, `ColumnInterface::dbTypec
 the value.
 
 ```php
+$isActive = true;
 // Cast the value to the correct database type
-$isActive = $db->getTableSchema('customer')->getColumn('is_active')->phpTypecast(true);
+$isActive = $db->getTableSchema('customer')->getColumn('is_active')->phpTypecast($isActive);
 
 $command = $db->createCommand();
 $command->setSql('INSERT INTO {{customer}} (name, is_active) VALUES (:name, :is_active)', [
