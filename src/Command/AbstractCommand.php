@@ -121,6 +121,7 @@ abstract class AbstractCommand implements CommandInterface
     protected string|null $refreshTableName = null;
     protected Closure|null $retryHandler = null;
     protected bool $dbTypecasting = true;
+    protected bool $phpTypecasting = false;
     /**
      * @var string The SQL statement to execute.
      */
@@ -461,6 +462,13 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         return is_scalar($result) ? $result : null;
+    }
+
+    public function withPhpTypecasting(bool $phpTypecasting = true): static
+    {
+        $new = clone $this;
+        $new->phpTypecasting = $phpTypecasting;
+        return $new;
     }
 
     public function renameColumn(string $table, string $oldName, string $newName): static

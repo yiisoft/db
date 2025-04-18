@@ -133,6 +133,14 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `SchemaInterface::hasSchema()` - returns whether the specified schema exists in database;
 - `SchemaInterface::hasView()` - returns whether the specified view exists in database;
 - `DbArrayHelper::arrange()` - arranges an array by specified keys;
+- `CommandInterface::withPhpTypecasting()` - enables or disables typecasting of values when retrieving records from DB;
+- `AbstractCommand::withPhpTypecasting()` - enables or disables typecasting of values when retrieving records from DB;
+- `QueryInterface::withTypecasting()` - enables or disables typecasting of values when retrieving records from DB;
+- `Query::withTypecasting()` - enables or disables typecasting of values when retrieving records from DB;
+- `SchemaInterface::getResultColumn()` - returns the column instance for the column metadata received from the query;
+- `AbstractSchema::getResultColumn()` - returns the column instance for the column metadata received from the query;
+- `AbstractSchema::getResultColumnCacheKey()` - returns the cache key for the column metadata received from the query;
+- `AbstractSchema::loadResultColumn()` - creates a new column instance according to the column metadata from the query;
 
 ### Remove methods
 

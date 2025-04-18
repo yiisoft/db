@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Tests\Support\Stub;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\AbstractSchema;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
 /**
@@ -37,6 +38,16 @@ class Schema extends AbstractSchema
     protected function getCacheTag(): string
     {
         return '';
+    }
+
+    protected function getResultColumnCacheKey(array $metadata): string
+    {
+        return md5(serialize([self::class, ...$metadata]));
+    }
+
+    protected function loadResultColumn(array $metadata): ColumnInterface|null
+    {
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     /**

@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Tests\Common;
 
 use JsonException;
 use PDO;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\ColumnType;
@@ -23,6 +24,7 @@ use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
+use Yiisoft\Db\Tests\Provider\SchemaProvider;
 use Yiisoft\Db\Tests\Support\AnyCaseValue;
 use Yiisoft\Db\Tests\Support\AnyValue;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -1119,6 +1121,17 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $result = str_replace(' ', '', $db->createCommand('SELECT * FROM {{%table}}')->queryScalar());
 
         $this->assertSame('[1,2]', trim($result));
+    }
+
+    #[DataProviderExternal(SchemaProvider::class, 'resultColumns')]
+    public function testGetResultColumn(ColumnInterface|null $expected, array $metadata): void
+    {
+        $db = $this->getConnection();
+        $schema = $db->getSchema();
+
+        $this->assertEquals($expected, $schema->getResultColumn($metadata));
+
+        $db->close();
     }
 
     protected function createTableForIndexAndConstraintTests(
