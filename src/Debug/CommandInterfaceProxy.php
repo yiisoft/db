@@ -321,14 +321,6 @@ final class CommandInterfaceProxy implements CommandInterface
         return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
-    /**
-     * @psalm-suppress MixedArgument
-     */
-    public function withPhpTypecasting(bool $phpTypecasting = true): static
-    {
-        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
-    }
-
     public function prepare(?bool $forRead = null): void
     {
         $this->decorated->{__FUNCTION__}(...func_get_args());
@@ -503,6 +495,30 @@ final class CommandInterfaceProxy implements CommandInterface
         bool|array $updateColumns = true,
         array $params = []
     ): static {
+        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
+    }
+
+    /**
+     * @psalm-suppress MixedArgument
+     */
+    public function withDbTypecasting(bool $dbTypecasting = true): static
+    {
+        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
+    }
+
+    /**
+     * @psalm-suppress MixedArgument
+     */
+    public function withPhpTypecasting(bool $phpTypecasting = true): static
+    {
+        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
+    }
+
+    /**
+     * @psalm-suppress MixedArgument
+     */
+    public function withTypecasting(bool $typecasting = true): static
+    {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 

@@ -13,6 +13,16 @@ use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 
 abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
 {
+    private function createTebleWithColumn(CommandInterface $command, string|ColumnInterface $column)
+    {
+        try {
+            $command->dropTable('build_column_definition_primary_key')->execute();
+        } catch (Exception) {
+        }
+
+        $command->createTable('build_column_definition_primary_key', ['id' => $column])->execute();
+    }
+
     public function getBuildColumnDefinitionProvider(): array
     {
         return QueryBuilderProvider::buildColumnDefinition();
@@ -60,13 +70,106 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
         $command->createTable('build_column_definition', $columns)->execute();
     }
 
-    private function createTebleWithColumn(CommandInterface $command, string|ColumnInterface $column)
+    public function testInsertWithoutTypecasting(): void
     {
-        try {
-            $command->dropTable('build_column_definition_primary_key')->execute();
-        } catch (Exception) {
-        }
+        $db = $this->getConnection(true);
+        $qb = $db->getQueryBuilder();
 
-        $command->createTable('build_column_definition_primary_key', ['id' => $column])->execute();
+        $values = [
+            'int_col' => '1',
+            'char_col' => 'test',
+            'float_col' => '3.14',
+            'bool_col' => '1',
+        ];
+
+        $params = [];
+        $qb->insert('{{type}}', $values, $params);
+
+        $this->assertSame([
+            ':qp0' => 1,
+            ':qp1' => 'test',
+            ':qp2' => 3.14,
+            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
+        ], $params);
+
+        $params = [];
+        $qb->withTypecasting(false)->insert('{{type}}', $values, $params);
+
+        $this->assertSame([
+            ':qp0' => '1',
+            ':qp1' => 'test',
+            ':qp2' => '3.14',
+            ':qp3' => '1',
+        ], $params);
+
+        $db->close();
+    }
+
+    public function testInsertBatchWithoutTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+        $qb = $db->getQueryBuilder();
+
+        $values = [
+            'int_col' => '1',
+            'char_col' => 'test',
+            'float_col' => '3.14',
+            'bool_col' => '1',
+        ];
+
+        $params = [];
+        $qb->insertBatch('{{type}}', [$values], [], $params);
+
+        $this->assertSame([
+            ':qp0' => 1,
+            ':qp1' => 'test',
+            ':qp2' => 3.14,
+            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
+        ], $params);
+
+        $params = [];
+        $qb->withTypecasting(false)->insertBatch('{{type}}', [$values], [], $params);
+
+        $this->assertSame([
+            ':qp0' => '1',
+            ':qp1' => 'test',
+            ':qp2' => '3.14',
+            ':qp3' => '1',
+        ], $params);
+
+        $db->close();
+    }
+
+    public function testUpdateWithoutTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+        $qb = $db->getQueryBuilder();
+
+        $values = [
+            'int_col' => '1',
+            'char_col' => 'test',
+            'float_col' => '3.14',
+            'bool_col' => '1',
+        ];
+
+        $params = [];
+        $qb->update('{{type}}', $values, [], $params);
+
+        $this->assertSame([
+            ':qp0' => 1,
+            ':qp1' => 'test',
+            ':qp2' => 3.14,
+            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
+        ], $params);
+
+        $params = [];
+        $qb->withTypecasting(false)->update('{{type}}', $values, [], $params);
+
+        $this->assertSame([
+            ':qp0' => '1',
+            ':qp1' => 'test',
+            ':qp2' => '3.14',
+            ':qp3' => '1',
+        ], $params);
     }
 }
