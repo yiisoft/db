@@ -116,7 +116,7 @@ final class QueryTest extends AbstractQueryTest
         parent::testColumnWithIndexBy();
     }
 
-    public function testTypecasting(): void
+    public function testWithTypecasting(): void
     {
         $db = $this->getConnection();
 
@@ -124,11 +124,11 @@ final class QueryTest extends AbstractQueryTest
 
         $this->assertFalse(Assert::getInaccessibleProperty($query, 'typecasting'));
 
-        $query->typecasting();
+        $query = $query->withTypecasting();
 
         $this->assertTrue(Assert::getInaccessibleProperty($query, 'typecasting'));
 
-        $query->typecasting(false);
+        $query = $query->withTypecasting(false);
 
         $this->assertFalse(Assert::getInaccessibleProperty($query, 'typecasting'));
     }
@@ -142,7 +142,7 @@ final class QueryTest extends AbstractQueryTest
 
         $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
 
-        $command = $query->typecasting()->createCommand();
+        $command = $query->withTypecasting()->createCommand();
 
         $this->assertTrue(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
     }

@@ -457,10 +457,11 @@ abstract class AbstractCommand implements CommandInterface
         return is_scalar($result) ? $result : null;
     }
 
-    public function phpTypecasting(bool $phpTypecasting = true): static
+    public function withPhpTypecasting(bool $phpTypecasting = true): static
     {
-        $this->phpTypecasting = $phpTypecasting;
-        return $this;
+        $new = clone $this;
+        $new->phpTypecasting = $phpTypecasting;
+        return $new;
     }
 
     public function renameColumn(string $table, string $oldName, string $newName): static

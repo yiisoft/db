@@ -324,7 +324,7 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
-    public function phpTypecasting(bool $phpTypecasting = true): static
+    public function withPhpTypecasting(bool $phpTypecasting = true): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
