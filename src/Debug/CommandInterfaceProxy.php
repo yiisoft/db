@@ -180,14 +180,6 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
-    public function dbTypecasting(bool $dbTypecasting = true): static
-    {
-        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
-    }
-
-    /**
-     * @psalm-suppress MixedArgument
-     */
     public function delete(string $table, array|string $condition = '', array $params = []): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
@@ -327,14 +319,6 @@ final class CommandInterfaceProxy implements CommandInterface
     {
         /** @var array|false */
         return $this->decorated->{__FUNCTION__}(...func_get_args());
-    }
-
-    /**
-     * @psalm-suppress MixedArgument
-     */
-    public function withPhpTypecasting(bool $phpTypecasting = true): static
-    {
-        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
     public function prepare(?bool $forRead = null): void
@@ -511,6 +495,30 @@ final class CommandInterfaceProxy implements CommandInterface
         bool|array $updateColumns = true,
         array $params = []
     ): static {
+        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
+    }
+
+    /**
+     * @psalm-suppress MixedArgument
+     */
+    public function withDbTypecasting(bool $dbTypecasting = true): static
+    {
+        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
+    }
+
+    /**
+     * @psalm-suppress MixedArgument
+     */
+    public function withPhpTypecasting(bool $phpTypecasting = true): static
+    {
+        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
+    }
+
+    /**
+     * @psalm-suppress MixedArgument
+     */
+    public function withTypecasting(bool $typecasting = true): static
+    {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 

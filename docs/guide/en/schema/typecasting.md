@@ -17,8 +17,8 @@ flowchart LR
 When saving a value to the database, the value must be in the correct type. For example, if saving a value to a column
 that is of type `bit`, the value must be an `integer` or `string` depends on DBMS.
 
-To ensure that the value is saved in the correct type, `ColumnInterface::dbTypecast()` method can be used to cast 
-the value. Majority of the DB library methods, such as `CommandInterface::insert()`, automatically convert the type.
+By default `update()`, `upsert()`, `insert()`, `insertBatch()` and `insertWithReturningPks()` methods
+of `CommandInterface` and `QueryBuilderInterface` instances cast the values to the correct type.
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -33,7 +33,44 @@ $command->execute();
 ```
 
 In the example above, the value of `is_active` is a `boolean`, but the column `is_active` can be of type `bit`.
-The `CommandInterface::insert()` method will automatically cast the value to the correct type.
+The `CommandInterface::insert()` method by default cast the value to the correct type.
+
+### Using `ColumnInterface::dbTypecast()`
+
+To ensure that the value is saved in the correct type, `ColumnInterface::dbTypecast()` method can be used to cast 
+the value.
+
+```php
+// Cast the value to the correct database type
+$isActive = $db->getTableSchema('customer')->getColumn('is_active')->phpTypecast(true);
+
+$command = $db->createCommand();
+$command->setSql('INSERT INTO {{customer}} (name, is_active) VALUES (:name, :is_active)', [
+    ':name' => 'John Doe',
+    ':is_active' => $isActive,
+]);
+$command->execute();
+```
+
+In the example above, the value of `is_active` is casted to the correct database type before it is saved.
+
+### Using `QueryBuilderInterface::withTypecasting()` or `CommandInterface::withDbTypecasting()`
+
+You can also use `QueryBuilderInterface::withTypecasting()` or `CommandInterface::withDbTypecasting()` methods to
+enable or disable type casting.
+
+```php
+$command = $db->createCommand()->withDbTypecasting(false);
+$command->insert('customer', [
+    'name' => 'John Doe',
+    'is_active' => 1,
+]);
+$command->execute();
+```
+
+In the example above, the value of `is_active` is not casted to the correct type before it is saved. The value
+is saved as an integer `1` instead of a `bit` or a `bool`. This is useful when you want to save the value as is or 
+the value is already in the correct type.
 
 ## Casting values retrieved from the database
 
@@ -47,9 +84,6 @@ To ensure that the value is returned in the correct type, you can use `ColumnInt
 the value, in the example above, to a `float`.
 
 ```php
-use Yiisoft\Db\Connection\ConnectionInterface;
-
-/** @var ConnectionInterface $db */
 $command = $db->createCommand('SELECT * FROM {{customer}} WHERE id = 1');
 
 $row = $command->queryOne();

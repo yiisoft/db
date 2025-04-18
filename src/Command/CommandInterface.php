@@ -379,11 +379,6 @@ interface CommandInterface
     public function createView(string $viewName, QueryInterface|string $subQuery): static;
 
     /**
-     * Enables or disables typecasting of values when inserting or updating records.
-     */
-    public function dbTypecasting(bool $dbTypecasting = true): static;
-
-    /**
      * Creates a DELETE command.
      *
      * For example,
@@ -623,11 +618,6 @@ interface CommandInterface
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
     public function insertWithReturningPks(string $table, array $columns): array|false;
-
-    /**
-     * Returns a copy of the instance with enabled or disabled typecasting of values when retrieving records from DB.
-     */
-    public function withPhpTypecasting(bool $phpTypecasting = true): static;
 
     /**
      * Prepares the SQL statement to be executed.
@@ -899,4 +889,20 @@ interface CommandInterface
         bool|array $updateColumns = true,
         array $params = []
     ): static;
+
+    /**
+     * Returns copy of the instance with enabled or disabled typecasting of values when inserting or updating records.
+     */
+    public function withDbTypecasting(bool $dbTypecasting = true): static;
+
+    /**
+     * Returns a copy of the instance with enabled or disabled typecasting of values when retrieving records from DB.
+     */
+    public function withPhpTypecasting(bool $phpTypecasting = true): static;
+
+    /**
+     * Returns a copy of the instance with enabled or disabled typecasting of values when inserting, updating
+     * or retrieving records from DB.
+     */
+    public function withTypecasting(bool $typecasting = true): static;
 }

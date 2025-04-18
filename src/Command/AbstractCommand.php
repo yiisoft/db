@@ -254,12 +254,6 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->requireTableSchemaRefresh($viewName);
     }
 
-    public function dbTypecasting(bool $dbTypecasting = true): static
-    {
-        $this->dbTypecasting = $dbTypecasting;
-        return $this;
-    }
-
     public function delete(string $table, array|string $condition = '', array $params = []): static
     {
         $sql = $this->getQueryBuilder()->delete($table, $condition, $params);
@@ -464,13 +458,6 @@ abstract class AbstractCommand implements CommandInterface
         return is_scalar($result) ? $result : null;
     }
 
-    public function withPhpTypecasting(bool $phpTypecasting = true): static
-    {
-        $new = clone $this;
-        $new->phpTypecasting = $phpTypecasting;
-        return $new;
-    }
-
     public function renameColumn(string $table, string $oldName, string $newName): static
     {
         $sql = $this->getQueryBuilder()->renameColumn($table, $oldName, $newName);
@@ -534,6 +521,28 @@ abstract class AbstractCommand implements CommandInterface
     ): static {
         $sql = $this->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
         return $this->setSql($sql)->bindValues($params);
+    }
+
+    public function withDbTypecasting(bool $dbTypecasting = true): static
+    {
+        $new = clone $this;
+        $new->dbTypecasting = $dbTypecasting;
+        return $new;
+    }
+
+    public function withPhpTypecasting(bool $phpTypecasting = true): static
+    {
+        $new = clone $this;
+        $new->phpTypecasting = $phpTypecasting;
+        return $new;
+    }
+
+    public function withTypecasting(bool $typecasting = true): static
+    {
+        $new = clone $this;
+        $new->dbTypecasting = $typecasting;
+        $new->phpTypecasting = $typecasting;
+        return $new;
     }
 
     /**
