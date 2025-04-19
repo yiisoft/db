@@ -430,6 +430,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 ->from('admin_user')
                 ->having(['id' => 1])
                 ->having(['id' => 2]);
+
+            $this->fail('RuntimeException should be thrown.');
         } catch (RuntimeException $e) {
             $this->assertEquals('The `having` condition was set earlier. Use the `setHaving()`, `andHaving()` or `orHaving()` method.', $e->getMessage());
         }
