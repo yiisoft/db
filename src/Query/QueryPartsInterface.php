@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
-use LogicException;
+use RuntimeException;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -301,7 +301,7 @@ interface QueryPartsInterface
     public function groupBy(array|string|ExpressionInterface $columns): static;
 
     /**
-     * Sets the `HAVING` part of the query.
+     * Initially sets the `HAVING` part of the query.
      *
      * @param array|ExpressionInterface|string|null $condition The conditions to be put after `HAVING`.
      * Please refer to {@see where()} on how to specify this parameter.
@@ -309,10 +309,24 @@ interface QueryPartsInterface
      *
      * @psalm-param ParamsType $params
      *
+     * @throws RuntimeException If `having` was set previously.
+     *
      * @see andHaving()
      * @see orHaving()
      */
     public function having(array|ExpressionInterface|string|null $condition, array $params = []): static;
+
+    /**
+     * Overwrites the `HAVING` part of the query.
+     *
+     * @param array|ExpressionInterface|string|null $condition The conditions to be put after `HAVING`.
+     * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
+     *
+     * @see having()
+     */
+    public function setHaving(array|ExpressionInterface|string|null $condition, array $params = []): static;
 
     /**
      * Sets the {@see indexBy} property.
@@ -673,7 +687,7 @@ interface QueryPartsInterface
      *
      * @psalm-param ParamsType $params
      *
-     * @throws LogicException If `where` was set previously.
+     * @throws RuntimeException If `where` was set previously.
      *
      * @see andWhere()
      * @see orWhere()
