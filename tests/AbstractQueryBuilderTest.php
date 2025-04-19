@@ -514,6 +514,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
             (new Query($db))
                 ->where(['like', 'name', 'foo%'])
                 ->where(['not like', 'name', 'foo%']);
+
+            $this->fail('RuntimeException should be thrown.');
         } catch (RuntimeException $e) {
             $this->assertEquals('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.', $e->getMessage());
         }
