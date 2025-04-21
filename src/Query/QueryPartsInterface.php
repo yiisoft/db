@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
-use RuntimeException;
+use LogicException;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -309,7 +309,7 @@ interface QueryPartsInterface
      *
      * @psalm-param ParamsType $params
      *
-     * @throws RuntimeException If `having` was set previously.
+     * @throws LogicException If `having` was set previously.
      *
      * @see andHaving()
      * @see orHaving()
@@ -687,7 +687,7 @@ interface QueryPartsInterface
      *
      * @psalm-param ParamsType $params
      *
-     * @throws RuntimeException If `where` was set previously.
+     * @throws LogicException If `where` was set previously.
      *
      * @see andWhere()
      * @see orWhere()

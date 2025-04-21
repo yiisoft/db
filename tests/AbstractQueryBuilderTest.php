@@ -6,10 +6,10 @@ namespace Yiisoft\Db\Tests;
 
 use Closure;
 use JsonException;
+use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 use stdClass;
 use Throwable;
 use Yiisoft\Db\Command\Param;
@@ -432,7 +432,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 ->having(['id' => 2]);
 
             $this->fail('RuntimeException should be thrown.');
-        } catch (RuntimeException $e) {
+        } catch (LogicException $e) {
             $this->assertEquals('The `having` condition was set earlier. Use the `setHaving()`, `andHaving()` or `orHaving()` method.', $e->getMessage());
         }
 
@@ -504,7 +504,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @throws RuntimeException
+     * @throws LogicException
      */
     public function testOverwriteWhereCondition(): void
     {
@@ -516,7 +516,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 ->where(['not like', 'name', 'foo%']);
 
             $this->fail('RuntimeException should be thrown.');
-        } catch (RuntimeException $e) {
+        } catch (LogicException $e) {
             $this->assertEquals('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.', $e->getMessage());
         }
 

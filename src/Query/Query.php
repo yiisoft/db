@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
-use RuntimeException;
+use LogicException;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -495,7 +495,7 @@ class Query implements QueryInterface
         if ($this->having === null) {
             $this->having = $condition;
         } else {
-            throw new RuntimeException('The `having` condition was set earlier. Use the `setHaving()`, `andHaving()` or `orHaving()` method.');
+            throw new LogicException('The `having` condition was set earlier. Use the `setHaving()`, `andHaving()` or `orHaving()` method.');
         }
         $this->addParams($params);
         return $this;
@@ -712,7 +712,7 @@ class Query implements QueryInterface
         if ($this->where === null) {
             $this->where = $condition;
         } else {
-            throw new RuntimeException('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.');
+            throw new LogicException('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.');
         }
         $this->addParams($params);
         return $this;
