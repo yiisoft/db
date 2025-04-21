@@ -12,6 +12,7 @@ use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * Represents the schema for a database table.
@@ -313,6 +314,13 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @psalm-return DataType::*
      */
     public function getDataType(mixed $data): int;
+
+    /**
+     * Returns the column instance for the column metadata received from the query result.
+     *
+     * @param array $metadata The column metadata from the query result.
+     */
+    public function getResultColumn(array $metadata): ColumnInterface|null;
 
     /**
      * Returns all schema names in the database, except system schemas.

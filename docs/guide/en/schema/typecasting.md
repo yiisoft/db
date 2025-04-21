@@ -41,6 +41,8 @@ When you retrieve a value from the database, the value can be returned in a diff
 For example, a value that is stored as a `numeric(5,2)` in the database will be returned as a `string`. This is because 
 the database driver does not convert some data types when retrieves values.
 
+### Using `ColumnInterface::phpTypecast()`
+
 To ensure that the value is returned in the correct type, you can use `ColumnInterface::phpTypecast()` method to cast 
 the value, in the example above, to a `float`.
 
@@ -59,6 +61,28 @@ $isActive = $db->getTableSchema('customer')->getColumn('is_active')->phpTypecast
 
 In the example above, the value of `is_active` can be retrieved from the database as a `bit`, but the correct PHP type 
 is `boolean`. The `ColumnInterface::phpTypecast()` method is used to cast the value to the correct type.
+
+### Using `QueryInterface::withTypecasting()` or `CommandInterface::withPhpTypecasting()`
+
+Optionally, you can use `QueryInterface::withTypecasting()` or `CommandInterface::withPhpTypecasting()` methods to cast
+the values when retrieving them from the database. Using these methods, values are casted to the correct type before
+they are returned.
+
+```php
+$query = (new Query($db))->from('customer')->where(['id' => 1]);
+
+$row = $query->withTypecasting()->one();
+$isActive = $row['is_active'];
+```
+
+```php
+$command = $db->createCommand('SELECT * FROM {{customer}} WHERE id = 1');
+
+$row = $command->withPhpTypecasting()->queryOne();
+$isActive = $row['is_active'];
+```
+
+In the examples above, the value of `is_active` is casted to the correct `boolean` type before it is returned.
 
 ## Custom type casting
 
