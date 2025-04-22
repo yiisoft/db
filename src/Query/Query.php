@@ -492,6 +492,17 @@ class Query implements QueryInterface
 
     public function having(array|ExpressionInterface|string|null $condition, array $params = []): static
     {
+        if ($this->having === null) {
+            $this->having = $condition;
+        } else {
+            throw new LogicException('The `having` condition was set earlier. Use the `setHaving()`, `andHaving()` or `orHaving()` method.');
+        }
+        $this->addParams($params);
+        return $this;
+    }
+
+    public function setHaving(array|ExpressionInterface|string|null $condition, array $params = []): static
+    {
         $this->having = $condition;
         $this->addParams($params);
         return $this;
