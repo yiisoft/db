@@ -431,7 +431,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 ->having(['id' => 1])
                 ->having(['id' => 2]);
 
-            $this->fail('RuntimeException should be thrown.');
+            $this->fail('LogicException should be thrown.');
         } catch (LogicException $e) {
             $this->assertEquals('The `having` condition was set earlier. Use the `setHaving()`, `andHaving()` or `orHaving()` method.', $e->getMessage());
         }
@@ -515,7 +515,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 ->where(['like', 'name', 'foo%'])
                 ->where(['not like', 'name', 'foo%']);
 
-            $this->fail('RuntimeException should be thrown.');
+            $this->fail('LogicException should be thrown.');
         } catch (LogicException $e) {
             $this->assertEquals('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.', $e->getMessage());
         }
