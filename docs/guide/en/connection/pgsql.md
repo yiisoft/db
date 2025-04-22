@@ -38,7 +38,10 @@ return [
 ];
 ```
 
-To configure without a [DI container](https://github.com/yiisoft/di), you need to follow these steps:
+To use more than one database connection you can
+[use class-aliases](https://github.com/yiisoft/di#using-class-aliases-for-specific-configuration).
+
+To configure without [DI container](https://github.com/yiisoft/di), you need to follow these steps:
 
 ```php
 use Yiisoft\Cache\ArrayCache;
