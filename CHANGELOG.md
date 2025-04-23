@@ -83,6 +83,7 @@
 - Enh #941: Add the ability for user-defined type casting (@Tigrov)
 - Enh #961: Added `setHaving()` as a forced method to overwrite `having()` (@lav45)
 - Enh #822: Refactor data readers (@Tigrov)
+- Enh #963: Make `Query::andHaving()` similar to `Query::andWhere()` (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
