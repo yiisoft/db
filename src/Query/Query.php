@@ -185,6 +185,12 @@ class Query implements QueryInterface
     {
         if ($this->having === null) {
             $this->having = $condition;
+        } elseif (
+            is_array($this->having)
+            && isset($this->having[0])
+            && strcasecmp((string) $this->having[0], 'and') === 0
+        ) {
+            $this->having[] = $condition;
         } else {
             $this->having = ['and', $this->having, $condition];
         }
@@ -221,7 +227,11 @@ class Query implements QueryInterface
     {
         if ($this->where === null) {
             $this->where = $condition;
-        } elseif (is_array($this->where) && isset($this->where[0]) && strcasecmp((string) $this->where[0], 'and') === 0) {
+        } elseif (
+            is_array($this->where)
+            && isset($this->where[0])
+            && strcasecmp((string) $this->where[0], 'and') === 0
+        ) {
             $this->where[] = $condition;
         } else {
             $this->where = ['and', $this->where, $condition];
