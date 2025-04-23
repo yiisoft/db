@@ -227,4 +227,6 @@ interface DMLQueryBuilderInterface
         bool|array $updateColumns,
         array &$params
     ): string;
+
+    public function withTypecasting(bool $typecasting = true): static;
 }

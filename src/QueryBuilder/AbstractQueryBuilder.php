@@ -471,6 +471,13 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->upsert($table, $insertColumns, $updateColumns, $params);
     }
 
+    public function withTypecasting(bool $typecasting = true): static
+    {
+        $new = clone $this;
+        $new->dmlBuilder = $new->dmlBuilder->withTypecasting($typecasting);
+        return $new;
+    }
+
     /**
      * Converts a resource value to its SQL representation or throws an exception if conversion is not possible.
      *

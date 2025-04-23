@@ -170,7 +170,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
 
     protected function getQueryBuilder(): QueryBuilderInterface
     {
-        return $this->db->getQueryBuilder();
+        return $this->db->getQueryBuilder()->withTypecasting($this->dbTypecasting);
     }
 
     protected function getQueryMode(int $queryMode): string
