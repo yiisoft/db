@@ -20,7 +20,6 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Syntax\AbstractSqlParser;
 
-use function array_map;
 use function bin2hex;
 use function count;
 use function get_resource_type;
