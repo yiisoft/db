@@ -2024,6 +2024,12 @@ abstract class AbstractQueryBuilderTest extends TestCase
             "SELECT * FROM [[table]] WHERE [[id]] = 1 AND [[name]] = 'John' AND [[is_active]] = :active AND [[created_at]] = :created_at",
             $sql,
         );
+
+        // Question mark placeholder are not replaced
+        $this->assertSame(
+            'SELECT * FROM [[table]] WHERE [[id]] = ?',
+            $qb->replacePlaceholders('SELECT * FROM [[table]] WHERE [[id]] = ?', ['1']),
+        );
     }
 
     /**
