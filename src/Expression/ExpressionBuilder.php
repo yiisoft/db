@@ -76,8 +76,6 @@ final class ExpressionBuilder implements ExpressionBuilderInterface
      * @psalm-param ParamsType $params
      *
      * @return string[] Replacements for non-unique parameters.
-     *
-     * @psalm-return array<non-empty-string, string>
      */
     private function appendParams(array &$expressionParams, array &$params): array
     {
@@ -125,8 +123,6 @@ final class ExpressionBuilder implements ExpressionBuilderInterface
      * @psalm-param ParamsType $params
      *
      * @return string[] Replacements for parameters.
-     *
-     * @psalm-return array<non-empty-string, string>
      */
     private function buildParamExpressions(array $expressionParams, array &$params): array
     {
@@ -155,10 +151,6 @@ final class ExpressionBuilder implements ExpressionBuilderInterface
      * @param string[] $expressionReplacements Replacements for expression parameters.
      *
      * @return string[] Merged replacements.
-     *
-     * @psalm-param array<string, string> $replacements
-     * @psalm-param array<string, string> $expressionReplacements
-     * @psalm-return array<string, string>
      */
     private function mergeReplacements(array $replacements, array $expressionReplacements): array
     {

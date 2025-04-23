@@ -414,7 +414,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                 $value instanceof ParamInterface => $this->prepareParam($value),
                 $value instanceof ExpressionInterface => $this->replacePlaceholders(
                     $this->buildExpression($value, $params),
-                    \array_map($this->prepareValue(...), $params),
+                    array_map($this->prepareValue(...), $params),
                 ),
                 default => $this->db->getQuoter()->quoteValue((string) $value),
             },

@@ -194,7 +194,6 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         if ($subQuery instanceof QueryInterface) {
             [$rawQuery, $params] = $this->queryBuilder->build($subQuery);
 
-            /** @psalm-var array<string, string> */
             $params = array_map($this->queryBuilder->prepareValue(...), $params);
             $subQuery = $this->queryBuilder->replacePlaceholders($rawQuery, $params);
         }

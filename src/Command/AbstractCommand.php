@@ -353,7 +353,6 @@ abstract class AbstractCommand implements CommandInterface
         $params = array_map($queryBuilder->prepareParam(...), $this->params);
 
         if (!isset($params[0])) {
-            /** @psalm-var array<string, string> $params */
             return $queryBuilder->replacePlaceholders($this->sql, $params);
         }
 
