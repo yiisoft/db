@@ -93,7 +93,7 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
     public function prepareValue(mixed $value): string;
 
     /**
-     * Replaces placeholders with replacements in a SQL expression.
+     * Replaces placeholders in the SQL string with the corresponding values.
      *
      * @param string $sql SQL expression where the placeholder should be replaced.
      * @param string[] $replacements Replacements for placeholders with placeholder names as keys and values as follows:
