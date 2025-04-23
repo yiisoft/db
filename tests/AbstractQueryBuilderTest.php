@@ -2006,6 +2006,26 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
+    public function testReplacePlaceholders(): void
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+        $sql = $qb->replacePlaceholders(
+            'SELECT * FROM [[table]] WHERE [[id]] = :id AND [[name]] = :name AND [[is_active]] = :is_active AND [[created_at]] = :created_at',
+            [
+                ':id' => '1',
+                'name' => "'John'",
+                ':is_active' => ':active',
+            ],
+        );
+
+        $this->assertSame(
+            "SELECT * FROM [[table]] WHERE [[id]] = 1 AND [[name]] = 'John' AND [[is_active]] = :active AND [[created_at]] = :created_at",
+            $sql,
+        );
+    }
+
     /**
      * @throws Exception
      * @throws NotSupportedException

@@ -43,7 +43,7 @@ interface DQLQueryBuilderInterface
      * to the SQL statement (the second array element). The parameters returned include those provided in `$params`.
      *
      * @psalm-param ParamsType $params
-     * @psalm-return array{0: string, 1: array}
+     * @psalm-return array{0: string, 1: ParamsType}
      */
     public function build(QueryInterface $query, array $params = []): array;
 

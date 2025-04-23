@@ -91,4 +91,16 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * Used when the bind parameter cannot be used in the SQL query.
      */
     public function prepareValue(mixed $value): string;
+
+    /**
+     * Replaces placeholders with replacements in a SQL expression.
+     *
+     * @param string $sql SQL expression where the placeholder should be replaced.
+     * @param string[] $replacements Replacements for placeholders with placeholder names as keys and values as follows:
+     * - quoted string values (name => value) use {@see prepareValue()} to prepare the values;
+     * - new placeholder names prefixed with colon `:` (name => new name).
+     *
+     * @return string SQL expression with replaced placeholders.
+     */
+    public function replacePlaceholders(string $sql, array $replacements): string;
 }

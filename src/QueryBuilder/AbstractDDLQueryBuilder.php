@@ -10,6 +10,7 @@ use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
+use function array_map;
 use function implode;
 use function is_string;
 use function preg_split;
@@ -193,11 +194,9 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         if ($subQuery instanceof QueryInterface) {
             [$rawQuery, $params] = $this->queryBuilder->build($subQuery);
 
-            foreach ($params as $key => $value) {
-                $params[$key] = $this->queryBuilder->prepareValue($value);
-            }
-
-            $subQuery = strtr($rawQuery, $params);
+            /** @psalm-var array<string, string> */
+            $params = array_map($this->queryBuilder->prepareValue(...), $params);
+            $subQuery = $this->queryBuilder->replacePlaceholders($rawQuery, $params);
         }
 
         return 'CREATE VIEW ' . $this->quoter->quoteTableName($viewName) . ' AS ' . $subQuery;

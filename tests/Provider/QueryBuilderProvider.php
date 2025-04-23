@@ -1752,6 +1752,9 @@ class QueryBuilderProvider
             'float' => ['1.1', 1.1, DataType::STRING],
             'string' => ["'string'", 'string', DataType::STRING],
             'binary' => ['0x737472696e67', 'string', DataType::LOB],
+            'expression' => ['(1 + 2)', new Expression('(1 + 2)'), DataType::STRING],
+            'expression with params' => ['(1 + 2)', new Expression('(:a + :b)', [':a' => 1, 'b' => 2]), DataType::STRING],
+            'Stringable' => ["'string'", new Stringable('string'), DataType::STRING],
         ];
     }
 
@@ -1769,6 +1772,7 @@ class QueryBuilderProvider
             'paramString' => ["'string'", new Param('string', DataType::STRING)],
             'paramInteger' => ['1', new Param(1, DataType::INTEGER)],
             'expression' => ['(1 + 2)', new Expression('(1 + 2)')],
+            'expression with params' => ['(1 + 2)', new Expression('(:a + :b)', [':a' => 1, 'b' => 2])],
             'Stringable' => ["'string'", new Stringable('string')],
         ];
     }
