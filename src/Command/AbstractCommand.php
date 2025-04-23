@@ -20,8 +20,6 @@ use function is_array;
 use function is_int;
 use function is_resource;
 use function is_scalar;
-use function is_string;
-use function preg_replace_callback;
 use function stream_get_contents;
 
 /**
