@@ -301,7 +301,7 @@ interface QueryPartsInterface
     public function groupBy(array|string|ExpressionInterface $columns): static;
 
     /**
-     * Sets the `HAVING` part of the query.
+     * Initially sets the `HAVING` part of the query.
      *
      * @param array|ExpressionInterface|string|null $condition The conditions to be put after `HAVING`.
      * Please refer to {@see where()} on how to specify this parameter.
@@ -309,10 +309,24 @@ interface QueryPartsInterface
      *
      * @psalm-param ParamsType $params
      *
+     * @throws LogicException If `having` was set previously.
+     *
      * @see andHaving()
      * @see orHaving()
      */
     public function having(array|ExpressionInterface|string|null $condition, array $params = []): static;
+
+    /**
+     * Overwrites the `HAVING` part of the query.
+     *
+     * @param array|ExpressionInterface|string|null $condition The conditions to be put after `HAVING`.
+     * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
+     *
+     * @see having()
+     */
+    public function setHaving(array|ExpressionInterface|string|null $condition, array $params = []): static;
 
     /**
      * Sets the {@see indexBy} property.

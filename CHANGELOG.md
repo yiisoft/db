@@ -74,13 +74,14 @@
 - New #939: Add `caseSensitive` option to like condition (@vjik)
 - New #942: Allow PHP backed enums as values (@Tigrov)
 - Enh #943: Add `getCacheKey()` and `getCacheTag()` methods to `AbstractPdoSchema` class (@Tigrov)
-- Enh #944: Added `setWhere()` as method a forced for overwriting `where()` (@lav45)
+- Enh #944: Added `setWhere()` as a forced method to overwrite `where()` (@lav45)
 - Enh #925, #951: Add callback to `Query::all()` and `Query::one()` methods (@Tigrov, @vjik)
 - New #954: Add `DbArrayHelper::arrange()` method (@Tigrov)
 - Chg #956: Remove nullable from `PdoConnectionInterface::getActivePdo()` result (@vjik)
 - New #949: Add option for typecasting when insert or update values (@Tigrov)
 - New #945: Add option for typecasting values retrieved from DB (@Tigrov)
 - Enh #941: Add the ability for user-defined type casting (@Tigrov)
+- Enh #961: Added `setHaving()` as a forced method to overwrite `having()` (@lav45)
 - Enh #822: Refactor data readers (@Tigrov)
 
 ## 1.3.0 March 21, 2024

@@ -122,6 +122,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
   `null` if the callback is not set;
 - `QueryInterface::withTypecasting()` - enables or disables typecasting of values when retrieving records from DB;
 - `QueryPartsInterface::setWhere()` - overwrites the `WHERE` part of the query;
+- `QueryPartsInterface::setHaving()` - overwrites the `HAVING` part of the query;
 - `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
