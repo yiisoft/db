@@ -421,9 +421,19 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame(['and', 'id = :id', 'name = :name'], $query->getHaving());
         $this->assertSame([':id' => 1, ':name' => 'something'], $query->getParams());
 
+        $query->andHaving('is_active = :is_active', [':is_active' => true]);
+        $this->assertSame(['and', 'id = :id', 'name = :name', 'is_active = :is_active'], $query->getHaving());
+        $this->assertSame([':id' => 1, ':name' => 'something', ':is_active' => true], $query->getParams());
+
         $query->orHaving('age = :age', [':age' => '30']);
-        $this->assertSame(['or', ['and', 'id = :id', 'name = :name'], 'age = :age'], $query->getHaving());
-        $this->assertSame([':id' => 1, ':name' => 'something', ':age' => '30'], $query->getParams());
+        $this->assertSame(
+            ['or', ['and', 'id = :id', 'name = :name', 'is_active = :is_active'], 'age = :age'],
+            $query->getHaving(),
+        );
+        $this->assertSame(
+            [':id' => 1, ':name' => 'something', ':is_active' => true, ':age' => '30'],
+            $query->getParams(),
+        );
     }
 
     public function testJoin(): void
@@ -724,14 +734,22 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame([':id' => 1], $query->getParams());
 
         $query->andWhere('name = :name', [':name' => 'something']);
-
         $this->assertSame(['and', 'id = :id', 'name = :name'], $query->getWhere());
         $this->assertSame([':id' => 1, ':name' => 'something'], $query->getParams());
 
-        $query->orWhere('age = :age', [':age' => '30']);
+        $query->andWhere('is_active = :is_active', [':is_active' => true]);
+        $this->assertSame(['and', 'id = :id', 'name = :name', 'is_active = :is_active'], $query->getWhere());
+        $this->assertSame([':id' => 1, ':name' => 'something', ':is_active' => true], $query->getParams());
 
-        $this->assertSame(['or', ['and', 'id = :id', 'name = :name'], 'age = :age'], $query->getWhere());
-        $this->assertSame([':id' => 1, ':name' => 'something', ':age' => '30'], $query->getParams());
+        $query->orWhere('age = :age', [':age' => '30']);
+        $this->assertSame(
+            ['or', ['and', 'id = :id', 'name = :name', 'is_active = :is_active'], 'age = :age'],
+            $query->getWhere(),
+        );
+        $this->assertSame(
+            [':id' => 1, ':name' => 'something', ':is_active' => true, ':age' => '30'],
+            $query->getParams(),
+        );
     }
 
     public function testWithQueries(): void
