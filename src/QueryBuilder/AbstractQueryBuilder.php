@@ -18,6 +18,7 @@ use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
+use Yiisoft\Db\Syntax\AbstractSqlParser;
 
 use function bin2hex;
 use function count;
@@ -25,6 +26,8 @@ use function get_resource_type;
 use function gettype;
 use function is_string;
 use function stream_get_contents;
+use function strlen;
+use function substr_replace;
 
 /**
  * Builds a SELECT SQL statement based on the specification given as a {@see QueryInterface} object.
@@ -398,7 +401,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
 
     public function prepareValue(mixed $value): string
     {
-        $quoter = $this->db->getQuoter();
+        $params = [];
 
         /** @psalm-suppress MixedArgument */
         return match (gettype($value)) {
@@ -407,13 +410,16 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             GettypeResult::INTEGER => (string) $value,
             GettypeResult::NULL => 'NULL',
             GettypeResult::OBJECT => match (true) {
-                $value instanceof Expression => (string) $value,
                 $value instanceof ParamInterface => $this->prepareParam($value),
-                default => $quoter->quoteValue((string) $value),
+                $value instanceof ExpressionInterface => $this->replacePlaceholders(
+                    $this->buildExpression($value, $params),
+                    array_map($this->prepareValue(...), $params),
+                ),
+                default => $this->db->getQuoter()->quoteValue((string) $value),
             },
             GettypeResult::RESOURCE => $this->prepareResource($value),
             GettypeResult::RESOURCE_CLOSED => throw new InvalidArgumentException('Resource is closed.'),
-            default => $quoter->quoteValue((string) $value),
+            default => $this->db->getQuoter()->quoteValue((string) $value),
         };
     }
 
@@ -425,6 +431,42 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function renameTable(string $oldName, string $newName): string
     {
         return $this->ddlBuilder->renameTable($oldName, $newName);
+    }
+
+    public function replacePlaceholders(string $sql, array $replacements): string
+    {
+        if (isset($replacements[0])) {
+            return $sql;
+        }
+
+        /** @psalm-var array<string, string> $replacements */
+        foreach ($replacements as $placeholder => $replacement) {
+            if ($placeholder[0] !== ':') {
+                unset($replacements[$placeholder]);
+                $replacements[":$placeholder"] = $replacement;
+            }
+        }
+
+        $offset = 0;
+        $parser = $this->createSqlParser($sql);
+
+        while (null !== $placeholder = $parser->getNextPlaceholder($position)) {
+            if (isset($replacements[$placeholder])) {
+                $replacement = $replacements[$placeholder];
+
+                /** @var int $position */
+                $sql = substr_replace($sql, $replacement, $position + $offset, strlen($placeholder));
+
+                if (count($replacements) === 1) {
+                    break;
+                }
+
+                $offset += strlen($replacement) - strlen($placeholder);
+                unset($replacements[$placeholder]);
+            }
+        }
+
+        return $sql;
     }
 
     public function resetSequence(string $table, int|string|null $value = null): string
@@ -477,6 +519,15 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         $new->dmlBuilder = $new->dmlBuilder->withTypecasting($typecasting);
         return $new;
     }
+
+    /**
+     * Creates an instance of {@see AbstractSqlParser} for the given SQL expression.
+     *
+     * @param string $sql SQL expression to be parsed.
+     *
+     * @return AbstractSqlParser SQL parser instance.
+     */
+    abstract protected function createSqlParser(string $sql): AbstractSqlParser;
 
     /**
      * Converts a resource value to its SQL representation or throws an exception if conversion is not possible.

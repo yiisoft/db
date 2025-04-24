@@ -13,14 +13,13 @@ use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
+use function array_map;
 use function explode;
 use function get_resource_type;
 use function is_array;
 use function is_int;
 use function is_resource;
 use function is_scalar;
-use function is_string;
-use function preg_replace_callback;
 use function stream_get_contents;
 
 /**
@@ -348,25 +347,11 @@ abstract class AbstractCommand implements CommandInterface
             return $this->sql;
         }
 
-        $params = [];
         $queryBuilder = $this->getQueryBuilder();
+        $params = array_map($queryBuilder->prepareParam(...), $this->params);
 
-        foreach ($this->params as $name => $param) {
-            if (is_string($name) && $name[0] !== ':') {
-                $name = ':' . $name;
-            }
-
-            $params[$name] = $queryBuilder->prepareParam($param);
-        }
-
-        /** @var string[] $params */
         if (!isset($params[0])) {
-            /** @var string */
-            return preg_replace_callback(
-                '#(:\w+)#',
-                static fn (array $matches): string => $params[$matches[1]] ?? $matches[1],
-                $this->sql
-            );
+            return $queryBuilder->replacePlaceholders($this->sql, $params);
         }
 
         // Support unnamed placeholders should be dropped
