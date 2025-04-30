@@ -36,7 +36,7 @@ final class PdoConnectionTest extends AbstractPdoConnectionTest
         $this->expectException(InvalidCallException::class);
         $this->expectExceptionMessage('DB Connection is not active.');
 
-        $db->getLastInsertID();
+        $db->getLastInsertId();
     }
 
     public function testQuoteValueString(): void

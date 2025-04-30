@@ -109,7 +109,7 @@ interface ConnectionInterface
      *
      * @return string The row ID of the last row inserted, or the last value retrieved from the sequence object.
      */
-    public function getLastInsertID(?string $sequenceName = null): string;
+    public function getLastInsertId(?string $sequenceName = null): string;
 
     /**
      * Returns the query builder for the current DB connection.
