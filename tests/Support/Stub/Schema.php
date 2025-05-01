@@ -22,14 +22,6 @@ class Schema extends AbstractSchema
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
-    /**
-     * @throws NotSupportedException
-     */
-    public function getLastInsertID(?string $sequenceName = null): string
-    {
-        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
-    }
-
     protected function getCacheKey(string $name): array
     {
         return [];

@@ -312,7 +312,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
             'createCommand',
             'close',
             'getDriverName',
-            'getLastInsertID',
+            'getLastInsertId',
             'getQueryBuilder',
             'getQuoter',
             'getSchema',
