@@ -146,10 +146,16 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      */
     public function exists(): bool;
 
+    public function for(ExpressionInterface|string|null $value): static;
+
+    public function forUpdate(bool $value = true): static;
+
     /**
      * @return bool|null The "distinct" value.
      */
     public function getDistinct(): bool|null;
+
+    public function getFor(): ExpressionInterface|string|null;
 
     /**
      * @return array The "from" value.

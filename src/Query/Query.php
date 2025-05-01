@@ -14,6 +14,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbArrayHelper;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -99,6 +100,7 @@ class Query implements QueryInterface
     protected ExpressionInterface|int|null $offset = null;
     protected array|string|ExpressionInterface|null $where = null;
     protected array $with = [];
+    protected ExpressionInterface|string|null $for = null;
 
     private bool $emulateExecution = false;
     private bool $typecasting = false;
@@ -385,6 +387,19 @@ class Query implements QueryInterface
         return $this;
     }
 
+    public function for(ExpressionInterface|string|null $value = null): static
+    {
+        $this->for = $value;
+        return $this;
+    }
+
+    public function forUpdate(bool $value = true): static
+    {
+        return $this->for(
+            $value ? new Expression('UPDATE') : null
+        );
+    }
+
     public function from(array|ExpressionInterface|string $tables): static
     {
         /**
@@ -403,6 +418,11 @@ class Query implements QueryInterface
     public function getDistinct(): bool|null
     {
         return $this->distinct;
+    }
+
+    public function getFor(): ExpressionInterface|string|null
+    {
+        return $this->for;
     }
 
     public function getFrom(): array

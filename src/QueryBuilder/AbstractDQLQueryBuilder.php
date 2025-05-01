@@ -109,6 +109,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $this->buildWhere($query->getWhere(), $params),
             $this->buildGroupBy($query->getGroupBy(), $params),
             $this->buildHaving($query->getHaving(), $params),
+            $this->buildFor($query->getFor(), $params),
         ];
         $sql = implode($this->separator, array_filter($clauses));
         $sql = $this->buildOrderByAndLimit($sql, $query->getOrderBy(), $query->getLimit(), $query->getOffset(), $params);
@@ -176,6 +177,19 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         $builder = $this->queryBuilder->getExpressionBuilder($expression);
         /** @psalm-suppress MixedMethodCall */
         return (string) $builder->build($expression, $params);
+    }
+
+    public function buildFor(ExpressionInterface|string|null $value, array &$params): string
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        if (is_string($value)) {
+            $value = new Expression($value, $params);
+        }
+
+        return 'FOR ' . $this->buildExpression($value, $params);
     }
 
     public function buildFrom(array|null $tables, array &$params): string
