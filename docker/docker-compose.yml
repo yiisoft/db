@@ -131,6 +131,7 @@ services:
     ports:
       - "1521:1521"
     volumes:
+      - ./oracle/init.sql:/docker-entrypoint-initdb.d/init.sql
       - oracle-data:/opt/oracle/oradata
     environment:
       ORACLE_PASSWORD: sys_user_password
