@@ -387,17 +387,15 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function for(ExpressionInterface|string|null $value = null): static
+    public function for(ExpressionInterface|string|null $value): static
     {
         $this->for = $value;
         return $this;
     }
 
-    public function forUpdate(bool $value = true): static
+    public function forUpdate(): static
     {
-        return $this->for(
-            $value ? new Expression('UPDATE') : null
-        );
+        return $this->for(new Expression('UPDATE'));
     }
 
     public function from(array|ExpressionInterface|string $tables): static
