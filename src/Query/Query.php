@@ -100,7 +100,11 @@ class Query implements QueryInterface
     protected ExpressionInterface|int|null $offset = null;
     protected array|string|ExpressionInterface|null $where = null;
     protected array $with = [];
-    protected ExpressionInterface|string|null $for = null;
+
+    /**
+     * @psalm-var list<ExpressionInterface|string>
+     */
+    protected array $for = [];
 
     private bool $emulateExecution = false;
     private bool $typecasting = false;
@@ -387,9 +391,19 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function for(ExpressionInterface|string|null $value): static
+    public function for(ExpressionInterface|string|array|null $value): static
     {
-        $this->for = $value;
+        if ($value === null) {
+            $this->for = [];
+            return $this;
+        }
+
+        if (is_array($value)) {
+            $this->for = $value;
+            return $this;
+        }
+
+        $this->for = [$value];
         return $this;
     }
 
@@ -418,7 +432,7 @@ class Query implements QueryInterface
         return $this->distinct;
     }
 
-    public function getFor(): ExpressionInterface|string|null
+    public function getFor(): array
     {
         return $this->for;
     }

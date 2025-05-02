@@ -146,7 +146,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      */
     public function exists(): bool;
 
-    public function for(ExpressionInterface|string|null $value): static;
+    /**
+     * @psalm-param ExpressionInterface|string|list<ExpressionInterface|string>|null $value
+     */
+    public function for(ExpressionInterface|string|array|null $value): static;
 
     public function forUpdate(): static;
 
@@ -155,7 +158,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      */
     public function getDistinct(): bool|null;
 
-    public function getFor(): ExpressionInterface|string|null;
+    /**
+     * @psalm-return list<ExpressionInterface|string>
+     */
+    public function getFor(): array;
 
     /**
      * @return array The "from" value.
