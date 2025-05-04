@@ -192,27 +192,27 @@ class ColumnBuilder
     }
 
     /**
-     * Builds a column with the abstract type `datetime`.
-     */
-    public static function datetime(int|null $size = 0): ColumnInterface
-    {
-        return new StringColumn(ColumnType::DATETIME, size: $size);
-    }
-
-    /**
      * Builds a column with the abstract type `timestamp`.
      */
     public static function timestamp(int|null $size = 0): ColumnInterface
     {
-        return new StringColumn(ColumnType::TIMESTAMP, size: $size);
+        return new DateTimeColumn(ColumnType::TIMESTAMP, size: $size);
     }
 
     /**
-     * Builds a column with the abstract type `date`.
+     * Builds a column with the abstract type `datetime`.
      */
-    public static function date(): ColumnInterface
+    public static function datetime(int|null $size = 0): ColumnInterface
     {
-        return new StringColumn(ColumnType::DATE);
+        return new DateTimeColumn(ColumnType::DATETIME, size: $size);
+    }
+
+    /**
+     * Builds a column with the abstract type `datetimetz`.
+     */
+    public static function datetimeWithTimezone(int|null $size = 0): ColumnInterface
+    {
+        return new DateTimeColumn(ColumnType::DATETIMETZ, size: $size);
     }
 
     /**
@@ -220,7 +220,23 @@ class ColumnBuilder
      */
     public static function time(int|null $size = 0): ColumnInterface
     {
-        return new StringColumn(ColumnType::TIME, size: $size);
+        return new DateTimeColumn(ColumnType::TIME, size: $size);
+    }
+
+    /**
+     * Builds a column with the abstract type `timetz`.
+     */
+    public static function timeWithTimezone(int|null $size = 0): ColumnInterface
+    {
+        return new DateTimeColumn(ColumnType::TIMETZ, size: $size);
+    }
+
+    /**
+     * Builds a column with the abstract type `date`.
+     */
+    public static function date(): ColumnInterface
+    {
+        return new DateTimeColumn(ColumnType::DATE);
     }
 
     /**
