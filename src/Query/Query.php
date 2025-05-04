@@ -102,7 +102,7 @@ class Query implements QueryInterface
     protected array $with = [];
 
     /**
-     * @psalm-var list<ExpressionInterface|string>
+     * @psalm-var list<string>
      */
     protected array $for = [];
 
@@ -409,7 +409,7 @@ class Query implements QueryInterface
 
     public function forUpdate(): static
     {
-        return $this->for(new Expression('UPDATE'));
+        return $this->for('UPDATE');
     }
 
     public function from(array|ExpressionInterface|string $tables): static
