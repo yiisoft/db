@@ -191,7 +191,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $values,
         );
 
-        return implode(' ', $parts);
+        return implode($this->separator, $parts);
     }
 
     public function buildFrom(array|null $tables, array &$params): string
