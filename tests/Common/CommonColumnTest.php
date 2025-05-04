@@ -63,7 +63,7 @@ abstract class CommonColumnTest extends AbstractColumnTest
         $utcTimezone = new DateTimeZone('UTC');
 
         $this->assertEquals(
-            new Expression(match($db->getDriverName()) {
+            new Expression(match ($db->getDriverName()) {
                 'sqlsrv' => 'getdate()',
                 'pgsql' => version_compare($db->getServerInfo()->getVersion(), '10', '<')
                     ? 'now()'
