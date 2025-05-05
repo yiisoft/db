@@ -1,6 +1,6 @@
 # For
 
-The `FOR` clause allows you to specify table locking behavior during a SELECT statement. It's commonly used to control 
+The `FOR` clause allows you to specify table locking behavior during a `SELECT` statement. It's commonly used to control 
 concurrent access to data in multi-user database environments.
 
 The `Yiisoft\Db\Query\Query` class provides three methods to specify the `FOR` fragment of a SQL query:
