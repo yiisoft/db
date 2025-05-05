@@ -93,7 +93,7 @@ class DateTimeColumn extends AbstractColumn
      * - ExpressionInterface;
      *
      * If the value is `string` or a `Stringable` object, it will be converted to a `DateTimeImmutable` object with
-     * the default timezone set specified in the {@see DEFAULT_TIMEZONE} constant. If the conversion fails, the original
+     * the default time zone set specified in the {@see $phpTimezone} property. If the conversion fails, the original
      * value will be returned.
      */
     public function dbTypecast(mixed $value): string|ExpressionInterface|null
