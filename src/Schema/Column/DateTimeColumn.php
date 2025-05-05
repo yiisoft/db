@@ -52,18 +52,18 @@ class DateTimeColumn extends AbstractColumn
     protected const DEFAULT_TYPE = ColumnType::DATETIME;
 
     /**
-     * The PHP time zone for the `string` datetime values when converting them to `DateTimeImmutable` objects before
-     * inserting them into the database or after retrieving them from the database. Use empty string to use current PHP
-     * time zone.
-     */
-    protected string $phpTimezone = 'UTC';
-
-    /**
      * The database time zone to be used when converting datetime values before inserting them into the database
      * and when converting them back to PHP `DateTimeImmutable` objects. It is used when the column type does not have
      * time zone information. Use empty string to disable time zone conversion.
      */
     protected string $dbTimezone = 'UTC';
+
+    /**
+     * The PHP time zone for the `string` datetime values when converting them to `DateTimeImmutable` objects before
+     * inserting them into the database or after retrieving them from the database. Use empty string to use current PHP
+     * time zone.
+     */
+    protected string $phpTimezone = 'UTC';
 
     /**
      * @psalm-suppress PropertyNotSetInConstructor
@@ -111,29 +111,6 @@ class DateTimeColumn extends AbstractColumn
                 default => $this->dbTypecastString((string) $value),
             },
             default => throw new InvalidArgumentException('Wrong ' . gettype($value) . ' value for ' . $this->getType() . ' column.'),
-        };
-    }
-
-    private function dbTypecastDateTime(DateTimeImmutable $value): string
-    {
-        if ($this->shouldConvertTimezone()) {
-            /** @psalm-suppress ArgumentTypeCoercion */
-            $value = $value->setTimezone(new DateTimeZone($this->dbTimezone));
-        }
-
-        return $value->format($this->getFormat());
-    }
-
-    private function dbTypecastString(string $value): string|null
-    {
-        /** @psalm-suppress PossiblyFalseArgument */
-        return match ($value) {
-            '' => null,
-            (string)(int) $value => $this->dbTypecastDateTime(DateTimeImmutable::createFromFormat('U', $value)),
-            (string)(float) $value => $this->dbTypecastDateTime(DateTimeImmutable::createFromFormat('U.u', $value)),
-            default => ($datetime = date_create_immutable($value, new DateTimeZone($this->getPhpTimezone()))) !== false
-                ? $this->dbTypecastDateTime($datetime)
-                : $value,
         };
     }
 
@@ -217,5 +194,28 @@ class DateTimeColumn extends AbstractColumn
         return empty($this->phpTimezone)
             ? date_default_timezone_get()
             : $this->phpTimezone;
+    }
+
+    private function dbTypecastDateTime(DateTimeImmutable $value): string
+    {
+        if ($this->shouldConvertTimezone()) {
+            /** @psalm-suppress ArgumentTypeCoercion */
+            $value = $value->setTimezone(new DateTimeZone($this->dbTimezone));
+        }
+
+        return $value->format($this->getFormat());
+    }
+
+    private function dbTypecastString(string $value): string|null
+    {
+        /** @psalm-suppress PossiblyFalseArgument */
+        return match ($value) {
+            '' => null,
+            (string)(int) $value => $this->dbTypecastDateTime(DateTimeImmutable::createFromFormat('U', $value)),
+            (string)(float) $value => $this->dbTypecastDateTime(DateTimeImmutable::createFromFormat('U.u', $value)),
+            default => ($datetime = date_create_immutable($value, new DateTimeZone($this->getPhpTimezone()))) !== false
+                ? $this->dbTypecastDateTime($datetime)
+                : $value,
+        };
     }
 }
