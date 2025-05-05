@@ -33,6 +33,8 @@ use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
+use function PHPUnit\Framework\assertSame;
+
 /**
  * @psalm-suppress PropertyNotSetInConstructor
  */
@@ -349,11 +351,20 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($expectedParams, $params);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
+    public static function dataBuildFor(): iterable
+    {
+        yield ['', []];
+        yield ['FOR UPDATE', ['UPDATE']];
+        yield ['FOR UPDATE FOR SHARE', ['UPDATE', 'SHARE']];
+    }
+
+    #[DataProvider('dataBuildFor')]
+    public function testBuildFor(string $expected, array $value): void
+    {
+        $queryBuilder = $this->getConnection()->getQueryBuilder();
+        assertSame($expected, $queryBuilder->buildFor($value));
+    }
+
     public function testBuildFrom(): void
     {
         $db = $this->getConnection();
