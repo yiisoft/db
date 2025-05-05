@@ -10,8 +10,6 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
-use function Sodium\add;
-
 /**
  * This interface defines a set of methods to create and manipulate the different parts of a database
  * query, such as the {@see addGroupBy()}, {@see addSelect()}, {@see addOrderBy()}, {@see andFilterCompare()}, etc.
