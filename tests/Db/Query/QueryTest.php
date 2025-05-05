@@ -16,18 +16,11 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class QueryTest extends AbstractQueryTest
 {
     use TestTrait;
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testColumn(): void
     {
         $db = $this->getConnection(true);
@@ -40,11 +33,6 @@ final class QueryTest extends AbstractQueryTest
         (new Query($db))->select('name')->from('customer')->orderBy(['id' => SORT_DESC])->column();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testCount(): void
     {
         $db = $this->getConnection(true);
@@ -69,11 +57,6 @@ final class QueryTest extends AbstractQueryTest
         (new Query($db))->from('customer')->where(['status' => 2])->exists();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testLimitOffsetWithExpression(): void
     {
         $db = $this->getConnection(true);
@@ -89,11 +72,6 @@ final class QueryTest extends AbstractQueryTest
         $query->column();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testOne(): void
     {
         $db = $this->getConnection(true);
