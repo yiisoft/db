@@ -151,8 +151,6 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      */
     public function for(string|array|null $value): static;
 
-    public function forUpdate(): static;
-
     /**
      * @return bool|null The "distinct" value.
      */

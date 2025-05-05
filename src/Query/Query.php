@@ -407,11 +407,6 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function forUpdate(): static
-    {
-        return $this->for('UPDATE');
-    }
-
     public function from(array|ExpressionInterface|string $tables): static
     {
         /**
