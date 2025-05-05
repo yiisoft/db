@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 
 use JsonException;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
@@ -15,6 +16,7 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
+use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\QueryBuilder;
@@ -26,16 +28,11 @@ use function stream_context_create;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class QueryBuilderTest extends AbstractQueryBuilderTest
 {
     use TestTrait;
 
-    /**
-     * @throws Exception
-     */
     public function testAddDefaultValue(): void
     {
         $db = $this->getConnection();
@@ -50,9 +47,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->addDefaultValue('table', 'name', 'column', 'value');
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'batchInsert')]
     public function testBatchInsert(
         string $table,
         iterable $rows,
@@ -85,9 +80,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->buildJoin(['admin_profile', 'admin_user.id = admin_profile.user_id'], $params);
     }
 
-    /**
-     * @throws Exception
-     */
     public function testCheckIntegrity(): void
     {
         $db = $this->getConnection();
@@ -135,11 +127,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         );
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
     public function testCreateView(): void
     {
         $db = $this->getConnection();
@@ -154,9 +141,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         );
     }
 
-    /**
-     * @throws Exception
-     */
     public function testDropDefaultValue(): void
     {
         $db = $this->getConnection(true);
@@ -171,9 +155,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->dropDefaultValue('T_constraints_1', 'CN_pk');
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function testGetExpressionBuilderException(): void
     {
         $db = $this->getConnection();
@@ -186,11 +167,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->getExpressionBuilder($expression);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insert
-     *
-     * @throws Exception
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'insert')]
     public function testInsert(
         string $table,
         array|QueryInterface $columns,
@@ -205,9 +182,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $this->assertEquals($expectedParams, $params);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insertWithReturningPks
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'insertWithReturningPks')]
     public function testInsertWithReturningPks(
         string $table,
         array|QueryInterface $columns,
@@ -227,9 +202,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->insertWithReturningPks($table, $columns, $params);
     }
 
-    /**
-     * @throws Exception
-     */
     public function testResetSequence(): void
     {
         $db = $this->getConnection();
@@ -244,11 +216,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->resetSequence('T_constraints_1', 'id');
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::update
-     *
-     * @throws Exception
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
@@ -267,13 +235,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $this->assertEquals($expectedParams, $params);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert
-     *
-     * @throws Exception
-     * @throws JsonException
-     * @throws NotSupportedException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
     public function testUpsert(
         string $table,
         array|QueryInterface $insertColumns,
@@ -293,9 +255,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
     public function testUpsertExecute(
         string $table,
         array|QueryInterface $insertColumns,
