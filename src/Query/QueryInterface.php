@@ -147,16 +147,13 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function exists(): bool;
 
     /**
-     * @psalm-param string|list<string>|null $value
-     */
-    public function for(string|array|null $value): static;
-
-    /**
      * @return bool|null The "distinct" value.
      */
     public function getDistinct(): bool|null;
 
     /**
+     * @return string[] The "for" values.
+     *
      * @psalm-return list<string>
      */
     public function getFor(): array;

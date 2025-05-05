@@ -251,6 +251,17 @@ interface QueryPartsInterface
     public function filterWhere(array $condition): static;
 
     /**
+     * Sets the `FOR` part of the query.
+     *
+     * @param string|array|null $value The value(s) to be set for the `FOR` part. This can be either a string (for
+     * example, `'UPDATE'`) or a list of strings (such as `['SHARE OF {{t1}}', 'UPDATE OF {{t2}}']`) specifying one or
+     * several values.
+     *
+     * @psalm-param string|list<string>|null $value
+     */
+    public function for(string|array|null $value): static;
+
+    /**
      * Sets the `FROM` part of the query.
      *
      * @param array|ExpressionInterface|string $tables The table(s) to select from.
