@@ -420,12 +420,7 @@ class Query implements QueryInterface
             return $this;
         }
 
-        if (is_array($value)) {
-            $this->for = $value;
-            return $this;
-        }
-
-        $this->for = [$value];
+        $this->for = (array) $value;
         return $this;
     }
 
