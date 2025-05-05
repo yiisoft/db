@@ -33,6 +33,7 @@ use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
+use function PHPUnit\Framework\assertEmpty;
 use function PHPUnit\Framework\assertSame;
 
 /**
@@ -363,6 +364,25 @@ abstract class AbstractQueryBuilderTest extends TestCase
     {
         $queryBuilder = $this->getConnection()->getQueryBuilder();
         assertSame($expected, $queryBuilder->buildFor($value));
+    }
+
+    public function testBuildWithFor(): void
+    {
+        $db = $this->getConnection();
+        $queryBuilder = $db->getQueryBuilder();
+
+        $query = (new Query($db))->from('test')->for('UPDATE OF {{t1}}');
+
+        [$sql, $params] = $queryBuilder->build($query);
+
+        assertSame(
+            DbHelper::replaceQuotes(
+                'SELECT * FROM [[test]] FOR UPDATE OF {{t1}}',
+                $db->getDriverName(),
+            ),
+            $sql
+        );
+        assertEmpty($params);
     }
 
     public function testBuildFrom(): void
