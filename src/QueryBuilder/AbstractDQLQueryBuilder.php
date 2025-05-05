@@ -181,12 +181,11 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function buildFor(array $values): string
     {
-        $parts = array_map(
-            static fn(string $value) => 'FOR ' . $value,
-            $values,
-        );
+        if (empty($values)) {
+            return '';
+        }
 
-        return implode($this->separator, $parts);
+        return 'FOR ' . implode(' FOR ', $values);
     }
 
     public function buildFrom(array|null $tables, array &$params): string
