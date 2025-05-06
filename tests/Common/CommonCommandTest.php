@@ -1333,9 +1333,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->insert('{{order}}', ['customer_id' => 1, 'created_at' => $time, 'total' => 42])->execute();
 
         if ($db->getDriverName() === 'pgsql') {
-            $orderId = $db->getLastInsertID('public.order_id_seq');
+            $orderId = $db->getLastInsertId('public.order_id_seq');
         } else {
-            $orderId = $db->getLastInsertID();
+            $orderId = $db->getLastInsertId();
         }
 
         $columnValueQuery = (new Query($db))->select('{{created_at}}')->from('{{order}}')->where(['id' => $orderId]);
@@ -1630,9 +1630,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         )->execute();
 
         if ($db->getDriverName() === 'pgsql') {
-            $customerId = $db->getLastInsertID('public.customer_id_seq');
+            $customerId = $db->getLastInsertId('public.customer_id_seq');
         } else {
-            $customerId = $db->getLastInsertID();
+            $customerId = $db->getLastInsertId();
         }
 
         $customer = $command->setSql(

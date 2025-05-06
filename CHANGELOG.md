@@ -85,6 +85,7 @@
 - Enh #822: Refactor data readers (@Tigrov)
 - Enh #963: Make `Query::andHaving()` similar to `Query::andWhere()` (@Tigrov)
 - New #964: Add `QueryBuilderInterface::replacePlaceholders()` method (@Tigrov)
+- Enh #879: Rename `getLastInsertID()` method in `ConnectionInterface` to `getLastInsertId()` (@vjik)
 
 ## 1.3.0 March 21, 2024
 
