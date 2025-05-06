@@ -65,16 +65,12 @@ class DateTimeColumn extends AbstractColumn
      */
     protected string $phpTimezone = 'UTC';
 
-    /**
-     * @psalm-suppress PropertyNotSetInConstructor
-     */
-    protected bool $shouldConvertTimezone;
+    protected ?bool $shouldConvertTimezone = null;
 
     /**
-     * @psalm-var non-empty-string
-     * @psalm-suppress PropertyNotSetInConstructor
+     * @psalm-var non-empty-string|null
      */
-    protected string $format;
+    protected ?string $format = null;
 
     /**
      * @param mixed $value The value representing datetime or time to be typecasted to the database format.
@@ -150,7 +146,6 @@ class DateTimeColumn extends AbstractColumn
 
     protected function shouldConvertTimezone(): bool
     {
-        /** @psalm-suppress RedundantPropertyInitializationCheck */
         return $this->shouldConvertTimezone ??= $this->dbTimezone !== '' && match ($this->getType()) {
             ColumnType::DATETIMETZ,
             ColumnType::TIMETZ,
@@ -162,7 +157,6 @@ class DateTimeColumn extends AbstractColumn
     /** @psalm-return non-empty-string */
     protected function getFormat(): string
     {
-        /** @psalm-suppress RedundantPropertyInitializationCheck */
         return $this->format ??= match ($this->getType()) {
             ColumnType::TIMESTAMP,
             ColumnType::DATETIME => 'Y-m-d H:i:s' . $this->getMillisecondsFormat(),
