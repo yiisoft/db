@@ -101,9 +101,9 @@ class Query implements QueryInterface
     protected array $with = [];
 
     /**
-     * @psalm-var list<string>|null
+     * @psalm-var list<string>
      */
-    protected ?array $for = null;
+    protected array $for = [];
 
     private bool $emulateExecution = false;
     private bool $typecasting = false;
@@ -392,7 +392,7 @@ class Query implements QueryInterface
 
     public function for(string|array|null $value): static
     {
-        if ($this->for !== null) {
+        if ($this->for !== []) {
             throw new LogicException('The `FOR` part was set earlier. Use the `setFor()` or `addFor()` method.');
         }
         return $this->setFor($value);
@@ -405,18 +405,18 @@ class Query implements QueryInterface
         }
 
         if (is_array($value)) {
-            $this->for = [...($this->for ?? []), ...$value];
+            $this->for = [...$this->for, ...$value];
             return $this;
         }
 
-        $this->for = [...($this->for ?? []), $value];
+        $this->for = [...$this->for, $value];
         return $this;
     }
 
     public function setFor(array|string|null $value): static
     {
         if ($value === null) {
-            $this->for = null;
+            $this->for = [];
             return $this;
         }
 
@@ -446,7 +446,7 @@ class Query implements QueryInterface
 
     public function getFor(): array
     {
-        return $this->for ?? [];
+        return $this->for;
     }
 
     public function getFrom(): array
