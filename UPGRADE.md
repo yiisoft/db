@@ -118,9 +118,13 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 
 - `QuoterInterface::getRawTableName()` - returns the raw table name without quotes;
 - `QueryInterface::resultCallback()` - allows to use a callback, to be called on all rows of the query result;
+- `QueryInterface::getFor()` - returns the `FOR` part of the query;
 - `QueryInterface::getResultCallback()` - returns the callback to be called on all rows of the query result or 
   `null` if the callback is not set;
 - `QueryInterface::withTypecasting()` - enables or disables typecasting of values when retrieving records from DB;
+- `QueryPartsInterface::for()` - sets the `FOR` part of the query;
+- `QueryPartsInterface::addFor()` - adds more `FOR` parts to the existing ones;
+- `QueryPartsInterface::setFor()` - overwrites the `FOR` part of the query;
 - `QueryPartsInterface::setWhere()` - overwrites the `WHERE` part of the query;
 - `QueryPartsInterface::setHaving()` - overwrites the `HAVING` part of the query;
 - `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
@@ -131,6 +135,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryBuilderInterface::replacePlaceholders()` - replaces placeholders in the SQL string with the corresponding values;
 - `QueryBuilderInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `QueryBuilderInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
+- `DQLQueryBuilderInterface::buildFor()` - builds a SQL for `FOR` clause;
 - `DMLQueryBuilderInterface::withTypecasting()` - enables or disables typecasting of values when inserting or updating 
   records in DB;
 - `LikeConditionInterface::getCaseSensitive()` - returns whether the comparison is case-sensitive;

@@ -152,6 +152,13 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function getDistinct(): bool|null;
 
     /**
+     * @return string[] The "for" values.
+     *
+     * @psalm-return list<string>
+     */
+    public function getFor(): array;
+
+    /**
      * @return array The "from" value.
      */
     public function getFrom(): array;
