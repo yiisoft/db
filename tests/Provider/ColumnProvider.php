@@ -54,6 +54,7 @@ class ColumnProvider
             'binary' => [BinaryColumn::class, ColumnType::BINARY, PhpType::MIXED],
             'bit' => [BitColumn::class, ColumnType::BIT, PhpType::INT],
             'boolean' => [BooleanColumn::class, ColumnType::BOOLEAN, PhpType::BOOL],
+            'datetime' => [DateTimeColumn::class, ColumnType::DATETIME, DateTimeImmutable::class],
             'array' => [ArrayColumn::class, ColumnType::ARRAY, PhpType::ARRAY],
             'structured' => [StructuredColumn::class, ColumnType::STRUCTURED, PhpType::ARRAY],
             'json' => [JsonColumn::class, ColumnType::JSON, PhpType::MIXED],

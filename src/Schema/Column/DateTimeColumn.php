@@ -126,10 +126,11 @@ class DateTimeColumn extends AbstractColumn
     public function phpTypecast(mixed $value): DateTimeImmutable|null
     {
         if (is_string($value)) {
+            $phpTimezone = $this->getPhpTimezone();
+
             if ($this->shouldConvertTimezone()) {
                 /** @psalm-suppress ArgumentTypeCoercion */
                 $datetime = new DateTimeImmutable($value, new DateTimeZone($this->dbTimezone));
-                $phpTimezone = $this->getPhpTimezone();
 
                 if ($phpTimezone !== $this->dbTimezone) {
                     return $datetime->setTimezone(new DateTimeZone($phpTimezone));
@@ -138,7 +139,7 @@ class DateTimeColumn extends AbstractColumn
                 return $datetime;
             }
 
-            return new DateTimeImmutable($value);
+            return new DateTimeImmutable($value, new DateTimeZone($phpTimezone));
         }
 
         return $value;
