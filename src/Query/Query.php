@@ -409,7 +409,7 @@ class Query implements QueryInterface
             return $this;
         }
 
-        $this->for = [...$this->for, $value];
+        $this->for[] = $value;
         return $this;
     }
 
