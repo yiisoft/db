@@ -133,8 +133,13 @@ class DateTimeColumn extends AbstractColumn
             if ($this->shouldConvertTimezone()) {
                 /** @psalm-suppress ArgumentTypeCoercion */
                 $datetime = new DateTimeImmutable($value, new DateTimeZone($this->dbTimezone));
+                $phpTimezone = $this->getPhpTimezone();
 
-                return $datetime->setTimezone(new DateTimeZone($this->getPhpTimezone()));
+                if ($phpTimezone !== $this->dbTimezone) {
+                    return $datetime->setTimezone(new DateTimeZone($phpTimezone));
+                }
+
+                return $datetime;
             }
 
             return new DateTimeImmutable($value);
