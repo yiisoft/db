@@ -35,5 +35,6 @@ All the query building methods return the query object itself, which allows you 
 - [Having](../query/having.md)
 - [Limit and Offset](../query/limit-and-offset.md)
 - [Join](../query/join.md)
+- [For](../query/for.md)
 - [Union](../query/union.md)
 - [WithQuery](../query/with-query.md)

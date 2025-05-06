@@ -100,6 +100,11 @@ class Query implements QueryInterface
     protected array|string|ExpressionInterface|null $where = null;
     protected array $with = [];
 
+    /**
+     * @psalm-var list<string>
+     */
+    protected array $for = [];
+
     private bool $emulateExecution = false;
     private bool $typecasting = false;
 
@@ -385,6 +390,40 @@ class Query implements QueryInterface
         return $this;
     }
 
+    public function for(string|array|null $value): static
+    {
+        if ($this->for !== []) {
+            throw new LogicException('The `FOR` part was set earlier. Use the `setFor()` or `addFor()` method.');
+        }
+        return $this->setFor($value);
+    }
+
+    public function addFor(string|array|null $value): static
+    {
+        if ($value === null) {
+            return $this;
+        }
+
+        if (is_array($value)) {
+            $this->for = [...$this->for, ...$value];
+            return $this;
+        }
+
+        $this->for[] = $value;
+        return $this;
+    }
+
+    public function setFor(array|string|null $value): static
+    {
+        if ($value === null) {
+            $this->for = [];
+            return $this;
+        }
+
+        $this->for = (array) $value;
+        return $this;
+    }
+
     public function from(array|ExpressionInterface|string $tables): static
     {
         /**
@@ -403,6 +442,11 @@ class Query implements QueryInterface
     public function getDistinct(): bool|null
     {
         return $this->distinct;
+    }
+
+    public function getFor(): array
+    {
+        return $this->for;
     }
 
     public function getFrom(): array

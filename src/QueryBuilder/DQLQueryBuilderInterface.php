@@ -99,6 +99,19 @@ interface DQLQueryBuilderInterface
     public function buildExpression(ExpressionInterface $expression, array &$params = []): string;
 
     /**
+     * Builds a SQL for `FOR` clause.
+     *
+     * @param array $values The value to build.
+     *
+     * @throws NotSupportedException When the `FOR` clause is not supported.
+     *
+     * @return string The result SQL.
+     *
+     * @psalm-param list<string> $values
+     */
+    public function buildFor(array $values): string;
+
+    /**
      * @param array|null $tables The tables to process.
      * @param array $params The binding parameters to populate.
      *

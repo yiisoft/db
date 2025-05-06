@@ -251,6 +251,50 @@ interface QueryPartsInterface
     public function filterWhere(array $condition): static;
 
     /**
+     * Sets the `FOR` part of the query.
+     *
+     * @param array|string|null $value The value(s) to be set for the `FOR` part. This can be either a string (for
+     * example, `'UPDATE'`) or a list of strings (such as `['SHARE OF {{t1}}', 'UPDATE OF {{t2}}']`) specifying one or
+     * several values. `null` means no `FOR` part.
+     *
+     * @throws LogicException If `FOR` was set previously.
+     *
+     * @see addFor()
+     * @see setFor()
+     *
+     * @psalm-param string|list<string>|null $value
+     */
+    public function for(string|array|null $value): static;
+
+    /**
+     * Adds more `FOR` parts to the existing ones.
+     *
+     * @param array|string|null $value The value(s) to be set for the `FOR` part. This can be either a string (for
+     * example, `'UPDATE'`) or a list of strings (such as `['SHARE OF {{t1}}', 'UPDATE OF {{t2}}']`) specifying one or
+     * several values. `null` means adding nothing.
+     *
+     * @see for()
+     * @see setFor()
+     *
+     * @psalm-param string|list<string>|null $value
+     */
+    public function addFor(string|array|null $value): static;
+
+    /**
+     * Overwrites the `FOR` part of the query.
+     *
+     * @param array|string|null $value The value(s) to be set for the `FOR` part. This can be either a string (for
+     * example, `'UPDATE'`) or a list of strings (such as `['SHARE OF {{t1}}', 'UPDATE OF {{t2}}']`) specifying one or
+     * several values. `null` means no `FOR` part.
+     *
+     * @see for()
+     * @see addFor()
+     *
+     * @psalm-param string|list<string>|null $value
+     */
+    public function setFor(string|array|null $value): static;
+
+    /**
      * Sets the `FROM` part of the query.
      *
      * @param array|ExpressionInterface|string $tables The table(s) to select from.
