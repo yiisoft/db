@@ -24,14 +24,13 @@ concurrency:
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql.server }}
+    name: PHP ${{ matrix.php }}-mssql-${{ matrix.mssql }}
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      CURRENT_PACKAGE: db-mssql
       EXTENSIONS: pdo, pdo_sqlsrv
 
-    runs-on: ${{ matrix.mssql.os || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
@@ -41,32 +40,22 @@ jobs:
           - 8.3
           - 8.4
 
-        mssql:
-          - server: 2022-latest
-            odbc-version: 18
-            flag: "-C"
+        mssql: 2022-latest
 
         include:
           - php: 8.4
-            mssql:
-              server: 2017-latest
-              os: ubuntu-20.04
-          - php: 8.4
-            mssql:
-              server: 2019-latest
-              odbc-version: 18
-              flag: "-C"
+            mssql: 2019-latest
 
     services:
       mssql:
-          image: mcr.microsoft.com/mssql/server:${{ matrix.mssql.server }}
+          image: mcr.microsoft.com/mssql/server:${{ matrix.mssql }}
           env:
               SA_PASSWORD: YourStrong!Passw0rd
               ACCEPT_EULA: Y
               MSSQL_PID: Developer
           ports:
               - 1433:1433
-          options: --name=mssql --health-cmd="/opt/mssql-tools${{ matrix.mssql.odbc-version }}/bin/sqlcmd ${{ matrix.mssql.flag }} -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
+          options: --name=mssql --health-cmd="/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Install ODBC driver.
@@ -74,11 +63,11 @@ jobs:
           sudo curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
           sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
+      - name: Create database.
+        run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
+
       - name: Checkout.
         uses: actions/checkout@v4
-
-      - name: Create MS SQL Database.
-        run: docker exec -i mssql /opt/mssql-tools${{ matrix.mssql.odbc-version }}/bin/sqlcmd ${{ matrix.mssql.flag }} -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE yiitest'
 
       - name: Install PHP with extensions.
         uses: shivammathur/setup-php@v2
@@ -93,17 +82,11 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
-      - name: Set environment variables pull request linux.
-        uses: yiisoft/actions/db/environment-linux@master
-
-      - name: Install db.
-        uses: yiisoft/actions/db/subpackage-install@master
+      - name: Install db-mssql.
+        uses: yiisoft/actions/install-packages@master
         with:
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
-          CURRENT_PACKAGE: ${{ env.CURRENT_PACKAGE }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
-          WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
+          packages: >-
+            ['db-mssql']
 
       - name: Run mssql tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Mssql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
