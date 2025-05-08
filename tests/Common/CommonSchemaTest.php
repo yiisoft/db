@@ -1134,6 +1134,18 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $db->close();
     }
 
+    public function testPrimaryKeyOrder(): void
+    {
+        $db = $this->getConnection(true);
+        $schema = $db->getSchema();
+
+        $tableSchema = $schema->getTableSchema('order_item');
+
+        $this->assertSame(['order_id', 'item_id'], $tableSchema->getPrimaryKey());
+
+        $db->close();
+    }
+
     protected function createTableForIndexAndConstraintTests(
         ConnectionInterface $db,
         string $tableName,
