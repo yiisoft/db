@@ -10,6 +10,7 @@ use Yiisoft\Db\Schema\Column\BinaryColumn;
 use Yiisoft\Db\Schema\Column\BitColumn;
 use Yiisoft\Db\Schema\Column\BooleanColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Column\DateTimeColumn;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\JsonColumn;
@@ -80,13 +81,17 @@ class ColumnBuilderProvider
             'binary()' => ['binary', [], BinaryColumn::class, ColumnType::BINARY],
             'binary(8)' => ['binary', [8], BinaryColumn::class, ColumnType::BINARY, ['getSize' => 8]],
             'uuid()' => ['uuid', [], StringColumn::class, ColumnType::UUID],
-            'datetime()' => ['datetime', [], StringColumn::class, ColumnType::DATETIME, ['getSize' => 0]],
-            'datetime(3)' => ['datetime', [3], StringColumn::class, ColumnType::DATETIME, ['getSize' => 3]],
-            'timestamp()' => ['timestamp', [], StringColumn::class, ColumnType::TIMESTAMP, ['getSize' => 0]],
-            'timestamp(3)' => ['timestamp', [3], StringColumn::class, ColumnType::TIMESTAMP, ['getSize' => 3]],
-            'date()' => ['date', [], StringColumn::class, ColumnType::DATE],
-            'time()' => ['time', [], StringColumn::class, ColumnType::TIME, ['getSize' => 0]],
-            'time(3)' => ['time', [3], StringColumn::class, ColumnType::TIME, ['getSize' => 3]],
+            'timestamp()' => ['timestamp', [], DateTimeColumn::class, ColumnType::TIMESTAMP, ['getSize' => 0]],
+            'timestamp(3)' => ['timestamp', [3], DateTimeColumn::class, ColumnType::TIMESTAMP, ['getSize' => 3]],
+            'datetime()' => ['datetime', [], DateTimeColumn::class, ColumnType::DATETIME, ['getSize' => 0]],
+            'datetime(3)' => ['datetime', [3], DateTimeColumn::class, ColumnType::DATETIME, ['getSize' => 3]],
+            'datetimeWithTimezone()' => ['datetimeWithTimezone', [], DateTimeColumn::class, ColumnType::DATETIMETZ, ['getSize' => 0]],
+            'datetimeWithTimezone(3)' => ['datetimeWithTimezone', [3], DateTimeColumn::class, ColumnType::DATETIMETZ, ['getSize' => 3]],
+            'time()' => ['time', [], DateTimeColumn::class, ColumnType::TIME, ['getSize' => 0]],
+            'time(3)' => ['time', [3], DateTimeColumn::class, ColumnType::TIME, ['getSize' => 3]],
+            'timeWithTimezone()' => ['timeWithTimezone', [], DateTimeColumn::class, ColumnType::TIMETZ, ['getSize' => 0]],
+            'timeWithTimezone(3)' => ['timeWithTimezone', [3], DateTimeColumn::class, ColumnType::TIMETZ, ['getSize' => 3]],
+            'date()' => ['date', [], DateTimeColumn::class, ColumnType::DATE],
             'array()' => ['array', [], ArrayColumn::class, ColumnType::ARRAY],
             'array($column)' => ['array', [$column], ArrayColumn::class, ColumnType::ARRAY, ['getColumn' => $column]],
             'structured()' => ['structured', [], StructuredColumn::class, ColumnType::STRUCTURED],

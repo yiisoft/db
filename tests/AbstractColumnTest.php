@@ -23,6 +23,10 @@ abstract class AbstractColumnTest extends TestCase
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::dbTypecastColumns */
     public function testDbTypecastColumns(ColumnInterface $column, array $values)
     {
+        // Set the timezone for testing purposes, could be any timezone except UTC
+        $oldDatetime = date_default_timezone_get();
+        date_default_timezone_set('America/New_York');
+
         foreach ($values as [$expected, $value]) {
             if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {
                 $this->assertEquals($expected, $column->dbTypecast($value));
@@ -30,6 +34,8 @@ abstract class AbstractColumnTest extends TestCase
                 $this->assertSame($expected, $column->dbTypecast($value));
             }
         }
+
+        date_default_timezone_set($oldDatetime);
     }
 
     /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::phpTypecastColumns */

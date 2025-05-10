@@ -119,6 +119,36 @@ $isActive = $row['is_active'];
 
 In the examples above, the value of `is_active` is casted to the correct `boolean` type before it is returned.
 
+## DateTime, Date and Time types
+
+Some databases support date and time types, such as `timestamp`, `datetime`, `date`, `time`, etc.
+These types are casted to `DateTimeImmutable` objects using `DateTimeColumn` class when type casting is enabled.
+
+```php
+$query = (new Query($db))->from('customer')->where(['id' => 1]);
+
+$row = $query->withTypecasting()->one();
+$createdAt = $row['created_at']; // `DateTimeImmutable` object
+```
+
+```php
+$command = $db->createCommand('SELECT * FROM {{customer}} WHERE id = 1');
+
+$row = $command->withTypecasting()->queryOne();
+$createdAt = $row['created_at']; // `DateTimeImmutable` object
+```
+
+In the examples above, the value of `created_at` column is casted to the `DateTimeImmutable` type before it is returned.
+
+```php
+$db->createCommand()->insert('customer', [
+    'name' => 'John Doe',
+    'updated_at' => new DateTimeImmutable(),
+])->execute();
+```
+
+In the example above, the value of `updated_at` is casted to the correct database type before it is saved.
+
 ## Custom type casting
 
 To implement custom type casting you need to extend the `AbstractColumn` class and override the `dbTypecast()` 

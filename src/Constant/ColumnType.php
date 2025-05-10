@@ -70,21 +70,29 @@ final class ColumnType
      */
     public const UUID = 'uuid';
     /**
-     * Define the abstract column type as `datetime`.
-     */
-    public const DATETIME = 'datetime';
-    /**
      * Define the abstract column type as `timestamp`.
      */
     public const TIMESTAMP = 'timestamp';
     /**
-     * Define the abstract column type as `date`.
+     * Define the abstract column type as `datetime`.
      */
-    public const DATE = 'date';
+    public const DATETIME = 'datetime';
+    /**
+     * Define the abstract column type as `datetimetz`.
+     */
+    public const DATETIMETZ = 'datetimetz';
     /**
      * Define the abstract column type as `time`.
      */
     public const TIME = 'time';
+    /**
+     * Define the abstract column type as `timetz`.
+     */
+    public const TIMETZ = 'timetz';
+    /**
+     * Define the abstract column type as `date`.
+     */
+    public const DATE = 'date';
     /**
      * Define the abstract column type as `array`.
      */
