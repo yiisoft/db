@@ -245,7 +245,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
     public function buildSelect(
         array $columns,
         array &$params,
-        bool|null $distinct = false,
+        bool $distinct = false,
         ?string $selectOption = null
     ): string {
         return $this->dqlBuilder->buildSelect($columns, $params, $distinct, $selectOption);

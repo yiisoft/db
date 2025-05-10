@@ -547,7 +547,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->select('*');
 
         $this->assertSame(['*' => '*'], $query->getSelect());
-        $this->assertNull($query->getDistinct());
+        $this->assertFalse($query->getDistinct());
         $this->assertNull($query->getSelectOption());
 
         $query = new Query($db);

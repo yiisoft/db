@@ -229,7 +229,7 @@ interface DQLQueryBuilderInterface
      * Each column can be a string representing a column name or an array representing a column specification.
      * Please refer to {@see \Yiisoft\Db\Query\Query::select()} on how to specify this parameter.
      * @param array $params The binding parameters to populate.
-     * @param bool|null $distinct  Whether to add `DISTINCT` or not.
+     * @param bool $distinct Whether to add `DISTINCT` or not.
      * @param string|null $selectOption The `SELECT` option to use (for example, `SQL_CALC_FOUND_ROWS`).
      *
      * @throws Exception
@@ -245,7 +245,7 @@ interface DQLQueryBuilderInterface
     public function buildSelect(
         array $columns,
         array &$params,
-        bool|null $distinct = false,
+        bool $distinct = false,
         ?string $selectOption = null
     ): string;
 

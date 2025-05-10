@@ -225,3 +225,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Remove parameters from `each()` method in `QueryInterface` and `Query` class;
 - Change return type of `each()` method to `DataReaderInterface` in `QueryInterface` and `Query` class;
 - Add `$columnFactory` parameter to `AbstractPdoConnection::__construct()` constructor;
+- Change `Query::$distinct` type to `bool` with `false` as default value;
+- Change `QueryInterface::getDistinct()` result type to `bool`;
+- Change `QueryPartsInterface::distinct()` parameter type to `bool`;
+- Change `$distinct` parameter type in `DQLQueryBuilderInterface::buildSelect()` to `bool`;
