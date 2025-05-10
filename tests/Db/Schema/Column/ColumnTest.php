@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Schema;
+namespace Yiisoft\Db\Tests\Db\Schema\Column;
 
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Expression\ArrayExpression;
