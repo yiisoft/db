@@ -330,7 +330,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     public function buildSelect(
         array $columns,
         array &$params,
-        bool|null $distinct = false,
+        bool $distinct = false,
         ?string $selectOption = null
     ): string {
         $select = $distinct ? 'SELECT DISTINCT' : 'SELECT';

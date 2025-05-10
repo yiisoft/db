@@ -184,7 +184,7 @@ interface QueryPartsInterface
      *
      * @param bool $value Whether to `SELECT DISTINCT` or not.
      */
-    public function distinct(bool|null $value = true): static;
+    public function distinct(bool $value = true): static;
 
     /**
      * Sets the `HAVING` part of the query but ignores {@see Query::isEmpty()}.

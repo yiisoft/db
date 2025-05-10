@@ -147,9 +147,9 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function exists(): bool;
 
     /**
-     * @return bool|null The "distinct" value.
+     * @return bool The "distinct" value.
      */
-    public function getDistinct(): bool|null;
+    public function getDistinct(): bool;
 
     /**
      * @return string[] The "for" values.
