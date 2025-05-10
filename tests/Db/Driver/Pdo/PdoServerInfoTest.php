@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Driver\PDO;
+namespace Yiisoft\Db\Tests\Db\Driver\Pdo;
 
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Tests\Support\TestTrait;
