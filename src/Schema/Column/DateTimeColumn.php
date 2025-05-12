@@ -37,7 +37,7 @@ use function is_string;
  *   and back from UTC to the session time zone when retrieve the values;
  * - Oracle DBMS converts `TIMESTAMP WITH LOCAL TIME ZONE` column type values from database session time zone to
  *   the database time zone for storage, and back from the database time zone to the session time zone when retrieve
- *   the values;
+ *   the values.
  *
  * Both of them do not store time zone offset and require to convert datetime values to the database session time
  * zone before insert and back to the PHP time zone after retrieve the values. This will be done in the
