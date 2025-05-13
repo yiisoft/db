@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Closure;
-use JsonException;
 use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Throwable;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
