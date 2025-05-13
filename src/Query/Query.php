@@ -82,7 +82,7 @@ class Query implements QueryInterface
     /** @psalm-var SelectValue $select */
     protected array $select = [];
     protected string|null $selectOption = null;
-    protected bool|null $distinct = null;
+    protected bool $distinct = false;
     protected array $from = [];
     protected array $groupBy = [];
     protected array|ExpressionInterface|string|null $having = null;
@@ -334,7 +334,7 @@ class Query implements QueryInterface
         return $this->db->createCommand($sql, $params)->withPhpTypecasting($this->typecasting);
     }
 
-    public function distinct(bool|null $value = true): static
+    public function distinct(bool $value = true): static
     {
         $this->distinct = $value;
         return $this;
@@ -439,7 +439,7 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function getDistinct(): bool|null
+    public function getDistinct(): bool
     {
         return $this->distinct;
     }
