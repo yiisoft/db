@@ -65,3 +65,19 @@ $pdoDriver = new Driver($dsn, 'user', 'password');
 // Connection.
 $db = new Connection($pdoDriver, $schemaCache);
 ```
+
+## Date and Time Formats
+
+After opening a connection, the Oracle driver will set the date and time formats to ISO 8601.
+This is required for the correct conversion of date and time values retrieved from the database.
+
+The following SQL statement is executed:
+
+```SQL
+ALTER SESSION SET
+    NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH24:MI:SSXFF'
+    NLS_TIMESTAMP_TZ_FORMAT = 'YYYY-MM-DD HH24:MI:SSXFFTZH:TZM'
+    NLS_TIME_FORMAT = 'HH24:MI:SSXFF'
+    NLS_TIME_TZ_FORMAT = 'HH24:MI:SSXFFTZH:TZM'
+    NLS_DATE_FORMAT = 'YYYY-MM-DD'
+```

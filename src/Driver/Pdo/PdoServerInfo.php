@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Driver\Pdo;
 
 use PDO;
 use Yiisoft\Db\Connection\ServerInfoInterface;
+use Yiisoft\Db\Exception\NotSupportedException;
 
 class PdoServerInfo implements ServerInfoInterface
 {
@@ -13,6 +14,11 @@ class PdoServerInfo implements ServerInfoInterface
 
     public function __construct(protected PdoConnectionInterface $db)
     {
+    }
+
+    public function getTimezone(bool $refresh = false): string
+    {
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     public function getVersion(): string

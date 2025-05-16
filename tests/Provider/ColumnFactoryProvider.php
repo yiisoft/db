@@ -11,6 +11,7 @@ use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\BigIntColumn;
 use Yiisoft\Db\Schema\Column\BinaryColumn;
 use Yiisoft\Db\Schema\Column\BooleanColumn;
+use Yiisoft\Db\Schema\Column\DateTimeColumn;
 use Yiisoft\Db\Schema\Column\DoubleColumn;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Schema\Column\JsonColumn;
@@ -65,10 +66,12 @@ class ColumnFactoryProvider
             'double' => [ColumnType::DOUBLE, ColumnType::DOUBLE, DoubleColumn::class],
             'decimal' => [ColumnType::DECIMAL, ColumnType::DECIMAL, DoubleColumn::class],
             'money' => [ColumnType::MONEY, ColumnType::MONEY, StringColumn::class],
-            'datetime' => [ColumnType::DATETIME, ColumnType::DATETIME, StringColumn::class],
-            'timestamp' => [ColumnType::TIMESTAMP, ColumnType::TIMESTAMP, StringColumn::class],
-            'time' => [ColumnType::TIME, ColumnType::TIME, StringColumn::class],
-            'date' => [ColumnType::DATE, ColumnType::DATE, StringColumn::class],
+            'timestamp' => [ColumnType::TIMESTAMP, ColumnType::TIMESTAMP, DateTimeColumn::class],
+            'datetime' => [ColumnType::DATETIME, ColumnType::DATETIME, DateTimeColumn::class],
+            'datetimetz' => [ColumnType::DATETIMETZ, ColumnType::DATETIMETZ, DateTimeColumn::class],
+            'time' => [ColumnType::TIME, ColumnType::TIME, DateTimeColumn::class],
+            'timetz' => [ColumnType::TIMETZ, ColumnType::TIMETZ, DateTimeColumn::class],
+            'date' => [ColumnType::DATE, ColumnType::DATE, DateTimeColumn::class],
             'array' => [ColumnType::ARRAY, ColumnType::ARRAY, ArrayColumn::class],
             'structured' => [ColumnType::STRUCTURED, ColumnType::STRUCTURED, StructuredColumn::class],
             'json' => [ColumnType::JSON, ColumnType::JSON, JsonColumn::class],

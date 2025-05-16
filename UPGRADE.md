@@ -108,8 +108,9 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `IntegerColumn` for columns with integer type (tinyint, smallint, integer, bigint);
 - `BigIntColumn` for columns with integer type with range outside `PHP_INT_MIN` and `PHP_INT_MAX`;
 - `DoubleColumn` for columns with fractional number type (float, double, decimal, money);
-- `StringColumn` for columns with string or datetime type (char, string, text, datetime, timestamp, date, time);
+- `StringColumn` for columns with string type (char, string, text);
 - `BinaryColumn` for columns with binary type;
+- `DateTimeColumn` for columns with date and time type (timestamp, datetime, time, date);
 - `ArrayColumn` for columns with array type;
 - `StructuredColumn` for columns with structured type (composite type in PostgreSQL);
 - `JsonColumn` for columns with json type.
