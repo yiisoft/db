@@ -17,7 +17,6 @@ use Yiisoft\Db\Constraint\DefaultValueConstraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
@@ -28,7 +27,6 @@ use Yiisoft\Db\Tests\Provider\SchemaProvider;
 use Yiisoft\Db\Tests\Support\AnyCaseValue;
 use Yiisoft\Db\Tests\Support\AnyValue;
 use Yiisoft\Db\Tests\Support\Assert;
-use Yiisoft\Db\Tests\Support\DbHelper;
 
 use function array_keys;
 use function count;
@@ -231,35 +229,6 @@ abstract class CommonSchemaTest extends AbstractSchemaTest
         $schema = $db->getSchema();
 
         $this->assertNull($schema->getTableSchema('nonexisting_table'));
-
-        $db->close();
-    }
-
-    /**
-     * @throws Exception
-     * @throws InvalidCallException
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
-    public function testGetPrimaryKey(): void
-    {
-        $db = $this->getConnection(true);
-
-        $command = $db->createCommand();
-
-        $insertResult = $command->insertWithReturningPks('animal', ['type' => 'cat']);
-        $selectResult = $command->setSql(
-            DbHelper::replaceQuotes(
-                <<<SQL
-                SELECT [[id]] FROM [[animal]] WHERE [[type]] = 'cat'
-                SQL,
-                $db->getDriverName(),
-            )
-        )->queryOne();
-
-        $this->assertIsArray($insertResult);
-        $this->assertIsArray($selectResult);
-        $this->assertEquals($selectResult['id'], $insertResult['id']);
 
         $db->close();
     }

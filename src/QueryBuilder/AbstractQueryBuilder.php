@@ -378,12 +378,12 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->db->getServerInfo();
     }
 
-    public function insert(string $table, QueryInterface|array $columns, array &$params = []): string
+    public function insert(string $table, array|QueryInterface $columns, array &$params = []): string
     {
         return $this->dmlBuilder->insert($table, $columns, $params);
     }
 
-    public function insertWithReturningPks(string $table, QueryInterface|array $columns, array &$params = []): string
+    public function insertWithReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string
     {
         return $this->dmlBuilder->insertWithReturningPks($table, $columns, $params);
     }
@@ -511,11 +511,20 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
 
     public function upsert(
         string $table,
-        QueryInterface|array $insertColumns,
-        bool|array $updateColumns,
-        array &$params = []
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+        array &$params = [],
     ): string {
         return $this->dmlBuilder->upsert($table, $insertColumns, $updateColumns, $params);
+    }
+
+    public function upsertWithReturningPks(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+        array &$params = [],
+    ): string {
+        return $this->dmlBuilder->upsertWithReturningPks($table, $insertColumns, $updateColumns, $params);
     }
 
     public function withTypecasting(bool $typecasting = true): static

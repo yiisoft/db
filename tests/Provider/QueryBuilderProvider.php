@@ -1566,6 +1566,13 @@ class QueryBuilderProvider
         ];
     }
 
+    public static function upsertWithReturningPks(): array
+    {
+        return [
+            ['{{table}}', [], [], '', []],
+        ];
+    }
+
     public static function cteAliases(): array
     {
         return [

@@ -310,12 +310,12 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
-    public function insert(string $table, QueryInterface|array $columns): static
+    public function insert(string $table, array|QueryInterface $columns): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function insertWithReturningPks(string $table, array $columns): array|false
+    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false
     {
         /** @var array|false */
         return $this->decorated->{__FUNCTION__}(...func_get_args());
@@ -491,11 +491,19 @@ final class CommandInterfaceProxy implements CommandInterface
      */
     public function upsert(
         string $table,
-        QueryInterface|array $insertColumns,
-        bool|array $updateColumns = true,
-        array $params = []
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
     ): static {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
+    }
+
+    public function upsertWithReturningPks(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+    ): array|false {
+        /** @var array|false */
+        return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
     /**

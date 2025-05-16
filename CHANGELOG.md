@@ -88,6 +88,7 @@
 - Enh #879: Rename `getLastInsertID()` method in `ConnectionInterface` to `getLastInsertId()` (@vjik)
 - New #967: Add `FOR` clause to query (@vjik)
 - Chg #972: Change in query "distinct" flag type from `bool|null` to `bool` (@vjik)
+- New #973: Add `upsertWithReturningPks()` method to `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
 - New #968: Add `DateTimeColumn` column class (@Tigrov)
 
 ## 1.3.0 March 21, 2024

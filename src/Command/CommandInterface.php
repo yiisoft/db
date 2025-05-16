@@ -599,14 +599,15 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
-    public function insert(string $table, QueryInterface|array $columns): static;
+    public function insert(string $table, array|QueryInterface $columns): static;
 
     /**
      * Attention! Please use function only as a last resort. The feature will be refactored in future releases.
      * Executes the INSERT command, returning primary key inserted values.
      *
      * @param string $table The name of the table to insert new rows into.
-     * @param array $columns The column data (name => value) to insert into the table.
+     * @param array|QueryInterface $columns The column data (name => value) to insert into the table or an instance of
+     * {@see QueryInterface} to perform `INSERT INTO ... SELECT` SQL statement.
      *
      * @throws Exception
      * @throws InvalidCallException
@@ -617,7 +618,7 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
-    public function insertWithReturningPks(string $table, array $columns): array|false;
+    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false;
 
     /**
      * Prepares the SQL statement to be executed.
@@ -870,7 +871,6 @@ interface CommandInterface
      * @param array|bool $updateColumns The column data (name => value) to update if it already exists.
      * If `true` is passed, the column data will be updated to match the insert column data.
      * If `false` is passed, no update will be performed if the column data already exist.
-     * @param array $params The parameters to bind to the command.
      *
      * @throws Exception
      * @throws InvalidConfigException
@@ -885,10 +885,36 @@ interface CommandInterface
      */
     public function upsert(
         string $table,
-        QueryInterface|array $insertColumns,
-        bool|array $updateColumns = true,
-        array $params = []
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
     ): static;
+
+    /**
+     * Creates a command to insert rows into a database table if they don't already exist (matching unique constraints)
+     * or update them if they do, with returning inserted or updated primary key values.
+     * The method will quote the `table` and `insertColumns`, `updateColumns` parameters before using it in the
+     * generated SQL.
+     *
+     * @param string $table The name of the table to insert rows into or update rows in.
+     * @param array|QueryInterface $insertColumns The column data (name => value) to insert into the table or an
+     * instance of {@see QueryInterface} to perform `INSERT INTO ... SELECT` SQL statement.
+     * @param array|bool $updateColumns The column data (name => value) to update if it already exists.
+     * If `true` is passed, the column data will be updated to match the insert column data.
+     * If `false` is passed, no update will be performed if the column data already exist.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws JsonException
+     * @throws NotSupportedException
+     *
+     * @psalm-param array<string, mixed>|QueryInterface $insertColumns
+     * @psalm-param ParamsType $params
+     */
+    public function upsertWithReturningPks(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+    ): array|false;
 
     /**
      * Returns copy of the instance with enabled or disabled typecasting of values when inserting or updating records.

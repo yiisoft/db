@@ -1230,12 +1230,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidCallException
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testInsertWithReturningPks(): void
     {
         $db = $this->getConnection(true);
@@ -1261,7 +1255,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $db->createCommand();
 
-        $params = ['id_1' => 99, 'id_2' => 100, 'type' => 'test'];
+        $params = ['id_1' => 99, 'id_2' => 100.5, 'type' => 'test'];
         $result = $command->insertWithReturningPks('{{%notauto_pk}}', $params);
 
         $this->assertEquals($params['id_1'], $result['id_1']);
@@ -1270,11 +1264,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testInsertExpression(): void
     {
         $db = $this->getConnection(true);
@@ -2241,6 +2230,90 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $pkValues = $db->createCommand()->insertWithReturningPks('negative_default_values', []);
 
         $this->assertSame([], $pkValues);
+    }
+
+    public function testInsertWithReturningPksWithPhpTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+
+        $result = $db->createCommand()
+            ->withPhpTypecasting()
+            ->insertWithReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
+
+        $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
+    }
+
+    public function testUpsertWithReturningPks(): void
+    {
+        $db = $this->getConnection(true);
+
+        // insert case
+        $primaryKeys = $db->createCommand()
+            ->upsertWithReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']);
+
+        $this->assertEquals(['id' => 4], $primaryKeys);
+
+        $customer = $db->createCommand('SELECT * FROM {{customer}} WHERE [[id]] = 4')->queryOne();
+
+        $this->assertSame('test_1', $customer['name']);
+        $this->assertSame('test_1@example.com', $customer['email']);
+
+        // update case with composite primary key
+        $primaryKeys = $db->createCommand()->upsertWithReturningPks(
+            '{{order_item}}',
+            ['order_id' => 1, 'item_id' => 2, 'quantity' => 3, 'subtotal' => 100],
+        );
+
+        $this->assertEquals(['order_id' => 1, 'item_id' => 2], $primaryKeys);
+
+        $orderItem = $db->createCommand('SELECT * FROM {{order_item}} WHERE [[order_id]] = 1 AND [[item_id]] = 2')->queryOne();
+
+        $this->assertEquals(3, $orderItem['quantity']);
+        $this->assertEquals(100, $orderItem['subtotal']);
+
+        $db->close();
+    }
+
+    public function testUpsertWithReturningPksEmptyValues()
+    {
+        $db = $this->getConnection(true);
+
+        $pkValues = $db->createCommand()->upsertWithReturningPks('null_values', []);
+
+        $this->assertEquals(['id' => 1], $pkValues);
+    }
+
+    public function testUpsertWithReturningPksEmptyValuesAndNoPk()
+    {
+        $db = $this->getConnection(true);
+
+        $command = $db->createCommand();
+        $pkValues = $command->upsertWithReturningPks('negative_default_values', []);
+
+        $this->assertSame([], $pkValues);
+    }
+
+    public function testUpsertWithReturningPksWithPhpTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+
+        $result = $db->createCommand()
+            ->withPhpTypecasting()
+            ->upsertWithReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
+
+        $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
+
+        $result = $db->createCommand()
+            ->withPhpTypecasting()
+            ->upsertWithReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test2']);
+
+        $this->assertSame(['id_1' => 2, 'id_2' => 2.5], $result);
+
+        $result = $db->createCommand()
+            ->withPhpTypecasting()
+            ->upsertWithReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test3']);
+
+        $this->assertSame(['id_1' => 2, 'id_2' => 2.5], $result);
     }
 
     public function testUuid(): void
