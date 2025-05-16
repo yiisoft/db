@@ -19,6 +19,7 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
  *     columns?: array<string, ColumnInterface>,
  *     comment?: string|null,
  *     computed?: bool,
+ *     dbTimezone?: string,
  *     dbType?: string|null,
  *     defaultValue?: mixed,
  *     defaultValueRaw?: string|null,
