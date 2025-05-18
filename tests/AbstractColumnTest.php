@@ -16,7 +16,7 @@ use function is_object;
 abstract class AbstractColumnTest extends TestCase
 {
     #[DataProviderExternal(ColumnProvider::class, 'predefinedTypes')]
-    public function testPredefinedType(string $className, string $type, string $phpType): void
+    public function testPredefinedType(string $className, string $type, string $phpType)
     {
         $column = new $className();
 
@@ -25,7 +25,7 @@ abstract class AbstractColumnTest extends TestCase
     }
 
     #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumns')]
-    public function testDbTypecastColumns(ColumnInterface $column, array $values): void
+    public function testDbTypecastColumns(ColumnInterface $column, array $values)
     {
         // Set the timezone for testing purposes, could be any timezone except UTC
         $oldDatetime = date_default_timezone_get();
@@ -43,7 +43,7 @@ abstract class AbstractColumnTest extends TestCase
     }
 
     #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumnsWithException')]
-    public function testDbTypecastColumnsWithException(ColumnInterface $column, mixed $value): void
+    public function testDbTypecastColumnsWithException(ColumnInterface $column, mixed $value)
     {
         $type = is_object($value) ? $value::class : gettype($value);
 
@@ -54,7 +54,7 @@ abstract class AbstractColumnTest extends TestCase
     }
 
     #[DataProviderExternal(ColumnProvider::class, 'phpTypecastColumns')]
-    public function testPhpTypecastColumns(ColumnInterface $column, array $values): void
+    public function testPhpTypecastColumns(ColumnInterface $column, array $values)
     {
         foreach ($values as [$expected, $value]) {
             if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {
