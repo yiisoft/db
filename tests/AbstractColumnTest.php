@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Tests\Provider\ColumnProvider;
 
 use function is_object;
 
 abstract class AbstractColumnTest extends TestCase
 {
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::predefinedTypes */
-    public function testPredefinedType(string $className, string $type, string $phpType)
+    #[DataProviderExternal(ColumnProvider::class, 'predefinedTypes')]
+    public function testPredefinedType(string $className, string $type, string $phpType): void
     {
         $column = new $className();
 
@@ -20,8 +23,8 @@ abstract class AbstractColumnTest extends TestCase
         $this->assertSame($phpType, $column->getPhpType());
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::dbTypecastColumns */
-    public function testDbTypecastColumns(ColumnInterface $column, array $values)
+    #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumns')]
+    public function testDbTypecastColumns(ColumnInterface $column, array $values): void
     {
         // Set the timezone for testing purposes, could be any timezone except UTC
         $oldDatetime = date_default_timezone_get();
@@ -38,8 +41,19 @@ abstract class AbstractColumnTest extends TestCase
         date_default_timezone_set($oldDatetime);
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::phpTypecastColumns */
-    public function testPhpTypecastColumns(ColumnInterface $column, array $values)
+    #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumnsWithException')]
+    public function testDbTypecastColumnsWithException(ColumnInterface $column, mixed $value): void
+    {
+        $type = is_object($value) ? $value::class : gettype($value);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Wrong $type value for {$column->getType()} column.");
+
+        $column->dbTypecast($value);
+    }
+
+    #[DataProviderExternal(ColumnProvider::class, 'phpTypecastColumns')]
+    public function testPhpTypecastColumns(ColumnInterface $column, array $values): void
     {
         foreach ($values as [$expected, $value]) {
             if (is_object($expected) && !(is_object($value) && $expected::class === $value::class)) {

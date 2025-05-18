@@ -76,6 +76,8 @@ class ColumnProvider
                     [1, true],
                     [0, false],
                     [1, IntEnum::ONE],
+                    [1, new Stringable('1')],
+                    [1745071895, new DateTimeImmutable('2025-04-19 14:11:35')],
                     [$expression = new Expression('1'), $expression],
                 ],
             ],
@@ -89,7 +91,11 @@ class ColumnProvider
                     [1, '1'],
                     [1, true],
                     [0, false],
+                    [1, IntEnum::ONE],
+                    [1, new Stringable('1')],
+                    [1745071895, new DateTimeImmutable('2025-04-19 14:11:35')],
                     ['12345678901234567890', '12345678901234567890'],
+                    ['12345678901234567890', new Stringable('12345678901234567890')],
                     [$expression = new Expression('1'), $expression],
                 ],
             ],
@@ -103,6 +109,9 @@ class ColumnProvider
                     [1.0, '1'],
                     [1.0, true],
                     [0.0, false],
+                    [1.0, IntEnum::ONE],
+                    [1.0, new Stringable('1')],
+                    [1745071895.123456, new DateTimeImmutable('2025-04-19 14:11:35.123456')],
                     [$expression = new Expression('1'), $expression],
                 ],
             ],
@@ -116,6 +125,7 @@ class ColumnProvider
                     ['0', false],
                     ['string', 'string'],
                     ['one', StringEnum::ONE],
+                    ['string', new Stringable('string')],
                     [$resource = fopen('php://memory', 'rb'), $resource],
                     [$expression = new Expression('expression'), $expression],
                 ],
@@ -128,6 +138,8 @@ class ColumnProvider
                     ['1', true],
                     ['0', false],
                     [new Param("\x10\x11\x12", PDO::PARAM_LOB), "\x10\x11\x12"],
+                    ['one', StringEnum::ONE],
+                    ['string', new Stringable('string')],
                     [$resource = fopen('php://memory', 'rb'), $resource],
                     [$expression = new Expression('expression'), $expression],
                 ],
@@ -446,6 +458,29 @@ class ColumnProvider
                     [$expression = new Expression('expression'), $expression],
                 ],
             ],
+        ];
+    }
+
+    public static function dbTypecastColumnsWithException(): array
+    {
+        return [
+            'integer array' => [new IntegerColumn(), []],
+            'integer resource' => [new IntegerColumn(), fopen('php://memory', 'r')],
+            'integer stdClass' => [new IntegerColumn(), new stdClass()],
+            'bigint array' => [new BigintColumn(), []],
+            'bigint resource' => [new BigintColumn(), fopen('php://memory', 'r')],
+            'bigint stdClass' => [new BigintColumn(), new stdClass()],
+            'double array' => [new DoubleColumn(), []],
+            'double resource' => [new DoubleColumn(), fopen('php://memory', 'r')],
+            'double stdClass' => [new DoubleColumn(), new stdClass()],
+            'string array' => [new StringColumn(), []],
+            'string stdClass' => [new StringColumn(), new stdClass()],
+            'binary array' => [new BinaryColumn(), []],
+            'binary stdClass' => [new BinaryColumn(), new stdClass()],
+            'datetime array' => [new DateTimeColumn(), []],
+            'datetime resource' => [new DateTimeColumn(), fopen('php://memory', 'r')],
+            'datetime enum' => [new DateTimeColumn(), StringEnum::ONE],
+            'datetime stdClass' => [new DateTimeColumn(), new stdClass()],
         ];
     }
 

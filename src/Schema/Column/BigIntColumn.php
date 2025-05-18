@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use BackedEnum;
+use DateTimeInterface;
+use Stringable;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\GettypeResult;
@@ -25,19 +28,19 @@ class BigIntColumn extends AbstractColumn
     {
         /** @var ExpressionInterface|int|string|null */
         return match (gettype($value)) {
-            GettypeResult::STRING => $value === '' ? null : (
-                $value <= PHP_INT_MAX && $value >= PHP_INT_MIN
-                    ? (int) $value
-                    : $value
-            ),
+            GettypeResult::STRING => $this->dbTypecastString($value),
             GettypeResult::NULL => null,
             GettypeResult::INTEGER => $value,
+            GettypeResult::DOUBLE => $this->dbTypecastString((string) $value),
             GettypeResult::BOOLEAN => $value ? 1 : 0,
-            default => $value instanceof ExpressionInterface ? $value : (
-                ($val = (string) $value) <= PHP_INT_MAX && $val >= PHP_INT_MIN
-                    ? (int) $val
-                    : $val
-            ),
+            GettypeResult::OBJECT => match (true) {
+                $value instanceof ExpressionInterface => $value,
+                $value instanceof BackedEnum => $this->dbTypecastString((string) $value->value),
+                $value instanceof DateTimeInterface => $value->getTimestamp(),
+                $value instanceof Stringable => $this->dbTypecastString((string) $value),
+                default => $this->throwWrongTypeException($value::class),
+            },
+            default => $this->throwWrongTypeException(gettype($value)),
         };
     }
 
@@ -54,5 +57,14 @@ class BigIntColumn extends AbstractColumn
         }
 
         return (string) $value;
+    }
+
+    protected function dbTypecastString(string $value): int|string|null
+    {
+        if ($value === '') {
+            return null;
+        }
+
+        return PHP_INT_MAX >= $value && $value >= PHP_INT_MIN ? (int) $value : $value;
     }
 }

@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use BackedEnum;
+use DateTimeInterface;
+use Stringable;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\PhpType;
 
-use function is_float;
+use function gettype;
 
 /**
  * Represents the metadata for a double column.
@@ -19,13 +23,20 @@ class DoubleColumn extends AbstractColumn
 
     public function dbTypecast(mixed $value): float|ExpressionInterface|null
     {
-        if (is_float($value)) {
-            return $value;
-        }
-
-        return match ($value) {
-            null, '' => null,
-            default => $value instanceof ExpressionInterface ? $value : (float) $value,
+        return match (gettype($value)) {
+            GettypeResult::DOUBLE => $value,
+            GettypeResult::INTEGER => (float) $value,
+            GettypeResult::NULL => null,
+            GettypeResult::STRING => $value === '' ? null : (float) $value,
+            GettypeResult::BOOLEAN => $value ? 1.0 : 0.0,
+            GettypeResult::OBJECT => match (true) {
+                $value instanceof ExpressionInterface => $value,
+                $value instanceof BackedEnum => (float) $value->value,
+                $value instanceof DateTimeInterface => (float) $value->format('U.u'),
+                $value instanceof Stringable => (float)(string) $value,
+                default => $this->throwWrongTypeException($value::class),
+            },
+            default => $this->throwWrongTypeException(gettype($value)),
         };
     }
 

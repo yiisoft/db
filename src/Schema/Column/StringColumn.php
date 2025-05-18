@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use BackedEnum;
+use Stringable;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\GettypeResult;
@@ -25,13 +26,16 @@ class StringColumn extends AbstractColumn
             GettypeResult::STRING => $value,
             GettypeResult::RESOURCE => $value,
             GettypeResult::NULL => null,
+            GettypeResult::INTEGER,
+            GettypeResult::DOUBLE => (string) $value,
             GettypeResult::BOOLEAN => $value ? '1' : '0',
             GettypeResult::OBJECT => match (true) {
                 $value instanceof ExpressionInterface => $value,
                 $value instanceof BackedEnum => (string) $value->value,
-                default => (string) $value,
+                $value instanceof Stringable => (string) $value,
+                default => $this->throwWrongTypeException($value::class),
             },
-            default => (string) $value,
+            default => $this->throwWrongTypeException(gettype($value)),
         };
     }
 

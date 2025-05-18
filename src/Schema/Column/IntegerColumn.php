@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Schema\Column;
 
 use BackedEnum;
+use DateTimeInterface;
+use Stringable;
 use Yiisoft\Db\Constant\ColumnType;
+use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Constant\PhpType;
 
-use function is_int;
+use function gettype;
 
 /**
  * Represents the schema for an integer column.
@@ -20,17 +23,20 @@ class IntegerColumn extends AbstractColumn
 
     public function dbTypecast(mixed $value): int|ExpressionInterface|null
     {
-        if (is_int($value)) {
-            return $value;
-        }
-
-        return match ($value) {
-            null, '' => null,
-            default => match (true) {
+        return match (gettype($value)) {
+            GettypeResult::INTEGER => $value,
+            GettypeResult::NULL => null,
+            GettypeResult::STRING => $value === '' ? null : (int) $value,
+            GettypeResult::DOUBLE => (int) $value,
+            GettypeResult::BOOLEAN => $value ? 1 : 0,
+            GettypeResult::OBJECT => match (true) {
                 $value instanceof ExpressionInterface => $value,
                 $value instanceof BackedEnum => (int) $value->value,
-                default => (int) $value,
+                $value instanceof DateTimeInterface => $value->getTimestamp(),
+                $value instanceof Stringable => (int)(string) $value,
+                default => $this->throwWrongTypeException($value::class),
             },
+            default => $this->throwWrongTypeException(gettype($value)),
         };
     }
 
