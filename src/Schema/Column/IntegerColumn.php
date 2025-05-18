@@ -23,7 +23,7 @@ class IntegerColumn extends AbstractColumn
 
     public function dbTypecast(mixed $value): int|ExpressionInterface|null
     {
-        /** @var int|ExpressionInterface|null */
+        /** @var ExpressionInterface|int|null */
         return match (gettype($value)) {
             GettypeResult::INTEGER => $value,
             GettypeResult::NULL => null,
