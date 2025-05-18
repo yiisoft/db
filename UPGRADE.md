@@ -137,6 +137,8 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryBuilderInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `QueryBuilderInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `DQLQueryBuilderInterface::buildFor()` - builds a SQL for `FOR` clause;
+- `DMLQueryBuilderInterface::upsertWithReturningPks()` - builds a SQL to inserts or updates a record and returns its 
+  primary keys;
 - `DMLQueryBuilderInterface::withTypecasting()` - enables or disables typecasting of values when inserting or updating 
   records in DB;
 - `LikeConditionInterface::getCaseSensitive()` - returns whether the comparison is case-sensitive;
@@ -144,6 +146,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `SchemaInterface::hasSchema()` - returns whether the specified schema exists in database;
 - `SchemaInterface::hasView()` - returns whether the specified view exists in database;
 - `DbArrayHelper::arrange()` - arranges an array by specified keys;
+- `CommandInterface::upsertWithReturningPks()` - inserts or updates a record and returns its primary keys;
 - `CommandInterface::withDbTypecasting()` - enables or disables typecasting of values when inserting or updating records;
 - `CommandInterface::withPhpTypecasting()` - enables or disables typecasting of values when retrieving records from DB;
 - `CommandInterface::withTypecasting()` - enables or disables typecasting of values when inserting, updating 
@@ -230,3 +233,8 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change `QueryInterface::getDistinct()` result type to `bool`;
 - Change `QueryPartsInterface::distinct()` parameter type to `bool`;
 - Change `$distinct` parameter type in `DQLQueryBuilderInterface::buildSelect()` to `bool`;
+- Add `QueryInterface` to type of `$columns` parameter of `insertWithReturningPks()` method in `CommandInterface` and 
+  `AbstractCommand` class;
+- Remove `$params` parameter from `upsert()` method in `CommandInterface` and `AbstractCommand` class;
+- Add default value to `$updateColumns` and `$params` parameters of `upsert()` method in `DMLQueryBuilderInterface` and 
+  `AbstractDMLQueryBuilder` and `AbstractQueryBuilder` classes;

@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Closure;
-use JsonException;
 use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Throwable;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
@@ -1974,9 +1972,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals($expectedParams, $params);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insertWithReturningPks
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'insertWithReturningPks')]
     public function testInsertWithReturningPks(
         string $table,
         array|QueryInterface $columns,
@@ -1985,7 +1981,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         array $expectedParams
     ): void {
         $db = $this->getConnection(true);
-
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expectedSQL, $qb->insertWithReturningPks($table, $columns, $params));
@@ -2346,12 +2341,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::update
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
@@ -2370,70 +2360,64 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals($expectedParams, $params);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws JsonException
-     * @throws NotSupportedException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
     public function testUpsert(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
-        string $expectedSQL,
+        string $expectedSql,
         array $expectedParams
-    ): void {
-        $db = $this->getConnection();
-
-        $actualParams = [];
-        $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
-
-        $this->assertSame($expectedSQL, $actualSQL);
-
-        $this->assertSame($expectedParams, $actualParams);
-    }
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws JsonException
-     * @throws NotSupportedException
-     * @throws Throwable
-     */
-    public function testUpsertExecute(
-        string $table,
-        array|QueryInterface $insertColumns,
-        array|bool $updateColumns
     ): void {
         $db = $this->getConnection(true);
 
-        $actualParams = [];
-        $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
+        $params = [];
+        $sql = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
 
-        $countQuery = (new Query($db))->from($table)->select('count(*)');
+        $this->assertSame($expectedSql, $sql);
+        $this->assertSame($expectedParams, $params);
 
-        $rowCountBefore = (int) $countQuery->createCommand()->queryScalar();
+        $query = (new Query($db))->from($table);
+        $countBefore = $query->count();
 
-        $command = $db->createCommand($actualSQL, $actualParams);
-        $this->assertEquals(1, $command->execute());
+        $command = $db->createCommand($sql, $params);
+        $this->assertSame(1, $command->execute());
 
-        $rowCountAfter = (int) $countQuery->createCommand()->queryScalar();
+        $countAfter = $query->count();
 
-        $this->assertEquals(1, $rowCountAfter - $rowCountBefore);
+        $this->assertSame(1, $countAfter - $countBefore);
 
-        $command = $db->createCommand($actualSQL, $actualParams);
-        $command->execute();
+        $db->createCommand($sql, $params)->execute();
     }
 
-    /**
-     * @throws \Exception
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsertWithReturningPks')]
+    public function testUpsertWithReturningPks(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns,
+        string $expectedSql,
+        array $expectedParams
+    ): void {
+        $db = $this->getConnection(true);
+        $qb = $db->getQueryBuilder();
+
+        $params = [];
+        $sql = $qb->upsertWithReturningPks($table, $insertColumns, $updateColumns, $params);
+
+        $this->assertSame($expectedSql, $sql);
+        $this->assertSame($expectedParams, $params);
+
+        $query = (new Query($db))->from($table);
+        $countBefore = $query->count();
+
+        $db->createCommand($sql, $params)->execute();
+
+        $countAfter = $query->count();
+
+        $this->assertSame(1, $countAfter - $countBefore);
+
+        $db->createCommand($sql, $params)->execute();
+    }
+
     public function testOverrideParameters1(): void
     {
         $db = $this->getConnection();
@@ -2460,11 +2444,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @throws \Exception
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testOverrideParameters2(): void
     {
         $db = $this->getConnection();

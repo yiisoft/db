@@ -20,6 +20,7 @@ use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
@@ -124,6 +125,19 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         return $this;
     }
 
+    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false
+    {
+        if (empty($this->db->getSchema()->getTableSchema($table)?->getPrimaryKey())) {
+            if ($this->insert($table, $columns)->execute() === 0) {
+                return false;
+            }
+
+            return [];
+        }
+
+        return parent::insertWithReturningPks($table, $columns);
+    }
+
     public function prepare(bool|null $forRead = null): void
     {
         if (isset($this->pdoStatement)) {
@@ -154,6 +168,22 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
 
             throw new Exception($message, $errorInfo, $e);
         }
+    }
+
+    public function upsertWithReturningPks(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+    ): array|false {
+        if (empty($this->db->getSchema()->getTableSchema($table)?->getPrimaryKey())) {
+            if ($this->upsert($table, $insertColumns, $updateColumns)->execute() === 0) {
+                return false;
+            }
+
+            return [];
+        }
+
+        return parent::upsertWithReturningPks($table, $insertColumns, $updateColumns);
     }
 
     /**
