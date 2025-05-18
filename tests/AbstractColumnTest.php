@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\Provider\ColumnProvider;
 
+use function gettype;
 use function is_object;
 
 abstract class AbstractColumnTest extends TestCase
