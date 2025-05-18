@@ -26,7 +26,7 @@ class StringColumn extends AbstractColumn
             GettypeResult::STRING => $value,
             GettypeResult::RESOURCE => $value,
             GettypeResult::NULL => null,
-            GettypeResult::INTEGER,
+            GettypeResult::INTEGER => (string) $value,
             GettypeResult::DOUBLE => (string) $value,
             GettypeResult::BOOLEAN => $value ? '1' : '0',
             GettypeResult::OBJECT => match (true) {

@@ -26,7 +26,10 @@ class BigIntColumn extends AbstractColumn
 
     public function dbTypecast(mixed $value): int|string|ExpressionInterface|null
     {
-        /** @var ExpressionInterface|int|string|null */
+        /**
+         * @var ExpressionInterface|int|string|null
+         * @psalm-suppress MixedArgument
+         */
         return match (gettype($value)) {
             GettypeResult::STRING => $this->dbTypecastString($value),
             GettypeResult::NULL => null,

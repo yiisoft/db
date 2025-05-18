@@ -23,6 +23,7 @@ class DoubleColumn extends AbstractColumn
 
     public function dbTypecast(mixed $value): float|ExpressionInterface|null
     {
+        /** @var float|ExpressionInterface|null */
         return match (gettype($value)) {
             GettypeResult::DOUBLE => $value,
             GettypeResult::INTEGER => (float) $value,

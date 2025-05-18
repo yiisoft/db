@@ -27,7 +27,7 @@ class BinaryColumn extends AbstractColumn
             GettypeResult::STRING => new Param($value, PDO::PARAM_LOB),
             GettypeResult::RESOURCE => $value,
             GettypeResult::NULL => null,
-            GettypeResult::INTEGER,
+            GettypeResult::INTEGER => (string) $value,
             GettypeResult::DOUBLE => (string) $value,
             GettypeResult::BOOLEAN => $value ? '1' : '0',
             GettypeResult::OBJECT => match (true) {
