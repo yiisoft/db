@@ -27,7 +27,7 @@ interface TableSchemaInterface
     public function getColumn(string $name): ColumnInterface|null;
 
     /**
-     * @return array The names of all columns in this table.
+     * @return string[] The names of all columns in this table.
      */
     public function getColumnNames(): array;
 
