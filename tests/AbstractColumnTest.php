@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Tests\Provider\ColumnProvider;
 
+use function gettype;
 use function is_object;
 
 abstract class AbstractColumnTest extends TestCase
 {
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::predefinedTypes */
+    #[DataProviderExternal(ColumnProvider::class, 'predefinedTypes')]
     public function testPredefinedType(string $className, string $type, string $phpType)
     {
         $column = new $className();
@@ -20,7 +24,7 @@ abstract class AbstractColumnTest extends TestCase
         $this->assertSame($phpType, $column->getPhpType());
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::dbTypecastColumns */
+    #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumns')]
     public function testDbTypecastColumns(ColumnInterface $column, array $values)
     {
         // Set the timezone for testing purposes, could be any timezone except UTC
@@ -38,7 +42,18 @@ abstract class AbstractColumnTest extends TestCase
         date_default_timezone_set($oldDatetime);
     }
 
-    /** @dataProvider \Yiisoft\Db\Tests\Provider\ColumnProvider::phpTypecastColumns */
+    #[DataProviderExternal(ColumnProvider::class, 'dbTypecastColumnsWithException')]
+    public function testDbTypecastColumnsWithException(ColumnInterface $column, mixed $value)
+    {
+        $type = is_object($value) ? $value::class : gettype($value);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Wrong $type value for {$column->getType()} column.");
+
+        $column->dbTypecast($value);
+    }
+
+    #[DataProviderExternal(ColumnProvider::class, 'phpTypecastColumns')]
     public function testPhpTypecastColumns(ColumnInterface $column, array $values)
     {
         foreach ($values as [$expected, $value]) {

@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Schema\Column;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
-use InvalidArgumentException;
+use Stringable;
 use UnexpectedValueException;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\GettypeResult;
@@ -104,9 +104,10 @@ class DateTimeColumn extends AbstractColumn
                 $value instanceof DateTimeImmutable => $this->dbTypecastDateTime($value),
                 $value instanceof DateTimeInterface => $this->dbTypecastDateTime(DateTimeImmutable::createFromInterface($value)),
                 $value instanceof ExpressionInterface => $value,
-                default => $this->dbTypecastString((string) $value),
+                $value instanceof Stringable => $this->dbTypecastString((string) $value),
+                default => $this->throwWrongTypeException($value::class),
             },
-            default => throw new InvalidArgumentException('Wrong ' . gettype($value) . ' value for ' . $this->getType() . ' column.'),
+            default => $this->throwWrongTypeException(gettype($value)),
         };
     }
 
@@ -169,7 +170,7 @@ class DateTimeColumn extends AbstractColumn
             ColumnType::BIGINT => 'U',
             ColumnType::FLOAT => 'U.u',
             default => throw new UnexpectedValueException(
-                'Unsupported abstract column type "' . $this->getType() . '" for ' . static::class . ' class.',
+                'Unsupported abstract column type ' . $this->getType() . ' for ' . static::class . ' class.',
             ),
         };
     }

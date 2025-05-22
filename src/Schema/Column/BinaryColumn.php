@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use BackedEnum;
 use PDO;
+use Stringable;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -25,8 +27,16 @@ class BinaryColumn extends AbstractColumn
             GettypeResult::STRING => new Param($value, PDO::PARAM_LOB),
             GettypeResult::RESOURCE => $value,
             GettypeResult::NULL => null,
+            GettypeResult::INTEGER => (string) $value,
+            GettypeResult::DOUBLE => (string) $value,
             GettypeResult::BOOLEAN => $value ? '1' : '0',
-            default => $value instanceof ExpressionInterface ? $value : (string) $value,
+            GettypeResult::OBJECT => match (true) {
+                $value instanceof ExpressionInterface => $value,
+                $value instanceof BackedEnum => (string) $value->value,
+                $value instanceof Stringable => (string) $value,
+                default => $this->throwWrongTypeException($value::class),
+            },
+            default => $this->throwWrongTypeException(gettype($value)),
         };
     }
 
