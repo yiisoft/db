@@ -13,6 +13,7 @@ use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Constant\PhpType;
 
 use function gettype;
+use function is_int;
 
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
@@ -38,7 +39,9 @@ class BigIntColumn extends AbstractColumn
             GettypeResult::BOOLEAN => $value ? 1 : 0,
             GettypeResult::OBJECT => match (true) {
                 $value instanceof ExpressionInterface => $value,
-                $value instanceof BackedEnum => $this->dbTypecastString((string) $value->value),
+                $value instanceof BackedEnum => is_int($value->value)
+                    ? $value->value
+                    : $this->dbTypecastString($value->value),
                 $value instanceof DateTimeInterface => $value->getTimestamp(),
                 $value instanceof Stringable => $this->dbTypecastString((string) $value),
                 default => $this->throwWrongTypeException($value::class),

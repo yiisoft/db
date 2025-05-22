@@ -32,9 +32,9 @@ class IntegerColumn extends AbstractColumn
             GettypeResult::BOOLEAN => $value ? 1 : 0,
             GettypeResult::OBJECT => match (true) {
                 $value instanceof ExpressionInterface => $value,
-                $value instanceof BackedEnum => (int) $value->value,
+                $value instanceof BackedEnum => $value->value === '' ? null : (int) $value->value,
                 $value instanceof DateTimeInterface => $value->getTimestamp(),
-                $value instanceof Stringable => (int)(string) $value,
+                $value instanceof Stringable => ($val = (string) $value) === '' ? null : (int) $val,
                 default => $this->throwWrongTypeException($value::class),
             },
             default => $this->throwWrongTypeException(gettype($value)),
