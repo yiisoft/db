@@ -24,6 +24,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbUuidHelper;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractCommandTest;
@@ -1676,15 +1677,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertInstanceOf(DataReaderInterface::class, $reader);
         $this->assertIsInt($reader->count());
 
-        $expectedRow = 6;
-
-        if ($db->getDriverName() === 'oci' || $db->getDriverName() === 'pgsql') {
-            $expectedRow = 7;
-        }
-
         foreach ($reader as $row) {
             $this->assertIsArray($row);
-            $this->assertCount($expectedRow, $row);
+            $this->assertCount(6, $row);
         }
 
         $command = $db->createCommand('bad SQL');
@@ -1710,16 +1705,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL
         );
         $rows = $command->queryAll();
-        $expectedRow = 6;
-
-        if ($db->getDriverName() === 'oci' || $db->getDriverName() === 'pgsql') {
-            $expectedRow = 7;
-        }
 
         $this->assertIsArray($rows);
         $this->assertCount(3, $rows);
         $this->assertIsArray($rows[0]);
-        $this->assertCount($expectedRow, $rows[0]);
+        $this->assertCount(6, $rows[0]);
 
         $command->setSql('bad SQL');
 
@@ -2223,6 +2213,20 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame($expected, $pkValues);
     }
 
+    public function testInsertWithReturningPksWithQuery(): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))->select([
+            'name' => new Expression("'test_1'"),
+            'email' => new Expression("'test_1@example.com'"),
+        ]);
+
+        $pkValues = $db->createCommand()->insertWithReturningPks('customer', $query);
+
+        $this->assertEquals(['id' => 4], $pkValues);
+    }
+
     public function testInsertWithReturningPksEmptyValuesAndNoPk()
     {
         $db = $this->getConnection(true);
@@ -2241,6 +2245,79 @@ abstract class CommonCommandTest extends AbstractCommandTest
             ->insertWithReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
 
         $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
+    }
+
+    #[DataProviderExternal(CommandProvider::class, 'upsertWithReturning')]
+    public function testUpsertWithReturning(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns,
+        array|null $returnColumns,
+        array $selectCondition,
+        array $expectedValues,
+    ): void {
+        $db = $this->getConnection(true);
+        $command = $db->createCommand();
+
+        $returnedValues = $command->upsertWithReturning($table, $insertColumns, $updateColumns, $returnColumns);
+
+        $this->assertEquals($expectedValues, $returnedValues);
+
+        if (!empty($returnColumns)) {
+            $selectedValues = (new Query($db))
+                ->select(array_keys($expectedValues))
+                ->from($table)
+                ->where($selectCondition)
+                ->one();
+
+            $this->assertEquals($expectedValues, $selectedValues);
+        }
+
+        $db->close();
+    }
+
+    public function testUpsertWithReturningWithUnique(): void
+    {
+        $db = $this->getConnection(true);
+        $command = $db->createCommand();
+
+        $tableName = 'T_upsert';
+        $insertColumns = [
+            'email' => 'test@example.com',
+            'address' => 'first address',
+            'status' => 1,
+        ];
+        $expectedValues = [
+            'id' => 1,
+            'ts' => null,
+            'email' => 'test@example.com',
+            'recovery_email' => null,
+            'address' => 'first address',
+            'status' => 1,
+            'orders' => 0,
+            'profile_id' => null,
+        ];
+
+        $returnedValues = $command->upsertWithReturning($tableName, $insertColumns);
+
+        $this->assertEquals($expectedValues, $returnedValues);
+
+        $insertColumns = [
+            'email' => 'test@example.com',
+            'address' => 'second address',
+            'status' => 2,
+        ];
+
+        $returnedValues = $command->upsertWithReturning($tableName, $insertColumns, false);
+
+        $this->assertEquals($expectedValues, $returnedValues);
+
+        $returnedValues = $command->upsertWithReturning($tableName, $insertColumns, ['address' => 'third address']);
+        $expectedValues['address'] = 'third address';
+
+        $this->assertEquals($expectedValues, $returnedValues);
+
+        $db->close();
     }
 
     public function testUpsertWithReturningPks(): void

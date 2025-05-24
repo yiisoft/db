@@ -891,8 +891,39 @@ interface CommandInterface
 
     /**
      * Creates a command to insert rows into a database table if they don't already exist (matching unique constraints)
+     * or update them if they do, with returning values from the specified columns.
+     * The method will quote the `table`, `insertColumns`, `updateColumns` and `returnColumns` parameters before using
+     * it in the generated SQL.
+     *
+     * @param string $table The name of the table to insert rows into or update rows in.
+     * @param array|QueryInterface $insertColumns The column data (name => value) to insert into the table or an
+     * instance of {@see QueryInterface} to perform `INSERT INTO ... SELECT` SQL statement.
+     * @param array|bool $updateColumns The column data (name => value) to update if it already exists.
+     * If `true` is passed, the column data will be updated to match the insert column data.
+     * If `false` is passed, no update will be performed if the column data already exist.
+     * @param string[]|null $returnColumns The column names to return values from. `null` means all columns.
+     *
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws JsonException
+     * @throws NotSupportedException
+     *
+     * @psalm-param array<string, mixed>|QueryInterface $insertColumns
+     * @psalm-param ParamsType $params
+     *
+     * @see upsertWithReturningPks()
+     */
+    public function upsertWithReturning(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+        array|null $returnColumns = null,
+    ): array|false;
+
+    /**
+     * Creates a command to insert rows into a database table if they don't already exist (matching unique constraints)
      * or update them if they do, with returning inserted or updated primary key values.
-     * The method will quote the `table` and `insertColumns`, `updateColumns` parameters before using it in the
+     * The method will quote the `table`, `insertColumns` and `updateColumns` parameters before using it in the
      * generated SQL.
      *
      * @param string $table The name of the table to insert rows into or update rows in.
@@ -909,6 +940,8 @@ interface CommandInterface
      *
      * @psalm-param array<string, mixed>|QueryInterface $insertColumns
      * @psalm-param ParamsType $params
+     *
+     * @see upsertWithReturning()
      */
     public function upsertWithReturningPks(
         string $table,

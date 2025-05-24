@@ -2389,19 +2389,20 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db->createCommand($sql, $params)->execute();
     }
 
-    #[DataProviderExternal(QueryBuilderProvider::class, 'upsertWithReturningPks')]
-    public function testUpsertWithReturningPks(
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsertWithReturning')]
+    public function testUpsertWithReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
+        array|null $returnColumns,
         string $expectedSql,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         $db = $this->getConnection(true);
         $qb = $db->getQueryBuilder();
 
         $params = [];
-        $sql = $qb->upsertWithReturningPks($table, $insertColumns, $updateColumns, $params);
+        $sql = $qb->upsertWithReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
 
         $this->assertSame($expectedSql, $sql);
         $this->assertSame($expectedParams, $params);
