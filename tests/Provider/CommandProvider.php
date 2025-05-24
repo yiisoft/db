@@ -980,7 +980,7 @@ class CommandProvider
                 'table' => 'customer',
                 'insertColumns' => (new Query(static::getDb()))->select([
                     'name' => new Expression("'test_1'"),
-                    'email' => new Expression("'test_1@example.com'")
+                    'email' => new Expression("'test_1@example.com'"),
                 ]),
                 'updateColumns' => true,
                 'returnColumns' => null,
