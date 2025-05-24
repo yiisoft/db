@@ -137,8 +137,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryBuilderInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `QueryBuilderInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `DQLQueryBuilderInterface::buildFor()` - builds a SQL for `FOR` clause;
-- `DMLQueryBuilderInterface::upsertWithReturningPks()` - builds a SQL to inserts or updates a record and returns its 
-  primary keys;
+- `DMLQueryBuilderInterface::upsertWithReturning()` - builds a SQL to inserts or updates a record with returning values;
 - `DMLQueryBuilderInterface::withTypecasting()` - enables or disables typecasting of values when inserting or updating 
   records in DB;
 - `LikeConditionInterface::getCaseSensitive()` - returns whether the comparison is case-sensitive;
@@ -146,6 +145,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `SchemaInterface::hasSchema()` - returns whether the specified schema exists in database;
 - `SchemaInterface::hasView()` - returns whether the specified view exists in database;
 - `DbArrayHelper::arrange()` - arranges an array by specified keys;
+- `CommandInterface::upsertWithReturning()` - inserts or updates a record with returning its values;
 - `CommandInterface::upsertWithReturningPks()` - inserts or updates a record and returns its primary keys;
 - `CommandInterface::withDbTypecasting()` - enables or disables typecasting of values when inserting or updating records;
 - `CommandInterface::withPhpTypecasting()` - enables or disables typecasting of values when retrieving records from DB;
