@@ -2213,6 +2213,20 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame($expected, $pkValues);
     }
 
+    public function testInsertWithReturningPksWithQuery(): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))->select([
+            'name' => new Expression("'test_1'"),
+            'email' => new Expression("'test_1@example.com'"),
+        ]);
+
+        $pkValues = $db->createCommand()->insertWithReturningPks('customer', $query);
+
+        $this->assertEquals(['id' => 4], $pkValues);
+    }
+
     public function testInsertWithReturningPksEmptyValuesAndNoPk()
     {
         $db = $this->getConnection(true);
