@@ -513,9 +513,7 @@ abstract class AbstractCommand implements CommandInterface
         array|bool $updateColumns = true,
         array|null $returnColumns = null,
     ): array|false {
-        $returnColumns ??= $this->db->getTableSchema($table)?->getColumnNames();
-
-        if (empty($returnColumns)) {
+        if ($returnColumns === []) {
             $this->upsert($table, $insertColumns, $updateColumns)->execute();
             return [];
         }
