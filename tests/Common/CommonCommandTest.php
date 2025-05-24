@@ -1677,15 +1677,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertInstanceOf(DataReaderInterface::class, $reader);
         $this->assertIsInt($reader->count());
 
-        $expectedRow = 6;
-
-        if ($db->getDriverName() === 'oci' || $db->getDriverName() === 'pgsql') {
-            $expectedRow = 7;
-        }
-
         foreach ($reader as $row) {
             $this->assertIsArray($row);
-            $this->assertCount($expectedRow, $row);
+            $this->assertCount(6, $row);
         }
 
         $command = $db->createCommand('bad SQL');
@@ -1711,16 +1705,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL
         );
         $rows = $command->queryAll();
-        $expectedRow = 6;
-
-        if ($db->getDriverName() === 'oci' || $db->getDriverName() === 'pgsql') {
-            $expectedRow = 7;
-        }
 
         $this->assertIsArray($rows);
         $this->assertCount(3, $rows);
         $this->assertIsArray($rows[0]);
-        $this->assertCount($expectedRow, $rows[0]);
+        $this->assertCount(6, $rows[0]);
 
         $command->setSql('bad SQL');
 
