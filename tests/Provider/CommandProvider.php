@@ -958,7 +958,7 @@ class CommandProvider
         ];
     }
 
-    public static function upsertWithReturning(): array
+    public static function upsertReturning(): array
     {
         return [
             'insert' => [

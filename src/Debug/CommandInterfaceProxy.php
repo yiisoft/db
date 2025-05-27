@@ -497,7 +497,7 @@ final class CommandInterfaceProxy implements CommandInterface
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function upsertWithReturning(
+    public function upsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
@@ -507,7 +507,7 @@ final class CommandInterfaceProxy implements CommandInterface
         return $this->decorated->{__FUNCTION__}(...func_get_args());
     }
 
-    public function upsertWithReturningPks(
+    public function upsertReturningPks(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,

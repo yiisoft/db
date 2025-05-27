@@ -2247,8 +2247,8 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
     }
 
-    #[DataProviderExternal(CommandProvider::class, 'upsertWithReturning')]
-    public function testUpsertWithReturning(
+    #[DataProviderExternal(CommandProvider::class, 'upsertReturning')]
+    public function testUpsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
@@ -2259,7 +2259,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
         $command = $db->createCommand();
 
-        $returnedValues = $command->upsertWithReturning($table, $insertColumns, $updateColumns, $returnColumns);
+        $returnedValues = $command->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns);
 
         $this->assertEquals($expectedValues, $returnedValues);
 
@@ -2276,7 +2276,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    public function testUpsertWithReturningWithUnique(): void
+    public function testUpsertReturningWithUnique(): void
     {
         $db = $this->getConnection(true);
         $command = $db->createCommand();
@@ -2298,7 +2298,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             'profile_id' => null,
         ];
 
-        $returnedValues = $command->upsertWithReturning($tableName, $insertColumns);
+        $returnedValues = $command->upsertReturning($tableName, $insertColumns);
 
         $this->assertEquals($expectedValues, $returnedValues);
 
@@ -2308,11 +2308,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
             'status' => 2,
         ];
 
-        $returnedValues = $command->upsertWithReturning($tableName, $insertColumns, false);
+        $returnedValues = $command->upsertReturning($tableName, $insertColumns, false);
 
         $this->assertEquals($expectedValues, $returnedValues);
 
-        $returnedValues = $command->upsertWithReturning($tableName, $insertColumns, ['address' => 'third address']);
+        $returnedValues = $command->upsertReturning($tableName, $insertColumns, ['address' => 'third address']);
         $expectedValues['address'] = 'third address';
 
         $this->assertEquals($expectedValues, $returnedValues);
@@ -2320,13 +2320,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    public function testUpsertWithReturningPks(): void
+    public function testUpsertReturningPks(): void
     {
         $db = $this->getConnection(true);
 
         // insert case
         $primaryKeys = $db->createCommand()
-            ->upsertWithReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']);
+            ->upsertReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']);
 
         $this->assertEquals(['id' => 4], $primaryKeys);
 
@@ -2336,7 +2336,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame('test_1@example.com', $customer['email']);
 
         // update case with composite primary key
-        $primaryKeys = $db->createCommand()->upsertWithReturningPks(
+        $primaryKeys = $db->createCommand()->upsertReturningPks(
             '{{order_item}}',
             ['order_id' => 1, 'item_id' => 2, 'quantity' => 3, 'subtotal' => 100],
         );
@@ -2351,44 +2351,44 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    public function testUpsertWithReturningPksEmptyValues()
+    public function testUpsertReturningPksEmptyValues()
     {
         $db = $this->getConnection(true);
 
-        $pkValues = $db->createCommand()->upsertWithReturningPks('null_values', []);
+        $pkValues = $db->createCommand()->upsertReturningPks('null_values', []);
 
         $this->assertEquals(['id' => 1], $pkValues);
     }
 
-    public function testUpsertWithReturningPksEmptyValuesAndNoPk()
+    public function testUpsertReturningPksEmptyValuesAndNoPk()
     {
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $pkValues = $command->upsertWithReturningPks('negative_default_values', []);
+        $pkValues = $command->upsertReturningPks('negative_default_values', []);
 
         $this->assertSame([], $pkValues);
     }
 
-    public function testUpsertWithReturningPksWithPhpTypecasting(): void
+    public function testUpsertReturningPksWithPhpTypecasting(): void
     {
         $db = $this->getConnection(true);
 
         $result = $db->createCommand()
             ->withPhpTypecasting()
-            ->upsertWithReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
+            ->upsertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
 
         $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
 
         $result = $db->createCommand()
             ->withPhpTypecasting()
-            ->upsertWithReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test2']);
+            ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test2']);
 
         $this->assertSame(['id_1' => 2, 'id_2' => 2.5], $result);
 
         $result = $db->createCommand()
             ->withPhpTypecasting()
-            ->upsertWithReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test3']);
+            ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test3']);
 
         $this->assertSame(['id_1' => 2, 'id_2' => 2.5], $result);
     }

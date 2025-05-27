@@ -911,9 +911,9 @@ interface CommandInterface
      * @psalm-param array<string, mixed>|QueryInterface $insertColumns
      * @psalm-param ParamsType $params
      *
-     * @see upsertWithReturningPks()
+     * @see upsertReturningPks()
      */
-    public function upsertWithReturning(
+    public function upsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
@@ -941,9 +941,9 @@ interface CommandInterface
      * @psalm-param array<string, mixed>|QueryInterface $insertColumns
      * @psalm-param ParamsType $params
      *
-     * @see upsertWithReturning()
+     * @see upsertReturning()
      */
-    public function upsertWithReturningPks(
+    public function upsertReturningPks(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,

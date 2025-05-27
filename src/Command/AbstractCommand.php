@@ -507,7 +507,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function upsertWithReturning(
+    public function upsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
@@ -520,7 +520,7 @@ abstract class AbstractCommand implements CommandInterface
 
         $params = [];
         $sql = $this->getQueryBuilder()
-            ->upsertWithReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
+            ->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
 
         $this->setSql($sql)->bindValues($params);
 
