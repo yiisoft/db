@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema\Column;
 
+use InvalidArgumentException;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PhpType;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
@@ -375,5 +376,10 @@ abstract class AbstractColumn implements ColumnInterface
         $new = clone $this;
         $new->name = $name;
         return $new;
+    }
+
+    protected function throwWrongTypeException(string $type): never
+    {
+        throw new InvalidArgumentException("Wrong $type value for $this->type column.");
     }
 }

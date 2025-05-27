@@ -293,7 +293,7 @@ class CommandProvider
                     ':qp2' => 'test string',
                     ':qp3' => true,
                     ':qp4' => 0,
-                    ':qp5' => 0.0,
+                    ':qp5' => 0,
                     ':qp6' => 'test string2',
                     ':qp7' => false,
                 ],
@@ -354,7 +354,7 @@ class CommandProvider
                 ),
                 'expectedParams' => [
                     ':exp1' => 42,
-                    ':qp1' => 1.0,
+                    ':qp1' => 1,
                     ':qp2' => 'test',
                     ':qp3' => false,
                 ],
