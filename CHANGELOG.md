@@ -90,6 +90,7 @@
 - Chg #972: Change in query "distinct" flag type from `bool|null` to `bool` (@vjik)
 - New #973: Add `upsertWithReturningPks()` method to `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
 - New #968: Add `DateTimeColumn` column class (@Tigrov)
+- Bug #978: Fix memory leaking in `Command::exists()` method (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
