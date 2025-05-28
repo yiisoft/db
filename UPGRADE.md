@@ -137,7 +137,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryBuilderInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `QueryBuilderInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `DQLQueryBuilderInterface::buildFor()` - builds a SQL for `FOR` clause;
-- `DMLQueryBuilderInterface::upsertWithReturning()` - builds a SQL to inserts or updates a record with returning values;
+- `DMLQueryBuilderInterface::upsertWithReturning()` - builds a SQL to insert or update a record with returning values;
 - `DMLQueryBuilderInterface::withTypecasting()` - enables or disables typecasting of values when inserting or updating 
   records in DB;
 - `LikeConditionInterface::getCaseSensitive()` - returns whether the comparison is case-sensitive;

@@ -891,7 +891,7 @@ interface CommandInterface
 
     /**
      * Creates a command to insert rows into a database table if they don't already exist (matching unique constraints)
-     * or update them if they do, with returning values from the specified columns.
+     * or update them if they do, returning values from the specified columns.
      * The method will quote the `table`, `insertColumns`, `updateColumns` and `returnColumns` parameters before using
      * it in the generated SQL.
      *
