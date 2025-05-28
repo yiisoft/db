@@ -1046,7 +1046,7 @@ class CommandProvider
                 ['int_col' => 3, 'char_col' => str_repeat('a', 100), 'float_col' => new Expression('1 + 1.2'), 'bool_col' => true],
                 true,
                 ['int_col', 'char_col', 'float_col', 'bool_col'],
-                [],
+                ['int_col' => 3],
                 ['int_col' => 3, 'char_col' => str_repeat('a', 100), 'float_col' => 2.2, 'bool_col' => true],
             ],
         ];
