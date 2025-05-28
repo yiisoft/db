@@ -2134,10 +2134,13 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
-        $sql = DbHelper::replaceQuotes('SELECT 1 FROM [[table]] WHERE [[id]] = 1', $db->getDriverName());
+        $sql = DbHelper::replaceQuotes('SELECT 1 FROM [[customer]] WHERE [[id]] = 1', $db->getDriverName());
         // Alias required to avoid memory leaking on MySQL. Other DBMS have the same alias for consistency.
         // @link https://github.com/yiisoft/yii2/issues/20385
-        $expected = DbHelper::replaceQuotes('SELECT EXISTS(SELECT 1 FROM [[table]] WHERE [[id]] = 1) AS [[0]]', $db->getDriverName());
+        $expected = DbHelper::replaceQuotes(
+            'SELECT EXISTS(SELECT 1 FROM [[customer]] WHERE [[id]] = 1) AS [[0]]',
+            $db->getDriverName()
+        );
 
         $this->assertSame($expected, $qb->selectExists($sql));
     }
