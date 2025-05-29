@@ -468,7 +468,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function selectExists(string $rawSql): string
     {
-        return 'SELECT EXISTS(' . $rawSql . ')';
+        return 'SELECT EXISTS(' . $rawSql . ') AS ' . $this->quoter->quoteSimpleColumnName('0');
     }
 
     public function setConditionClasses(array $classes): void
