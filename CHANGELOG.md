@@ -91,6 +91,7 @@
 - New #973: Add `upsertWithReturningPks()` method to `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
 - New #968: Add `DateTimeColumn` column class (@Tigrov)
 - Bug #978: Fix memory leaking in `Command::exists()` method (@Tigrov)
+- Chg #980: Add constructor with DB connection to `AbstractCommand` (@vjik)
 
 ## 1.3.0 March 21, 2024
 
