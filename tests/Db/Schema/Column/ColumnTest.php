@@ -10,6 +10,7 @@ use Yiisoft\Db\Schema\Column\ArrayColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
+use Yiisoft\Db\Schema\Column\StringColumn;
 use Yiisoft\Db\Schema\Column\StructuredColumn;
 use Yiisoft\Db\Tests\AbstractColumnTest;
 use Yiisoft\Db\Tests\Support\Stub\Column;
@@ -365,5 +366,14 @@ final class ColumnTest extends AbstractColumnTest
         $this->assertSame([], $structuredCol->getColumns());
         $this->assertSame($structuredCol, $structuredCol->columns($columns));
         $this->assertSame($columns, $structuredCol->getColumns());
+    }
+
+    public function testStringColumnCollation(): void
+    {
+        $stringCol = new StringColumn();
+
+        $this->assertNull($stringCol->getCollation());
+        $this->assertSame($stringCol, $stringCol->collation('utf8mb4'));
+        $this->assertSame('utf8mb4', $stringCol->getCollation());
     }
 }

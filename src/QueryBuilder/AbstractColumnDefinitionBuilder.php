@@ -7,6 +7,7 @@ namespace Yiisoft\Db\QueryBuilder;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Schema\Column\StringColumn;
 
 use function in_array;
 use function strtolower;
@@ -57,6 +58,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
             . $this->buildDefault($column)
             . $this->buildComment($column)
             . $this->buildCheck($column)
+            . $this->buildCollate($column)
             . $this->buildReferences($column)
             . $this->buildExtra($column);
     }
@@ -122,6 +124,20 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
         $check = $column->getCheck();
 
         return !empty($check) ? " CHECK ($check)" : '';
+    }
+
+    /**
+     * Builds the collation clause for the column.
+     *
+     * @return string A string containing the COLLATE keyword and the collation name.
+     */
+    protected function buildCollate(ColumnInterface $column): string
+    {
+        if (!$column instanceof StringColumn || empty($column->getCollation())) {
+            return '';
+        }
+
+        return ' COLLATE ' . $column->getCollation();
     }
 
     /**

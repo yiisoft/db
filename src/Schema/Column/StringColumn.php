@@ -20,6 +20,20 @@ class StringColumn extends AbstractColumn
 {
     protected const DEFAULT_TYPE = ColumnType::STRING;
 
+    /**
+     * @var string|null The column collation.
+     */
+    protected string|null $collation = null;
+
+    /**
+     * Sets the collation for the column.
+     */
+    public function collation(string|null $collation): static
+    {
+        $this->collation = $collation;
+        return $this;
+    }
+
     public function dbTypecast(mixed $value): mixed
     {
         return match (gettype($value)) {
@@ -37,6 +51,16 @@ class StringColumn extends AbstractColumn
             },
             default => $this->throwWrongTypeException(gettype($value)),
         };
+    }
+
+    /**
+     * Returns the collation of the column.
+     *
+     * @psalm-mutation-free
+     */
+    public function getCollation(): string|null
+    {
+        return $this->collation;
     }
 
     /** @psalm-mutation-free */
