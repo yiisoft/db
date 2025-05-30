@@ -8,8 +8,10 @@ use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -257,9 +259,9 @@ final class CommandTest extends AbstractCommandTest
         $columns = [
             'id' => PseudoType::PK,
             'name' => ColumnType::STRING . '(255) NOT NULL',
-            'email' => ColumnType::STRING . '(255) NOT NULL',
-            'address' => ColumnType::STRING . '(255) NOT NULL',
-            'status' => ColumnType::INTEGER . ' NOT NULL',
+            'email' => new Expression('varchar(255) NOT NULL'),
+            'address' => ColumnBuilder::string()->notNull(),
+            'status' => new IntegerColumn(notNull: true),
             'profile_id' => ColumnType::INTEGER . ' NOT NULL',
             'data' => ColumnBuilder::json(),
             'created_at' => ColumnType::TIMESTAMP . ' NOT NULL',

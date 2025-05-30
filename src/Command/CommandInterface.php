@@ -18,6 +18,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
@@ -349,18 +350,16 @@ interface CommandInterface
      * If a column is specified with definition only (e.g. 'PRIMARY KEY (name, type)'), it will be directly put into the
      * generated SQL.
      *
+     * The method will quote the `table` and `columns` parameter before using it in the generated SQL.
+     *
      * @param string $table The name of the table to create.
-     * @param (ColumnInterface|string)[] $columns The columns (name => definition) in the new table.
-     * The definition can be `string` or {@see ColumnInterface} instance.
+     * @param (ColumnInterface|ExpressionInterface|string)[] $columns The columns (name => definition) in the new table.
+     * The definition can be `string`, or {@see ColumnInterface} or {@see ExpressionInterface} instance.
      * @param string|null $options More SQL fragments to append to the generated SQL.
      *
      * @throws Exception
      * @throws InvalidConfigException
      * @throws NotSupportedException
-     *
-     * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
-     *
-     * @psalm-param array<string, ColumnInterface>|string[] $columns
      */
     public function createTable(string $table, array $columns, ?string $options = null): static;
 

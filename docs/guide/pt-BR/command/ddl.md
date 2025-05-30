@@ -13,16 +13,17 @@ Para criar uma tabela, você pode usar o método `Yiisoft\Db\Command\CommandInte
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;
+use Yiisoft\Db\Schema\Column\ColumnBuilder;
 
 /** @var ConnectionInterface $db */
 $db->createCommand()->createTable(
     '{{%customer}}',
      [
-        'id' => 'pk',
-        'name' => 'string(255) NOT NULL',
-        'email' => 'string(255) NOT NULL',
-        'status' => 'integer NOT NULL',
-        'created_at' => 'datetime NOT NULL',
+        'id' => ColumnBuilder::primaryKey(),
+        'name' => ColumnBuilder::string()->notNull(),
+        'email' => ColumnBuilder::string()->notNull(),
+        'status' => ColumnBuilder::integer()->notNull(),
+        'created_at' => ColumnBuilder::datetime()->notNull(),
      ],
 )->execute();
 ```
