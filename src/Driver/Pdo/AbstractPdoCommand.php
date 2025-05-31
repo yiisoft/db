@@ -170,20 +170,14 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         }
     }
 
-    public function upsertWithReturningPks(
+    public function upsertReturningPks(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
     ): array|false {
-        if (empty($this->db->getSchema()->getTableSchema($table)?->getPrimaryKey())) {
-            if ($this->upsert($table, $insertColumns, $updateColumns)->execute() === 0) {
-                return false;
-            }
+        $primaryKeys = $this->db->getSchema()->getTableSchema($table)?->getPrimaryKey() ?? [];
 
-            return [];
-        }
-
-        return parent::upsertWithReturningPks($table, $insertColumns, $updateColumns);
+        return $this->upsertReturning($table, $insertColumns, $updateColumns, $primaryKeys);
     }
 
     /**

@@ -507,13 +507,20 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function upsertWithReturningPks(
+    public function upsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        array|null $returnColumns = null,
     ): array|false {
+        if ($returnColumns === []) {
+            $this->upsert($table, $insertColumns, $updateColumns)->execute();
+            return [];
+        }
+
         $params = [];
-        $sql = $this->getQueryBuilder()->upsertWithReturningPks($table, $insertColumns, $updateColumns, $params);
+        $sql = $this->getQueryBuilder()
+            ->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
 
         $this->setSql($sql)->bindValues($params);
 

@@ -20,6 +20,8 @@ use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stringable;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
+use function str_repeat;
+
 class CommandProvider
 {
     use TestTrait;
@@ -952,6 +954,100 @@ class CommandProvider
                     ],
                     'expected' => ['email' => 'user1@example.com', 'address' => 'address1', 'status' => 1],
                 ],
+            ],
+        ];
+    }
+
+    public static function upsertReturning(): array
+    {
+        return [
+            'insert' => [
+                'table' => 'customer',
+                'insertColumns' => ['name' => 'test_1', 'email' => 'test_1@example.com'],
+                'updateColumns' => true,
+                'returnColumns' => null,
+                'selectCondition' => ['id' => 4],
+                'expectedValues' => [
+                    'id' => 4,
+                    'name' => 'test_1',
+                    'email' => 'test_1@example.com',
+                    'address' => null,
+                    'status' => 0,
+                    'profile_id' => null,
+                ],
+            ],
+            'insert from sub-query' => [
+                'table' => 'customer',
+                'insertColumns' => (new Query(static::getDb()))->select([
+                    'name' => new Expression("'test_1'"),
+                    'email' => new Expression("'test_1@example.com'"),
+                ]),
+                'updateColumns' => true,
+                'returnColumns' => null,
+                'selectCondition' => ['id' => 4],
+                'expectedValues' => [
+                    'id' => 4,
+                    'name' => 'test_1',
+                    'email' => 'test_1@example.com',
+                    'address' => null,
+                    'status' => 0,
+                    'profile_id' => null,
+                ],
+            ],
+            'update from inserting values' => [
+                'order_item',
+                ['order_id' => 1, 'item_id' => 2, 'quantity' => 3, 'subtotal' => 100],
+                true,
+                null,
+                ['order_id' => 1, 'item_id' => 2],
+                [
+                    'order_id' => 1,
+                    'item_id' => 2,
+                    'quantity' => 3,
+                    'subtotal' => 100.0,
+                ],
+            ],
+            'update from updating values' => [
+                'order_item',
+                ['order_id' => 1, 'item_id' => 2, 'quantity' => 3, 'subtotal' => 100],
+                ['subtotal' => new Expression('{{order_item}}.[[subtotal]] + 10')],
+                null,
+                ['order_id' => 1, 'item_id' => 2],
+                [
+                    'order_id' => 1,
+                    'item_id' => 2,
+                    'quantity' => 2,
+                    'subtotal' => 50.0,
+                ],
+            ],
+            'do nothing' => [
+                'order_item',
+                ['order_id' => 1, 'item_id' => 2, 'quantity' => 3, 'subtotal' => 100],
+                false,
+                null,
+                ['order_id' => 1, 'item_id' => 2],
+                [
+                    'order_id' => 1,
+                    'item_id' => 2,
+                    'quantity' => 2,
+                    'subtotal' => 40.0,
+                ],
+            ],
+            'no return columns' => [
+                'order_item',
+                ['order_id' => 1, 'item_id' => 2, 'quantity' => 3, 'subtotal' => 100],
+                true,
+                [],
+                [],
+                [],
+            ],
+            'no primary keys' => [
+                'type',
+                ['int_col' => 3, 'char_col' => str_repeat('a', 100), 'float_col' => new Expression('1 + 1.2'), 'bool_col' => true],
+                true,
+                ['int_col', 'char_col', 'float_col', 'bool_col'],
+                ['int_col' => 3],
+                ['int_col' => 3, 'char_col' => str_repeat('a', 100), 'float_col' => 2.2, 'bool_col' => true],
             ],
         ];
     }
