@@ -9,10 +9,12 @@ use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -102,7 +104,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 <<<SQL
                 CREATE TABLE [[test]] (
                 \t[[id]] integer PRIMARY KEY AUTOINCREMENT,
-                \t[[name]] varchar(255) NOT NULL,
+                \t[[name]] string(255) NOT NULL,
                 \t[[email]] varchar(255) NOT NULL,
                 \t[[status]] integer NOT NULL,
                 \t[[created_at]] datetime NOT NULL,
@@ -115,9 +117,9 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 'test',
                 [
                     'id' => 'pk',
-                    'name' => 'string(255) NOT NULL',
+                    'name' => new Expression('string(255) NOT NULL'),
                     'email' => ColumnBuilder::string()->notNull(),
-                    'status' => 'integer NOT NULL',
+                    'status' => new IntegerColumn(notNull: true),
                     'created_at' => 'datetime NOT NULL',
                     'UNIQUE test_email_unique (email)',
                 ],
