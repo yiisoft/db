@@ -14,13 +14,13 @@ use Throwable;
 use Yiisoft\Db\Command\AbstractCommand;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
-use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
@@ -45,6 +45,11 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     use ProfilerAwareTrait;
 
     /**
+     * @var PdoConnectionInterface
+     */
+    protected readonly ConnectionInterface $db;
+
+    /**
      * @var PDOStatement|null Represents a prepared statement and, after the statement is executed, an associated
      * result set.
      *
@@ -52,8 +57,12 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      */
     protected PDOStatement|null $pdoStatement = null;
 
-    public function __construct(protected PdoConnectionInterface $db)
+    /**
+     * @param PdoConnectionInterface $db The PDO database connection to use.
+     */
+    public function __construct(PdoConnectionInterface $db)
     {
+        parent::__construct($db);
     }
 
     /**
@@ -125,19 +134,6 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         return $this;
     }
 
-    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false
-    {
-        if (empty($this->db->getSchema()->getTableSchema($table)?->getPrimaryKey())) {
-            if ($this->insert($table, $columns)->execute() === 0) {
-                return false;
-            }
-
-            return [];
-        }
-
-        return parent::insertWithReturningPks($table, $columns);
-    }
-
     public function prepare(bool|null $forRead = null): void
     {
         if (isset($this->pdoStatement)) {
@@ -168,22 +164,6 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
 
             throw new Exception($message, $errorInfo, $e);
         }
-    }
-
-    public function upsertWithReturningPks(
-        string $table,
-        array|QueryInterface $insertColumns,
-        array|bool $updateColumns = true,
-    ): array|false {
-        if (empty($this->db->getSchema()->getTableSchema($table)?->getPrimaryKey())) {
-            if ($this->upsert($table, $insertColumns, $updateColumns)->execute() === 0) {
-                return false;
-            }
-
-            return [];
-        }
-
-        return parent::upsertWithReturningPks($table, $insertColumns, $updateColumns);
     }
 
     /**
