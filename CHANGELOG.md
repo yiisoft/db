@@ -93,6 +93,7 @@
 - Bug #978: Fix memory leaking in `Command::exists()` method (@Tigrov)
 - Chg #980: Add constructor with DB connection to `AbstractCommand` (@vjik)
 - Enh #979: Allow `ExpressionInterface` for column definitions when create table (@Tigrov)
+- Enh #981: Refactor constraints (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

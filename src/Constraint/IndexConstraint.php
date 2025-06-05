@@ -12,13 +12,27 @@ namespace Yiisoft\Db\Constraint;
  * It has information about the table and column(s) that the constraint applies to, as well as whether the index is
  * unique.
  */
-final class IndexConstraint extends Constraint
+final class IndexConstraint extends AbstractConstraint
 {
-    private bool $isUnique = false;
-    private bool $isPrimary = false;
+    /**
+     * @param string $name The constraint name.
+     * @param string[] $columnNames The list of column names the constraint belongs to.
+     * @param bool $isUnique Whether the index is unique.
+     * @param bool $isPrimaryKey Whether the index was created for a primary key.
+     */
+    public function __construct(
+        string $name = '',
+        array $columnNames = [],
+        private bool $isUnique = false,
+        private bool $isPrimaryKey = false,
+    ) {
+        parent::__construct($name, $columnNames);
+    }
 
     /**
      * @return bool Whether the index is unique.
+     *
+     * @psalm-immutable
      */
     public function isUnique(): bool
     {
@@ -27,31 +41,33 @@ final class IndexConstraint extends Constraint
 
     /**
      * @return bool Whether the index was created for a primary key.
+     *
+     * @psalm-immutable
      */
-    public function isPrimary(): bool
+    public function isPrimaryKey(): bool
     {
-        return $this->isPrimary;
+        return $this->isPrimaryKey;
     }
 
     /**
      * Set whether the index is unique.
      *
-     * @param bool $value Whether the index is unique.
+     * @param bool $isUnique Whether the index is unique.
      */
-    public function unique(bool $value): self
+    public function unique(bool $isUnique = true): self
     {
-        $this->isUnique = $value;
+        $this->isUnique = $isUnique;
         return $this;
     }
 
     /**
      * Set whether the index was created for a primary key.
      *
-     * @param bool $value whether the index was created for a primary key.
+     * @param bool $isPrimaryKey whether the index was created for a primary key.
      */
-    public function primary(bool $value): self
+    public function primaryKey(bool $isPrimaryKey = true): self
     {
-        $this->isPrimary = $value;
+        $this->isPrimaryKey = $isPrimaryKey;
         return $this;
     }
 }

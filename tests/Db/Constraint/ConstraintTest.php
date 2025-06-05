@@ -4,44 +4,52 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Constraint;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use stdClass;
-use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Constraint\AbstractConstraint;
+use Yiisoft\Db\Constraint\CheckConstraint;
+use Yiisoft\Db\Constraint\DefaultValueConstraint;
+use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Constraint\IndexConstraint;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class ConstraintTest extends TestCase
 {
-    public function testGetColumnNames(): void
+    public static function constraintClasses(): array
     {
-        $constraint = new Constraint();
+        return [
+            [CheckConstraint::class],
+            [DefaultValueConstraint::class],
+            [ForeignKeyConstraint::class],
+            [IndexConstraint::class],
+        ];
+    }
 
-        $this->assertNull($constraint->getColumnNames());
+    #[DataProvider('constraintClasses')]
+    public function testGetColumnNames(string $className): void
+    {
+        /** @var AbstractConstraint $constraint */
+        $constraint = new $className();
 
-        $constraint->columnNames('columnNames');
-
-        $this->assertSame('columnNames', $constraint->getColumnNames());
+        $this->assertSame([], $constraint->getColumnNames());
 
         $constraint->columnNames(['columnNames']);
 
         $this->assertSame(['columnNames'], $constraint->getColumnNames());
     }
 
-    public function testGetName(): void
+    #[DataProvider('constraintClasses')]
+    public function testGetName(string $className): void
     {
-        $constraint = new Constraint();
+        /** @var AbstractConstraint $constraint */
+        $constraint = new $className();
 
-        $this->assertNull($constraint->getName());
+        $this->assertSame('', $constraint->getName());
 
         $constraint->name('name');
 
         $this->assertSame('name', $constraint->getName());
-
-        $constraint->name(new stdClass());
-
-        $this->assertInstanceOf(stdClass::class, $constraint->getName());
     }
 }

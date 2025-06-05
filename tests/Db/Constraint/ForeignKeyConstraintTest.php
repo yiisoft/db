@@ -14,22 +14,11 @@ use Yiisoft\Db\Constraint\ForeignKeyConstraint;
  */
 final class ForeignKeyConstraintTest extends TestCase
 {
-    public function testGetForeignSchemaName(): void
-    {
-        $foreignKeyConstraint = new ForeignKeyConstraint();
-
-        $this->assertNull($foreignKeyConstraint->getForeignSchemaName());
-
-        $foreignKeyConstraint = $foreignKeyConstraint->foreignSchemaName('foreignSchemaName');
-
-        $this->assertSame('foreignSchemaName', $foreignKeyConstraint->getForeignSchemaName());
-    }
-
     public function testGetForeignTableName(): void
     {
         $foreignKeyConstraint = new ForeignKeyConstraint();
 
-        $this->assertNull($foreignKeyConstraint->getForeignTableName());
+        $this->assertSame('', $foreignKeyConstraint->getForeignTableName());
 
         $foreignKeyConstraint = $foreignKeyConstraint->foreignTableName('foreignTableName');
 
