@@ -523,20 +523,20 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function upsertWithReturningPks(
+    public function upsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        array|null $returnColumns = null,
     ): array|false {
-        if (empty($this->db->getSchema()->getTableSchema($table)?->getPrimaryKey())) {
-            if ($this->upsert($table, $insertColumns, $updateColumns)->execute() === 0) {
-                return false;
-            }
+        if ($returnColumns === []) {
+            $this->upsert($table, $insertColumns, $updateColumns)->execute();
             return [];
         }
 
         $params = [];
-        $sql = $this->getQueryBuilder()->upsertWithReturningPks($table, $insertColumns, $updateColumns, $params);
+        $sql = $this->getQueryBuilder()
+            ->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
 
         $this->setSql($sql)->bindValues($params);
 
@@ -544,6 +544,16 @@ abstract class AbstractCommand implements CommandInterface
         $result = $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
 
         return is_array($result) ? $result : false;
+    }
+
+    public function upsertReturningPks(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+    ): array|false {
+        $primaryKeys = $this->db->getSchema()->getTableSchema($table)?->getPrimaryKey() ?? [];
+
+        return $this->upsertReturning($table, $insertColumns, $updateColumns, $primaryKeys);
     }
 
     public function withDbTypecasting(bool $dbTypecasting = true): static
