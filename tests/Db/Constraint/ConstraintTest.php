@@ -17,7 +17,7 @@ use Yiisoft\Db\Constraint\IndexConstraint;
  */
 final class ConstraintTest extends TestCase
 {
-    public static function constrainClasses(): array
+    public static function constraintClasses(): array
     {
         return [
             [CheckConstraint::class],
@@ -27,7 +27,7 @@ final class ConstraintTest extends TestCase
         ];
     }
 
-    #[DataProvider('constrainClasses')]
+    #[DataProvider('constraintClasses')]
     public function testGetColumnNames(string $className): void
     {
         /** @var AbstractConstraint $constraint */
@@ -40,7 +40,7 @@ final class ConstraintTest extends TestCase
         $this->assertSame(['columnNames'], $constraint->getColumnNames());
     }
 
-    #[DataProvider('constrainClasses')]
+    #[DataProvider('constraintClasses')]
     public function testGetName(string $className): void
     {
         /** @var AbstractConstraint $constraint */
