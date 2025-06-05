@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
-use JsonException;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\Depends;
-use Throwable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\IndexType;
@@ -18,18 +16,14 @@ use Yiisoft\Db\Constraint\DefaultValueConstraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Tests\AbstractSchemaTest;
 use Yiisoft\Db\Tests\Provider\SchemaProvider;
-use Yiisoft\Db\Tests\Support\AnyCaseValue;
-use Yiisoft\Db\Tests\Support\AnyValue;
 use Yiisoft\Db\Tests\Support\Assert;
 
-use function array_keys;
 use function count;
 use function gettype;
 use function is_array;

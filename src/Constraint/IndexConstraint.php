@@ -21,8 +21,8 @@ final class IndexConstraint extends AbstractConstraint
      * @param bool $isPrimaryKey Whether the index was created for a primary key.
      */
     public function __construct(
-        string       $name = '',
-        array        $columnNames = [],
+        string $name = '',
+        array $columnNames = [],
         private bool $isUnique = false,
         private bool $isPrimaryKey = false,
     ) {
