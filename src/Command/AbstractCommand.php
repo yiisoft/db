@@ -6,6 +6,7 @@ namespace Yiisoft\Db\Command;
 
 use Closure;
 use Throwable;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -66,6 +67,14 @@ use function stream_get_contents;
  */
 abstract class AbstractCommand implements CommandInterface
 {
+    /**
+     * @param ConnectionInterface $db The database connection to use.
+     */
+    public function __construct(
+        protected readonly ConnectionInterface $db,
+    ) {
+    }
+
     /**
      * Command in this query mode returns count of affected rows.
      *
@@ -378,6 +387,13 @@ abstract class AbstractCommand implements CommandInterface
 
     public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false
     {
+        if (empty($this->db->getSchema()->getTableSchema($table)?->getPrimaryKey())) {
+            if ($this->insert($table, $columns)->execute() === 0) {
+                return false;
+            }
+            return [];
+        }
+
         $params = [];
         $sql = $this->getQueryBuilder()->insertWithReturningPks($table, $columns, $params);
 
@@ -528,6 +544,16 @@ abstract class AbstractCommand implements CommandInterface
         $result = $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
 
         return is_array($result) ? $result : false;
+    }
+
+    public function upsertReturningPks(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+    ): array|false {
+        $primaryKeys = $this->db->getSchema()->getTableSchema($table)?->getPrimaryKey() ?? [];
+
+        return $this->upsertReturning($table, $insertColumns, $updateColumns, $primaryKeys);
     }
 
     public function withDbTypecasting(bool $dbTypecasting = true): static

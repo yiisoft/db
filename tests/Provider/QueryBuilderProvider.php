@@ -1141,26 +1141,6 @@ class QueryBuilderProvider
         ];
     }
 
-    public static function selectExist(): array
-    {
-        return [
-            [
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    SELECT 1 FROM `table` WHERE `id` = 1
-                    SQL,
-                    static::$driverName,
-                ),
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    SELECT EXISTS(SELECT 1 FROM `table` WHERE `id` = 1)
-                    SQL,
-                    static::$driverName,
-                ),
-            ],
-        ];
-    }
-
     public static function selectScalar(): array
     {
         return [
