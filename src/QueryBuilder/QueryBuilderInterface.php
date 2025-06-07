@@ -50,6 +50,25 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
     public function buildColumnDefinition(ColumnInterface|string $column): string;
 
     /**
+     * Securely converts PHP values to their SQL representations with using bind parameters where necessary:
+     * - `array` values are converted to JSON or SQL array expressions;
+     * - `bool` values are converted to `TRUE` or `FALSE` or other DBMS-specific boolean representations;
+     * - `float` and `int` values are converted to their string representations;
+     * - `null` values are converted to `NULL`;
+     * - `object` values are converted to their SQL representation based on their type;
+     * - `resource` values are bound as LOB parameters;
+     * - closed `resource` throw an {@see InvalidArgumentException};
+     * - `string` values are bound as string parameters;
+     * - other values are bound as parameters.
+     *
+     * @param mixed $value The PHP value to be converted to SQL.
+     * @param array $params The parameters array to which the bound parameters will be added.
+     *
+     * @return string The SQL representation of the value.
+     */
+    public function buildValue(mixed $value, array &$params = []): string;
+
+    /**
      * Returns the column definition builder for the current DBMS.
      */
     public function getColumnDefinitionBuilder(): ColumnDefinitionBuilderInterface;

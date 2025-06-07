@@ -6,10 +6,13 @@ namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use Yiisoft\Db\Command\CommandInterface;
+use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
+use Yiisoft\Db\Tests\Support\Assert;
 
 abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
 {
@@ -117,25 +120,30 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
             'bool_col' => '1',
         ];
 
+        // Test with typecasting enabled
+        $expectedParams = [':qp0' => new Param('test', DataType::STRING)];
+
+        if ($db->getDriverName() === 'oci') {
+            $expectedParams[':qp1'] = new Param('1', DataType::STRING);
+        }
+
         $params = [];
         $qb->insertBatch('{{type}}', [$values], [], $params);
 
-        $this->assertSame([
-            ':qp0' => 1,
-            ':qp1' => 'test',
-            ':qp2' => 3.14,
-            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
-        ], $params);
+        Assert::arraysEquals($expectedParams, $params);
+
+        // Test with typecasting disabled
+        $expectedParams = [
+            ':qp0' => new Param('1', DataType::STRING),
+            ':qp1' => new Param('test', DataType::STRING),
+            ':qp2' => new Param('3.14', DataType::STRING),
+            ':qp3' => new Param('1', DataType::STRING),
+        ];
 
         $params = [];
         $qb->withTypecasting(false)->insertBatch('{{type}}', [$values], [], $params);
 
-        $this->assertSame([
-            ':qp0' => '1',
-            ':qp1' => 'test',
-            ':qp2' => '3.14',
-            ':qp3' => '1',
-        ], $params);
+        Assert::arraysEquals($expectedParams, $params);
 
         $db->close();
     }

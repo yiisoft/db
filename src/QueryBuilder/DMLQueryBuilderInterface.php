@@ -141,6 +141,13 @@ interface DMLQueryBuilderInterface
     public function insertWithReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string;
 
     /**
+     * Returns whether type casting is required for the query builder.
+     *
+     * @see withTypecasting()
+     */
+    public function isTypecastingRequired(): bool;
+
+    /**
      * Creates an SQL statement for resetting the sequence value of a table's primary key.
      *
      * The sequence will be reset such that the primary key of the next new row inserted will have the specified value
@@ -258,5 +265,12 @@ interface DMLQueryBuilderInterface
         array &$params = [],
     ): string;
 
+    /**
+     * Clones the current instance and sets whether type casting is required for the query builder.
+     *
+     * @param bool $typecasting Whether type casting is required. Defaults to `true`.
+     *
+     * @see isTypecastingRequired()
+     */
     public function withTypecasting(bool $typecasting = true): static;
 }

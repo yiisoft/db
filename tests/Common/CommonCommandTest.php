@@ -298,17 +298,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * Make sure that `{{something}}` in values will not be encoded.
-     *
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::batchInsert
-     *
-     * {@see https://github.com/yiisoft/yii2/issues/11242}
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
+    #[DataProviderExternal(CommandProvider::class, 'batchInsert')]
     public function testBatchInsert(
         string $table,
         iterable $values,
@@ -1562,12 +1552,13 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->insertBatch('{{type}}', [$values]);
 
-        $this->assertSame([
-            ':qp0' => 1,
-            ':qp1' => 'test',
-            ':qp2' => 3.14,
-            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
-        ], $command->getParams());
+        $expectedParams = [':qp0' => 'test'];
+
+        if ($db->getDriverName() === 'oci') {
+            $expectedParams[':qp1'] = '1';
+        }
+
+        $this->assertSame($expectedParams, $command->getParams());
 
         $command = $command->withDbTypecasting(false);
         $command->insertBatch('{{type}}', [$values]);

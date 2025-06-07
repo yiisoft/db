@@ -124,6 +124,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
     }
 
+    public function isTypecastingRequired(): bool
+    {
+        return $this->typecasting;
+    }
+
     /** @throws NotSupportedException */
     public function resetSequence(string $table, int|string|null $value = null): string
     {
@@ -209,6 +214,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         $names = array_values($columnNames);
         $keys = array_fill_keys($names, false);
         $columns = $this->typecasting ? $this->schema->getTableSchema($table)?->getColumns() ?? [] : [];
+        $queryBuilder = $this->queryBuilder;
 
         foreach ($rows as $row) {
             $i = 0;
@@ -222,11 +228,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                     $value = $columns[$columnName]->dbTypecast($value);
                 }
 
-                if ($value instanceof ExpressionInterface) {
-                    $placeholders[$columnName] = $this->queryBuilder->buildExpression($value, $params);
-                } else {
-                    $placeholders[$columnName] = $this->queryBuilder->bindParam($value, $params);
-                }
+                $placeholders[$columnName] = $queryBuilder->buildValue($value, $params);
 
                 ++$i;
             }
