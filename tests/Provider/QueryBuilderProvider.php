@@ -12,7 +12,6 @@ use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
-use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
@@ -169,7 +168,7 @@ class QueryBuilderProvider
                 'expectedParams' => [
                     ':qp0' => new Param('test@example.com', DataType::STRING),
                     ':qp1' => new Param('silverfire', DataType::STRING),
-                    ':qp2' => new Param('Kyiv {{city}}, Ukraine', DataType::STRING)
+                    ':qp2' => new Param('Kyiv {{city}}, Ukraine', DataType::STRING),
                 ],
             ],
             'escape-danger-chars' => [
@@ -1790,67 +1789,67 @@ class QueryBuilderProvider
             'string' => [
                 'string',
                 ':qp0',
-                [':qp0' => new Param('string', DataType::STRING)]
+                [':qp0' => new Param('string', DataType::STRING)],
             ],
             'binary' => [
                 $param = fopen(__DIR__ . '/../Support/string.txt', 'rb'),
                 ':qp0',
-                [':qp0' => new Param($param, DataType::LOB)]
+                [':qp0' => new Param($param, DataType::LOB)],
             ],
             'paramBinary' => [
                 $param = new Param('string', DataType::LOB),
                 ':qp0',
-                [':qp0' => $param]
+                [':qp0' => $param],
             ],
             'paramString' => [
                 $param = new Param('string', DataType::STRING),
                 ':qp0',
-                [':qp0' => $param]
+                [':qp0' => $param],
             ],
             'paramInteger' => [
                 $param = new Param(1, DataType::INTEGER),
                 ':qp0',
-                [':qp0' => $param]
+                [':qp0' => $param],
             ],
             'expression' => [
                 new Expression('(1 + 2)'),
                 '(1 + 2)',
-                []
+                [],
             ],
             'expression with params' => [
                 new Expression('(:a + :b)', [':a' => 1, 'b' => 2]),
                 '(:a + :b)',
-                [':a' => 1, 'b' => 2]
+                [':a' => 1, 'b' => 2],
             ],
             'Stringable' => [
                 new Stringable('string'),
                 ':qp0',
-                [':qp0' => new Param('string', DataType::STRING)]
+                [':qp0' => new Param('string', DataType::STRING)],
             ],
             'array' => [
                 ['a', 'b', 'c'],
                 ':qp0',
-                [':qp0' => new Param('["a","b","c"]', DataType::STRING)]
+                [':qp0' => new Param('["a","b","c"]', DataType::STRING)],
             ],
             'json' => [
                 ['a' => 1, 'b' => 2],
                 ':qp0',
-                [':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)]
+                [':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)],
             ],
             'Iterator' => [
                 new ArrayIterator(['a', 'b', 'c']),
                 ':qp0',
-                [':qp0' => new Param('["a","b","c"]', DataType::STRING)]
+                [':qp0' => new Param('["a","b","c"]', DataType::STRING)],
             ],
             'Traversable' => [
                 new ArrayIterator(['a' => 1, 'b' => 2]),
                 ':qp0',
-                [':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)]
+                [':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)],
             ],
             'JsonSerializable' => [
                 new JsonSerializableObject(['a' => 1, 'b' => 2]),
                 ':qp0',
-                [':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)]
+                [':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)],
             ],
         ];
     }
