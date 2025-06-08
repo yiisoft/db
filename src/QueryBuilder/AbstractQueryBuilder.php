@@ -424,9 +424,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->insertWithReturningPks($table, $columns, $params);
     }
 
-    public function isTypecastingRequired(): bool
+    public function isTypecastingEnabled(): bool
     {
-        return $this->dmlBuilder->isTypecastingRequired();
+        return $this->dmlBuilder->isTypecastingEnabled();
     }
 
     public function getQuoter(): QuoterInterface

@@ -124,7 +124,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         throw new NotSupportedException(__METHOD__ . '() is not supported by this DBMS.');
     }
 
-    public function isTypecastingRequired(): bool
+    public function isTypecastingEnabled(): bool
     {
         return $this->typecasting;
     }
