@@ -577,13 +577,14 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->upsert($table, $insertColumns, $updateColumns, $params);
     }
 
-    public function upsertWithReturningPks(
+    public function upsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,
+        array|null $returnColumns = null,
         array &$params = [],
     ): string {
-        return $this->dmlBuilder->upsertWithReturningPks($table, $insertColumns, $updateColumns, $params);
+        return $this->dmlBuilder->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
     }
 
     public function withTypecasting(bool $typecasting = true): static

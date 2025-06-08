@@ -269,11 +269,12 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns);
     }
 
-    #[DataProviderExternal(QueryBuilderProvider::class, 'upsertWithReturningPks')]
-    public function testUpsertWithReturningPks(
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsertReturning')]
+    public function testUpsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
+        array|null $returnColumns,
         string $expectedSql,
         array $expectedParams
     ): void {
@@ -282,10 +283,10 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsertWithReturningPks() is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsertReturning() is not supported by this DBMS.'
         );
 
-        $qb->upsertWithReturningPks($table, $insertColumns, $updateColumns);
+        $qb->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns);
     }
 
     public function testBuildValueClosedResource(): void
