@@ -497,7 +497,17 @@ final class CommandInterfaceProxy implements CommandInterface
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function upsertWithReturningPks(
+    public function upsertReturning(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+        array|null $returnColumns = null,
+    ): array|false {
+        /** @var array|false */
+        return $this->decorated->{__FUNCTION__}(...func_get_args());
+    }
+
+    public function upsertReturningPks(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns = true,

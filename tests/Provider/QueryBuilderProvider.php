@@ -1490,7 +1490,7 @@ class QueryBuilderProvider
                 [':qp0' => 'dynamic@example.com'],
             ],
             'values and expressions without update part' => [
-                '{{%T_upsert}}',
+                'T_upsert',
                 ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('CURRENT_TIMESTAMP')],
                 false,
                 '',
@@ -1510,7 +1510,7 @@ class QueryBuilderProvider
                 [':phEmail' => 'dynamic@example.com', ':qp1' => 0],
             ],
             'query, values and expressions without update part' => [
-                '{{%T_upsert}}',
+                'T_upsert',
                 (new Query(static::getDb()))
                     ->select(
                         [
@@ -1530,7 +1530,7 @@ class QueryBuilderProvider
                 [':qp0' => 1],
             ],
             'no columns to update with unique' => [
-                '{{%T_upsert}}',
+                'T_upsert',
                 ['email' => 'email'],
                 true,
                 '',
@@ -1546,10 +1546,10 @@ class QueryBuilderProvider
         ];
     }
 
-    public static function upsertWithReturningPks(): array
+    public static function upsertReturning(): array
     {
         return [
-            ['{{table}}', [], [], '', []],
+            ['{{table}}', [], [], [], '', []],
         ];
     }
 
