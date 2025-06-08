@@ -131,12 +131,14 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
+- `QueryBuilderInterface::buildValue()` - converts a value to its SQL representation with binding parameters if necessary;
 - `QueryBuilderInterface::prepareParam()` - converts a `ParamInterface` object to its SQL representation;
 - `QueryBuilderInterface::prepareValue()` - converts a value to its SQL representation;
 - `QueryBuilderInterface::replacePlaceholders()` - replaces placeholders in the SQL string with the corresponding values;
 - `QueryBuilderInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `QueryBuilderInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
 - `DQLQueryBuilderInterface::buildFor()` - builds a SQL for `FOR` clause;
+- `DMLQueryBuilderInterface::isTypecastingEnabled()` - returns whether typecasting is enabled for the query builder;
 - `DMLQueryBuilderInterface::upsertWithReturningPks()` - builds a SQL to inserts or updates a record and returns its 
   primary keys;
 - `DMLQueryBuilderInterface::withTypecasting()` - enables or disables typecasting of values when inserting or updating 
