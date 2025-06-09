@@ -32,6 +32,7 @@ use function bin2hex;
 use function count;
 use function get_resource_type;
 use function gettype;
+use function is_resource;
 use function is_string;
 use function stream_get_contents;
 use function strlen;
@@ -439,7 +440,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return match ($param->getType()) {
             DataType::BOOLEAN => $param->getValue() ? static::TRUE_VALUE : static::FALSE_VALUE,
             DataType::INTEGER => (string) (int) $param->getValue(),
-            DataType::LOB => $this->prepareBinary((string) $param->getValue()),
+            DataType::LOB => is_resource($value = $param->getValue())
+                ? $this->prepareResource($value)
+                : $this->prepareBinary((string) $value),
             DataType::NULL => 'NULL',
             default => $this->prepareValue($param->getValue()),
         };
