@@ -442,7 +442,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             DataType::INTEGER => (string) (int) $param->getValue(),
             DataType::LOB => is_resource($value = $param->getValue())
                 ? $this->prepareResource($value)
-                : $this->prepareBinary($value),
+                : $this->prepareBinary((string) $value),
             DataType::NULL => 'NULL',
             default => $this->prepareValue($param->getValue()),
         };
