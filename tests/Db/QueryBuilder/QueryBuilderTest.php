@@ -296,10 +296,11 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $resource = fopen('php://memory', 'r');
         fclose($resource);
+        $params = [];
 
         $this->expectExceptionObject(new InvalidArgumentException('Resource is closed.'));
 
-        $qb->buildValue($resource);
+        $qb->buildValue($resource, $params);
     }
 
     public function testPrepareValueClosedResource(): void

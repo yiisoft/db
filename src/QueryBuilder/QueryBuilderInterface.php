@@ -66,7 +66,7 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      *
      * @return string The SQL representation of the value.
      */
-    public function buildValue(mixed $value, array &$params = []): string;
+    public function buildValue(mixed $value, array &$params): string;
 
     /**
      * Returns the column definition builder for the current DBMS.

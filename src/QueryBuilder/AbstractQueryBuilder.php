@@ -264,7 +264,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dqlBuilder->buildUnion($unions, $params);
     }
 
-    public function buildValue(mixed $value, array &$params = []): string
+    public function buildValue(mixed $value, array &$params): string
     {
         /** @psalm-suppress MixedArgument */
         return match (gettype($value)) {
