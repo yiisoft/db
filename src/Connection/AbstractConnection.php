@@ -6,8 +6,10 @@ namespace Yiisoft\Db\Connection;
 
 use Closure;
 use Throwable;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
@@ -66,6 +68,13 @@ abstract class AbstractConnection implements ConnectionInterface
     public function setEnableSavepoint(bool $value): void
     {
         $this->enableSavepoint = $value;
+    }
+
+    public function select(
+        array|bool|float|int|string|ExpressionInterface $columns = [],
+        ?string $option = null,
+    ): QueryInterface {
+        return (new Query($this))->select($columns, $option);
     }
 
     public function setTablePrefix(string $value): void
