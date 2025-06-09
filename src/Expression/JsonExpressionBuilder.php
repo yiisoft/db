@@ -95,7 +95,7 @@ final class JsonExpressionBuilder implements ExpressionBuilderInterface
     protected function buildValue(mixed $value, array &$params): string
     {
         if ($value instanceof Traversable && !$value instanceof JsonSerializable) {
-            $value = iterator_to_array($value, false);
+            $value = iterator_to_array($value);
         }
 
         return $this->buildStringValue(json_encode($value, JSON_THROW_ON_ERROR), $params);

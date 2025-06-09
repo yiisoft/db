@@ -61,7 +61,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         try {
             $this->assertSame($expected, $qb->insertBatch($table, $rows, $columns, $params));
-            $this->assertSame($expectedParams, $params);
+            Assert::arraysEquals($expectedParams, $params);
         } catch (InvalidArgumentException|Exception) {
         }
     }
@@ -289,15 +289,29 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns);
     }
 
+    public function testBuildValueClosedResource(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $resource = fopen('php://memory', 'r');
+        fclose($resource);
+        $params = [];
+
+        $this->expectExceptionObject(new InvalidArgumentException('Resource is closed.'));
+
+        $qb->buildValue($resource, $params);
+    }
+
     public function testPrepareValueClosedResource(): void
     {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
-        $this->expectExceptionObject(new InvalidArgumentException('Resource is closed.'));
-
         $resource = fopen('php://memory', 'r');
         fclose($resource);
+
+        $this->expectExceptionObject(new InvalidArgumentException('Resource is closed.'));
 
         $qb->prepareValue($resource);
     }
