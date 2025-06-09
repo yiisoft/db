@@ -201,13 +201,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     *
      * @psalm-param array<array-key, string> $columns
      */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'batchInsert')]
     public function testBatchInsert(
         string $table,
         iterable $rows,
@@ -222,7 +218,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->insertBatch($table, $rows, $columns, $params);
 
         $this->assertSame($expected, $sql);
-        $this->assertSame($expectedParams, $params);
+        Assert::arraysEquals($expectedParams, $params);
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildCondition')]
@@ -243,7 +239,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
             $sql
         );
-        $this->assertEquals($expectedParams, $params);
+        Assert::arraysEquals($expectedParams, $params);
     }
 
     /**
@@ -2392,19 +2388,20 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db->createCommand($sql, $params)->execute();
     }
 
-    #[DataProviderExternal(QueryBuilderProvider::class, 'upsertWithReturningPks')]
-    public function testUpsertWithReturningPks(
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsertReturning')]
+    public function testUpsertReturning(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
+        array|null $returnColumns,
         string $expectedSql,
-        array $expectedParams
+        array $expectedParams,
     ): void {
         $db = $this->getConnection(true);
         $qb = $db->getQueryBuilder();
 
         $params = [];
-        $sql = $qb->upsertWithReturningPks($table, $insertColumns, $updateColumns, $params);
+        $sql = $qb->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
 
         $this->assertSame($expectedSql, $sql);
         $this->assertSame($expectedParams, $params);
@@ -2501,5 +2498,16 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expected, $qb->prepareValue($value));
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildValue')]
+    public function testBuildValue(mixed $value, string $expected, array $expectedParams): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $params = [];
+        $this->assertSame($expected, $qb->buildValue($value, $params));
+        Assert::arraysEquals($expectedParams, $params);
     }
 }
