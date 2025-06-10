@@ -49,7 +49,7 @@ abstract class AbstractSchema implements SchemaInterface
     private array $schemaNames = [];
     /** @var string[][] */
     private array $tableNames = [];
-    /** @var array[] */
+    /** @var (AbstractConstraint[]|IndexConstraint|TableSchemaInterface|null)[][] */
     private array $tableMetadata = [];
 
     public function __construct(protected ConnectionInterface $db, private SchemaCache $schemaCache)
@@ -368,7 +368,8 @@ abstract class AbstractSchema implements SchemaInterface
      * @param bool $refresh Whether to fetch the latest available table metadata. If this is `false`, cached data may be
      * returned if available.
      *
-     * @return array The metadata of the given type for all tables in the given schema.
+     * @return AbstractConstraint[][]|IndexConstraint[]|TableSchemaInterface[] The metadata of the given type for all
+     * tables in the given schema.
      */
     protected function getSchemaMetadata(string $schema, string $type, bool $refresh): array
     {
@@ -419,7 +420,6 @@ abstract class AbstractSchema implements SchemaInterface
             $this->saveTableMetadataToCache($rawName);
         }
 
-        /** @var AbstractConstraint[]|IndexConstraint|TableSchemaInterface|null */
         return $this->tableMetadata[$rawName][$type];
     }
 
@@ -515,6 +515,7 @@ abstract class AbstractSchema implements SchemaInterface
         }
 
         unset($metadata[self::CACHE_VERSION]);
+        /** @var (AbstractConstraint[]|IndexConstraint|TableSchemaInterface|null)[] $metadata */
         $this->tableMetadata[$rawName] = $metadata;
     }
 
