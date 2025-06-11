@@ -98,8 +98,8 @@ final class DbHelper
     public static function replaceQuotes(string $sql, string $driverName): string
     {
         return match ($driverName) {
-            'mysql', 'sqlite' => str_replace(['[[', ']]'], '`', $sql),
-            'oci' => str_replace(['[[', ']]'], '"', $sql),
+            'mysql' => str_replace(['[[', ']]'], '`', $sql),
+            'oci', 'sqlite' => str_replace(['[[', ']]'], '"', $sql),
             'pgsql' => str_replace(['\\[', '\\]'], ['[', ']'], preg_replace('/(\[\[)|((?<!(\[))]])/', '"', $sql)),
             'db', 'sqlsrv' => str_replace(['[[', ']]'], ['[', ']'], $sql),
             default => $sql,
