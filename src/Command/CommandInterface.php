@@ -617,7 +617,7 @@ interface CommandInterface
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
      */
-    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false;
+    public function insertReturningPks(string $table, array|QueryInterface $columns): array|false;
 
     /**
      * Prepares the SQL statement to be executed.

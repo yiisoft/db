@@ -192,7 +192,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
             self::QUERY_MODE_COLUMN => 'queryColumn',
             self::QUERY_MODE_CURSOR => 'query',
             self::QUERY_MODE_SCALAR => 'queryScalar',
-            self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE => 'insertWithReturningPks'
+            self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE => 'insertReturningPks'
         };
     }
 

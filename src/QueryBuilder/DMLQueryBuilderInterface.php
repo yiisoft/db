@@ -138,7 +138,7 @@ interface DMLQueryBuilderInterface
      *
      * Note: The method will escape the table and column names.
      */
-    public function insertWithReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string;
+    public function insertReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string;
 
     /**
      * Returns whether type casting is enabled for the query builder.
