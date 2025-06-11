@@ -385,7 +385,7 @@ abstract class AbstractCommand implements CommandInterface
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false
+    public function insertReturningPks(string $table, array|QueryInterface $columns): array|false
     {
         if (empty($this->db->getSchema()->getTableSchema($table)?->getPrimaryKey())) {
             if ($this->insert($table, $columns)->execute() === 0) {
@@ -395,7 +395,7 @@ abstract class AbstractCommand implements CommandInterface
         }
 
         $params = [];
-        $sql = $this->getQueryBuilder()->insertWithReturningPks($table, $columns, $params);
+        $sql = $this->getQueryBuilder()->insertReturningPks($table, $columns, $params);
 
         $this->setSql($sql)->bindValues($params);
 
@@ -403,6 +403,14 @@ abstract class AbstractCommand implements CommandInterface
         $result = $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
 
         return is_array($result) ? $result : false;
+    }
+
+    /**
+     * @deprecated Use {@see insertReturningPks()} instead. It will be removed in version 3.0.0.
+     */
+    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false
+    {
+        return $this->insertReturningPks($table, $columns);
     }
 
     public function execute(): int

@@ -182,12 +182,12 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $this->assertEquals($expectedParams, $params);
     }
 
-    #[DataProviderExternal(QueryBuilderProvider::class, 'insertWithReturningPks')]
-    public function testInsertWithReturningPks(
+    #[DataProviderExternal(QueryBuilderProvider::class, 'insertReturningPks')]
+    public function testInsertReturningPks(
         string $table,
         array|QueryInterface $columns,
         array $params,
-        string $expectedSQL,
+        string $expectedSql,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
@@ -196,10 +196,10 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::insertWithReturningPks() is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::insertReturningPks() is not supported by this DBMS.'
         );
 
-        $qb->insertWithReturningPks($table, $columns, $params);
+        $qb->insertReturningPks($table, $columns, $params);
     }
 
     public function testResetSequence(): void

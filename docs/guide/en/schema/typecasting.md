@@ -17,8 +17,9 @@ flowchart LR
 When saving a value to the database, the value must be in the correct type. For example, if saving a value to a column
 that is of type `bit`, the value must be an `integer` or `string` depends on DBMS.
 
-By default `update()`, `upsert()`, `insert()`, `insertBatch()` and `insertWithReturningPks()` methods
-of `CommandInterface` and `QueryBuilderInterface` instances cast the values to the correct type.
+By default `update()`, `insert()`, `insertBatch()`, `insertReturningPks()`, `upsert()`, `upsertReturning()` and
+`upsertReturningPks()` methods of `CommandInterface` and `QueryBuilderInterface` instances cast the values 
+to the correct type.
 
 ```php
 use Yiisoft\Db\Connection\ConnectionInterface;

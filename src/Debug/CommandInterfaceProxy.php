@@ -315,7 +315,7 @@ final class CommandInterfaceProxy implements CommandInterface
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false
+    public function insertReturningPks(string $table, array|QueryInterface $columns): array|false
     {
         /** @var array|false */
         return $this->decorated->{__FUNCTION__}(...func_get_args());

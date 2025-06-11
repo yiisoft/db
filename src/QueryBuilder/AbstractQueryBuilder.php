@@ -420,9 +420,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->dmlBuilder->insert($table, $columns, $params);
     }
 
-    public function insertWithReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string
+    public function insertReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string
     {
-        return $this->dmlBuilder->insertWithReturningPks($table, $columns, $params);
+        return $this->dmlBuilder->insertReturningPks($table, $columns, $params);
     }
 
     public function isTypecastingEnabled(): bool
