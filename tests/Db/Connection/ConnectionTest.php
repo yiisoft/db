@@ -51,6 +51,13 @@ final class ConnectionTest extends AbstractConnectionTest
         $this->assertSame($columnFactory, $db->getColumnFactory());
     }
 
+    public function testCreateQuery(): void
+    {
+        $db = $this->getConnection();
+
+        $this->assertInstanceOf(Query::class, $db->createQuery());
+    }
+
     #[TestWith(['columns' => 'column1'])]
     #[TestWith(['columns' => 'now()'])]
     #[TestWith(['columns' => true])]
@@ -62,13 +69,13 @@ final class ConnectionTest extends AbstractConnectionTest
     {
         $db = $this->getConnection();
 
-        Assert::objectsEquals($db->select($columns, $option), (new Query($db))->select($columns, $option));
+        Assert::objectsEquals($db->select($columns, $option), $db->createQuery()->select($columns, $option));
     }
 
     public function testSelectWithoutParams(): void
     {
         $db = $this->getConnection();
 
-        Assert::objectsEquals($db->select(), new Query($db));
+        Assert::objectsEquals($db->select(), $db->createQuery());
     }
 }

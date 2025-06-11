@@ -75,6 +75,13 @@ interface ConnectionInterface
     public function createCommand(?string $sql = null, array $params = []): CommandInterface;
 
     /**
+     * Creates a query instance.
+     *
+     * @return QueryInterface The query instance.
+     */
+    public function createQuery(): QueryInterface;
+
+    /**
      * Create a transaction instance.
      *
      * @return TransactionInterface The transaction instance.

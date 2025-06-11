@@ -45,6 +45,11 @@ abstract class AbstractConnection implements ConnectionInterface
         return new BatchQueryResult($query);
     }
 
+    public function createQuery(): QueryInterface
+    {
+        return new Query($this);
+    }
+
     public function getTablePrefix(): string
     {
         return $this->tablePrefix;
@@ -74,7 +79,7 @@ abstract class AbstractConnection implements ConnectionInterface
         array|bool|float|int|string|ExpressionInterface $columns = [],
         ?string $option = null,
     ): QueryInterface {
-        return (new Query($this))->select($columns, $option);
+        return $this->createQuery()->select($columns, $option);
     }
 
     public function setTablePrefix(string $value): void

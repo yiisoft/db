@@ -52,6 +52,11 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
         );
     }
 
+    public function createQuery(): QueryInterface
+    {
+        return $this->connection->createQuery();
+    }
+
     public function createTransaction(): TransactionInterface
     {
         return new TransactionInterfaceDecorator(

@@ -130,6 +130,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryPartsInterface::setHaving()` - overwrites the `HAVING` part of the query;
 - `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
+- `ConnectionInterface::createQuery()` - creates a `Query` object;
 - `ConnectionInterface::select()` - creates a `Query` object with the specified columns to be selected;
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
 - `QueryBuilderInterface::buildValue()` - converts a value to its SQL representation with binding parameters if necessary;
