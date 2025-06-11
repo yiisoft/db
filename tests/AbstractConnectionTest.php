@@ -37,7 +37,7 @@ abstract class AbstractConnectionTest extends TestCase
     {
         $db = $this->getConnection();
 
-        $query = (new Query($db))->from('customer');
+        $query = $db->select()->from('customer');
 
         $this->assertInstanceOf(BatchQueryResult::class, $db->createBatchQueryResult($query));
     }

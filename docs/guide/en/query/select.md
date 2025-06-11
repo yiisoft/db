@@ -69,8 +69,8 @@ use Yiisoft\Db\Query\Query;
 
 /** @var ConnectionInterface $db */
 
-$subQuery = (new Query($db))->select('COUNT(*)')->from('{{%user}}');
-$query = (new Query($db))->select(['id', 'count' => $subQuery])->from('{{%post}}');
+$subQuery = $db->select('COUNT(*)')->from('{{%user}}');
+$query = $db->select(['id', 'count' => $subQuery])->from('{{%post}}');
 ```
 
 The equivalent SQL is:

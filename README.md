@@ -19,8 +19,7 @@ Using the package, you can perform common database tasks such as creating, readi
 records in a database table, as well as executing raw SQL queries.
 
 ```php
-$rows = (new Query($db))  
-    ->select(['id', 'email'])  
+$rows = $db->select(['id', 'email'])  
     ->from('{{%user}}')  
     ->where(['last_name' => 'Smith'])  
     ->limit(10)  

@@ -82,7 +82,7 @@ final class JsonExpressionBuilderTest extends TestCase
 
         $params = [];
         $builder = new JsonExpressionBuilder($qb);
-        $expression = new JsonExpression((new Query($db))->select('json_field')->from('json_table'));
+        $expression = new JsonExpression($db->select('json_field')->from('json_table'));
 
         $this->assertSame('(SELECT [json_field] FROM [json_table])', $builder->build($expression, $params));
         $this->assertSame([], $params);

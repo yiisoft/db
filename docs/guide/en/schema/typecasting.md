@@ -105,7 +105,7 @@ the values when retrieving them from the database. Using these methods, values a
 they are returned.
 
 ```php
-$query = (new Query($db))->from('customer')->where(['id' => 1]);
+$query = $db->select()->from('customer')->where(['id' => 1]);
 
 $row = $query->withTypecasting()->one();
 $isActive = $row['is_active'];
@@ -126,7 +126,7 @@ Some databases support date and time types, such as `timestamp`, `datetime`, `da
 These types are casted to `DateTimeImmutable` objects using `DateTimeColumn` class when type casting is enabled.
 
 ```php
-$query = (new Query($db))->from('customer')->where(['id' => 1]);
+$query = $db->select()->from('customer')->where(['id' => 1]);
 
 $row = $query->withTypecasting()->one();
 $createdAt = $row['created_at']; // `DateTimeImmutable` object

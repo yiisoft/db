@@ -31,7 +31,7 @@ final class QueryTest extends AbstractQueryTest
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
         );
 
-        (new Query($db))->select('name')->from('customer')->orderBy(['id' => SORT_DESC])->column();
+        $db->select('name')->from('customer')->orderBy(['id' => SORT_DESC])->column();
     }
 
     public function testCount(): void
@@ -43,7 +43,7 @@ final class QueryTest extends AbstractQueryTest
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
         );
 
-        (new Query($db))->from('customer')->count();
+        $db->select()->from('customer')->count();
     }
 
     public function testExists(): void
@@ -55,14 +55,14 @@ final class QueryTest extends AbstractQueryTest
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
         );
 
-        (new Query($db))->from('customer')->where(['status' => 2])->exists();
+        $db->select()->from('customer')->where(['status' => 2])->exists();
     }
 
     public function testLimitOffsetWithExpression(): void
     {
         $db = $this->getConnection(true);
 
-        $query = (new Query($db))->from('customer')->select('id')->orderBy('id');
+        $query = $db->select()->from('customer')->select('id')->orderBy('id');
         $query->limit(new Expression('1 + 1'))->offset(new Expression('1 + 0'));
 
         $this->expectException(NotSupportedException::class);
@@ -82,7 +82,7 @@ final class QueryTest extends AbstractQueryTest
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
         );
 
-        (new Query($db))->from('customer')->where(['status' => 2])->one();
+        $db->select()->from('customer')->where(['status' => 2])->one();
     }
 
     public function testColumnWithIndexBy(): void
@@ -140,7 +140,7 @@ final class QueryTest extends AbstractQueryTest
     {
         $db = $this->getConnection();
 
-        $query = (new Query($db))->for($value);
+        $query = $db->select()->for($value);
 
         assertSame($expected, $query->getFor());
     }
@@ -149,7 +149,7 @@ final class QueryTest extends AbstractQueryTest
     {
         $db = $this->getConnection();
 
-        $query = (new Query($db))->for('UPDATE');
+        $query = $db->select()->for('UPDATE');
 
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage('The `FOR` part was set earlier. Use the `setFor()` or `addFor()` method.');
@@ -170,7 +170,7 @@ final class QueryTest extends AbstractQueryTest
     {
         $db = $this->getConnection();
 
-        $query = (new Query($db))->for('NO KEY UPDATE')->addFor($value);
+        $query = $db->select()->for('NO KEY UPDATE')->addFor($value);
 
         assertSame($expected, $query->getFor());
     }
@@ -189,7 +189,7 @@ final class QueryTest extends AbstractQueryTest
     {
         $db = $this->getConnection();
 
-        $query = (new Query($db))->addFor($value);
+        $query = $db->select()->addFor($value);
 
         assertSame($expected, $query->getFor());
     }
@@ -208,7 +208,7 @@ final class QueryTest extends AbstractQueryTest
     {
         $db = $this->getConnection();
 
-        $query = (new Query($db))->for('NO KEY UPDATE')->setFor($value);
+        $query = $db->select()->for('NO KEY UPDATE')->setFor($value);
 
         assertSame($expected, $query->getFor());
     }
@@ -227,7 +227,7 @@ final class QueryTest extends AbstractQueryTest
     {
         $db = $this->getConnection();
 
-        $query = (new Query($db))->setFor($value);
+        $query = $db->select()->setFor($value);
 
         assertSame($expected, $query->getFor());
     }

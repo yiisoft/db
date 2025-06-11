@@ -12,18 +12,15 @@ use Yiisoft\Db\Query\Query;
 
 /** @var ConnectionInterface $db */
 
-$initialQuery = (new Query($db))
-    ->select(['parent', 'child'])
+$initialQuery = $db->select(['parent', 'child'])
     ->from(['aic' => '{{%auth_item_child}}'])
     ->where(['parent' => 'admin']);
 
-$recursiveQuery = (new Query($db))
-    ->select(['aic.parent', 'aic.child'])
+$recursiveQuery = $db->select(['aic.parent', 'aic.child'])
     ->from(['aic' => '{{%auth_item_child}}'])
     ->innerJoin('t1', 't1.child = aic.parent');
 
-$mainQuery = (new Query($db))
-    ->select(['parent', 'child'])
+$mainQuery = $db->select(['parent', 'child'])
     ->from('{{%t1}}')
     ->withQuery($initialQuery->union($recursiveQuery), 't1', true);
 ```
