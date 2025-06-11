@@ -1968,8 +1968,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals($expectedParams, $params);
     }
 
-    #[DataProviderExternal(QueryBuilderProvider::class, 'insertWithReturningPks')]
-    public function testInsertWithReturningPks(
+    #[DataProviderExternal(QueryBuilderProvider::class, 'insertReturningPks')]
+    public function testInsertReturningPks(
         string $table,
         array|QueryInterface $columns,
         array $params,
@@ -1979,7 +1979,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $db = $this->getConnection(true);
         $qb = $db->getQueryBuilder();
 
-        $this->assertSame($expectedSQL, $qb->insertWithReturningPks($table, $columns, $params));
+        $this->assertSame($expectedSQL, $qb->insertReturningPks($table, $columns, $params));
         $this->assertSame($expectedParams, $params);
     }
 

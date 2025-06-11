@@ -237,6 +237,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change `$distinct` parameter type in `DQLQueryBuilderInterface::buildSelect()` to `bool`;
 - Add `QueryInterface` to type of `$columns` parameter of `insertWithReturningPks()` method in `CommandInterface` and 
   `AbstractCommand` class;
+- Rename `insertWithReturningPks()` to `insertReturningPks()` method in `CommandInterface` and `DMLQueryBuilderInterface`;
 - Remove `$params` parameter from `upsert()` method in `CommandInterface` and `AbstractCommand` class;
 - Add default value to `$updateColumns` and `$params` parameters of `upsert()` method in `DMLQueryBuilderInterface` and 
   `AbstractDMLQueryBuilder` and `AbstractQueryBuilder` classes;
