@@ -148,7 +148,7 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
     }
 
     public function select(
-        array|bool|float|int|string|ExpressionInterface $columns,
+        array|bool|float|int|string|ExpressionInterface $columns = [],
         ?string $option = null,
     ): QueryInterface {
         return $this->connection->select($columns, $option);

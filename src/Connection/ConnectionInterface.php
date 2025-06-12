@@ -233,7 +233,7 @@ interface ConnectionInterface
      * @psalm-param SelectValue|scalar|ExpressionInterface $columns
      */
     public function select(
-        array|bool|float|int|string|ExpressionInterface $columns,
+        array|bool|float|int|string|ExpressionInterface $columns = [],
         ?string $option = null,
     ): QueryInterface;
 
