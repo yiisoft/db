@@ -183,6 +183,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `AbstractDQLQueryBuilder::hasOffset()` - use `!empty($offset)` instead;
 - `BatchQueryResultInterface::reset()` - use `BatchQueryResultInterface::rewind()` instead;
 - `BatchQueryResult::reset()` - use `BatchQueryResult::rewind()` instead;
+- `ForeignKeyConstraint::getForeignSchemaName()` and `ForeignKeyConstraint::foreignSchemaName()` methods;
 
 ### Remove deprecated parameters
 
@@ -243,3 +244,5 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Remove `$params` parameter from `upsert()` method in `CommandInterface` and `AbstractCommand` class;
 - Add default value to `$updateColumns` and `$params` parameters of `upsert()` method in `DMLQueryBuilderInterface` and 
   `AbstractDMLQueryBuilder` and `AbstractQueryBuilder` classes;
+- Rename `Constraint` class to `AbstractConstraint` and make it abstract;
+- Rename `IndexConstraint::isPrimary()` to `IndexConstraint::isPrimaryKey()` method;

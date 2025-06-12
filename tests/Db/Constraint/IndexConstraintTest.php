@@ -20,7 +20,7 @@ final class IndexConstraintTest extends TestCase
 
         $this->assertFalse($indexConstraint->isUnique());
 
-        $indexConstraint = $indexConstraint->unique(true);
+        $indexConstraint = $indexConstraint->unique();
 
         $this->assertTrue($indexConstraint->isUnique());
     }
@@ -29,10 +29,10 @@ final class IndexConstraintTest extends TestCase
     {
         $indexConstraint = new IndexConstraint();
 
-        $this->assertFalse($indexConstraint->isPrimary());
+        $this->assertFalse($indexConstraint->isPrimaryKey());
 
-        $indexConstraint = $indexConstraint->primary(true);
+        $indexConstraint = $indexConstraint->primaryKey();
 
-        $this->assertTrue($indexConstraint->isPrimary());
+        $this->assertTrue($indexConstraint->isPrimaryKey());
     }
 }
