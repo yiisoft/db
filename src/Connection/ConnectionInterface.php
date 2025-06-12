@@ -11,8 +11,10 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Query\QueryPartsInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
@@ -28,6 +30,7 @@ use Yiisoft\Db\Transaction\TransactionInterface;
  * different database systems without having to worry about the specific details of each one.
  *
  * @psalm-type ParamsType = array<non-empty-string, mixed>|list<mixed>
+ * @psalm-import-type SelectValue from QueryPartsInterface
  */
 interface ConnectionInterface
 {
@@ -70,6 +73,13 @@ interface ConnectionInterface
      * @psalm-param ParamsType $params
      */
     public function createCommand(?string $sql = null, array $params = []): CommandInterface;
+
+    /**
+     * Creates a query instance.
+     *
+     * @return QueryInterface The query instance.
+     */
+    public function createQuery(): QueryInterface;
 
     /**
      * Create a transaction instance.
@@ -202,6 +212,30 @@ interface ConnectionInterface
      * @param bool $value Whether to enable savepoint.
      */
     public function setEnableSavepoint(bool $value): void;
+
+    /**
+     * Creates a new {@see Query} instance with the specified columns to be selected.
+     *
+     * @param array|ExpressionInterface|scalar $columns The columns to be selected.
+     * Columns can be specified in either a string (for example `id, name`) or an array (such as `['id', 'name']`).
+     * Columns can be prefixed with table names (such as `user.id`) and/or contain column aliases
+     * (for example `user.id AS user_id`).
+     * The method will automatically quote the column names unless a column has some parenthesis (which means the
+     * column has a DB expression).
+     * A DB expression may also be passed in form of an {@see ExpressionInterface} object.
+     * Note that if you are selecting an expression like `CONCAT(first_name, ' ', last_name)`, you should use an array
+     * to specify the columns. Otherwise, the expression may be incorrectly split into several parts.
+     * When the columns are specified as an array, you may also use array keys as the column aliases (if a column
+     * doesn't need alias, don't use a string key).
+     * @param string|null $option More option that should be appended to the 'SELECT' keyword. For example, in MySQL,
+     * the option 'SQL_CALC_FOUND_ROWS' can be used.
+     *
+     * @psalm-param SelectValue|scalar|ExpressionInterface $columns
+     */
+    public function select(
+        array|bool|float|int|string|ExpressionInterface $columns = [],
+        ?string $option = null,
+    ): QueryInterface;
 
     /**
      * The common prefix or suffix for table names.

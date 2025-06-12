@@ -95,6 +95,7 @@
 - Chg #980: Add constructor with DB connection to `AbstractCommand` (@vjik)
 - Enh #979: Allow `ExpressionInterface` for column definitions when create table (@Tigrov)
 - Enh #982: Reduce binding parameters (@Tigrov)
+- New #984: Add `createQuery()` and `select()` methods to `ConnectionInterface` (@Tigrov)
 - Chg #985: Rename `insertWithReturningPks()` to `insertReturningPks()` in `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
 
 ## 1.3.0 March 21, 2024
