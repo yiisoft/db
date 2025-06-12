@@ -33,7 +33,7 @@ trait TestTrait
         return new PdoDriver($this->dsn);
     }
 
-    protected static function getDriverName(): string
+    protected function getDriverName(): string
     {
         return 'db';
     }

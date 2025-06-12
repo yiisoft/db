@@ -13,7 +13,6 @@ use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\CaseExpressionBuilder;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
-use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -41,10 +40,7 @@ final class CaseExpressionBuilderTest extends TestCase
                 (new CaseExpression())
                     ->addWhen(['=', 'column_name', 1], 'a')
                     ->addWhen('column_name = 2', (new Query(self::getDb()))->select(3)),
-                DbHelper::replaceQuotes(
-                    'CASE WHEN [[column_name]] = :qp0 THEN :qp1 WHEN column_name = 2 THEN (SELECT 3) END',
-                    self::getDriverName(),
-                ),
+                'CASE WHEN [column_name] = :qp0 THEN :qp1 WHEN column_name = 2 THEN (SELECT 3) END',
                 [
                     ':qp0' => 1,
                     ':qp1' => new Param('a', DataType::STRING),
