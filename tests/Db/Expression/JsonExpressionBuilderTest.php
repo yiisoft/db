@@ -11,7 +11,6 @@ use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\JsonExpressionBuilder;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Schema\Data\StructuredLazyArray;
