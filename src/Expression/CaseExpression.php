@@ -63,7 +63,7 @@ final class CaseExpression implements ExpressionInterface
      *
      * @psalm-suppress PropertyNotSetInConstructor
      */
-    private bool|ExpressionInterface|float|int|string|null $else = null;
+    private bool|ExpressionInterface|float|int|string|null $else;
 
     /**
      * @param array|bool|ExpressionInterface|float|int|string|null $case Comparison condition in the CASE expression.
