@@ -26,9 +26,9 @@ use function get_object_vars;
  *
  * ```sql
  * CASE
- *     WHEN condition1 THEN result1
- *     WHEN condition2 THEN result2
- *     ELSE defaultResult
+ *     WHEN condition1 THEN 'result1'
+ *     WHEN condition2 THEN 'result2'
+ *     ELSE 'defaultResult'
  * END
  * ```
  *
@@ -45,9 +45,9 @@ use function get_object_vars;
  *
  * ```sql
  * CASE expression
- *     WHEN 1 THEN result1
- *     WHEN 2 THEN result2
- *     ELSE defaultResult
+ *     WHEN 1 THEN 'result1'
+ *     WHEN 2 THEN 'result2'
+ *     ELSE 'defaultResult'
  * END
  * ```
  */
