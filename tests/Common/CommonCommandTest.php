@@ -319,7 +319,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->prepare(false);
         $command->execute();
 
-        $this->assertEquals($insertedRow, $db->select()->from($table)->count());
+        $this->assertEquals($insertedRow, $db->createQuery()->from($table)->count());
 
         $db->close();
     }
@@ -450,7 +450,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertSame($attemptsInsertRows, $command->execute());
 
-        $insertedRowsCount = $db->select()->from('{{customer}}')->count();
+        $insertedRowsCount = $db->createQuery()->from('{{customer}}')->count();
 
         $this->assertGreaterThanOrEqual($attemptsInsertRows, $insertedRowsCount);
 
@@ -2026,7 +2026,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertSame($expectedCount, $count);
 
-        $values = $db->select()
+        $values = $db->createQuery()
             ->from($table)
             ->where($conditions, $params)
             ->limit(1)
