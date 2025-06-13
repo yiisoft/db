@@ -306,7 +306,8 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * For example:
      *
      * ```php
-     * $users = $db->createQuery()->from('user')
+     * $users = $db->createQuery()
+     *     ->from('user')
      *     ->resultCallback(function (array $rows): array {
      *         foreach ($rows as &$row) {
      *             $row['name'] = strtoupper($row['name']);
