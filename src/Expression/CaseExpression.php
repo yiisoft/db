@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
+use Yiisoft\Db\Schema\Column\ColumnInterface;
+
 use function array_key_exists;
 use function get_object_vars;
 
@@ -68,9 +70,13 @@ final class CaseExpression implements ExpressionInterface
     /**
      * @param array|bool|ExpressionInterface|float|int|string|null $case Comparison condition in the CASE expression.
      * If not provided, the CASE expression will be a WHEN-THEN structure without a specific case value.
+     * @param string|ColumnInterface $caseType Optional data type of the CASE expression which can be used in some DBMS
+     * to specify the expected type (for example in PostgreSQL).
      */
-    public function __construct(private array|bool|ExpressionInterface|float|int|string|null $case = null)
-    {
+    public function __construct(
+        private array|bool|ExpressionInterface|float|int|string|null $case = null,
+        private string|ColumnInterface $caseType = '',
+    ) {
     }
 
     /**
@@ -100,6 +106,16 @@ final class CaseExpression implements ExpressionInterface
     }
 
     /**
+     * Sets the optional data type of the CASE expression which can be used in some DBMS to specify the expected type
+     * (for example in PostgreSQL).
+     */
+    public function caseType(string|ColumnInterface $caseType): self
+    {
+        $this->caseType = $caseType;
+        return $this;
+    }
+
+    /**
      * Sets the result to return if no conditions match in the CASE expression.
      *
      * @param bool|ExpressionInterface|float|int|string|null $else The result to return if no conditions match (ELSE).
@@ -119,6 +135,16 @@ final class CaseExpression implements ExpressionInterface
     public function getCase(): array|bool|ExpressionInterface|float|int|string|null
     {
         return $this->case;
+    }
+
+    /**
+     * Returns the data type of the CASE expression.
+     *
+     * @psalm-mutation-free
+     */
+    public function getCaseType(): string|ColumnInterface
+    {
+        return $this->caseType;
     }
 
     /**

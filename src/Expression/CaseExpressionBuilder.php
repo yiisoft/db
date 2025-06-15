@@ -15,7 +15,7 @@ use function gettype;
  */
 class CaseExpressionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
+    public function __construct(protected readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
@@ -61,7 +61,7 @@ class CaseExpressionBuilder implements ExpressionBuilderInterface
      *
      * @return string The SQL condition string.
      */
-    private function buildCondition(
+    protected function buildCondition(
         array|bool|ExpressionInterface|float|int|string|null $condition,
         array &$params,
     ): string {

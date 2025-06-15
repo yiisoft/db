@@ -10,6 +10,7 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\WhenClause;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
@@ -40,6 +41,20 @@ final class CaseExpressionTest extends TestCase
         $expression = new CaseExpression($case);
 
         $this->assertSame($case, $expression->getCase());
+        $this->assertSame('', $expression->getCaseType());
+    }
+
+    public function testConstructType(): void
+    {
+        $expression = new CaseExpression(caseType: 'int');
+
+        $this->assertNull($expression->getCase());
+        $this->assertSame('int', $expression->getCaseType());
+
+        $intCol = new IntegerColumn();
+        $expression = new CaseExpression(caseType: $intCol);
+        $this->assertNull($expression->getCase());
+        $this->assertSame($intCol, $expression->getCaseType());
     }
 
     #[DataProvider('dataCase')]
@@ -52,6 +67,22 @@ final class CaseExpressionTest extends TestCase
         $expression->case($case);
 
         $this->assertSame($case, $expression->getCase());
+    }
+
+    public function testCaseType(): void
+    {
+        $expression = new CaseExpression();
+
+        $this->assertSame('', $expression->getCaseType());
+
+        $expression->caseType('int');
+
+        $this->assertSame('int', $expression->getCaseType());
+
+        $intCol = new IntegerColumn();
+        $expression->caseType($intCol);
+
+        $this->assertSame($intCol, $expression->getCaseType());
     }
 
     public function testWhen(): void
