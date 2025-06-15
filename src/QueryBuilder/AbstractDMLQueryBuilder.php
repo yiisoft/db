@@ -15,6 +15,7 @@ use Yiisoft\Db\Exception\InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\Function\MultiOperandFunction;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
@@ -385,36 +386,83 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     /**
      * Prepare column names and placeholders for `UPDATE` SQL statement.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
+     * @psalm-param ParamsType $params
+     *
+     * @return string[]
+     */
+    protected function prepareUpdateSets(string $table, array $columns, array &$params, bool $forUpsert = false): array
+    {
+        $sets = [];
+        $columns = $this->normalizeColumnNames($columns);
+        $tableColumns = $this->schema->getTableSchema($table)?->getColumns() ?? [];
+        $typecastColumns = $this->typecasting ? $tableColumns : [];
+        $queryBuilder = $this->queryBuilder;
+        $quoter = $this->quoter;
+
+        foreach ($columns as $name => $value) {
+            if (isset($typecastColumns[$name])) {
+                $value = $typecastColumns[$name]->dbTypecast($value);
+            }
+
+            $quotedName = $quoter->quoteColumnName($name);
+
+            if ($value instanceof ExpressionInterface) {
+                if ($forUpsert && $value instanceof MultiOperandFunction && empty($value->getOperands())) {
+                    $value->addOperand($quotedName)->addOperand($this->getExcludedColumnName($quotedName));
+
+                    if (isset($tableColumns[$name])) {
+                        $value->type($tableColumns[$name]);
+                    }
+                }
+
+                $placeholder = $queryBuilder->buildExpression($value, $params);
+            } else {
+                $placeholder = $queryBuilder->bindParam($value, $params);
+            }
+
+            $sets[] = "$quotedName=$placeholder";
+        }
+
+        return $sets;
+    }
+
+    /**
+     * Prepare column names and placeholders for upsert SQL statement.
      *
      * @psalm-param ParamsType $params
      *
      * @return string[]
      */
-    protected function prepareUpdateSets(string $table, array $columns, array &$params): array
-    {
-        $sets = [];
-        $columns = $this->normalizeColumnNames($columns);
-        $tableColumns = $this->typecasting ? $this->schema->getTableSchema($table)?->getColumns() ?? [] : [];
+    protected function prepareUpsertSets(
+        string $table,
+        array|true $updateColumns,
+        array|null $updateNames,
+        array &$params
+    ): array {
+        if ($updateColumns === true) {
+            $quoter = $this->quoter;
+            $sets = [];
 
-        foreach ($columns as $name => $value) {
-            if (isset($tableColumns[$name])) {
-                $value = $tableColumns[$name]->dbTypecast($value);
+            /** @psalm-var string[] $updateNames */
+            foreach ($updateNames as $name) {
+                $quotedName = $quoter->quoteColumnName($name);
+                $sets[] = "$quotedName=" . $this->getExcludedColumnName($quotedName);
             }
 
-            if ($value instanceof ExpressionInterface) {
-                $placeholder = $this->queryBuilder->buildExpression($value, $params);
-            } else {
-                $placeholder = $this->queryBuilder->bindParam($value, $params);
-            }
-
-            $sets[] = $this->quoter->quoteColumnName($name) . '=' . $placeholder;
+            return $sets;
         }
 
-        return $sets;
+        return $this->prepareUpdateSets($table, $updateColumns, $params, true);
+    }
+
+    /**
+     * Returns the name of the column in the `EXCLUDED` table for `ON CONFLICT DO UPDATE` clause.
+     *
+     * @param string $quotedName The quoted column name.
+     */
+    protected function getExcludedColumnName(string $quotedName): string
+    {
+        return 'EXCLUDED.' . $quotedName;
     }
 
     /**
