@@ -40,7 +40,8 @@ abstract class AbstractCaseExpressionBuilderTest extends TestCase
                 (new CaseExpression())
                     ->addWhen(['=', 'column_name', 1], 'a')
                     ->addWhen('column_name = 2', (new Query(self::getDb()))->select(3)),
-                DbHelper::replaceQuotes(<<<SQL
+                DbHelper::replaceQuotes(
+                    <<<SQL
                     CASE WHEN [[column_name]] = :qp0 THEN :qp1 WHEN column_name = 2 THEN (SELECT 3) END
                     SQL,
                     static::getDriverName(),

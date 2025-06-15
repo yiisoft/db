@@ -70,7 +70,7 @@ final class CaseExpression implements ExpressionInterface
     /**
      * @param array|bool|ExpressionInterface|float|int|string|null $case Comparison condition in the CASE expression.
      * If not provided, the CASE expression will be a WHEN-THEN structure without a specific case value.
-     * @param string|ColumnInterface $caseType Optional data type of the CASE expression which can be used in some DBMS
+     * @param ColumnInterface|string $caseType Optional data type of the CASE expression which can be used in some DBMS
      * to specify the expected type (for example in PostgreSQL).
      */
     public function __construct(
