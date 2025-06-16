@@ -27,18 +27,17 @@ abstract class AbstractCaseExpressionBuilderTest extends TestCase
         return [
             'with case expression' => [
                 (new CaseExpression('expression'))
-                    ->addWhen(1, 'a')
+                    ->addWhen(1, "'a'")
                     ->addWhen(2, new Expression('1 + 2'))
-                    ->else('c'),
-                'CASE expression WHEN 1 THEN :qp0 WHEN 2 THEN 1 + 2 ELSE :qp1 END',
+                    ->else($param = new Param('c', DataType::STRING)),
+                "CASE expression WHEN 1 THEN 'a' WHEN 2 THEN 1 + 2 ELSE :qp0 END",
                 [
-                    ':qp0' => new Param('a', DataType::STRING),
-                    ':qp1' => new Param('c', DataType::STRING),
+                    ':qp0' => $param,
                 ],
             ],
             'without case expression' => [
                 (new CaseExpression())
-                    ->addWhen(['=', 'column_name', 1], 'a')
+                    ->addWhen(['=', 'column_name', 1], $param = new Param('a', DataType::STRING))
                     ->addWhen('column_name = 2', (new Query(self::getDb()))->select(3)),
                 DbHelper::replaceQuotes(
                     <<<SQL
@@ -48,14 +47,14 @@ abstract class AbstractCaseExpressionBuilderTest extends TestCase
                 ),
                 [
                     ':qp0' => 1,
-                    ':qp1' => new Param('a', DataType::STRING),
+                    ':qp1' => $param,
                 ],
             ],
         ];
     }
 
     #[DataProvider('buildProvider')]
-    public function testBuild(CaseExpression $case, string $expected, array $expectedParams): void
+    public function testBuild(CaseExpression $case, string $expected, array $expectedParams = []): void
     {
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();

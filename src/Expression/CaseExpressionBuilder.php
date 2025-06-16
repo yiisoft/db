@@ -9,6 +9,7 @@ use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function gettype;
+use function is_string;
 
 /**
  * Builds expressions for {@see CaseExpression}.
@@ -36,7 +37,6 @@ class CaseExpressionBuilder implements ExpressionBuilderInterface
         }
 
         $sql = 'CASE';
-        $queryBuilder = $this->queryBuilder;
 
         $case = $expression->getCase();
 
@@ -46,18 +46,18 @@ class CaseExpressionBuilder implements ExpressionBuilderInterface
 
         foreach ($whenClauses as $when) {
             $sql .= ' WHEN ' . $this->buildCondition($when->condition, $params);
-            $sql .= ' THEN ' . $queryBuilder->buildValue($when->result, $params);
+            $sql .= ' THEN ' . $this->buildResult($when->result, $params);
         }
 
         if ($expression->hasElse()) {
-            $sql .= ' ELSE ' . $queryBuilder->buildValue($expression->getElse(), $params);
+            $sql .= ' ELSE ' . $this->buildResult($expression->getElse(), $params);
         }
 
         return $sql . ' END';
     }
 
     /**
-     * Builds condition parts of the CASE expression based on their type.
+     * Builds the condition part of the CASE expression based on their type.
      *
      * @return string The SQL condition string.
      */
@@ -74,5 +74,21 @@ class CaseExpressionBuilder implements ExpressionBuilderInterface
             GettypeResult::STRING => $condition,
             default => $this->queryBuilder->buildValue($condition, $params),
         };
+    }
+
+    /**
+     * Builds the result part of the CASE expression based on its type.
+     *
+     * @return string The SQL result string.
+     */
+    protected function buildResult(
+        bool|ExpressionInterface|float|int|string|null $result,
+        array &$params,
+    ): string {
+        if (is_string($result)) {
+            return $result;
+        }
+
+        return $this->queryBuilder->buildValue($result, $params);
     }
 }

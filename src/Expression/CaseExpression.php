@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function array_key_exists;
@@ -68,7 +69,11 @@ final class CaseExpression implements ExpressionInterface
     private bool|ExpressionInterface|float|int|string|null $else;
 
     /**
-     * @param array|bool|ExpressionInterface|float|int|string|null $case Comparison condition in the CASE expression.
+     * @param array|bool|ExpressionInterface|float|int|string|null $case Comparison condition in the CASE expression:
+     * - `string` is treated as a SQL expression;
+     * - `bool`, `float`, `int`, and `null` are treated as literal values;
+     * - `array` is treated as a condition to check, see {@see QueryInterface::where()};
+     * - `ExpressionInterface` is treated as an expression to build SQL expression.
      * If not provided, the CASE expression will be a WHEN-THEN structure without a specific case value.
      * @param ColumnInterface|string $caseType Optional data type of the CASE expression which can be used in some DBMS
      * to specify the expected type (for example in PostgreSQL).
@@ -82,8 +87,15 @@ final class CaseExpression implements ExpressionInterface
     /**
      * Adds a condition and its corresponding result to the CASE expression.
      *
-     * @param array|bool|ExpressionInterface|float|int|string $when The condition to check (WHEN).
-     * @param bool|ExpressionInterface|float|int|string|null $then The result to return if the condition is `true` (THEN).
+     * @param array|bool|ExpressionInterface|float|int|string $when The condition to check (WHEN):
+     * - `string` is treated as a SQL expression;
+     * - `bool`, `float`, `int`, and `null` are treated as literal values;
+     * - `array` is treated as a condition to check, see {@see QueryInterface::where()};
+     * - `ExpressionInterface` is treated as an expression to build SQL expression.
+     * @param bool|ExpressionInterface|float|int|string|null $then The result to return if the condition is `true` (THEN):
+     * - `string` is treated as a SQL expression;
+     * - `bool`, `float`, `int`, and `null` are treated as literal values;
+     * - `ExpressionInterface` is treated as an expression to build SQL expression.
      */
     public function addWhen(
         array|bool|ExpressionInterface|float|int|string $when,
@@ -96,7 +108,11 @@ final class CaseExpression implements ExpressionInterface
     /**
      * Sets the value to compare against in the CASE expression.
      *
-     * @param array|bool|ExpressionInterface|float|int|string|null $case Comparison condition in the CASE expression.
+     * @param array|bool|ExpressionInterface|float|int|string|null $case Comparison condition in the CASE expression:
+     * - `string` is treated as a SQL expression;
+     * - `bool`, `float`, `int`, and `null` are treated as literal values;
+     * - `array` is treated as a condition to check, see {@see QueryInterface::where()};
+     * - `ExpressionInterface` is treated as an expression to build SQL expression.
      * If not provided, the CASE expression will be a WHEN-THEN structure without a specific case value.
      */
     public function case(array|bool|ExpressionInterface|float|int|string|null $case): self
@@ -118,7 +134,10 @@ final class CaseExpression implements ExpressionInterface
     /**
      * Sets the result to return if no conditions match in the CASE expression.
      *
-     * @param bool|ExpressionInterface|float|int|string|null $else The result to return if no conditions match (ELSE).
+     * @param bool|ExpressionInterface|float|int|string|null $else The result to return if no conditions match (ELSE):
+     * - `string` is treated as a SQL expression;
+     * - `bool`, `float`, `int`, and `null` are treated as literal values;
+     * - `ExpressionInterface` is treated as an expression to build SQL expression.
      * If not set, the CASE expression will not have an ELSE clause.
      */
     public function else(bool|ExpressionInterface|float|int|string|null $else): self
