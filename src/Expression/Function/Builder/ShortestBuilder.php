@@ -4,14 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression\Function\Builder;
 
-use Yiisoft\Db\Expression\CaseExpression;
-use Yiisoft\Db\Expression\Function\Least;
 use Yiisoft\Db\Expression\Function\Length;
 use Yiisoft\Db\Expression\Function\MultiOperandFunction;
 use Yiisoft\Db\Expression\Function\Shortest;
-
-use function array_map;
-use function array_pop;
 
 /**
  * Builds SQL expressions to represent the function which returns the shortest string from a set of operands.

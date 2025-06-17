@@ -70,7 +70,7 @@ class MultiOperandFunctionTest extends TestCase
                 [$stringValue],
                 [$query],
                 ['expression', $stringValue, $query],
-            ]]
+            ]],
         ];
     }
 

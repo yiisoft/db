@@ -22,7 +22,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 final class Length implements ExpressionInterface
 {
     /**
-     * @param string|ExpressionInterface $operand The expression for which to calculate the length.
+     * @param ExpressionInterface|string $operand The expression for which to calculate the length.
      */
     public function __construct(
         public readonly string|ExpressionInterface $operand
