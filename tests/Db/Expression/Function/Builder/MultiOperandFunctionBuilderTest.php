@@ -49,7 +49,6 @@ class MultiOperandFunctionBuilderTest extends TestCase
                 Greatest::class,
                 [1, 1.5, '1 + 2', $query],
                 "GREATEST(1, 1.5, 1 + 2, $queryString)",
-                [':qp0' => 1],
             ],
 
             'Least with 1 operand' => [
@@ -76,13 +75,16 @@ class MultiOperandFunctionBuilderTest extends TestCase
             'Longest with 2 operands' => [
                 Longest::class,
                 ['expression', $stringParam],
-                'CASE GREATEST(LENGTH(expression), LENGTH(:pv0)) WHEN LENGTH(expression) THEN expression ELSE :qp1 END',
-                [':pv0' => $stringParam, ':qp1' => $stringParam],
+                '(SELECT [0] FROM (SELECT expression [0] UNION ALL SELECT :qp0 [0]) AS t ORDER BY LENGTH([0]) DESC LIMIT 1)',
+                [':qp0' => $stringParam],
             ],
             'Longest with 3 operands' => [
                 Longest::class,
                 ['expression', $stringParam, $query],
-                "CASE GREATEST(LENGTH(expression), LENGTH(:pv0), LENGTH($queryString)) WHEN LENGTH(expression) THEN :qp1 WHEN LENGTH(:pv2) THEN :qp3 ELSE $queryString END",
+                "(SELECT [0] FROM (SELECT expression [0] UNION ALL SELECT :qp0 [0] UNION ALL SELECT $queryString [0]) AS t ORDER BY LENGTH([0]) DESC LIMIT 1)",
+                [
+                    ':qp0' => $stringParam,
+                ],
             ],
 
             'Shortest with 1 operand' => [
@@ -93,12 +95,16 @@ class MultiOperandFunctionBuilderTest extends TestCase
             'Shortest with 2 operands' => [
                 Shortest::class,
                 ['expression', $stringParam],
-                'CASE LEAST(LENGTH(expression), LENGTH(:pv0)) WHEN LENGTH(expression) THEN :qp1 ELSE :qp2 END',
+                '(SELECT [0] FROM (SELECT expression [0] UNION ALL SELECT :qp0 [0]) AS t ORDER BY LENGTH([0]) ASC LIMIT 1)',
+                [':qp0' => $stringParam],
             ],
             'Shortest with 3 operands' => [
                 Shortest::class,
                 ['expression', $stringParam, $query],
-                '',
+                "(SELECT [0] FROM (SELECT expression [0] UNION ALL SELECT :qp0 [0] UNION ALL SELECT $queryString [0]) AS t ORDER BY LENGTH([0]) ASC LIMIT 1)",
+                [
+                    ':qp0' => $stringParam,
+                ],
             ],
         ];
     }

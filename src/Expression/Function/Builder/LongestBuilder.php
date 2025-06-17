@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression\Function\Builder;
 
-use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\Function\Greatest;
 use Yiisoft\Db\Expression\Function\Length;
 use Yiisoft\Db\Expression\Function\Longest;
 use Yiisoft\Db\Expression\Function\MultiOperandFunction;
-
-use function array_map;
-use function array_pop;
 
 /**
  * Builds SQL expressions to represent the function which returns the longest string from a set of operands.
@@ -30,18 +26,24 @@ class LongestBuilder extends MultiOperandFunctionBuilder
      */
     protected function buildFromExpression(MultiOperandFunction $expression, array &$params): string
     {
-        $lengths = array_map(
-            static fn ($operand): Length => new Length($operand),
-            $expression->getOperands(),
-        );
+        $builtSelects = [];
+        $operandAlias = $this->queryBuilder->getQuoter()->quoteSimpleColumnName('0');
 
-        $case = (new CaseExpression(new Greatest(...$lengths)))
-            ->else(array_pop($lengths)->operand);
-
-        foreach ($lengths as $length) {
-            $case->addWhen($length, $length->operand);
+        foreach ($expression->getOperands() as $operand) {
+            $builtSelects[] = $this->buildSelect($operand, $operandAlias, $params);
         }
 
-        return $this->queryBuilder->buildExpression($case, $params);
+        $unions = implode(' UNION ALL ', $builtSelects);
+
+        $lengthClause = $this->queryBuilder->buildExpression(new Length($operandAlias));
+
+        return <<<SQL
+            (SELECT $operandAlias FROM ($unions) AS t ORDER BY $lengthClause DESC LIMIT 1)
+            SQL;
+    }
+
+    protected function buildSelect(mixed $operand, string $alias, array &$params): string
+    {
+        return 'SELECT ' . $this->buildOperand($operand, $params) . " $alias";
     }
 }

@@ -30,18 +30,24 @@ class ShortestBuilder extends MultiOperandFunctionBuilder
      */
     protected function buildFromExpression(MultiOperandFunction $expression, array &$params): string
     {
-        $lengths = array_map(
-            static fn ($operand): Length => new Length($operand),
-            $expression->getOperands(),
-        );
+        $builtSelects = [];
+        $operandAlias = $this->queryBuilder->getQuoter()->quoteSimpleColumnName('0');
 
-        $case = (new CaseExpression(new Least(...$lengths)))
-            ->else(array_pop($lengths)->operand);
-
-        foreach ($lengths as $length) {
-            $case->addWhen($length, $length->operand);
+        foreach ($expression->getOperands() as $operand) {
+            $builtSelects[] = $this->buildSelect($operand, $operandAlias, $params);
         }
 
-        return $this->queryBuilder->buildExpression($case, $params);
+        $unions = implode(' UNION ALL ', $builtSelects);
+
+        $lengthClause = $this->queryBuilder->buildExpression(new Length($operandAlias));
+
+        return <<<SQL
+            (SELECT $operandAlias FROM ($unions) AS t ORDER BY $lengthClause ASC LIMIT 1)
+            SQL;
+    }
+
+    protected function buildSelect(mixed $operand, string $alias, array &$params): string
+    {
+        return 'SELECT ' . $this->buildOperand($operand, $params) . " $alias";
     }
 }

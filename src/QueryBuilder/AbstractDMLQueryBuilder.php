@@ -408,7 +408,9 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
             if ($value instanceof ExpressionInterface) {
                 if ($forUpsert && $value instanceof MultiOperandFunction && empty($value->getOperands())) {
-                    $value->addOperand($quotedName)->addOperand($this->getExcludedColumnName($quotedName));
+                    $quotedTableName ??= $quoter->quoteTableName($table);
+                    $value->addOperand("$quotedTableName.$quotedName")
+                        ->addOperand($this->getExcludedColumnName($quotedName));
 
                     if (isset($tableColumns[$name])) {
                         $value->type($tableColumns[$name]);
