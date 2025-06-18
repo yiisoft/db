@@ -159,7 +159,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     {
         $db = $this->getConnection();
 
-        $this->expectException(Exception::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $expression = new class () implements ExpressionInterface {
         };
