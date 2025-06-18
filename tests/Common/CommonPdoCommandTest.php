@@ -11,7 +11,7 @@ use Psr\Log\LogLevel;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
-use Yiisoft\Db\Exception\InvalidParamException;
+use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -223,7 +223,7 @@ abstract class CommonPdoCommandTest extends TestCase
             }
         };
 
-        $this->expectException(InvalidParamException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Unknown query mode '1024'");
         $command->testExecute();
 

@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;

@@ -11,7 +11,7 @@ use Traversable;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;

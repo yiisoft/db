@@ -17,7 +17,7 @@ use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidParamException;
+use InvalidArgumentException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
