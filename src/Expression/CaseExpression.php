@@ -61,12 +61,12 @@ final class CaseExpression implements ExpressionInterface
      */
     private array $whenClauses = [];
     /**
-     * @var bool|ExpressionInterface|float|int|string|null The result to return if no conditions match in the CASE
-     * expression. If not set, the CASE expression will not have an ELSE clause.
+     * @var mixed The result to return if no conditions match in the CASE expression.
+     * If not set, the CASE expression will not have an ELSE clause.
      *
      * @psalm-suppress PropertyNotSetInConstructor
      */
-    private bool|ExpressionInterface|float|int|string|null $else;
+    private mixed $else;
 
     /**
      * @param array|bool|ExpressionInterface|float|int|string|null $case Comparison condition in the CASE expression:
@@ -92,14 +92,13 @@ final class CaseExpression implements ExpressionInterface
      * - `bool`, `float`, `int`, and `null` are treated as literal values;
      * - `array` is treated as a condition to check, see {@see QueryInterface::where()};
      * - `ExpressionInterface` is treated as an expression to build SQL expression.
-     * @param bool|ExpressionInterface|float|int|string|null $then The result to return if the condition is `true` (THEN):
-     * - `string` is treated as a SQL expression;
-     * - `bool`, `float`, `int`, and `null` are treated as literal values;
-     * - `ExpressionInterface` is treated as an expression to build SQL expression.
+     * @param mixed $then The result to return if the condition is `true` (THEN):
+     * Note that `string` is treated as a SQL expression. Other values will be converted to their string representation
+     * using {@see QueryBuilderInterface::buildValue()} method.
      */
     public function addWhen(
         array|bool|ExpressionInterface|float|int|string $when,
-        bool|ExpressionInterface|float|int|string|null $then,
+        mixed $then,
     ): self {
         $this->whenClauses[] = new WhenClause($when, $then);
         return $this;
@@ -134,13 +133,12 @@ final class CaseExpression implements ExpressionInterface
     /**
      * Sets the result to return if no conditions match in the CASE expression.
      *
-     * @param bool|ExpressionInterface|float|int|string|null $else The result to return if no conditions match (ELSE):
-     * - `string` is treated as a SQL expression;
-     * - `bool`, `float`, `int`, and `null` are treated as literal values;
-     * - `ExpressionInterface` is treated as an expression to build SQL expression.
+     * @param mixed $else The result to return if no conditions match (ELSE).
+     * Note that `string` is treated as a SQL expression. Other values will be converted to their string representation
+     * using {@see QueryBuilderInterface::buildValue()} method.
      * If not set, the CASE expression will not have an ELSE clause.
      */
-    public function else(bool|ExpressionInterface|float|int|string|null $else): self
+    public function else(mixed $else): self
     {
         $this->else = $else;
         return $this;
@@ -171,7 +169,7 @@ final class CaseExpression implements ExpressionInterface
      *
      * @psalm-mutation-free
      */
-    public function getElse(): bool|ExpressionInterface|float|int|string|null
+    public function getElse(): mixed
     {
         return $this->else ?? null;
     }
