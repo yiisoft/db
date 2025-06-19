@@ -81,10 +81,8 @@ class CaseExpressionBuilder implements ExpressionBuilderInterface
      *
      * @return string The SQL result string.
      */
-    protected function buildResult(
-        bool|ExpressionInterface|float|int|string|null $result,
-        array &$params,
-    ): string {
+    protected function buildResult(mixed $result, array &$params): string
+    {
         if (is_string($result)) {
             return $result;
         }
