@@ -16,13 +16,7 @@ namespace Yiisoft\Db\Expression\Function;
  * $longest = new Longest('short', 'longer', 'longest');
  * ```
  *
- * ```sql
- * CASE GREATEST(LENGTH('short'), LENGTH('longer'), LENGTH('longest'))
- *     WHEN LENGTH('short') THEN 'short'
- *     WHEN LENGTH('longer') THEN 'longer'
- *     ELSE 'longest'
- * END
- * ```
+ * @see LongestBuilder for building SQL representations of this function expression.
  */
 final class Longest extends MultiOperandFunction
 {

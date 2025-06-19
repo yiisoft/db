@@ -18,7 +18,7 @@ use Yiisoft\Db\Expression\Function\Shortest;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
-class MultiOperandFunctionTest extends TestCase
+final class MultiOperandFunctionTest extends TestCase
 {
     use TestTrait;
 

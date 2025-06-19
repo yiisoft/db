@@ -10,7 +10,7 @@ use Yiisoft\Db\Expression\Function\MultiOperandFunction;
 use function implode;
 
 /**
- * Builds SQL LEAST() function expressions for {@see Least}.
+ * Builds SQL LEAST() function expressions for {@see Least} objects.
  */
 class LeastBuilder extends MultiOperandFunctionBuilder
 {

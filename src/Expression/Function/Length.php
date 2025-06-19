@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Expression\Function;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\Function\Builder\LengthBuilder;
 
 /**
  * Represents a SQL LENGTH() function that returns the length of string represented as an expression.
@@ -18,6 +19,8 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * ```sql
  * LENGTH(expression)
  * ```
+ *
+ * @see LengthBuilder for building SQL representations of this function expression.
  */
 final class Length implements ExpressionInterface
 {

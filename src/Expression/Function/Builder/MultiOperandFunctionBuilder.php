@@ -14,7 +14,9 @@ use function count;
 use function is_string;
 
 /**
- * Builds SQL multi-operand function expressions for {@see MultiOperandFunction} instances.
+ * Base class for building SQL representation of multi-operand function expressions.
+ *
+ * @see MultiOperandFunction
  */
 abstract class MultiOperandFunctionBuilder implements ExpressionBuilderInterface
 {

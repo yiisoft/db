@@ -12,7 +12,7 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use function is_string;
 
 /**
- * Builds SQL LENGTH() function expressions for {@see Length}.
+ * Builds SQL LENGTH() function expressions for {@see Length} objects.
  */
 class LengthBuilder implements ExpressionBuilderInterface
 {

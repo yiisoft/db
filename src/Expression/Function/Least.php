@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Expression\Function;
 
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\Function\Builder\LeastBuilder;
 
 /**
  * Represents a SQL LEAST() function that returns the least value from a list of values or expressions.
@@ -18,6 +19,8 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * ```sql
  * LEAST(1, a + b, (SELECT "column" FROM "table" WHERE "id" = 1))
  * ```
+ *
+ * @see LeastBuilder for building SQL representations of this function expression.
  */
 final class Least extends MultiOperandFunction
 {

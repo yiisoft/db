@@ -9,7 +9,7 @@ use Yiisoft\Db\Expression\Function\MultiOperandFunction;
 use Yiisoft\Db\Expression\Function\Shortest;
 
 /**
- * Builds SQL expressions to represent the function which returns the shortest string from a set of operands.
+ * Builds SQL representation of function expressions which return the shortest string from a set of operands.
  *
  * @see Shortest
  */
@@ -32,7 +32,7 @@ class ShortestBuilder extends MultiOperandFunctionBuilder
             $builtSelects[] = $this->buildSelect($operand, $operandAlias, $params);
         }
 
-        $unions = implode(' UNION ALL ', $builtSelects);
+        $unions = implode(' UNION ', $builtSelects);
 
         $lengthClause = $this->queryBuilder->buildExpression(new Length($operandAlias));
 

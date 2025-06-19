@@ -10,7 +10,7 @@ use Yiisoft\Db\Expression\Function\MultiOperandFunction;
 use function implode;
 
 /**
- * Builds SQL GREATEST() function expressions for {@see Greatest}.
+ * Builds SQL GREATEST() function expressions for {@see Greatest} objects.
  */
 class GreatestBuilder extends MultiOperandFunctionBuilder
 {

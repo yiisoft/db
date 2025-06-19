@@ -12,7 +12,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Length;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
-class LengthTest extends TestCase
+final class LengthTest extends TestCase
 {
     use TestTrait;
 

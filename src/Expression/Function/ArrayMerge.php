@@ -15,7 +15,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * $arrayMerge = new ArrayMerge('operand1', 'operand2');
  * ```
  *
- * This will generate the following SQL expression (in PostgreSQL):
+ * For example, it will be generated into the following SQL expression in PostgreSQL:
  *
  * ```sql
  * ARRAY(SELECT DISTINCT UNNEST(operand1 || operand2))

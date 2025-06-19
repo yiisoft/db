@@ -10,7 +10,7 @@ use Yiisoft\Db\Expression\Function\Longest;
 use Yiisoft\Db\Expression\Function\MultiOperandFunction;
 
 /**
- * Builds SQL expressions to represent the function which returns the longest string from a set of operands.
+ * Builds SQL representation of function expressions which returns the longest string from a set of operands.
  *
  * @see Longest
  */
@@ -33,7 +33,7 @@ class LongestBuilder extends MultiOperandFunctionBuilder
             $builtSelects[] = $this->buildSelect($operand, $operandAlias, $params);
         }
 
-        $unions = implode(' UNION ALL ', $builtSelects);
+        $unions = implode(' UNION ', $builtSelects);
 
         $lengthClause = $this->queryBuilder->buildExpression(new Length($operandAlias));
 

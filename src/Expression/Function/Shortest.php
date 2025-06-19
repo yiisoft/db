@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression\Function;
 
+use Yiisoft\Db\Expression\Function\Builder\ShortestBuilder;
+
 /**
  * Represents SQL expression that returns the shortest string from a list of operands.
  *
@@ -16,13 +18,7 @@ namespace Yiisoft\Db\Expression\Function;
  * $shortest = new Shortest('short', 'longer', 'longest');
  * ```
  *
- * ```sql
- * CASE LEAST(LENGTH('short'), LENGTH('longer'), LENGTH('longest'))
- *     WHEN LENGTH('short') THEN 'short'
- *     WHEN LENGTH('longer') THEN 'longer'
- *     ELSE 'longest'
- * END
- * ```
+ * @see ShortestBuilder for building SQL representations of this function expression.
  */
 final class Shortest extends MultiOperandFunction
 {
