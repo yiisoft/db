@@ -31,14 +31,14 @@ use function is_string;
  */
 final class PdoDataReader implements DataReaderInterface
 {
-    /** @var ColumnInterface[] */
-    private array $typecastColumns = [];
     /** @psalm-var IndexBy|null $indexBy */
     private Closure|string|null $indexBy = null;
     private int $index = 0;
     /** @psalm-var ResultCallbackOne|null $resultCallback */
     private Closure|null $resultCallback = null;
     private array|false $row;
+    /** @var ColumnInterface[] */
+    private array $typecastColumns = [];
 
     /**
      * @param PDOStatement $statement The PDO statement object that contains the result of the query.
