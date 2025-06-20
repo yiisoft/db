@@ -32,7 +32,7 @@ use function is_string;
 final class PdoDataReader implements DataReaderInterface
 {
     /** @var ColumnInterface[] */
-    private array $columns = [];
+    private array $typecastColumns = [];
     /** @psalm-var IndexBy|null $indexBy */
     private Closure|string|null $indexBy = null;
     private int $index = 0;
@@ -108,8 +108,8 @@ final class PdoDataReader implements DataReaderInterface
             return false;
         }
 
-        if (!empty($this->columns)) {
-            foreach ($this->columns as $key => $column) {
+        if (!empty($this->typecastColumns)) {
+            foreach ($this->typecastColumns as $key => $column) {
                 $row[$key] = $column->phpTypecast($row[$key]);
             }
         }
@@ -155,9 +155,9 @@ final class PdoDataReader implements DataReaderInterface
         return $this;
     }
 
-    public function typecastColumns(array $columns): static
+    public function typecastColumns(array $typecastColumns): static
     {
-        $this->columns = $columns;
+        $this->typecastColumns = $typecastColumns;
         return $this;
     }
 }
