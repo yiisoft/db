@@ -2,6 +2,8 @@
 
 ## 2.0.0 under development
 
+- Chg #990: Delete `Yiisoft\Db\Exception\InvalidArgumentException` and `Yiisoft\Db\Exception\InvalidParamException` and
+  use `\InvalidArgumentException` instead (@DikoIbragimov)
 - New #913: Add methods `SchemaInterface::hasSchema()`, `SchemaInterface::hasTable()`, `SchemaInterface::hasView()` (@evil1)
 - Enh #820: Support `Traversable` values for `AbstractDMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #815: Refactor `Query::column()` method (@Tigrov) 
