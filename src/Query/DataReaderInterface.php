@@ -50,14 +50,6 @@ interface DataReaderInterface extends Iterator, Countable
     public function current(): array|object|false;
 
     /**
-     * Sets the columns for type casting the query results.
-     * Do not use this method if you want to get the raw data from the query.
-     *
-     * @param ColumnInterface[] $columns
-     */
-    public function typecastColumns(array $columns): static;
-
-    /**
      * Sets `indexBy` property.
      *
      * @param Closure|string|null $indexBy The name of the column by which the query results should be indexed by.
@@ -94,4 +86,12 @@ interface DataReaderInterface extends Iterator, Countable
      * @psalm-param ResultCallbackOne|null $resultCallback
      */
     public function resultCallback(Closure|null $resultCallback): static;
+
+    /**
+     * Sets the columns for type casting the query results.
+     * Do not use this method if you want to get the raw data from the query.
+     *
+     * @param ColumnInterface[] $typecastColumns
+     */
+    public function typecastColumns(array $typecastColumns): static;
 }
