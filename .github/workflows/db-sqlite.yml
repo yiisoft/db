@@ -28,7 +28,6 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      CURRENT_PACKAGE: db-sqlite
       EXTENSIONS: pdo, pdo_sqlite
 
     runs-on: ${{ matrix.os }}
@@ -60,22 +59,11 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
-      - name: Set environment variables pull request linux.
-        if: matrix.os == 'ubuntu-latest'
-        uses: yiisoft/actions/db/environment-linux@master
-
-      - name: Set environment variables pull request windows.
-        if: matrix.os == 'windows-latest'
-        uses: yiisoft/actions/db/environment-windows@master
-
-      - name: Install db.
-        uses: yiisoft/actions/db/subpackage-install@master
+      - name: Install db-sqlite.
+        uses: yiisoft/actions/install-packages@recognize-fork-prefix
         with:
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
-          CURRENT_PACKAGE: ${{ env.CURRENT_PACKAGE }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
-          WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
+          packages: >-
+            ['db-sqlite']
 
       - name: Run sqlite tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Sqlite --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
