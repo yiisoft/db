@@ -23,6 +23,7 @@ use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+
 use function array_keys;
 use function array_map;
 use function restore_error_handler;
