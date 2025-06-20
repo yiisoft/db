@@ -155,7 +155,7 @@ final class PdoDataReader implements DataReaderInterface
         return $this;
     }
 
-    public function columns(array $columns): static
+    public function typecastColumns(array $columns): static
     {
         $this->columns = $columns;
         return $this;

@@ -55,7 +55,7 @@ interface DataReaderInterface extends Iterator, Countable
      *
      * @param ColumnInterface[] $columns
      */
-    public function columns(array $columns): static;
+    public function typecastColumns(array $columns): static;
 
     /**
      * Sets `indexBy` property.
