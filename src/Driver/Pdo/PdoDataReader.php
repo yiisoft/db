@@ -12,6 +12,7 @@ use PDOStatement;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function is_string;
 
@@ -30,6 +31,8 @@ use function is_string;
  */
 final class PdoDataReader implements DataReaderInterface
 {
+    /** @var ColumnInterface[] */
+    private array $columns = [];
     /** @psalm-var IndexBy|null $indexBy */
     private Closure|string|null $indexBy = null;
     private int $index = 0;
@@ -99,11 +102,23 @@ final class PdoDataReader implements DataReaderInterface
 
     public function current(): array|object|false
     {
-        if ($this->resultCallback === null || $this->row === false) {
-            return $this->row;
+        $row = $this->row;
+
+        if ($row === false) {
+            return false;
         }
 
-        return ($this->resultCallback)($this->row);
+        if (!empty($this->columns)) {
+            foreach ($this->columns as $key => $column) {
+                $row[$key] = $column->phpTypecast($row[$key]);
+            }
+        }
+
+        if ($this->resultCallback === null) {
+            return $row;
+        }
+
+        return ($this->resultCallback)($row);
     }
 
     /**
@@ -137,6 +152,12 @@ final class PdoDataReader implements DataReaderInterface
     public function resultCallback(Closure|null $resultCallback): static
     {
         $this->resultCallback = $resultCallback;
+        return $this;
+    }
+
+    public function columns(array $columns): static
+    {
+        $this->columns = $columns;
         return $this;
     }
 }

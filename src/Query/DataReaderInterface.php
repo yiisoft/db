@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Query;
 use Closure;
 use Countable;
 use Iterator;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * This interface represents a forward-only stream of rows from a query result set.
@@ -47,6 +48,14 @@ interface DataReaderInterface extends Iterator, Countable
      * This method is required by the interface {@see Iterator}.
      */
     public function current(): array|object|false;
+
+    /**
+     * Sets the columns for type casting the query results.
+     * Do not use this method if you want to get the raw data from the query.
+     *
+     * @param ColumnInterface[] $columns
+     */
+    public function columns(array $columns): static;
 
     /**
      * Sets `indexBy` property.
