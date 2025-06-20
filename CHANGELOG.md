@@ -2,6 +2,8 @@
 
 ## 2.0.0 under development
 
+- Chg #990: Delete `Yiisoft\Db\Exception\InvalidArgumentException` and `Yiisoft\Db\Exception\InvalidParamException` and
+  use `\InvalidArgumentException` instead (@DikoIbragimov)
 - New #913: Add methods `SchemaInterface::hasSchema()`, `SchemaInterface::hasTable()`, `SchemaInterface::hasView()` (@evil1)
 - Enh #820: Support `Traversable` values for `AbstractDMLQueryBuilder::batchInsert()` method with empty columns (@Tigrov)
 - Enh #815: Refactor `Query::column()` method (@Tigrov) 
@@ -96,6 +98,8 @@
 - Enh #979: Allow `ExpressionInterface` for column definitions when create table (@Tigrov)
 - Enh #981: Refactor constraints (@Tigrov)
 - Enh #982: Reduce binding parameters (@Tigrov)
+- New #984: Add `createQuery()` and `select()` methods to `ConnectionInterface` (@Tigrov)
+- Chg #985: Rename `insertWithReturningPks()` to `insertReturningPks()` in `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 

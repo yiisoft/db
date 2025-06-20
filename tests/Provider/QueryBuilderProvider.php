@@ -1137,7 +1137,7 @@ class QueryBuilderProvider
         ];
     }
 
-    public static function insertWithReturningPks(): array
+    public static function insertReturningPks(): array
     {
         return [
             ['{{table}}', [], [], '', []],

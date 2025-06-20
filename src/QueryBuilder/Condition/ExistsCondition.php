@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition;
 
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ExistConditionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 

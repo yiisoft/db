@@ -8,6 +8,7 @@ use Closure;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -49,6 +50,11 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
             $this->connection->createCommand($sql, $params),
             $this->collector,
         );
+    }
+
+    public function createQuery(): QueryInterface
+    {
+        return $this->connection->createQuery();
     }
 
     public function createTransaction(): TransactionInterface
@@ -139,6 +145,13 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
     public function setEnableSavepoint(bool $value): void
     {
         $this->connection->setEnableSavepoint($value);
+    }
+
+    public function select(
+        array|bool|float|int|string|ExpressionInterface $columns = [],
+        ?string $option = null,
+    ): QueryInterface {
+        return $this->connection->select($columns, $option);
     }
 
     public function setTablePrefix(string $value): void

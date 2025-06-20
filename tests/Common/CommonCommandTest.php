@@ -15,7 +15,7 @@ use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -1221,7 +1221,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    public function testInsertWithReturningPks(): void
+    public function testInsertReturningPks(): void
     {
         $db = $this->getConnection(true);
 
@@ -1234,20 +1234,20 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertSame(
             $expected,
-            $command->insertWithReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']),
+            $command->insertReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']),
         );
 
         $db->close();
     }
 
-    public function testInsertWithReturningPksWithCompositePK(): void
+    public function testInsertReturningPksWithCompositePK(): void
     {
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
 
         $params = ['id_1' => 99, 'id_2' => 100.5, 'type' => 'test'];
-        $result = $command->insertWithReturningPks('{{%notauto_pk}}', $params);
+        $result = $command->insertReturningPks('{{%notauto_pk}}', $params);
 
         $this->assertEquals($params['id_1'], $result['id_1']);
         $this->assertEquals($params['id_2'], $result['id_2']);
@@ -2174,7 +2174,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $inserted = $db->createCommand()
-            ->insertWithReturningPks(
+            ->insertReturningPks(
                 '{{%order}}',
                 ['customer_id' => 1, 'created_at' => 0, 'total' => $decimalValue]
             );
@@ -2190,11 +2190,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame($decimalValue, $phpTypecastValue);
     }
 
-    public function testInsertWithReturningPksEmptyValues()
+    public function testInsertReturningPksEmptyValues()
     {
         $db = $this->getConnection(true);
 
-        $pkValues = $db->createCommand()->insertWithReturningPks('null_values', []);
+        $pkValues = $db->createCommand()->insertReturningPks('null_values', []);
 
         $expected = match ($db->getDriverName()) {
             'pgsql' => ['id' => 1],
@@ -2204,7 +2204,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame($expected, $pkValues);
     }
 
-    public function testInsertWithReturningPksWithQuery(): void
+    public function testInsertReturningPksWithQuery(): void
     {
         $db = $this->getConnection(true);
 
@@ -2213,27 +2213,27 @@ abstract class CommonCommandTest extends AbstractCommandTest
             'email' => new Expression("'test_1@example.com'"),
         ]);
 
-        $pkValues = $db->createCommand()->insertWithReturningPks('customer', $query);
+        $pkValues = $db->createCommand()->insertReturningPks('customer', $query);
 
         $this->assertEquals(['id' => 4], $pkValues);
     }
 
-    public function testInsertWithReturningPksEmptyValuesAndNoPk()
+    public function testInsertReturningPksEmptyValuesAndNoPk()
     {
         $db = $this->getConnection(true);
 
-        $pkValues = $db->createCommand()->insertWithReturningPks('negative_default_values', []);
+        $pkValues = $db->createCommand()->insertReturningPks('negative_default_values', []);
 
         $this->assertSame([], $pkValues);
     }
 
-    public function testInsertWithReturningPksWithPhpTypecasting(): void
+    public function testInsertReturningPksWithPhpTypecasting(): void
     {
         $db = $this->getConnection(true);
 
         $result = $db->createCommand()
             ->withPhpTypecasting()
-            ->insertWithReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
+            ->insertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
 
         $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
     }

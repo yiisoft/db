@@ -130,6 +130,8 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `QueryPartsInterface::setHaving()` - overwrites the `HAVING` part of the query;
 - `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
+- `ConnectionInterface::createQuery()` - creates a `Query` object;
+- `ConnectionInterface::select()` - creates a `Query` object with the specified columns to be selected;
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
 - `QueryBuilderInterface::buildValue()` - converts a value to its SQL representation with binding parameters if necessary;
 - `QueryBuilderInterface::prepareParam()` - converts a `ParamInterface` object to its SQL representation;
@@ -238,6 +240,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change `$distinct` parameter type in `DQLQueryBuilderInterface::buildSelect()` to `bool`;
 - Add `QueryInterface` to type of `$columns` parameter of `insertWithReturningPks()` method in `CommandInterface` and 
   `AbstractCommand` class;
+- Rename `insertWithReturningPks()` to `insertReturningPks()` method in `CommandInterface` and `DMLQueryBuilderInterface`;
 - Remove `$params` parameter from `upsert()` method in `CommandInterface` and `AbstractCommand` class;
 - Add default value to `$updateColumns` and `$params` parameters of `upsert()` method in `DMLQueryBuilderInterface` and 
   `AbstractDMLQueryBuilder` and `AbstractQueryBuilder` classes;

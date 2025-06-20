@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\Helper;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Helper\DbUuidHelper;
 
 /**

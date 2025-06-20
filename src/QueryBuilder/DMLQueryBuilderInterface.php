@@ -7,7 +7,7 @@ namespace Yiisoft\Db\QueryBuilder;
 use JsonException;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Query\QueryInterface;
@@ -138,7 +138,7 @@ interface DMLQueryBuilderInterface
      *
      * Note: The method will escape the table and column names.
      */
-    public function insertWithReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string;
+    public function insertReturningPks(string $table, array|QueryInterface $columns, array &$params = []): string;
 
     /**
      * Returns whether type casting is enabled for the query builder.
