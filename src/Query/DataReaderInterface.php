@@ -7,6 +7,7 @@ namespace Yiisoft\Db\Query;
 use Closure;
 use Countable;
 use Iterator;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * This interface represents a forward-only stream of rows from a query result set.
@@ -85,4 +86,12 @@ interface DataReaderInterface extends Iterator, Countable
      * @psalm-param ResultCallbackOne|null $resultCallback
      */
     public function resultCallback(Closure|null $resultCallback): static;
+
+    /**
+     * Sets the columns for type casting the query results.
+     * Do not use this method if you want to get the raw data from the query.
+     *
+     * @param ColumnInterface[] $typecastColumns
+     */
+    public function typecastColumns(array $typecastColumns): static;
 }

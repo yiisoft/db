@@ -100,6 +100,7 @@
 - Enh #982: Reduce binding parameters (@Tigrov)
 - New #984: Add `createQuery()` and `select()` methods to `ConnectionInterface` (@Tigrov)
 - Chg #985: Rename `insertWithReturningPks()` to `insertReturningPks()` in `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
+- Enh #992: Add optional type casting to `DataReaderInterface` using columns (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
