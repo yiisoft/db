@@ -15,7 +15,7 @@ use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
@@ -502,7 +502,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertCount($count + 1, $schema->getTableIndexes($tableName));
 
-        $index = array_filter($schema->getTableIndexes($tableName), static fn ($index) => !$index->isPrimary())[0];
+        $index = array_filter($schema->getTableIndexes($tableName), static fn ($index) => !$index->isPrimaryKey())[0];
 
         $this->assertSame($indexColumns, $index->getColumnNames());
 
