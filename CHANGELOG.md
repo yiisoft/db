@@ -96,6 +96,7 @@
 - Bug #978: Fix memory leaking in `Command::exists()` method (@Tigrov)
 - Chg #980: Add constructor with DB connection to `AbstractCommand` (@vjik)
 - Enh #979: Allow `ExpressionInterface` for column definitions when create table (@Tigrov)
+- Enh #981: Refactor constraints (@Tigrov)
 - Enh #982: Reduce binding parameters (@Tigrov)
 - New #984: Add `createQuery()` and `select()` methods to `ConnectionInterface` (@Tigrov)
 - Chg #985: Rename `insertWithReturningPks()` to `insertReturningPks()` in `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)

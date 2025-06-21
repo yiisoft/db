@@ -211,7 +211,7 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     {
         $reference = $this->buildReferenceDefinition($column);
 
-        if ($reference === null) {
+        if ($reference === '') {
             return '';
         }
 
@@ -221,23 +221,17 @@ abstract class AbstractColumnDefinitionBuilder implements ColumnDefinitionBuilde
     /**
      * Builds the reference definition for the column.
      */
-    protected function buildReferenceDefinition(ColumnInterface $column): string|null
+    protected function buildReferenceDefinition(ColumnInterface $column): string
     {
         $reference = $column->getReference();
-        $table = $reference?->getForeignTableName();
+        $table = $reference?->getForeignTableName() ?? '';
 
-        if ($table === null) {
-            return null;
+        if ($table === '') {
+            return '';
         }
 
         $quoter = $this->queryBuilder->getQuoter();
-        $schema = $reference?->getForeignSchemaName();
-
         $sql = $quoter->quoteTableName($table);
-
-        if ($schema !== null) {
-            $sql = $quoter->quoteTableName($schema) . '.' . $sql;
-        }
 
         $columns = $reference?->getForeignColumnNames();
 
