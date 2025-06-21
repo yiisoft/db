@@ -1605,7 +1605,7 @@ class QueryBuilderProvider
         $reference->onUpdate(ReferentialAction::CASCADE);
 
         $referenceWithSchema = clone $reference;
-        $referenceWithSchema->foreignSchemaName('ref_schema');
+        $referenceWithSchema->foreignTableName('ref_schema.ref_table');
 
         return [
             PseudoType::PK => ['integer PRIMARY KEY AUTOINCREMENT', PseudoType::PK],
