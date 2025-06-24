@@ -258,6 +258,10 @@ interface ConnectionInterface
      * @throws Throwable If there is any exception during query. In this case, the transaction will be rolled back.
      *
      * @return TValue Result of callback function.
+     *
+     * @psalm-template TValue
+     * @psalm-param Closure(ConnectionInterface): TValue $closure
+     * @psalm-return TValue
      */
     public function transaction(Closure $closure, ?string $isolationLevel = null): mixed;
 }
