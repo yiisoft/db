@@ -12,6 +12,7 @@ use PDOStatement;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 use function is_string;
 
@@ -36,6 +37,8 @@ final class PdoDataReader implements DataReaderInterface
     /** @psalm-var ResultCallbackOne|null $resultCallback */
     private Closure|null $resultCallback = null;
     private array|false $row;
+    /** @var ColumnInterface[] */
+    private array $typecastColumns = [];
 
     /**
      * @param PDOStatement $statement The PDO statement object that contains the result of the query.
@@ -99,11 +102,23 @@ final class PdoDataReader implements DataReaderInterface
 
     public function current(): array|object|false
     {
-        if ($this->resultCallback === null || $this->row === false) {
-            return $this->row;
+        $row = $this->row;
+
+        if ($row === false) {
+            return false;
         }
 
-        return ($this->resultCallback)($this->row);
+        if (!empty($this->typecastColumns)) {
+            foreach ($this->typecastColumns as $key => $column) {
+                $row[$key] = $column->phpTypecast($row[$key]);
+            }
+        }
+
+        if ($this->resultCallback === null) {
+            return $row;
+        }
+
+        return ($this->resultCallback)($row);
     }
 
     /**
@@ -137,6 +152,12 @@ final class PdoDataReader implements DataReaderInterface
     public function resultCallback(Closure|null $resultCallback): static
     {
         $this->resultCallback = $resultCallback;
+        return $this;
+    }
+
+    public function typecastColumns(array $typecastColumns): static
+    {
+        $this->typecastColumns = $typecastColumns;
         return $this;
     }
 }

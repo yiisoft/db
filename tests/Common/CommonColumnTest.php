@@ -29,6 +29,92 @@ abstract class CommonColumnTest extends AbstractColumnTest
 
     protected const COLUMN_BUILDER = ColumnBuilder::class;
 
+    abstract protected function insertTypeValues(ConnectionInterface $db): void;
+
+    abstract protected function assertTypecastedValues(array $result, bool $allTypecasted = false): void;
+
+    public function testQueryWithTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+
+        $this->insertTypeValues($db);
+
+        $query = $db->createQuery()->from('type')->withTypecasting();
+
+        $result = $query->one();
+
+        $this->assertTypecastedValues($result);
+
+        $result = $query->all();
+
+        $this->assertTypecastedValues($result[0]);
+
+        $result = iterator_to_array($query->each());
+
+        $this->assertTypecastedValues($result[0]);
+
+        $result = iterator_to_array($query->batch());
+
+        $this->assertTypecastedValues($result[0][0]);
+
+        $result = $db->select(['float_col'])->from('type')->withTypecasting()->column();
+
+        $this->assertSame(1.234, $result[0]);
+
+        $db->close();
+    }
+
+    public function testCommandWithPhpTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+
+        $this->insertTypeValues($db);
+
+        $quotedTableName = $db->getQuoter()->quoteSimpleTableName('type');
+        $command = $db->createCommand("SELECT * FROM $quotedTableName")->withPhpTypecasting();
+
+        $result = $command->queryOne();
+
+        $this->assertTypecastedValues($result);
+
+        $result = $command->queryAll();
+
+        $this->assertTypecastedValues($result[0]);
+
+        $result = iterator_to_array($command->query());
+
+        $this->assertTypecastedValues($result[0]);
+
+        $quotedColumnName = $db->getQuoter()->quoteSimpleColumnName('float_col');
+        $result = $db->createCommand("SELECT $quotedColumnName FROM $quotedTableName")
+            ->withPhpTypecasting()
+            ->queryColumn();
+
+        $this->assertSame(1.234, $result[0]);
+
+        $db->close();
+    }
+
+    public function testPhpTypecast(): void
+    {
+        $db = $this->getConnection(true);
+        $columns = $db->getTableSchema('type')->getColumns();
+
+        $this->insertTypeValues($db);
+
+        $query = $db->createQuery()->from('type')->one();
+
+        $result = [];
+
+        foreach ($columns as $columnName => $column) {
+            $result[$columnName] = $column->phpTypecast($query[$columnName]);
+        }
+
+        $this->assertTypecastedValues($result, true);
+
+        $db->close();
+    }
+
     public function createDateTimeColumnTable(ConnectionInterface $db): void
     {
         $schema = $db->getSchema();
