@@ -1866,7 +1866,7 @@ class QueryBuilderProvider
                     ->addWhen(2, new Expression('2'))
                     ->addWhen(3, '(2 + 1)')
                     ->else($param = new Param(4, DataType::INTEGER)),
-                "CASE (1 + 2) WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN (2 + 1) ELSE :qp0 END",
+                'CASE (1 + 2) WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN (2 + 1) ELSE :qp0 END',
                 [':qp0' => $param],
                 3,
             ],
@@ -1877,7 +1877,8 @@ class QueryBuilderProvider
                         DbHelper::replaceQuotes('[[column_name]] = 2', static::getDriverName()),
                         (new Query(self::getDb()))->select($paramB = new Param('b', DataType::STRING))
                     ),
-                DbHelper::replaceQuotes(<<<SQL
+                DbHelper::replaceQuotes(
+                    <<<SQL
                     CASE WHEN [[column_name]] = :qp0 THEN :qp1 WHEN [[column_name]] = 2 THEN (SELECT :pv2) END
                     SQL,
                     static::getDriverName(),
