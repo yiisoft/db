@@ -192,11 +192,14 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
     ): void {
         parent::testCaseExpressionBuilder($case, $expectedSql, $expectedParams, $expectedResult);
 
-        $result = $this->getConnection()
-            ->select($case)
+        $db = $this->getConnection();
+
+        $result = $db->select($case)
             ->from($this->getConnection()->select(['column_name' => 2]))
             ->scalar();
 
         $this->assertEquals($expectedResult, $result);
+
+        $db->close();
     }
 }
