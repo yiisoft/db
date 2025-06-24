@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Common;
 
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
+use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
 use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
@@ -179,5 +181,22 @@ abstract class CommonQueryBuilderTest extends AbstractQueryBuilderTest
             ':qp2' => '3.14',
             ':qp3' => '1',
         ], $params);
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'caseExpressionBuilder')]
+    public function testCaseExpressionBuilder(
+        CaseExpression $case,
+        string $expectedSql,
+        array $expectedParams,
+        string|int $expectedResult,
+    ): void {
+        parent::testCaseExpressionBuilder($case, $expectedSql, $expectedParams, $expectedResult);
+
+        $result = $this->getConnection()
+            ->select($case)
+            ->from($this->getConnection()->select(['column_name' => 2]))
+            ->scalar();
+
+        $this->assertEquals($expectedResult, $result);
     }
 }

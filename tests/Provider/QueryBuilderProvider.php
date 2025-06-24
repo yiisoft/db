@@ -12,6 +12,7 @@ use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
@@ -1852,6 +1853,37 @@ class QueryBuilderProvider
                 new JsonSerializableObject(['a' => 1, 'b' => 2]),
                 ':qp0',
                 [':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)],
+            ],
+        ];
+    }
+
+    public static function caseExpressionBuilder(): array
+    {
+        return [
+            'with case expression' => [
+                (new CaseExpression('(1 + 2)'))
+                    ->addWhen(1, 1)
+                    ->addWhen(2, new Expression('2'))
+                    ->addWhen(3, '(2 + 1)')
+                    ->else($param = new Param(4, DataType::INTEGER)),
+                "CASE (1 + 2) WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN (2 + 1) ELSE :qp0 END",
+                [':qp0' => $param],
+                3,
+            ],
+            'without case expression' => [
+                (new CaseExpression())
+                    ->addWhen(['=', 'column_name', 1], $paramA = new Param('a', DataType::STRING))
+                    ->addWhen(
+                        DbHelper::replaceQuotes('[[column_name]] = 2', static::getDriverName()),
+                        (new Query(self::getDb()))->select($paramB = new Param('b', DataType::STRING))
+                    ),
+                DbHelper::replaceQuotes(<<<SQL
+                    CASE WHEN [[column_name]] = :qp0 THEN :qp1 WHEN [[column_name]] = 2 THEN (SELECT :pv2) END
+                    SQL,
+                    static::getDriverName(),
+                ),
+                [':qp0' => 1, ':qp1' => $paramA, ':pv2' => $paramB],
+                'b',
             ],
         ];
     }
