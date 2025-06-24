@@ -38,6 +38,11 @@ trait TestTrait
         return 'db';
     }
 
+    protected static function replaceQuotes(string $sql): string
+    {
+        return DbHelper::replaceQuotes($sql, static::getDriverName());
+    }
+
     protected function setDsn(string $dsn): void
     {
         $this->dsn = $dsn;

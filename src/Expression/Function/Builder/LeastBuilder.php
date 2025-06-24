@@ -12,7 +12,7 @@ use function implode;
 /**
  * Builds SQL LEAST() function expressions for {@see Least} objects.
  */
-class LeastBuilder extends MultiOperandFunctionBuilder
+final class LeastBuilder extends MultiOperandFunctionBuilder
 {
     /**
      * Builds a SQL LEAST() function expression from the given {@see Least} object.

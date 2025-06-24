@@ -19,6 +19,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\Expression\Function\Length;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition;
@@ -2509,5 +2510,56 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
         $this->assertSame($expected, $qb->buildValue($value, $params));
         Assert::arraysEquals($expectedParams, $params);
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'lengthBuilder')]
+    public function testLengthBuilder(
+        string|ExpressionInterface $operand,
+        string $expectedSql,
+        int $expectedResult,
+        array $expectedParams = [],
+    ): void {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $length = new Length($operand);
+        $params = [];
+
+        $this->assertSame($expectedSql, $qb->buildExpression($length, $params));
+        $this->assertSame($expectedParams, $params);
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'multiOperandFunctionBuilder')]
+    public function testMultiOperandFunctionBuilder(
+        string $class,
+        array $operands,
+        string $expectedSql,
+        string|int $expectedResult,
+        array $expectedParams = [],
+    ): void {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $expression = new $class(...$operands);
+        $params = [];
+
+        $sql = $qb->buildExpression($expression, $params);
+
+        $this->assertSame($expectedSql, $sql);
+        Assert::arraysEquals($expectedParams, $params);
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'multiOperandFunctionClasses')]
+    public function testMultiOperandFunctionBuilderWithoutOperands(string $class): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $expression = new $class();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("The $class expression must have at least one operand.");
+
+        $qb->buildExpression($expression);
     }
 }

@@ -17,7 +17,6 @@ final class StructuredColumn extends AbstractStructuredColumn
 {
     /**
      * @param string|null $value The string retrieved value from the database that can be parsed into an array.
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function phpTypecast(mixed $value): array|null
     {

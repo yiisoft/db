@@ -14,7 +14,7 @@ use function is_string;
 /**
  * Builds SQL LENGTH() function expressions for {@see Length} objects.
  */
-class LengthBuilder implements ExpressionBuilderInterface
+final class LengthBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
