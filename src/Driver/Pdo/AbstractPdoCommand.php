@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Driver\Pdo;
 
+use InvalidArgumentException;
 use PDO;
 use PDOException;
 use PDOStatement;
@@ -17,7 +18,6 @@ use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Profiler\Context\CommandContext;
 use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
@@ -245,13 +245,20 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     }
 
     /**
-     * @throws InvalidParamException
+     * @throws InvalidArgumentException
      */
     protected function internalGetQueryResult(int $queryMode): mixed
     {
         if ($queryMode === self::QUERY_MODE_CURSOR) {
             /** @psalm-suppress PossiblyNullArgument */
-            return new PdoDataReader($this->pdoStatement);
+            $dataReader = new PdoDataReader($this->pdoStatement);
+
+            if ($this->phpTypecasting && ($row = $dataReader->current()) !== false) {
+                /** @var array $row */
+                $dataReader->typecastColumns($this->getResultColumns(array_keys($row)));
+            }
+
+            return $dataReader;
         }
 
         if ($queryMode === self::QUERY_MODE_EXECUTE) {
@@ -293,7 +300,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
                 $result = $this->phpTypecastRows($result);
             }
         } else {
-            throw new InvalidParamException("Unknown query mode '$queryMode'");
+            throw new InvalidArgumentException("Unknown query mode '$queryMode'");
         }
 
         $this->pdoStatement?->closeCursor();
