@@ -158,6 +158,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `SchemaInterface::getResultColumn()` - returns the column instance for the column metadata received from the query;
 - `AbstractSchema::getResultColumnCacheKey()` - returns the cache key for the column metadata received from the query;
 - `AbstractSchema::loadResultColumn()` - creates a new column instance according to the column metadata from the query;
+- `DataReaderInterface::typecastColumns()` - sets columns for type casting the query results;
 
 ### Remove methods
 

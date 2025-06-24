@@ -251,7 +251,14 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     {
         if ($queryMode === self::QUERY_MODE_CURSOR) {
             /** @psalm-suppress PossiblyNullArgument */
-            return new PdoDataReader($this->pdoStatement);
+            $dataReader = new PdoDataReader($this->pdoStatement);
+
+            if ($this->phpTypecasting && ($row = $dataReader->current()) !== false) {
+                /** @var array $row */
+                $dataReader->typecastColumns($this->getResultColumns(array_keys($row)));
+            }
+
+            return $dataReader;
         }
 
         if ($queryMode === self::QUERY_MODE_EXECUTE) {
