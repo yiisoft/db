@@ -363,37 +363,31 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             return $select . ' *';
         }
 
+        $quoter = $this->quoter;
+
         foreach ($columns as $i => $column) {
-            if ($column instanceof ExpressionInterface) {
-                if (is_int($i)) {
-                    $columns[$i] = $this->buildExpression($column, $params);
-                } else {
-                    $columns[$i] = $this->buildExpression($column, $params) . ' AS '
-                        . $this->quoter->quoteColumnName($i);
-                }
-            } elseif (!is_string($column)) {
-                if (is_bool($column)) {
-                    $columns[$i] = $column ? 'TRUE' : 'FALSE';
-                } else {
-                    $columns[$i] = (string) $column;
+            $isIndexString = is_string($i);
+
+            if (!is_string($column)) {
+                $columns[$i] = $this->queryBuilder->buildValue($column, $params);
+            } elseif (!str_contains($column, '(')) {
+                if (!$isIndexString
+                    && preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $column, $matches) === 1
+                ) {
+                    $columns[$i] = $quoter->quoteColumnName($matches[1])
+                        . ' AS ' . $quoter->quoteSimpleColumnName($matches[2]);
+                    continue;
                 }
 
-                if (is_string($i)) {
-                    /** @psalm-var string $columns[$i] */
-                    $columns[$i] .= ' AS ' . $this->quoter->quoteColumnName($i);
-                }
-            } elseif (is_string($i) && $i !== $column) {
-                if (!str_contains($column, '(')) {
-                    $column = $this->quoter->quoteColumnName($column);
-                }
-                $columns[$i] = "$column AS " . $this->quoter->quoteColumnName($i);
-            } elseif (!str_contains($column, '(')) {
-                if (preg_match('/^(.*?)(?i:\s+as\s+|\s+)([\w\-_.]+)$/', $column, $matches)) {
-                    $columns[$i] = $this->quoter->quoteColumnName($matches[1])
-                        . ' AS ' . $this->quoter->quoteColumnName($matches[2]);
-                } else {
-                    $columns[$i] = $this->quoter->quoteColumnName($column);
-                }
+                $columns[$i] = $quoter->quoteColumnName($column);
+            }
+
+            if ($isIndexString && $i !== $column) {
+                /**
+                 * @var string $i
+                 * @psalm-var string $columns[$i]
+                 */
+                $columns[$i] .= ' AS ' . $quoter->quoteColumnName($i);
             }
         }
 

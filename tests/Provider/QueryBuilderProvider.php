@@ -1926,10 +1926,10 @@ class QueryBuilderProvider
                     ),
                 static::replaceQuotes(
                     <<<SQL
-                    CASE WHEN [[column_name]] = 1 THEN :qp0 WHEN [[column_name]] = 2 THEN (SELECT :pv1) END
+                    CASE WHEN [[column_name]] = 1 THEN :qp0 WHEN [[column_name]] = 2 THEN (SELECT :qp1) END
                     SQL
                 ),
-                [':qp0' => $paramA, ':pv1' => $paramB],
+                [':qp0' => $paramA, ':qp1' => $paramB],
                 'b',
             ],
         ];
