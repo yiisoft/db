@@ -40,6 +40,7 @@ final class CaseExpressionTest extends TestCase
 
         $this->assertSame($case, $expression->getCase());
         $this->assertSame('', $expression->getCaseType());
+        $this->assertSame([], $expression->getWhen());
     }
 
     public function testConstructType(): void
@@ -53,6 +54,7 @@ final class CaseExpressionTest extends TestCase
         $expression = new CaseExpression(caseType: $intCol);
         $this->assertNull($expression->getCase());
         $this->assertSame($intCol, $expression->getCaseType());
+        $this->assertSame([], $expression->getWhen());
     }
 
     public function testConstructorWhenClauses()
@@ -61,9 +63,9 @@ final class CaseExpressionTest extends TestCase
         $whenClause = new WhenClause('field = 1', 'result1');
         $expression = new CaseExpression(when: $whenClause);
 
+        $this->assertNull($expression->getCase());
+        $this->assertSame('', $expression->getCaseType());
         $this->assertSame(['when' => $whenClause], $expression->getWhen());
-        $this->assertFalse($expression->hasElse());
-        $this->assertNull($expression->getElse());
 
         // Test with multiple when clauses
         $whenClauses = [
@@ -72,9 +74,9 @@ final class CaseExpressionTest extends TestCase
         ];
         $expression = new CaseExpression(...$whenClauses);
 
+        $this->assertNull($expression->getCase());
+        $this->assertSame('', $expression->getCaseType());
         $this->assertSame($whenClauses, $expression->getWhen());
-        $this->assertFalse($expression->hasElse());
-        $this->assertNull($expression->getElse());
     }
 
     #[DataProvider('dataCase')]
