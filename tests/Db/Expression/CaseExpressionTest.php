@@ -35,9 +35,8 @@ final class CaseExpressionTest extends TestCase
     }
 
     #[DataProvider('dataCase')]
-    public function testConstruct(
-        array|bool|ExpressionInterface|float|int|string|null $case
-    ): void {
+    public function testConstruct(mixed $case): void
+    {
         $expression = new CaseExpression($case);
 
         $this->assertSame($case, $expression->getCase());
@@ -57,8 +56,30 @@ final class CaseExpressionTest extends TestCase
         $this->assertSame($intCol, $expression->getCaseType());
     }
 
+    public function testConstructorWhenClauses()
+    {
+        // Test with one when clauses
+        $whenClause = new WhenClause('field = 1', 'result1');
+        $expression = new CaseExpression(when: $whenClause);
+
+        $this->assertSame(['when' => $whenClause], $expression->getWhen());
+        $this->assertFalse($expression->hasElse());
+        $this->assertNull($expression->getElse());
+
+        // Test with multiple when clauses
+        $whenClauses = [
+            'when0' => new WhenClause('field = 1', 'result1'),
+            'when1' => new WhenClause('field = 2', 'result2'),
+        ];
+        $expression = new CaseExpression(...$whenClauses);
+
+        $this->assertSame($whenClauses, $expression->getWhen());
+        $this->assertFalse($expression->hasElse());
+        $this->assertNull($expression->getElse());
+    }
+
     #[DataProvider('dataCase')]
-    public function testCase(array|bool|ExpressionInterface|float|int|string|null $case): void
+    public function testCase(mixed $case): void
     {
         $expression = new CaseExpression();
 
@@ -102,13 +123,22 @@ final class CaseExpressionTest extends TestCase
             $expression->getWhen(),
         );
 
-        $expression->setWhen([]);
+        $expression->setWhen();
 
         $this->assertSame([], $expression->getWhen());
 
-        $expression->setWhen([new WhenClause('field = 3', 'result3')]);
+        $whenClauses = [new WhenClause('field = 3', 'result3')];
+        $expression->setWhen(...$whenClauses);
 
-        Assert::arraysEquals([new WhenClause('field = 3', 'result3')], $expression->getWhen());
+        $this->assertSame($whenClauses, $expression->getWhen());
+
+        $whenClauses = [
+            new WhenClause('field = 3', 'result3'),
+            new WhenClause('field = 4', 'result4'),
+        ];
+        $expression->setWhen(...$whenClauses);
+
+        $this->assertSame($whenClauses, $expression->getWhen());
     }
 
     public function testElse(): void

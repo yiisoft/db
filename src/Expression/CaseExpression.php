@@ -57,9 +57,9 @@ use function get_object_vars;
 final class CaseExpression implements ExpressionInterface
 {
     /**
-     * @var WhenClause[] List of pairs of conditions and their corresponding results in the CASE expression.
+     * @var WhenClause[] List of WHEN conditions and their corresponding results in the CASE expression.
      */
-    private array $whenClauses = [];
+    private array $whenClauses;
     /**
      * @var mixed The result to return if no conditions match in the CASE expression.
      * If not set, the CASE expression will not have an ELSE clause.
@@ -76,11 +76,14 @@ final class CaseExpression implements ExpressionInterface
      * If not provided, the CASE expression will be a WHEN-THEN structure without a specific case value.
      * @param ColumnInterface|string $caseType Optional data type of the CASE expression which can be used in some DBMS
      * to specify the expected type (for example in PostgreSQL).
+     * @param WhenClause ...$when List of WHEN conditions and their corresponding results in the CASE expression.
      */
     public function __construct(
         private mixed $case = null,
         private string|ColumnInterface $caseType = '',
+        WhenClause ...$when,
     ) {
+        $this->whenClauses = $when;
     }
 
     /**
@@ -194,9 +197,9 @@ final class CaseExpression implements ExpressionInterface
     /**
      * Sets WHEN conditions and their corresponding results in the CASE expression.
      *
-     * @param WhenClause[] $whenClauses List of WHEN conditions and their corresponding results in the CASE expression.
+     * @param WhenClause ...$whenClauses List of WHEN conditions and their corresponding results in the CASE expression.
      */
-    public function setWhen(array $whenClauses): self
+    public function setWhen(WhenClause ...$whenClauses): self
     {
         $this->whenClauses = $whenClauses;
         return $this;
