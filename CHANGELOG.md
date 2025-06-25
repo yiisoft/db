@@ -101,6 +101,7 @@
 - New #984: Add `createQuery()` and `select()` methods to `ConnectionInterface` (@Tigrov)
 - Chg #985: Rename `insertWithReturningPks()` to `insertReturningPks()` in `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
 - Enh #992: Add optional type casting to `DataReaderInterface` using columns (@Tigrov)
+- New #988: Add `CaseExpression` and `CaseExpressionBuilder` to build `CASE-WHEN-THEN-ELSE` SQL expressions (@Tigrov)
 
 ## 1.3.0 March 21, 2024
 
