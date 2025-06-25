@@ -15,17 +15,16 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 final class WhenClause
 {
     /**
-     * @param array|bool|ExpressionInterface|float|int|string $condition The condition for the WHEN clause:
+     * @param mixed $condition The condition for the WHEN clause:
      * - `string` is treated as a SQL expression;
-     * - `bool`, `float`, `int`, and `null` are treated as literal values;
      * - `array` is treated as a condition to check, see {@see QueryInterface::where()};
-     * - `ExpressionInterface` is treated as an expression to build SQL expression.
-     * @param mixed $result The result to return if the condition is `true`.
-     * Note that `string` is treated as a SQL expression. Other values will be converted to their string representation
-     * using {@see QueryBuilderInterface::buildValue()} method.
+     * - other values will be converted to their string representation using {@see QueryBuilderInterface::buildValue()}.
+     * @param mixed $result The result to return if the condition is `true`:
+     * - `string` is treated as a SQL expression;
+     * - other values will be converted to their string representation using {@see QueryBuilderInterface::buildValue()}.
      */
     public function __construct(
-        public readonly array|bool|ExpressionInterface|float|int|string $condition,
+        public readonly mixed $condition,
         public readonly mixed $result,
     ) {
     }

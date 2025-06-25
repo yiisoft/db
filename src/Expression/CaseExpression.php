@@ -69,17 +69,16 @@ final class CaseExpression implements ExpressionInterface
     private mixed $else;
 
     /**
-     * @param array|bool|ExpressionInterface|float|int|string|null $case Comparison condition in the CASE expression:
+     * @param mixed $case Comparison condition in the CASE expression:
      * - `string` is treated as a SQL expression;
-     * - `bool`, `float`, `int`, and `null` are treated as literal values;
      * - `array` is treated as a condition to check, see {@see QueryInterface::where()};
-     * - `ExpressionInterface` is treated as an expression to build SQL expression.
+     * - other values will be converted to their string representation using {@see QueryBuilderInterface::buildValue()}.
      * If not provided, the CASE expression will be a WHEN-THEN structure without a specific case value.
      * @param ColumnInterface|string $caseType Optional data type of the CASE expression which can be used in some DBMS
      * to specify the expected type (for example in PostgreSQL).
      */
     public function __construct(
-        private array|bool|ExpressionInterface|float|int|string|null $case = null,
+        private mixed $case = null,
         private string|ColumnInterface $caseType = '',
     ) {
     }
@@ -87,19 +86,16 @@ final class CaseExpression implements ExpressionInterface
     /**
      * Adds a condition and its corresponding result to the CASE expression.
      *
-     * @param array|bool|ExpressionInterface|float|int|string $when The condition to check (WHEN):
+     * @param mixed $when The condition to check (WHEN):
      * - `string` is treated as a SQL expression;
-     * - `bool`, `float`, `int`, and `null` are treated as literal values;
      * - `array` is treated as a condition to check, see {@see QueryInterface::where()};
-     * - `ExpressionInterface` is treated as an expression to build SQL expression.
+     * - other values will be converted to their string representation using {@see QueryBuilderInterface::buildValue()}.
      * @param mixed $then The result to return if the condition is `true` (THEN):
-     * Note that `string` is treated as a SQL expression. Other values will be converted to their string representation
-     * using {@see QueryBuilderInterface::buildValue()} method.
+     * - `string` is treated as a SQL expression;
+     * - other values will be converted to their string representation using {@see QueryBuilderInterface::buildValue()}.
      */
-    public function addWhen(
-        array|bool|ExpressionInterface|float|int|string $when,
-        mixed $then,
-    ): self {
+    public function addWhen(mixed $when, mixed $then): self
+    {
         $this->whenClauses[] = new WhenClause($when, $then);
         return $this;
     }
@@ -107,14 +103,13 @@ final class CaseExpression implements ExpressionInterface
     /**
      * Sets the value to compare against in the CASE expression.
      *
-     * @param array|bool|ExpressionInterface|float|int|string|null $case Comparison condition in the CASE expression:
+     * @param mixed $case Comparison condition in the CASE expression:
      * - `string` is treated as a SQL expression;
-     * - `bool`, `float`, `int`, and `null` are treated as literal values;
      * - `array` is treated as a condition to check, see {@see QueryInterface::where()};
-     * - `ExpressionInterface` is treated as an expression to build SQL expression.
+     * - other values will be converted to their string representation using {@see QueryBuilderInterface::buildValue()}.
      * If not provided, the CASE expression will be a WHEN-THEN structure without a specific case value.
      */
-    public function case(array|bool|ExpressionInterface|float|int|string|null $case): self
+    public function case(mixed $case): self
     {
         $this->case = $case;
         return $this;
@@ -134,8 +129,8 @@ final class CaseExpression implements ExpressionInterface
      * Sets the result to return if no conditions match in the CASE expression.
      *
      * @param mixed $else The result to return if no conditions match (ELSE).
-     * Note that `string` is treated as a SQL expression. Other values will be converted to their string representation
-     * using {@see QueryBuilderInterface::buildValue()} method.
+     * - `string` is treated as a SQL expression;
+     * - other values will be converted to their string representation using {@see QueryBuilderInterface::buildValue()}.
      * If not set, the CASE expression will not have an ELSE clause.
      */
     public function else(mixed $else): self
@@ -149,7 +144,7 @@ final class CaseExpression implements ExpressionInterface
      *
      * @psalm-mutation-free
      */
-    public function getCase(): array|bool|ExpressionInterface|float|int|string|null
+    public function getCase(): mixed
     {
         return $this->case;
     }

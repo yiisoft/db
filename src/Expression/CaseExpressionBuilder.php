@@ -61,13 +61,11 @@ class CaseExpressionBuilder implements ExpressionBuilderInterface
      *
      * @return string The SQL condition string.
      */
-    protected function buildCondition(
-        array|bool|ExpressionInterface|float|int|string|null $condition,
-        array &$params,
-    ): string {
+    protected function buildCondition(mixed $condition, array &$params): string
+    {
         /**
          * @var string
-         * @psalm-suppress ArgumentTypeCoercion
+         * @psalm-suppress MixedArgument
          */
         return match (gettype($condition)) {
             GettypeResult::ARRAY => $this->queryBuilder->buildCondition($condition, $params),
