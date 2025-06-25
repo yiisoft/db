@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression\Function;
 
-use Yiisoft\Db\Expression\ExpressionInterface;
-
 /**
  * Represents SQL expression that returns the merged array from a list of operands.
  *

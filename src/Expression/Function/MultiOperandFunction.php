@@ -8,8 +8,6 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\Function\Builder\MultiOperandFunctionBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
-use function array_map;
-
 /**
  * Base class for functions that operate on multiple operands with the same type.
  *
