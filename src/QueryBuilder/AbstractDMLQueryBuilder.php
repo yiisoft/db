@@ -178,6 +178,20 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
     }
 
     /**
+     * @psalm-param array<string, string> $columns
+     */
+    protected function buildSimpleSelect(array $columns): string
+    {
+        $quoter = $this->quoter;
+
+        foreach ($columns as $name => &$column) {
+            $column = $column . ' AS ' . $quoter->quoteSimpleColumnName($name);
+        }
+
+        return 'SELECT ' . implode(', ', $columns);
+    }
+
+    /**
      * Prepare traversable for batch insert.
      *
      * @param Traversable $rows The rows to be batch inserted into the table.
@@ -298,12 +312,11 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      *
-     * @return array Array of column names, values, and params.
+     * @return string[] Array of column names, values, and params.
      *
      * @psalm-param ParamsType $params
-     * @psalm-return array{0: string[], 1: string, 2: array}
      */
-    protected function prepareInsertSelectSubQuery(QueryInterface $columns, array $params = []): array
+    protected function getQueryColumnNames(QueryInterface $columns, array &$params = []): array
     {
         /** @psalm-var string[] $select */
         $select = $columns->getSelect();
@@ -311,8 +324,6 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         if (empty($select) || in_array('*', $select, true)) {
             throw new InvalidArgumentException('Expected select query object with enumerated (named) parameters');
         }
-
-        [$values, $params] = $this->queryBuilder->build($columns, $params);
 
         $names = [];
 
@@ -332,7 +343,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
             }
         }
 
-        return [$names, $values, $params];
+        return $names;
     }
 
     /**
@@ -361,7 +372,8 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         }
 
         if ($columns instanceof QueryInterface) {
-            [$names, $values, $params] = $this->prepareInsertSelectSubQuery($columns, $params);
+            $names = $this->getQueryColumnNames($columns, $params);
+            [$values, $params] = $this->queryBuilder->build($columns, $params);
             return [$names, [], $values, $params];
         }
 
@@ -411,7 +423,7 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
                 if ($forUpsert && $value instanceof MultiOperandFunction && empty($value->getOperands())) {
                     $quotedTableName ??= $quoter->quoteTableName($table);
                     $value->addOperand("$quotedTableName.$quotedName")
-                        ->addOperand($this->getExcludedColumnName($quotedName));
+                        ->addOperand("EXCLUDED.$quotedName");
 
                     if (isset($tableColumns[$name])) {
                         $value->type($tableColumns[$name]);
@@ -448,24 +460,14 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
 
             /** @psalm-var string[] $updateNames */
             foreach ($updateNames as $name) {
-                $quotedName = $quoter->quoteColumnName($name);
-                $sets[] = "$quotedName=" . $this->getExcludedColumnName($quotedName);
+                $quotedName = $quoter->quoteSimpleColumnName($name);
+                $sets[] = "$quotedName=EXCLUDED.$quotedName";
             }
 
             return $sets;
         }
 
         return $this->prepareUpdateSets($table, $updateColumns, $params, true);
-    }
-
-    /**
-     * Returns the name of the column in the `EXCLUDED` table for `ON CONFLICT DO UPDATE` clause.
-     *
-     * @param string $quotedName The quoted column name.
-     */
-    protected function getExcludedColumnName(string $quotedName): string
-    {
-        return 'EXCLUDED.' . $quotedName;
     }
 
     /**
@@ -485,11 +487,12 @@ abstract class AbstractDMLQueryBuilder implements DMLQueryBuilderInterface
         array &$constraints = []
     ): array {
         if ($insertColumns instanceof QueryInterface) {
-            [$insertNames] = $this->prepareInsertSelectSubQuery($insertColumns);
+            $insertNames = $this->getQueryColumnNames($insertColumns);
         } else {
-            $insertNames = $this->getNormalizeColumnNames(array_keys($insertColumns));
+            $insertNames = array_keys($insertColumns);
         }
 
+        $insertNames = $this->getNormalizeColumnNames($insertNames);
         $uniqueNames = $this->getTableUniqueColumnNames($table, $insertNames, $constraints);
 
         if ($updateColumns === true) {

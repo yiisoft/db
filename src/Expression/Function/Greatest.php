@@ -24,9 +24,4 @@ use Yiisoft\Db\Expression\Function\Builder\GreatestBuilder;
  */
 final class Greatest extends MultiOperandFunction
 {
-    public function addOperand(float|int|string|ExpressionInterface $operand): static
-    {
-        $this->operands[] = $operand;
-        return $this;
-    }
 }

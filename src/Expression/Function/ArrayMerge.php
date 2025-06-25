@@ -23,9 +23,4 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  */
 final class ArrayMerge extends MultiOperandFunction
 {
-    public function addOperand(array|string|ExpressionInterface $operand): static
-    {
-        $this->operands[] = $operand;
-        return $this;
-    }
 }

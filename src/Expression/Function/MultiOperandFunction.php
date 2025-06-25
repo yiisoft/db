@@ -29,13 +29,12 @@ abstract class MultiOperandFunction implements ExpressionInterface
     /**
      * @param mixed ...$operands The values or expressions to operate on.
      */
-    public function __construct(
-        mixed ...$operands
-    ) {
-        array_map($this->addOperand(...), $operands);
+    public function __construct(mixed ...$operands)
+    {
+        $this->operands = $operands;
     }
 
-    public function addOperand(string|ExpressionInterface $operand): static
+    public function addOperand(mixed $operand): static
     {
         $this->operands[] = $operand;
         return $this;
