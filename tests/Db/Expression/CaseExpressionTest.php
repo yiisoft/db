@@ -7,7 +7,6 @@ namespace Yiisoft\Db\Tests\Db\Expression;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Yiisoft\Db\Expression\Expression;
-use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\WhenClause;
 use Yiisoft\Db\Schema\Column\IntegerColumn;
