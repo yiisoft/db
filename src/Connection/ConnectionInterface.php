@@ -250,14 +250,13 @@ interface ConnectionInterface
     /**
      * Executes callback provided in a transaction.
      *
-     * @template TValue
-     * @param Closure(ConnectionInterface): TValue $closure A valid PHP callback that performs the job. Accepts connection instance as parameter.
+     * @param Closure $closure A valid PHP callback that performs the job. Accepts connection instance as parameter.
      * @param string|null $isolationLevel The isolation level to use for this transaction.
      * {@see TransactionInterface::begin()} for details.
      *
      * @throws Throwable If there is any exception during query. In this case, the transaction will be rolled back.
      *
-     * @return TValue Result of callback function.
+     * @return mixed Result of callback function.
      *
      * @psalm-template TValue
      * @psalm-param Closure(ConnectionInterface): TValue $closure
