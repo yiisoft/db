@@ -258,9 +258,9 @@ interface ConnectionInterface
      *
      * @return mixed Result of callback function.
      *
-     * @psalm-template TValue
-     * @psalm-param Closure(ConnectionInterface): TValue $closure
-     * @psalm-return TValue
+     * @psalm-template Result
+     * @psalm-param Closure(ConnectionInterface): Result $closure
+     * @psalm-return Result
      */
     public function transaction(Closure $closure, ?string $isolationLevel = null): mixed;
 }
