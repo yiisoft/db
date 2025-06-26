@@ -3,11 +3,12 @@ on:
     paths:
       - 'src/**'
       - 'config/**'
+      - 'tests/**'
       - '.github/workflows/rector.yml'
       - 'composer.json'
       - 'rector.php'
 
-name: rector
+name: Rector
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,7 +21,5 @@ jobs:
       token: ${{ secrets.YIISOFT_GITHUB_TOKEN }}
     with:
       repository: ${{ github.event.pull_request.head.repo.full_name }}
-      os: >-
-        ['ubuntu-latest']
       php: >-
         ['8.4']
