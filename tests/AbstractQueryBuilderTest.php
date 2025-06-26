@@ -16,6 +16,7 @@ use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -2509,5 +2510,35 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $params = [];
         $this->assertSame($expected, $qb->buildValue($value, $params));
         Assert::arraysEquals($expectedParams, $params);
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'caseExpressionBuilder')]
+    public function testCaseExpressionBuilder(
+        CaseExpression $case,
+        string $expectedSql,
+        array $expectedParams,
+        string|int $expectedResult,
+    ): void {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $params = [];
+
+        $this->assertSame($expectedSql, $qb->buildExpression($case, $params));
+        $this->assertEquals($expectedParams, $params);
+    }
+
+    public function testCaseExpressionBuilderEmpty(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $params = [];
+        $case = new CaseExpression();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The CASE expression must have at least one WHEN clause.');
+
+        $qb->buildExpression($case, $params);
     }
 }

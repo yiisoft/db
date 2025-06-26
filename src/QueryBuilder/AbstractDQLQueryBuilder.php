@@ -18,6 +18,8 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\JsonExpressionBuilder;
+use Yiisoft\Db\Expression\CaseExpression;
+use Yiisoft\Db\Expression\CaseExpressionBuilder;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\StructuredExpressionBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
@@ -548,6 +550,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             JsonExpression::class => JsonExpressionBuilder::class,
             ArrayExpression::class => ArrayExpressionBuilder::class,
             StructuredExpression::class => StructuredExpressionBuilder::class,
+            CaseExpression::class => CaseExpressionBuilder::class,
         ];
     }
 
