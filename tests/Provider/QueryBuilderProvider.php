@@ -22,8 +22,10 @@ use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\IntEnum;
 use Yiisoft\Db\Tests\Support\JsonSerializableObject;
 use Yiisoft\Db\Tests\Support\Stringable;
+use Yiisoft\Db\Tests\Support\StringEnum;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
@@ -1753,6 +1755,8 @@ class QueryBuilderProvider
             'expression' => ['(1 + 2)', new Expression('(1 + 2)'), DataType::STRING],
             'expression with params' => ['(1 + 2)', new Expression('(:a + :b)', [':a' => 1, 'b' => 2]), DataType::STRING],
             'Stringable' => ["'string'", new Stringable('string'), DataType::STRING],
+            'StringEnum' => ["'one'", StringEnum::ONE, DataType::STRING],
+            'IntEnum' => ['1', IntEnum::ONE, DataType::STRING],
         ];
     }
 
@@ -1773,6 +1777,8 @@ class QueryBuilderProvider
             'expression' => ['(1 + 2)', new Expression('(1 + 2)')],
             'expression with params' => ['(1 + 2)', new Expression('(:a + :b)', [':a' => 1, 'b' => 2])],
             'Stringable' => ["'string'", new Stringable('string')],
+            'StringEnum' => ["'one'", StringEnum::ONE],
+            'IntEnum' => ['1', IntEnum::ONE],
             'array' => ['\'["a","b","c"]\'', ['a', 'b', 'c']],
             'json' => ['\'{"a":1,"b":2}\'', ['a' => 1, 'b' => 2]],
             'Iterator' => ['\'["a","b","c"]\'', new ArrayIterator(['a', 'b', 'c'])],
@@ -1784,11 +1790,11 @@ class QueryBuilderProvider
     public static function buildValue(): array
     {
         return [
-            'null' => [null, 'NULL', []],
-            'true' => [true, 'TRUE', []],
-            'false' => [false, 'FALSE', []],
-            'integer' => [1, '1', []],
-            'float' => [1.1, '1.1', []],
+            'null' => [null, 'NULL'],
+            'true' => [true, 'TRUE'],
+            'false' => [false, 'FALSE'],
+            'integer' => [1, '1'],
+            'float' => [1.1, '1.1'],
             'string' => [
                 'string',
                 ':qp0',
@@ -1817,7 +1823,6 @@ class QueryBuilderProvider
             'expression' => [
                 new Expression('(1 + 2)'),
                 '(1 + 2)',
-                [],
             ],
             'expression with params' => [
                 new Expression('(:a + :b)', [':a' => 1, 'b' => 2]),
@@ -1829,6 +1834,12 @@ class QueryBuilderProvider
                 ':qp0',
                 [':qp0' => new Param('string', DataType::STRING)],
             ],
+            'StringEnum' => [
+                StringEnum::ONE,
+                ':qp0',
+                [':qp0' => new Param('one', DataType::STRING)],
+            ],
+            'IntEnum' => [IntEnum::ONE, '1'],
             'array' => [
                 ['a', 'b', 'c'],
                 ':qp0',

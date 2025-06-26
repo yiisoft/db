@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder;
 
+use BackedEnum;
 use Iterator;
 use JsonSerializable;
 use Stringable;
@@ -281,6 +282,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                 $value instanceof ParamInterface => $this->bindParam($value, $params),
                 $value instanceof ExpressionInterface => $this->buildExpression($value, $params),
                 $value instanceof Stringable => $this->bindParam(new Param((string) $value, DataType::STRING), $params),
+                $value instanceof BackedEnum => is_string($value->value)
+                    ? $this->bindParam(new Param($value->value, DataType::STRING), $params)
+                    : (string) $value->value,
                 $value instanceof Iterator && $value->key() === 0 => $this->buildExpression(new ArrayExpression($value), $params),
                 $value instanceof Traversable => $this->buildExpression(new JsonExpression($value), $params),
                 $value instanceof JsonSerializable => $this->buildExpression(new JsonExpression($value), $params),
@@ -473,6 +477,9 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
                     $this->buildExpression($value, $params),
                     array_map($this->prepareValue(...), $params),
                 ),
+                $value instanceof BackedEnum => is_string($value->value)
+                    ? $this->db->getQuoter()->quoteValue($value->value)
+                    : (string) $value->value,
                 $value instanceof Iterator && $value->key() === 0 => $this->replacePlaceholders(
                     $this->buildExpression(new ArrayExpression($value), $params),
                     array_map($this->prepareValue(...), $params),
