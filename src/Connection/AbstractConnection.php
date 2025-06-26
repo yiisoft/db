@@ -93,7 +93,6 @@ abstract class AbstractConnection implements ConnectionInterface
         $level = $transaction->getLevel();
 
         try {
-            /** @psalm-var mixed $result */
             $result = $closure($this);
 
             if ($transaction->isActive() && $transaction->getLevel() === $level) {
