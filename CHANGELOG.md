@@ -2,6 +2,7 @@
 
 ## 2.0.0 under development
 
+- Enh #996: Adapt summary data in debug collector (@rustamwin)
 - Chg #990: Delete `Yiisoft\Db\Exception\InvalidArgumentException` and `Yiisoft\Db\Exception\InvalidParamException` and
   use `\InvalidArgumentException` instead (@DikoIbragimov)
 - New #913: Add methods `SchemaInterface::hasSchema()`, `SchemaInterface::hasTable()`, `SchemaInterface::hasView()` (@evil1)
