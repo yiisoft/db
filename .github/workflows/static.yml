@@ -16,7 +16,7 @@ on:
       - 'psalm*.xml'
       - 'composer.json'
 
-name: static analysis
+name: Static analysis
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,7 +26,5 @@ jobs:
   psalm:
     uses: yiisoft/actions/.github/workflows/psalm.yml@master
     with:
-      os: >-
-        ['ubuntu-latest']
       php: >-
         ['8.2', '8.3', '8.4']
