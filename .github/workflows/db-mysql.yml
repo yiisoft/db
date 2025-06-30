@@ -28,7 +28,6 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      CURRENT_PACKAGE: db-mysql
       EXTENSIONS: pdo, pdo_mysql
 
     runs-on: ubuntu-latest
@@ -76,17 +75,11 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
-      - name: Set environment variables pull request linux.
-        uses: yiisoft/actions/db/environment-linux@master
-
-      - name: Install db.
-        uses: yiisoft/actions/db/subpackage-install@master
+      - name: Install db-mysql.
+        uses: yiisoft/actions/install-packages@master
         with:
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
-          CURRENT_PACKAGE: ${{ env.CURRENT_PACKAGE }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
-          WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
+          packages: >-
+            ['db-mysql']
 
       - name: Run Mysql tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Mysql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations
