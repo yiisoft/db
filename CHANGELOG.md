@@ -103,7 +103,8 @@
 - Chg #985: Rename `insertWithReturningPks()` to `insertReturningPks()` in `CommandInterface` and `DMLQueryBuilderInterface` (@Tigrov)
 - Enh #992: Add optional type casting to `DataReaderInterface` using columns (@Tigrov)
 - New #988: Add `CaseExpression` and `CaseExpressionBuilder` to build `CASE-WHEN-THEN-ELSE` SQL expressions (@Tigrov)
-- Enh #991: Improve types in `ConnectionInterface::transaction()` (@kikara) 
+- Enh #991: Improve types in `ConnectionInterface::transaction()` (@kikara)
+- Chg #998: Add `yiisoft/db-implementation` virtual package as dependency (@vjik)
 
 ## 1.3.0 March 21, 2024
 
