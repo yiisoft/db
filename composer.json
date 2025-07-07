@@ -33,7 +33,8 @@
         "php": "8.1 - 8.4",
         "ext-pdo": "*",
         "psr/log": "^2.0|^3.0",
-        "psr/simple-cache": "^2.0|^3.0"
+        "psr/simple-cache": "^2.0|^3.0",
+        "yiisoft/db-implementation": "1.0.0"
     },
     "require-dev": {
         "maglnet/composer-require-checker": "^4.7.1",
@@ -44,7 +45,6 @@
         "vimeo/psalm": "^5.26.1 || ^6.8.8",
         "yiisoft/aliases": "^3.0",
         "yiisoft/cache-file": "^3.2",
-        "yiisoft/db-implementation": "1.0.0",
         "yiisoft/di": "^1.3",
         "yiisoft/dummy-provider": "^1.1",
         "yiisoft/event-dispatcher": "^1.1",
