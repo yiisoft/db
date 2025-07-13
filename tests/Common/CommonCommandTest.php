@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\Attributes\DataProviderExternal;
-use ReflectionException;
 use Throwable;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
@@ -31,7 +30,6 @@ use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function array_filter;
 use function is_string;
