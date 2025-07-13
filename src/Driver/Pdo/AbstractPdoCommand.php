@@ -206,10 +206,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
      */
     protected function internalExecute(): void
     {
-        $attempt = 0;
-
-        while (true) {
-            $attempt++;
+        for ($attempt = 0; ; ++$attempt) {
             try {
                 set_error_handler(
                     static fn(int $errorNumber, string $errorString): bool =>
