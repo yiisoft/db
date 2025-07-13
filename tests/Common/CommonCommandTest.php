@@ -1128,68 +1128,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws ReflectionException
-     * @throws Throwable
-     */
-    public function testExecuteWithTransaction(): void
-    {
-        $db = $this->getConnection(true);
-
-        $this->assertNull($db->getTransaction());
-
-        $command = $db->createCommand(
-            <<<SQL
-            INSERT INTO {{profile}} ([[description]]) VALUES('command transaction 1')
-            SQL,
-        );
-
-        Assert::invokeMethod($command, 'requireTransaction');
-
-        $command->execute();
-
-        $this->assertNull($db->getTransaction());
-
-        $this->assertEquals(
-            1,
-            $db->createCommand(
-                <<<SQL
-                SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction 1'
-                SQL,
-            )->queryScalar(),
-        );
-
-        $command = $db->createCommand(
-            <<<SQL
-            INSERT INTO {{profile}} ([[description]]) VALUES('command transaction 2')
-            SQL,
-        );
-
-        Assert::invokeMethod($command, 'requireTransaction', [TransactionInterface::READ_UNCOMMITTED]);
-
-        $command->execute();
-
-        $this->assertNull($db->getTransaction());
-
-        $this->assertEquals(
-            1,
-            $db->createCommand(
-                <<<SQL
-                SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction 2'
-                SQL,
-            )->queryScalar(),
-        );
-
-        $db->close();
-    }
-
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testInsert(): void
     {
         $db = $this->getConnection(true);
@@ -1878,12 +1816,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws ReflectionException
-     * @throws Throwable
-     */
     public function testSetRetryHandler(): void
     {
         $db = $this->getConnection(true);
@@ -1942,47 +1874,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws ReflectionException
-     * @throws Throwable
-     */
-    public function testTransaction(): void
-    {
-        $db = $this->getConnection(true);
-
-        $this->assertNull($db->getTransaction());
-
-        $command = $db->createCommand();
-        $command = $command->setSql(
-            <<<SQL
-            INSERT INTO [[profile]] ([[description]]) VALUES('command transaction')
-            SQL
-        );
-
-        Assert::invokeMethod($command, 'requireTransaction');
-
-        $command->execute();
-
-        $this->assertNull($db->getTransaction());
-        $this->assertEquals(
-            1,
-            $command->setSql(
-                <<<SQL
-                SELECT COUNT(*) FROM [[profile]] WHERE [[description]] = 'command transaction'
-                SQL
-            )->queryScalar(),
-        );
-
-        $db->close();
-    }
-
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testTruncateTable(): void
     {
         $db = $this->getConnection(true);

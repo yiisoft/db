@@ -209,28 +209,18 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         $attempt = 0;
 
         while (true) {
+            $attempt++;
             try {
-                if (
-                    ++$attempt === 1
-                    && $this->isolationLevel !== null
-                    && $this->db->getTransaction() === null
-                ) {
-                    $this->db->transaction(
-                        fn () => $this->internalExecute(),
-                        $this->isolationLevel
-                    );
-                } else {
-                    set_error_handler(
-                        static fn(int $errorNumber, string $errorString): bool =>
-                            str_starts_with($errorString, 'Packets out of order. Expected '),
-                        E_WARNING,
-                    );
+                set_error_handler(
+                    static fn(int $errorNumber, string $errorString): bool =>
+                        str_starts_with($errorString, 'Packets out of order. Expected '),
+                    E_WARNING,
+                );
 
-                    try {
-                        $this->pdoStatement?->execute();
-                    } finally {
-                        restore_error_handler();
-                    }
+                try {
+                    $this->pdoStatement?->execute();
+                } finally {
+                    restore_error_handler();
                 }
                 break;
             } catch (PDOException $e) {
