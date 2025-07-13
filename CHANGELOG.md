@@ -105,6 +105,7 @@
 - New #988: Add `CaseExpression` and `CaseExpressionBuilder` to build `CASE-WHEN-THEN-ELSE` SQL expressions (@Tigrov)
 - Enh #991: Improve types in `ConnectionInterface::transaction()` (@kikara)
 - Chg #998: Add `yiisoft/db-implementation` virtual package as dependency (@vjik)
+- Chg #999: Remove `requireTransaction()` method and `$isolationLevel` property from `AbstractCommand` (@vjik)
 
 ## 1.3.0 March 21, 2024
 
