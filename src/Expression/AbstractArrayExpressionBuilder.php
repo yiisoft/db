@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Expression;
 
-use InvalidArgumentException;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Data\LazyArrayInterface;
@@ -69,17 +68,13 @@ abstract class AbstractArrayExpressionBuilder implements ExpressionBuilderInterf
     /**
      * The Method builds the raw SQL from the `$expression` that won't be additionally escaped or quoted.
      *
-     * @param ExpressionInterface $expression The expression to build.
+     * @param ArrayExpression $expression The expression to build.
      * @param array $params The binding parameters.
      *
      * @return string The raw SQL that won't be additionally escaped or quoted.
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        if (!$expression instanceof ArrayExpression) {
-            throw new InvalidArgumentException(static::class . ' could only be used with ArrayExpression.');
-        }
-
         $value = $expression->getValue();
 
         if ($value === null) {

@@ -30,10 +30,6 @@ final class QueryExpressionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        if (!$expression instanceof QueryInterface) {
-            throw new InvalidConfigException('QueryExpressionBuilder can only be used with QueryInterface instance.');
-        }
-
         [$sql, $params] = $this->queryBuilder->build($expression, $params);
         return "($sql)";
     }

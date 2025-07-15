@@ -51,10 +51,6 @@ final class JsonExpressionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        if (!$expression instanceof JsonExpression) {
-            throw new InvalidArgumentException('JsonExpressionBuilder could only be used with JsonExpression.');
-        }
-
         $value = $expression->getValue();
 
         if ($value === null) {

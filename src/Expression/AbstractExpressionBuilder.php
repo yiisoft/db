@@ -6,7 +6,6 @@ namespace Yiisoft\Db\Expression;
 
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Syntax\AbstractSqlParser;
 
@@ -47,10 +46,6 @@ abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        if (!$expression instanceof Expression) {
-            throw new InvalidArgumentException(static::class . ' could only be used with Expression.');
-        }
-
         $sql = $expression->__toString();
         $expressionParams = $expression->getParams();
 
