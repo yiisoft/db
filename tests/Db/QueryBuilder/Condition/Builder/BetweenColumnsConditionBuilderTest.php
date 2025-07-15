@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\QueryBuilder\Condition\Builder;
 
 use PHPUnit\Framework\TestCase;
-use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Builder\BetweenColumnsConditionBuilder;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
