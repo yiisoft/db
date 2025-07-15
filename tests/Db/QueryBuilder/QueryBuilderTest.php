@@ -4,17 +4,20 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 
-use JsonException;
+use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
-use Yiisoft\Db\Exception\InvalidConfigException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\AbstractQueryBuilderTest;
+use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
+use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\Stub\QueryBuilder;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -25,16 +28,11 @@ use function stream_context_create;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class QueryBuilderTest extends AbstractQueryBuilderTest
 {
     use TestTrait;
 
-    /**
-     * @throws Exception
-     */
     public function testAddDefaultValue(): void
     {
         $db = $this->getConnection();
@@ -49,9 +47,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->addDefaultValue('table', 'name', 'column', 'value');
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'batchInsert')]
     public function testBatchInsert(
         string $table,
         iterable $rows,
@@ -65,7 +61,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         try {
             $this->assertSame($expected, $qb->insertBatch($table, $rows, $columns, $params));
-            $this->assertSame($expectedParams, $params);
+            Assert::arraysEquals($expectedParams, $params);
         } catch (InvalidArgumentException|Exception) {
         }
     }
@@ -84,9 +80,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->buildJoin(['admin_profile', 'admin_user.id = admin_profile.user_id'], $params);
     }
 
-    /**
-     * @throws Exception
-     */
     public function testCheckIntegrity(): void
     {
         $db = $this->getConnection();
@@ -111,7 +104,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 <<<SQL
                 CREATE TABLE [[test]] (
                 \t[[id]] integer PRIMARY KEY AUTOINCREMENT,
-                \t[[name]] varchar(255) NOT NULL,
+                \t[[name]] string(255) NOT NULL,
                 \t[[email]] varchar(255) NOT NULL,
                 \t[[status]] integer NOT NULL,
                 \t[[created_at]] datetime NOT NULL,
@@ -124,9 +117,9 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
                 'test',
                 [
                     'id' => 'pk',
-                    'name' => 'string(255) NOT NULL',
+                    'name' => new Expression('string(255) NOT NULL'),
                     'email' => ColumnBuilder::string()->notNull(),
-                    'status' => 'integer NOT NULL',
+                    'status' => new IntegerColumn(notNull: true),
                     'created_at' => 'datetime NOT NULL',
                     'UNIQUE test_email_unique (email)',
                 ],
@@ -134,11 +127,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         );
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
     public function testCreateView(): void
     {
         $db = $this->getConnection();
@@ -153,9 +141,6 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         );
     }
 
-    /**
-     * @throws Exception
-     */
     public function testDropDefaultValue(): void
     {
         $db = $this->getConnection(true);
@@ -170,14 +155,11 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->dropDefaultValue('T_constraints_1', 'CN_pk');
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function testGetExpressionBuilderException(): void
     {
         $db = $this->getConnection();
 
-        $this->expectException(Exception::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $expression = new class () implements ExpressionInterface {
         };
@@ -185,11 +167,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->getExpressionBuilder($expression);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insert
-     *
-     * @throws Exception
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'insert')]
     public function testInsert(
         string $table,
         array|QueryInterface $columns,
@@ -204,14 +182,12 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $this->assertEquals($expectedParams, $params);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insertWithReturningPks
-     */
-    public function testInsertWithReturningPks(
+    #[DataProviderExternal(QueryBuilderProvider::class, 'insertReturningPks')]
+    public function testInsertReturningPks(
         string $table,
         array|QueryInterface $columns,
         array $params,
-        string $expectedSQL,
+        string $expectedSql,
         array $expectedParams
     ): void {
         $db = $this->getConnection();
@@ -220,15 +196,12 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
 
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
-            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::insertWithReturningPks() is not supported by this DBMS.'
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::insertReturningPks() is not supported by this DBMS.'
         );
 
-        $qb->insertWithReturningPks($table, $columns, $params);
+        $qb->insertReturningPks($table, $columns, $params);
     }
 
-    /**
-     * @throws Exception
-     */
     public function testResetSequence(): void
     {
         $db = $this->getConnection();
@@ -243,11 +216,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $qb->resetSequence('T_constraints_1', 'id');
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::update
-     *
-     * @throws Exception
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
@@ -266,13 +235,7 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $this->assertEquals($expectedParams, $params);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert
-     *
-     * @throws Exception
-     * @throws JsonException
-     * @throws NotSupportedException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
     public function testUpsert(
         string $table,
         array|QueryInterface $insertColumns,
@@ -282,19 +245,15 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
     ): void {
         $db = $this->getConnection();
 
-        $actualParams = [];
-
         $this->expectException(NotSupportedException::class);
         $this->expectExceptionMessage(
             'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsert is not supported by this DBMS.'
         );
 
-        $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
+        $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
     public function testUpsertExecute(
         string $table,
         array|QueryInterface $insertColumns,
@@ -307,8 +266,41 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
             'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsert is not supported by this DBMS.'
         );
 
-        $actualParams = [];
-        $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
+        $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns);
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsertReturning')]
+    public function testUpsertReturning(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns,
+        array|null $returnColumns,
+        string $expectedSql,
+        array $expectedParams
+    ): void {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage(
+            'Yiisoft\Db\QueryBuilder\AbstractDMLQueryBuilder::upsertReturning() is not supported by this DBMS.'
+        );
+
+        $qb->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns);
+    }
+
+    public function testBuildValueClosedResource(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $resource = fopen('php://memory', 'r');
+        fclose($resource);
+        $params = [];
+
+        $this->expectExceptionObject(new InvalidArgumentException('Resource is closed.'));
+
+        $qb->buildValue($resource, $params);
     }
 
     public function testPrepareValueClosedResource(): void
@@ -316,10 +308,10 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
         $db = $this->getConnection();
         $qb = $db->getQueryBuilder();
 
-        $this->expectExceptionObject(new InvalidArgumentException('Resource is closed.'));
-
         $resource = fopen('php://memory', 'r');
         fclose($resource);
+
+        $this->expectExceptionObject(new InvalidArgumentException('Resource is closed.'));
 
         $qb->prepareValue($resource);
     }
@@ -371,5 +363,40 @@ final class QueryBuilderTest extends AbstractQueryBuilderTest
             ),
             $qb->alterColumn('json_table', 'json_col', $column),
         );
+    }
+
+    public function testWithTypecasting(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $dmlBuilder = Assert::getInaccessibleProperty($qb, 'dmlBuilder');
+        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+
+        $this->assertTrue($typecasting);
+
+        $dmlBuilder = $dmlBuilder->withTypecasting(false);
+        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+
+        $this->assertFalse($typecasting);
+
+        $dmlBuilder = $dmlBuilder->withTypecasting();
+        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+
+        $this->assertTrue($typecasting);
+
+        $qb = $qb->withTypecasting(false);
+        $dmlBuilder = Assert::getInaccessibleProperty($qb, 'dmlBuilder');
+        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+
+        $this->assertFalse($typecasting);
+
+        $qb = $qb->withTypecasting();
+        $dmlBuilder = Assert::getInaccessibleProperty($qb, 'dmlBuilder');
+        $typecasting = Assert::getInaccessibleProperty($dmlBuilder, 'typecasting');
+
+        $this->assertTrue($typecasting);
+
+        $db->close();
     }
 }

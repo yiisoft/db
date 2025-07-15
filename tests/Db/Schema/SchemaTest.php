@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Db\Schema;
 
-use ReflectionException;
 use Yiisoft\Db\Constraint\CheckConstraint;
-use Yiisoft\Db\Constraint\Constraint;
 use Yiisoft\Db\Constraint\DefaultValueConstraint;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
 use Yiisoft\Db\Constraint\IndexConstraint;
@@ -22,16 +20,11 @@ use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
  * @group db
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class SchemaTest extends AbstractSchemaTest
 {
     use TestTrait;
 
-    /**
-     * @throws ReflectionException
-     */
     public function testFindTableNames(): void
     {
         $db = $this->getConnection();
@@ -44,9 +37,6 @@ final class SchemaTest extends AbstractSchemaTest
         Assert::invokeMethod($schema, 'findTableNames', ['dbo']);
     }
 
-    /**
-     * @throws ReflectionException
-     */
     public function testFindViewNames(): void
     {
         $db = $this->getConnection();
@@ -56,9 +46,6 @@ final class SchemaTest extends AbstractSchemaTest
         $this->assertSame([], Assert::invokeMethod($schema, 'findViewNames', ['dbo']));
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function testGetSchemaChecks(): void
     {
         $db = $this->getConnection();
@@ -85,9 +72,6 @@ final class SchemaTest extends AbstractSchemaTest
         }
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function testGetSchemaDefaultValues(): void
     {
         $db = $this->getConnection();
@@ -114,9 +98,6 @@ final class SchemaTest extends AbstractSchemaTest
         }
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function testGetSchemaForeignKeys(): void
     {
         $db = $this->getConnection();
@@ -144,9 +125,6 @@ final class SchemaTest extends AbstractSchemaTest
         }
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function testGetSchemaIndexes(): void
     {
         $db = $this->getConnection();
@@ -156,7 +134,7 @@ final class SchemaTest extends AbstractSchemaTest
                 ->name('PK__T_constr__A9FAE80AC2B18E65')
                 ->columnNames(['"C_id'])
                 ->unique(true)
-                ->primary(true),
+                ->primaryKey(true),
         ];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableIndexes'])
@@ -188,10 +166,6 @@ final class SchemaTest extends AbstractSchemaTest
         $schema->getSchemaNames();
     }
 
-    /**
-     * @throws NotSupportedException
-     * @throws ReflectionException
-     */
     public function testGetSchemaNamesWithSchema(): void
     {
         $db = $this->getConnection();
@@ -202,14 +176,25 @@ final class SchemaTest extends AbstractSchemaTest
         $this->assertSame(['dbo', 'public'], $schema->getSchemaNames());
     }
 
-    /**
-     * @throws NotSupportedException
-     */
+    public function testHasSchema(): void
+    {
+        $db = $this->getConnection();
+
+        $schema = $db->getSchema();
+        Assert::setInaccessibleProperty($schema, 'schemaNames', ['dbo', 'public']);
+
+        $this->assertTrue($schema->hasSchema('dbo'));
+        $this->assertTrue($schema->hasSchema('public'));
+        $this->assertFalse($schema->hasSchema('no_such_schema'));
+
+        $db->close();
+    }
+
     public function testGetSchemaPrimaryKeys(): void
     {
         $db = $this->getConnection();
 
-        $pksConstraint = (new Constraint())->name('PK__T_constr__A9FAE80AC2B18E65')->columnNames(['"C_id']);
+        $pksConstraint = new IndexConstraint('PK__T_constr__A9FAE80AC2B18E65', ['"C_id'], true, true);
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTablePrimaryKey'])
             ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
@@ -219,17 +204,14 @@ final class SchemaTest extends AbstractSchemaTest
         $tablePks = $schemaMock->getSchemaPrimaryKeys();
 
         $this->assertIsArray($tablePks);
-        $this->assertContainsOnlyInstancesOf(Constraint::class, $tablePks);
+        $this->assertContainsOnlyInstancesOf(IndexConstraint::class, $tablePks);
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function testGetSchemaUniques(): void
     {
         $db = $this->getConnection();
 
-        $uniquesConstraint = [(new Constraint())->name('CN_unique')->columnNames(['C_unique'])];
+        $uniquesConstraint = [new IndexConstraint('CN_unique', ['C_unique'], true)];
         $schemaMock = $this->getMockBuilder(Schema::class)
             ->onlyMethods(['findTableNames', 'loadTableUniques'])
             ->setConstructorArgs([$db, DbHelper::getSchemaCache()])
@@ -242,7 +224,7 @@ final class SchemaTest extends AbstractSchemaTest
 
         foreach ($tableUniques as $uniques) {
             $this->assertIsArray($uniques);
-            $this->assertContainsOnlyInstancesOf(Constraint::class, $uniques);
+            $this->assertContainsOnlyInstancesOf(IndexConstraint::class, $uniques);
         }
     }
 
@@ -266,9 +248,6 @@ final class SchemaTest extends AbstractSchemaTest
         $this->assertSame(['C_id', 'C_not_null', 'C_check', 'C_default', 'C_unique'], $table->getColumnNames());
     }
 
-    /**
-     * @throws NotSupportedException
-     */
     public function testGetTableSchemas(): void
     {
         $db = $this->getConnection();
@@ -341,9 +320,6 @@ final class SchemaTest extends AbstractSchemaTest
         $this->assertNotSame($noCacheTable, $refreshedTable);
     }
 
-    /**
-     * @throws ReflectionException
-     */
     public function testResolveTableName(): void
     {
         $db = $this->getConnection();
@@ -356,9 +332,6 @@ final class SchemaTest extends AbstractSchemaTest
         Assert::invokeMethod($schema, 'resolveTableName', ['customer']);
     }
 
-    /**
-     * @throws ReflectionException
-     */
     public function testSetTableMetadata(): void
     {
         $db = $this->getConnection();
@@ -374,6 +347,19 @@ final class SchemaTest extends AbstractSchemaTest
         Assert::invokeMethod($schema, 'setTableMetadata', ['T_constraints_1', 'checks', $checkConstraint]);
 
         $this->assertSame($checkConstraint, $schema->getTableChecks('T_constraints_1'));
+    }
+
+    public function testGetResultColumn(): void
+    {
+        $db = $this->getConnection();
+        $schema = $db->getSchema();
+
+        $this->assertNull($schema->getResultColumn([]));
+
+        $this->expectException(NotSupportedException::class);
+        $this->expectExceptionMessage('Yiisoft\Db\Tests\Support\Stub\Schema::loadResultColumn is not supported by this DBMS.');
+
+        $schema->getResultColumn(['native_type' => 'integer']);
     }
 
     private function createTableSchemaStub(): TableSchemaInterface

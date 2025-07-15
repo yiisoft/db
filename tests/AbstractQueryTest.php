@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests;
 
+use Closure;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 use Yiisoft\Db\Exception\Exception;
@@ -420,9 +421,19 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame(['and', 'id = :id', 'name = :name'], $query->getHaving());
         $this->assertSame([':id' => 1, ':name' => 'something'], $query->getParams());
 
+        $query->andHaving('is_active = :is_active', [':is_active' => true]);
+        $this->assertSame(['and', 'id = :id', 'name = :name', 'is_active = :is_active'], $query->getHaving());
+        $this->assertSame([':id' => 1, ':name' => 'something', ':is_active' => true], $query->getParams());
+
         $query->orHaving('age = :age', [':age' => '30']);
-        $this->assertSame(['or', ['and', 'id = :id', 'name = :name'], 'age = :age'], $query->getHaving());
-        $this->assertSame([':id' => 1, ':name' => 'something', ':age' => '30'], $query->getParams());
+        $this->assertSame(
+            ['or', ['and', 'id = :id', 'name = :name', 'is_active = :is_active'], 'age = :age'],
+            $query->getHaving(),
+        );
+        $this->assertSame(
+            [':id' => 1, ':name' => 'something', ':is_active' => true, ':age' => '30'],
+            $query->getParams(),
+        );
     }
 
     public function testJoin(): void
@@ -536,7 +547,7 @@ abstract class AbstractQueryTest extends TestCase
         $query->select('*');
 
         $this->assertSame(['*' => '*'], $query->getSelect());
-        $this->assertNull($query->getDistinct());
+        $this->assertFalse($query->getDistinct());
         $this->assertNull($query->getSelectOption());
 
         $query = new Query($db);
@@ -723,14 +734,22 @@ abstract class AbstractQueryTest extends TestCase
         $this->assertSame([':id' => 1], $query->getParams());
 
         $query->andWhere('name = :name', [':name' => 'something']);
-
         $this->assertSame(['and', 'id = :id', 'name = :name'], $query->getWhere());
         $this->assertSame([':id' => 1, ':name' => 'something'], $query->getParams());
 
-        $query->orWhere('age = :age', [':age' => '30']);
+        $query->andWhere('is_active = :is_active', [':is_active' => true]);
+        $this->assertSame(['and', 'id = :id', 'name = :name', 'is_active = :is_active'], $query->getWhere());
+        $this->assertSame([':id' => 1, ':name' => 'something', ':is_active' => true], $query->getParams());
 
-        $this->assertSame(['or', ['and', 'id = :id', 'name = :name'], 'age = :age'], $query->getWhere());
-        $this->assertSame([':id' => 1, ':name' => 'something', ':age' => '30'], $query->getParams());
+        $query->orWhere('age = :age', [':age' => '30']);
+        $this->assertSame(
+            ['or', ['and', 'id = :id', 'name = :name', 'is_active = :is_active'], 'age = :age'],
+            $query->getWhere(),
+        );
+        $this->assertSame(
+            [':id' => 1, ':name' => 'something', ':is_active' => true, ':age' => '30'],
+            $query->getParams(),
+        );
     }
 
     public function testWithQueries(): void
@@ -823,5 +842,22 @@ abstract class AbstractQueryTest extends TestCase
             ->willReturn('12345678901234567890');
 
         $this->assertSame('12345678901234567890', $query->count());
+    }
+
+    public function testResultCallback(): void
+    {
+        $db = $this->getConnection();
+
+        $query = (new Query($db));
+
+        $this->assertNull($query->getResultCallback());
+
+        $query->resultCallback(fn (array $rows) => array_map(fn (array $row) => (object) $row, $rows));
+
+        $this->assertInstanceOf(Closure::class, $query->getResultCallback());
+
+        $query->resultCallback(null);
+
+        $this->assertNull($query->getResultCallback());
     }
 }

@@ -14,34 +14,44 @@ use Yiisoft\Db\Constant\ReferentialAction;
  * It has information about the table and column(s) that the constraint applies to, as well as any actions that
  * should be taken when a referenced record is deleted or updated.
  */
-final class ForeignKeyConstraint extends Constraint
+final class ForeignKeyConstraint extends AbstractConstraint
 {
-    private string|null $foreignSchemaName = null;
-    private string|null $foreignTableName = null;
-    private array $foreignColumnNames = [];
-    /** @psalm-var ReferentialAction::*|null */
-    private string|null $onUpdate = null;
-    /** @psalm-var ReferentialAction::*|null */
-    private string|null $onDelete = null;
-
     /**
-     * @return string|null The foreign table schema name.
+     * @param string $name The constraint name.
+     * @param string[] $columnNames The list of column names the constraint belongs to.
+     * @param string $foreignTableName The referenced table name.
+     * @param string[] $foreignColumnNames The list of referenced table column names.
+     * @param string|null $onUpdate The referential action if rows in a referenced table are to be updated.
+     * @param string|null $onDelete The referential action if rows in a referenced table are to be deleted.
+     *
+     * @psalm-param ReferentialAction::*|null $onUpdate
+     * @psalm-param ReferentialAction::*|null $onDelete
      */
-    public function getForeignSchemaName(): string|null
-    {
-        return $this->foreignSchemaName;
+    public function __construct(
+        string $name = '',
+        array $columnNames = [],
+        private string $foreignTableName = '',
+        private array $foreignColumnNames = [],
+        private string|null $onUpdate = null,
+        private string|null $onDelete = null,
+    ) {
+        parent::__construct($name, $columnNames);
     }
 
     /**
-     * @return string|null The foreign table name.
+     * Returns the foreign table name.
+     *
+     * @psalm-immutable
      */
-    public function getForeignTableName(): string|null
+    public function getForeignTableName(): string
     {
         return $this->foreignTableName;
     }
 
     /**
-     * @return array The list of foreign table column names.
+     * @return string[] The list of foreign table column names.
+     *
+     * @psalm-immutable
      */
     public function getForeignColumnNames(): array
     {
@@ -49,9 +59,10 @@ final class ForeignKeyConstraint extends Constraint
     }
 
     /**
-     * @return string|null The referential action if rows in a referenced table are to be updated.
+     * Returns the referential action if rows in a referenced table are to be updated.
      *
      * @psalm-return ReferentialAction::*|null
+     * @psalm-immutable
      */
     public function getOnUpdate(): string|null
     {
@@ -59,9 +70,10 @@ final class ForeignKeyConstraint extends Constraint
     }
 
     /**
-     * @return string|null The referential action if rows in a referenced table are to be deleted.
+     * Returns the referential action if rows in a referenced table are to be deleted.
      *
      * @psalm-return ReferentialAction::*|null
+     * @psalm-immutable
      */
     public function getOnDelete(): string|null
     {
@@ -69,63 +81,52 @@ final class ForeignKeyConstraint extends Constraint
     }
 
     /**
-     * Set the foreign table schema name.
-     *
-     * @param string|null $value the referenced table schema name.
-     */
-    public function foreignSchemaName(string|null $value): self
-    {
-        $this->foreignSchemaName = $value;
-        return $this;
-    }
-
-    /**
      * Set the foreign table name.
      *
-     * @param string|null $value The referenced table name.
+     * @param string $foreignTableName The referenced table name.
      */
-    public function foreignTableName(string|null $value): self
+    public function foreignTableName(string $foreignTableName): self
     {
-        $this->foreignTableName = $value;
+        $this->foreignTableName = $foreignTableName;
         return $this;
     }
 
     /**
      * Set the list of foreign table column names.
      *
-     * @param array $value The list of referenced table column names.
+     * @param string[] $foreignColumnNames The list of referenced table column names.
      */
-    public function foreignColumnNames(array $value): self
+    public function foreignColumnNames(array $foreignColumnNames): self
     {
-        $this->foreignColumnNames = $value;
+        $this->foreignColumnNames = $foreignColumnNames;
         return $this;
     }
 
     /**
      * Set the referential action if rows in a referenced table are to be updated.
      *
-     * @param string|null $value The referential action if rows in a referenced table are to be updated.
+     * @param string|null $onUpdate The referential action if rows in a referenced table are to be updated.
      * See {@see ReferentialAction} class for possible values.
      *
-     * @psalm-param ReferentialAction::*|null $value
+     * @psalm-param ReferentialAction::*|null $onUpdate
      */
-    public function onUpdate(string|null $value): self
+    public function onUpdate(string|null $onUpdate): self
     {
-        $this->onUpdate = $value;
+        $this->onUpdate = $onUpdate;
         return $this;
     }
 
     /**
      * Set the referential action if rows in a referenced table are to be deleted.
      *
-     * @param string|null $value The referential action if rows in a referenced table are to be deleted.
+     * @param string|null $onDelete The referential action if rows in a referenced table are to be deleted.
      * See {@see ReferentialAction} class for possible values.
      *
-     * @psalm-param ReferentialAction::*|null $value
+     * @psalm-param ReferentialAction::*|null $onDelete
      */
-    public function onDelete(string|null $value): self
+    public function onDelete(string|null $onDelete): self
     {
-        $this->onDelete = $value;
+        $this->onDelete = $onDelete;
         return $this;
     }
 }

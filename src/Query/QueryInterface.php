@@ -9,7 +9,7 @@ use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -30,6 +30,8 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
  * @psalm-type IndexBy = Closure(array):array-key|string
  * @psalm-import-type ParamsType from ConnectionInterface
  * @psalm-import-type SelectValue from QueryPartsInterface
+ * @psalm-type ResultCallback = Closure(non-empty-list<array>):non-empty-list<array|object>
+ * @psalm-type ResultCallbackOne = Closure(array):(array|object)
  */
 interface QueryInterface extends ExpressionInterface, QueryPartsInterface, QueryFunctionsInterface
 {
@@ -105,10 +107,7 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function createCommand(): CommandInterface;
 
     /**
-     * Starts a batch query and retrieves data row by row.
-     *
-     * This method is similar to {@see batch()} except that in each iteration of the result,
-     * it returns only one row of data.
+     * Creates data reader to retrieve data row by row.
      *
      * For example,
      *
@@ -119,12 +118,10 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * }
      * ```
      *
-     * @param int $batchSize The number of records to fetch in each batch.
-     *
-     * @return BatchQueryResultInterface The batch query result. It implements the {@see \Iterator} interface and can be
-     * traversed to retrieve the data in batches.
+     * @return DataReaderInterface The data reader. It implements the {@see \Iterator} interface and can be
+     * traversed to retrieve each row of data.
      */
-    public function each(int $batchSize = 100): BatchQueryResultInterface;
+    public function each(): DataReaderInterface;
 
     /**
      * Sets whether to emulate query execution without actually executing a query.
@@ -150,9 +147,16 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function exists(): bool;
 
     /**
-     * @return bool|null The "distinct" value.
+     * @return bool The "distinct" value.
      */
-    public function getDistinct(): bool|null;
+    public function getDistinct(): bool;
+
+    /**
+     * @return string[] The "for" values.
+     *
+     * @psalm-return list<string>
+     */
+    public function getFor(): array;
 
     /**
      * @return array The "from" value.
@@ -209,6 +213,14 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @return array The "params" value.
      */
     public function getParams(): array;
+
+    /**
+     * Returns the callback to be called on all rows of the query result.
+     * `null` will be returned if the callback is not set.
+     *
+     * @psalm-return ResultCallback|null
+     */
+    public function getResultCallback(): Closure|null;
 
     /**
      * @return array The "select" value.
@@ -289,6 +301,27 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
     public function prepare(QueryBuilderInterface $builder): self;
 
     /**
+     * Sets the callback, to be called on all rows of the query result before returning them.
+     *
+     * For example:
+     *
+     * ```php
+     * $users = (new Query($db))
+     *     ->from('user')
+     *     ->resultCallback(function (array $rows): array {
+     *         foreach ($rows as &$row) {
+     *             $row['name'] = strtoupper($row['name']);
+     *         }
+     *         return $rows;
+     *     })
+     *     ->all();
+     * ```
+     *
+     * @psalm-param ResultCallback|null $resultCallback
+     */
+    public function resultCallback(Closure|null $resultCallback): static;
+
+    /**
      * Returns the query results as a scalar value.
      * The value returned will be the first column in the first row of the query results.
      * Do not use this method for `boolean` values as it returns `false` if the query result is empty.
@@ -306,4 +339,9 @@ interface QueryInterface extends ExpressionInterface, QueryPartsInterface, Query
      * @return bool Whether to emulate query execution.
      */
     public function shouldEmulateExecution(): bool;
+
+    /**
+     * Returns a copy of the instance with enabled or disabled typecasting of values when retrieving records from DB.
+     */
+    public function withTypecasting(bool $typecasting = true): static;
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Common;
 
 use PHPUnit\Framework\Attributes\DataProviderExternal;
-use ReflectionException;
 use Throwable;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
@@ -15,24 +14,22 @@ use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use Yiisoft\Db\Driver\Pdo\PdoConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\Exception\IntegrityException;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidCallException;
 use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\InvalidParamException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Helper\DbUuidHelper;
-use Yiisoft\Db\Query\Data\DataReader;
-use Yiisoft\Db\Query\Data\DataReaderInterface;
+use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\Query;
+use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
-use Yiisoft\Db\Transaction\TransactionInterface;
 
 use function array_filter;
 use function is_string;
@@ -300,17 +297,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * Make sure that `{{something}}` in values will not be encoded.
-     *
-     * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::batchInsert
-     *
-     * {@see https://github.com/yiisoft/yii2/issues/11242}
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
+    #[DataProviderExternal(CommandProvider::class, 'batchInsert')]
     public function testBatchInsert(
         string $table,
         iterable $values,
@@ -513,7 +500,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertCount($count + 1, $schema->getTableIndexes($tableName));
 
-        $index = array_filter($schema->getTableIndexes($tableName), static fn ($index) => !$index->isPrimary())[0];
+        $index = array_filter($schema->getTableIndexes($tableName), static fn ($index) => !$index->isPrimaryKey())[0];
 
         $this->assertSame($indexColumns, $index->getColumnNames());
 
@@ -616,13 +603,20 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
-        $reader = $command->setSql(
-            <<<SQL
-            SELECT * FROM {{customer}}
-            SQL
-        )->query();
+        $reader = $command->setSql('SELECT * FROM {{customer}}')->query();
+
+        $this->assertTrue($reader->valid());
+
+        $firstRow = $reader->current();
+
+        $this->assertIsArray($firstRow);
+
+        $reader->rewind();
+
+        $this->assertTrue($reader->valid());
+        $this->assertSame($firstRow, $reader->current());
+
         $reader->next();
-        $this->assertIsInt($reader->key());
 
         $this->expectException(InvalidCallException::class);
         $this->expectExceptionMessage('DataReader cannot rewind. It is a forward-only reader.');
@@ -632,13 +626,27 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    public function testDataReaderInvalidParamException(): void
+    public function testDataReaderIndexByAndResultCallback(): void
     {
         $db = $this->getConnection(true);
 
-        $this->expectException(InvalidParamException::class);
-        $this->expectExceptionMessage('The PDOStatement cannot be null.');
-        new DataReader($db->createCommand());
+        $reader = $db->createCommand()
+            ->setSql('SELECT * FROM {{customer}} WHERE [[id]]=1')
+            ->query()
+            ->indexBy(static fn (array $row): int => (int) $row['id'])
+            ->resultCallback(static fn (array $row): object => (object) $row);
+
+        $this->assertTrue($reader->valid());
+        $this->assertSame(1, $reader->key());
+        $this->assertIsObject($reader->current());
+
+        $reader->next();
+
+        $this->assertFalse($reader->valid());
+        $this->assertNull($reader->key());
+        $this->assertFalse($reader->current());
+
+        $db->close();
     }
 
     /**
@@ -1118,68 +1126,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws ReflectionException
-     * @throws Throwable
-     */
-    public function testExecuteWithTransaction(): void
-    {
-        $db = $this->getConnection(true);
-
-        $this->assertNull($db->getTransaction());
-
-        $command = $db->createCommand(
-            <<<SQL
-            INSERT INTO {{profile}} ([[description]]) VALUES('command transaction 1')
-            SQL,
-        );
-
-        Assert::invokeMethod($command, 'requireTransaction');
-
-        $command->execute();
-
-        $this->assertNull($db->getTransaction());
-
-        $this->assertEquals(
-            1,
-            $db->createCommand(
-                <<<SQL
-                SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction 1'
-                SQL,
-            )->queryScalar(),
-        );
-
-        $command = $db->createCommand(
-            <<<SQL
-            INSERT INTO {{profile}} ([[description]]) VALUES('command transaction 2')
-            SQL,
-        );
-
-        Assert::invokeMethod($command, 'requireTransaction', [TransactionInterface::READ_UNCOMMITTED]);
-
-        $command->execute();
-
-        $this->assertNull($db->getTransaction());
-
-        $this->assertEquals(
-            1,
-            $db->createCommand(
-                <<<SQL
-                SELECT COUNT(*) FROM {{profile}} WHERE [[description]] = 'command transaction 2'
-                SQL,
-            )->queryScalar(),
-        );
-
-        $db->close();
-    }
-
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testInsert(): void
     {
         $db = $this->getConnection(true);
@@ -1211,13 +1157,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidCallException
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
-    public function testInsertWithReturningPks(): void
+    public function testInsertReturningPks(): void
     {
         $db = $this->getConnection(true);
 
@@ -1230,20 +1170,20 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertSame(
             $expected,
-            $command->insertWithReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']),
+            $command->insertReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']),
         );
 
         $db->close();
     }
 
-    public function testInsertWithReturningPksWithCompositePK(): void
+    public function testInsertReturningPksWithCompositePK(): void
     {
         $db = $this->getConnection(true);
 
         $command = $db->createCommand();
 
-        $params = ['id_1' => 99, 'id_2' => 100, 'type' => 'test'];
-        $result = $command->insertWithReturningPks('{{%notauto_pk}}', $params);
+        $params = ['id_1' => 99, 'id_2' => 100.5, 'type' => 'test'];
+        $result = $command->insertReturningPks('{{%notauto_pk}}', $params);
 
         $this->assertEquals($params['id_1'], $result['id_1']);
         $this->assertEquals($params['id_2'], $result['id_2']);
@@ -1251,11 +1191,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testInsertExpression(): void
     {
         $db = $this->getConnection(true);
@@ -1314,9 +1249,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->insert('{{order}}', ['customer_id' => 1, 'created_at' => $time, 'total' => 42])->execute();
 
         if ($db->getDriverName() === 'pgsql') {
-            $orderId = $db->getLastInsertID('public.order_id_seq');
+            $orderId = $db->getLastInsertId('public.order_id_seq');
         } else {
-            $orderId = $db->getLastInsertID();
+            $orderId = $db->getLastInsertId();
         }
 
         $columnValueQuery = (new Query($db))->select('{{created_at}}')->from('{{order}}')->where(['id' => $orderId]);
@@ -1506,6 +1441,75 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
+    public function testInsertWithoutTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+        $command = $db->createCommand();
+
+        $values = [
+            'int_col' => '1',
+            'char_col' => 'test',
+            'float_col' => '3.14',
+            'bool_col' => '1',
+        ];
+
+        $command->insert('{{type}}', $values);
+
+        $this->assertSame([
+            ':qp0' => 1,
+            ':qp1' => 'test',
+            ':qp2' => 3.14,
+            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
+        ], $command->getParams());
+
+        $command = $command->withDbTypecasting(false);
+        $command->insert('{{type}}', $values);
+
+        $this->assertSame([
+            ':qp0' => '1',
+            ':qp1' => 'test',
+            ':qp2' => '3.14',
+            ':qp3' => '1',
+        ], $command->getParams());
+
+        $db->close();
+    }
+
+    public function testInsertBatchWithoutTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+        $command = $db->createCommand();
+
+        $values = [
+            'int_col' => '1',
+            'char_col' => 'test',
+            'float_col' => '3.14',
+            'bool_col' => '1',
+        ];
+
+        $command->insertBatch('{{type}}', [$values]);
+
+        $expectedParams = [':qp0' => 'test'];
+
+        if ($db->getDriverName() === 'oci') {
+            $expectedParams[':qp1'] = '1';
+        }
+
+        $this->assertSame($expectedParams, $command->getParams());
+
+        $command = $command->withDbTypecasting(false);
+        $command->insertBatch('{{type}}', [$values]);
+
+        $this->assertSame([
+            ':qp0' => '1',
+            ':qp1' => 'test',
+            ':qp2' => '3.14',
+            ':qp3' => '1',
+        ], $command->getParams());
+
+        $db->close();
+    }
+
     /**
      * @throws Exception
      * @throws InvalidConfigException
@@ -1543,9 +1547,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         )->execute();
 
         if ($db->getDriverName() === 'pgsql') {
-            $customerId = $db->getLastInsertID('public.customer_id_seq');
+            $customerId = $db->getLastInsertId('public.customer_id_seq');
         } else {
-            $customerId = $db->getLastInsertID();
+            $customerId = $db->getLastInsertId();
         }
 
         $customer = $command->setSql(
@@ -1600,15 +1604,9 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertInstanceOf(DataReaderInterface::class, $reader);
         $this->assertIsInt($reader->count());
 
-        $expectedRow = 6;
-
-        if ($db->getDriverName() === 'oci' || $db->getDriverName() === 'pgsql') {
-            $expectedRow = 7;
-        }
-
         foreach ($reader as $row) {
             $this->assertIsArray($row);
-            $this->assertCount($expectedRow, $row);
+            $this->assertCount(6, $row);
         }
 
         $command = $db->createCommand('bad SQL');
@@ -1634,16 +1632,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
             SQL
         );
         $rows = $command->queryAll();
-        $expectedRow = 6;
-
-        if ($db->getDriverName() === 'oci' || $db->getDriverName() === 'pgsql') {
-            $expectedRow = 7;
-        }
 
         $this->assertIsArray($rows);
         $this->assertCount(3, $rows);
         $this->assertIsArray($rows[0]);
-        $this->assertCount($expectedRow, $rows[0]);
+        $this->assertCount(6, $rows[0]);
 
         $command->setSql('bad SQL');
 
@@ -1821,12 +1814,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws ReflectionException
-     * @throws Throwable
-     */
     public function testSetRetryHandler(): void
     {
         $db = $this->getConnection(true);
@@ -1885,47 +1872,6 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws ReflectionException
-     * @throws Throwable
-     */
-    public function testTransaction(): void
-    {
-        $db = $this->getConnection(true);
-
-        $this->assertNull($db->getTransaction());
-
-        $command = $db->createCommand();
-        $command = $command->setSql(
-            <<<SQL
-            INSERT INTO [[profile]] ([[description]]) VALUES('command transaction')
-            SQL
-        );
-
-        Assert::invokeMethod($command, 'requireTransaction');
-
-        $command->execute();
-
-        $this->assertNull($db->getTransaction());
-        $this->assertEquals(
-            1,
-            $command->setSql(
-                <<<SQL
-                SELECT COUNT(*) FROM [[profile]] WHERE [[description]] = 'command transaction'
-                SQL
-            )->queryScalar(),
-        );
-
-        $db->close();
-    }
-
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     */
     public function testTruncateTable(): void
     {
         $db = $this->getConnection(true);
@@ -1985,6 +1931,38 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db->close();
     }
 
+    public function testUpdateWithoutTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+        $command = $db->createCommand();
+
+        $values = [
+            'int_col' => '1',
+            'char_col' => 'test',
+            'float_col' => '3.14',
+            'bool_col' => '1',
+        ];
+
+        $command->update('{{type}}', $values);
+
+        $this->assertSame([
+            ':qp0' => 1,
+            ':qp1' => 'test',
+            ':qp2' => 3.14,
+            ':qp3' => $db->getDriverName() === 'oci' ? '1' : true,
+        ], $command->getParams());
+
+        $command = $command->withDbTypecasting(false);
+        $command->update('{{type}}', $values);
+
+        $this->assertSame([
+            ':qp0' => '1',
+            ':qp1' => 'test',
+            ':qp2' => '3.14',
+            ':qp3' => '1',
+        ], $command->getParams());
+    }
+
     /**
      * @dataProvider \Yiisoft\Db\Tests\Provider\CommandProvider::upsert
      *
@@ -2027,7 +2005,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     public function testPrepareWithEmptySql()
     {
         $db = $this->createMock(PdoConnectionInterface::class);
-        $db->expects(self::never())->method('getActivePDO');
+        $db->expects(self::never())->method('getActivePdo');
 
         $command = new class ($db) extends AbstractPdoCommand {
             public function showDatabases(): array
@@ -2085,7 +2063,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $db = $this->getConnection(true);
 
         $inserted = $db->createCommand()
-            ->insertWithReturningPks(
+            ->insertReturningPks(
                 '{{%order}}',
                 ['customer_id' => 1, 'created_at' => 0, 'total' => $decimalValue]
             );
@@ -2101,11 +2079,11 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame($decimalValue, $phpTypecastValue);
     }
 
-    public function testInsertWithReturningPksEmptyValues()
+    public function testInsertReturningPksEmptyValues()
     {
         $db = $this->getConnection(true);
 
-        $pkValues = $db->createCommand()->insertWithReturningPks('null_values', []);
+        $pkValues = $db->createCommand()->insertReturningPks('null_values', []);
 
         $expected = match ($db->getDriverName()) {
             'pgsql' => ['id' => 1],
@@ -2115,13 +2093,184 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame($expected, $pkValues);
     }
 
-    public function testInsertWithReturningPksEmptyValuesAndNoPk()
+    public function testInsertReturningPksWithQuery(): void
     {
         $db = $this->getConnection(true);
 
-        $pkValues = $db->createCommand()->insertWithReturningPks('negative_default_values', []);
+        $query = (new Query($db))->select([
+            'name' => new Expression("'test_1'"),
+            'email' => new Expression("'test_1@example.com'"),
+        ]);
+
+        $pkValues = $db->createCommand()->insertReturningPks('customer', $query);
+
+        $this->assertEquals(['id' => 4], $pkValues);
+    }
+
+    public function testInsertReturningPksEmptyValuesAndNoPk()
+    {
+        $db = $this->getConnection(true);
+
+        $pkValues = $db->createCommand()->insertReturningPks('negative_default_values', []);
 
         $this->assertSame([], $pkValues);
+    }
+
+    public function testInsertReturningPksWithPhpTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+
+        $result = $db->createCommand()
+            ->withPhpTypecasting()
+            ->insertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
+
+        $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
+    }
+
+    #[DataProviderExternal(CommandProvider::class, 'upsertReturning')]
+    public function testUpsertReturning(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns,
+        array|null $returnColumns,
+        array $selectCondition,
+        array $expectedValues,
+    ): void {
+        $db = $this->getConnection(true);
+        $command = $db->createCommand();
+
+        $returnedValues = $command->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns);
+
+        $this->assertEquals($expectedValues, $returnedValues);
+
+        if (!empty($returnColumns)) {
+            $selectedValues = (new Query($db))
+                ->select(array_keys($expectedValues))
+                ->from($table)
+                ->where($selectCondition)
+                ->one();
+
+            $this->assertEquals($expectedValues, $selectedValues);
+        }
+
+        $db->close();
+    }
+
+    public function testUpsertReturningWithUnique(): void
+    {
+        $db = $this->getConnection(true);
+        $command = $db->createCommand();
+
+        $tableName = 'T_upsert';
+        $insertColumns = [
+            'email' => 'test@example.com',
+            'address' => 'first address',
+            'status' => 1,
+        ];
+        $expectedValues = [
+            'id' => 1,
+            'ts' => null,
+            'email' => 'test@example.com',
+            'recovery_email' => null,
+            'address' => 'first address',
+            'status' => 1,
+            'orders' => 0,
+            'profile_id' => null,
+        ];
+
+        $returnedValues = $command->upsertReturning($tableName, $insertColumns);
+
+        $this->assertEquals($expectedValues, $returnedValues);
+
+        $insertColumns = [
+            'email' => 'test@example.com',
+            'address' => 'second address',
+            'status' => 2,
+        ];
+
+        $returnedValues = $command->upsertReturning($tableName, $insertColumns, false);
+
+        $this->assertEquals($expectedValues, $returnedValues);
+
+        $returnedValues = $command->upsertReturning($tableName, $insertColumns, ['address' => 'third address']);
+        $expectedValues['address'] = 'third address';
+
+        $this->assertEquals($expectedValues, $returnedValues);
+
+        $db->close();
+    }
+
+    public function testUpsertReturningPks(): void
+    {
+        $db = $this->getConnection(true);
+
+        // insert case
+        $primaryKeys = $db->createCommand()
+            ->upsertReturningPks('{{customer}}', ['name' => 'test_1', 'email' => 'test_1@example.com']);
+
+        $this->assertEquals(['id' => 4], $primaryKeys);
+
+        $customer = $db->createCommand('SELECT * FROM {{customer}} WHERE [[id]] = 4')->queryOne();
+
+        $this->assertSame('test_1', $customer['name']);
+        $this->assertSame('test_1@example.com', $customer['email']);
+
+        // update case with composite primary key
+        $primaryKeys = $db->createCommand()->upsertReturningPks(
+            '{{order_item}}',
+            ['order_id' => 1, 'item_id' => 2, 'quantity' => 3, 'subtotal' => 100],
+        );
+
+        $this->assertEquals(['order_id' => 1, 'item_id' => 2], $primaryKeys);
+
+        $orderItem = $db->createCommand('SELECT * FROM {{order_item}} WHERE [[order_id]] = 1 AND [[item_id]] = 2')->queryOne();
+
+        $this->assertEquals(3, $orderItem['quantity']);
+        $this->assertEquals(100, $orderItem['subtotal']);
+
+        $db->close();
+    }
+
+    public function testUpsertReturningPksEmptyValues()
+    {
+        $db = $this->getConnection(true);
+
+        $pkValues = $db->createCommand()->upsertReturningPks('null_values', []);
+
+        $this->assertEquals(['id' => 1], $pkValues);
+    }
+
+    public function testUpsertReturningPksEmptyValuesAndNoPk()
+    {
+        $db = $this->getConnection(true);
+
+        $command = $db->createCommand();
+        $pkValues = $command->upsertReturningPks('negative_default_values', []);
+
+        $this->assertSame([], $pkValues);
+    }
+
+    public function testUpsertReturningPksWithPhpTypecasting(): void
+    {
+        $db = $this->getConnection(true);
+
+        $result = $db->createCommand()
+            ->withPhpTypecasting()
+            ->upsertReturningPks('notauto_pk', ['id_1' => 1, 'id_2' => 2.5, 'type' => 'test1']);
+
+        $this->assertSame(['id_1' => 1, 'id_2' => 2.5], $result);
+
+        $result = $db->createCommand()
+            ->withPhpTypecasting()
+            ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test2']);
+
+        $this->assertSame(['id_1' => 2, 'id_2' => 2.5], $result);
+
+        $result = $db->createCommand()
+            ->withPhpTypecasting()
+            ->upsertReturningPks('notauto_pk', ['id_1' => 2, 'id_2' => 2.5, 'type' => 'test3']);
+
+        $this->assertSame(['id_1' => 2, 'id_2' => 2.5], $result);
     }
 
     public function testUuid(): void

@@ -15,6 +15,7 @@ use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Data\LazyArray;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
 use Yiisoft\Db\Schema\Data\StructuredLazyArray;
+use Yiisoft\Db\Tests\Support\JsonSerializableObject;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 /**
@@ -35,6 +36,8 @@ final class JsonExpressionBuilderTest extends TestCase
             [['nil' => null], '{"nil":null}'],
             [[1, 2, 3], '[1,2,3]'],
             [new ArrayIterator(['a', 'b', 'c']), '["a","b","c"]'],
+            [new ArrayIterator(['a' => 1, 'b' => 2]), '{"a":1,"b":2}'],
+            [new JsonSerializableObject(['a' => 1, 'b' => 2]), '{"a":1,"b":2}'],
             [new LazyArray('[1,2,3]'), '[1,2,3]'],
             [new JsonLazyArray('[1,2,3]'), '[1,2,3]'],
             [new StructuredLazyArray('["5","USD"]'), '["5","USD"]'],

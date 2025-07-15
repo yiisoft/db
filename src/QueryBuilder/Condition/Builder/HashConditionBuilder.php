@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
-use InvalidArgumentException;
 use Yiisoft\Db\Exception\Exception;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Interface\HashConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -39,10 +39,6 @@ class HashConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        if (!$expression instanceof HashCondition) {
-            throw new InvalidArgumentException('HashConditionBuilder can only be used with HashCondition instance.');
-        }
-
         $hash = $expression->getHash() ?? [];
         $parts = [];
 

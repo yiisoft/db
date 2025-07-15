@@ -20,6 +20,7 @@ use Yiisoft\Db\Profiler\Context\ConnectionContext;
 use Yiisoft\Db\Profiler\ProfilerAwareInterface;
 use Yiisoft\Db\Profiler\ProfilerAwareTrait;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
@@ -50,8 +51,11 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
     protected QuoterInterface|null $quoter = null;
     protected SchemaInterface|null $schema = null;
 
-    public function __construct(protected PdoDriverInterface $driver, protected SchemaCache $schemaCache)
-    {
+    public function __construct(
+        protected PdoDriverInterface $driver,
+        protected SchemaCache $schemaCache,
+        protected ColumnFactoryInterface|null $columnFactory = null,
+    ) {
     }
 
     /**
@@ -139,10 +143,10 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         return $this->emulatePrepare;
     }
 
-    public function getActivePDO(string|null $sql = '', bool|null $forRead = null): PDO
+    public function getActivePdo(string|null $sql = '', bool|null $forRead = null): PDO
     {
         $this->open();
-        $pdo = $this->getPDO();
+        $pdo = $this->getPdo();
 
         if ($pdo === null) {
             throw new Exception('PDO cannot be initialized.');
@@ -151,12 +155,12 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
         return $pdo;
     }
 
-    public function getPDO(): PDO|null
+    public function getPdo(): PDO|null
     {
         return $this->pdo;
     }
 
-    public function getLastInsertID(?string $sequenceName = null): string
+    public function getLastInsertId(?string $sequenceName = null): string
     {
         if ($this->pdo !== null) {
             return $this->pdo->lastInsertID($sequenceName ?? null);
@@ -186,7 +190,7 @@ abstract class AbstractPdoConnection extends AbstractConnection implements PdoCo
             return $value;
         }
 
-        return $this->getActivePDO()->quote($value);
+        return $this->getActivePdo()->quote($value);
     }
 
     public function setEmulatePrepare(bool $value): void

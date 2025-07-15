@@ -12,6 +12,7 @@ use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Constraint\ForeignKeyConstraint;
+use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Query\Query;
@@ -21,7 +22,10 @@ use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\IntEnum;
+use Yiisoft\Db\Tests\Support\JsonSerializableObject;
 use Yiisoft\Db\Tests\Support\Stringable;
+use Yiisoft\Db\Tests\Support\StringEnum;
 use Yiisoft\Db\Tests\Support\TestTrait;
 use Yiisoft\Db\Tests\Support\TraversableObject;
 
@@ -164,7 +168,11 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                'expectedParams' => [':qp0' => 'test@example.com', ':qp1' => 'silverfire', ':qp2' => 'Kyiv {{city}}, Ukraine'],
+                'expectedParams' => [
+                    ':qp0' => new Param('test@example.com', DataType::STRING),
+                    ':qp1' => new Param('silverfire', DataType::STRING),
+                    ':qp2' => new Param('Kyiv {{city}}, Ukraine', DataType::STRING),
+                ],
             ],
             'escape-danger-chars' => [
                 'customer',
@@ -176,7 +184,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                'expectedParams' => [':qp0' => "SQL-danger chars are escaped: '); --"],
+                'expectedParams' => [':qp0' => new Param("SQL-danger chars are escaped: '); --", DataType::STRING)],
             ],
             'customer2' => [
                 'customer',
@@ -194,7 +202,7 @@ class QueryBuilderProvider
                     SQL,
                     static::$driverName,
                 ),
-                'expectedParams' => [':qp0' => 'no columns passed'],
+                'expectedParams' => [':qp0' => new Param('no columns passed', DataType::STRING)],
             ],
             'bool-false, bool2-null' => [
                 'type',
@@ -202,11 +210,11 @@ class QueryBuilderProvider
                 ['bool_col', 'bool_col2'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
-                    INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
+                    INSERT INTO [[type]] ([[bool_col]], [[bool_col2]]) VALUES (FALSE, NULL)
                     SQL,
                     static::$driverName,
                 ),
-                'expectedParams' => [':qp0' => false, ':qp1' => null],
+                'expectedParams' => [],
             ],
             'wrong' => [
                 '{{%type}}',
@@ -214,11 +222,11 @@ class QueryBuilderProvider
                 ['{{%type}}.[[float_col]]', '[[time]]'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
-                    INSERT INTO {{%type}} ([[float_col]], [[time]]) VALUES (:qp0, now()), (:qp1, now())
+                    INSERT INTO {{%type}} ([[float_col]], [[time]]) VALUES (NULL, now()), (NULL, now())
                     SQL,
                     static::$driverName,
                 ),
-                'expectedParams' => [':qp0' => null, ':qp1' => null],
+                'expectedParams' => [],
             ],
             'bool-false, time-now()' => [
                 '{{%type}}',
@@ -226,11 +234,11 @@ class QueryBuilderProvider
                 ['{{%type}}.[[bool_col]]', '[[time]]'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
-                    INSERT INTO {{%type}} ([[bool_col]], [[time]]) VALUES (:qp0, now())
+                    INSERT INTO {{%type}} ([[bool_col]], [[time]]) VALUES (FALSE, now())
                     SQL,
                     static::$driverName,
                 ),
-                'expectedParams' => [':qp0' => false],
+                'expectedParams' => [],
             ],
             'column table names are not checked' => [
                 '{{%type}}',
@@ -238,11 +246,11 @@ class QueryBuilderProvider
                 ['{{%type}}.[[bool_col]]', '{{%another_table}}.[[bool_col2]]'],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
-                    INSERT INTO {{%type}} ([[bool_col]], [[bool_col2]]) VALUES (:qp0, :qp1)
+                    INSERT INTO {{%type}} ([[bool_col]], [[bool_col2]]) VALUES (TRUE, FALSE)
                     SQL,
                     static::$driverName,
                 ),
-                'expectedParams' => [':qp0' => true, ':qp1' => false],
+                'expectedParams' => [],
             ],
             'empty-sql' => [
                 '{{%type}}',
@@ -260,15 +268,13 @@ class QueryBuilderProvider
                 [],
                 'expected' => DbHelper::replaceQuotes(
                     <<<SQL
-                    INSERT INTO [[non_exists_table]] VALUES (:qp0, :qp1, :qp2, :qp3)
+                    INSERT INTO [[non_exists_table]] VALUES (:qp0, :qp1, 10, 1)
                     SQL,
                     static::$driverName,
                 ),
                 'expectedParams' => [
-                    ':qp0' => '1.0',
-                    ':qp1' => '2',
-                    ':qp2' => 10,
-                    ':qp3' => 1,
+                    ':qp0' => new Param('1.0', DataType::STRING),
+                    ':qp1' => new Param('2', DataType::STRING),
                 ],
             ],
         ];
@@ -1134,30 +1140,10 @@ class QueryBuilderProvider
         ];
     }
 
-    public static function insertWithReturningPks(): array
+    public static function insertReturningPks(): array
     {
         return [
             ['{{table}}', [], [], '', []],
-        ];
-    }
-
-    public static function selectExist(): array
-    {
-        return [
-            [
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    SELECT 1 FROM `table` WHERE `id` = 1
-                    SQL,
-                    static::$driverName,
-                ),
-                DbHelper::replaceQuotes(
-                    <<<SQL
-                    SELECT EXISTS(SELECT 1 FROM `table` WHERE `id` = 1)
-                    SQL,
-                    static::$driverName,
-                ),
-            ],
         ];
     }
 
@@ -1510,7 +1496,7 @@ class QueryBuilderProvider
                 [':qp0' => 'dynamic@example.com'],
             ],
             'values and expressions without update part' => [
-                '{{%T_upsert}}',
+                'T_upsert',
                 ['{{%T_upsert}}.[[email]]' => 'dynamic@example.com', '[[ts]]' => new Expression('CURRENT_TIMESTAMP')],
                 false,
                 '',
@@ -1530,7 +1516,7 @@ class QueryBuilderProvider
                 [':phEmail' => 'dynamic@example.com', ':qp1' => 0],
             ],
             'query, values and expressions without update part' => [
-                '{{%T_upsert}}',
+                'T_upsert',
                 (new Query(static::getDb()))
                     ->select(
                         [
@@ -1550,7 +1536,7 @@ class QueryBuilderProvider
                 [':qp0' => 1],
             ],
             'no columns to update with unique' => [
-                '{{%T_upsert}}',
+                'T_upsert',
                 ['email' => 'email'],
                 true,
                 '',
@@ -1563,6 +1549,13 @@ class QueryBuilderProvider
                 '',
                 [':qp0' => 'test'],
             ],
+        ];
+    }
+
+    public static function upsertReturning(): array
+    {
+        return [
+            ['{{table}}', [], [], [], '', []],
         ];
     }
 
@@ -1615,7 +1608,7 @@ class QueryBuilderProvider
         $reference->onUpdate(ReferentialAction::CASCADE);
 
         $referenceWithSchema = clone $reference;
-        $referenceWithSchema->foreignSchemaName('ref_schema');
+        $referenceWithSchema->foreignTableName('ref_schema.ref_table');
 
         return [
             PseudoType::PK => ['integer PRIMARY KEY AUTOINCREMENT', PseudoType::PK],
@@ -1675,17 +1668,23 @@ class QueryBuilderProvider
             'binary()' => ['binary', ColumnBuilder::binary()],
             'binary(1000)' => ['binary(1000)', ColumnBuilder::binary(1000)],
             'uuid()' => ['uuid', ColumnBuilder::uuid()],
-            'datetime()' => ['datetime(0)', ColumnBuilder::datetime()],
-            'datetime(6)' => ['datetime(6)', ColumnBuilder::datetime(6)],
-            'datetime(null)' => ['datetime', ColumnBuilder::datetime(null)],
             'timestamp()' => ['timestamp(0)', ColumnBuilder::timestamp()],
             'timestamp(6)' => ['timestamp(6)', ColumnBuilder::timestamp(6)],
             'timestamp(null)' => ['timestamp', ColumnBuilder::timestamp(null)],
-            'date()' => ['date', ColumnBuilder::date()],
-            'date(100)' => ['date', ColumnBuilder::date()->size(100)],
+            'datetime()' => ['datetime(0)', ColumnBuilder::datetime()],
+            'datetime(6)' => ['datetime(6)', ColumnBuilder::datetime(6)],
+            'datetime(null)' => ['datetime', ColumnBuilder::datetime(null)],
+            'datetimeWithTimezone()' => ['datetimetz(0)', ColumnBuilder::datetimeWithTimezone()],
+            'datetimeWithTimezone(6)' => ['datetimetz(6)', ColumnBuilder::datetimeWithTimezone(6)],
+            'datetimeWithTimezone(null)' => ['datetimetz', ColumnBuilder::datetimeWithTimezone(null)],
             'time()' => ['time(0)', ColumnBuilder::time()],
             'time(6)' => ['time(6)', ColumnBuilder::time(6)],
             'time(null)' => ['time', ColumnBuilder::time(null)],
+            'timeWithTimezone()' => ['timetz(0)', ColumnBuilder::timeWithTimezone()],
+            'timeWithTimezone(6)' => ['timetz(6)', ColumnBuilder::timeWithTimezone(6)],
+            'timeWithTimezone(null)' => ['timetz', ColumnBuilder::timeWithTimezone(null)],
+            'date()' => ['date', ColumnBuilder::date()],
+            'date(100)' => ['date', ColumnBuilder::date()->size(100)],
             'array()' => ['json', ColumnBuilder::array()],
             'structured()' => ['json', ColumnBuilder::structured()],
             "structured('json')" => ['json', ColumnBuilder::structured('json')],
@@ -1752,6 +1751,12 @@ class QueryBuilderProvider
             'float' => ['1.1', 1.1, DataType::STRING],
             'string' => ["'string'", 'string', DataType::STRING],
             'binary' => ['0x737472696e67', 'string', DataType::LOB],
+            'resource' => ['0x737472696e67', fopen(__DIR__ . '/../Support/string.txt', 'rb'), DataType::LOB],
+            'expression' => ['(1 + 2)', new Expression('(1 + 2)'), DataType::STRING],
+            'expression with params' => ['(1 + 2)', new Expression('(:a + :b)', [':a' => 1, 'b' => 2]), DataType::STRING],
+            'Stringable' => ["'string'", new Stringable('string'), DataType::STRING],
+            'StringEnum' => ["'one'", StringEnum::ONE, DataType::STRING],
+            'IntEnum' => ['1', IntEnum::ONE, DataType::STRING],
         ];
     }
 
@@ -1766,10 +1771,132 @@ class QueryBuilderProvider
             'string' => ["'string'", 'string'],
             'binary' => ['0x737472696e67', fopen(__DIR__ . '/../Support/string.txt', 'rb')],
             'paramBinary' => ['0x737472696e67', new Param('string', DataType::LOB)],
+            'paramResource' => ['0x737472696e67', new Param(fopen(__DIR__ . '/../Support/string.txt', 'rb'), DataType::LOB)],
             'paramString' => ["'string'", new Param('string', DataType::STRING)],
             'paramInteger' => ['1', new Param(1, DataType::INTEGER)],
             'expression' => ['(1 + 2)', new Expression('(1 + 2)')],
+            'expression with params' => ['(1 + 2)', new Expression('(:a + :b)', [':a' => 1, 'b' => 2])],
             'Stringable' => ["'string'", new Stringable('string')],
+            'StringEnum' => ["'one'", StringEnum::ONE],
+            'IntEnum' => ['1', IntEnum::ONE],
+            'array' => ['\'["a","b","c"]\'', ['a', 'b', 'c']],
+            'json' => ['\'{"a":1,"b":2}\'', ['a' => 1, 'b' => 2]],
+            'Iterator' => ['\'["a","b","c"]\'', new ArrayIterator(['a', 'b', 'c'])],
+            'Traversable' => ['\'{"a":1,"b":2}\'', new ArrayIterator(['a' => 1, 'b' => 2])],
+            'JsonSerializable' => ['\'{"a":1,"b":2}\'', new JsonSerializableObject(['a' => 1, 'b' => 2])],
+        ];
+    }
+
+    public static function buildValue(): array
+    {
+        return [
+            'null' => [null, 'NULL'],
+            'true' => [true, 'TRUE'],
+            'false' => [false, 'FALSE'],
+            'integer' => [1, '1'],
+            'float' => [1.1, '1.1'],
+            'string' => [
+                'string',
+                ':qp0',
+                [':qp0' => new Param('string', DataType::STRING)],
+            ],
+            'binary' => [
+                $param = fopen(__DIR__ . '/../Support/string.txt', 'rb'),
+                ':qp0',
+                [':qp0' => new Param($param, DataType::LOB)],
+            ],
+            'paramBinary' => [
+                $param = new Param('string', DataType::LOB),
+                ':qp0',
+                [':qp0' => $param],
+            ],
+            'paramString' => [
+                $param = new Param('string', DataType::STRING),
+                ':qp0',
+                [':qp0' => $param],
+            ],
+            'paramInteger' => [
+                $param = new Param(1, DataType::INTEGER),
+                ':qp0',
+                [':qp0' => $param],
+            ],
+            'expression' => [
+                new Expression('(1 + 2)'),
+                '(1 + 2)',
+            ],
+            'expression with params' => [
+                new Expression('(:a + :b)', [':a' => 1, 'b' => 2]),
+                '(:a + :b)',
+                [':a' => 1, 'b' => 2],
+            ],
+            'Stringable' => [
+                new Stringable('string'),
+                ':qp0',
+                [':qp0' => new Param('string', DataType::STRING)],
+            ],
+            'StringEnum' => [
+                StringEnum::ONE,
+                ':qp0',
+                [':qp0' => new Param('one', DataType::STRING)],
+            ],
+            'IntEnum' => [IntEnum::ONE, '1'],
+            'array' => [
+                ['a', 'b', 'c'],
+                ':qp0',
+                [':qp0' => new Param('["a","b","c"]', DataType::STRING)],
+            ],
+            'json' => [
+                ['a' => 1, 'b' => 2],
+                ':qp0',
+                [':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)],
+            ],
+            'Iterator' => [
+                new ArrayIterator(['a', 'b', 'c']),
+                ':qp0',
+                [':qp0' => new Param('["a","b","c"]', DataType::STRING)],
+            ],
+            'Traversable' => [
+                new ArrayIterator(['a' => 1, 'b' => 2]),
+                ':qp0',
+                [':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)],
+            ],
+            'JsonSerializable' => [
+                new JsonSerializableObject(['a' => 1, 'b' => 2]),
+                ':qp0',
+                [':qp0' => new Param('{"a":1,"b":2}', DataType::STRING)],
+            ],
+        ];
+    }
+
+    public static function caseExpressionBuilder(): array
+    {
+        return [
+            'with case expression' => [
+                (new CaseExpression('(1 + 2)'))
+                    ->addWhen(1, 1)
+                    ->addWhen(2, new Expression('2'))
+                    ->addWhen(3, '(2 + 1)')
+                    ->else($param = new Param(4, DataType::INTEGER)),
+                'CASE (1 + 2) WHEN 1 THEN 1 WHEN 2 THEN 2 WHEN 3 THEN (2 + 1) ELSE :qp0 END',
+                [':qp0' => $param],
+                3,
+            ],
+            'without case expression' => [
+                (new CaseExpression())
+                    ->addWhen(['=', 'column_name', 1], $paramA = new Param('a', DataType::STRING))
+                    ->addWhen(
+                        DbHelper::replaceQuotes('[[column_name]] = 2', static::getDriverName()),
+                        (new Query(self::getDb()))->select($paramB = new Param('b', DataType::STRING))
+                    ),
+                DbHelper::replaceQuotes(
+                    <<<SQL
+                    CASE WHEN [[column_name]] = :qp0 THEN :qp1 WHEN [[column_name]] = 2 THEN (SELECT :pv2) END
+                    SQL,
+                    static::getDriverName(),
+                ),
+                [':qp0' => 1, ':qp1' => $paramA, ':pv2' => $paramB],
+                'b',
+            ],
         ];
     }
 }

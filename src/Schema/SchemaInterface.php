@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Schema;
 
-use Throwable;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Constraint\ConstraintSchemaInterface;
-use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidConfigException;
-use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 
 /**
  * Represents the schema for a database table.
@@ -315,14 +312,19 @@ interface SchemaInterface extends ConstraintSchemaInterface
     public function getDataType(mixed $data): int;
 
     /**
+     * Returns the column instance for the column metadata received from the query result.
+     *
+     * @param array $metadata The column metadata from the query result.
+     */
+    public function getResultColumn(array $metadata): ColumnInterface|null;
+
+    /**
      * Returns all schema names in the database, except system schemas.
      *
      * @param bool $refresh Whether to fetch the latest available schema names. If this is `false`, schema names fetched
      * before (if available) will be returned.
      *
-     * @throws NotSupportedException
-     *
-     * @return array All schemas name in the database, except system schemas.
+     * @return string[] All schemas name in the database, except system schemas.
      */
     public function getSchemaNames(bool $refresh = false): array;
 
@@ -335,9 +337,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available table names. If this is `false`, table names fetched
      * before (if available) will be returned.
      *
-     * @throws NotSupportedException
-     *
-     * @return array All tables name in the database.
+     * @return string[] All tables name in the database.
      */
     public function getTableNames(string $schema = '', bool $refresh = false): array;
 
@@ -355,11 +355,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      *
      * @param TableSchemaInterface $table The table metadata.
      *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws Throwable
-     *
-     * @return array All unique indexes for the given table.
+     * @return string[][] All unique indexes for the given table.
      */
     public function findUniqueIndexes(TableSchemaInterface $table): array;
 
@@ -382,9 +378,7 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available table schemas. If this is `false`, cached data may be
      * returned if available.
      *
-     * @return array The metadata for all tables in the database.
-     *
-     * @psalm-return list<TableSchemaInterface>
+     * @return TableSchemaInterface[] The metadata for all tables in the database.
      */
     public function getTableSchemas(string $schema = '', bool $refresh = false): array;
 
@@ -421,7 +415,44 @@ interface SchemaInterface extends ConstraintSchemaInterface
      * @param bool $refresh Whether to fetch the latest available view names. If this is false, view names fetched
      * before (if available) will be returned.
      *
-     * @return array All view names in the database.
+     * @return string[] All view names in the database.
      */
     public function getViewNames(string $schema = '', bool $refresh = false): array;
+
+    /**
+     * Determines if a specified table exists in the database.
+     *
+     * @param string $tableName The table name to search for
+     * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
+     * name. If not empty, the table will be searched in the specified schema.
+     * @param bool $refresh Whether to fetch the latest available table names. If this is false, view names fetched
+     * before (if available) will be returned.
+     *
+     * @return bool Whether table exists.
+     */
+    public function hasTable(string $tableName, string $schema = '', bool $refresh = false): bool;
+
+    /**
+     * Determines if a specified schema exists in the database.
+     *
+     * @param string $schema The schema name to search for
+     * @param bool $refresh Whether to fetch the latest available schema names. If this is false, view names fetched
+     * before (if available) will be returned.
+     *
+     * @return bool Whether schema exists.
+     */
+    public function hasSchema(string $schema, bool $refresh = false): bool;
+
+    /**
+     * Determines if a specified view exists in the database.
+     *
+     * @param string $viewName The view name to search for
+     * @param string $schema The schema of the tables. Defaults to empty string, meaning the current or default schema
+     * name. If not empty, the table will be searched in the specified schema.
+     * @param bool $refresh Whether to fetch the latest available view names. If this is false, view names fetched
+     * before (if available) will be returned.
+     *
+     * @return bool Whether view exists.
+     */
+    public function hasView(string $viewName, string $schema = '', bool $refresh = false): bool;
 }

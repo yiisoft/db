@@ -9,8 +9,38 @@ use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\AbstractQueryTest;
 
+use function array_keys;
+
 abstract class CommonQueryTest extends AbstractQueryTest
 {
+    public function testAllEmpty(): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))->from('customer')->where(['id' => 0]);
+
+        $this->assertSame([], $query->all());
+    }
+
+    public function testAllWithIndexBy(): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))
+            ->from('customer')
+            ->indexBy('name');
+
+        $this->assertSame(['user1', 'user2', 'user3'], array_keys($query->all()));
+
+        $query = (new Query($db))
+            ->from('customer')
+            ->indexBy(fn (array $row) => $row['id'] * 2);
+
+        $this->assertSame([2, 4, 6], array_keys($query->all()));
+
+        $db->close();
+    }
+
     public function testColumnIndexByWithClosure()
     {
         $db = $this->getConnection(true);
@@ -79,6 +109,35 @@ abstract class CommonQueryTest extends AbstractQueryTest
         $query = (new Query($db))->select(new Expression('1'));
 
         $this->assertEquals(1, $query->scalar());
+
+        $db->close();
+    }
+
+    public function testCallbackAll(): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))
+            ->from('customer')
+            ->resultCallback(fn (array $rows) => array_map(fn (array $row) => (object) $row, $rows));
+
+        foreach ($query->all() as $row) {
+            $this->assertIsObject($row);
+        }
+
+        $db->close();
+    }
+
+    public function testCallbackOne(): void
+    {
+        $db = $this->getConnection(true);
+
+        $query = (new Query($db))
+            ->from('customer')
+            ->where(['id' => 2])
+            ->resultCallback(fn (array $rows) => [(object) $rows[0]]);
+
+        $this->assertIsObject($query->one());
 
         $db->close();
     }

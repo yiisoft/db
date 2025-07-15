@@ -7,16 +7,19 @@ namespace Yiisoft\Db\QueryBuilder;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamBuilder;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ArrayExpression;
 use Yiisoft\Db\Expression\ArrayExpressionBuilder;
 use Yiisoft\Db\Expression\Expression;
+use Yiisoft\Db\Expression\ExpressionBuilder;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Expression\JsonExpression;
 use Yiisoft\Db\Expression\JsonExpressionBuilder;
+use Yiisoft\Db\Expression\CaseExpression;
+use Yiisoft\Db\Expression\CaseExpressionBuilder;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\StructuredExpressionBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
@@ -108,6 +111,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             $this->buildWhere($query->getWhere(), $params),
             $this->buildGroupBy($query->getGroupBy(), $params),
             $this->buildHaving($query->getHaving(), $params),
+            $this->buildFor($query->getFor()),
         ];
         $sql = implode($this->separator, array_filter($clauses));
         $sql = $this->buildOrderByAndLimit($sql, $query->getOrderBy(), $query->getLimit(), $query->getOffset(), $params);
@@ -175,6 +179,15 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         $builder = $this->queryBuilder->getExpressionBuilder($expression);
         /** @psalm-suppress MixedMethodCall */
         return (string) $builder->build($expression, $params);
+    }
+
+    public function buildFor(array $values): string
+    {
+        if (empty($values)) {
+            return '';
+        }
+
+        return 'FOR ' . implode($this->separator . 'FOR ', $values);
     }
 
     public function buildFrom(array|null $tables, array &$params): string
@@ -319,7 +332,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     public function buildSelect(
         array $columns,
         array &$params,
-        bool|null $distinct = false,
+        bool $distinct = false,
         ?string $selectOption = null
     ): string {
         $select = $distinct ? 'SELECT DISTINCT' : 'SELECT';
@@ -457,7 +470,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
 
     public function selectExists(string $rawSql): string
     {
-        return 'SELECT EXISTS(' . $rawSql . ')';
+        return 'SELECT EXISTS(' . $rawSql . ') AS ' . $this->quoter->quoteSimpleColumnName('0');
     }
 
     public function setConditionClasses(array $classes): void
@@ -522,6 +535,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         return [
             Query::class => QueryExpressionBuilder::class,
             Param::class => ParamBuilder::class,
+            Expression::class => ExpressionBuilder::class,
             Condition\AbstractConjunctionCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
             Condition\NotCondition::class => Condition\Builder\NotConditionBuilder::class,
             Condition\AndCondition::class => Condition\Builder\ConjunctionConditionBuilder::class,
@@ -536,6 +550,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             JsonExpression::class => JsonExpressionBuilder::class,
             ArrayExpression::class => ArrayExpressionBuilder::class,
             StructuredExpression::class => StructuredExpressionBuilder::class,
+            CaseExpression::class => CaseExpressionBuilder::class,
         ];
     }
 

@@ -7,9 +7,10 @@ namespace Yiisoft\Db\QueryBuilder;
 use Yiisoft\Db\Constant\IndexType;
 use Yiisoft\Db\Constant\ReferentialAction;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
@@ -263,15 +264,13 @@ interface DDLQueryBuilderInterface
      * generated SQL.
      *
      * @param string $table The name of the table to create.
-     * @param array $columns The columns (name => definition) in the new table.
-     * The definition can be `string` or {@see ColumnInterface} instance.
+     * @param (ColumnInterface|ExpressionInterface|string)[] $columns The columns (name => definition) in the new table.
+     * The definition can be `string`, or {@see ColumnInterface} or {@see ExpressionInterface} instance.
      * @param string|null $options More SQL fragments to append to the generated SQL.
      *
      * @return string The SQL statement for creating a new DB table.
      *
      * Note: The method will quote the `table` and `columns` parameter before using it in the generated SQL.
-     *
-     * @psalm-param array<string, ColumnInterface>|string[] $columns
      */
     public function createTable(string $table, array $columns, ?string $options = null): string;
 

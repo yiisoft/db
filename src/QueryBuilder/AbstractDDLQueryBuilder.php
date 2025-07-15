@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
 use Yiisoft\Db\Schema\SchemaInterface;
 
+use function array_map;
 use function implode;
 use function is_string;
 use function preg_split;
@@ -165,25 +167,27 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
     public function createTable(string $table, array $columns, ?string $options = null): string
     {
         $cols = [];
+        $quoter = $this->quoter;
+        $queryBuilder = $this->queryBuilder;
 
         foreach ($columns as $name => $type) {
             if (is_string($name)) {
-                $cols[] = "\t"
-                    . $this->quoter->quoteColumnName($name)
-                    . ' '
-                    . $this->queryBuilder->buildColumnDefinition(
-                        $type instanceof ColumnInterface
-                        ? $type->withName($name)
-                        : $type
-                    );
+                $columnDefinition = match (true) {
+                    $type instanceof ColumnInterface => $queryBuilder->buildColumnDefinition($type->withName($name)),
+                    $type instanceof ExpressionInterface => $queryBuilder->buildExpression($type),
+                    default => $queryBuilder->buildColumnDefinition($type),
+                };
+
+                $cols[] = "{$quoter->quoteColumnName($name)} $columnDefinition";
             } else {
                 /** @var string $type */
-                $cols[] = "\t" . $type;
+                $cols[] = $type;
             }
         }
 
-        $sql = 'CREATE TABLE '
-            . $this->quoter->quoteTableName($table) . " (\n" . implode(",\n", $cols) . "\n)";
+        $sql = "CREATE TABLE {$quoter->quoteTableName($table)} (\n\t"
+            . implode(",\n\t", $cols)
+            . "\n)";
 
         return $options === null ? $sql : $sql . ' ' . $options;
     }
@@ -193,11 +197,8 @@ abstract class AbstractDDLQueryBuilder implements DDLQueryBuilderInterface
         if ($subQuery instanceof QueryInterface) {
             [$rawQuery, $params] = $this->queryBuilder->build($subQuery);
 
-            foreach ($params as $key => $value) {
-                $params[$key] = $this->queryBuilder->prepareValue($value);
-            }
-
-            $subQuery = strtr($rawQuery, $params);
+            $params = array_map($this->queryBuilder->prepareValue(...), $params);
+            $subQuery = $this->queryBuilder->replacePlaceholders($rawQuery, $params);
         }
 
         return 'CREATE VIEW ' . $this->quoter->quoteTableName($viewName) . ' AS ' . $subQuery;

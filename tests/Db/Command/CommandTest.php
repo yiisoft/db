@@ -8,8 +8,10 @@ use PHPUnit\Framework\Attributes\DataProviderExternal;
 use Yiisoft\Db\Constant\ColumnType;
 use Yiisoft\Db\Constant\PseudoType;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
+use Yiisoft\Db\Schema\Column\IntegerColumn;
 use Yiisoft\Db\Tests\AbstractCommandTest;
 use Yiisoft\Db\Tests\Provider\CommandProvider;
 use Yiisoft\Db\Tests\Support\Assert;
@@ -257,9 +259,9 @@ final class CommandTest extends AbstractCommandTest
         $columns = [
             'id' => PseudoType::PK,
             'name' => ColumnType::STRING . '(255) NOT NULL',
-            'email' => ColumnType::STRING . '(255) NOT NULL',
-            'address' => ColumnType::STRING . '(255) NOT NULL',
-            'status' => ColumnType::INTEGER . ' NOT NULL',
+            'email' => new Expression('varchar(255) NOT NULL'),
+            'address' => ColumnBuilder::string()->notNull(),
+            'status' => new IntegerColumn(notNull: true),
             'profile_id' => ColumnType::INTEGER . ' NOT NULL',
             'data' => ColumnBuilder::json(),
             'created_at' => ColumnType::TIMESTAMP . ' NOT NULL',
@@ -750,5 +752,56 @@ final class CommandTest extends AbstractCommandTest
             'Yiisoft\Db\Tests\Support\Stub\Command::internalExecute is not supported by this DBMS.'
         );
         parent::testProfilerData();
+    }
+
+    public function testWithDbTypecasting(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        $this->assertTrue(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
+
+        $command = $command->withDbTypecasting(false);
+
+        $this->assertFalse(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
+
+        $command = $command->withDbTypecasting();
+
+        $this->assertTrue(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
+    }
+
+    public function testWithPhpTypecasting(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+
+        $command = $command->withPhpTypecasting();
+
+        $this->assertTrue(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+
+        $command = $command->withPhpTypecasting(false);
+
+        $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+    }
+
+    public function testWithTypecasting(): void
+    {
+        $db = $this->getConnection();
+        $command = $db->createCommand();
+
+        $this->assertTrue(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
+        $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+
+        $command = $command->withTypecasting(false);
+
+        $this->assertFalse(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
+        $this->assertFalse(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
+
+        $command = $command->withTypecasting();
+
+        $this->assertTrue(Assert::getInaccessibleProperty($command, 'dbTypecasting'));
+        $this->assertTrue(Assert::getInaccessibleProperty($command, 'phpTypecasting'));
     }
 }

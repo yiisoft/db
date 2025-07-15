@@ -108,8 +108,9 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `IntegerColumn` for columns with integer type (tinyint, smallint, integer, bigint);
 - `BigIntColumn` for columns with integer type with range outside `PHP_INT_MIN` and `PHP_INT_MAX`;
 - `DoubleColumn` for columns with fractional number type (float, double, decimal, money);
-- `StringColumn` for columns with string or datetime type (char, string, text, datetime, timestamp, date, time);
+- `StringColumn` for columns with string type (char, string, text);
 - `BinaryColumn` for columns with binary type;
+- `DateTimeColumn` for columns with date and time type (timestamp, datetime, time, date);
 - `ArrayColumn` for columns with array type;
 - `StructuredColumn` for columns with structured type (composite type in PostgreSQL);
 - `JsonColumn` for columns with json type.
@@ -117,14 +118,47 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 ### New methods
 
 - `QuoterInterface::getRawTableName()` - returns the raw table name without quotes;
+- `QueryInterface::resultCallback()` - allows to use a callback, to be called on all rows of the query result;
+- `QueryInterface::getFor()` - returns the `FOR` part of the query;
+- `QueryInterface::getResultCallback()` - returns the callback to be called on all rows of the query result or 
+  `null` if the callback is not set;
+- `QueryInterface::withTypecasting()` - enables or disables typecasting of values when retrieving records from DB;
+- `QueryPartsInterface::for()` - sets the `FOR` part of the query;
+- `QueryPartsInterface::addFor()` - adds more `FOR` parts to the existing ones;
+- `QueryPartsInterface::setFor()` - overwrites the `FOR` part of the query;
+- `QueryPartsInterface::setWhere()` - overwrites the `WHERE` part of the query;
+- `QueryPartsInterface::setHaving()` - overwrites the `HAVING` part of the query;
 - `ConnectionInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `ConnectionInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
+- `ConnectionInterface::createQuery()` - creates a `Query` object;
+- `ConnectionInterface::select()` - creates a `Query` object with the specified columns to be selected;
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
+- `QueryBuilderInterface::buildValue()` - converts a value to its SQL representation with binding parameters if necessary;
 - `QueryBuilderInterface::prepareParam()` - converts a `ParamInterface` object to its SQL representation;
 - `QueryBuilderInterface::prepareValue()` - converts a value to its SQL representation;
+- `QueryBuilderInterface::replacePlaceholders()` - replaces placeholders in the SQL string with the corresponding values;
 - `QueryBuilderInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
 - `QueryBuilderInterface::getServerInfo()` - returns `ServerInfoInterface` instance which provides server information;
-- `LikeConditionInterface::getCaseSensitive()` - returns whether the comparison is case-sensitive.
+- `DQLQueryBuilderInterface::buildFor()` - builds a SQL for `FOR` clause;
+- `DMLQueryBuilderInterface::isTypecastingEnabled()` - returns whether typecasting is enabled for the query builder;
+- `DMLQueryBuilderInterface::upsertReturning()` - builds a SQL to insert or update a record with returning values;
+- `DMLQueryBuilderInterface::withTypecasting()` - enables or disables typecasting of values when inserting or updating 
+  records in DB;
+- `LikeConditionInterface::getCaseSensitive()` - returns whether the comparison is case-sensitive;
+- `SchemaInterface::hasTable()` - returns whether the specified table exists in database;
+- `SchemaInterface::hasSchema()` - returns whether the specified schema exists in database;
+- `SchemaInterface::hasView()` - returns whether the specified view exists in database;
+- `DbArrayHelper::arrange()` - arranges an array by specified keys;
+- `CommandInterface::upsertReturning()` - inserts or updates a record returning its values;
+- `CommandInterface::upsertReturningPks()` - inserts or updates a record returning its primary keys;
+- `CommandInterface::withDbTypecasting()` - enables or disables typecasting of values when inserting or updating records;
+- `CommandInterface::withPhpTypecasting()` - enables or disables typecasting of values when retrieving records from DB;
+- `CommandInterface::withTypecasting()` - enables or disables typecasting of values when inserting, updating 
+  or retrieving records from DB;
+- `SchemaInterface::getResultColumn()` - returns the column instance for the column metadata received from the query;
+- `AbstractSchema::getResultColumnCacheKey()` - returns the cache key for the column metadata received from the query;
+- `AbstractSchema::loadResultColumn()` - creates a new column instance according to the column metadata from the query;
+- `DataReaderInterface::typecastColumns()` - sets columns for type casting the query results;
 
 ### Remove methods
 
@@ -148,6 +182,9 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `DbStringHelper::pascalCaseToId()`;
 - `AbstractDQLQueryBuilder::hasLimit()` - use `$limit !== null` instead;
 - `AbstractDQLQueryBuilder::hasOffset()` - use `!empty($offset)` instead;
+- `BatchQueryResultInterface::reset()` - use `BatchQueryResultInterface::rewind()` instead;
+- `BatchQueryResult::reset()` - use `BatchQueryResult::rewind()` instead;
+- `ForeignKeyConstraint::getForeignSchemaName()` and `ForeignKeyConstraint::foreignSchemaName()` methods;
 
 ### Remove deprecated parameters
 
@@ -182,3 +219,31 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Change return type of `AbstractCommand::insertWithReturningPks()` method to `array|false`;
 - Rename `QueryBuilderInterface::quoter()` method to `QueryBuilderInterface::getQuoter()`;
 - Change constructor parameters in `AbstractQueryBuilder` class;
+- Remove nullable from `PdoConnectionInterface::getActivePdo()` result;
+- Move `Yiisoft\Db\Query\Data\DataReaderInterface` interface to `Yiisoft\Db\Query` namespace;
+- Move `Yiisoft\Db\Query\Data\DataReader` class to `Yiisoft\Db\Driver\Pdo` namespace and rename it to `PdoDataReader`;
+- Add `indexBy()` and `resultCallback()` methods to `DataReaderInterface` and `PdoDataReader` class;
+- Change return type of `DataReaderInterface::key()` method to `int|string|null`;
+- Change return type of `DataReaderInterface::current()` method to `array|object|false`;
+- Change `PdoDataReader` a constructor parameter;
+- Remove the second parameter `$each` from `ConnectionInterface::createBatchQueryResult()`
+  and `AbstractConnection::createBatchQueryResult()` methods;
+- Rename `setPopulatedMethod()` to `resultCallback()` in `BatchQueryResultInterface` and `BatchQueryResult` class;
+- Change return type of `key()` method to `int` in `BatchQueryResultInterface` and `BatchQueryResult` class;
+- Change return type of `current()` method to `array` in `BatchQueryResultInterface` and `BatchQueryResult` class;
+- Remove `null` from return type of `getQuery()` method in `BatchQueryResultInterface` and `BatchQueryResult` class;
+- Remove parameters from `each()` method in `QueryInterface` and `Query` class;
+- Change return type of `each()` method to `DataReaderInterface` in `QueryInterface` and `Query` class;
+- Add `$columnFactory` parameter to `AbstractPdoConnection::__construct()` constructor;
+- Change `Query::$distinct` type to `bool` with `false` as default value;
+- Change `QueryInterface::getDistinct()` result type to `bool`;
+- Change `QueryPartsInterface::distinct()` parameter type to `bool`;
+- Change `$distinct` parameter type in `DQLQueryBuilderInterface::buildSelect()` to `bool`;
+- Add `QueryInterface` to type of `$columns` parameter of `insertWithReturningPks()` method in `CommandInterface` and 
+  `AbstractCommand` class;
+- Rename `insertWithReturningPks()` to `insertReturningPks()` method in `CommandInterface` and `DMLQueryBuilderInterface`;
+- Remove `$params` parameter from `upsert()` method in `CommandInterface` and `AbstractCommand` class;
+- Add default value to `$updateColumns` and `$params` parameters of `upsert()` method in `DMLQueryBuilderInterface` and 
+  `AbstractDMLQueryBuilder` and `AbstractQueryBuilder` classes;
+- Rename `Constraint` class to `AbstractConstraint` and make it abstract;
+- Rename `IndexConstraint::isPrimary()` to `IndexConstraint::isPrimaryKey()` method;

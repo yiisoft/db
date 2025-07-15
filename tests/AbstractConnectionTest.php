@@ -12,11 +12,14 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Profiler\Context\ConnectionContext;
 use Yiisoft\Db\Profiler\ContextInterface;
+use Yiisoft\Db\Profiler\ProfilerInterface;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Tests\Support\Assert;
+use Yiisoft\Db\Tests\Support\DbHelper;
+use Yiisoft\Db\Tests\Support\Stub\ColumnFactory;
+use Yiisoft\Db\Tests\Support\Stub\Connection;
 use Yiisoft\Db\Tests\Support\TestTrait;
-use Yiisoft\Db\Profiler\ProfilerInterface;
 
 abstract class AbstractConnectionTest extends TestCase
 {
@@ -144,17 +147,37 @@ abstract class AbstractConnectionTest extends TestCase
         $connection = $this->getConnection();
         $connection->open();
         $serialized = serialize($connection);
-        $this->assertNotNull($connection->getPDO());
+        $this->assertNotNull($connection->getPdo());
 
         $unserialized = unserialize($serialized);
         $this->assertInstanceOf(PdoConnectionInterface::class, $unserialized);
-        $this->assertNull($unserialized->getPDO());
+        $this->assertNull($unserialized->getPdo());
         $this->assertEquals(123, $unserialized->createCommand('SELECT 123')->queryScalar());
-        $this->assertNotNull($connection->getPDO());
+        $this->assertNotNull($connection->getPdo());
     }
 
     private function getProfiler(): ProfilerInterface
     {
         return $this->createMock(ProfilerInterface::class);
+    }
+
+    public function testGetColumnFactory(): void
+    {
+        $db = $this->getConnection();
+
+        $this->assertInstanceOf(ColumnFactory::class, $db->getColumnFactory());
+
+        $db->close();
+    }
+
+    public function testUserDefinedColumnFactory(): void
+    {
+        $columnFactory = new ColumnFactory();
+
+        $db = new Connection($this->getDriver(), DbHelper::getSchemaCache(), $columnFactory);
+
+        $this->assertSame($columnFactory, $db->getColumnFactory());
+
+        $db->close();
     }
 }

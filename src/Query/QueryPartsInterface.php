@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
+use LogicException;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -17,6 +18,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  *
  * @psalm-type SelectValue = array<array-key, ExpressionInterface|scalar>
  * @psalm-import-type ParamsType from ConnectionInterface
+ * @psalm-import-type IndexBy from QueryInterface
  */
 interface QueryPartsInterface
 {
@@ -182,7 +184,7 @@ interface QueryPartsInterface
      *
      * @param bool $value Whether to `SELECT DISTINCT` or not.
      */
-    public function distinct(bool|null $value = true): static;
+    public function distinct(bool $value = true): static;
 
     /**
      * Sets the `HAVING` part of the query but ignores {@see Query::isEmpty()}.
@@ -249,6 +251,50 @@ interface QueryPartsInterface
     public function filterWhere(array $condition): static;
 
     /**
+     * Sets the `FOR` part of the query.
+     *
+     * @param array|string|null $value The value(s) to be set for the `FOR` part. This can be either a string (for
+     * example, `'UPDATE'`) or a list of strings (such as `['SHARE OF {{t1}}', 'UPDATE OF {{t2}}']`) specifying one or
+     * several values. `null` means no `FOR` part.
+     *
+     * @throws LogicException If `FOR` was set previously.
+     *
+     * @see addFor()
+     * @see setFor()
+     *
+     * @psalm-param string|list<string>|null $value
+     */
+    public function for(string|array|null $value): static;
+
+    /**
+     * Adds more `FOR` parts to the existing ones.
+     *
+     * @param array|string|null $value The value(s) to be set for the `FOR` part. This can be either a string (for
+     * example, `'UPDATE'`) or a list of strings (such as `['SHARE OF {{t1}}', 'UPDATE OF {{t2}}']`) specifying one or
+     * several values. `null` means adding nothing.
+     *
+     * @see for()
+     * @see setFor()
+     *
+     * @psalm-param string|list<string>|null $value
+     */
+    public function addFor(string|array|null $value): static;
+
+    /**
+     * Overwrites the `FOR` part of the query.
+     *
+     * @param array|string|null $value The value(s) to be set for the `FOR` part. This can be either a string (for
+     * example, `'UPDATE'`) or a list of strings (such as `['SHARE OF {{t1}}', 'UPDATE OF {{t2}}']`) specifying one or
+     * several values. `null` means no `FOR` part.
+     *
+     * @see for()
+     * @see addFor()
+     *
+     * @psalm-param string|list<string>|null $value
+     */
+    public function setFor(string|array|null $value): static;
+
+    /**
      * Sets the `FROM` part of the query.
      *
      * @param array|ExpressionInterface|string $tables The table(s) to select from.
@@ -299,7 +345,7 @@ interface QueryPartsInterface
     public function groupBy(array|string|ExpressionInterface $columns): static;
 
     /**
-     * Sets the `HAVING` part of the query.
+     * Initially sets the `HAVING` part of the query.
      *
      * @param array|ExpressionInterface|string|null $condition The conditions to be put after `HAVING`.
      * Please refer to {@see where()} on how to specify this parameter.
@@ -307,10 +353,24 @@ interface QueryPartsInterface
      *
      * @psalm-param ParamsType $params
      *
+     * @throws LogicException If `having` was set previously.
+     *
      * @see andHaving()
      * @see orHaving()
      */
     public function having(array|ExpressionInterface|string|null $condition, array $params = []): static;
+
+    /**
+     * Overwrites the `HAVING` part of the query.
+     *
+     * @param array|ExpressionInterface|string|null $condition The conditions to be put after `HAVING`.
+     * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
+     *
+     * @see having()
+     */
+    public function setHaving(array|ExpressionInterface|string|null $condition, array $params = []): static;
 
     /**
      * Sets the {@see indexBy} property.
@@ -321,13 +381,13 @@ interface QueryPartsInterface
      * The signature of the callable should be:
      *
      * ```php
-     * function ($row)
+     * function (array $row): array-key
      * {
      *     // return the index value corresponding to $row
      * }
      * ```
      *
-     * @psalm-param Closure(array):array-key|string|null $column
+     * @psalm-param IndexBy|null $column
      */
     public function indexBy(string|Closure|null $column): static;
 
@@ -580,7 +640,7 @@ interface QueryPartsInterface
     public function union(QueryInterface|string $sql, bool $all = false): static;
 
     /**
-     * Sets the `WHERE` part of the query.
+     * Initially sets the `WHERE` part of the query.
      *
      * The `$condition` specified as an array can be in one of the following two formats:
      *
@@ -671,10 +731,24 @@ interface QueryPartsInterface
      *
      * @psalm-param ParamsType $params
      *
+     * @throws LogicException If `where` was set previously.
+     *
      * @see andWhere()
      * @see orWhere()
      */
     public function where(array|string|ExpressionInterface|null $condition, array $params = []): static;
+
+    /**
+     * Overwrites the `WHERE` part of the query.
+     *
+     * @param array|ExpressionInterface|string|null $condition The conditions to put in the `WHERE` part.
+     * @param array $params The parameters (name => value) to bind to the query.
+     *
+     * @psalm-param ParamsType $params
+     *
+     * @see where()
+     */
+    public function setWhere(array|string|ExpressionInterface|null $condition, array $params = []): static;
 
     /**
      * Prepends an SQL statement using `WITH` syntax.

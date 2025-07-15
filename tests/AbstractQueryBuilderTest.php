@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests;
 
 use Closure;
-use JsonException;
+use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Throwable;
-use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
+use Yiisoft\Db\Expression\CaseExpression;
 use Yiisoft\Db\Expression\Expression;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -31,6 +31,9 @@ use Yiisoft\Db\Tests\Provider\QueryBuilderProvider;
 use Yiisoft\Db\Tests\Support\Assert;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
+
+use function PHPUnit\Framework\assertEmpty;
+use function PHPUnit\Framework\assertSame;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
@@ -199,13 +202,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
     }
 
     /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::batchInsert
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     *
      * @psalm-param array<array-key, string> $columns
      */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'batchInsert')]
     public function testBatchInsert(
         string $table,
         iterable $rows,
@@ -220,7 +219,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->insertBatch($table, $rows, $columns, $params);
 
         $this->assertSame($expected, $sql);
-        $this->assertSame($expectedParams, $params);
+        Assert::arraysEquals($expectedParams, $params);
     }
 
     #[DataProviderExternal(QueryBuilderProvider::class, 'buildCondition')]
@@ -241,7 +240,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
             . (empty($expected) ? '' : ' WHERE ' . DbHelper::replaceQuotes($expected, $db->getDriverName())),
             $sql
         );
-        $this->assertEquals($expectedParams, $params);
+        Assert::arraysEquals($expectedParams, $params);
     }
 
     /**
@@ -306,7 +305,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $qb = $db->getQueryBuilder();
         $query = (new Query($db))->from('admin_user')->where(['is_deleted' => false]);
-        $query->where([])->andWhere(['in', 'id', ['1', '0']]);
+        $query->setWhere([])->andWhere(['in', 'id', ['1', '0']]);
 
         [$sql, $params] = $qb->build($query);
 
@@ -348,11 +347,39 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($expectedParams, $params);
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
+    public static function dataBuildFor(): iterable
+    {
+        yield ['', []];
+        yield ['FOR UPDATE', ['UPDATE']];
+        yield ['FOR UPDATE FOR SHARE', ['UPDATE', 'SHARE']];
+    }
+
+    #[DataProvider('dataBuildFor')]
+    public function testBuildFor(string $expected, array $value): void
+    {
+        $queryBuilder = $this->getConnection()->getQueryBuilder();
+        assertSame($expected, $queryBuilder->buildFor($value));
+    }
+
+    public function testBuildWithFor(): void
+    {
+        $db = $this->getConnection();
+        $queryBuilder = $db->getQueryBuilder();
+
+        $query = (new Query($db))->from('test')->for('UPDATE OF {{t1}}');
+
+        [$sql, $params] = $queryBuilder->build($query);
+
+        assertSame(
+            DbHelper::replaceQuotes(
+                'SELECT * FROM [[test]] FOR UPDATE OF {{t1}}',
+                $db->getDriverName(),
+            ),
+            $sql
+        );
+        assertEmpty($params);
+    }
+
     public function testBuildFrom(): void
     {
         $db = $this->getConnection();
@@ -420,6 +447,34 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
+    public function testOverwriteHavingCondition(): void
+    {
+        $db = $this->getConnection();
+
+        try {
+            (new Query($db))
+                ->from('admin_user')
+                ->having(['id' => 1])
+                ->having(['id' => 2]);
+
+            $this->fail('LogicException should be thrown.');
+        } catch (LogicException $e) {
+            $this->assertEquals('The `having` condition was set earlier. Use the `setHaving()`, `andHaving()` or `orHaving()` method.', $e->getMessage());
+        }
+
+        $query = (new Query($db))
+            ->from('admin_user')
+            ->having(['id' => 1])
+            ->setHaving(['id' => 2]);
+
+        $this->assertEquals(['id' => 2], $query->getHaving());
+
+        $query->setHaving('id = :id', [':id' => 200]);
+
+        $this->assertEquals('id = :id', $query->getHaving());
+        $this->assertEquals([':id' => 200], $query->getParams());
+    }
+
     /**
      * @throws Exception
      */
@@ -472,6 +527,35 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 $this->assertSame($expectedParams[$name], $value);
             }
         }
+    }
+
+    /**
+     * @throws LogicException
+     */
+    public function testOverwriteWhereCondition(): void
+    {
+        $db = $this->getConnection();
+
+        try {
+            (new Query($db))
+                ->where(['like', 'name', 'foo%'])
+                ->where(['not like', 'name', 'foo%']);
+
+            $this->fail('LogicException should be thrown.');
+        } catch (LogicException $e) {
+            $this->assertEquals('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.', $e->getMessage());
+        }
+
+        $query = (new Query($db))
+            ->where(['like', 'name', 'foo%'])
+            ->setWhere(['not like', 'name', 'foo%']);
+
+        $this->assertEquals(['not like', 'name', 'foo%'], $query->getWhere());
+
+        $query->setWhere('id = :id', [':id' => 200]);
+
+        $this->assertEquals('id = :id', $query->getWhere());
+        $this->assertEquals([':id' => 200], $query->getParams());
     }
 
     public function testBuildLimit(): void
@@ -1885,10 +1969,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals($expectedParams, $params);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::insertWithReturningPks
-     */
-    public function testInsertWithReturningPks(
+    #[DataProviderExternal(QueryBuilderProvider::class, 'insertReturningPks')]
+    public function testInsertReturningPks(
         string $table,
         array|QueryInterface $columns,
         array $params,
@@ -1896,10 +1978,9 @@ abstract class AbstractQueryBuilderTest extends TestCase
         array $expectedParams
     ): void {
         $db = $this->getConnection(true);
-
         $qb = $db->getQueryBuilder();
 
-        $this->assertSame($expectedSQL, $qb->insertWithReturningPks($table, $columns, $params));
+        $this->assertSame($expectedSQL, $qb->insertReturningPks($table, $columns, $params));
         $this->assertSame($expectedParams, $params);
     }
 
@@ -1945,6 +2026,32 @@ abstract class AbstractQueryBuilderTest extends TestCase
                 $db->getDriverName(),
             ),
             $sql,
+        );
+    }
+
+    public function testReplacePlaceholders(): void
+    {
+        $db = $this->getConnection();
+
+        $qb = $db->getQueryBuilder();
+        $sql = $qb->replacePlaceholders(
+            'SELECT * FROM [[table]] WHERE [[id]] = :id AND [[name]] = :name AND [[is_active]] = :is_active AND [[created_at]] = :created_at',
+            [
+                ':id' => '1',
+                'name' => "'John'",
+                ':is_active' => ':active',
+            ],
+        );
+
+        $this->assertSame(
+            "SELECT * FROM [[table]] WHERE [[id]] = 1 AND [[name]] = 'John' AND [[is_active]] = :active AND [[created_at]] = :created_at",
+            $sql,
+        );
+
+        // Question mark placeholder are not replaced
+        $this->assertSame(
+            'SELECT * FROM [[table]] WHERE [[id]] = ?',
+            $qb->replacePlaceholders('SELECT * FROM [[table]] WHERE [[id]] = ?', ['1']),
         );
     }
 
@@ -2019,17 +2126,20 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb->resetSequence('noExist', 1);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::selectExist
-     */
-    public function testSelectExists(string $sql, string $expected): void
+    public function testSelectExists(): void
     {
         $db = $this->getConnection();
-
         $qb = $db->getQueryBuilder();
-        $sqlSelectExist = $qb->selectExists($sql);
 
-        $this->assertSame($expected, $sqlSelectExist);
+        $sql = DbHelper::replaceQuotes('SELECT 1 FROM [[customer]] WHERE [[id]] = 1', $db->getDriverName());
+        // Alias required to avoid memory leaking on MySQL. Other DBMS have the same alias for consistency.
+        // @link https://github.com/yiisoft/yii2/issues/20385
+        $expected = DbHelper::replaceQuotes(
+            'SELECT EXISTS(SELECT 1 FROM [[customer]] WHERE [[id]] = 1) AS [[0]]',
+            $db->getDriverName()
+        );
+
+        $this->assertSame($expected, $qb->selectExists($sql));
     }
 
     /**
@@ -2231,12 +2341,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::update
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'update')]
     public function testUpdate(
         string $table,
         array $columns,
@@ -2255,70 +2360,65 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertEquals($expectedParams, $params);
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws JsonException
-     * @throws NotSupportedException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsert')]
     public function testUpsert(
         string $table,
         array|QueryInterface $insertColumns,
         array|bool $updateColumns,
-        string $expectedSQL,
+        string $expectedSql,
         array $expectedParams
-    ): void {
-        $db = $this->getConnection();
-
-        $actualParams = [];
-        $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
-
-        $this->assertSame($expectedSQL, $actualSQL);
-
-        $this->assertSame($expectedParams, $actualParams);
-    }
-
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::upsert
-     *
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws JsonException
-     * @throws NotSupportedException
-     * @throws Throwable
-     */
-    public function testUpsertExecute(
-        string $table,
-        array|QueryInterface $insertColumns,
-        array|bool $updateColumns
     ): void {
         $db = $this->getConnection(true);
 
-        $actualParams = [];
-        $actualSQL = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $actualParams);
+        $params = [];
+        $sql = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
 
-        $countQuery = (new Query($db))->from($table)->select('count(*)');
+        $this->assertSame($expectedSql, $sql);
+        $this->assertSame($expectedParams, $params);
 
-        $rowCountBefore = (int) $countQuery->createCommand()->queryScalar();
+        $query = (new Query($db))->from($table);
+        $countBefore = $query->count();
 
-        $command = $db->createCommand($actualSQL, $actualParams);
-        $this->assertEquals(1, $command->execute());
+        $command = $db->createCommand($sql, $params);
+        $this->assertSame(1, $command->execute());
 
-        $rowCountAfter = (int) $countQuery->createCommand()->queryScalar();
+        $countAfter = $query->count();
 
-        $this->assertEquals(1, $rowCountAfter - $rowCountBefore);
+        $this->assertSame(1, $countAfter - $countBefore);
 
-        $command = $db->createCommand($actualSQL, $actualParams);
-        $command->execute();
+        $db->createCommand($sql, $params)->execute();
     }
 
-    /**
-     * @throws \Exception
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'upsertReturning')]
+    public function testUpsertReturning(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns,
+        array|null $returnColumns,
+        string $expectedSql,
+        array $expectedParams,
+    ): void {
+        $db = $this->getConnection(true);
+        $qb = $db->getQueryBuilder();
+
+        $params = [];
+        $sql = $qb->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
+
+        $this->assertSame($expectedSql, $sql);
+        $this->assertSame($expectedParams, $params);
+
+        $query = (new Query($db))->from($table);
+        $countBefore = $query->count();
+
+        $db->createCommand($sql, $params)->execute();
+
+        $countAfter = $query->count();
+
+        $this->assertSame(1, $countAfter - $countBefore);
+
+        $db->createCommand($sql, $params)->execute();
+    }
+
     public function testOverrideParameters1(): void
     {
         $db = $this->getConnection();
@@ -2345,11 +2445,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @throws \Exception
-     * @throws Exception
-     * @throws InvalidConfigException
-     */
     public function testOverrideParameters2(): void
     {
         $db = $this->getConnection();
@@ -2404,5 +2499,46 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expected, $qb->prepareValue($value));
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'buildValue')]
+    public function testBuildValue(mixed $value, string $expected, array $expectedParams = []): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $params = [];
+        $this->assertSame($expected, $qb->buildValue($value, $params));
+        Assert::arraysEquals($expectedParams, $params);
+    }
+
+    #[DataProviderExternal(QueryBuilderProvider::class, 'caseExpressionBuilder')]
+    public function testCaseExpressionBuilder(
+        CaseExpression $case,
+        string $expectedSql,
+        array $expectedParams,
+        string|int $expectedResult,
+    ): void {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $params = [];
+
+        $this->assertSame($expectedSql, $qb->buildExpression($case, $params));
+        $this->assertEquals($expectedParams, $params);
+    }
+
+    public function testCaseExpressionBuilderEmpty(): void
+    {
+        $db = $this->getConnection();
+        $qb = $db->getQueryBuilder();
+
+        $params = [];
+        $case = new CaseExpression();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The CASE expression must have at least one WHEN clause.');
+
+        $qb->buildExpression($case, $params);
     }
 }

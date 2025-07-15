@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\Tests\Db\Driver\PDO;
+namespace Yiisoft\Db\Tests\Db\Driver\Pdo;
 
 use PDO;
 use PHPUnit\Framework\TestCase;
@@ -14,7 +14,7 @@ use Yiisoft\Db\Tests\Support\Stub\PDODriver;
  *
  * @psalm-suppress PropertyNotSetInConstructor
  */
-final class PDODriverTest extends TestCase
+final class PdoDriverTest extends TestCase
 {
     public function testAttributes(): void
     {

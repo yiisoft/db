@@ -16,14 +16,14 @@ create a database agnostic application.
 
 Yii DB supports the following databases out of the box:
 
-| DB | Version |
-|----|----------|
+| DB | Version              |
+|----|----------------------|
 | [MSSQL](https://www.microsoft.com/en-us/sql-server/sql-server-2019) | **2017, 2019, 2022** |
-| [MySQL](https://www.mysql.com/) | **5.7 - 8.0** |
-| [MariaDB](https://mariadb.org/) | **10.4 - 10.9** |
-| [Oracle](https://www.oracle.com/database/) | **12c - 21c** |
-| [PostgreSQL](https://www.postgresql.org/) | **9.6 - 15** |
-| [SQLite](https://www.sqlite.org/) | **3.3 or higher** |
+| [MySQL](https://www.mysql.com/) | **5.7 - 8.0**        |
+| [MariaDB](https://mariadb.org/) | **10.4 - 10.9**    |
+| [Oracle](https://www.oracle.com/database/) | **12c - 21c**       |
+| [PostgreSQL](https://www.postgresql.org/) | **9.6 - 17**    |
+| [SQLite](https://www.sqlite.org/) | **3.3 or higher**   |
 
 ## Installation
 
@@ -137,6 +137,7 @@ via schema:
 
 - [Reading database schema](schema/usage.md)
 - [Configuring schema cache](schema/cache.md)
+- [Casting values](schema/typecasting.md)
 
 ## Extensions
 

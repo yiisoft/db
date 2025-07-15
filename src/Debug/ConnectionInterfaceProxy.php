@@ -8,6 +8,7 @@ use Closure;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -38,9 +39,9 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
         return new TransactionInterfaceDecorator($result, $this->collector);
     }
 
-    public function createBatchQueryResult(QueryInterface $query, bool $each = false): BatchQueryResultInterface
+    public function createBatchQueryResult(QueryInterface $query): BatchQueryResultInterface
     {
-        return $this->connection->createBatchQueryResult($query, $each);
+        return $this->connection->createBatchQueryResult($query);
     }
 
     public function createCommand(?string $sql = null, array $params = []): CommandInterface
@@ -49,6 +50,11 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
             $this->connection->createCommand($sql, $params),
             $this->collector,
         );
+    }
+
+    public function createQuery(): QueryInterface
+    {
+        return $this->connection->createQuery();
     }
 
     public function createTransaction(): TransactionInterface
@@ -69,9 +75,9 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
         return $this->connection->getColumnFactory();
     }
 
-    public function getLastInsertID(?string $sequenceName = null): string
+    public function getLastInsertId(?string $sequenceName = null): string
     {
-        return $this->connection->getLastInsertID($sequenceName);
+        return $this->connection->getLastInsertId($sequenceName);
     }
 
     public function getQueryBuilder(): QueryBuilderInterface
@@ -139,6 +145,13 @@ final class ConnectionInterfaceProxy implements ConnectionInterface
     public function setEnableSavepoint(bool $value): void
     {
         $this->connection->setEnableSavepoint($value);
+    }
+
+    public function select(
+        array|bool|float|int|string|ExpressionInterface $columns = [],
+        ?string $option = null,
+    ): QueryInterface {
+        return $this->connection->select($columns, $option);
     }
 
     public function setTablePrefix(string $value): void

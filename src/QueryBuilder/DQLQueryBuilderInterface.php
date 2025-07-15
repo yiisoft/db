@@ -6,7 +6,7 @@ namespace Yiisoft\Db\QueryBuilder;
 
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
@@ -43,7 +43,7 @@ interface DQLQueryBuilderInterface
      * to the SQL statement (the second array element). The parameters returned include those provided in `$params`.
      *
      * @psalm-param ParamsType $params
-     * @psalm-return array{0: string, 1: array}
+     * @psalm-return array{0: string, 1: ParamsType}
      */
     public function build(QueryInterface $query, array $params = []): array;
 
@@ -97,6 +97,19 @@ interface DQLQueryBuilderInterface
      * @see AbstractDQLQueryBuilder::expressionBuilders
      */
     public function buildExpression(ExpressionInterface $expression, array &$params = []): string;
+
+    /**
+     * Builds a SQL for `FOR` clause.
+     *
+     * @param array $values The value to build.
+     *
+     * @throws NotSupportedException When the `FOR` clause is not supported.
+     *
+     * @return string The result SQL.
+     *
+     * @psalm-param list<string> $values
+     */
+    public function buildFor(array $values): string;
 
     /**
      * @param array|null $tables The tables to process.
@@ -216,7 +229,7 @@ interface DQLQueryBuilderInterface
      * Each column can be a string representing a column name or an array representing a column specification.
      * Please refer to {@see \Yiisoft\Db\Query\Query::select()} on how to specify this parameter.
      * @param array $params The binding parameters to populate.
-     * @param bool|null $distinct  Whether to add `DISTINCT` or not.
+     * @param bool $distinct Whether to add `DISTINCT` or not.
      * @param string|null $selectOption The `SELECT` option to use (for example, `SQL_CALC_FOUND_ROWS`).
      *
      * @throws Exception
@@ -232,7 +245,7 @@ interface DQLQueryBuilderInterface
     public function buildSelect(
         array $columns,
         array &$params,
-        bool|null $distinct = false,
+        bool $distinct = false,
         ?string $selectOption = null
     ): string;
 

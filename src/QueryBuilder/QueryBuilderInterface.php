@@ -7,7 +7,7 @@ namespace Yiisoft\Db\QueryBuilder;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Schema\Column\ColumnFactoryInterface;
@@ -48,6 +48,25 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * @return string the SQL column definition.
      */
     public function buildColumnDefinition(ColumnInterface|string $column): string;
+
+    /**
+     * Securely converts PHP values to their SQL representations with using bind parameters where necessary:
+     * - `array` values are converted to JSON or SQL array expressions;
+     * - `bool` values are converted to `TRUE` or `FALSE` or other DBMS-specific boolean representations;
+     * - `float` and `int` values are converted to their string representations;
+     * - `null` values are converted to `NULL`;
+     * - `object` values are converted to their SQL representation based on their type;
+     * - `resource` values are bound as LOB parameters;
+     * - closed `resource` throw an {@see InvalidArgumentException};
+     * - `string` values are bound as string parameters;
+     * - other values are bound as parameters.
+     *
+     * @param mixed $value The PHP value to be converted to SQL.
+     * @param array $params The parameters array to which the bound parameters will be added.
+     *
+     * @return string The SQL representation of the value.
+     */
+    public function buildValue(mixed $value, array &$params): string;
 
     /**
      * Returns the column definition builder for the current DBMS.
@@ -91,4 +110,16 @@ interface QueryBuilderInterface extends DDLQueryBuilderInterface, DMLQueryBuilde
      * Used when the bind parameter cannot be used in the SQL query.
      */
     public function prepareValue(mixed $value): string;
+
+    /**
+     * Replaces placeholders in the SQL string with the corresponding values.
+     *
+     * @param string $sql SQL expression where the placeholder should be replaced.
+     * @param string[] $replacements Replacements for placeholders with placeholder names as keys and values as follows:
+     * - quoted string values (name => value) use {@see prepareValue()} to prepare the values;
+     * - new placeholder names prefixed with colon `:` (name => new name).
+     *
+     * @return string SQL expression with replaced placeholders.
+     */
+    public function replacePlaceholders(string $sql, array $replacements): string;
 }

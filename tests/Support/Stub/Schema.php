@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\Tests\Support\Stub;
 
-use Yiisoft\Db\Constraint\Constraint;
+use Yiisoft\Db\Constraint\IndexConstraint;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Schema\AbstractSchema;
+use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 
 /**
@@ -21,14 +22,6 @@ class Schema extends AbstractSchema
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
-    /**
-     * @throws NotSupportedException
-     */
-    public function getLastInsertID(?string $sequenceName = null): string
-    {
-        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
-    }
-
     protected function getCacheKey(string $name): array
     {
         return [];
@@ -37,6 +30,16 @@ class Schema extends AbstractSchema
     protected function getCacheTag(): string
     {
         return '';
+    }
+
+    protected function getResultColumnCacheKey(array $metadata): string
+    {
+        return md5(serialize([self::class, ...$metadata]));
+    }
+
+    protected function loadResultColumn(array $metadata): ColumnInterface|null
+    {
+        throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }
 
     /**
@@ -74,7 +77,7 @@ class Schema extends AbstractSchema
     /**
      * @throws NotSupportedException
      */
-    protected function loadTablePrimaryKey(string $tableName): Constraint|null
+    protected function loadTablePrimaryKey(string $tableName): IndexConstraint|null
     {
         throw new NotSupportedException(__METHOD__ . ' is not supported by this DBMS.');
     }

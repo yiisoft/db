@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
-use InvalidArgumentException;
 use Yiisoft\Db\Exception\Exception;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\BetweenColumnsConditionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 use function str_contains;
@@ -35,10 +34,6 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        if (!$expression instanceof BetweenColumnsConditionInterface) {
-            throw new InvalidArgumentException('BetweenColumnsConditionBuilder can only be used with BetweenColumnsConditionInterface instance.');
-        }
-
         $operator = $expression->getOperator();
         $startColumn = $this->escapeColumnName($expression->getIntervalStartColumn(), $params);
         $endColumn = $this->escapeColumnName($expression->getIntervalEndColumn(), $params);

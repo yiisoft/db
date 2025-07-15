@@ -7,13 +7,9 @@ namespace Yiisoft\Db\Expression;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
-use Yiisoft\Db\Syntax\AbstractSqlParser;
 
 use function array_merge;
-use function count;
-use function strlen;
 use function substr;
-use function substr_replace;
 
 /**
  * It's used to build expressions for use in database queries.
@@ -26,7 +22,7 @@ use function substr_replace;
  *
  * @psalm-import-type ParamsType from ConnectionInterface
  */
-abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
+final class ExpressionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
@@ -67,7 +63,7 @@ abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
             return $sql;
         }
 
-        return $this->replacePlaceholders($sql, $replacements);
+        return $this->queryBuilder->replacePlaceholders($sql, $replacements);
     }
 
     /**
@@ -199,43 +195,4 @@ abstract class AbstractExpressionBuilder implements ExpressionBuilderInterface
 
         return $uniqueName;
     }
-
-    /**
-     * Replaces placeholders with replacements in a SQL expression.
-     *
-     * @param string $sql SQL expression where the placeholder should be replaced.
-     * @param string[] $replacements Replacements for placeholders.
-     *
-     * @return string SQL expression with replaced placeholders.
-     */
-    private function replacePlaceholders(string $sql, array $replacements): string
-    {
-        $parser = $this->createSqlParser($sql);
-        $offset = 0;
-
-        while (null !== $placeholder = $parser->getNextPlaceholder($position)) {
-            if (isset($replacements[$placeholder])) {
-                /** @var int $position */
-                $sql = substr_replace($sql, $replacements[$placeholder], $position + $offset, strlen($placeholder));
-
-                if (count($replacements) === 1) {
-                    break;
-                }
-
-                $offset += strlen($replacements[$placeholder]) - strlen($placeholder);
-                unset($replacements[$placeholder]);
-            }
-        }
-
-        return $sql;
-    }
-
-    /**
-     * Creates an instance of {@see AbstractSqlParser} for the given SQL expression.
-     *
-     * @param string $sql SQL expression to be parsed.
-     *
-     * @return AbstractSqlParser SQL parser instance.
-     */
-    abstract protected function createSqlParser(string $sql): AbstractSqlParser;
 }

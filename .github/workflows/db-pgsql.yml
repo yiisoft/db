@@ -28,7 +28,6 @@ jobs:
 
     env:
       COMPOSER_ROOT_VERSION: dev-master
-      CURRENT_PACKAGE: db-pgsql
       EXTENSIONS: pdo, pdo_pgsql
 
     runs-on: ubuntu-latest
@@ -47,14 +46,15 @@ jobs:
           - 14
           - 15
           - 16
+          - 17
 
         include:
           - php: 8.1
-            pgsql: 16
+            pgsql: 17
           - php: 8.2
-            pgsql: 16
+            pgsql: 17
           - php: 8.3
-            pgsql: 16
+            pgsql: 17
 
     services:
       postgres:
@@ -82,17 +82,11 @@ jobs:
       - name: Update composer.
         run: composer self-update
 
-      - name: Set environment variables pull request linux.
-        uses: yiisoft/actions/db/environment-linux@master
-
-      - name: Install db.
-        uses: yiisoft/actions/db/subpackage-install@master
+      - name: Install db-pgsql.
+        uses: yiisoft/actions/install-packages@master
         with:
-          BRANCH_NAME: ${{ env.BRANCH_NAME }}
-          COMPOSER_ROOT_VERSION: ${{ env.COMPOSER_ROOT_VERSION }}
-          CURRENT_PACKAGE: ${{ env.CURRENT_PACKAGE }}
-          FULL_BRANCH_NAME: ${{ env.FULL_BRANCH_NAME }}
-          WORK_PACKAGE_URL: ${{ env.WORK_PACKAGE_URL }}
+          packages: >-
+            ['db-pgsql']
 
       - name: Run pgsql tests with phpunit and code coverage.
         run: vendor/bin/phpunit --testsuite Pgsql --coverage-clover=coverage.xml --colors=always --display-warnings --display-deprecations

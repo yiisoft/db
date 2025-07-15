@@ -6,21 +6,21 @@ namespace Yiisoft\Db\Command;
 
 use Closure;
 use Throwable;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Query\Data\DataReaderInterface;
+use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\QueryBuilder\DMLQueryBuilderInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
+use function array_map;
 use function explode;
 use function get_resource_type;
 use function is_array;
 use function is_int;
 use function is_resource;
 use function is_scalar;
-use function is_string;
-use function preg_replace_callback;
 use function stream_get_contents;
 
 /**
@@ -68,6 +68,14 @@ use function stream_get_contents;
 abstract class AbstractCommand implements CommandInterface
 {
     /**
+     * @param ConnectionInterface $db The database connection to use.
+     */
+    public function __construct(
+        protected readonly ConnectionInterface $db,
+    ) {
+    }
+
+    /**
      * Command in this query mode returns count of affected rows.
      *
      * @see execute()
@@ -106,11 +114,6 @@ abstract class AbstractCommand implements CommandInterface
     protected const QUERY_MODE_SCALAR = 32;
 
     /**
-     * @var string|null Transaction isolation level.
-     */
-    protected string|null $isolationLevel = null;
-
-    /**
      * @var ParamInterface[] Parameters to use.
      */
     protected array $params = [];
@@ -120,6 +123,8 @@ abstract class AbstractCommand implements CommandInterface
      */
     protected string|null $refreshTableName = null;
     protected Closure|null $retryHandler = null;
+    protected bool $dbTypecasting = true;
+    protected bool $phpTypecasting = false;
     /**
      * @var string The SQL statement to execute.
      */
@@ -346,25 +351,11 @@ abstract class AbstractCommand implements CommandInterface
             return $this->sql;
         }
 
-        $params = [];
         $queryBuilder = $this->getQueryBuilder();
+        $params = array_map($queryBuilder->prepareParam(...), $this->params);
 
-        foreach ($this->params as $name => $param) {
-            if (is_string($name) && $name[0] !== ':') {
-                $name = ':' . $name;
-            }
-
-            $params[$name] = $queryBuilder->prepareParam($param);
-        }
-
-        /** @var string[] $params */
         if (!isset($params[0])) {
-            /** @var string */
-            return preg_replace_callback(
-                '#(:\w+)#',
-                static fn (array $matches): string => $params[$matches[1]] ?? $matches[1],
-                $this->sql
-            );
+            return $queryBuilder->replacePlaceholders($this->sql, $params);
         }
 
         // Support unnamed placeholders should be dropped
@@ -382,18 +373,24 @@ abstract class AbstractCommand implements CommandInterface
         return $this->sql;
     }
 
-    public function insert(string $table, QueryInterface|array $columns): static
+    public function insert(string $table, array|QueryInterface $columns): static
     {
         $params = [];
         $sql = $this->getQueryBuilder()->insert($table, $columns, $params);
         return $this->setSql($sql)->bindValues($params);
     }
 
-    public function insertWithReturningPks(string $table, array $columns): array|false
+    public function insertReturningPks(string $table, array|QueryInterface $columns): array|false
     {
-        $params = [];
+        if (empty($this->db->getSchema()->getTableSchema($table)?->getPrimaryKey())) {
+            if ($this->insert($table, $columns)->execute() === 0) {
+                return false;
+            }
+            return [];
+        }
 
-        $sql = $this->getQueryBuilder()->insertWithReturningPks($table, $columns, $params);
+        $params = [];
+        $sql = $this->getQueryBuilder()->insertReturningPks($table, $columns, $params);
 
         $this->setSql($sql)->bindValues($params);
 
@@ -401,6 +398,14 @@ abstract class AbstractCommand implements CommandInterface
         $result = $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
 
         return is_array($result) ? $result : false;
+    }
+
+    /**
+     * @deprecated Use {@see insertReturningPks()} instead. It will be removed in version 3.0.0.
+     */
+    public function insertWithReturningPks(string $table, array|QueryInterface $columns): array|false
+    {
+        return $this->insertReturningPks($table, $columns);
     }
 
     public function execute(): int
@@ -425,7 +430,7 @@ abstract class AbstractCommand implements CommandInterface
 
     public function queryAll(): array
     {
-        /** @psalm-var array<array-key, array>|null $results */
+        /** @psalm-var list<array>|null $results */
         $results = $this->queryInternal(self::QUERY_MODE_ALL);
         return $results ?? [];
     }
@@ -513,12 +518,67 @@ abstract class AbstractCommand implements CommandInterface
 
     public function upsert(
         string $table,
-        QueryInterface|array $insertColumns,
-        bool|array $updateColumns = true,
-        array $params = []
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
     ): static {
+        $params = [];
         $sql = $this->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
         return $this->setSql($sql)->bindValues($params);
+    }
+
+    public function upsertReturning(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+        array|null $returnColumns = null,
+    ): array|false {
+        if ($returnColumns === []) {
+            $this->upsert($table, $insertColumns, $updateColumns)->execute();
+            return [];
+        }
+
+        $params = [];
+        $sql = $this->getQueryBuilder()
+            ->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
+
+        $this->setSql($sql)->bindValues($params);
+
+        /** @psalm-var array|bool $result */
+        $result = $this->queryInternal(self::QUERY_MODE_ROW | self::QUERY_MODE_EXECUTE);
+
+        return is_array($result) ? $result : false;
+    }
+
+    public function upsertReturningPks(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+    ): array|false {
+        $primaryKeys = $this->db->getSchema()->getTableSchema($table)?->getPrimaryKey() ?? [];
+
+        return $this->upsertReturning($table, $insertColumns, $updateColumns, $primaryKeys);
+    }
+
+    public function withDbTypecasting(bool $dbTypecasting = true): static
+    {
+        $new = clone $this;
+        $new->dbTypecasting = $dbTypecasting;
+        return $new;
+    }
+
+    public function withPhpTypecasting(bool $phpTypecasting = true): static
+    {
+        $new = clone $this;
+        $new->phpTypecasting = $phpTypecasting;
+        return $new;
+    }
+
+    public function withTypecasting(bool $typecasting = true): static
+    {
+        $new = clone $this;
+        $new->dbTypecasting = $typecasting;
+        $new->phpTypecasting = $typecasting;
+        return $new;
     }
 
     /**
@@ -599,19 +659,6 @@ abstract class AbstractCommand implements CommandInterface
     }
 
     /**
-     * Marks the command to execute in transaction.
-     *
-     * @param string|null $isolationLevel The isolation level to use for this transaction.
-     *
-     * {@see \Yiisoft\Db\Transaction\TransactionInterface::begin()} for details.
-     */
-    protected function requireTransaction(?string $isolationLevel = null): static
-    {
-        $this->isolationLevel = $isolationLevel;
-        return $this;
-    }
-
-    /**
      * Resets the command object, so it can be reused to build another SQL statement.
      */
     protected function reset(): void
@@ -619,7 +666,6 @@ abstract class AbstractCommand implements CommandInterface
         $this->sql = '';
         $this->params = [];
         $this->refreshTableName = null;
-        $this->isolationLevel = null;
         $this->retryHandler = null;
     }
 

@@ -6,8 +6,10 @@ namespace Yiisoft\Db\Connection;
 
 use Closure;
 use Throwable;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\BatchQueryResult;
 use Yiisoft\Db\Query\BatchQueryResultInterface;
+use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\TableSchemaInterface;
 use Yiisoft\Db\Transaction\TransactionInterface;
@@ -38,9 +40,14 @@ abstract class AbstractConnection implements ConnectionInterface
         return $this->transaction;
     }
 
-    public function createBatchQueryResult(QueryInterface $query, bool $each = false): BatchQueryResultInterface
+    public function createBatchQueryResult(QueryInterface $query): BatchQueryResultInterface
     {
-        return new BatchQueryResult($query, $each);
+        return new BatchQueryResult($query);
+    }
+
+    public function createQuery(): QueryInterface
+    {
+        return new Query($this);
     }
 
     public function getTablePrefix(): string
@@ -68,6 +75,13 @@ abstract class AbstractConnection implements ConnectionInterface
         $this->enableSavepoint = $value;
     }
 
+    public function select(
+        array|bool|float|int|string|ExpressionInterface $columns = [],
+        ?string $option = null,
+    ): QueryInterface {
+        return $this->createQuery()->select($columns, $option);
+    }
+
     public function setTablePrefix(string $value): void
     {
         $this->tablePrefix = $value;
@@ -79,7 +93,6 @@ abstract class AbstractConnection implements ConnectionInterface
         $level = $transaction->getLevel();
 
         try {
-            /** @psalm-var mixed $result */
             $result = $closure($this);
 
             if ($transaction->isActive() && $transaction->getLevel() === $level) {

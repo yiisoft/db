@@ -312,7 +312,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
             'createCommand',
             'close',
             'getDriverName',
-            'getLastInsertID',
+            'getLastInsertId',
             'getQueryBuilder',
             'getQuoter',
             'getSchema',
@@ -363,7 +363,7 @@ abstract class CommonPdoConnectionTest extends AbstractPdoConnectionTest
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('PDO cannot be initialized.');
 
-        $db->getActivePDO();
+        $db->getActivePdo();
     }
 
     private function getProfiler(): ProfilerInterface

@@ -19,7 +19,7 @@ use function trim;
 
 final class DbHelper
 {
-    public static function changeSqlForOracleBatchInsert(string &$str): void
+    public static function changeSqlForOracleBatchInsert(string &$str, array $expectedParams = []): void
     {
         if (empty($str)) {
             return;
@@ -34,6 +34,14 @@ final class DbHelper
                 substr($str, 0, -1)
             )
         ) . ' FROM DUAL';
+
+        foreach ($expectedParams as $param => $value) {
+            $str = match ($value) {
+                '1' => preg_replace('/\bTRUE\b/i', $param, $str, 1),
+                '0' => preg_replace('/\bFALSE\b/i', $param, $str, 1),
+                default => $str,
+            };
+        }
     }
 
     public static function getPsrCache(): CacheInterface
@@ -74,7 +82,7 @@ final class DbHelper
 
         foreach ($lines as $line) {
             if (trim($line) !== '') {
-                $db->getPDO()?->exec($line);
+                $db->getPdo()?->exec($line);
             }
         }
     }
@@ -90,8 +98,8 @@ final class DbHelper
     public static function replaceQuotes(string $sql, string $driverName): string
     {
         return match ($driverName) {
-            'mysql', 'sqlite' => str_replace(['[[', ']]'], '`', $sql),
-            'oci' => str_replace(['[[', ']]'], '"', $sql),
+            'mysql' => str_replace(['[[', ']]'], '`', $sql),
+            'oci', 'sqlite' => str_replace(['[[', ']]'], '"', $sql),
             'pgsql' => str_replace(['\\[', '\\]'], ['[', ']'], preg_replace('/(\[\[)|((?<!(\[))]])/', '"', $sql)),
             'db', 'sqlsrv' => str_replace(['[[', ']]'], ['[', ']'], $sql),
             default => $sql,

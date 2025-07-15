@@ -11,7 +11,7 @@ use Psr\Log\LogLevel;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
-use Yiisoft\Db\Exception\InvalidParamException;
+use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
@@ -164,7 +164,7 @@ abstract class CommonPdoCommandTest extends TestCase
     {
         $db = $this->getConnection(true);
 
-        $this->assertSame(PDO::CASE_NATURAL, $db->getActivePDO()?->getAttribute(PDO::ATTR_CASE));
+        $this->assertSame(PDO::CASE_NATURAL, $db->getActivePdo()->getAttribute(PDO::ATTR_CASE));
 
         $command = $db->createCommand();
         $sql = <<<SQL
@@ -176,9 +176,9 @@ abstract class CommonPdoCommandTest extends TestCase
         $this->assertTrue(isset($rows[0]['customer_id']));
         $this->assertTrue(isset($rows[0]['total']));
 
-        $db->getActivePDO()?->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
+        $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_LOWER);
 
-        $this->assertSame(PDO::CASE_LOWER, $db->getActivePDO()?->getAttribute(PDO::ATTR_CASE));
+        $this->assertSame(PDO::CASE_LOWER, $db->getActivePdo()->getAttribute(PDO::ATTR_CASE));
 
         $rows = $command->setSql($sql)->queryAll();
 
@@ -186,9 +186,9 @@ abstract class CommonPdoCommandTest extends TestCase
         $this->assertTrue(isset($rows[0]['customer_id']));
         $this->assertTrue(isset($rows[0]['total']));
 
-        $db->getActivePDO()?->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
+        $db->getActivePdo()->setAttribute(PDO::ATTR_CASE, PDO::CASE_UPPER);
 
-        $this->assertSame(PDO::CASE_UPPER, $db->getActivePDO()?->getAttribute(PDO::ATTR_CASE));
+        $this->assertSame(PDO::CASE_UPPER, $db->getActivePdo()->getAttribute(PDO::ATTR_CASE));
 
         $rows = $command->setSql($sql)->queryAll();
 
@@ -223,7 +223,7 @@ abstract class CommonPdoCommandTest extends TestCase
             }
         };
 
-        $this->expectException(InvalidParamException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("Unknown query mode '1024'");
         $command->testExecute();
 

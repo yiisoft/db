@@ -7,7 +7,7 @@ namespace Yiisoft\Db\Debug;
 use Closure;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
-use Yiisoft\Db\Query\Data\DataReaderInterface;
+use Yiisoft\Db\Query\DataReaderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 
@@ -310,12 +310,12 @@ final class CommandInterfaceProxy implements CommandInterface
     /**
      * @psalm-suppress MixedArgument
      */
-    public function insert(string $table, QueryInterface|array $columns): static
+    public function insert(string $table, array|QueryInterface $columns): static
     {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 
-    public function insertWithReturningPks(string $table, array $columns): array|false
+    public function insertReturningPks(string $table, array|QueryInterface $columns): array|false
     {
         /** @var array|false */
         return $this->decorated->{__FUNCTION__}(...func_get_args());
@@ -491,10 +491,52 @@ final class CommandInterfaceProxy implements CommandInterface
      */
     public function upsert(
         string $table,
-        QueryInterface|array $insertColumns,
-        bool|array $updateColumns = true,
-        array $params = []
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
     ): static {
+        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
+    }
+
+    public function upsertReturning(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+        array|null $returnColumns = null,
+    ): array|false {
+        /** @var array|false */
+        return $this->decorated->{__FUNCTION__}(...func_get_args());
+    }
+
+    public function upsertReturningPks(
+        string $table,
+        array|QueryInterface $insertColumns,
+        array|bool $updateColumns = true,
+    ): array|false {
+        /** @var array|false */
+        return $this->decorated->{__FUNCTION__}(...func_get_args());
+    }
+
+    /**
+     * @psalm-suppress MixedArgument
+     */
+    public function withDbTypecasting(bool $dbTypecasting = true): static
+    {
+        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
+    }
+
+    /**
+     * @psalm-suppress MixedArgument
+     */
+    public function withPhpTypecasting(bool $phpTypecasting = true): static
+    {
+        return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
+    }
+
+    /**
+     * @psalm-suppress MixedArgument
+     */
+    public function withTypecasting(bool $typecasting = true): static
+    {
         return new self($this->decorated->{__FUNCTION__}(...func_get_args()), $this->collector);
     }
 

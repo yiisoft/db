@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Query;
 
 use Closure;
+use LogicException;
 use Throwable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Constant\GettypeResult;
 use Yiisoft\Db\Exception\Exception;
-use Yiisoft\Db\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionInterface;
@@ -74,19 +75,22 @@ use function trim;
  *
  * @psalm-import-type SelectValue from QueryPartsInterface
  * @psalm-import-type IndexBy from QueryInterface
+ * @psalm-import-type ResultCallback from QueryInterface
  */
 class Query implements QueryInterface
 {
     /** @psalm-var SelectValue $select */
     protected array $select = [];
     protected string|null $selectOption = null;
-    protected bool|null $distinct = null;
+    protected bool $distinct = false;
     protected array $from = [];
     protected array $groupBy = [];
     protected array|ExpressionInterface|string|null $having = null;
     protected array $join = [];
     protected array $orderBy = [];
     protected array $params = [];
+    /** @psalm-var ResultCallback|null $resultCallback */
+    protected Closure|null $resultCallback = null;
     protected array $union = [];
     protected array $withQueries = [];
     /** @psalm-var IndexBy|null $indexBy */
@@ -96,7 +100,13 @@ class Query implements QueryInterface
     protected array|string|ExpressionInterface|null $where = null;
     protected array $with = [];
 
+    /**
+     * @psalm-var list<string>
+     */
+    protected array $for = [];
+
     private bool $emulateExecution = false;
+    private bool $typecasting = false;
 
     public function __construct(protected ConnectionInterface $db)
     {
@@ -180,6 +190,12 @@ class Query implements QueryInterface
     {
         if ($this->having === null) {
             $this->having = $condition;
+        } elseif (
+            is_array($this->having)
+            && isset($this->having[0])
+            && strcasecmp((string) $this->having[0], 'and') === 0
+        ) {
+            $this->having[] = $condition;
         } else {
             $this->having = ['and', $this->having, $condition];
         }
@@ -216,7 +232,11 @@ class Query implements QueryInterface
     {
         if ($this->where === null) {
             $this->where = $condition;
-        } elseif (is_array($this->where) && isset($this->where[0]) && strcasecmp((string) $this->where[0], 'and') === 0) {
+        } elseif (
+            is_array($this->where)
+            && isset($this->where[0])
+            && strcasecmp((string) $this->where[0], 'and') === 0
+        ) {
             $this->where[] = $condition;
         } else {
             $this->where = ['and', $this->where, $condition];
@@ -233,7 +253,7 @@ class Query implements QueryInterface
             return [];
         }
 
-        return DbArrayHelper::index($this->createCommand()->queryAll(), $this->indexBy);
+        return $this->index($this->createCommand()->queryAll());
     }
 
     public function average(string $sql): int|float|null|string
@@ -249,8 +269,7 @@ class Query implements QueryInterface
         return $this->db
             ->createBatchQueryResult($this)
             ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::index($rows, $indexBy))
-        ;
+            ->resultCallback($this->index(...));
     }
 
     public function column(): array
@@ -312,22 +331,21 @@ class Query implements QueryInterface
     public function createCommand(): CommandInterface
     {
         [$sql, $params] = $this->db->getQueryBuilder()->build($this);
-        return $this->db->createCommand($sql, $params);
+        return $this->db->createCommand($sql, $params)->withPhpTypecasting($this->typecasting);
     }
 
-    public function distinct(bool|null $value = true): static
+    public function distinct(bool $value = true): static
     {
         $this->distinct = $value;
         return $this;
     }
 
-    public function each(int $batchSize = 100): BatchQueryResultInterface
+    public function each(): DataReaderInterface
     {
-        return $this->db
-            ->createBatchQueryResult($this, true)
-            ->batchSize($batchSize)
-            ->setPopulatedMethod(fn (array $rows, Closure|string|null $indexBy = null): array => DbArrayHelper::index($rows, $indexBy))
-        ;
+        return $this->createCommand()
+            ->query()
+            ->indexBy($this->indexBy)
+            ->resultCallback($this->resultCallback !== null ? $this->callResultCallbackOnOne(...) : null);
     }
 
     public function exists(): bool
@@ -372,6 +390,40 @@ class Query implements QueryInterface
         return $this;
     }
 
+    public function for(string|array|null $value): static
+    {
+        if ($this->for !== []) {
+            throw new LogicException('The `FOR` part was set earlier. Use the `setFor()` or `addFor()` method.');
+        }
+        return $this->setFor($value);
+    }
+
+    public function addFor(string|array|null $value): static
+    {
+        if ($value === null) {
+            return $this;
+        }
+
+        if (is_array($value)) {
+            $this->for = [...$this->for, ...$value];
+            return $this;
+        }
+
+        $this->for[] = $value;
+        return $this;
+    }
+
+    public function setFor(array|string|null $value): static
+    {
+        if ($value === null) {
+            $this->for = [];
+            return $this;
+        }
+
+        $this->for = (array) $value;
+        return $this;
+    }
+
     public function from(array|ExpressionInterface|string $tables): static
     {
         /**
@@ -387,9 +439,14 @@ class Query implements QueryInterface
         return $this;
     }
 
-    public function getDistinct(): bool|null
+    public function getDistinct(): bool
     {
         return $this->distinct;
+    }
+
+    public function getFor(): array
+    {
+        return $this->for;
     }
 
     public function getFrom(): array
@@ -435,6 +492,11 @@ class Query implements QueryInterface
     public function getParams(): array
     {
         return $this->params;
+    }
+
+    public function getResultCallback(): Closure|null
+    {
+        return $this->resultCallback;
     }
 
     public function getSelect(): array
@@ -483,6 +545,17 @@ class Query implements QueryInterface
     }
 
     public function having(array|ExpressionInterface|string|null $condition, array $params = []): static
+    {
+        if ($this->having === null) {
+            $this->having = $condition;
+        } else {
+            throw new LogicException('The `having` condition was set earlier. Use the `setHaving()`, `andHaving()` or `orHaving()` method.');
+        }
+        $this->addParams($params);
+        return $this;
+    }
+
+    public function setHaving(array|ExpressionInterface|string|null $condition, array $params = []): static
     {
         $this->having = $condition;
         $this->addParams($params);
@@ -539,10 +612,17 @@ class Query implements QueryInterface
 
     public function one(): array|object|null
     {
-        return match ($this->emulateExecution) {
-            true => null,
-            false => $this->createCommand()->queryOne(),
-        };
+        if ($this->emulateExecution) {
+            return null;
+        }
+
+        $row = $this->createCommand()->queryOne();
+
+        if ($this->resultCallback === null || $row === null) {
+            return $row;
+        }
+
+        return $this->callResultCallbackOnOne($row);
     }
 
     public function orderBy(array|string|ExpressionInterface $columns): static
@@ -610,6 +690,12 @@ class Query implements QueryInterface
         return $this;
     }
 
+    public function resultCallback(Closure|null $resultCallback): static
+    {
+        $this->resultCallback = $resultCallback;
+        return $this;
+    }
+
     public function rightJoin(array|string $table, array|string $on = '', array $params = []): static
     {
         $this->join[] = ['RIGHT JOIN', $table, $on];
@@ -662,6 +748,13 @@ class Query implements QueryInterface
         };
     }
 
+    public function withTypecasting(bool $typecasting = true): static
+    {
+        $new = clone $this;
+        $new->typecasting = $typecasting;
+        return $new;
+    }
+
     public function union(QueryInterface|string $sql, bool $all = false): static
     {
         $this->union[] = ['query' => $sql, 'all' => $all];
@@ -669,6 +762,17 @@ class Query implements QueryInterface
     }
 
     public function where(array|string|ExpressionInterface|null $condition, array $params = []): static
+    {
+        if ($this->where === null) {
+            $this->where = $condition;
+        } else {
+            throw new LogicException('The `where` condition was set earlier. Use the `setWhere()`, `andWhere()` or `orWhere()` method.');
+        }
+        $this->addParams($params);
+        return $this;
+    }
+
+    public function setWhere(array|string|ExpressionInterface|null $condition, array $params = []): static
     {
         $this->where = $condition;
         $this->addParams($params);
@@ -739,6 +843,28 @@ class Query implements QueryInterface
         $command = $this->db->createCommand($sql, $params);
 
         return $command->queryScalar();
+    }
+
+    /**
+     * @psalm-param list<array> $rows
+     *
+     * @return array[]|object[]
+     *
+     * @psalm-return (
+     *     $rows is non-empty-list<array>
+     *         ? non-empty-array<array|object>
+     *         : array[]|object[]
+     * )
+     */
+    protected function index(array $rows): array
+    {
+        return DbArrayHelper::index($rows, $this->indexBy, $this->resultCallback);
+    }
+
+    private function callResultCallbackOnOne(array $row): array|object
+    {
+        /** @psalm-var ResultCallback $this->resultCallback */
+        return ($this->resultCallback)([$row])[0];
     }
 
     /**
