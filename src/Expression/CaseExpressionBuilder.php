@@ -27,6 +27,8 @@ class CaseExpressionBuilder implements ExpressionBuilderInterface
      * @param array $params The parameters to be bound to the query.
      *
      * @return string SQL CASE expression.
+     *
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

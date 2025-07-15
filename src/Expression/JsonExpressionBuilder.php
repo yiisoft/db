@@ -48,6 +48,7 @@ final class JsonExpressionBuilder implements ExpressionBuilderInterface
      * @throws NotSupportedException
      *
      * @return string The raw SQL that won't be additionally escaped or quoted.
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
