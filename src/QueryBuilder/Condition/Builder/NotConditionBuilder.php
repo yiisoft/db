@@ -10,6 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\NotCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
@@ -24,10 +25,14 @@ class NotConditionBuilder implements ExpressionBuilderInterface
     /**
      * Build SQL for {@see NotCondition}.
      *
+     * @param NotCondition $expression
+     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
+     *
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

@@ -23,10 +23,14 @@ final class QueryExpressionBuilder implements ExpressionBuilderInterface
     }
 
     /**
+     * @param QueryInterface $expression
+     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
+     *
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

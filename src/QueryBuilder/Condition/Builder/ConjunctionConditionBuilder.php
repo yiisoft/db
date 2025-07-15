@@ -32,10 +32,14 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     /**
      * Build SQL for {@see AndCondition} and {@see OrCondition}.
      *
+     * @param AbstractConjunctionCondition $expression
+     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
+     *
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

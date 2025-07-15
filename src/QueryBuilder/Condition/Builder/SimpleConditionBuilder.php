@@ -10,6 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function str_contains;
@@ -26,10 +27,14 @@ class SimpleConditionBuilder implements ExpressionBuilderInterface
     /**
      * Build SQL for {@see SimpleCondition}.
      *
+     * @param SimpleCondition $expression
+     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
+     *
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

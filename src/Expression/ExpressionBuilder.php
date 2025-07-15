@@ -33,12 +33,13 @@ final class ExpressionBuilder implements ExpressionBuilderInterface
      *
      * This method is called by the query builder to build SQL expressions from {@see ExpressionInterface} objects.
      *
-     * @param ExpressionInterface $expression The expression to build.
+     * @param Expression $expression The expression to build.
      * @param array $params The parameters to be bound to the query.
      *
      * @psalm-param ParamsType $params
      *
      * @return string SQL expression.
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

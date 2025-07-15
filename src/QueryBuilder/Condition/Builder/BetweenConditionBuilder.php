@@ -10,6 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\BetweenCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function str_contains;
@@ -26,10 +27,14 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
     /**
      * Build SQL for {@see BetweenCondition}.
      *
+     * @param BetweenCondition $expression
+     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
+     *
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

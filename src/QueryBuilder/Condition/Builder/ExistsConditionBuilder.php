@@ -10,6 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\ExistsCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
@@ -24,10 +25,14 @@ class ExistsConditionBuilder implements ExpressionBuilderInterface
     /**
      * Build SQL for {@see ExistsCondition}.
      *
+     * @param ExistsCondition $expression
+     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
+     *
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

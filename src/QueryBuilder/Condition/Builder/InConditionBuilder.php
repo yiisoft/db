@@ -42,10 +42,14 @@ class InConditionBuilder implements ExpressionBuilderInterface
     /**
      * Build SQL for {@see InCondition}.
      *
+     * @param InCondition $expression
+     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
+     *
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
