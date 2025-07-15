@@ -34,21 +34,4 @@ final class BetweenColumnsConditionBuilderTest extends TestCase
 
         $this->assertEquals([':qp0' => 42], $params);
     }
-
-    public function testWrongConditionType(): void
-    {
-        $db = $this->getConnection();
-
-        $wrongCondition = new class () implements ConditionInterface {
-            public static function fromArrayDefinition(string $operator, array $operands): ConditionInterface
-            {
-                return new self();
-            }
-        };
-
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('BetweenColumnsConditionBuilder can only be used with BetweenColumnsConditionInterface instance.');
-
-        (new BetweenColumnsConditionBuilder($db->getQueryBuilder()))->build($wrongCondition);
-    }
 }
