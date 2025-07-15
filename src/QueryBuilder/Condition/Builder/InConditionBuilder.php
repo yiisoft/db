@@ -49,10 +49,6 @@ class InConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        if (!$expression instanceof InConditionInterface) {
-            throw new InvalidArgumentException('InConditionBuilder can only be used with InConditionInterface instance.');
-        }
-
         $column = $expression->getColumn();
         $operator = strtoupper($expression->getOperator());
         $values = $expression->getValues();

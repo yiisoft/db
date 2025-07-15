@@ -53,10 +53,6 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        if (!$expression instanceof LikeConditionInterface) {
-            throw new InvalidArgumentException('LikeConditionBuilder can only be used with LikeConditionInterface instance.');
-        }
-
         $values = $expression->getValue();
         $escape = $expression->getEscapingReplacements();
 

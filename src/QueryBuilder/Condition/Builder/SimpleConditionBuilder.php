@@ -34,10 +34,6 @@ class SimpleConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        if (!$expression instanceof SimpleConditionInterface) {
-            throw new InvalidArgumentException('SimpleConditionBuilder can only be used with SimpleConditionInterface instance.');
-        }
-
         $operator = $expression->getOperator();
         $column = $expression->getColumn();
         /** @psalm-var mixed $value */

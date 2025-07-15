@@ -84,7 +84,7 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
     /**
      * The method builds the raw SQL from the `$expression` that won't be additionally escaped or quoted.
      *
-     * @param ExpressionInterface $expression The expression to build.
+     * @param StructuredExpression $expression The expression to build.
      * @param array $params The binding parameters.
      *
      * @throws Exception
@@ -96,10 +96,6 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        if (!$expression instanceof StructuredExpression) {
-            throw new InvalidArgumentException(static::class . ' could only be used with StructuredExpression.');
-        }
-
         $value = $expression->getValue();
 
         if ($value === null) {

@@ -39,10 +39,6 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        if (!$expression instanceof ConjunctionConditionInterface) {
-            throw new InvalidArgumentException('ConjunctionConditionBuilder can only be used with ConjunctionConditionInterface instance.');
-        }
-
         /** @psalm-var string[] $parts */
         $parts = $this->buildExpressionsFrom($expression, $params);
 

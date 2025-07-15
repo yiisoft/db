@@ -32,10 +32,6 @@ class NotConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        if (!$expression instanceof NotConditionInterface) {
-            throw new InvalidArgumentException('NotConditionBuilder can only be used with NotConditionInterface instance.');
-        }
-
         $operand = $expression->getCondition();
 
         if ($operand === '') {
