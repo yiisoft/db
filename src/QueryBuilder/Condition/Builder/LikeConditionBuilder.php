@@ -24,7 +24,7 @@ use function strtoupper;
 use function strtr;
 
 /**
- * Build an object of {@see LikeCondition} into SQL expressions.
+ * Build an object of {@see LikeConditionInterface} into SQL expressions.
  *
  * @implements ExpressionBuilderInterface<LikeConditionInterface>
  */
@@ -47,7 +47,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     ];
 
     /**
-     * Build SQL for {@see LikeCondition}.
+     * Build SQL for {@see LikeConditionInterface}.
      *
      * @param LikeConditionInterface $expression
      *

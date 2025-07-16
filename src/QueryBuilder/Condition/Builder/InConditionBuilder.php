@@ -31,9 +31,9 @@ use function str_contains;
 use function strtoupper;
 
 /**
- * Build an object of {@see InCondition} into SQL expressions.
+ * Build an object of {@see InConditionInterface} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<InCondition>
+ * @implements ExpressionBuilderInterface<InConditionInterface>
  */
 class InConditionBuilder implements ExpressionBuilderInterface
 {
@@ -42,9 +42,9 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see InCondition}.
+     * Build SQL for {@see InConditionInterface}.
      *
-     * @param InCondition $expression
+     * @param InConditionInterface $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException

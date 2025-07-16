@@ -11,6 +11,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Interface\BetweenColumnsConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -19,7 +20,7 @@ use function str_contains;
 /**
  * Build an object of {@see BetweenColumnsCondition} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<BetweenColumnsCondition>
+ * @implements ExpressionBuilderInterface<BetweenColumnsConditionInterface>
  */
 class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
 {
@@ -28,9 +29,9 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see BetweenColumnsCondition}.
+     * Build SQL for {@see BetweenColumnsConditionInterface}.
      *
-     * @param BetweenColumnsCondition $expression
+     * @param BetweenColumnsConditionInterface $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException

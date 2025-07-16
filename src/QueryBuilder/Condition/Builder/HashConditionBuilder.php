@@ -21,7 +21,7 @@ use function is_iterable;
 use function str_contains;
 
 /**
- * Build an object of {@see HashCondition} into SQL expressions.
+ * Build an object of {@see HashConditionInterface} into SQL expressions.
  *
  * @implements ExpressionBuilderInterface<HashConditionInterface>
  */
@@ -32,7 +32,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see HashCondition}.
+     * Build SQL for {@see HashConditionInterface}.
      *
      * @param HashConditionInterface $expression
      *

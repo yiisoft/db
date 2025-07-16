@@ -10,8 +10,6 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\AbstractConjunctionCondition;
-use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConjunctionConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
@@ -21,9 +19,9 @@ use function is_array;
 use function reset;
 
 /**
- * Build an object of {@see AbstractConjunctionCondition} into SQL expressions.
+ * Build an object of {@see ConjunctionConditionInterface} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<AbstractConjunctionCondition>
+ * @implements ExpressionBuilderInterface<ConjunctionConditionInterface>
  */
 class ConjunctionConditionBuilder implements ExpressionBuilderInterface
 {
@@ -32,9 +30,9 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see AndCondition} and {@see OrCondition}.
+     * Build SQL for {@see ConjunctionConditionInterface}.
      *
-     * @param AbstractConjunctionCondition $expression
+     * @param ConjunctionConditionInterface $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
