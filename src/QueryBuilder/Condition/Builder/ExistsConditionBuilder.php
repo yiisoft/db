@@ -15,6 +15,8 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
  * Build an object of {@see ExistsCondition} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<ExistsCondition>
  */
 class ExistsConditionBuilder implements ExpressionBuilderInterface
 {
@@ -31,8 +33,6 @@ class ExistsConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

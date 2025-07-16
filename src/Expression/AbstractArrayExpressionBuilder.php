@@ -12,6 +12,8 @@ use function is_string;
 
 /**
  * Abstract expression builder for {@see ArrayExpression}.
+ *
+ * @implements ExpressionBuilderInterface<ArrayExpression>
  */
 abstract class AbstractArrayExpressionBuilder implements ExpressionBuilderInterface
 {
@@ -72,8 +74,6 @@ abstract class AbstractArrayExpressionBuilder implements ExpressionBuilderInterf
      * @param array $params The binding parameters.
      *
      * @return string The raw SQL that won't be additionally escaped or quoted.
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

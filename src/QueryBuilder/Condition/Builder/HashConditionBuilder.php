@@ -22,6 +22,8 @@ use function str_contains;
 
 /**
  * Build an object of {@see HashCondition} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<HashConditionInterface>
  */
 class HashConditionBuilder implements ExpressionBuilderInterface
 {
@@ -38,8 +40,6 @@ class HashConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

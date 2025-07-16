@@ -20,6 +20,8 @@ use function is_string;
 
 /**
  * Abstract expression builder for {@see StructuredExpression}.
+ *
+ * @implements ExpressionBuilderInterface<StructuredExpression>
  */
 abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderInterface
 {
@@ -93,8 +95,6 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
      * @throws NotSupportedException
      *
      * @return string The raw SQL that won't be additionally escaped or quoted.
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

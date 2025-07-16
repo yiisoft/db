@@ -15,6 +15,8 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 /**
  * Used internally to build a {@see Query} object using unified {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder}
  * expression building interface.
+ *
+ * @implements ExpressionBuilderInterface<QueryInterface>
  */
 final class QueryExpressionBuilder implements ExpressionBuilderInterface
 {
@@ -29,8 +31,6 @@ final class QueryExpressionBuilder implements ExpressionBuilderInterface
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

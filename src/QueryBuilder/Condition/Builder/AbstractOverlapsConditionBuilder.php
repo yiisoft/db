@@ -10,6 +10,8 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
  * The base class for classes building SQL expressions for an array and JSON overlaps conditions.
+ *
+ * @implements ExpressionBuilderInterface<ExpressionInterface>
  */
 abstract class AbstractOverlapsConditionBuilder implements ExpressionBuilderInterface
 {

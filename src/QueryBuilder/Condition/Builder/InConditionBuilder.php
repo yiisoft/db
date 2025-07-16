@@ -32,6 +32,8 @@ use function strtoupper;
 
 /**
  * Build an object of {@see InCondition} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<InCondition>
  */
 class InConditionBuilder implements ExpressionBuilderInterface
 {
@@ -48,8 +50,6 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

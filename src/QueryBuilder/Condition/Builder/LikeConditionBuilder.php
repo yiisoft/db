@@ -25,6 +25,8 @@ use function strtr;
 
 /**
  * Build an object of {@see LikeCondition} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<LikeCondition>
  */
 class LikeConditionBuilder implements ExpressionBuilderInterface
 {
@@ -53,8 +55,6 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

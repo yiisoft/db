@@ -13,6 +13,8 @@ use function is_string;
 
 /**
  * Builds expressions for {@see CaseExpression}.
+ *
+ * @implements ExpressionBuilderInterface<CaseExpression>
  */
 class CaseExpressionBuilder implements ExpressionBuilderInterface
 {
@@ -27,8 +29,6 @@ class CaseExpressionBuilder implements ExpressionBuilderInterface
      * @param array $params The parameters to be bound to the query.
      *
      * @return string SQL CASE expression.
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

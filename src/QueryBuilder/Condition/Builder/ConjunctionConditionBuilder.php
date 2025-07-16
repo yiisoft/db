@@ -22,6 +22,8 @@ use function reset;
 
 /**
  * Build an object of {@see AbstractConjunctionCondition} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<AbstractConjunctionCondition>
  */
 class ConjunctionConditionBuilder implements ExpressionBuilderInterface
 {
@@ -38,8 +40,6 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

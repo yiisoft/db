@@ -11,6 +11,8 @@ use function count;
 
 /**
  * Implements the {@see ExpressionBuilderInterface} interface, is used to build {@see ParamInterface} objects.
+ *
+ * @implements ExpressionBuilderInterface<ExpressionInterface>
  */
 final class ParamBuilder implements ExpressionBuilderInterface
 {

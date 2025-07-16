@@ -17,6 +17,8 @@ use function str_contains;
 
 /**
  * Build an object of {@see BetweenCondition} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<BetweenCondition>
  */
 class BetweenConditionBuilder implements ExpressionBuilderInterface
 {
@@ -33,8 +35,6 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
-     *
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

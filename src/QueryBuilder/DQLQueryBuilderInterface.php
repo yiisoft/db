@@ -342,7 +342,7 @@ interface DQLQueryBuilderInterface
      *
      * @param string[] $builders Array of builders to merge with the pre-defined ones in property.
      *
-     * @psalm-param array<string, class-string<ExpressionBuilderInterface>> $builders
+     * @psalm-param array<class-string<ExpressionInterface>, class-string<ExpressionBuilderInterface>> $builders
      */
     public function setExpressionBuilders(array $builders): void;
 

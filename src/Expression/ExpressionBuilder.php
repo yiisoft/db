@@ -20,6 +20,8 @@ use function substr;
  * These expressions can be used with the query builder to build complex and customizable database queries
  * {@see Expression} class.
  *
+ * @implements ExpressionBuilderInterface<Expression>
+ *
  * @psalm-import-type ParamsType from ConnectionInterface
  */
 final class ExpressionBuilder implements ExpressionBuilderInterface
@@ -39,7 +41,6 @@ final class ExpressionBuilder implements ExpressionBuilderInterface
      * @psalm-param ParamsType $params
      *
      * @return string SQL expression.
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {

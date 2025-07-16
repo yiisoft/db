@@ -28,6 +28,8 @@ use const JSON_THROW_ON_ERROR;
 
 /**
  * Builds expressions for {@see JsonExpression}.
+ *
+ * @implements ExpressionBuilderInterface<JsonExpression>
  */
 final class JsonExpressionBuilder implements ExpressionBuilderInterface
 {
@@ -48,7 +50,6 @@ final class JsonExpressionBuilder implements ExpressionBuilderInterface
      * @throws NotSupportedException
      *
      * @return string The raw SQL that won't be additionally escaped or quoted.
-     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
