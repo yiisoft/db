@@ -77,7 +77,7 @@
 - New #939: Add `caseSensitive` option to like condition (@vjik)
 - New #942: Allow PHP backed enums as values (@Tigrov)
 - Enh #943: Add `getCacheKey()` and `getCacheTag()` methods to `AbstractPdoSchema` class (@Tigrov)
-- Enh #730: Add ExpressionBuilderInterface::build() (@samdark)
+- Enh #730: Add `ExpressionBuilderInterface::build()` (@samdark)
 - Enh #944: Added `setWhere()` as a forced method to overwrite `where()` (@lav45)
 - Enh #925, #951: Add callback to `Query::all()` and `Query::one()` methods (@Tigrov, @vjik)
 - New #954: Add `DbArrayHelper::arrange()` method (@Tigrov)
