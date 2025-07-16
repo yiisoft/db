@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
+use BackedEnum;
+use Yiisoft\Db\Command\Param;
+use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
@@ -17,7 +20,9 @@ use Yiisoft\Db\Query\QueryInterface;
 
 use function count;
 use function implode;
+use function is_int;
 use function is_iterable;
+use function is_string;
 use function str_contains;
 
 /**
@@ -63,12 +68,25 @@ class HashConditionBuilder implements ExpressionBuilderInterface
                 } elseif ($value instanceof ExpressionInterface) {
                     $parts[] = "$column=" . $this->queryBuilder->buildExpression($value, $params);
                 } else {
-                    $phName = $this->queryBuilder->bindParam($value, $params);
+                    $phName = $this->queryBuilder->bindParam($this->prepareValue($value), $params);
                     $parts[] = "$column=$phName";
                 }
             }
         }
 
         return (count($parts) === 1) ? $parts[0] : ('(' . implode(') AND (', $parts) . ')');
+    }
+
+    private function prepareValue(mixed $value): mixed
+    {
+        if ($value instanceof BackedEnum) {
+            $value = $value->value;
+        }
+
+        return match (true) {
+            is_int($value) => new Param($value, DataType::INTEGER),
+            is_string($value) => new Param($value, DataType::STRING),
+            default => $value,
+        };
     }
 }
