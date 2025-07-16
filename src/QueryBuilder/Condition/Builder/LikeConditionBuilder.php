@@ -26,7 +26,7 @@ use function strtr;
 /**
  * Build an object of {@see LikeCondition} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<LikeCondition>
+ * @implements ExpressionBuilderInterface<LikeConditionInterface>
  */
 class LikeConditionBuilder implements ExpressionBuilderInterface
 {
@@ -49,7 +49,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     /**
      * Build SQL for {@see LikeCondition}.
      *
-     * @param LikeCondition $expression
+     * @param LikeConditionInterface $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
