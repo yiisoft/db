@@ -9,11 +9,14 @@ use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * Used internally to build {@see Query} object using unified {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder}
+ * Used internally to build a {@see Query} object using unified {@see \Yiisoft\Db\QueryBuilder\AbstractQueryBuilder}
  * expression building interface.
+ *
+ * @implements ExpressionBuilderInterface<QueryInterface>
  */
 final class QueryExpressionBuilder implements ExpressionBuilderInterface
 {
@@ -22,12 +25,14 @@ final class QueryExpressionBuilder implements ExpressionBuilderInterface
     }
 
     /**
+     * @param QueryInterface $expression
+     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(QueryInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         [$sql, $params] = $this->queryBuilder->build($expression, $params);
         return "($sql)";

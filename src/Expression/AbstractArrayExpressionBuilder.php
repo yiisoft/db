@@ -12,11 +12,13 @@ use function is_string;
 
 /**
  * Abstract expression builder for {@see ArrayExpression}.
+ *
+ * @implements ExpressionBuilderInterface<ArrayExpression>
  */
 abstract class AbstractArrayExpressionBuilder implements ExpressionBuilderInterface
 {
     /**
-     * Builds a SQL expression for a string value.
+     * Builds an SQL expression for a string value.
      *
      * @param string $value The valid SQL string representation of the array value.
      * @param ArrayExpression $expression The array expression.

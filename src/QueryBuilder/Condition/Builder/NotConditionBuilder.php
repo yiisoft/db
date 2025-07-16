@@ -9,27 +9,32 @@ use InvalidArgumentException;
 use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
+use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\NotConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * Build an object of {@see NotCondition} into SQL expressions.
+ * Build an object of {@see NotConditionInterface} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<NotConditionInterface>
  */
 class NotConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * Build SQL for {@see NotCondition}.
+     * Build SQL for {@see NotConditionInterface}.
+     *
+     * @param NotConditionInterface $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(NotConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $operand = $expression->getCondition();
 

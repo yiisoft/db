@@ -20,6 +20,8 @@ use function substr;
  * These expressions can be used with the query builder to build complex and customizable database queries
  * {@see Expression} class.
  *
+ * @implements ExpressionBuilderInterface<Expression>
+ *
  * @psalm-import-type ParamsType from ConnectionInterface
  */
 final class ExpressionBuilder implements ExpressionBuilderInterface

@@ -16,23 +16,27 @@ use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use function str_contains;
 
 /**
- * Build an object of {@see SimpleCondition} into SQL expressions.
+ * Build an object of {@see SimpleConditionInterface} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<SimpleConditionInterface>
  */
 class SimpleConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
      * Build SQL for {@see SimpleCondition}.
      *
+     * @param SimpleConditionInterface $expression
+     *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(SimpleConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();
         $column = $expression->getColumn();

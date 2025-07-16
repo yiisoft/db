@@ -13,7 +13,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 interface BetweenColumnsConditionInterface extends ConditionInterface
 {
     /**
-     * @return ExpressionInterface|string The column name or expression that's an end of the interval.
+     * @return ExpressionInterface|string The column name or expression that's the end of the interval.
      */
     public function getIntervalEndColumn(): string|ExpressionInterface;
 

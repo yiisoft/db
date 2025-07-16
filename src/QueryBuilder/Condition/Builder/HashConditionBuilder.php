@@ -10,8 +10,8 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\HashConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -21,23 +21,27 @@ use function is_iterable;
 use function str_contains;
 
 /**
- * Build an object of {@see HashCondition} into SQL expressions.
+ * Build an object of {@see HashConditionInterface} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<HashConditionInterface>
  */
 class HashConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * Build SQL for {@see HashCondition}.
+     * Build SQL for {@see HashConditionInterface}.
+     *
+     * @param HashConditionInterface $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(HashConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $hash = $expression->getHash() ?? [];
         $parts = [];

@@ -10,30 +10,35 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\QueryBuilder\Condition\BetweenColumnsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\BetweenColumnsConditionInterface;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 use function str_contains;
 
 /**
  * Build an object of {@see BetweenColumnsCondition} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<BetweenColumnsConditionInterface>
  */
 class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * Build SQL for {@see BetweenColumnsCondition}.
+     * Build SQL for {@see BetweenColumnsConditionInterface}.
+     *
+     * @param BetweenColumnsConditionInterface $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(BetweenColumnsConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();
         $startColumn = $this->escapeColumnName($expression->getIntervalStartColumn(), $params);

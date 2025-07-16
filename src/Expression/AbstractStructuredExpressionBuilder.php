@@ -20,11 +20,13 @@ use function is_string;
 
 /**
  * Abstract expression builder for {@see StructuredExpression}.
+ *
+ * @implements ExpressionBuilderInterface<StructuredExpression>
  */
 abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderInterface
 {
     /**
-     * Builds a SQL expression for a string value.
+     * Builds an SQL expression for a string value.
      *
      * @param string $value The valid SQL string representation of the structured value.
      * @param StructuredExpression $expression The structured expression.
@@ -54,7 +56,7 @@ abstract class AbstractStructuredExpressionBuilder implements ExpressionBuilderI
     ): string;
 
     /**
-     * Builds a SQL expression for a structured value.
+     * Builds an SQL expression for a structured value.
      *
      * @param array|object $value The structured value.
      * @param StructuredExpression $expression The structured expression.

@@ -23,13 +23,15 @@ use function strtoupper;
 use function strtr;
 
 /**
- * Build an object of {@see LikeCondition} into SQL expressions.
+ * Build an object of {@see LikeConditionInterface} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<LikeConditionInterface>
  */
 class LikeConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(
-        private QueryBuilderInterface $queryBuilder,
-        private string|null $escapeSql = null
+        private readonly QueryBuilderInterface $queryBuilder,
+        private readonly string|null $escapeSql = null
     ) {
     }
 
@@ -44,14 +46,16 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
     ];
 
     /**
-     * Build SQL for {@see LikeCondition}.
+     * Build SQL for {@see LikeConditionInterface}.
+     *
+     * @param LikeConditionInterface $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(LikeConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $values = $expression->getValue();
         $escape = $expression->getEscapingReplacements();

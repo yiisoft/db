@@ -13,6 +13,8 @@ use function is_string;
 
 /**
  * Builds expressions for {@see CaseExpression}.
+ *
+ * @implements ExpressionBuilderInterface<CaseExpression>
  */
 class CaseExpressionBuilder implements ExpressionBuilderInterface
 {

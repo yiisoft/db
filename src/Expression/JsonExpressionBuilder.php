@@ -28,6 +28,8 @@ use const JSON_THROW_ON_ERROR;
 
 /**
  * Builds expressions for {@see JsonExpression}.
+ *
+ * @implements ExpressionBuilderInterface<JsonExpression>
  */
 final class JsonExpressionBuilder implements ExpressionBuilderInterface
 {

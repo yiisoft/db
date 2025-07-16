@@ -10,8 +10,6 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\AbstractConjunctionCondition;
-use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\ConjunctionConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
@@ -21,23 +19,27 @@ use function is_array;
 use function reset;
 
 /**
- * Build an object of {@see AbstractConjunctionCondition} into SQL expressions.
+ * Build an object of {@see ConjunctionConditionInterface} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<ConjunctionConditionInterface>
  */
 class ConjunctionConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * Build SQL for {@see AndCondition} and {@see OrCondition}.
+     * Build SQL for {@see ConjunctionConditionInterface}.
+     *
+     * @param ConjunctionConditionInterface $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(ConjunctionConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         /** @psalm-var string[] $parts */
         $parts = $this->buildExpressionsFrom($expression, $params);

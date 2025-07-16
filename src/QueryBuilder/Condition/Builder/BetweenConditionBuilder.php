@@ -10,29 +10,34 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
+use Yiisoft\Db\QueryBuilder\Condition\BetweenCondition;
 use Yiisoft\Db\QueryBuilder\Condition\Interface\BetweenConditionInterface;
+use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function str_contains;
 
 /**
  * Build an object of {@see BetweenCondition} into SQL expressions.
+ *
+ * @implements ExpressionBuilderInterface<BetweenConditionInterface>
  */
 class BetweenConditionBuilder implements ExpressionBuilderInterface
 {
-    public function __construct(private QueryBuilderInterface $queryBuilder)
+    public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * Build SQL for {@see BetweenCondition}.
+     * Build SQL for {@see BetweenConditionInterface}.
+     *
+     * @param BetweenConditionInterface $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    public function build(BetweenConditionInterface $expression, array &$params = []): string
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();
         $column = $expression->getColumn();

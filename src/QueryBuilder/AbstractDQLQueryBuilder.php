@@ -88,7 +88,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      * {@see setExpressionBuilders()}
      * {@see defaultExpressionBuilders()}
      *
-     * @psalm-var array<string, class-string<ExpressionBuilderInterface>>
+     * @psalm-var array<class-string<ExpressionInterface>, class-string<ExpressionBuilderInterface>>
      */
     protected array $expressionBuilders = [];
 
@@ -528,7 +528,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      *
      * See {@see expressionBuilders} docs for details.
      *
-     * @psalm-return array<string, class-string<ExpressionBuilderInterface>>
+     * @psalm-return array<class-string<ExpressionInterface>, class-string<ExpressionBuilderInterface>>
      */
     protected function defaultExpressionBuilders(): array
     {

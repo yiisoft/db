@@ -6,10 +6,14 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
 
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\Interface\OverlapsConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * The base class for classes building SQL expressions for array and JSON overlaps conditions.
+ * The base class for classes building SQL expressions for an array and JSON overlaps conditions.
+ *
+ * @template T as OverlapsConditionInterface
+ * @implements ExpressionBuilderInterface<T>
  */
 abstract class AbstractOverlapsConditionBuilder implements ExpressionBuilderInterface
 {
