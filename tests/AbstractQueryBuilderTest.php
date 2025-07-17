@@ -1678,11 +1678,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($db->getQuoter()->quoteSql($sql), $builder($qb));
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
     public function testCreateView(): void
     {
         $db = $this->getConnection();
@@ -1700,12 +1695,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::delete
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'delete')]
     public function testDelete(string $table, array|string $condition, string $expectedSQL, array $expectedParams): void
     {
         $db = $this->getConnection();
