@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Yiisoft\Db\Tests\Db\QueryBuilder;
 
 use PHPUnit\Framework\TestCase;
-use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Db\QueryBuilder\AbstractColumnDefinitionBuilder;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
