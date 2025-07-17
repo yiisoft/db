@@ -19,9 +19,6 @@ final class ColumnDefinitionBuilderTest extends TestCase
 {
     use TestTrait;
 
-    /**
-     * @throws Exception
-     */
     public function testBuildAlter(): void
     {
         $db = $this->getConnection();
