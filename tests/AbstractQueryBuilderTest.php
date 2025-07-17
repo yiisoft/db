@@ -422,12 +422,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
     public function testBuildHaving(): void
     {
         $db = $this->getConnection();
@@ -439,7 +433,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                HAVING [[id]]=:qp0
+                HAVING [[id]]=1
                 SQL,
                 $db->getDriverName(),
             ),
@@ -1524,13 +1518,16 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (([[w]].[[merchant_id]]=:qp0) AND ([[w]].[[user_id]]=:qp1)))) AND ([[t]].[[some_column]]=:qp2)
+                SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (([[w]].[[merchant_id]]=6) AND ([[w]].[[user_id]]=210)))) AND ([[t]].[[some_column]]=:qp0)
                 SQL,
                 $db->getDriverName(),
             ),
             $sql,
         );
-        $this->assertSame([':qp0' => 6, ':qp1' => 210, ':qp2' => 'asd'], $params);
+        $this->assertEquals(
+            [':qp0' => new Param('asd', DataType::STRING)],
+            $params,
+        );
     }
 
     /**
