@@ -1978,7 +1978,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expectedSQL, $qb->insertReturningPks($table, $columns, $params));
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
     }
 
     public function testQuoter(): void
@@ -2371,7 +2371,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
 
         $this->assertSame($expectedSql, $sql);
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
 
         $query = (new Query($db))->from($table);
         $countBefore = $query->count();
@@ -2402,7 +2402,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
 
         $this->assertSame($expectedSql, $sql);
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
 
         $query = (new Query($db))->from($table);
         $countBefore = $query->count();

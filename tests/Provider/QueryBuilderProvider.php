@@ -1454,7 +1454,7 @@ class QueryBuilderProvider
                     ->limit(1),
                 true,
                 '',
-                [':qp0' => 'user1'],
+                [':qp0' => new Param('user1', DataType::STRING)],
             ],
             'query with update part' => [
                 'T_upsert',
@@ -1465,7 +1465,7 @@ class QueryBuilderProvider
                     ->limit(1),
                 ['address' => 'foo {{city}}', 'status' => 2, 'orders' => new Expression('T_upsert.orders + 1')],
                 '',
-                [':qp0' => 'user1', ':qp1' => 'foo {{city}}', ':qp2' => 2],
+                [':qp0' => new Param('user1', DataType::STRING), ':qp1' => 'foo {{city}}', ':qp2' => 2],
             ],
             'query without update part' => [
                 'T_upsert',
@@ -1476,7 +1476,7 @@ class QueryBuilderProvider
                     ->limit(1),
                 false,
                 '',
-                [':qp0' => 'user1'],
+                [':qp0' => new Param('user1', DataType::STRING)],
             ],
             'values and expressions' => [
                 '{{%T_upsert}}',
