@@ -60,7 +60,6 @@ class HashConditionBuilder implements ExpressionBuilderInterface
 
                 $parts[] = match (true) {
                     $value === null => "$column IS NULL",
-                    $value instanceof ExpressionInterface => "$column=" . $this->queryBuilder->buildExpression($value, $params),
                     default => $column . '=' . $this->queryBuilder->buildValue($value, $params),
                 };
             }
