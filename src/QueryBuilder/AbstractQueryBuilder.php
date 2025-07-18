@@ -172,7 +172,6 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             ++$additionalCount;
         }
 
-        /** @psalm-var mixed */
         $params[$phName] = $value;
 
         return $phName;
