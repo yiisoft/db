@@ -26,8 +26,10 @@ final class Param implements ExpressionInterface
      *
      * @psalm-param DataType::* $type
      */
-    public function __construct(private mixed $value, private int $type)
-    {
+    public function __construct(
+        public readonly mixed $value,
+        public readonly int $type,
+    ) {
     }
 
     /**

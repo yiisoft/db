@@ -248,3 +248,4 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Rename `Constraint` class to `AbstractConstraint` and make it abstract;
 - Rename `IndexConstraint::isPrimary()` to `IndexConstraint::isPrimaryKey()` method;
 - Remove `ParamInterface`, use `Param` class instead;
+- Remove `getType()` and `getValue()` methods from `Param` class, use `$type` and `$value` properties instead;

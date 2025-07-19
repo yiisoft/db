@@ -173,7 +173,7 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
     protected function bindPendingParams(): void
     {
         foreach ($this->params as $name => $value) {
-            $this->pdoStatement?->bindValue($name, $value->getValue(), $value->getType());
+            $this->pdoStatement?->bindValue($name, $value->value, $value->type);
         }
     }
 

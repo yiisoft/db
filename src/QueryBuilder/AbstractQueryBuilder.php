@@ -439,14 +439,14 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
 
     public function prepareParam(Param $param): string
     {
-        return match ($param->getType()) {
-            DataType::BOOLEAN => $param->getValue() ? static::TRUE_VALUE : static::FALSE_VALUE,
-            DataType::INTEGER => (string) (int) $param->getValue(),
-            DataType::LOB => is_resource($value = $param->getValue())
+        return match ($param->type) {
+            DataType::BOOLEAN => $param->value ? static::TRUE_VALUE : static::FALSE_VALUE,
+            DataType::INTEGER => (string) (int) $param->value,
+            DataType::LOB => is_resource($value = $param->value)
                 ? $this->prepareResource($value)
                 : $this->prepareBinary((string) $value),
             DataType::NULL => 'NULL',
-            default => $this->prepareValue($param->getValue()),
+            default => $this->prepareValue($param->value),
         };
     }
 

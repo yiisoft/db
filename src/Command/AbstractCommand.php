@@ -338,8 +338,7 @@ abstract class AbstractCommand implements CommandInterface
         $buildParams = [];
 
         foreach ($this->params as $name => $value) {
-            /** @psalm-var mixed */
-            $buildParams[$name] = $value->getValue();
+            $buildParams[$name] = $value->value;
         }
 
         return $buildParams;
