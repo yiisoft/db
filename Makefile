@@ -56,7 +56,7 @@ test-oracle: ## Run tests for Oracle driver only.
 testsuite-%:
 	docker compose -f docker/docker-compose.yml -f docker/docker-compose.override.yml run \
 	--rm \
-	--entrypoint "vendor/bin/phpunit --filter=testOverrideParameters1 --testsuite $(subst testsuite-,,$@) $(RUN_ARGS)" \
+	--entrypoint "vendor/bin/phpunit --testsuite $(subst testsuite-,,$@) $(RUN_ARGS)" \
 	php
 
 mutation: CMD="\
