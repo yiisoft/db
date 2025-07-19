@@ -134,7 +134,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `ConnectionInterface::select()` - creates a `Query` object with the specified columns to be selected;
 - `QueryBuilderInterface::buildColumnDefinition()` - builds column definition for `CREATE TABLE` statement;
 - `QueryBuilderInterface::buildValue()` - converts a value to its SQL representation with binding parameters if necessary;
-- `QueryBuilderInterface::prepareParam()` - converts a `ParamInterface` object to its SQL representation;
+- `QueryBuilderInterface::prepareParam()` - converts a `Param` object to its SQL representation;
 - `QueryBuilderInterface::prepareValue()` - converts a value to its SQL representation;
 - `QueryBuilderInterface::replacePlaceholders()` - replaces placeholders in the SQL string with the corresponding values;
 - `QueryBuilderInterface::getColumnFactory()` - returns the column factory object for concrete DBMS;
