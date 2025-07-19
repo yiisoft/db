@@ -11,7 +11,6 @@ use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\StructuredExpressionBuilder;
-use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Schema\Column\AbstractStructuredColumn;
 use Yiisoft\Db\Schema\Column\ColumnBuilder;
 use Yiisoft\Db\Schema\Data\JsonLazyArray;
@@ -81,7 +80,7 @@ final class StructuredExpressionBuilderTest extends TestCase
 
         $params = [];
         $builder = new StructuredExpressionBuilder($qb);
-        $expression = new StructuredExpression((new Query($db))->select('json_field')->from('json_table'));
+        $expression = new StructuredExpression($db->select('json_field')->from('json_table'));
 
         $this->assertSame('(SELECT [json_field] FROM [json_table])', $builder->build($expression, $params));
         $this->assertSame([], $params);

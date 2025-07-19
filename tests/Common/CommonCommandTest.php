@@ -317,7 +317,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $command->prepare(false);
         $command->execute();
 
-        $this->assertEquals($insertedRow, (new Query($db))->from($table)->count());
+        $this->assertEquals($insertedRow, $db->createQuery()->from($table)->count());
 
         $db->close();
     }
@@ -416,8 +416,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertSame(1, $command->execute());
 
-        $result = (new Query($db))
-            ->select(['email', 'name', 'address'])
+        $result = $db->select(['email', 'name', 'address'])
             ->from('{{customer}}')
             ->where(['=', '{{email}}', 't1@example.com'])
             ->one();
@@ -449,7 +448,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertSame($attemptsInsertRows, $command->execute());
 
-        $insertedRowsCount = (new Query($db))->from('{{customer}}')->count();
+        $insertedRowsCount = $db->createQuery()->from('{{customer}}')->count();
 
         $this->assertGreaterThanOrEqual($attemptsInsertRows, $insertedRowsCount);
 
@@ -563,7 +562,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command = $db->createCommand();
         $schema = $db->getSchema();
-        $subQuery = (new Query($db))->select('{{bar}}')->from('{{testCreateViewTable}}')->where(['>', 'bar', '5']);
+        $subQuery = $db->select('{{bar}}')->from('{{testCreateViewTable}}')->where(['>', 'bar', '5']);
 
         if ($schema->getTableSchema('{{testCreateView}}') !== null) {
             $command->dropView('{{testCreateView}}')->execute();
@@ -1254,7 +1253,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             $orderId = $db->getLastInsertId();
         }
 
-        $columnValueQuery = (new Query($db))->select('{{created_at}}')->from('{{order}}')->where(['id' => $orderId]);
+        $columnValueQuery = $db->select('{{created_at}}')->from('{{order}}')->where(['id' => $orderId]);
         $command->insert(
             '{{order_with_null_fk}}',
             ['customer_id' => $orderId, 'created_at' => $columnValueQuery, 'total' => 42],
@@ -1302,8 +1301,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             '{{customer}}',
             ['email' => 't1@example.com', 'name' => 'test', 'address' => 'test address']
         )->execute();
-        $query = (new Query($db))
-            ->select(['{{customer}}.{{email}} as name', '{{name}} as email', '{{address}}'])
+        $query = $db->select(['{{customer}}.{{email}} as name', '{{name}} as email', '{{address}}'])
             ->from('{{customer}}')
             ->where(['and', ['<>', 'name', 'foo'], ['status' => [0, 1, 2, 3]]]);
         $command->insert('{{customer}}', $query)->execute();
@@ -1353,8 +1351,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
                 'address' => 'test address',
             ]
         )->execute();
-        $query = (new Query($db))
-            ->select(['email' => '{{customer}}.{{email}}', 'address' => 'name', 'name' => 'address'])
+        $query = $db->select(['email' => '{{customer}}.{{email}}', 'address' => 'name', 'name' => 'address'])
             ->from('{{customer}}')
             ->where(['and', ['<>', 'name', 'foo'], ['status' => [0, 1, 2, 3]]]);
         $command->insert('{{customer}}', $query)->execute();
@@ -1918,7 +1915,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $this->assertSame($expectedCount, $count);
 
-        $values = (new Query($db))
+        $values = $db->createQuery()
             ->from($table)
             ->where($conditions, $params)
             ->limit(1)
@@ -2050,8 +2047,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
 
         $command->execute();
 
-        $actual = (new Query($db))
-            ->select(['email', 'address' => new Expression($this->upsertTestCharCast), 'status'])
+        $actual = $db->select(['email', 'address' => new Expression($this->upsertTestCharCast), 'status'])
             ->from('{{T_upsert}}')
             ->one();
         $this->assertEquals($expected, $actual, $this->upsertTestCharCast);
@@ -2097,7 +2093,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
     {
         $db = $this->getConnection(true);
 
-        $query = (new Query($db))->select([
+        $query = $db->select([
             'name' => new Expression("'test_1'"),
             'email' => new Expression("'test_1@example.com'"),
         ]);
@@ -2144,8 +2140,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertEquals($expectedValues, $returnedValues);
 
         if (!empty($returnColumns)) {
-            $selectedValues = (new Query($db))
-                ->select(array_keys($expectedValues))
+            $selectedValues = $db->select(array_keys($expectedValues))
                 ->from($table)
                 ->where($selectCondition)
                 ->one();
@@ -2305,8 +2300,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
             'uuid_pk' => $uuidValue,
         ])->execute();
 
-        $uuid = (new Query($db))
-            ->select(['[[uuid_pk]]'])
+        $uuid = $db->select(['[[uuid_pk]]'])
             ->from($tableName)
             ->where(['int_col' => 1])
             ->scalar();
@@ -2359,7 +2353,7 @@ abstract class CommonCommandTest extends AbstractCommandTest
         $this->assertSame('json_col', $tableSchema->getColumn('json_col')->getName());
         $this->assertSame(ColumnType::JSON, $tableSchema->getColumn('json_col')->getType());
 
-        $value = (new Query($db))->select('json_col')->from('json_table')->where(['id' => 1])->scalar();
+        $value = $db->select('json_col')->from('json_table')->where(['id' => 1])->scalar();
         $this->assertSame('{"a":1,"b":2}', str_replace(' ', '', $value));
     }
 }
