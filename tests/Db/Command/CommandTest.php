@@ -720,8 +720,8 @@ final class CommandTest extends AbstractCommandTest
         $command = $db->createCommand();
         $command->update('{{table}}', ['name' => 'John'], ['id' => 1]);
 
-        $this->assertSame('UPDATE [table] SET [name]=:qp0 WHERE [id]=:qp1', $command->getSql());
-        $this->assertSame([':qp0' => 'John', ':qp1' => 1], $command->getParams());
+        $this->assertSame('UPDATE [table] SET [name]=:qp0 WHERE [id]=1', $command->getSql());
+        $this->assertSame([':qp0' => 'John'], $command->getParams());
     }
 
     public function testUpsert(): void

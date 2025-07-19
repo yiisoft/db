@@ -107,6 +107,7 @@
 - Enh #991: Improve types in `ConnectionInterface::transaction()` (@kikara)
 - Chg #998: Add `yiisoft/db-implementation` virtual package as dependency (@vjik)
 - Chg #999: Remove `requireTransaction()` method and `$isolationLevel` property from `AbstractCommand` (@vjik)
+- Enh #1000: Prepare values in `HashCondition` (@vjik)
 
 ## 1.3.0 March 21, 2024
 

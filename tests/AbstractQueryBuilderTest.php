@@ -422,12 +422,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws InvalidArgumentException
-     * @throws NotSupportedException
-     */
     public function testBuildHaving(): void
     {
         $db = $this->getConnection();
@@ -439,7 +433,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                HAVING [[id]]=:qp0
+                HAVING [[id]]=1
                 SQL,
                 $db->getDriverName(),
             ),
@@ -1524,13 +1518,16 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame(
             DbHelper::replaceQuotes(
                 <<<SQL
-                SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (([[w]].[[merchant_id]]=:qp0) AND ([[w]].[[user_id]]=:qp1)))) AND ([[t]].[[some_column]]=:qp2)
+                SELECT [[id]] FROM [[TotalExample]] [[t]] WHERE (EXISTS (SELECT [[1]] FROM [[Website]] [[w]] WHERE (w.id = t.website_id) AND (([[w]].[[merchant_id]]=6) AND ([[w]].[[user_id]]=210)))) AND ([[t]].[[some_column]]=:qp0)
                 SQL,
                 $db->getDriverName(),
             ),
             $sql,
         );
-        $this->assertSame([':qp0' => 6, ':qp1' => 210, ':qp2' => 'asd'], $params);
+        $this->assertEquals(
+            [':qp0' => new Param('asd', DataType::STRING)],
+            $params,
+        );
     }
 
     /**
@@ -1681,11 +1678,6 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame($db->getQuoter()->quoteSql($sql), $builder($qb));
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidConfigException
-     * @throws NotSupportedException
-     */
     public function testCreateView(): void
     {
         $db = $this->getConnection();
@@ -1703,12 +1695,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider \Yiisoft\Db\Tests\Provider\QueryBuilderProvider::delete
-     *
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
+    #[DataProviderExternal(QueryBuilderProvider::class, 'delete')]
     public function testDelete(string $table, array|string $condition, string $expectedSQL, array $expectedParams): void
     {
         $db = $this->getConnection();
@@ -1981,7 +1968,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $qb = $db->getQueryBuilder();
 
         $this->assertSame($expectedSQL, $qb->insertReturningPks($table, $columns, $params));
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
     }
 
     public function testQuoter(): void
@@ -2374,7 +2361,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $db->getQueryBuilder()->upsert($table, $insertColumns, $updateColumns, $params);
 
         $this->assertSame($expectedSql, $sql);
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
 
         $query = (new Query($db))->from($table);
         $countBefore = $query->count();
@@ -2405,7 +2392,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $sql = $qb->upsertReturning($table, $insertColumns, $updateColumns, $returnColumns, $params);
 
         $this->assertSame($expectedSql, $sql);
-        $this->assertSame($expectedParams, $params);
+        $this->assertEquals($expectedParams, $params);
 
         $query = (new Query($db))->from($table);
         $countBefore = $query->count();
@@ -2423,8 +2410,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
     {
         $db = $this->getConnection();
 
-        $params = [':id' => 1, ':pv2' => 'test'];
-        $expression = new Expression('id = :id AND type = :pv2', $params);
+        $params = [':id' => 1, ':qp2' => 'test'];
+        $expression = new Expression('id = :id AND type = :qp2', $params);
 
         $query = new Query($db);
         $query->select('*')
@@ -2435,7 +2422,7 @@ abstract class AbstractQueryBuilderTest extends TestCase
 
         $command = $query->createCommand();
         $this->assertCount(3, $command->getParams());
-        $this->assertEquals([':id', ':pv2', ':pv2_0',], array_keys($command->getParams()));
+        $this->assertEquals([':id', ':qp2', ':qp2_0',], array_keys($command->getParams()));
         $this->assertEquals(
             DbHelper::replaceQuotes(
                 'SELECT * FROM [[animal]] WHERE (id = 1 AND type = \'test\') AND ([[type]]=\'test1\')',
