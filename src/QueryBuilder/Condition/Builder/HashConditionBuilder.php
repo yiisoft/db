@@ -18,7 +18,6 @@ use Yiisoft\Db\Query\QueryInterface;
 use function count;
 use function implode;
 use function is_iterable;
-use function str_contains;
 
 /**
  * Build an object of {@see HashConditionInterface} into SQL expressions.
@@ -54,14 +53,11 @@ class HashConditionBuilder implements ExpressionBuilderInterface
                 /** IN condition */
                 $parts[] = $this->queryBuilder->buildCondition(new InCondition($column, 'IN', $value), $params);
             } else {
-                if (!str_contains($column, '(')) {
-                    $column = $this->queryBuilder->getQuoter()->quoteColumnName($column);
-                }
+                $column = $this->queryBuilder->getQuoter()->quoteColumnName($column);
 
-                $parts[] = match (true) {
-                    $value === null => "$column IS NULL",
-                    default => $column . '=' . $this->queryBuilder->buildValue($value, $params),
-                };
+                $parts[] = $value === null
+                    ? "$column IS NULL"
+                    : $column . '=' . $this->queryBuilder->buildValue($value, $params);
             }
         }
 
