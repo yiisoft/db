@@ -895,7 +895,7 @@ class QueryBuilderProvider
             foreach ($conditions[$i][2] as $name => $value) {
                 $conditions[$i][2][$name] = $conditions[$i][2][$name] instanceof Param
                     ? new Param(
-                        strtr($conditions[$i][2][$name]->getValue(), static::$likeParameterReplacements),
+                        strtr($conditions[$i][2][$name]->value, static::$likeParameterReplacements),
                         DataType::STRING
                     )
                     : strtr($conditions[$i][2][$name], static::$likeParameterReplacements);

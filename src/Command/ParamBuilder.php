@@ -10,7 +10,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 use function count;
 
 /**
- * Implements the {@see ExpressionBuilderInterface} interface, is used to build {@see ParamInterface} objects.
+ * Implements the {@see ExpressionBuilderInterface} interface, is used to build {@see Param} objects.
  *
  * @implements ExpressionBuilderInterface<ExpressionInterface>
  */

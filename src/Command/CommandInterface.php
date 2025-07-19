@@ -261,7 +261,7 @@ interface CommandInterface
      *
      * Note that the SQL data type of each value is determined by its PHP type.
      *
-     * @param array|ParamInterface[] $values The values to bind. This must be given in terms of an associative
+     * @param array|Param[] $values The values to bind. This must be given in terms of an associative
      * array with array keys being the parameter names, and an array values the corresponding parameter values,
      * for example, `[':name' => 'John Doe', ':age' => 25]`.
      * By default, the SQL data type of each value is determined by its PHP type.
@@ -540,9 +540,9 @@ interface CommandInterface
      * Return the params used in the last query.
      *
      * @param bool $asValues By default, returns an array of name => value pairs. If set to `true`, returns an array of
-     * {@see ParamInterface}.
+     * {@see Param}.
      *
-     * @psalm-return array|ParamInterface[]
+     * @psalm-return array|Param[]
      *
      * @return array The params used in the last query.
      */

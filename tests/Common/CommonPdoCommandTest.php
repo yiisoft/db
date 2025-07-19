@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Yiisoft\Db\Command\Param;
-use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Driver\Pdo\AbstractPdoCommand;
 use InvalidArgumentException;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
@@ -135,7 +134,7 @@ abstract class CommonPdoCommandTest extends TestCase
         $bindedValues = $command->getParams(false);
 
         $this->assertIsArray($bindedValues);
-        $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
+        $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
         $this->assertCount(2, $bindedValues);
 
         $param = new Param('str', 99);
@@ -143,7 +142,7 @@ abstract class CommonPdoCommandTest extends TestCase
         $bindedValues = $command->getParams(false);
 
         $this->assertIsArray($bindedValues);
-        $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
+        $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
         $this->assertCount(3, $bindedValues);
         $this->assertSame($param, $bindedValues['param']);
         $this->assertNotEquals($param, $bindedValues['int']);
@@ -153,7 +152,7 @@ abstract class CommonPdoCommandTest extends TestCase
         $bindedValues = $command->getParams(false);
 
         $this->assertIsArray($bindedValues);
-        $this->assertContainsOnlyInstancesOf(ParamInterface::class, $bindedValues);
+        $this->assertContainsOnlyInstancesOf(Param::class, $bindedValues);
         $this->assertCount(3, $bindedValues);
         $this->assertSame($param, $bindedValues['int']);
 

@@ -114,7 +114,7 @@ abstract class AbstractCommand implements CommandInterface
     protected const QUERY_MODE_SCALAR = 32;
 
     /**
-     * @var ParamInterface[] Parameters to use.
+     * @var Param[] Parameters to use.
      */
     protected array $params = [];
 
@@ -338,8 +338,7 @@ abstract class AbstractCommand implements CommandInterface
         $buildParams = [];
 
         foreach ($this->params as $name => $value) {
-            /** @psalm-var mixed */
-            $buildParams[$name] = $value->getValue();
+            $buildParams[$name] = $value->value;
         }
 
         return $buildParams;
