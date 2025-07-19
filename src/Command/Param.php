@@ -31,22 +31,4 @@ final class Param implements ExpressionInterface
         public readonly int $type,
     ) {
     }
-
-    /**
-     * @return int The SQL data type of the parameter.
-     *
-     * @psalm-return DataType::*
-     */
-    public function getType(): int
-    {
-        return $this->type;
-    }
-
-    /**
-     * @return mixed The value to bind to the parameter.
-     */
-    public function getValue(): mixed
-    {
-        return $this->value;
-    }
 }
