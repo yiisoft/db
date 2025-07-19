@@ -14,7 +14,6 @@ use Psr\Log\LogLevel;
 use Throwable;
 use Yiisoft\Db\Command\AbstractCommand;
 use Yiisoft\Db\Command\Param;
-use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Exception\ConvertException;
 use Yiisoft\Db\Exception\Exception;
@@ -120,10 +119,10 @@ abstract class AbstractPdoCommand extends AbstractCommand implements PdoCommandI
         }
 
         /**
-         * @psalm-var array<string, int>|ParamInterface|int $value
+         * @psalm-var array<string, int>|Param|int $value
          */
         foreach ($values as $name => $value) {
-            if ($value instanceof ParamInterface) {
+            if ($value instanceof Param) {
                 $this->params[$name] = $value;
             } else {
                 $type = $this->db->getSchema()->getDataType($value);

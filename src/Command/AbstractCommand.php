@@ -114,7 +114,7 @@ abstract class AbstractCommand implements CommandInterface
     protected const QUERY_MODE_SCALAR = 32;
 
     /**
-     * @var ParamInterface[] Parameters to use.
+     * @var Param[] Parameters to use.
      */
     protected array $params = [];
 
