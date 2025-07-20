@@ -252,4 +252,4 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Remove specific condition interfaces: `BetweenColumnsConditionInterface`, `BetweenConditionInterface`,
   `ConjunctionConditionInterface`, `ExistConditionInterface`, `HashConditionInterface`, `InConditionInterface`,
   `LikeConditionInterface`, `NotConditionInterface`, `OverlapsConditionInterface`, `SimpleConditionInterface`;
-- `ConditionInterface` is moved to `Yiisoft\Db\QueryBuilder\Condition` namespace;
+- `ConditionInterface` moved to `Yiisoft\Db\QueryBuilder\Condition` namespace;
