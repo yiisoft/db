@@ -446,8 +446,6 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         if (isset($condition[0])) {
             $operator = strtoupper((string) array_shift($condition));
             $className = $this->conditionClasses[$operator] ?? SimpleCondition::class;
-
-            /** @var ConditionInterface $className */
             return $className::fromArrayDefinition($operator, $condition);
         }
 
