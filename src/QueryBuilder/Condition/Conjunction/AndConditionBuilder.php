@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\QueryBuilder\Condition\Builder\Conjunction;
+namespace Yiisoft\Db\QueryBuilder\Condition\Conjunction;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Exception\Exception;
@@ -10,26 +10,26 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Conjunction\AndCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * @implements ExpressionBuilderInterface<OrCondition>
+ * @implements ExpressionBuilderInterface<AndCondition>
  */
-final class OrConditionBuilder implements ExpressionBuilderInterface
+final class AndConditionBuilder implements ExpressionBuilderInterface
 {
     private ExpressionsConjunctionBuilder $expressionsConjunctionBuilder;
 
     public function __construct(
         QueryBuilderInterface $queryBuilder,
     ) {
-        $this->expressionsConjunctionBuilder = new ExpressionsConjunctionBuilder('OR', $queryBuilder);
+        $this->expressionsConjunctionBuilder = new ExpressionsConjunctionBuilder('AND', $queryBuilder);
     }
 
     /**
-     * Build SQL for {@see OrCondition}.
+     * Build SQL for {@see AndCondition}.
      *
-     * @param OrCondition $expression
+     * @param AndCondition $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -41,4 +41,3 @@ final class OrConditionBuilder implements ExpressionBuilderInterface
         return $this->expressionsConjunctionBuilder->build($expression->expressions, $params);
     }
 }
-

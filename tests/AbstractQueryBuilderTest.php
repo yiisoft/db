@@ -22,10 +22,10 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
-use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition;
-use Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition;
-use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Conjunction\AndCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Overlaps\ArrayOverlapsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Overlaps\JsonOverlapsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\Conjunction\OrCondition;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
@@ -1615,14 +1615,14 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $condition = $qb->createConditionFromArray(['array overlaps', 'column', [1, 2, 3]]);
 
         $this->assertInstanceOf(ArrayOverlapsCondition::class, $condition);
-        $this->assertSame('column', $condition->getColumn());
-        $this->assertSame([1, 2, 3], $condition->getValues());
+        $this->assertSame('column', $condition->column);
+        $this->assertSame([1, 2, 3], $condition->values);
 
         $condition = $qb->createConditionFromArray(['json overlaps', 'column', [1, 2, 3]]);
 
         $this->assertInstanceOf(JsonOverlapsCondition::class, $condition);
-        $this->assertSame('column', $condition->getColumn());
-        $this->assertSame([1, 2, 3], $condition->getValues());
+        $this->assertSame('column', $condition->column);
+        $this->assertSame([1, 2, 3], $condition->values);
     }
 
     public function testCreateOverlapsConditionFromArrayWithInvalidOperandsCount(): void

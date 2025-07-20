@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\QueryBuilder\Condition\Builder\Conjunction;
+namespace Yiisoft\Db\QueryBuilder\Condition\Conjunction;
 
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;

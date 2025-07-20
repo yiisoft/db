@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\QueryBuilder\Condition;
+namespace Yiisoft\Db\QueryBuilder\Condition\Overlaps;
 
 /**
  * Condition that represents `ARRAY OVERLAPS` operator is used to check if a column of array type overlaps another array.

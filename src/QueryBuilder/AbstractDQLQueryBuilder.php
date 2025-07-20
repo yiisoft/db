@@ -504,8 +504,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
     {
         return [
             'NOT' => Condition\NotCondition::class,
-            'AND' => Condition\AndCondition::class,
-            'OR' => Condition\OrCondition::class,
+            'AND' => Condition\Conjunction\AndCondition::class,
+            'OR' => Condition\Conjunction\OrCondition::class,
             'BETWEEN' => Condition\BetweenCondition::class,
             'NOT BETWEEN' => Condition\BetweenCondition::class,
             'IN' => Condition\InCondition::class,
@@ -516,8 +516,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             'OR NOT LIKE' => Condition\LikeCondition::class,
             'EXISTS' => Condition\ExistsCondition::class,
             'NOT EXISTS' => Condition\ExistsCondition::class,
-            'ARRAY OVERLAPS' => Condition\ArrayOverlapsCondition::class,
-            'JSON OVERLAPS' => Condition\JsonOverlapsCondition::class,
+            'ARRAY OVERLAPS' => Condition\Overlaps\ArrayOverlapsCondition::class,
+            'JSON OVERLAPS' => Condition\Overlaps\JsonOverlapsCondition::class,
         ];
     }
 
@@ -537,8 +537,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
             Param::class => ParamBuilder::class,
             Expression::class => ExpressionBuilder::class,
             Condition\NotCondition::class => Condition\Builder\NotConditionBuilder::class,
-            Condition\AndCondition::class => Condition\Builder\Conjunction\AndConditionBuilder::class,
-            Condition\OrCondition::class => Condition\Builder\Conjunction\OrConditionBuilder::class,
+            Condition\Conjunction\AndCondition::class => Condition\Conjunction\AndConditionBuilder::class,
+            Condition\Conjunction\OrCondition::class => Condition\Conjunction\OrConditionBuilder::class,
             Condition\BetweenCondition::class => Condition\Builder\BetweenConditionBuilder::class,
             Condition\InCondition::class => Condition\Builder\InConditionBuilder::class,
             Condition\LikeCondition::class => Condition\Builder\LikeConditionBuilder::class,
