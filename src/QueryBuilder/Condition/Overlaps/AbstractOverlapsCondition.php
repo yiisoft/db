@@ -6,7 +6,6 @@ namespace Yiisoft\Db\QueryBuilder\Condition\Overlaps;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-
 use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 
 use function is_iterable;
@@ -18,8 +17,8 @@ use function is_string;
 abstract class AbstractOverlapsCondition implements ConditionInterface
 {
     /**
-     * @param string|ExpressionInterface $column The column name or an expression.
-     * @param iterable|ExpressionInterface $values An array of values that {@see $columns} value should overlap.
+     * @param ExpressionInterface|string $column The column name or an expression.
+     * @param ExpressionInterface|iterable $values An array of values that {@see $columns} value should overlap.
      */
     public function __construct(
         public readonly string|ExpressionInterface $column,

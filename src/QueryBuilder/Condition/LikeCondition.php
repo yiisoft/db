@@ -21,9 +21,9 @@ final class LikeCondition implements ConditionInterface
     protected array|null $escapingReplacements = [];
 
     /**
-     * @param string|ExpressionInterface $column The column name.
+     * @param ExpressionInterface|string $column The column name.
      * @param string $operator The operator to use such as `>` or `<=`.
-     * @param array|int|string|Iterator|ExpressionInterface|null $value The value to the right of {@see operator}.
+     * @param array|ExpressionInterface|int|Iterator|string|null $value The value to the right of {@see operator}.
      * @param bool|null $caseSensitive Whether the comparison is case-sensitive. `null` means using the default
      * behavior.
      */

@@ -12,7 +12,6 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\LikeCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function implode;

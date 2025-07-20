@@ -40,10 +40,10 @@ use function is_string;
 final class BetweenColumnsCondition implements ConditionInterface
 {
     /**
-     * @param array|int|string|Iterator|ExpressionInterface $value The value to compare against.
+     * @param array|ExpressionInterface|int|Iterator|string $value The value to compare against.
      * @param string $operator The operator to use (for example `BETWEEN` or `NOT BETWEEN`).
-     * @param string|ExpressionInterface $intervalStartColumn The column name or expression that's the beginning of the interval.
-     * @param string|ExpressionInterface $intervalEndColumn The column name or expression that's the end of the interval.
+     * @param ExpressionInterface|string $intervalStartColumn The column name or expression that's the beginning of the interval.
+     * @param ExpressionInterface|string $intervalEndColumn The column name or expression that's the end of the interval.
      */
     public function __construct(
         public readonly array|int|string|Iterator|ExpressionInterface $value,

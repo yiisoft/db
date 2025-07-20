@@ -10,7 +10,6 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Conjunction\OrCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
@@ -41,4 +40,3 @@ final class OrConditionBuilder implements ExpressionBuilderInterface
         return $this->expressionsConjunctionBuilder->build($expression->expressions, $params);
     }
 }
-

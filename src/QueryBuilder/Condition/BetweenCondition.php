@@ -13,7 +13,7 @@ use Yiisoft\Db\Expression\ExpressionInterface;
 final class BetweenCondition implements ConditionInterface
 {
     /**
-     * @param string|ExpressionInterface $column The column name.
+     * @param ExpressionInterface|string $column The column name.
      * @param string $operator The operator to use (for example `BETWEEN` or `NOT BETWEEN`).
      * @param mixed $intervalStart Beginning of the interval.
      * @param mixed $intervalEnd End of the interval.

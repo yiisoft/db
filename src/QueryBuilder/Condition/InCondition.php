@@ -15,7 +15,7 @@ use Yiisoft\Db\Query\QueryInterface;
 final class InCondition implements ConditionInterface
 {
     /**
-     * @param array|string|Iterator|ExpressionInterface $column The column name. If it's an array, a composite `IN` condition
+     * @param array|ExpressionInterface|Iterator|string $column The column name. If it's an array, a composite `IN` condition
      * will be generated.
      * @param string $operator The operator to use (for example, `IN` or `NOT IN`).
      * @param int|iterable|Iterator|QueryInterface $values An array of values that {@see $columns} value should be among.

@@ -22,7 +22,6 @@ final class OrCondition implements ConditionInterface
     ) {
     }
 
-
     public static function fromArrayDefinition(string $operator, array $operands): self
     {
         /** @psalm-var array<array|ExpressionInterface|scalar> $operands */
