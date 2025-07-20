@@ -19,20 +19,20 @@ final class BetweenConditionTest extends TestCase
     {
         $betweenCondition = new BetweenCondition('date', 'BETWEEN', 1, 2);
 
-        $this->assertSame('date', $betweenCondition->getColumn());
-        $this->assertSame('BETWEEN', $betweenCondition->getOperator());
-        $this->assertSame(1, $betweenCondition->getIntervalStart());
-        $this->assertSame(2, $betweenCondition->getIntervalEnd());
+        $this->assertSame('date', $betweenCondition->column);
+        $this->assertSame('BETWEEN', $betweenCondition->operator);
+        $this->assertSame(1, $betweenCondition->intervalStart);
+        $this->assertSame(2, $betweenCondition->intervalEnd);
     }
 
     public function testFromArrayDefinition(): void
     {
         $betweenCondition = BetweenCondition::fromArrayDefinition('BETWEEN', ['date', 1, 2]);
 
-        $this->assertSame('date', $betweenCondition->getColumn());
-        $this->assertSame('BETWEEN', $betweenCondition->getOperator());
-        $this->assertSame(1, $betweenCondition->getIntervalStart());
-        $this->assertSame(2, $betweenCondition->getIntervalEnd());
+        $this->assertSame('date', $betweenCondition->column);
+        $this->assertSame('BETWEEN', $betweenCondition->operator);
+        $this->assertSame(1, $betweenCondition->intervalStart);
+        $this->assertSame(2, $betweenCondition->intervalEnd);
     }
 
     public function testFromArrayDefinitionExceptionWithoutOperands(): void

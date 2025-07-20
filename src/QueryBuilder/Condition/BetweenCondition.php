@@ -12,44 +12,18 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  */
 final class BetweenCondition implements ConditionInterface
 {
+    /**
+     * @param string|ExpressionInterface $column The column name.
+     * @param string $operator The operator to use (for example `BETWEEN` or `NOT BETWEEN`).
+     * @param mixed $intervalStart Beginning of the interval.
+     * @param mixed $intervalEnd End of the interval.
+     */
     public function __construct(
-        private string|ExpressionInterface $column,
-        private string $operator,
-        private mixed $intervalStart,
-        private mixed $intervalEnd
+        public readonly string|ExpressionInterface $column,
+        public readonly string $operator,
+        public readonly mixed $intervalStart,
+        public readonly mixed $intervalEnd
     ) {
-    }
-
-    /**
-     * @return ExpressionInterface|string The column name.
-     */
-    public function getColumn(): string|ExpressionInterface
-    {
-        return $this->column;
-    }
-
-    /**
-     * @return mixed End of the interval.
-     */
-    public function getIntervalEnd(): mixed
-    {
-        return $this->intervalEnd;
-    }
-
-    /**
-     * @return mixed Beginning of the interval.
-     */
-    public function getIntervalStart(): mixed
-    {
-        return $this->intervalStart;
-    }
-
-    /**
-     * @return string The operator to use (for example `BETWEEN` or `NOT BETWEEN`).
-     */
-    public function getOperator(): string
-    {
-        return $this->operator;
     }
 
     /**

@@ -38,16 +38,18 @@ class BetweenConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operator = $expression->getOperator();
-        $column = $expression->getColumn();
-        $column = $column instanceof ExpressionInterface ? $this->queryBuilder->buildExpression($column) : $column;
+        $operator = $expression->operator;
+        $column = $expression->column;
+        $column = $column instanceof ExpressionInterface
+            ? $this->queryBuilder->buildExpression($column)
+            : $column;
 
         if (!str_contains($column, '(')) {
             $column = $this->queryBuilder->getQuoter()->quoteColumnName($column);
         }
 
-        $phName1 = $this->createPlaceholder($expression->getIntervalStart(), $params);
-        $phName2 = $this->createPlaceholder($expression->getIntervalEnd(), $params);
+        $phName1 = $this->createPlaceholder($expression->intervalStart, $params);
+        $phName2 = $this->createPlaceholder($expression->intervalEnd, $params);
 
         return "$column $operator $phName1 AND $phName2";
     }
