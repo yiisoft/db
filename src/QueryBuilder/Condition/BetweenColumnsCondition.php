@@ -39,44 +39,18 @@ use function is_string;
  */
 final class BetweenColumnsCondition implements ConditionInterface
 {
+    /**
+     * @param array|int|string|Iterator|ExpressionInterface $value The value to compare against.
+     * @param string $operator The operator to use (for example `BETWEEN` or `NOT BETWEEN`).
+     * @param string|ExpressionInterface $intervalStartColumn The column name or expression that's the beginning of the interval.
+     * @param string|ExpressionInterface $intervalEndColumn The column name or expression that's the end of the interval.
+     */
     public function __construct(
-        private array|int|string|Iterator|ExpressionInterface $value,
-        private string $operator,
-        private string|ExpressionInterface $intervalStartColumn,
-        private string|ExpressionInterface $intervalEndColumn
+        public readonly array|int|string|Iterator|ExpressionInterface $value,
+        public readonly string $operator,
+        public readonly string|ExpressionInterface $intervalStartColumn,
+        public readonly string|ExpressionInterface $intervalEndColumn,
     ) {
-    }
-
-    /**
-     * @return ExpressionInterface|string The column name or expression that's the end of the interval.
-     */
-    public function getIntervalEndColumn(): string|ExpressionInterface
-    {
-        return $this->intervalEndColumn;
-    }
-
-    /**
-     * @return ExpressionInterface|string The column name or expression that's the beginning of the interval.
-     */
-    public function getIntervalStartColumn(): string|ExpressionInterface
-    {
-        return $this->intervalStartColumn;
-    }
-
-    /**
-     * @return string The operator to use (for example `BETWEEN` or `NOT BETWEEN`).
-     */
-    public function getOperator(): string
-    {
-        return $this->operator;
-    }
-
-    /**
-     * @return array|ExpressionInterface|int|Iterator|string The value to compare against.
-     */
-    public function getValue(): array|int|string|Iterator|ExpressionInterface
-    {
-        return $this->value;
     }
 
     /**
