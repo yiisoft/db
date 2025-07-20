@@ -9,16 +9,12 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
  */
 final class HashCondition implements ConditionInterface
 {
-    public function __construct(private array|null $hash = [])
-    {
-    }
-
     /**
-     * @return array|null The condition specification.
+     * @param array|null $hash The condition specification.
      */
-    public function getHash(): array|null
-    {
-        return $this->hash;
+    public function __construct(
+        public readonly array|null $hash = [],
+    ) {
     }
 
     /**

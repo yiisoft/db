@@ -53,9 +53,9 @@ class InConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $column = $expression->getColumn();
-        $operator = strtoupper($expression->getOperator());
-        $values = $expression->getValues();
+        $column = $expression->column;
+        $operator = strtoupper($expression->operator);
+        $values = $expression->values;
 
         if ($column === []) {
             /** no columns to test against */
@@ -146,7 +146,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
     protected function buildValues(InCondition $condition, iterable $values, array &$params = []): array
     {
         $sqlValues = [];
-        $column = $condition->getColumn();
+        $column = $condition->column;
 
         if (is_array($column)) {
             /** @psalm-var mixed $column */

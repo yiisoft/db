@@ -18,19 +18,20 @@ final class LikeConditionTest extends TestCase
     {
         $likeCondition = new LikeCondition('id', 'LIKE', 'test');
 
-        $this->assertSame('id', $likeCondition->getColumn());
-        $this->assertSame('LIKE', $likeCondition->getOperator());
-        $this->assertSame('test', $likeCondition->getValue());
-        $this->assertNull($likeCondition->getCaseSensitive());
+        $this->assertSame('id', $likeCondition->column);
+        $this->assertSame('LIKE', $likeCondition->operator);
+        $this->assertSame('test', $likeCondition->value);
+        $this->assertNull($likeCondition->caseSensitive);
     }
 
     public function testFromArrayDefinition(): void
     {
         $likeCondition = LikeCondition::fromArrayDefinition('LIKE', ['id', 'test']);
 
-        $this->assertSame('id', $likeCondition->getColumn());
-        $this->assertSame('LIKE', $likeCondition->getOperator());
-        $this->assertSame('test', $likeCondition->getValue());
+        $this->assertSame('id', $likeCondition->column);
+        $this->assertSame('LIKE', $likeCondition->operator);
+        $this->assertSame('test', $likeCondition->value);
+        $this->assertNull($likeCondition->caseSensitive);
     }
 
     public function testFromArrayDefinitionException(): void
@@ -63,9 +64,9 @@ final class LikeConditionTest extends TestCase
     {
         $likeCondition = LikeCondition::fromArrayDefinition('LIKE', ['id', 'test', ['%' => '\%', '_' => '\_']]);
 
-        $this->assertSame('id', $likeCondition->getColumn());
-        $this->assertSame('LIKE', $likeCondition->getOperator());
-        $this->assertSame('test', $likeCondition->getValue());
+        $this->assertSame('id', $likeCondition->column);
+        $this->assertSame('LIKE', $likeCondition->operator);
+        $this->assertSame('test', $likeCondition->value);
         $this->assertSame(['%' => '\%', '_' => '\_'], $likeCondition->getEscapingReplacements());
     }
 
@@ -84,9 +85,9 @@ final class LikeConditionTest extends TestCase
     {
         $likeCondition = LikeCondition::fromArrayDefinition('LIKE', ['id', 'test', 'caseSensitive' => $caseSensitive]);
 
-        $this->assertSame('id', $likeCondition->getColumn());
-        $this->assertSame('LIKE', $likeCondition->getOperator());
-        $this->assertSame('test', $likeCondition->getValue());
-        $this->assertSame($caseSensitive, $likeCondition->getCaseSensitive());
+        $this->assertSame('id', $likeCondition->column);
+        $this->assertSame('LIKE', $likeCondition->operator);
+        $this->assertSame('test', $likeCondition->value);
+        $this->assertSame($caseSensitive, $likeCondition->caseSensitive);
     }
 }
