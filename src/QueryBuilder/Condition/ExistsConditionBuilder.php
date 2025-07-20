@@ -36,9 +36,8 @@ class ExistsConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operator = $expression->getOperator();
-        $query = $expression->getQuery();
-        $sql = $this->queryBuilder->buildExpression($query, $params);
-        return "$operator $sql";
+        return $expression->operator
+            . ' '
+            . $this->queryBuilder->buildExpression($expression->query, $params);
     }
 }

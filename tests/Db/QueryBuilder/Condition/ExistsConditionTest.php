@@ -25,8 +25,8 @@ final class ExistsConditionTest extends TestCase
             ->where(['active' => 1]);
         $existCondition = new ExistsCondition('EXISTS', $query);
 
-        $this->assertSame('EXISTS', $existCondition->getOperator());
-        $this->assertSame($query, $existCondition->getQuery());
+        $this->assertSame('EXISTS', $existCondition->operator);
+        $this->assertSame($query, $existCondition->query);
     }
 
     public function testFromArrayDefinition(): void
@@ -37,8 +37,8 @@ final class ExistsConditionTest extends TestCase
             ->where(['active' => 1]);
         $existCondition = ExistsCondition::fromArrayDefinition('EXISTS', [$query]);
 
-        $this->assertSame('EXISTS', $existCondition->getOperator());
-        $this->assertSame($query, $existCondition->getQuery());
+        $this->assertSame('EXISTS', $existCondition->operator);
+        $this->assertSame($query, $existCondition->query);
     }
 
     public function testFromArrayDefinitionExceptionQuery(): void
