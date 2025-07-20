@@ -144,7 +144,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - `DMLQueryBuilderInterface::upsertReturning()` - builds a SQL to insert or update a record with returning values;
 - `DMLQueryBuilderInterface::withTypecasting()` - enables or disables typecasting of values when inserting or updating 
   records in DB;
-- `LikeConditionInterface::getCaseSensitive()` - returns whether the comparison is case-sensitive;
+- `LikeCondition::getCaseSensitive()` - returns whether the comparison is case-sensitive;
 - `SchemaInterface::hasTable()` - returns whether the specified table exists in database;
 - `SchemaInterface::hasSchema()` - returns whether the specified schema exists in database;
 - `SchemaInterface::hasView()` - returns whether the specified view exists in database;
@@ -249,3 +249,7 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
 - Rename `IndexConstraint::isPrimary()` to `IndexConstraint::isPrimaryKey()` method;
 - Remove `ParamInterface`, use `Param` class instead;
 - Remove `getType()` and `getValue()` methods from `Param` class, use `$type` and `$value` properties instead;
+- Remove specific condition interfaces: `BetweenColumnsConditionInterface`, `BetweenConditionInterface`,
+  `ConjunctionConditionInterface`, `ExistConditionInterface`, `HashConditionInterface`, `InConditionInterface`,
+  `LikeConditionInterface`, `NotConditionInterface`, `OverlapsConditionInterface`, `SimpleConditionInterface`;
+- `ConditionInterface` moved to `Yiisoft\Db\QueryBuilder\Condition` namespace;

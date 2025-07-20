@@ -5,23 +5,28 @@ declare(strict_types=1);
 namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use InvalidArgumentException;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\ExistConditionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**
- * Condition that represents `EXISTS` operator.
+ * Condition that represents `EXISTS` operator that checks whether a sub-query returns any rows
  */
-final class ExistsCondition implements ExistConditionInterface
+final class ExistsCondition implements ConditionInterface
 {
     public function __construct(private string $operator, private QueryInterface $query)
     {
     }
 
+    /**
+     * @return string The operator to use (for example, `EXISTS` or `NOT EXISTS`).
+     */
     public function getOperator(): string
     {
         return $this->operator;
     }
 
+    /**
+     * @return QueryInterface The {@see Query} object representing the sub-query.
+     */
     public function getQuery(): QueryInterface
     {
         return $this->query;

@@ -6,12 +6,13 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\SimpleConditionInterface;
+
+use function array_key_exists;
 
 /**
  * Represents a simple condition like `"column" operator value`.
  */
-final class SimpleCondition implements SimpleConditionInterface
+final class SimpleCondition implements ConditionInterface
 {
     public function __construct(
         private string|ExpressionInterface $column,
@@ -20,16 +21,25 @@ final class SimpleCondition implements SimpleConditionInterface
     ) {
     }
 
+    /**
+     * @return ExpressionInterface|string The column name or an Expression.
+     */
     public function getColumn(): string|ExpressionInterface
     {
         return $this->column;
     }
 
+    /**
+     * @return string The operator to use such as `>` or `<=`.
+     */
     public function getOperator(): string
     {
         return $this->operator;
     }
 
+    /**
+     * @return mixed The value to the right of {@see operator}.
+     */
     public function getValue(): mixed
     {
         return $this->value;

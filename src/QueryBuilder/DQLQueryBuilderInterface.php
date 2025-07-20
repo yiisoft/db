@@ -12,7 +12,7 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\QueryPartsInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
 /**
@@ -334,6 +334,8 @@ interface DQLQueryBuilderInterface
      * ```php
      * ['LIKE' => \Yiisoft\Db\Condition\LikeCondition::class]
      * ```
+     *
+     * @psalm-param array<string, class-string<ConditionInterface>> $classes
      */
     public function setConditionClasses(array $classes): void;
 

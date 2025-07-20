@@ -23,7 +23,7 @@ use Yiisoft\Db\Expression\CaseExpressionBuilder;
 use Yiisoft\Db\Expression\StructuredExpression;
 use Yiisoft\Db\Expression\StructuredExpressionBuilder;
 use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\ConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryExpressionBuilder;
@@ -70,6 +70,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      *
      * @see setConditonClasses()
      * @see defaultConditionClasses()
+     *
+     * @psalm-var array<string, class-string<ConditionInterface>> $conditionClasses
      */
     protected array $conditionClasses = [];
     /**
@@ -443,11 +445,7 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
         /** operator format: operator, operand 1, operand 2, ... */
         if (isset($condition[0])) {
             $operator = strtoupper((string) array_shift($condition));
-
-            /** @var string $className */
             $className = $this->conditionClasses[$operator] ?? SimpleCondition::class;
-
-            /** @var ConditionInterface $className */
             return $className::fromArrayDefinition($operator, $condition);
         }
 
@@ -499,6 +497,8 @@ abstract class AbstractDQLQueryBuilder implements DQLQueryBuilderInterface
      * Extend this method if you want to change default condition classes for the query builder.
      *
      * See {@see conditionClasses} docs for details.
+     *
+     * @psalm-return array<string, class-string<ConditionInterface>>
      */
     protected function defaultConditionClasses(): array
     {

@@ -7,7 +7,6 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 use Iterator;
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\LikeConditionInterface;
 
 use function array_key_exists;
 use function is_array;
@@ -17,7 +16,7 @@ use function is_string;
 /**
  * Condition that represents `LIKE` operator.
  */
-final class LikeCondition implements LikeConditionInterface
+final class LikeCondition implements ConditionInterface
 {
     protected array|null $escapingReplacements = [];
 
@@ -29,31 +28,56 @@ final class LikeCondition implements LikeConditionInterface
     ) {
     }
 
+    /**
+     * @return ExpressionInterface|string The column name.
+     */
     public function getColumn(): string|ExpressionInterface
     {
         return $this->column;
     }
 
+    /**
+     * @see setEscapingReplacements()
+     */
     public function getEscapingReplacements(): ?array
     {
         return $this->escapingReplacements;
     }
 
+    /**
+     * @return string The operator to use such as `>` or `<=`.
+     */
     public function getOperator(): string
     {
         return $this->operator;
     }
 
+    /**
+     * @return array|ExpressionInterface|int|Iterator|string|null The value to the right of {@see operator}.
+     */
     public function getValue(): array|int|string|Iterator|ExpressionInterface|null
     {
         return $this->value;
     }
 
+    /**
+     * @return bool|null Whether the comparison is case-sensitive. `null` means using the default behavior.
+     */
     public function getCaseSensitive(): ?bool
     {
         return $this->caseSensitive;
     }
 
+    /**
+     * This method allows specifying how to escape special characters in the value(s).
+     *
+     * @param array|null $escapingReplacements An array of mappings from the special characters to their escaped
+     * counterparts.
+     *
+     * You may use an empty array to indicate the values are already escaped and no escape should be applied.
+     * Note that when using an escape mapping (or the third operand isn't provided), the values will be automatically
+     * inside within a pair of percentage characters.
+     */
     public function setEscapingReplacements(array|null $escapingReplacements): void
     {
         $this->escapingReplacements = $escapingReplacements;

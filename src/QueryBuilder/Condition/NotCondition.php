@@ -6,7 +6,6 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\NotConditionInterface;
 
 use function array_shift;
 use function count;
@@ -16,12 +15,15 @@ use function is_string;
 /**
  * Condition that represents `NOT` operator (negation).
  */
-final class NotCondition implements NotConditionInterface
+final class NotCondition implements ConditionInterface
 {
     public function __construct(private ExpressionInterface|array|null|string $condition)
     {
     }
 
+    /**
+     * @return array|ExpressionInterface|string|null the condition to negate.
+     */
     public function getCondition(): ExpressionInterface|array|null|string
     {
         return $this->condition;
