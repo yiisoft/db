@@ -15,7 +15,7 @@ use function array_key_exists;
 final class SimpleCondition implements ConditionInterface
 {
     /**
-     * @param string|ExpressionInterface $column The column name or an expression.
+     * @param ExpressionInterface|string $column The column name or an expression.
      * @param string $operator The operator to use such as `>` or `<=`.
      * @param mixed $value The value to the right of {@see $operator}.
      */
