@@ -6,7 +6,6 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 
 use function is_iterable;
 use function is_string;

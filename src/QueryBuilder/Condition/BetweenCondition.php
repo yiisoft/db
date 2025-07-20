@@ -6,7 +6,6 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 
 /**
  * Condition that's represented `BETWEEN` operator is used to check if a value is between two values.

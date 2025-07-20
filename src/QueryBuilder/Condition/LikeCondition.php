@@ -7,7 +7,6 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 use Iterator;
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 
 use function array_key_exists;
 use function is_array;

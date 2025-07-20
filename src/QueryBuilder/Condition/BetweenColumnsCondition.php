@@ -8,8 +8,6 @@ use Iterator;
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
 
-use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
-
 use function is_array;
 use function is_int;
 use function is_string;

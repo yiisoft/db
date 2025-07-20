@@ -6,7 +6,6 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Query\QueryInterface;
-use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 
 /**
  * Condition that represents `EXISTS` operator that checks whether a sub-query returns any rows

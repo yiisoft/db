@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition;
 
-use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
-
 /**
  * Condition based on column-value pairs.
  */

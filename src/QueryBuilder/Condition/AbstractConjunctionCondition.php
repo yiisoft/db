@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Yiisoft\Db\QueryBuilder\Condition;
 
-use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
-
 /**
  * Represents a condition that's composed by many other conditions connected by a conjunction
  * (for example, `AND`, `OR`).
