@@ -17,16 +17,12 @@ use function is_string;
  */
 final class NotCondition implements ConditionInterface
 {
-    public function __construct(private ExpressionInterface|array|null|string $condition)
-    {
-    }
-
     /**
-     * @return array|ExpressionInterface|string|null the condition to negate.
+     * @param ExpressionInterface|array|string|null $condition The condition to negate.
      */
-    public function getCondition(): ExpressionInterface|array|null|string
-    {
-        return $this->condition;
+    public function __construct(
+        public readonly ExpressionInterface|array|null|string $condition,
+    ) {
     }
 
     /**
