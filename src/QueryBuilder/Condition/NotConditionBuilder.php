@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yiisoft\Db\QueryBuilder\Condition\Builder;
+namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use Yiisoft\Db\Exception\Exception;
 use InvalidArgumentException;
@@ -10,24 +10,24 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\ExistsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\NotCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 /**
- * Build an object of {@see ExistsCondition} into SQL expressions.
+ * Build an object of {@see NotCondition} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<ExistsCondition>
+ * @implements ExpressionBuilderInterface<NotCondition>
  */
-class ExistsConditionBuilder implements ExpressionBuilderInterface
+class NotConditionBuilder implements ExpressionBuilderInterface
 {
     public function __construct(private readonly QueryBuilderInterface $queryBuilder)
     {
     }
 
     /**
-     * Build SQL for {@see ExistsCondition}.
+     * Build SQL for {@see NotCondition}.
      *
-     * @param ExistsCondition $expression
+     * @param NotCondition $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -36,9 +36,19 @@ class ExistsConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operator = $expression->getOperator();
-        $query = $expression->getQuery();
-        $sql = $this->queryBuilder->buildExpression($query, $params);
-        return "$operator $sql";
+        $operand = $expression->getCondition();
+
+        if ($operand === '') {
+            return '';
+        }
+
+        $expressionValue = $this->queryBuilder->buildCondition($operand, $params);
+
+        return "{$this->getNegationOperator()} ($expressionValue)";
+    }
+
+    protected function getNegationOperator(): string
+    {
+        return 'NOT';
     }
 }
