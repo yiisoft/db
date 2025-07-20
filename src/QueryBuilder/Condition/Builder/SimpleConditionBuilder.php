@@ -38,10 +38,9 @@ class SimpleConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $operator = $expression->getOperator();
-        $column = $expression->getColumn();
-        /** @psalm-var mixed $value */
-        $value = $expression->getValue();
+        $operator = $expression->operator;
+        $column = $expression->column;
+        $value = $expression->value;
 
         if ($column instanceof ExpressionInterface) {
             $column = $this->queryBuilder->buildExpression($column, $params);

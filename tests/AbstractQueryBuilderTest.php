@@ -22,8 +22,10 @@ use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\Query\Query;
 use Yiisoft\Db\Query\QueryInterface;
+use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
 use Yiisoft\Db\QueryBuilder\Condition\ArrayOverlapsCondition;
 use Yiisoft\Db\QueryBuilder\Condition\JsonOverlapsCondition;
+use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
 use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 use Yiisoft\Db\Schema\Column\ColumnInterface;
 use Yiisoft\Db\Schema\QuoterInterface;
@@ -33,6 +35,7 @@ use Yiisoft\Db\Tests\Support\DbHelper;
 use Yiisoft\Db\Tests\Support\TestTrait;
 
 use function PHPUnit\Framework\assertEmpty;
+use function PHPUnit\Framework\assertInstanceOf;
 use function PHPUnit\Framework\assertSame;
 
 /**
@@ -1566,52 +1569,41 @@ abstract class AbstractQueryBuilderTest extends TestCase
         $this->assertSame([':some_value' => 'asd', ':merchant_id' => 6], $params);
     }
 
-    /**
-     * @throws InvalidArgumentException
-     */
     public function testsCreateConditionFromArray(): void
     {
-        $db = $this->getConnection();
-
-        $qb = $db->getQueryBuilder();
+        $qb = $this->getConnection()->getQueryBuilder();
 
         $condition = $qb->createConditionFromArray(['and', 'a = 1', 'b = 2']);
-
-        $this->assertSame('AND', $condition->getOperator());
-        $this->assertSame(['a = 1', 'b = 2'], $condition->getExpressions());
+        $this->assertInstanceOf(AndCondition::class, $condition);
+        $this->assertSame(['a = 1', 'b = 2'], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(['or', 'a = 1', 'b = 2']);
-
-        $this->assertSame('OR', $condition->getOperator());
-        $this->assertSame(['a = 1', 'b = 2'], $condition->getExpressions());
+        $this->assertInstanceOf(OrCondition::class, $condition);
+        $this->assertSame(['a = 1', 'b = 2'], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(['and', 'a = 1', ['or', 'b = 2', 'c = 3']]);
-
-        $this->assertSame('AND', $condition->getOperator());
-        $this->assertSame(['a = 1', ['or', 'b = 2', 'c = 3']], $condition->getExpressions());
+        $this->assertInstanceOf(AndCondition::class, $condition);
+        $this->assertSame(['a = 1', ['or', 'b = 2', 'c = 3']], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(['or', 'a = 1', ['and', 'b = 2', 'c = 3']]);
-
-        $this->assertSame('OR', $condition->getOperator());
-        $this->assertSame(['a = 1', ['and', 'b = 2', 'c = 3']], $condition->getExpressions());
+        $this->assertInstanceOf(OrCondition::class, $condition);
+        $this->assertSame(['a = 1', ['and', 'b = 2', 'c = 3']], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(['and', 'a = 1', ['or', 'b = 2', ['and', 'c = 3', 'd = 4']]]);
-
-        $this->assertSame('AND', $condition->getOperator());
-        $this->assertSame(['a = 1', ['or', 'b = 2', ['and', 'c = 3', 'd = 4']]], $condition->getExpressions());
+        $this->assertInstanceOf(AndCondition::class, $condition);
+        $this->assertSame(['a = 1', ['or', 'b = 2', ['and', 'c = 3', 'd = 4']]], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(['or', 'a = 1', ['and', 'b = 2', ['or', 'c = 3', 'd = 4']]]);
-
-        $this->assertSame('OR', $condition->getOperator());
-        $this->assertSame(['a = 1', ['and', 'b = 2', ['or', 'c = 3', 'd = 4']]], $condition->getExpressions());
+        $this->assertInstanceOf(OrCondition::class, $condition);
+        $this->assertSame(['a = 1', ['and', 'b = 2', ['or', 'c = 3', 'd = 4']]], $condition->expressions);
 
         $condition = $qb->createConditionFromArray(
             ['and', 'a = 1', ['or', 'b = 2', ['and', 'c = 3', ['or', 'd = 4', 'e = 5']]]]
         );
-        $this->assertSame('AND', $condition->getOperator());
+        $this->assertInstanceOf(AndCondition::class, $condition);
         $this->assertSame(
             ['a = 1', ['or', 'b = 2', ['and', 'c = 3', ['or', 'd = 4', 'e = 5']]]],
-            $condition->getExpressions(),
+            $condition->expressions,
         );
     }
 
