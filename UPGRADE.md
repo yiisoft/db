@@ -253,3 +253,5 @@ Each table column has its own class in the `Yiisoft\Db\Schema\Column` namespace 
   `ConjunctionConditionInterface`, `ExistConditionInterface`, `HashConditionInterface`, `InConditionInterface`,
   `LikeConditionInterface`, `NotConditionInterface`, `OverlapsConditionInterface`, `SimpleConditionInterface`;
 - `ConditionInterface` moved to `Yiisoft\Db\QueryBuilder\Condition` namespace;
+- Remove `AbstractConjunctionCondition` and `AbstractOverlapsConditionBuilder`;
+- Change namespace of condition and condition builder classes;
