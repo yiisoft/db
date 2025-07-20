@@ -10,7 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\ConjunctionConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\AbstractConjunctionCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function count;
@@ -19,9 +19,9 @@ use function is_array;
 use function reset;
 
 /**
- * Build an object of {@see ConjunctionConditionInterface} into SQL expressions.
+ * Build an object of {@see AbstractConjunctionCondition} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<ConjunctionConditionInterface>
+ * @implements ExpressionBuilderInterface<AbstractConjunctionCondition>
  */
 class ConjunctionConditionBuilder implements ExpressionBuilderInterface
 {
@@ -30,9 +30,9 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see ConjunctionConditionInterface}.
+     * Build SQL for {@see AbstractConjunctionCondition}.
      *
-     * @param ConjunctionConditionInterface $expression
+     * @param AbstractConjunctionCondition $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -63,7 +63,7 @@ class ConjunctionConditionBuilder implements ExpressionBuilderInterface
      * @throws InvalidConfigException
      * @throws NotSupportedException
      */
-    private function buildExpressionsFrom(ConjunctionConditionInterface $condition, array &$params = []): array
+    private function buildExpressionsFrom(AbstractConjunctionCondition $condition, array &$params = []): array
     {
         $parts = [];
 

@@ -6,7 +6,7 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\OverlapsConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 
 use function is_iterable;
 use function is_string;
@@ -14,7 +14,7 @@ use function is_string;
 /**
  * The base class for classes representing the array and JSON overlaps conditions.
  */
-abstract class AbstractOverlapsCondition implements OverlapsConditionInterface
+abstract class AbstractOverlapsCondition implements ConditionInterface
 {
     public function __construct(
         private string|ExpressionInterface $column,
@@ -22,11 +22,17 @@ abstract class AbstractOverlapsCondition implements OverlapsConditionInterface
     ) {
     }
 
+    /**
+     * @return ExpressionInterface|string The column name or an Expression.
+     */
     public function getColumn(): string|ExpressionInterface
     {
         return $this->column;
     }
 
+    /**
+     * @return ExpressionInterface|iterable An array of values that {@see columns} value should overlap.
+     */
     public function getValues(): iterable|ExpressionInterface
     {
         return $this->values;

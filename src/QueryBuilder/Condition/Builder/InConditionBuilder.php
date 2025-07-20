@@ -14,7 +14,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\InConditionInterface;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
 
@@ -24,6 +23,7 @@ use function count;
 use function implode;
 use function in_array;
 use function is_array;
+use function is_string;
 use function iterator_count;
 use function reset;
 use function sprintf;
@@ -31,9 +31,9 @@ use function str_contains;
 use function strtoupper;
 
 /**
- * Build an object of {@see InConditionInterface} into SQL expressions.
+ * Build an object of {@see InCondition} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<InConditionInterface>
+ * @implements ExpressionBuilderInterface<InCondition>
  */
 class InConditionBuilder implements ExpressionBuilderInterface
 {
@@ -42,9 +42,9 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see InConditionInterface}.
+     * Build SQL for {@see InCondition}.
      *
-     * @param InConditionInterface $expression
+     * @param InCondition $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
@@ -143,7 +143,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @psalm-suppress MixedArrayTypeCoercion
      * @psalm-suppress MixedArrayOffset
      */
-    protected function buildValues(InConditionInterface $condition, iterable $values, array &$params = []): array
+    protected function buildValues(InCondition $condition, iterable $values, array &$params = []): array
     {
         $sqlValues = [];
         $column = $condition->getColumn();
@@ -155,17 +155,14 @@ class InConditionBuilder implements ExpressionBuilderInterface
 
         if ($column instanceof Iterator) {
             $column->rewind();
-            /** @psalm-var mixed $column */
             $column = $column->current();
         }
 
         /**
          * @psalm-var string|int $i
-         * @psalm-var mixed $value
          */
         foreach ($values as $i => $value) {
             if (is_array($value) || $value instanceof ArrayAccess) {
-                /** @psalm-var mixed $value */
                 $value = $value[$column] ?? null;
             }
 

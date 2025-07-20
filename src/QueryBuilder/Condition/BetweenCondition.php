@@ -6,12 +6,12 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\BetweenConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 
 /**
  * Condition that's represented `BETWEEN` operator is used to check if a value is between two values.
  */
-final class BetweenCondition implements BetweenConditionInterface
+final class BetweenCondition implements ConditionInterface
 {
     public function __construct(
         private string|ExpressionInterface $column,
@@ -21,21 +21,33 @@ final class BetweenCondition implements BetweenConditionInterface
     ) {
     }
 
+    /**
+     * @return ExpressionInterface|string The column name.
+     */
     public function getColumn(): string|ExpressionInterface
     {
         return $this->column;
     }
 
+    /**
+     * @return mixed End of the interval.
+     */
     public function getIntervalEnd(): mixed
     {
         return $this->intervalEnd;
     }
 
+    /**
+     * @return mixed Beginning of the interval.
+     */
     public function getIntervalStart(): mixed
     {
         return $this->intervalStart;
     }
 
+    /**
+     * @return string The operator to use (for example `BETWEEN` or `NOT BETWEEN`).
+     */
     public function getOperator(): string
     {
         return $this->operator;

@@ -10,15 +10,15 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\SimpleConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\SimpleCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
 use function str_contains;
 
 /**
- * Build an object of {@see SimpleConditionInterface} into SQL expressions.
+ * Build an object of {@see SimpleCondition} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<SimpleConditionInterface>
+ * @implements ExpressionBuilderInterface<SimpleCondition>
  */
 class SimpleConditionBuilder implements ExpressionBuilderInterface
 {
@@ -29,7 +29,7 @@ class SimpleConditionBuilder implements ExpressionBuilderInterface
     /**
      * Build SQL for {@see SimpleCondition}.
      *
-     * @param SimpleConditionInterface $expression
+     * @param SimpleCondition $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException

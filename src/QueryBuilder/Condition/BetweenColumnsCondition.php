@@ -7,7 +7,8 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 use Iterator;
 use InvalidArgumentException;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\BetweenColumnsConditionInterface;
+
+use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 
 use function is_array;
 use function is_int;
@@ -38,7 +39,7 @@ use function is_string;
  * // NOW() NOT BETWEEN (SELECT time FROM log ORDER BY id ASC LIMIT 1) AND update_time
  * ```
  */
-final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
+final class BetweenColumnsCondition implements ConditionInterface
 {
     public function __construct(
         private array|int|string|Iterator|ExpressionInterface $value,
@@ -48,21 +49,33 @@ final class BetweenColumnsCondition implements BetweenColumnsConditionInterface
     ) {
     }
 
+    /**
+     * @return ExpressionInterface|string The column name or expression that's the end of the interval.
+     */
     public function getIntervalEndColumn(): string|ExpressionInterface
     {
         return $this->intervalEndColumn;
     }
 
+    /**
+     * @return ExpressionInterface|string The column name or expression that's the beginning of the interval.
+     */
     public function getIntervalStartColumn(): string|ExpressionInterface
     {
         return $this->intervalStartColumn;
     }
 
+    /**
+     * @return string The operator to use (for example `BETWEEN` or `NOT BETWEEN`).
+     */
     public function getOperator(): string
     {
         return $this->operator;
     }
 
+    /**
+     * @return array|ExpressionInterface|int|Iterator|string The value to compare against.
+     */
     public function getValue(): array|int|string|Iterator|ExpressionInterface
     {
         return $this->value;

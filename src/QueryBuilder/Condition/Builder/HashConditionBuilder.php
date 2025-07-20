@@ -10,7 +10,7 @@ use Yiisoft\Db\Exception\InvalidConfigException;
 use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
-use Yiisoft\Db\QueryBuilder\Condition\Interface\HashConditionInterface;
+use Yiisoft\Db\QueryBuilder\Condition\HashCondition;
 use Yiisoft\Db\QueryBuilder\Condition\InCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 use Yiisoft\Db\Query\QueryInterface;
@@ -20,9 +20,9 @@ use function implode;
 use function is_iterable;
 
 /**
- * Build an object of {@see HashConditionInterface} into SQL expressions.
+ * Build an object of {@see HashCondition} into SQL expressions.
  *
- * @implements ExpressionBuilderInterface<HashConditionInterface>
+ * @implements ExpressionBuilderInterface<HashCondition>
  */
 class HashConditionBuilder implements ExpressionBuilderInterface
 {
@@ -31,9 +31,9 @@ class HashConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * Build SQL for {@see HashConditionInterface}.
+     * Build SQL for {@see HashCondition}.
      *
-     * @param HashConditionInterface $expression
+     * @param HashCondition $expression
      *
      * @throws Exception
      * @throws InvalidArgumentException
