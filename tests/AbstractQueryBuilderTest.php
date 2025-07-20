@@ -515,8 +515,8 @@ abstract class AbstractQueryBuilderTest extends TestCase
         foreach ($params as $name => $value) {
             if ($value instanceof Param) {
                 $this->assertInstanceOf(Param::class, $expectedParams[$name]);
-                $this->assertSame($expectedParams[$name]->getValue(), $value->getValue());
-                $this->assertSame($expectedParams[$name]->getType(), $value->getType());
+                $this->assertSame($expectedParams[$name]->value, $value->value);
+                $this->assertSame($expectedParams[$name]->type, $value->type);
             } else {
                 $this->assertSame($expectedParams[$name], $value);
             }

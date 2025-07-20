@@ -12,7 +12,6 @@ use Traversable;
 use Yiisoft\Db\Command\CommandInterface;
 use Yiisoft\Db\Command\Param;
 use Yiisoft\Db\Constant\DataType;
-use Yiisoft\Db\Command\ParamInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Db\Connection\ServerInfoInterface;
 use Yiisoft\Db\Constant\GettypeResult;
@@ -278,7 +277,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             GettypeResult::INTEGER => (string) $value,
             GettypeResult::NULL => 'NULL',
             GettypeResult::OBJECT => match (true) {
-                $value instanceof ParamInterface => $this->bindParam($value, $params),
+                $value instanceof Param => $this->bindParam($value, $params),
                 $value instanceof ExpressionInterface => $this->buildExpression($value, $params),
                 $value instanceof Stringable => $this->bindParam(new Param((string) $value, DataType::STRING), $params),
                 $value instanceof BackedEnum => is_string($value->value)
@@ -438,16 +437,16 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         return $this->db->getQuoter();
     }
 
-    public function prepareParam(ParamInterface $param): string
+    public function prepareParam(Param $param): string
     {
-        return match ($param->getType()) {
-            DataType::BOOLEAN => $param->getValue() ? static::TRUE_VALUE : static::FALSE_VALUE,
-            DataType::INTEGER => (string) (int) $param->getValue(),
-            DataType::LOB => is_resource($value = $param->getValue())
+        return match ($param->type) {
+            DataType::BOOLEAN => $param->value ? static::TRUE_VALUE : static::FALSE_VALUE,
+            DataType::INTEGER => (string) (int) $param->value,
+            DataType::LOB => is_resource($value = $param->value)
                 ? $this->prepareResource($value)
                 : $this->prepareBinary((string) $value),
             DataType::NULL => 'NULL',
-            default => $this->prepareValue($param->getValue()),
+            default => $this->prepareValue($param->value),
         };
     }
 
@@ -471,7 +470,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
             GettypeResult::INTEGER => (string) $value,
             GettypeResult::NULL => 'NULL',
             GettypeResult::OBJECT => match (true) {
-                $value instanceof ParamInterface => $this->prepareParam($value),
+                $value instanceof Param => $this->prepareParam($value),
                 $value instanceof ExpressionInterface => $this->replacePlaceholders(
                     $this->buildExpression($value, $params),
                     array_map($this->prepareValue(...), $params),

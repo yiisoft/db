@@ -17,25 +17,18 @@ use Yiisoft\Db\Expression\ExpressionInterface;
  * used. The class provides methods for specifying the parameter name, value, as well as methods for quoting and
  * escaping the parameter value to ensure that it's handled by the database.
  */
-final class Param implements ParamInterface, ExpressionInterface
+final class Param implements ExpressionInterface
 {
     /**
+     * @param mixed $value The value to bind to the parameter.
+     * @param int $type The SQL data type of the parameter.
+     * If `null`, the type is determined by the PHP type of the value.
+     *
      * @psalm-param DataType::* $type
      */
-    public function __construct(private mixed $value, private int $type)
-    {
-    }
-
-    /**
-     * @psalm-return DataType::*
-     */
-    public function getType(): int
-    {
-        return $this->type;
-    }
-
-    public function getValue(): mixed
-    {
-        return $this->value;
+    public function __construct(
+        public readonly mixed $value,
+        public readonly int $type,
+    ) {
     }
 }
