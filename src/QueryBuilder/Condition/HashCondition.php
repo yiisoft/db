@@ -10,10 +10,10 @@ namespace Yiisoft\Db\QueryBuilder\Condition;
 final class HashCondition implements ConditionInterface
 {
     /**
-     * @param array|null $hash The condition specification.
+     * @param array $hash The condition specification.
      */
     public function __construct(
-        public readonly array|null $hash = [],
+        public readonly array $hash = [],
     ) {
     }
 

@@ -42,7 +42,7 @@ class HashConditionBuilder implements ExpressionBuilderInterface
      */
     public function build(ExpressionInterface $expression, array &$params = []): string
     {
-        $hash = $expression->hash ?? [];
+        $hash = $expression->hash;
         $parts = [];
 
         /**
