@@ -11,7 +11,6 @@ use Yiisoft\Db\Exception\NotSupportedException;
 use Yiisoft\Db\Expression\ExpressionBuilderInterface;
 use Yiisoft\Db\Expression\ExpressionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\AndCondition;
-use Yiisoft\Db\QueryBuilder\Condition\ConditionInterface;
 use Yiisoft\Db\QueryBuilder\Condition\OrCondition;
 use Yiisoft\Db\QueryBuilder\QueryBuilderInterface;
 
@@ -21,7 +20,6 @@ use function is_array;
 use function reset;
 
 /**
- *
  * Build an object of {@see AndCondition} or {@see OrCondition} into SQL expressions.
  *
  * @implements ExpressionBuilderInterface<AndCondition|OrCondition>
@@ -55,7 +53,7 @@ final class LogicalConditionBuilder implements ExpressionBuilderInterface
             return (string) reset($parts);
         }
 
-        $operator = match($expression::class) {
+        $operator = match ($expression::class) {
             AndCondition::class => 'AND',
             OrCondition::class => 'OR',
         };
